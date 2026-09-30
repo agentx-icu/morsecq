@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morse_trainer
 
 Training pedagogy for morsecq as **pure Dart** (no Flutter imports): the Koch

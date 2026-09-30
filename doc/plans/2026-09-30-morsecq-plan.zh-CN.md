@@ -1,3 +1,5 @@
+[English](./2026-09-30-morsecq-plan.md)
+
 # morsecq — 跨平台莫斯电码 App 立项规划
 
 > 状态：v0.3（2026-09-30）。本文是 morsecq 的立项规划，最初在 toxee 仓库起草（复用其代码事实），现随仓库 `agentx-icu/morsecq` 一起维护。toxee 文档惯例为 EN/zh-CN 成对，本稿先只出中文。
@@ -286,3 +288,4 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 - **2026-09-30 v0.3.1** 波次 2 chat 代理实现结论回写：§3.1 第 8 条需补充——Tim2Tox 的离线群邀请重放走 `TIMGroupManager.inviteUserToGroup`，它要求 `TIMManager.initSDK`（会装上第二条入站路径），morsecq 不调用；改为在 `morsecq_chat` 自己的 `ConversationMetaStore` 维护离线邀请队列，好友在线时直接调 `DartInviteUserToGroup`。另：`tim2tox_dart` 包级依赖的 `tencent_cloud_chat_common` 以空 stub（`third_party/stubs/`）满足 pub，不引入 UIKit 组件；Tim2Tox 轮询路径无法区分 `failed` 与 `sent`（`MessageStatus.failed` 目前不会出现）→ 列入 D 线；`flutter_secure_storage` 需 `^11`（9.x 的 `win32 ^5` 与 `share_plus` 冲突）。
 - **2026-09-30 v0.3.2** 集成期决策：① `BackendFactory` 增加异步 `prepare()`，`main()` 先 await 真实后端；原生库缺失或 Tox 节点启动失败时自动回落到内存假后端并在「关于」显示后端标签。② 外壳改为五个目的地（Learn / Chat / Groups / Reference / Me），翻译器从手册顶栏进入并共享播放设置。③ 通知：Windows 由 `flutter_local_notifications` 22.x 原生 toast 覆盖，无需应用内兜底；iOS 后台模式只声明 `audio`（toxee 实际声明的是 `audio`+`fetch`，非本文 §5.6 所写的 `voip`，已更正认知）。④ 原生构建默认关闭 sqlite（`--with-sqlite` 可恢复 toxee 桌面行为），macOS 以裸 `libtim2tox_ffi.dylib` 放入 `Contents/Frameworks`。⑤ 应用级偏好（语言、窗口位置）存 `<application support>/settings.json`，按身份的数据（训练进度）存 `IdentityService.dataDirectory()`。
 - **2026-09-30 v0.3.3** 波次 2/3 全部集成完毕并推送 `master`。新增 `TrainingControllerHost`：每个身份只有一个 `TrainingController`，Learn 页与 Me 页的训练设置路由共用同一实例（避免两处写同一 `progress.json`）；`LearnScope` 只 dispose 自己创建的控制器。参考手册的 SoLoud 播放器改为首次播放时懒创建（外壳 `IndexedStack` 里构建时不再触碰音频引擎）。CI 新增 `strings_to_arb --check`。全仓 analyzer、复杂度、import guard、ARB 同步检查均通过；按用户指示本轮未执行测试与构建（测试文件已落盘：core 71、trainer 91、io 55、chat 33、chat_api 36、app 约 300 个用例待运行）。
+- **2026-09-30 v0.3.4** 仅文档：按与 toxee 共用的双语惯例（`X.md` + `X.zh-CN.md`）新增英文译本 `2026-09-30-morsecq-plan.md`（链接默认指向的文件），两文件第一行加语言链接。本文为原稿，两版不一致时以中文为准。规划内容本身无改动。

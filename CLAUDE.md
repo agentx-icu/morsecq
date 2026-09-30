@@ -103,6 +103,8 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   change; a bugfix lands with the regression test that would have caught it.
 - **Plan docs carry a change-log.** Every edit to a `doc/plans/*.md` file
   appends an entry (date, what changed, why) to that doc's change-log section.
+- **Docs are bilingual:** `X.md` (English, default) + `X.zh-CN.md`; add both
+  when adding a doc.
 - **Independent review on every change.** Draft → second opinion → apply
   findings → proceed. Bundle the diff and have the reviewer check correctness,
   layering (import guard), memory/ownership for anything FFI-adjacent, and

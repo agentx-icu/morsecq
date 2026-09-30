@@ -3,40 +3,48 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Guards the two ARB files against drifting apart. `flutter test` runs with
-/// the package root (apps/morsecq) as the working directory.
+/// Guards every shipped ARB against drifting from the English template.
+/// Data-driven over `lib/l10n/app_*.arb` (toxee's `_completeLocales`
+/// pattern): adding `app_zh_Hant.arb` or `app_ja.arb` is covered
+/// automatically. `flutter test` runs with the package root (apps/morsecq)
+/// as the working directory.
 void main() {
   late Map<String, Object?> en;
-  late Map<String, Object?> zh;
+  late Map<String, Map<String, Object?>> others; // file name -> content
 
   setUpAll(() {
     en = _readArb('lib/l10n/app_en.arb');
-    zh = _readArb('lib/l10n/app_zh.arb');
+    others = {
+      for (final file in _arbFiles().where((f) => !f.endsWith('app_en.arb')))
+        file: _readArb(file),
+    };
+    expect(others, isNotEmpty, reason: 'at least one translation must ship');
   });
 
-  test('both ARB files declare their locale', () {
+  test('every ARB declares a locale matching its file name', () {
     expect(en['@@locale'], 'en');
-    expect(zh['@@locale'], 'zh');
+    others.forEach((file, arb) {
+      final expected = RegExp(r'app_(.+)\.arb$').firstMatch(file)!.group(1);
+      expect(arb['@@locale'], expected, reason: file);
+    });
   });
 
-  test('app_en.arb and app_zh.arb have identical message key sets', () {
+  test('every translation has exactly the template key set', () {
     final enKeys = _messageKeys(en);
-    final zhKeys = _messageKeys(zh);
-    expect(
-      zhKeys.difference(enKeys),
-      isEmpty,
-      reason: 'keys only in app_zh.arb',
-    );
-    expect(
-      enKeys.difference(zhKeys),
-      isEmpty,
-      reason: 'keys missing from app_zh.arb — run '
-          '`dart run tool/strings_to_arb.dart` from the repo root',
-    );
+    others.forEach((file, arb) {
+      final keys = _messageKeys(arb);
+      expect(keys.difference(enKeys), isEmpty, reason: 'keys only in $file');
+      expect(
+        enKeys.difference(keys),
+        isEmpty,
+        reason: 'keys missing from $file — run '
+            '`dart run tool/strings_to_arb.dart` from the repo root',
+      );
+    });
   });
 
   test('every message value is a non-empty string', () {
-    for (final arb in [en, zh]) {
+    for (final arb in [en, ...others.values]) {
       for (final key in _messageKeys(arb)) {
         expect(arb[key], isA<String>(), reason: key);
         expect((arb[key] as String).isNotEmpty, isTrue, reason: key);
@@ -44,26 +52,28 @@ void main() {
     }
   });
 
-  test('zh uses every placeholder the en template declares', () {
+  test('translations keep every placeholder the template declares', () {
     for (final key in _messageKeys(en)) {
       final meta = en['@$key'];
       if (meta is! Map) continue;
       final placeholders = meta['placeholders'];
       if (placeholders is! Map) continue;
-      final zhValue = zh[key] as String;
-      for (final name in placeholders.keys) {
-        expect(
-          zhValue.contains('{$name'),
-          isTrue,
-          reason: '$key: zh translation drops placeholder {$name}',
-        );
-      }
+      others.forEach((file, arb) {
+        final value = arb[key] as String;
+        for (final name in placeholders.keys) {
+          expect(
+            value.contains('{$name'),
+            isTrue,
+            reason: '$key in $file drops placeholder {$name}',
+          );
+        }
+      });
     }
   });
 
-  test('plural messages carry an "other" branch in both files', () {
+  test('plural messages carry an "other" branch in every file', () {
     final plural = RegExp(r'\{(\w+),\s*plural,');
-    for (final arb in [en, zh]) {
+    for (final arb in [en, ...others.values]) {
       for (final key in _messageKeys(arb)) {
         final value = arb[key] as String;
         if (!plural.hasMatch(value)) continue;
@@ -72,11 +82,36 @@ void main() {
     }
   });
 
-  test('the four nav destinations and app name exist', () {
-    for (final key in ['appName', 'navLearn', 'navChat', 'navGroups', 'navMe']) {
+  test('no translation still carries a TODO marker', () {
+    others.forEach((file, arb) {
+      for (final key in arb.keys.where((k) => k.startsWith('@'))) {
+        final meta = arb[key];
+        if (meta is! Map) continue;
+        final description = meta['description'];
+        expect(
+          description is String && description.contains('@@TODO'),
+          isFalse,
+          reason: '$key in $file is untranslated',
+        );
+      }
+    });
+  });
+
+  test('the nav destinations and app name exist', () {
+    for (final key in [
+      'appName',
+      'navLearn',
+      'navChat',
+      'navGroups',
+      'navReference',
+      'navMe',
+    ]) {
       expect(en.containsKey(key), isTrue, reason: key);
     }
-    expect(en['appName'], zh['appName'], reason: 'product name is not translated');
+    others.forEach((file, arb) {
+      expect(arb['appName'], en['appName'],
+          reason: 'product name is not translated ($file)');
+    });
   });
 
   test('every ChatException code has an error message', () {
@@ -96,9 +131,23 @@ void main() {
   });
 }
 
+List<String> _arbFiles() {
+  final dir = Directory('lib/l10n');
+  expect(dir.existsSync(), isTrue,
+      reason: 'missing lib/l10n (cwd ${Directory.current.path})');
+  return dir
+      .listSync()
+      .whereType<File>()
+      .map((f) => f.path.replaceAll('\\', '/'))
+      .where((p) => RegExp(r'/app_[A-Za-z_]+\.arb$').hasMatch(p))
+      .toList()
+    ..sort();
+}
+
 Map<String, Object?> _readArb(String path) {
   final file = File(path);
-  expect(file.existsSync(), isTrue, reason: 'missing $path (cwd ${Directory.current.path})');
+  expect(file.existsSync(), isTrue,
+      reason: 'missing $path (cwd ${Directory.current.path})');
   final decoded = jsonDecode(file.readAsStringSync());
   expect(decoded, isA<Map<String, Object?>>());
   return decoded as Map<String, Object?>;

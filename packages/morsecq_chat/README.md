@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morsecq_chat
 
 Tim2Tox-backed implementation of [`morsecq_chat_api`](../morsecq_chat_api):

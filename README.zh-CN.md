@@ -1,0 +1,103 @@
+[English](./README.md)
+
+# morsecq
+
+**用莫斯电码聊天。** morsecq 是一款莫斯电码训练器，同时也是一个建立在
+[Tox](https://tox.chat) 网络之上、无服务器的点对点莫斯聊天工具。先通过系统化的
+课程与发报练习学会电码，再和真人「敲」着聊——单聊或群组「电台网」都可以，中间
+没有任何服务器。它与姊妹项目 **toxee** 使用同一套 Tim2Tox 线路协议，两者可以互通。
+
+## 状态
+
+**Pre-alpha。** v1 规划的全部模块已接入 App 外壳，并通过仓库门禁（analyzer、复杂度、
+import guard、ARB 同步），但测试套件尚未端到端跑过，也没有可用的发布版本。任何地方都
+可能发生破坏性变更。
+
+## 功能
+
+App 有五个目的地——**Learn（学习）/ Chat（聊天）/ Groups（群组）/ Reference（手册）/
+Me（我）**——全部位于同一个启动门之后：首次启动时创建（或解锁）一个 Tox 身份，训练与
+聊天都需要这一身份。
+
+- **学习** —— Koch 法字符课程 + Farnsworth 间距；听抄练习（字符组、常用词、呼号、
+  简短 QSO）；发报练习支持屏幕直键 / 双桨自动键 **以及** 桌面键盘；实时解码并给出
+  节奏诊断；错字混淆矩阵；间隔复习与每日目标。进度按身份保存。
+- **麦克风听抄** —— 从实时音频中解码莫斯（`morse_dsp`：Goertzel 音调检测、自动
+  调谐、包络门限），由 `record` 插件把 PCM 送入 `AudioMorseDecoder`。
+- **聊天** —— 通过 Tox ID 或二维码加好友；消息在线路上就是纯文本，任何 Tim2Tox
+  客户端（含 toxee）都能读，morsecq 收到后按**听者**自选速度重新播成「滴答」。气泡
+  显示点划符号 / 明文 / 播放按钮；「先听后揭晓」训练模式；键盘 / 直键 / 双桨三种输入
+  并可发送前预听；对方离线时消息进入离线队列并显示「待送达」。
+- **群组** —— 创建 / 邀请 / 通过 chat_id 加入（Tox NGC 群），群内莫斯消息，成员
+  列表，重启后自动重入。
+- **手册** —— 字母表、标点、prosign、Q 简语与 CW 缩写；双向文本 ↔ 莫斯翻译器，
+  与播放设置共享。
+- **我** —— 身份备份 / 恢复（加密 `.tox` + 二维码）、训练设置、统计（准确率趋势、
+  字符格、混淆热图、练习日历）、语言、通知、关于页（显示当前使用的后端）。
+- **通知** —— 聊天事件的本地通知（含莫斯图样）、未读角标、前后台协调；iOS 只声明
+  `audio` 后台模式（不带 ToxAV，因此没有 `voip`）。
+- **桌面外壳** —— macOS / Windows / Linux 上的窗口尺寸持久化、关闭到托盘、托盘菜单
+  与快捷键；移动端全部为 no-op。
+- **双语界面** —— 通过 Flutter gen-l10n 提供英文与简体中文
+  （`lib/l10n/app_en.arb` / `app_zh.arb`）。
+- **声音、触觉与闪光** —— 五端统一使用 `flutter_soloud` 侧音，移动端触觉反馈，
+  全平台屏幕闪光。
+
+v1 明确不做：语音 / 视频通话、服务器推送、多账号同时在线、传输发送方真实键控节奏
+（v2，依赖 Tim2Tox 上游改动）。
+
+## 目录结构
+
+本仓库是一个 pub workspace（在根目录执行一次 `dart pub get` 即可解析全部依赖）。
+
+| 路径 | 内容 |
+|------|------|
+| `packages/morse_core` | 纯 Dart 莫斯引擎：字母表、PARIS/Farnsworth 时序、编码器、流式按键解码器 |
+| `packages/morse_trainer` | 纯 Dart 教学法：Koch 课程进度、评分、间隔复习 |
+| `packages/morse_dsp` | 纯 Dart 音频解码：Goertzel 音调检测、自动调谐、包络门限、`AudioMorseDecoder` |
+| `packages/morse_io` | Flutter I/O：侧音、触觉、闪光、触屏 + 键盘键控输入 |
+| `packages/morsecq_chat_api` | UI 与后端之间的纯 Dart 契约（`IdentityService`、`ChatService`、模型、内存假实现） |
+| `packages/morsecq_chat` | 在 Tim2Tox 上实现契约的 Tox 传输层（唯一允许接触 Tim2Tox / 腾讯 SDK 的包） |
+| `apps/morsecq` | Flutter App：Material 3、响应式 Learn / Chat / Groups / Reference / Me 外壳、启动门、通知、桌面外壳、l10n |
+| `third_party/tim2tox` | git 子模块（上游 `agentx-icu/tim2tox`）——永不原地修改 |
+| `tool/` | 仓库门禁（500 行复杂度守卫、import 分层守卫）、依赖引导、原生构建辅助脚本 |
+| `doc/` | 文档树——见 [doc/README.zh-CN.md](doc/README.zh-CN.md) |
+
+## 构建前提
+
+- Flutter **3.41.9** stable（Dart 3.11）——与 CI 相同的 pin。
+- 目标平台工具链：Xcode（iOS/macOS）、Android SDK + JDK（Android）、GTK 3 开发头文件
+  （Linux）、Visual Studio C++ 工作负载（Windows）。
+- 聊天后端需要 C/C++ 工具链与 CMake ≥ 3.16 来构建 `libtim2tox_ffi` 原生库
+  （libsodium 自动下载并静态构建；默认 `--no-toxav`，不需要 opus/vpx）。没有原生库时
+  App 会回落到内存假后端，并在「关于」页标明。
+
+```bash
+git clone --recursive https://github.com/agentx-icu/morsecq.git
+cd morsecq
+dart run tool/bootstrap_deps.dart      # 子模块、vendored SDK、补丁、pubspec_overrides
+dart pub get
+flutter analyze apps/morsecq
+dart run tool/check_complexity.dart
+dart run tool/import_guard.dart
+(cd apps/morsecq && flutter test)
+(cd apps/morsecq && flutter run)
+```
+
+各平台原生库的构建与捆绑见
+[doc/operations/BUILD_AND_DEPLOY.zh-CN.md](doc/operations/BUILD_AND_DEPLOY.zh-CN.md)。
+
+## 文档
+
+每份文档都有英文版（`X.md`，链接与 CI 指向的默认版本）和简体中文版（`X.zh-CN.md`）。
+索引见 [doc/README.zh-CN.md](doc/README.zh-CN.md)。
+
+约定、门禁与工作约定见 [CLAUDE.md](CLAUDE.md)。产品与架构规划见
+[doc/plans/2026-09-30-morsecq-plan.zh-CN.md](doc/plans/2026-09-30-morsecq-plan.zh-CN.md)
+（中文为原稿；英文版为
+[doc/plans/2026-09-30-morsecq-plan.md](doc/plans/2026-09-30-morsecq-plan.md)）。
+
+## 许可证
+
+morsecq 是自由软件，以 **GNU General Public License v3.0** 发布。见
+[LICENSE](LICENSE)。版权归 morsecq 贡献者（agentx-icu）所有。

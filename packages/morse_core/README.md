@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morse_core
 
 Pure-Dart Morse code engine for morsecq: alphabet, PARIS / Farnsworth timing,

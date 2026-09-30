@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # Notifications, badge and background handling
 
 `lib/notifications/` posts OS notifications for chat events and keeps the
@@ -159,8 +161,8 @@ center.setActiveConversation(widget.target.id);   // initState
 center.setActiveConversation(null);               // dispose
 
 // Banner: ValueListenableBuilder(valueListenable: banner.offlineBannerVisible, ...)
-// with NotificationStrings.offlineBanner and a Reconnect action calling
-// StartupController.reconnect().
+// with context.s.shellOfflineBanner and a Reconnect action calling
+// StartupController.reconnect(). The policy exposes state only, no text.
 
 // Settings page: a "Notifications" tile calling center.ensurePermission()
 // and toggles bound to prefs.enabled / showText / showPattern / sound;
@@ -169,6 +171,35 @@ center.setActiveConversation(null);               // dispose
 // Dispose order: tapSub.cancel(); center.dispose(); banner.dispose();
 // lifecycle.dispose(); then the services.
 ```
+
+## Language
+
+All user-visible text (titles, "Friend request from {name}", "Invite to
+{group}", the "N new messages" inbox summary, Android channel names and
+descriptions, the Linux `Open` action) comes from the generated `S` class
+(`notification*` keys in `lib/l10n/app_*.arb`); there is no English const
+class any more. Nothing here has a `BuildContext`, so the text is resolved
+through an `S Function()`:
+
+- `NotificationCenter` / `NotificationComposer` / `FlutterLocalNotificationsApi`
+  take `strings:` and default to `currentS()` (`lib/i18n/current_strings.dart`),
+  which follows the app's `LocaleController`. `AppServices` passes
+  `() => strings.s` from its `StringsResolver`, tests pass
+  `() => lookupS(const Locale('zh'))`.
+- The function is called **at post time**, so a language switch applies to the
+  next notification. Banners already in the shade / Action Center keep the
+  language they were posted in; they are replaced (same id) by the next
+  message for that conversation anyway.
+- **Android channels are created once** (`initialize`, `createIfNotExists`):
+  the channel name/description shown in Android Settings stays in the
+  language of the first launch. Every `show()` still passes the current-language
+  name, but Android ignores it for an existing channel. If this matters
+  later, post with `channelAction: AndroidNotificationChannelAction.update`
+  or re-run `_createAndroidChannels` from the `StringsResolver` listener.
+- Windows registers `windowsAppName` (`Morsecq`, the product name) with the
+  toast platform; product names are never translated.
+- `AppLifecycleCoordinator` / `LifecycleHint` and `ConnectionBannerPolicy`
+  expose enums and booleans only; their text lives in the shell widgets.
 
 ## What needs a device to verify
 

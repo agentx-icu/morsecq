@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morse_io
 
 Flutter I/O layer for morsecq: renders `morse_core` timelines to **sound**,

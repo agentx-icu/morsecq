@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morsecq_chat_api
 
 Pure-Dart contract between the morsecq UI and the chat backend. The UI depends

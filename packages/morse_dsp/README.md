@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # morse_dsp
 
 Pure-Dart audio Morse decoding for the morsecq workspace: 16-bit PCM from a

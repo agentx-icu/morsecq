@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # Desktop shell (`lib/desktop/`)
 
 Window management and system tray for macOS / Windows / Linux. On Android,
@@ -99,11 +101,21 @@ Shortcuts(
   hides; otherwise (setting off, or no tray host) the shell persists bounds,
   runs `onBeforeQuit`, destroys the tray and the window — the runner then
   exits. Quit from the tray menu is always a real exit.
-- **Tray**: icon per platform, tooltip = app name (+ " — N unread"), menu
-  Show/Hide · Sound on/off (checkbox, placeholder callback) · Quit. Left
+- **Tray**: icon per platform, tooltip = app name (+ " — N unread messages"),
+  menu Show/Hide · Sound on/off (checkbox, placeholder callback) · Quit. Left
   click toggles the window where the host delivers clicks (macOS, Windows).
   Every tray call is tolerated: a missing tray disables the tray, a missing
   method (Linux tooltip) is logged once.
+- **Language**: menu labels, tooltip and the unread window title are `S`
+  strings (`desktop*` keys in `lib/l10n/app_*.arb`); the product name
+  (`DesktopShellConfig.appName`) is a placeholder and never translated. The
+  controller is built in `main()` before the `LocaleController` exists, so it
+  starts from `currentS()` (platform locale, or the `strings:` argument) and
+  `AppServices` calls `updateStrings(S)` with the persisted choice on start
+  and on every language change (`StringsResolver`); that re-sets the title
+  and rebuilds the tray behind any queued tray update. Keyboard shortcut
+  labels (`shortcutLabel`) stay platform-specific (`⌘K` / `Ctrl+K`), not
+  language-specific.
 - **Persistence keys**: `desktop.windowBounds` (JSON), `desktop.closeToTray`.
 
 ## Per-OS caveats
