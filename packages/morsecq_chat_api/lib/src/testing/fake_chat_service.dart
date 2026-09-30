@@ -5,27 +5,23 @@ import '../chat_service.dart';
 import '../models.dart';
 import 'replay_stream.dart';
 
+part 'fake_chat_service_hooks.dart';
+
 /// In-memory [ChatService] for widget tests and UI development without a
-/// Tox node.
-///
-/// Behaviour mirrors the Tox transport where it matters to the UI:
-/// * ids are deterministic (`msg_1`, `tox_1`, `inv_1`, ...);
-/// * [sendText] to an **offline** friend returns [MessageStatus.pending] and
-///   the row flips to `sent` (via [messageEvents]) when the friend comes
-///   online through [setFriendOnline] — Tox has no server to store it;
-/// * [addFriend] adds the friend immediately, offline, like `tox_friend_add`;
-/// * a `c2c_<pk>` / `group_<id>` conversation that is not in
-///   [conversations] yet is created on first send / draft, so the UI can open
-///   a chat straight from the contact list.
-///
-/// Test hooks are the `receive*` / `set*` / `addFake*` methods at the bottom.
+/// Tox node. Mirrors the Tox transport where the UI can tell: deterministic
+/// ids (`msg_1`, `tox_1`, `inv_1`); [sendText] to an offline friend is
+/// [MessageStatus.pending] until `setFriendOnline` flips it to `sent` (Tox has
+/// no server); [addFriend] adds the friend immediately, offline, like
+/// `tox_friend_add`; a `c2c_<pk>` / `group_<id>` conversation not yet in
+/// [conversations] is created on first send / draft. Test hooks live in the
+/// [FakeChatServiceTestHooks] extension (`fake_chat_service_hooks.dart`).
 final class FakeChatService implements ChatService {
   FakeChatService({
     String? selfPublicKey,
     DateTime Function()? clock,
     this.maxMessageBytes = 1322,
-  })  : selfPublicKey = selfPublicKey ?? 'F' * 64,
-        _clock = clock ?? DateTime.now;
+  }) : selfPublicKey = selfPublicKey ?? 'F' * 64,
+       _clock = clock ?? DateTime.now;
 
   /// Our own 64-hex public key; `addFriend(<own id>)` throws `own_id`.
   final String selfPublicKey;
@@ -42,8 +38,7 @@ final class FakeChatService implements ChatService {
   final Map<String, List<ChatMessage>> _messages =
       <String, List<ChatMessage>>{};
   final Map<String, Group> _groups = <String, Group>{};
-  final Map<String, List<GroupMember>> _members =
-      <String, List<GroupMember>>{};
+  final Map<String, List<GroupMember>> _members = <String, List<GroupMember>>{};
   final List<GroupInvite> _groupInvites = <GroupInvite>[];
 
   /// Tox IDs handed to [addFriend], oldest first (for assertions).
@@ -55,14 +50,23 @@ final class FakeChatService implements ChatService {
       ReplaySubject<List<FriendRequest>>(const <FriendRequest>[]);
   final ReplaySubject<List<Conversation>> _conversationChanges =
       ReplaySubject<List<Conversation>>(const <Conversation>[]);
-  final ReplaySubject<List<Group>> _groupChanges =
-      ReplaySubject<List<Group>>(const <Group>[]);
+  final ReplaySubject<List<Group>> _groupChanges = ReplaySubject<List<Group>>(
+    const <Group>[],
+  );
   final ReplaySubject<List<GroupInvite>> _groupInviteChanges =
       ReplaySubject<List<GroupInvite>>(const <GroupInvite>[]);
   final StreamController<ChatMessage> _messageEvents =
       StreamController<ChatMessage>.broadcast();
 
   bool _disposed = false;
+
+  List<ReplaySubject<Object>> get _subjects => <ReplaySubject<Object>>[
+    _friendChanges,
+    _friendRequestChanges,
+    _conversationChanges,
+    _groupChanges,
+    _groupInviteChanges,
+  ];
 
   String _nextId(String prefix) => '${prefix}_${++_seq}';
 
@@ -133,8 +137,9 @@ final class FakeChatService implements ChatService {
   }
 
   FriendRequest? _takeFriendRequest(String publicKey) {
-    final int index =
-        _friendRequests.indexWhere((r) => r.publicKey == publicKey);
+    final int index = _friendRequests.indexWhere(
+      (r) => r.publicKey == publicKey,
+    );
     if (index < 0) return null;
     final FriendRequest request = _friendRequests.removeAt(index);
     _friendRequestChanges.add(friendRequests);
@@ -155,17 +160,26 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> markRead(String conversationId) async {
-    _updateConversation(conversationId, (c) => _copy(c, unreadCount: 0));
+    _updateConversation(
+      conversationId,
+      (c) => _copyConversation(c, unreadCount: 0),
+    );
   }
 
   @override
   Future<void> setPinned(String conversationId, bool pinned) async {
-    _updateConversation(conversationId, (c) => _copy(c, pinned: pinned));
+    _updateConversation(
+      conversationId,
+      (c) => _copyConversation(c, pinned: pinned),
+    );
   }
 
   @override
   Future<void> setDraft(String conversationId, String draft) async {
-    _updateConversation(conversationId, (c) => _copy(c, draft: draft));
+    _updateConversation(
+      conversationId,
+      (c) => _copyConversation(c, draft: draft),
+    );
   }
 
   @override
@@ -251,7 +265,8 @@ final class FakeChatService implements ChatService {
         'No conversation $conversationId',
       );
     }
-    final bool peerOnline = conversation.kind == ConversationKind.group ||
+    final bool peerOnline =
+        conversation.kind == ConversationKind.group ||
         (_friends[conversation.peerId]?.online ?? false);
     final ChatMessage message = ChatMessage(
       id: _nextId('msg'),
@@ -289,7 +304,7 @@ final class FakeChatService implements ChatService {
   }) {
     _messages.putIfAbsent(message.conversationId, () => <ChatMessage>[]);
     _messages[message.conversationId]!.add(message);
-    _conversations[conversation.id] = _copy(
+    _conversations[conversation.id] = _copyConversation(
       conversation,
       lastMessage: message,
       unreadCount: conversation.unreadCount + unreadDelta,
@@ -304,11 +319,12 @@ final class FakeChatService implements ChatService {
       if (index < 0) continue;
       final ChatMessage updated = list[index].copyWith(status: status);
       list[index] = updated;
-      final Conversation? conversation =
-          _conversations[updated.conversationId];
+      final Conversation? conversation = _conversations[updated.conversationId];
       if (conversation != null && conversation.lastMessage?.id == messageId) {
-        _conversations[conversation.id] =
-            _copy(conversation, lastMessage: updated);
+        _conversations[conversation.id] = _copyConversation(
+          conversation,
+          lastMessage: updated,
+        );
         _publishConversations();
       }
       _messageEvents.add(updated);
@@ -342,13 +358,15 @@ final class FakeChatService implements ChatService {
       throw const ChatException('invalid_group_name', 'Group name is empty');
     }
     final String id = _nextId('tox');
-    return _installGroup(Group(
-      id: id,
-      name: trimmed,
-      kind: kind,
-      chatId: kind == GroupKind.group ? fakeChatIdFor(id) : null,
-      memberCount: 1,
-    ));
+    return _installGroup(
+      Group(
+        id: id,
+        name: trimmed,
+        kind: kind,
+        chatId: kind == GroupKind.group ? fakeChatIdFor(id) : null,
+        memberCount: 1,
+      ),
+    );
   }
 
   @override
@@ -363,13 +381,15 @@ final class FakeChatService implements ChatService {
     if (_groups.values.any((g) => g.chatId == id)) {
       throw const ChatException('already_member', 'Already in that group');
     }
-    _installGroup(Group(
-      id: _nextId('tox'),
-      name: 'Group ${id.substring(0, 8)}',
-      kind: GroupKind.group,
-      chatId: id,
-      memberCount: 1,
-    ));
+    _installGroup(
+      Group(
+        id: _nextId('tox'),
+        name: 'Group ${id.substring(0, 8)}',
+        kind: GroupKind.group,
+        chatId: id,
+        memberCount: 1,
+      ),
+    );
   }
 
   @override
@@ -384,13 +404,15 @@ final class FakeChatService implements ChatService {
   Future<void> acceptGroupInvite(String inviteId, {String? password}) async {
     final GroupInvite invite = _takeInvite(inviteId);
     final String id = _nextId('tox');
-    _installGroup(Group(
-      id: id,
-      name: invite.groupName,
-      kind: invite.kind,
-      chatId: invite.kind == GroupKind.group ? fakeChatIdFor(id) : null,
-      memberCount: 2,
-    ));
+    _installGroup(
+      Group(
+        id: id,
+        name: invite.groupName,
+        kind: invite.kind,
+        chatId: invite.kind == GroupKind.group ? fakeChatIdFor(id) : null,
+        memberCount: 2,
+      ),
+    );
   }
 
   @override
@@ -455,164 +477,21 @@ final class FakeChatService implements ChatService {
     if (_disposed) return;
     _disposed = true;
     await Future.wait(<Future<void>>[
-      _friendChanges.close(),
-      _friendRequestChanges.close(),
-      _conversationChanges.close(),
-      _groupChanges.close(),
-      _groupInviteChanges.close(),
+      for (final ReplaySubject<Object> s in _subjects) s.close(),
       _messageEvents.close(),
     ]);
   }
-
-  // ---- Test hooks ----------------------------------------------------------
-
-  /// Adds (or replaces) a friend without going through a request.
-  void addFakeFriend(Friend friend) {
-    _friends[friend.publicKey] = friend;
-    _publishFriends();
-    final Conversation? existing =
-        _conversations[c2cConversationId(friend.publicKey)];
-    if (existing != null && existing.title != friend.displayName) {
-      _conversations[existing.id] = _copy(existing, title: friend.displayName);
-      _publishConversations();
-    }
-  }
-
-  /// Toggles a friend's connection; coming online flushes pending messages
-  /// to `sent`, exactly what the Tox transport does.
-  void setFriendOnline(String publicKey, bool online) {
-    final Friend? friend = _friends[publicKey];
-    if (friend == null) return;
-    _friends[publicKey] = friend.copyWith(online: online);
-    _publishFriends();
-    if (!online) return;
-    final List<ChatMessage> pending =
-        (_messages[c2cConversationId(publicKey)] ?? const <ChatMessage>[])
-            .where((m) => m.isMine && m.status == MessageStatus.pending)
-            .toList();
-    for (final ChatMessage m in pending) {
-      _setStatus(m.id, MessageStatus.sent);
-    }
-  }
-
-  /// Marks one of our messages as failed (emits a status event).
-  void failMessage(String messageId) =>
-      _setStatus(messageId, MessageStatus.failed);
-
-  /// Delivers an inbound message; bumps the conversation's unread count.
-  ChatMessage receiveMessage(
-    String conversationId,
-    String text, {
-    String? senderId,
-    String? senderName,
-    DateTime? timestamp,
-  }) {
-    final Conversation? conversation =
-        _conversations[conversationId] ?? _materialize(conversationId);
-    if (conversation == null) {
-      throw ChatException(
-        'conversation_not_found',
-        'No conversation $conversationId',
-      );
-    }
-    final String sender = senderId ?? conversation.peerId;
-    final ChatMessage message = ChatMessage(
-      id: _nextId('msg'),
-      conversationId: conversationId,
-      senderId: sender,
-      senderName: senderName ?? _friends[sender]?.displayName,
-      text: text,
-      timestamp: timestamp ?? _clock(),
-      status: MessageStatus.received,
-      isMine: false,
-    );
-    _append(conversation, message, unreadDelta: 1);
-    return message;
-  }
-
-  void receiveFriendRequest(String publicKey, {String message = 'CQ CQ'}) {
-    _friendRequests.add(FriendRequest(
-      publicKey: publicKey,
-      message: message,
-      receivedAt: _clock(),
-    ));
-    _friendRequestChanges.add(friendRequests);
-  }
-
-  GroupInvite receiveGroupInvite({
-    required String fromPublicKey,
-    required String groupName,
-    GroupKind kind = GroupKind.group,
-  }) {
-    final GroupInvite invite = GroupInvite(
-      inviteId: _nextId('inv'),
-      fromPublicKey: fromPublicKey,
-      groupName: groupName,
-      kind: kind,
-    );
-    _groupInvites.add(invite);
-    _groupInviteChanges.add(groupInvites);
-    return invite;
-  }
-
-  /// Installs a group (and its conversation) as if we were already a member.
-  Group addFakeGroup(Group group, {List<GroupMember>? members}) {
-    _installGroup(group);
-    if (members != null) {
-      _members[group.id] = List<GroupMember>.of(members);
-      _groups[group.id] = Group(
-        id: group.id,
-        name: group.name,
-        kind: group.kind,
-        chatId: group.chatId,
-        memberCount: members.length,
-        topic: group.topic,
-      );
-      _groupChanges.add(groups);
-    }
-    return _groups[group.id]!;
-  }
-
-  // ---- Helpers -------------------------------------------------------------
 
   static String c2cConversationId(String publicKey) => 'c2c_$publicKey';
 
   static String groupConversationId(String groupId) => 'group_$groupId';
 
-  static final RegExp _hex76 = RegExp(r'^[0-9A-Fa-f]{76}$');
-  static final RegExp _hex64 = RegExp(r'^[0-9A-Fa-f]{64}$');
+  static bool isValidToxId(String value) =>
+      RegExp(r'^[0-9A-Fa-f]{76}$').hasMatch(value);
 
-  static bool isValidToxId(String value) => _hex76.hasMatch(value);
-
-  static bool isValidChatId(String value) => _hex64.hasMatch(value);
+  static bool isValidChatId(String value) =>
+      RegExp(r'^[0-9A-Fa-f]{64}$').hasMatch(value);
 
   /// Deterministic 64-hex chat id for a fake NGC group.
-  static String fakeChatIdFor(String groupId) {
-    final String hex = groupId.codeUnits
-        .map((c) => c.toRadixString(16).padLeft(2, '0'))
-        .join()
-        .toUpperCase();
-    return (hex * (64 ~/ hex.length + 1)).substring(0, 64);
-  }
-
-  static String _shortKey(String publicKey) =>
-      publicKey.length > 8 ? publicKey.substring(0, 8) : publicKey;
-
-  static Conversation _copy(
-    Conversation c, {
-    String? title,
-    ChatMessage? lastMessage,
-    int? unreadCount,
-    bool? pinned,
-    String? draft,
-  }) =>
-      Conversation(
-        id: c.id,
-        kind: c.kind,
-        title: title ?? c.title,
-        lastMessage: lastMessage ?? c.lastMessage,
-        unreadCount: unreadCount ?? c.unreadCount,
-        pinned: pinned ?? c.pinned,
-        draft: draft ?? c.draft,
-      );
+  static String fakeChatIdFor(String groupId) => _fakeChatIdFor(groupId);
 }

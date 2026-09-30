@@ -20,22 +20,19 @@ final class ReplaySubject<T> {
     }
   }
 
-  Stream<T> get stream => Stream<T>.multi(
-        (MultiStreamController<T> listener) {
-          listener.add(_value);
-          if (_controller.isClosed) {
-            unawaited(listener.close());
-            return;
-          }
-          final StreamSubscription<T> sub = _controller.stream.listen(
-            listener.add,
-            onError: listener.addError,
-            onDone: listener.close,
-          );
-          listener.onCancel = sub.cancel;
-        },
-        isBroadcast: true,
-      );
+  Stream<T> get stream => Stream<T>.multi((MultiStreamController<T> listener) {
+    listener.add(_value);
+    if (_controller.isClosed) {
+      unawaited(listener.close());
+      return;
+    }
+    final StreamSubscription<T> sub = _controller.stream.listen(
+      listener.add,
+      onError: listener.addError,
+      onDone: listener.close,
+    );
+    listener.onCancel = sub.cancel;
+  }, isBroadcast: true);
 
   Future<void> close() => _controller.close();
 }
