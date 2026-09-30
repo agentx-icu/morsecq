@@ -1,0 +1,2058 @@
+{
+  "@@locale": "en",
+  "appName": "morsecq",
+  "@appName": {
+    "description": "Product name; never translated"
+  },
+  "navLearn": "Learn",
+  "@navLearn": {
+    "description": "Shell destination: Morse training"
+  },
+  "navChat": "Chat",
+  "@navChat": {
+    "description": "Shell destination: 1:1 Morse chat over Tox"
+  },
+  "navGroups": "Groups",
+  "@navGroups": {
+    "description": "Shell destination: Tox group chats"
+  },
+  "navMe": "Me",
+  "@navMe": {
+    "description": "Shell destination: profile, identity, settings"
+  },
+  "actionOk": "OK",
+  "actionCancel": "Cancel",
+  "actionSave": "Save",
+  "actionDelete": "Delete",
+  "actionCopy": "Copy",
+  "actionShare": "Share",
+  "actionRetry": "Retry",
+  "actionClose": "Close",
+  "actionSearch": "Search",
+  "actionSettings": "Settings",
+  "connectionConnecting": "Connecting…",
+  "@connectionConnecting": {
+    "description": "Tox DHT bootstrap in progress"
+  },
+  "connectionOnline": "Online",
+  "@connectionOnline": {
+    "description": "Connected to the Tox network"
+  },
+  "connectionOffline": "Offline",
+  "@connectionOffline": {
+    "description": "Not connected to the Tox network"
+  },
+  "messageStatusPending": "Queued — peer is offline",
+  "@messageStatusPending": {
+    "description": "Outgoing message waiting for the peer to come online"
+  },
+  "messageStatusPendingDetail": "Tox has no server: the message is delivered when the peer comes online.",
+  "@messageStatusPendingDetail": {
+    "description": "Explains why a message can stay queued (P2P, no store-and-forward server)"
+  },
+  "messageStatusSending": "Sending",
+  "messageStatusSent": "Sent",
+  "messageStatusDelivered": "Delivered",
+  "messageStatusFailed": "Failed to send",
+  "errorWrongPassword": "Wrong password. Try again.",
+  "@errorWrongPassword": {
+    "description": "ChatException code wrong_password"
+  },
+  "errorPeerOffline": "This contact is offline. Tox has no server, so the message waits until they come back.",
+  "@errorPeerOffline": {
+    "description": "ChatException code peer_offline"
+  },
+  "errorInvalidToxId": "That is not a valid Tox ID (76 hex characters).",
+  "@errorInvalidToxId": {
+    "description": "ChatException code invalid_tox_id"
+  },
+  "errorAlreadyFriend": "This Tox ID is already in your friend list.",
+  "@errorAlreadyFriend": {
+    "description": "ChatException code already_friend"
+  },
+  "errorOwnId": "That is your own Tox ID.",
+  "@errorOwnId": {
+    "description": "ChatException code own_id"
+  },
+  "errorGroupNotFound": "Group not found.",
+  "@errorGroupNotFound": {
+    "description": "ChatException code group_not_found"
+  },
+  "errorMessageTooLong": "Message is too long for one Tox message.",
+  "@errorMessageTooLong": {
+    "description": "ChatException code message_too_long"
+  },
+  "errorUnknown": "Something went wrong",
+  "@errorUnknown": {
+    "description": "Fallback for any other ChatException code"
+  },
+  "languageTitle": "Language",
+  "@languageTitle": {
+    "description": "Settings tile on the Me page"
+  },
+  "languageSystemDefault": "System default",
+  "@languageSystemDefault": {
+    "description": "Follow the OS language"
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Native name of the English locale; identical in every ARB"
+  },
+  "languageChinese": "简体中文",
+  "@languageChinese": {
+    "description": "Native name of the Simplified Chinese locale; identical in every ARB"
+  },
+  "learnLessonOf": "Lesson {lesson} of {total}",
+  "@learnLessonOf": {
+    "description": "From LearnStrings.lessonOf (Koch lesson progress)",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnCharsLearned": "{count, plural, =1{1 character learned} other{{count} characters learned}}",
+  "@learnCharsLearned": {
+    "description": "From LearnStrings.charsLearned",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnDailyGoalProgress": "{done} / {goal} chars",
+  "@learnDailyGoalProgress": {
+    "description": "From LearnStrings.dailyGoalProgress (characters copied today vs goal)",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "learnStreakDays": "{days, plural, =1{1 day streak} other{{days} day streak}}",
+  "@learnStreakDays": {
+    "description": "From LearnStrings.streakDays",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "learnReviewDueCount": "{count, plural, =0{Nothing due} =1{1 due} other{{count} due}}",
+  "@learnReviewDueCount": {
+    "description": "From LearnStrings.reviewDueCount (spaced-repetition characters due)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnRoundScore": "{correct} of {total} correct",
+  "@learnRoundScore": {
+    "description": "From LearnStrings.roundScore",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnRoundOf": "Round {round}",
+  "@learnRoundOf": {
+    "description": "From LearnStrings.roundOf",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "learnAccuracyPercent": "{percent}%",
+  "@learnAccuracyPercent": {
+    "description": "From LearnStrings.accuracyPercent; percent is already rounded (0-100)",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "learnCharsSent": "{count, plural, =1{1 character sent} other{{count} characters sent}}",
+  "@learnCharsSent": {
+    "description": "From LearnStrings.charsSent",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnLessonUnlocked": "Next character unlocked: {char}",
+  "@learnLessonUnlocked": {
+    "description": "From LearnStrings.lessonUnlocked",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "learnConfusedMissed": "{target} missed",
+  "@learnConfusedMissed": {
+    "description": "From LearnStrings.confusedAs when nothing was answered",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "learnConfusedAs": "{target} heard as {answered}",
+  "@learnConfusedAs": {
+    "description": "From LearnStrings.confusedAs when a wrong character was answered",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "answered": {
+        "type": "String"
+      }
+    }
+  },
+  "learnWpmValue": "{wpm} wpm",
+  "@learnWpmValue": {
+    "description": "From LearnStrings.wpm; wpm is pre-formatted (e.g. 18)",
+    "placeholders": {
+      "wpm": {
+        "type": "String"
+      }
+    }
+  },
+  "learnHzValue": "{hz} Hz",
+  "@learnHzValue": {
+    "description": "From LearnStrings.hz; hz is pre-formatted (e.g. 600)",
+    "placeholders": {
+      "hz": {
+        "type": "String"
+      }
+    }
+  },
+  "learnCharsCount": "{count, plural, =1{1 character} other{{count} characters}}",
+  "@learnCharsCount": {
+    "description": "From LearnStrings.charsCount (session length)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsLessonOf": "{lesson} / {total}",
+  "@statsLessonOf": {
+    "description": "From StatsStrings.lessonOf",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "statsCharsLearned": "{count, plural, =1{1 character learned} other{{count} characters learned}}",
+  "@statsCharsLearned": {
+    "description": "From StatsStrings.charsLearned",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsPercent": "{percent}%",
+  "@statsPercent": {
+    "description": "From StatsStrings.percent; percent is pre-formatted (e.g. 92.5)",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "statsCharsCopied": "{count, plural, =1{1 char copied} other{{count} chars copied}}",
+  "@statsCharsCopied": {
+    "description": "From StatsStrings.charsCopied",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsSessions": "{count, plural, =1{1 session} other{{count} sessions}}",
+  "@statsSessions": {
+    "description": "From StatsStrings.sessions",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@statsDays": {
+    "description": "From StatsStrings.days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsBestStreak": "{count, plural, =1{best 1 day} other{best {count} days}}",
+  "@statsBestStreak": {
+    "description": "From StatsStrings.bestStreak",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsGoalProgress": "{done} / {goal} chars",
+  "@statsGoalProgress": {
+    "description": "From StatsStrings.goalProgress",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "statsGoalRemaining": "{remaining, plural, =1{1 char to go} other{{remaining} chars to go}}",
+  "@statsGoalRemaining": {
+    "description": "From StatsStrings.goalRemaining",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTrendSubtitle": "{count, plural, =1{Last session} other{Last {count} sessions}}",
+  "@statsTrendSubtitle": {
+    "description": "From StatsStrings.trendSubtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTooltipSession": "Session {index} of {total}",
+  "@statsTooltipSession": {
+    "description": "From StatsStrings.tooltipSession",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTooltipCopied": "{correct} / {total} correct",
+  "@statsTooltipCopied": {
+    "description": "From StatsStrings.tooltipCopied",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTooltipLesson": "Lesson {lesson}",
+  "@statsTooltipLesson": {
+    "description": "From StatsStrings.tooltipLesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "statsAttempts": "{count, plural, =1{1 attempt} other{{count} attempts}}",
+  "@statsAttempts": {
+    "description": "From StatsStrings.attempts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsCorrectOf": "{correct} of {attempts} correct",
+  "@statsCorrectOf": {
+    "description": "From StatsStrings.correctOf",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "statsLessonIntroduced": "Introduced in lesson {lesson}",
+  "@statsLessonIntroduced": {
+    "description": "From StatsStrings.lessonIntroduced",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "statsSrsBox": "Box {box} of {maxBox}",
+  "@statsSrsBox": {
+    "description": "From StatsStrings.srsBox (Leitner box)",
+    "placeholders": {
+      "box": {
+        "type": "int"
+      },
+      "maxBox": {
+        "type": "int"
+      }
+    }
+  },
+  "statsSrsDueIn": "{days, plural, =1{Due tomorrow} other{Due in {days} days}}",
+  "@statsSrsDueIn": {
+    "description": "From StatsStrings.srsDueIn",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTimes": "{count, plural, =1{1 time} other{{count} times}}",
+  "@statsTimes": {
+    "description": "From StatsStrings.times",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsHeatmapCell": "{target} answered as {answered}, {count, plural, =1{1 time} other{{count} times}}",
+  "@statsHeatmapCell": {
+    "description": "From StatsStrings.heatmapCell (semantics label of one heatmap cell)",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "answered": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsCalendarDay": "{date}: {chars, plural, =0{no practice} other{{chars} chars}}",
+  "@statsCalendarDay": {
+    "description": "From StatsStrings.calendarDay; date is pre-formatted",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "chars": {
+        "type": "int"
+      }
+    }
+  },
+  "statsActiveDays": "{count, plural, =1{1 active day} other{{count} active days}}",
+  "@statsActiveDays": {
+    "description": "From StatsStrings.activeDays",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "referenceEntryCount": "{count, plural, =1{1 entry} other{{count} entries}}",
+  "@referenceEntryCount": {
+    "description": "From ReferenceStrings.entryCount (matches in a reference section)",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "referenceWpmValue": "{wpm} WPM",
+  "@referenceWpmValue": {
+    "description": "From ReferenceStrings.wpm; wpm is pre-rounded (e.g. 18)",
+    "placeholders": {"wpm": {"type": "String"}}
+  },
+  "referenceHzValue": "{hz} Hz",
+  "@referenceHzValue": {
+    "description": "From ReferenceStrings.hz; hz is pre-rounded (e.g. 600)",
+    "placeholders": {"hz": {"type": "String"}}
+  },
+  "referenceSkippedChars": "Skipped (no Morse code): {chars}",
+  "@referenceSkippedChars": {
+    "description": "From ReferenceStrings.skippedChars; chars lists the characters that have no Morse code",
+    "placeholders": {"chars": {"type": "String"}}
+  },
+  "referenceEstimatedSpeed": "Estimated {wpm} WPM",
+  "@referenceEstimatedSpeed": {
+    "description": "From ReferenceStrings.estimatedSpeed; wpm is pre-rounded",
+    "placeholders": {"wpm": {"type": "String"}}
+  },
+  "accountAppName": "morsecq",
+  "@accountAppName": {
+    "description": "From AccountStrings.appName (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCancel": "Cancel",
+  "@accountCancel": {
+    "description": "From AccountStrings.cancel (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSave": "Save",
+  "@accountSave": {
+    "description": "From AccountStrings.save (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRetry": "Retry",
+  "@accountRetry": {
+    "description": "From AccountStrings.retry (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountContinueLabel": "Continue",
+  "@accountContinueLabel": {
+    "description": "From AccountStrings.continueLabel (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBack": "Back",
+  "@accountBack": {
+    "description": "From AccountStrings.back (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCopy": "Copy",
+  "@accountCopy": {
+    "description": "From AccountStrings.copy (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCopied": "Tox ID copied to clipboard",
+  "@accountCopied": {
+    "description": "From AccountStrings.copied (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountShowQr": "Show QR code",
+  "@accountShowQr": {
+    "description": "From AccountStrings.showQr (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountToxId": "Tox ID",
+  "@accountToxId": {
+    "description": "From AccountStrings.toxId (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDisplayName": "Display name",
+  "@accountDisplayName": {
+    "description": "From AccountStrings.displayName (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDisplayNameHint": "Your callsign or nickname",
+  "@accountDisplayNameHint": {
+    "description": "From AccountStrings.displayNameHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDisplayNameRequired": "Enter a display name",
+  "@accountDisplayNameRequired": {
+    "description": "From AccountStrings.displayNameRequired (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStatusMessage": "Status message",
+  "@accountStatusMessage": {
+    "description": "From AccountStrings.statusMessage (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountPassword": "Password",
+  "@accountPassword": {
+    "description": "From AccountStrings.password (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountPasswordOptional": "Password (optional)",
+  "@accountPasswordOptional": {
+    "description": "From AccountStrings.passwordOptional (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountConfirmPassword": "Confirm password",
+  "@accountConfirmPassword": {
+    "description": "From AccountStrings.confirmPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountPasswordsDoNotMatch": "Passwords do not match",
+  "@accountPasswordsDoNotMatch": {
+    "description": "From AccountStrings.passwordsDoNotMatch (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWrongPassword": "Wrong password. Try again.",
+  "@accountWrongPassword": {
+    "description": "From AccountStrings.wrongPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountShowPassword": "Show password",
+  "@accountShowPassword": {
+    "description": "From AccountStrings.showPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountHidePassword": "Hide password",
+  "@accountHidePassword": {
+    "description": "From AccountStrings.hidePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountGenericError": "Something went wrong",
+  "@accountGenericError": {
+    "description": "From AccountStrings.genericError (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStrengthWeak": "Weak: use at least 8 characters",
+  "@accountStrengthWeak": {
+    "description": "From AccountStrings.strengthWeak (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStrengthFair": "Fair: 12+ characters with mixed types is better",
+  "@accountStrengthFair": {
+    "description": "From AccountStrings.strengthFair (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStrengthStrong": "Strong",
+  "@accountStrengthStrong": {
+    "description": "From AccountStrings.strengthStrong (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStartupInspecting": "Checking your identity…",
+  "@accountStartupInspecting": {
+    "description": "From AccountStrings.startupInspecting (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStartupOpening": "Opening your identity…",
+  "@accountStartupOpening": {
+    "description": "From AccountStrings.startupOpening (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStartupFailedTitle": "Could not start",
+  "@accountStartupFailedTitle": {
+    "description": "From AccountStrings.startupFailedTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountStartupFailedBody": "morsecq could not read your identity. Nothing was changed; you can try again.",
+  "@accountStartupFailedBody": {
+    "description": "From AccountStrings.startupFailedBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountConnectionConnecting": "Connecting…",
+  "@accountConnectionConnecting": {
+    "description": "From AccountStrings.connectionConnecting (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountConnectionOffline": "Offline",
+  "@accountConnectionOffline": {
+    "description": "From AccountStrings.connectionOffline (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountConnectionOnline": "Online",
+  "@accountConnectionOnline": {
+    "description": "From AccountStrings.connectionOnline (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountConnectionTapToReconnect": "Tap to reconnect",
+  "@accountConnectionTapToReconnect": {
+    "description": "From AccountStrings.connectionTapToReconnect (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWelcomeTitle": "Your identity lives on this device",
+  "@accountWelcomeTitle": {
+    "description": "From AccountStrings.welcomeTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWelcomeIntro": "morsecq uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.",
+  "@accountWelcomeIntro": {
+    "description": "From AccountStrings.welcomeIntro (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWelcomePointNoServer": "No server, no phone number, no e-mail. Peers talk to each other directly, in Morse.",
+  "@accountWelcomePointNoServer": {
+    "description": "From AccountStrings.welcomePointNoServer (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWelcomePointTraining": "Training progress is saved with your identity, so it can be backed up and moved between devices.",
+  "@accountWelcomePointTraining": {
+    "description": "From AccountStrings.welcomePointTraining (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountWelcomePointBackup": "Nobody can recover an identity for you. Back it up right after creating it, or you will lose it with the device.",
+  "@accountWelcomePointBackup": {
+    "description": "From AccountStrings.welcomePointBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCreateIdentity": "Create identity",
+  "@accountCreateIdentity": {
+    "description": "From AccountStrings.createIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreFromBackup": "Restore from backup",
+  "@accountRestoreFromBackup": {
+    "description": "From AccountStrings.restoreFromBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCreateTitle": "Create your identity",
+  "@accountCreateTitle": {
+    "description": "From AccountStrings.createTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCreateBody": "Pick a name others will see. A password encrypts the identity file on this device; leave it empty if you prefer to open the app without one.",
+  "@accountCreateBody": {
+    "description": "From AccountStrings.createBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCreateButton": "Create",
+  "@accountCreateButton": {
+    "description": "From AccountStrings.createButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCreating": "Creating…",
+  "@accountCreating": {
+    "description": "From AccountStrings.creating (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupTitle": "Back up your identity now",
+  "@accountBackupTitle": {
+    "description": "From AccountStrings.backupTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupBody": "Your identity exists only on this device. If it is lost, reset or stolen, there is no way to recover it: your contacts will not recognise a new identity and your training progress is gone.",
+  "@accountBackupBody": {
+    "description": "From AccountStrings.backupBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupWhatIsInside": "The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.",
+  "@accountBackupWhatIsInside": {
+    "description": "From AccountStrings.backupWhatIsInside (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupSaveFile": "Save backup file",
+  "@accountBackupSaveFile": {
+    "description": "From AccountStrings.backupSaveFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupShareFile": "Share backup file",
+  "@accountBackupShareFile": {
+    "description": "From AccountStrings.backupShareFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupSaved": "Backup saved",
+  "@accountBackupSaved": {
+    "description": "From AccountStrings.backupSaved (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupNotSaved": "Backup was not saved",
+  "@accountBackupNotSaved": {
+    "description": "From AccountStrings.backupNotSaved (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupFailed": "Could not write the backup",
+  "@accountBackupFailed": {
+    "description": "From AccountStrings.backupFailed (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupAcknowledge": "I understand that without this backup my identity cannot be recovered.",
+  "@accountBackupAcknowledge": {
+    "description": "From AccountStrings.backupAcknowledge (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupContinue": "Continue to morsecq",
+  "@accountBackupContinue": {
+    "description": "From AccountStrings.backupContinue (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountBackupShowQrHint": "Your Tox ID is how friends add you. Share it as text or as a QR code.",
+  "@accountBackupShowQrHint": {
+    "description": "From AccountStrings.backupShowQrHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreTitle": "Restore from backup",
+  "@accountRestoreTitle": {
+    "description": "From AccountStrings.restoreTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreBody": "Choose a backup file exported from morsecq. If the identity was protected with a password you will need it here.",
+  "@accountRestoreBody": {
+    "description": "From AccountStrings.restoreBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreChooseFile": "Choose backup file",
+  "@accountRestoreChooseFile": {
+    "description": "From AccountStrings.restoreChooseFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreFileChosen": "Backup file selected",
+  "@accountRestoreFileChosen": {
+    "description": "From AccountStrings.restoreFileChosen (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreNoFile": "Choose a backup file first",
+  "@accountRestoreNoFile": {
+    "description": "From AccountStrings.restoreNoFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreButton": "Restore",
+  "@accountRestoreButton": {
+    "description": "From AccountStrings.restoreButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoring": "Restoring…",
+  "@accountRestoring": {
+    "description": "From AccountStrings.restoring (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreInvalidFile": "This file is not a morsecq backup.",
+  "@accountRestoreInvalidFile": {
+    "description": "From AccountStrings.restoreInvalidFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRestoreReplacesWarning": "Restoring replaces the identity currently on this device.",
+  "@accountRestoreReplacesWarning": {
+    "description": "From AccountStrings.restoreReplacesWarning (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountUnlockTitle": "Unlock your identity",
+  "@accountUnlockTitle": {
+    "description": "From AccountStrings.unlockTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountUnlockBody": "Your identity file is encrypted. Enter the password to continue.",
+  "@accountUnlockBody": {
+    "description": "From AccountStrings.unlockBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountUnlockButton": "Unlock",
+  "@accountUnlockButton": {
+    "description": "From AccountStrings.unlockButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountUnlocking": "Unlocking…",
+  "@accountUnlocking": {
+    "description": "From AccountStrings.unlocking (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountUnlockRestoreInstead": "Restore from backup instead",
+  "@accountUnlockRestoreInstead": {
+    "description": "From AccountStrings.unlockRestoreInstead (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountMeTitle": "Me",
+  "@accountMeTitle": {
+    "description": "From AccountStrings.meTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountMeNoIdentity": "No identity loaded",
+  "@accountMeNoIdentity": {
+    "description": "From AccountStrings.meNoIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSectionAccount": "Account",
+  "@accountSectionAccount": {
+    "description": "From AccountStrings.sectionAccount (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSectionTraining": "Training",
+  "@accountSectionTraining": {
+    "description": "From AccountStrings.sectionTraining (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSectionAbout": "About",
+  "@accountSectionAbout": {
+    "description": "From AccountStrings.sectionAbout (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSectionDanger": "Danger zone",
+  "@accountSectionDanger": {
+    "description": "From AccountStrings.sectionDanger (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountEditProfile": "Edit profile",
+  "@accountEditProfile": {
+    "description": "From AccountStrings.editProfile (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountEditProfileBody": "Shown to your contacts on the Tox network.",
+  "@accountEditProfileBody": {
+    "description": "From AccountStrings.editProfileBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountSetPassword": "Set password",
+  "@accountSetPassword": {
+    "description": "From AccountStrings.setPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountChangePassword": "Change password",
+  "@accountChangePassword": {
+    "description": "From AccountStrings.changePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountRemovePassword": "Remove password",
+  "@accountRemovePassword": {
+    "description": "From AccountStrings.removePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountCurrentPassword": "Current password",
+  "@accountCurrentPassword": {
+    "description": "From AccountStrings.currentPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountNewPassword": "New password",
+  "@accountNewPassword": {
+    "description": "From AccountStrings.newPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountPasswordUpdated": "Password updated",
+  "@accountPasswordUpdated": {
+    "description": "From AccountStrings.passwordUpdated (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountPasswordRemoved": "Password removed",
+  "@accountPasswordRemoved": {
+    "description": "From AccountStrings.passwordRemoved (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountProfileUpdated": "Profile updated",
+  "@accountProfileUpdated": {
+    "description": "From AccountStrings.profileUpdated (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountExportBackup": "Export backup",
+  "@accountExportBackup": {
+    "description": "From AccountStrings.exportBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountExportBackupSubtitle": "Save your identity and training progress to a file",
+  "@accountExportBackupSubtitle": {
+    "description": "From AccountStrings.exportBackupSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountTrainingDefaults": "Playback & training defaults",
+  "@accountTrainingDefaults": {
+    "description": "From AccountStrings.trainingDefaults (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountTrainingDefaultsSubtitle": "Speed, tone, Farnsworth spacing",
+  "@accountTrainingDefaultsSubtitle": {
+    "description": "From AccountStrings.trainingDefaultsSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountTrainingDefaultsPlaceholder": "Speed, tone and Farnsworth defaults will live here.",
+  "@accountTrainingDefaultsPlaceholder": {
+    "description": "From AccountStrings.trainingDefaultsPlaceholder (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountAboutLicence": "Licence",
+  "@accountAboutLicence": {
+    "description": "From AccountStrings.aboutLicence (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountAboutLicenceValue": "GPL-3.0",
+  "@accountAboutLicenceValue": {
+    "description": "From AccountStrings.aboutLicenceValue (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountAboutSource": "Source code",
+  "@accountAboutSource": {
+    "description": "From AccountStrings.aboutSource (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountAboutSourceCopied": "Source link copied",
+  "@accountAboutSourceCopied": {
+    "description": "From AccountStrings.aboutSourceCopied (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountAboutBackend": "Backend",
+  "@accountAboutBackend": {
+    "description": "From AccountStrings.aboutBackend (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteIdentity": "Delete identity",
+  "@accountDeleteIdentity": {
+    "description": "From AccountStrings.deleteIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteIdentitySubtitle": "Erase this identity, history and progress from this device",
+  "@accountDeleteIdentitySubtitle": {
+    "description": "From AccountStrings.deleteIdentitySubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteDialogTitle": "Delete this identity?",
+  "@accountDeleteDialogTitle": {
+    "description": "From AccountStrings.deleteDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteDialogBody": "This removes your identity, chat history and training progress from this device. Without a backup it cannot be recovered. Type DELETE to confirm.",
+  "@accountDeleteDialogBody": {
+    "description": "From AccountStrings.deleteDialogBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteConfirmWord": "DELETE",
+  "@accountDeleteConfirmWord": {
+    "description": "From AccountStrings.deleteConfirmWord (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteConfirmHint": "Type DELETE",
+  "@accountDeleteConfirmHint": {
+    "description": "From AccountStrings.deleteConfirmHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "accountDeleteButton": "Delete",
+  "@accountDeleteButton": {
+    "description": "From AccountStrings.deleteButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+  },
+  "chatChatTitle": "Chat",
+  "@chatChatTitle": {
+    "description": "From ChatStrings.chatTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatSearchConversations": "Search conversations",
+  "@chatSearchConversations": {
+    "description": "From ChatStrings.searchConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoConversations": "No conversations yet",
+  "@chatNoConversations": {
+    "description": "From ChatStrings.noConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoSearchResults": "No conversations match",
+  "@chatNoSearchResults": {
+    "description": "From ChatStrings.noSearchResults (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatPin": "Pin",
+  "@chatPin": {
+    "description": "From ChatStrings.pin (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatUnpin": "Unpin",
+  "@chatUnpin": {
+    "description": "From ChatStrings.unpin (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatMarkRead": "Mark as read",
+  "@chatMarkRead": {
+    "description": "From ChatStrings.markRead (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDelete": "Delete",
+  "@chatDelete": {
+    "description": "From ChatStrings.delete (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDeleteConversationTitle": "Delete conversation?",
+  "@chatDeleteConversationTitle": {
+    "description": "From ChatStrings.deleteConversationTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDeleteConversationBody": "Local history for this conversation is removed. Tox keeps no copy.",
+  "@chatDeleteConversationBody": {
+    "description": "From ChatStrings.deleteConversationBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCancel": "Cancel",
+  "@chatCancel": {
+    "description": "From ChatStrings.cancel (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDraftPrefix": "Draft: ",
+  "@chatDraftPrefix": {
+    "description": "From ChatStrings.draftPrefix (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatSelectConversation": "Select a conversation",
+  "@chatSelectConversation": {
+    "description": "From ChatStrings.selectConversation (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatContacts": "Contacts",
+  "@chatContacts": {
+    "description": "From ChatStrings.contacts (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatBackendUnavailable": "Chat backend is not connected.",
+  "@chatBackendUnavailable": {
+    "description": "From ChatStrings.backendUnavailable (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoMessages": "No messages yet — send CQ to start.",
+  "@chatNoMessages": {
+    "description": "From ChatStrings.noMessages (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTrainingMode": "Training mode",
+  "@chatTrainingMode": {
+    "description": "From ChatStrings.trainingMode (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTrainingModeOn": "Training mode on: text hidden",
+  "@chatTrainingModeOn": {
+    "description": "From ChatStrings.trainingModeOn (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTrainingModeOff": "Training mode off",
+  "@chatTrainingModeOff": {
+    "description": "From ChatStrings.trainingModeOff (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatReveal": "Reveal",
+  "@chatReveal": {
+    "description": "From ChatStrings.reveal (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatHiddenText": "Listen first, then reveal",
+  "@chatHiddenText": {
+    "description": "From ChatStrings.hiddenText (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatPlay": "Play Morse",
+  "@chatPlay": {
+    "description": "From ChatStrings.play (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStop": "Stop",
+  "@chatStop": {
+    "description": "From ChatStrings.stop (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatPlaybackSettings": "Playback settings",
+  "@chatPlaybackSettings": {
+    "description": "From ChatStrings.playbackSettings (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCharacterSpeed": "Character speed",
+  "@chatCharacterSpeed": {
+    "description": "From ChatStrings.characterSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatFarnsworthSpeed": "Farnsworth speed",
+  "@chatFarnsworthSpeed": {
+    "description": "From ChatStrings.farnsworthSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTone": "Tone",
+  "@chatTone": {
+    "description": "From ChatStrings.tone (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatWpm": "WPM",
+  "@chatWpm": {
+    "description": "From ChatStrings.wpm (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatHz": "Hz",
+  "@chatHz": {
+    "description": "From ChatStrings.hz (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStatusPending": "Queued — peer is offline",
+  "@chatStatusPending": {
+    "description": "From ChatStrings.statusPending (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStatusPendingDetail": "Tox has no server: the message is delivered when the peer comes online.",
+  "@chatStatusPendingDetail": {
+    "description": "From ChatStrings.statusPendingDetail (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStatusSending": "Sending",
+  "@chatStatusSending": {
+    "description": "From ChatStrings.statusSending (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStatusSent": "Sent",
+  "@chatStatusSent": {
+    "description": "From ChatStrings.statusSent (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatStatusFailed": "Failed to send",
+  "@chatStatusFailed": {
+    "description": "From ChatStrings.statusFailed (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatOnline": "Online",
+  "@chatOnline": {
+    "description": "From ChatStrings.online (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatOffline": "Offline",
+  "@chatOffline": {
+    "description": "From ChatStrings.offline (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatMembers": "Members",
+  "@chatMembers": {
+    "description": "From ChatStrings.members (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLeaveGroup": "Leave group",
+  "@chatLeaveGroup": {
+    "description": "From ChatStrings.leaveGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLeaveGroupTitle": "Leave this group?",
+  "@chatLeaveGroupTitle": {
+    "description": "From ChatStrings.leaveGroupTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLeaveGroupBody": "You will stop receiving messages. Rejoin later with the chat id.",
+  "@chatLeaveGroupBody": {
+    "description": "From ChatStrings.leaveGroupBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLeave": "Leave",
+  "@chatLeave": {
+    "description": "From ChatStrings.leave (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatConferenceNote": "Legacy conference: Morse keying metadata (v2) will not be available here. Text still works.",
+  "@chatConferenceNote": {
+    "description": "From ChatStrings.conferenceNote (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatClearHistory": "Clear history",
+  "@chatClearHistory": {
+    "description": "From ChatStrings.clearHistory (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatModeKeyboard": "Keyboard",
+  "@chatModeKeyboard": {
+    "description": "From ChatStrings.modeKeyboard (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatModeStraightKey": "Straight key",
+  "@chatModeStraightKey": {
+    "description": "From ChatStrings.modeStraightKey (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatModePaddles": "Paddles",
+  "@chatModePaddles": {
+    "description": "From ChatStrings.modePaddles (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTypeMessage": "Type a message",
+  "@chatTypeMessage": {
+    "description": "From ChatStrings.typeMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatSend": "Send",
+  "@chatSend": {
+    "description": "From ChatStrings.send (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatBytesLeft": "bytes left",
+  "@chatBytesLeft": {
+    "description": "From ChatStrings.bytesLeft (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatTooLong": "Too long for one Tox message",
+  "@chatTooLong": {
+    "description": "From ChatStrings.tooLong (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatKeyHint": "Key on the pad or press Space",
+  "@chatKeyHint": {
+    "description": "From ChatStrings.keyHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatPaddleHint": "Tap the paddles or hold Ctrl (left dit, right dah)",
+  "@chatPaddleHint": {
+    "description": "From ChatStrings.paddleHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatClearDraft": "Clear draft",
+  "@chatClearDraft": {
+    "description": "From ChatStrings.clearDraft (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDeleteLast": "Delete last character",
+  "@chatDeleteLast": {
+    "description": "From ChatStrings.deleteLast (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDecodedPreview": "Decoded",
+  "@chatDecodedPreview": {
+    "description": "From ChatStrings.decodedPreview (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatFriends": "Friends",
+  "@chatFriends": {
+    "description": "From ChatStrings.friends (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatFriendRequests": "Friend requests",
+  "@chatFriendRequests": {
+    "description": "From ChatStrings.friendRequests (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoFriends": "No friends yet. Add one with their Tox ID.",
+  "@chatNoFriends": {
+    "description": "From ChatStrings.noFriends (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoRequests": "No pending requests",
+  "@chatNoRequests": {
+    "description": "From ChatStrings.noRequests (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatAddFriend": "Add friend",
+  "@chatAddFriend": {
+    "description": "From ChatStrings.addFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatMyToxId": "My Tox ID",
+  "@chatMyToxId": {
+    "description": "From ChatStrings.myToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatToxIdLabel": "Tox ID (76 hex characters)",
+  "@chatToxIdLabel": {
+    "description": "From ChatStrings.toxIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatToxIdInvalid": "Tox ID must be exactly 76 hex characters",
+  "@chatToxIdInvalid": {
+    "description": "From ChatStrings.toxIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatToxIdOwn": "That is your own Tox ID",
+  "@chatToxIdOwn": {
+    "description": "From ChatStrings.toxIdOwn (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatToxIdAlreadyFriend": "Already in your friend list",
+  "@chatToxIdAlreadyFriend": {
+    "description": "From ChatStrings.toxIdAlreadyFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRequestMessage": "Message",
+  "@chatRequestMessage": {
+    "description": "From ChatStrings.requestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatDefaultRequestMessage": "morsecq CQ",
+  "@chatDefaultRequestMessage": {
+    "description": "From ChatStrings.defaultRequestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatSendRequest": "Send request",
+  "@chatSendRequest": {
+    "description": "From ChatStrings.sendRequest (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRequestSent": "Friend request sent",
+  "@chatRequestSent": {
+    "description": "From ChatStrings.requestSent (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatScanQr": "Scan QR",
+  "@chatScanQr": {
+    "description": "From ChatStrings.scanQr (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatScanQrDesktopHint": "QR scanning needs a phone camera",
+  "@chatScanQrDesktopHint": {
+    "description": "From ChatStrings.scanQrDesktopHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatScanQrTitle": "Scan a Tox ID",
+  "@chatScanQrTitle": {
+    "description": "From ChatStrings.scanQrTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatScanQrNotToxId": "That QR code is not a Tox ID",
+  "@chatScanQrNotToxId": {
+    "description": "From ChatStrings.scanQrNotToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatAccept": "Accept",
+  "@chatAccept": {
+    "description": "From ChatStrings.accept (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatReject": "Reject",
+  "@chatReject": {
+    "description": "From ChatStrings.reject (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCopy": "Copy",
+  "@chatCopy": {
+    "description": "From ChatStrings.copy (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCopied": "Copied to clipboard",
+  "@chatCopied": {
+    "description": "From ChatStrings.copied (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoIdentity": "No identity loaded",
+  "@chatNoIdentity": {
+    "description": "From ChatStrings.noIdentity (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRemoveFriend": "Remove friend",
+  "@chatRemoveFriend": {
+    "description": "From ChatStrings.removeFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRemoveFriendTitle": "Remove this friend?",
+  "@chatRemoveFriendTitle": {
+    "description": "From ChatStrings.removeFriendTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRemoveFriendBody": "They will no longer be able to message you.",
+  "@chatRemoveFriendBody": {
+    "description": "From ChatStrings.removeFriendBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatRemove": "Remove",
+  "@chatRemove": {
+    "description": "From ChatStrings.remove (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatGroupsTitle": "Groups",
+  "@chatGroupsTitle": {
+    "description": "From ChatStrings.groupsTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoGroups": "No groups yet. Create one or join by chat id.",
+  "@chatNoGroups": {
+    "description": "From ChatStrings.noGroups (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCreateGroup": "Create group",
+  "@chatCreateGroup": {
+    "description": "From ChatStrings.createGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatJoinGroup": "Join group",
+  "@chatJoinGroup": {
+    "description": "From ChatStrings.joinGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatGroupName": "Group name",
+  "@chatGroupName": {
+    "description": "From ChatStrings.groupName (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatGroupNameRequired": "Give the group a name",
+  "@chatGroupNameRequired": {
+    "description": "From ChatStrings.groupNameRequired (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatAdvanced": "Advanced",
+  "@chatAdvanced": {
+    "description": "From ChatStrings.advanced (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLegacyConference": "Legacy conference (old clients)",
+  "@chatLegacyConference": {
+    "description": "From ChatStrings.legacyConference (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatLegacyConferenceHint": "Not recommended: no persistent chat id, no Morse metadata.",
+  "@chatLegacyConferenceHint": {
+    "description": "From ChatStrings.legacyConferenceHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCreate": "Create",
+  "@chatCreate": {
+    "description": "From ChatStrings.create (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatChatIdLabel": "Chat id (64 hex characters)",
+  "@chatChatIdLabel": {
+    "description": "From ChatStrings.chatIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatChatIdInvalid": "Chat id must be exactly 64 hex characters",
+  "@chatChatIdInvalid": {
+    "description": "From ChatStrings.chatIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatPassword": "Password (optional)",
+  "@chatPassword": {
+    "description": "From ChatStrings.password (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatJoin": "Join",
+  "@chatJoin": {
+    "description": "From ChatStrings.join (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatJoinRequested": "Joining — the group appears once a peer is found.",
+  "@chatJoinRequested": {
+    "description": "From ChatStrings.joinRequested (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatGroupInvites": "Group invites",
+  "@chatGroupInvites": {
+    "description": "From ChatStrings.groupInvites (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatNoInvites": "No pending invites",
+  "@chatNoInvites": {
+    "description": "From ChatStrings.noInvites (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatInvitedBy": "Invited by",
+  "@chatInvitedBy": {
+    "description": "From ChatStrings.invitedBy (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatMembersCount": "members",
+  "@chatMembersCount": {
+    "description": "From ChatStrings.membersCount (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatConferenceBadge": "Conference",
+  "@chatConferenceBadge": {
+    "description": "From ChatStrings.conferenceBadge (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatCopyChatId": "Copy chat id",
+  "@chatCopyChatId": {
+    "description": "From ChatStrings.copyChatId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatYou": "You",
+  "@chatYou": {
+    "description": "From ChatStrings.you (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "chatError": "Something went wrong",
+  "@chatError": {
+    "description": "From ChatStrings.error (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  },
+  "learnLearnTitle": "Learn",
+  "@learnLearnTitle": {
+    "description": "From LearnStrings.learnTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLessonCardTitle": "Koch lesson",
+  "@learnLessonCardTitle": {
+    "description": "From LearnStrings.lessonCardTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnNewestChar": "New this lesson",
+  "@learnNewestChar": {
+    "description": "From LearnStrings.newestChar (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnCourseComplete": "Course complete - keep sharpening!",
+  "@learnCourseComplete": {
+    "description": "From LearnStrings.courseComplete (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDailyGoalTitle": "Today",
+  "@learnDailyGoalTitle": {
+    "description": "From LearnStrings.dailyGoalTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDailyGoalMet": "Daily goal reached",
+  "@learnDailyGoalMet": {
+    "description": "From LearnStrings.dailyGoalMet (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnNoStreak": "Start a streak today",
+  "@learnNoStreak": {
+    "description": "From LearnStrings.noStreak (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnContinueLesson": "Continue lesson",
+  "@learnContinueLesson": {
+    "description": "From LearnStrings.continueLesson (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReceivePractice": "Receive practice",
+  "@learnReceivePractice": {
+    "description": "From LearnStrings.receivePractice (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSendPractice": "Send practice",
+  "@learnSendPractice": {
+    "description": "From LearnStrings.sendPractice (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReviewDue": "Review due characters",
+  "@learnReviewDue": {
+    "description": "From LearnStrings.reviewDue (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSettings": "Training settings",
+  "@learnSettings": {
+    "description": "From LearnStrings.settings (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLoading": "Loading your progress...",
+  "@learnLoading": {
+    "description": "From LearnStrings.loading (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnIdentityRequired": "Create or unlock your identity to start training. Progress is stored with your identity so it travels with your backup.",
+  "@learnIdentityRequired": {
+    "description": "From LearnStrings.identityRequired (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLoadFailed": "Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.",
+  "@learnLoadFailed": {
+    "description": "From LearnStrings.loadFailed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnChooseDrill": "Choose a drill",
+  "@learnChooseDrill": {
+    "description": "From LearnStrings.chooseDrill (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDrillGroups": "Random groups",
+  "@learnDrillGroups": {
+    "description": "From LearnStrings.drillGroups (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDrillWords": "Words",
+  "@learnDrillWords": {
+    "description": "From LearnStrings.drillWords (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDrillCallsigns": "Callsigns",
+  "@learnDrillCallsigns": {
+    "description": "From LearnStrings.drillCallsigns (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDrillQso": "QSO",
+  "@learnDrillQso": {
+    "description": "From LearnStrings.drillQso (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReceiveTitle": "Receive",
+  "@learnReceiveTitle": {
+    "description": "From LearnStrings.receiveTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReviewTitle": "Review",
+  "@learnReviewTitle": {
+    "description": "From LearnStrings.reviewTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnListen": "Listen...",
+  "@learnListen": {
+    "description": "From LearnStrings.listen (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReady": "Ready",
+  "@learnReady": {
+    "description": "From LearnStrings.ready (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReplay": "Replay",
+  "@learnReplay": {
+    "description": "From LearnStrings.replay (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnPlay": "Play",
+  "@learnPlay": {
+    "description": "From LearnStrings.play (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnAnswerHint": "Type what you heard",
+  "@learnAnswerHint": {
+    "description": "From LearnStrings.answerHint (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSubmit": "Check",
+  "@learnSubmit": {
+    "description": "From LearnStrings.submit (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnNext": "Next",
+  "@learnNext": {
+    "description": "From LearnStrings.next (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnFinish": "Finish",
+  "@learnFinish": {
+    "description": "From LearnStrings.finish (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDone": "Done",
+  "@learnDone": {
+    "description": "From LearnStrings.done (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnBackspace": "Delete",
+  "@learnBackspace": {
+    "description": "From LearnStrings.backspace (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSpace": "Space",
+  "@learnSpace": {
+    "description": "From LearnStrings.space (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSent": "Sent",
+  "@learnSent": {
+    "description": "From LearnStrings.sent (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnYourCopy": "Your copy",
+  "@learnYourCopy": {
+    "description": "From LearnStrings.yourCopy (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnRoundPerfect": "Perfect copy!",
+  "@learnRoundPerfect": {
+    "description": "From LearnStrings.roundPerfect (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSessionSummary": "Session summary",
+  "@learnSessionSummary": {
+    "description": "From LearnStrings.sessionSummary (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLessonPassed": "Lesson passed",
+  "@learnLessonPassed": {
+    "description": "From LearnStrings.lessonPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLessonNotPassed": "Keep at it: 90% unlocks the next one",
+  "@learnLessonNotPassed": {
+    "description": "From LearnStrings.lessonNotPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnReviewRecorded": "Review recorded",
+  "@learnReviewRecorded": {
+    "description": "From LearnStrings.reviewRecorded (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnWeakChars": "Needs work",
+  "@learnWeakChars": {
+    "description": "From LearnStrings.weakChars (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnConfusions": "Confused",
+  "@learnConfusions": {
+    "description": "From LearnStrings.confusions (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnNoFeedbackWarning": "Sound, flash and haptics are all off - the screen will flash instead.",
+  "@learnNoFeedbackWarning": {
+    "description": "From LearnStrings.noFeedbackWarning (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSendTitle": "Send",
+  "@learnSendTitle": {
+    "description": "From LearnStrings.sendTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSendThis": "Send this",
+  "@learnSendThis": {
+    "description": "From LearnStrings.sendThis (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnCopyFromMemory": "From memory",
+  "@learnCopyFromMemory": {
+    "description": "From LearnStrings.copyFromMemory (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnHiddenTarget": "Hidden - key it from memory",
+  "@learnHiddenTarget": {
+    "description": "From LearnStrings.hiddenTarget (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDecoded": "Decoded",
+  "@learnDecoded": {
+    "description": "From LearnStrings.decoded (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnPending": "Keying",
+  "@learnPending": {
+    "description": "From LearnStrings.pending (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnWaitingForKey": "Start keying when ready",
+  "@learnWaitingForKey": {
+    "description": "From LearnStrings.waitingForKey (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnRestart": "Restart",
+  "@learnRestart": {
+    "description": "From LearnStrings.restart (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnTryAnother": "Try another",
+  "@learnTryAnother": {
+    "description": "From LearnStrings.tryAnother (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnKeyerStraight": "Straight",
+  "@learnKeyerStraight": {
+    "description": "From LearnStrings.keyerStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnKeyerIambicA": "Iambic A",
+  "@learnKeyerIambicA": {
+    "description": "From LearnStrings.keyerIambicA (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnKeyerIambicB": "Iambic B",
+  "@learnKeyerIambicB": {
+    "description": "From LearnStrings.keyerIambicB (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLegendStraight": "Space = key",
+  "@learnLegendStraight": {
+    "description": "From LearnStrings.legendStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnLegendPaddles": "Left Ctrl = dit, Right Ctrl = dah",
+  "@learnLegendPaddles": {
+    "description": "From LearnStrings.legendPaddles (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSendClean": "Clean fist - nothing to fix.",
+  "@learnSendClean": {
+    "description": "From LearnStrings.sendClean (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSendIssues": "Rhythm notes",
+  "@learnSendIssues": {
+    "description": "From LearnStrings.sendIssues (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnYourSending": "Decoded as",
+  "@learnYourSending": {
+    "description": "From LearnStrings.yourSending (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnStraightKeyLabel": "KEY",
+  "@learnStraightKeyLabel": {
+    "description": "From LearnStrings.straightKeyLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDitLabel": "DIT",
+  "@learnDitLabel": {
+    "description": "From LearnStrings.ditLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDahLabel": "DAH",
+  "@learnDahLabel": {
+    "description": "From LearnStrings.dahLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSettingsTitle": "Training settings",
+  "@learnSettingsTitle": {
+    "description": "From LearnStrings.settingsTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnCharacterSpeed": "Character speed",
+  "@learnCharacterSpeed": {
+    "description": "From LearnStrings.characterSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnFarnsworth": "Farnsworth spacing",
+  "@learnFarnsworth": {
+    "description": "From LearnStrings.farnsworth (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnFarnsworthHelp": "Characters stay fast; the gaps between them stretch to this speed.",
+  "@learnFarnsworthHelp": {
+    "description": "From LearnStrings.farnsworthHelp (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnEffectiveSpeed": "Effective speed",
+  "@learnEffectiveSpeed": {
+    "description": "From LearnStrings.effectiveSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnTone": "Tone",
+  "@learnTone": {
+    "description": "From LearnStrings.tone (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnPlaySample": "Play sample",
+  "@learnPlaySample": {
+    "description": "From LearnStrings.playSample (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSessionLength": "Session length",
+  "@learnSessionLength": {
+    "description": "From LearnStrings.sessionLength (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnFeedback": "Feedback",
+  "@learnFeedback": {
+    "description": "From LearnStrings.feedback (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSound": "Sound",
+  "@learnSound": {
+    "description": "From LearnStrings.sound (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnFlash": "Screen flash",
+  "@learnFlash": {
+    "description": "From LearnStrings.flash (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnHaptic": "Vibration",
+  "@learnHaptic": {
+    "description": "From LearnStrings.haptic (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnKeyer": "Keyer",
+  "@learnKeyer": {
+    "description": "From LearnStrings.keyer (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnDailyGoal": "Daily goal",
+  "@learnDailyGoal": {
+    "description": "From LearnStrings.dailyGoal (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "learnSampleText": "CQ",
+  "@learnSampleText": {
+    "description": "From LearnStrings.sampleText (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "referenceReferenceTitle": "Morse reference",
+  "@referenceReferenceTitle": {
+    "description": "From ReferenceStrings.referenceTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTranslatorTitle": "Translator",
+  "@referenceTranslatorTitle": {
+    "description": "From ReferenceStrings.translatorTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePlay": "Play",
+  "@referencePlay": {
+    "description": "From ReferenceStrings.play (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceStop": "Stop",
+  "@referenceStop": {
+    "description": "From ReferenceStrings.stop (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceClear": "Clear",
+  "@referenceClear": {
+    "description": "From ReferenceStrings.clear (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceClose": "Close",
+  "@referenceClose": {
+    "description": "From ReferenceStrings.close (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceEmptyOutput": "—",
+  "@referenceEmptyOutput": {
+    "description": "From ReferenceStrings.emptyOutput (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSearchHint": "Search characters, prosigns, Q-codes…",
+  "@referenceSearchHint": {
+    "description": "From ReferenceStrings.searchHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceClearSearch": "Clear search",
+  "@referenceClearSearch": {
+    "description": "From ReferenceStrings.clearSearch (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceNoResults": "Nothing matches your search.",
+  "@referenceNoResults": {
+    "description": "From ReferenceStrings.noResults (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionAlphabet": "Alphabet",
+  "@referenceSectionAlphabet": {
+    "description": "From ReferenceStrings.sectionAlphabet (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionPunctuation": "Punctuation",
+  "@referenceSectionPunctuation": {
+    "description": "From ReferenceStrings.sectionPunctuation (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionProsigns": "Prosigns",
+  "@referenceSectionProsigns": {
+    "description": "From ReferenceStrings.sectionProsigns (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionQCodes": "Q-codes",
+  "@referenceSectionQCodes": {
+    "description": "From ReferenceStrings.sectionQCodes (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionAbbreviations": "CW abbreviations",
+  "@referenceSectionAbbreviations": {
+    "description": "From ReferenceStrings.sectionAbbreviations (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceSectionKoch": "Koch order",
+  "@referenceSectionKoch": {
+    "description": "From ReferenceStrings.sectionKoch (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceAlphabetHint": "Tap a card to hear it. Long-press for a mnemonic.",
+  "@referenceAlphabetHint": {
+    "description": "From ReferenceStrings.alphabetHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKochHint": "The order the Koch method introduces characters (LCWO sequence). Start with K and M; add one when you copy at 90 %.",
+  "@referenceKochHint": {
+    "description": "From ReferenceStrings.kochHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceMnemonicTitle": "Mnemonic",
+  "@referenceMnemonicTitle": {
+    "description": "From ReferenceStrings.mnemonicTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKochPosition": "Koch position",
+  "@referenceKochPosition": {
+    "description": "From ReferenceStrings.kochPosition (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceMeaningLabel": "Meaning",
+  "@referenceMeaningLabel": {
+    "description": "From ReferenceStrings.meaningLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePlaybackSettings": "Playback settings",
+  "@referencePlaybackSettings": {
+    "description": "From ReferenceStrings.playbackSettings (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceCharacterSpeed": "Character speed",
+  "@referenceCharacterSpeed": {
+    "description": "From ReferenceStrings.characterSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceFarnsworth": "Farnsworth spacing",
+  "@referenceFarnsworth": {
+    "description": "From ReferenceStrings.farnsworth (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceFarnsworthHelp": "Characters stay at full speed; gaps stretch to the effective speed.",
+  "@referenceFarnsworthHelp": {
+    "description": "From ReferenceStrings.farnsworthHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceEffectiveSpeed": "Effective speed",
+  "@referenceEffectiveSpeed": {
+    "description": "From ReferenceStrings.effectiveSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTone": "Tone",
+  "@referenceTone": {
+    "description": "From ReferenceStrings.tone (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceModeTextToMorse": "Text → Morse",
+  "@referenceModeTextToMorse": {
+    "description": "From ReferenceStrings.modeTextToMorse (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceModeMorseToText": "Morse → Text",
+  "@referenceModeMorseToText": {
+    "description": "From ReferenceStrings.modeMorseToText (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceModeKey": "Key",
+  "@referenceModeKey": {
+    "description": "From ReferenceStrings.modeKey (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTextInputLabel": "Text",
+  "@referenceTextInputLabel": {
+    "description": "From ReferenceStrings.textInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTextInputHint": "Type text to encode…",
+  "@referenceTextInputHint": {
+    "description": "From ReferenceStrings.textInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePatternOutputLabel": "Morse",
+  "@referencePatternOutputLabel": {
+    "description": "From ReferenceStrings.patternOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceCopyPattern": "Copy pattern",
+  "@referenceCopyPattern": {
+    "description": "From ReferenceStrings.copyPattern (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePatternCopied": "Pattern copied",
+  "@referencePatternCopied": {
+    "description": "From ReferenceStrings.patternCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePatternInputLabel": "Morse",
+  "@referencePatternInputLabel": {
+    "description": "From ReferenceStrings.patternInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referencePatternInputHint": "Type . and -, a space between letters, / between words",
+  "@referencePatternInputHint": {
+    "description": "From ReferenceStrings.patternInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTextOutputLabel": "Text",
+  "@referenceTextOutputLabel": {
+    "description": "From ReferenceStrings.textOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceCopyText": "Copy text",
+  "@referenceCopyText": {
+    "description": "From ReferenceStrings.copyText (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceTextCopied": "Text copied",
+  "@referenceTextCopied": {
+    "description": "From ReferenceStrings.textCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceUnknownPatternHelp": "Patterns with no character are shown as <pattern>.",
+  "@referenceUnknownPatternHelp": {
+    "description": "From ReferenceStrings.unknownPatternHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeypadDit": "Dit",
+  "@referenceKeypadDit": {
+    "description": "From ReferenceStrings.keypadDit (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeypadDah": "Dah",
+  "@referenceKeypadDah": {
+    "description": "From ReferenceStrings.keypadDah (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeypadCharGap": "Letter gap",
+  "@referenceKeypadCharGap": {
+    "description": "From ReferenceStrings.keypadCharGap (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeypadWordGap": "Word gap",
+  "@referenceKeypadWordGap": {
+    "description": "From ReferenceStrings.keypadWordGap (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeypadBackspace": "Backspace",
+  "@referenceKeypadBackspace": {
+    "description": "From ReferenceStrings.keypadBackspace (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeyHint": "Press and hold the key to send. On a keyboard, hold Space.",
+  "@referenceKeyHint": {
+    "description": "From ReferenceStrings.keyHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeyLabel": "KEY",
+  "@referenceKeyLabel": {
+    "description": "From ReferenceStrings.keyLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeyDecodedLabel": "Decoded",
+  "@referenceKeyDecodedLabel": {
+    "description": "From ReferenceStrings.keyDecodedLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "referenceKeyPendingLabel": "Keying",
+  "@referenceKeyPendingLabel": {
+    "description": "From ReferenceStrings.keyPendingLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+  },
+  "statsTitle": "Statistics",
+  "@statsTitle": {
+    "description": "From StatsStrings.title (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsLoading": "Loading your statistics...",
+  "@statsLoading": {
+    "description": "From StatsStrings.loading (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsLoadFailed": "Your progress could not be loaded. Pull down or reopen to retry.",
+  "@statsLoadFailed": {
+    "description": "From StatsStrings.loadFailed (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsRetry": "Retry",
+  "@statsRetry": {
+    "description": "From StatsStrings.retry (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsEmptyTitle": "No sessions yet",
+  "@statsEmptyTitle": {
+    "description": "From StatsStrings.emptyTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsEmptyBody": "Finish your first receive or send session and this page fills up with your accuracy trend, per-character strengths and a practice calendar.",
+  "@statsEmptyBody": {
+    "description": "From StatsStrings.emptyBody (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsEmptyCallToAction": "Head to Learn and press \"Continue lesson\" to start.",
+  "@statsEmptyCallToAction": {
+    "description": "From StatsStrings.emptyCallToAction (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsOverviewTitle": "Overview",
+  "@statsOverviewTitle": {
+    "description": "From StatsStrings.overviewTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTileLesson": "Koch lesson",
+  "@statsTileLesson": {
+    "description": "From StatsStrings.tileLesson (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTileAccuracy": "Accuracy",
+  "@statsTileAccuracy": {
+    "description": "From StatsStrings.tileAccuracy (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsAccuracyLast7Days": "last 7 days",
+  "@statsAccuracyLast7Days": {
+    "description": "From StatsStrings.accuracyLast7Days (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsAccuracyAllTime": "all time",
+  "@statsAccuracyAllTime": {
+    "description": "From StatsStrings.accuracyAllTime (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsNoData": "--",
+  "@statsNoData": {
+    "description": "From StatsStrings.noData (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTilePractice": "Practice",
+  "@statsTilePractice": {
+    "description": "From StatsStrings.tilePractice (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTileStreak": "Streak",
+  "@statsTileStreak": {
+    "description": "From StatsStrings.tileStreak (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTileDailyGoal": "Daily goal",
+  "@statsTileDailyGoal": {
+    "description": "From StatsStrings.tileDailyGoal (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsGoalMet": "Reached today",
+  "@statsGoalMet": {
+    "description": "From StatsStrings.goalMet (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSummaryTitle": "Your stats",
+  "@statsSummaryTitle": {
+    "description": "From StatsStrings.summaryTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSummaryOpen": "View statistics",
+  "@statsSummaryOpen": {
+    "description": "From StatsStrings.summaryOpen (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTrendTitle": "Accuracy trend",
+  "@statsTrendTitle": {
+    "description": "From StatsStrings.trendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsTrendHint": "Tap a point to inspect a session.",
+  "@statsTrendHint": {
+    "description": "From StatsStrings.trendHint (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSeriesReceive": "Receive",
+  "@statsSeriesReceive": {
+    "description": "From StatsStrings.seriesReceive (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSeriesSend": "Send",
+  "@statsSeriesSend": {
+    "description": "From StatsStrings.seriesSend (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSeriesAll": "Sessions",
+  "@statsSeriesAll": {
+    "description": "From StatsStrings.seriesAll (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsAxisSessions": "Session",
+  "@statsAxisSessions": {
+    "description": "From StatsStrings.axisSessions (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsAxisAccuracy": "Accuracy",
+  "@statsAxisAccuracy": {
+    "description": "From StatsStrings.axisAccuracy (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCharsTitle": "Characters",
+  "@statsCharsTitle": {
+    "description": "From StatsStrings.charsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCharsSubtitle": "Koch order. Tap a character for detail.",
+  "@statsCharsSubtitle": {
+    "description": "From StatsStrings.charsSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCharsNotStarted": "Not practised yet",
+  "@statsCharsNotStarted": {
+    "description": "From StatsStrings.charsNotStarted (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsNotInCourse": "Not part of the Koch course",
+  "@statsNotInCourse": {
+    "description": "From StatsStrings.notInCourse (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSrsTitle": "Spaced repetition",
+  "@statsSrsTitle": {
+    "description": "From StatsStrings.srsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSrsNotTracked": "Not scheduled yet",
+  "@statsSrsNotTracked": {
+    "description": "From StatsStrings.srsNotTracked (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsSrsDueNow": "Due now",
+  "@statsSrsDueNow": {
+    "description": "From StatsStrings.srsDueNow (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsConfusionsTitle": "Most often confused with",
+  "@statsConfusionsTitle": {
+    "description": "From StatsStrings.confusionsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsConfusionsNone": "No confusions recorded",
+  "@statsConfusionsNone": {
+    "description": "From StatsStrings.confusionsNone (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsConfusionMissed": "missed",
+  "@statsConfusionMissed": {
+    "description": "From StatsStrings.confusionMissed (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketLegendTitle": "Accuracy",
+  "@statsBucketLegendTitle": {
+    "description": "From StatsStrings.bucketLegendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketNone": "None",
+  "@statsBucketNone": {
+    "description": "From StatsStrings.bucketNone (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketWeak": "< 70%",
+  "@statsBucketWeak": {
+    "description": "From StatsStrings.bucketWeak (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketFair": "70-89%",
+  "@statsBucketFair": {
+    "description": "From StatsStrings.bucketFair (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketGood": "90-97%",
+  "@statsBucketGood": {
+    "description": "From StatsStrings.bucketGood (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsBucketStrong": ">= 98%",
+  "@statsBucketStrong": {
+    "description": "From StatsStrings.bucketStrong (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapTitle": "Confusions",
+  "@statsHeatmapTitle": {
+    "description": "From StatsStrings.heatmapTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapSubtitle": "Rows are the sent character, columns what you answered. Darker means more often.",
+  "@statsHeatmapSubtitle": {
+    "description": "From StatsStrings.heatmapSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapEmpty": "No confusions yet. Wrong answers will show up here.",
+  "@statsHeatmapEmpty": {
+    "description": "From StatsStrings.heatmapEmpty (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapLegendLow": "Rare",
+  "@statsHeatmapLegendLow": {
+    "description": "From StatsStrings.heatmapLegendLow (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapLegendHigh": "Frequent",
+  "@statsHeatmapLegendHigh": {
+    "description": "From StatsStrings.heatmapLegendHigh (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapAxisTarget": "Sent",
+  "@statsHeatmapAxisTarget": {
+    "description": "From StatsStrings.heatmapAxisTarget (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsHeatmapAxisAnswered": "Answered",
+  "@statsHeatmapAxisAnswered": {
+    "description": "From StatsStrings.heatmapAxisAnswered (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCalendarTitle": "Practice calendar",
+  "@statsCalendarTitle": {
+    "description": "From StatsStrings.calendarTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCalendarSubtitle": "Last 12 weeks",
+  "@statsCalendarSubtitle": {
+    "description": "From StatsStrings.calendarSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCalendarLegendLess": "Less",
+  "@statsCalendarLegendLess": {
+    "description": "From StatsStrings.calendarLegendLess (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsCalendarLegendMore": "More",
+  "@statsCalendarLegendMore": {
+    "description": "From StatsStrings.calendarLegendMore (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "statsStreakExplanation": "A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.",
+  "@statsStreakExplanation": {
+    "description": "From StatsStrings.streakExplanation (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  }
+}
