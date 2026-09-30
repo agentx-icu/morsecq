@@ -75,6 +75,9 @@ host_device() {
 }
 
 level_e2e() {
+  # Android UI-only build (fake backend never loads libtim2tox_ffi.so); see
+  # tool/screenshots/capture.sh for the same export.
+  export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
   local device="$DEVICE"
   [[ -z "$device" ]] && device="$(host_device)"
   [[ -z "$device" ]] && { echo "e2e: no device (use --device)" >&2; return 1; }
