@@ -2,11 +2,17 @@ import 'package:flutter/widgets.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../desktop/desktop_shell_controller.dart';
 import '../i18n/key_value_store.dart';
 import '../i18n/locale_controller.dart';
+import '../lifecycle/app_lifecycle_coordinator.dart';
+import '../notifications/connection_banner_policy.dart';
+import '../notifications/notification_center.dart';
+import '../notifications/notification_prefs.dart';
 import '../startup/startup_controller.dart';
 import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
+import 'app_services.dart';
 import 'app_settings.dart';
 import 'backend_factory.dart';
 
@@ -16,7 +22,9 @@ import 'backend_factory.dart';
 ///
 /// Provided: [IdentityService], [ChatService], [BackupFileGateway],
 /// [AppSettings], [StartupController], [LocaleController],
-/// [MorsePlaybackSettings].
+/// [MorsePlaybackSettings], [AppLifecycleCoordinator],
+/// [ConnectionBannerPolicy], [NotificationPrefs], and — when `main()` supplies
+/// them — [NotificationCenter] and [DesktopShellController] (nullable).
 class AppScope extends StatefulWidget {
   const AppScope({
     super.key,
@@ -24,6 +32,8 @@ class AppScope extends StatefulWidget {
     required this.child,
     this.backupFiles,
     this.localeStore,
+    this.notificationApis,
+    this.desktopShell,
   });
 
   final BackendFactory factory;
@@ -35,6 +45,13 @@ class AppScope extends StatefulWidget {
   /// Where the language choice persists; defaults to memory (tests, fake
   /// backend). `main()` passes a file-backed store.
   final KeyValueStore? localeStore;
+
+  /// Real notification plugins from `main()`; null disables OS notifications
+  /// (tests, or platforms without support).
+  final NotificationApis? notificationApis;
+
+  /// Initialised desktop shell from `main()`; null on mobile and in tests.
+  final DesktopShellController? desktopShell;
 
   @override
   State<AppScope> createState() => _AppScopeState();
@@ -53,9 +70,22 @@ class _AppScopeState extends State<AppScope> {
     widget.localeStore ?? InMemoryKeyValueStore(),
   );
   final MorsePlaybackSettings _playback = MorsePlaybackSettings();
+  late final AppServices _services = AppServices(
+    identity: _identity,
+    chat: _chat,
+    notificationApis: widget.notificationApis,
+    desktopShell: widget.desktopShell,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _services.start();
+  }
 
   @override
   void dispose() {
+    _services.dispose().ignore();
     _playback.dispose();
     _locale.dispose();
     _startup.dispose();
@@ -77,6 +107,13 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<StartupController>.value(value: _startup),
         ChangeNotifierProvider<LocaleController>.value(value: _locale),
         ChangeNotifierProvider<MorsePlaybackSettings>.value(value: _playback),
+        Provider<AppLifecycleCoordinator>.value(value: _services.lifecycle),
+        Provider<ConnectionBannerPolicy>.value(value: _services.banner),
+        ChangeNotifierProvider<NotificationPrefs>.value(
+          value: _services.notificationPrefs,
+        ),
+        Provider<NotificationCenter?>.value(value: _services.notifications),
+        Provider<DesktopShellController?>.value(value: widget.desktopShell),
       ],
       child: widget.child,
     );

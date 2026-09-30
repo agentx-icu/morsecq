@@ -1,5 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:provider/provider.dart';
+
+import '../../notifications/connection_banner_policy.dart';
+import '../../notifications/notification_center.dart';
+import '../chat/conversation_screen.dart';
+import '../chat/conversation_target.dart';
 import '../pages/chat_page.dart';
 import '../pages/groups_page.dart';
 import '../pages/learn_page.dart';
@@ -71,6 +79,7 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
+  StreamSubscription<String>? _openRequests;
 
   void _select(int index) {
     if (index == _selectedIndex) return;
@@ -78,11 +87,66 @@ class _AppShellState extends State<AppShell> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Notification taps (and cold-start payloads) open the conversation.
+    // NotificationCenter is null in tests and where notifications are off.
+    final center = context.read<NotificationCenter?>();
+    _openRequests = center?.openConversationRequests.listen(_openConversation);
+  }
+
+  @override
+  void dispose() {
+    _openRequests?.cancel();
+    super.dispose();
+  }
+
+  void _openConversation(String conversationId) {
+    final chat = context.read<ChatService>();
+    final existing = chat.conversations
+        .where((c) => c.id == conversationId)
+        .firstOrNull;
+    final target = existing != null
+        ? ConversationTarget.fromConversation(existing)
+        : ConversationTarget(
+            id: conversationId,
+            title: conversationId,
+            kind: conversationId.startsWith('group_')
+                ? ConversationKind.group
+                : ConversationKind.c2c,
+          );
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ConversationScreen(target: target),
+      ),
+    );
+  }
+
+  /// Body plus the "offline for a while" strip; the policy decides when the
+  /// strip shows so it never flaps on short reconnects.
+  Widget _withBanner(Widget body) {
+    final policy = context.read<ConnectionBannerPolicy>();
+    return Column(
+      children: [
+        ValueListenableBuilder<bool>(
+          valueListenable: policy.offlineBannerVisible,
+          builder: (context, visible, _) => visible
+              ? const _OfflineBanner()
+              : const SizedBox.shrink(),
+        ),
+        Expanded(child: body),
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final layout = layoutClassOf(context);
-    final body = IndexedStack(
-      index: _selectedIndex,
-      children: [for (final d in kShellDestinations) d.page],
+    final body = _withBanner(
+      IndexedStack(
+        index: _selectedIndex,
+        children: [for (final d in kShellDestinations) d.page],
+      ),
     );
 
     switch (layout) {
@@ -124,5 +188,38 @@ class _AppShellState extends State<AppShell> {
           ),
         );
     }
+  }
+}
+
+/// Tox has no server: while we are offline nothing can arrive. Shown after the
+/// [ConnectionBannerPolicy] threshold, on every platform, above the content.
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.errorContainer,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Icon(Icons.cloud_off, size: 18, color: scheme.onErrorContainer),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Offline: not connected to the Tox network. Messages will '
+                  'be sent when you are back online.',
+                  style: TextStyle(color: scheme.onErrorContainer),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
