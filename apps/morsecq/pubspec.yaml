@@ -47,6 +47,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # integration_test/ + test_driver/: real-platform launch tests and the
+  # product-screenshot walk (tool/screenshots/capture.sh).
+  integration_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
   flutter_lints: ^6.0.0
   # Used only by tool/gen_tray_icons.dart to render assets/tray/*.png|ico.
   image: ^4.10.1

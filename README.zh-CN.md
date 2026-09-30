@@ -92,6 +92,9 @@ dart run tool/import_guard.dart
 每份文档都有英文版（`X.md`，链接与 CI 指向的默认版本）和简体中文版（`X.zh-CN.md`）。
 索引见 [doc/README.zh-CN.md](doc/README.zh-CN.md)。
 
+各平台、各语言的全部界面截图见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)；
+测试分层与运行方法见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)。
+
 约定、门禁与工作约定见 [CLAUDE.md](CLAUDE.md)。产品与架构规划见
 [doc/plans/2026-09-30-morsecq-plan.zh-CN.md](doc/plans/2026-09-30-morsecq-plan.zh-CN.md)
 （中文为原稿；英文版为
