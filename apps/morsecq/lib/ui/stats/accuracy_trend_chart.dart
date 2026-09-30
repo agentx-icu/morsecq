@@ -31,7 +31,10 @@ final class TrendGeometry {
   static const double kLeftInset = 44;
   static const double kRightInset = 12;
   static const double kTopInset = 12;
-  static const double kBottomInset = 28;
+  /// Two label rows: the session ticks, then the axis caption on its own
+  /// line (a caption anchored at the plot's right edge collided with the
+  /// last tick's number).
+  static const double kBottomInset = 44;
 
   final AxisScale axis;
   final Rect plot;
@@ -305,8 +308,8 @@ class TrendPainter extends CustomPainter {
     _label(
       canvas,
       axisLabel,
-      Offset(plot.right, size.height - 2),
-      anchor: Alignment.bottomRight,
+      Offset(plot.center.dx, size.height - 2),
+      anchor: Alignment.bottomCenter,
     );
 
     if (split) {

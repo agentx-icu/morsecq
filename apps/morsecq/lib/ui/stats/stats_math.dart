@@ -235,6 +235,12 @@ String monthAbbreviation(int month, {String? locale}) =>
 
 /// Chooses which x indices (0..count-1) get an axis label so at most
 /// [maxLabels] are shown and both ends are always included.
+///
+/// Labels step by a constant integer stride so the gaps are even: rounding a
+/// fractional step used to yield `1 2 3 5 6 7` for seven sessions (the 4 was
+/// skipped while 1-3 were consecutive). The last index is always labelled;
+/// the stride label just before it is dropped when it would sit closer to
+/// the end than half a stride, so the two never crowd each other.
 List<int> labelledIndices(int count, {int maxLabels = 6}) {
   if (count <= 0) {
     return const <int>[];
@@ -242,13 +248,17 @@ List<int> labelledIndices(int count, {int maxLabels = 6}) {
   if (count <= maxLabels) {
     return List<int>.generate(count, (i) => i);
   }
-  final step = (count - 1) / (maxLabels - 1);
-  final out = <int>{};
-  for (var i = 0; i < maxLabels; i++) {
-    out.add((i * step).round());
+  final last = count - 1;
+  final stride = (last / (maxLabels - 1)).ceil();
+  final out = <int>[];
+  for (var i = 0; i < last; i += stride) {
+    out.add(i);
   }
-  out.add(count - 1);
-  return out.toList()..sort();
+  if (last - out.last < stride / 2) {
+    out.removeLast();
+  }
+  out.add(last);
+  return out;
 }
 
 /// Index of the point whose x pixel is nearest to [x]; null when [xs] is

@@ -66,12 +66,10 @@ void main() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    // Desktop: the scan button is disabled and the hint is shown.
+    // Desktop: no scan button (a disabled one carried a tooltip that tripped
+    // a semantics assertion while the sheet dismissed); the hint explains.
     expect(find.text(s.chatScanQrDesktopHint), findsOneWidget);
-    final IconButton scan = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, Icons.qr_code_scanner),
-    );
-    expect(scan.onPressed, isNull);
+    expect(find.byIcon(Icons.qr_code_scanner), findsNothing);
     // The greeting defaults to the localized "morsecq CQ".
     expect(find.text(s.chatDefaultRequestMessage), findsOneWidget);
 

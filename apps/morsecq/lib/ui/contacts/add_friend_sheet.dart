@@ -147,17 +147,20 @@ class _AddFriendFormState extends State<AddFriendForm> {
                   labelText: s.chatToxIdLabel,
                   border: const OutlineInputBorder(),
                   errorText: serverError,
-                  suffixIcon: Tooltip(
-                    message: widget.canScan
-                        ? s.chatScanQr
-                        : s.chatScanQrDesktopHint,
-                    child: IconButton(
-                      icon: const Icon(Icons.qr_code_scanner),
-                      onPressed: widget.canScan
-                          ? () => unawaited(_scan())
-                          : null,
-                    ),
-                  ),
+                  // Desktop shows no scan button: the hint text below the
+                  // field already says why, and a tooltip on a disabled
+                  // button inside the suffix slot produced an invisible
+                  // SemanticsNode (framework assertion) while the sheet
+                  // slid away (integration_test/app_launch_test.dart).
+                  suffixIcon: widget.canScan
+                      ? Tooltip(
+                          message: s.chatScanQr,
+                          child: IconButton(
+                            icon: const Icon(Icons.qr_code_scanner),
+                            onPressed: () => unawaited(_scan()),
+                          ),
+                        )
+                      : null,
                 ),
                 validator: (v) =>
                     validateToxIdInput(s, v, ownToxId: widget.ownToxId),
