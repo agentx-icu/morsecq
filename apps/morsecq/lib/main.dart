@@ -22,7 +22,7 @@ import 'notifications/flutter_local_notifications_api.dart';
 import 'startup/startup_gate.dart';
 import 'ui/account/account_strings.dart';
 import 'ui/account/backup_file_gateway.dart';
-import 'ui/pages/placeholder_page.dart';
+import 'ui/learn/settings/training_settings_entry.dart';
 import 'ui/shell/app_shell.dart';
 import 'ui/theme.dart';
 
@@ -128,13 +128,8 @@ class MorsecqApp extends StatelessWidget {
             themeMode: themeMode,
             home: const StartupGate(child: AppShell()),
             routes: {
-              // TODO(learn-ui): replace with the real training-defaults page.
               AccountStrings.trainingSettingsRoute: (_) =>
-                  const PlaceholderPage(
-                    title: AccountStrings.trainingDefaults,
-                    description: AccountStrings.trainingDefaultsPlaceholder,
-                    icon: Icons.tune,
-                  ),
+                  const TrainingSettingsEntry(),
             },
           );
         },

@@ -1607,4 +1607,103 @@ class SEn extends S {
 
   @override
   String get statsStreakExplanation => 'A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.';
+
+  @override
+  String get learnStatistics => 'Statistics';
+
+  @override
+  String get listenTitle => 'Listen';
+
+  @override
+  String get listenStart => 'Start';
+
+  @override
+  String get listenStop => 'Stop';
+
+  @override
+  String get listenStarting => 'Starting microphone...';
+
+  @override
+  String get listenClear => 'Clear text';
+
+  @override
+  String get listenCopy => 'Copy text';
+
+  @override
+  String get listenCopied => 'Decoded text copied';
+
+  @override
+  String get listenSettings => 'Listen settings';
+
+  @override
+  String get listenDecoded => 'Decoded';
+
+  @override
+  String get listenEmptyHint => 'Point the microphone at a Morse tone. Decoded text appears here.';
+
+  @override
+  String get listenIdleHint => 'Tap Start to listen for a Morse tone.';
+
+  @override
+  String get listenPending => 'Receiving';
+
+  @override
+  String get listenSpeed => 'Speed';
+
+  @override
+  String get listenSpeedUnknown => '-- WPM';
+
+  @override
+  String get listenLevel => 'Signal';
+
+  @override
+  String get listenToneOn => 'Tone';
+
+  @override
+  String get listenTone => 'Tone frequency';
+
+  @override
+  String get listenToneLocked => 'Locked';
+
+  @override
+  String get listenToneSearching => 'Searching';
+
+  @override
+  String get listenToneManual => 'Manual';
+
+  @override
+  String get listenAutoTune => 'Auto-tune';
+
+  @override
+  String get listenAutoTuneHelp => 'Follow the strongest tone between 400 and 1000 Hz. Drag the slider to tune by hand instead.';
+
+  @override
+  String get listenRetune => 'Auto';
+
+  @override
+  String get listenBlockSize => 'Analysis block';
+
+  @override
+  String get listenBlockSizeHelp => 'Smaller blocks place mark edges more precisely but pick up more noise. 256 samples (5.3 ms) suits 5-40 WPM.';
+
+  @override
+  String get listenMinElement => 'Shortest element';
+
+  @override
+  String get listenMinElementHelp => 'Tones and gaps shorter than this are ignored as clicks and dropouts.';
+
+  @override
+  String get listenPermissionDenied => 'Microphone access was denied. Allow it in the system settings, then try again.';
+
+  @override
+  String get listenPermissionRetry => 'Try again';
+
+  @override
+  String get listenStartFailed => 'Could not start the microphone.';
+
+  @override
+  String get listenNoInput => 'No microphone was found. Connect one and try again.';
+
+  @override
+  String get listenStoppedInBackground => 'Listening stopped while the app was in the background.';
 }

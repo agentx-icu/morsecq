@@ -477,27 +477,47 @@
   "referenceEntryCount": "{count, plural, =1{1 entry} other{{count} entries}}",
   "@referenceEntryCount": {
     "description": "From ReferenceStrings.entryCount (matches in a reference section)",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "referenceWpmValue": "{wpm} WPM",
   "@referenceWpmValue": {
     "description": "From ReferenceStrings.wpm; wpm is pre-rounded (e.g. 18)",
-    "placeholders": {"wpm": {"type": "String"}}
+    "placeholders": {
+      "wpm": {
+        "type": "String"
+      }
+    }
   },
   "referenceHzValue": "{hz} Hz",
   "@referenceHzValue": {
     "description": "From ReferenceStrings.hz; hz is pre-rounded (e.g. 600)",
-    "placeholders": {"hz": {"type": "String"}}
+    "placeholders": {
+      "hz": {
+        "type": "String"
+      }
+    }
   },
   "referenceSkippedChars": "Skipped (no Morse code): {chars}",
   "@referenceSkippedChars": {
     "description": "From ReferenceStrings.skippedChars; chars lists the characters that have no Morse code",
-    "placeholders": {"chars": {"type": "String"}}
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
   },
   "referenceEstimatedSpeed": "Estimated {wpm} WPM",
   "@referenceEstimatedSpeed": {
     "description": "From ReferenceStrings.estimatedSpeed; wpm is pre-rounded",
-    "placeholders": {"wpm": {"type": "String"}}
+    "placeholders": {
+      "wpm": {
+        "type": "String"
+      }
+    }
   },
   "accountAppName": "morsecq",
   "@accountAppName": {
@@ -2054,5 +2074,137 @@
   "statsStreakExplanation": "A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.",
   "@statsStreakExplanation": {
     "description": "From StatsStrings.streakExplanation (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+  },
+  "learnStatistics": "Statistics",
+  "@learnStatistics": {
+    "description": "From LearnStrings.statistics (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+  },
+  "listenTitle": "Listen",
+  "@listenTitle": {
+    "description": "From ListenStrings.title (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenStart": "Start",
+  "@listenStart": {
+    "description": "From ListenStrings.start (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenStop": "Stop",
+  "@listenStop": {
+    "description": "From ListenStrings.stop (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenStarting": "Starting microphone...",
+  "@listenStarting": {
+    "description": "From ListenStrings.starting (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenClear": "Clear text",
+  "@listenClear": {
+    "description": "From ListenStrings.clear (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenCopy": "Copy text",
+  "@listenCopy": {
+    "description": "From ListenStrings.copy (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenCopied": "Decoded text copied",
+  "@listenCopied": {
+    "description": "From ListenStrings.copied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenSettings": "Listen settings",
+  "@listenSettings": {
+    "description": "From ListenStrings.settings (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenDecoded": "Decoded",
+  "@listenDecoded": {
+    "description": "From ListenStrings.decoded (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenEmptyHint": "Point the microphone at a Morse tone. Decoded text appears here.",
+  "@listenEmptyHint": {
+    "description": "From ListenStrings.emptyHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenIdleHint": "Tap Start to listen for a Morse tone.",
+  "@listenIdleHint": {
+    "description": "From ListenStrings.idleHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenPending": "Receiving",
+  "@listenPending": {
+    "description": "From ListenStrings.pending (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenSpeed": "Speed",
+  "@listenSpeed": {
+    "description": "From ListenStrings.speed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenSpeedUnknown": "-- WPM",
+  "@listenSpeedUnknown": {
+    "description": "From ListenStrings.speedUnknown (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenLevel": "Signal",
+  "@listenLevel": {
+    "description": "From ListenStrings.level (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenToneOn": "Tone",
+  "@listenToneOn": {
+    "description": "From ListenStrings.toneOn (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenTone": "Tone frequency",
+  "@listenTone": {
+    "description": "From ListenStrings.tone (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenToneLocked": "Locked",
+  "@listenToneLocked": {
+    "description": "From ListenStrings.toneLocked (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenToneSearching": "Searching",
+  "@listenToneSearching": {
+    "description": "From ListenStrings.toneSearching (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenToneManual": "Manual",
+  "@listenToneManual": {
+    "description": "From ListenStrings.toneManual (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenAutoTune": "Auto-tune",
+  "@listenAutoTune": {
+    "description": "From ListenStrings.autoTune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenAutoTuneHelp": "Follow the strongest tone between 400 and 1000 Hz. Drag the slider to tune by hand instead.",
+  "@listenAutoTuneHelp": {
+    "description": "From ListenStrings.autoTuneHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenRetune": "Auto",
+  "@listenRetune": {
+    "description": "From ListenStrings.retune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenBlockSize": "Analysis block",
+  "@listenBlockSize": {
+    "description": "From ListenStrings.blockSize (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenBlockSizeHelp": "Smaller blocks place mark edges more precisely but pick up more noise. 256 samples (5.3 ms) suits 5-40 WPM.",
+  "@listenBlockSizeHelp": {
+    "description": "From ListenStrings.blockSizeHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenMinElement": "Shortest element",
+  "@listenMinElement": {
+    "description": "From ListenStrings.minElement (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenMinElementHelp": "Tones and gaps shorter than this are ignored as clicks and dropouts.",
+  "@listenMinElementHelp": {
+    "description": "From ListenStrings.minElementHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenPermissionDenied": "Microphone access was denied. Allow it in the system settings, then try again.",
+  "@listenPermissionDenied": {
+    "description": "From ListenStrings.permissionDenied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenPermissionRetry": "Try again",
+  "@listenPermissionRetry": {
+    "description": "From ListenStrings.permissionRetry (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenStartFailed": "Could not start the microphone.",
+  "@listenStartFailed": {
+    "description": "From ListenStrings.startFailed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenNoInput": "No microphone was found. Connect one and try again.",
+  "@listenNoInput": {
+    "description": "From ListenStrings.noInput (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+  },
+  "listenStoppedInBackground": "Listening stopped while the app was in the background.",
+  "@listenStoppedInBackground": {
+    "description": "From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)"
   }
 }

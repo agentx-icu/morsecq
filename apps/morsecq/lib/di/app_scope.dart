@@ -10,6 +10,7 @@ import '../notifications/connection_banner_policy.dart';
 import '../notifications/notification_center.dart';
 import '../notifications/notification_prefs.dart';
 import '../startup/startup_controller.dart';
+import '../training/training_controller_host.dart';
 import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
 import 'app_services.dart';
@@ -77,6 +78,10 @@ class _AppScopeState extends State<AppScope> {
     desktopShell: widget.desktopShell,
   );
 
+  late final TrainingControllerHost _training = TrainingControllerHost(
+    _identity,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +90,7 @@ class _AppScopeState extends State<AppScope> {
 
   @override
   void dispose() {
+    _training.dispose().ignore();
     _services.dispose().ignore();
     _playback.dispose();
     _locale.dispose();
@@ -114,6 +120,7 @@ class _AppScopeState extends State<AppScope> {
         ),
         Provider<NotificationCenter?>.value(value: _services.notifications),
         Provider<DesktopShellController?>.value(value: widget.desktopShell),
+        Provider<TrainingControllerHost?>.value(value: _training),
       ],
       child: widget.child,
     );

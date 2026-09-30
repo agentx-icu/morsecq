@@ -2896,6 +2896,204 @@ abstract class S {
   /// In en, this message translates to:
   /// **'A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.'**
   String get statsStreakExplanation;
+
+  /// From LearnStrings.statistics (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get learnStatistics;
+
+  /// From ListenStrings.title (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get listenTitle;
+
+  /// From ListenStrings.start (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get listenStart;
+
+  /// From ListenStrings.stop (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get listenStop;
+
+  /// From ListenStrings.starting (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Starting microphone...'**
+  String get listenStarting;
+
+  /// From ListenStrings.clear (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Clear text'**
+  String get listenClear;
+
+  /// From ListenStrings.copy (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Copy text'**
+  String get listenCopy;
+
+  /// From ListenStrings.copied (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Decoded text copied'**
+  String get listenCopied;
+
+  /// From ListenStrings.settings (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Listen settings'**
+  String get listenSettings;
+
+  /// From ListenStrings.decoded (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Decoded'**
+  String get listenDecoded;
+
+  /// From ListenStrings.emptyHint (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Point the microphone at a Morse tone. Decoded text appears here.'**
+  String get listenEmptyHint;
+
+  /// From ListenStrings.idleHint (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Start to listen for a Morse tone.'**
+  String get listenIdleHint;
+
+  /// From ListenStrings.pending (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving'**
+  String get listenPending;
+
+  /// From ListenStrings.speed (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get listenSpeed;
+
+  /// From ListenStrings.speedUnknown (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'-- WPM'**
+  String get listenSpeedUnknown;
+
+  /// From ListenStrings.level (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Signal'**
+  String get listenLevel;
+
+  /// From ListenStrings.toneOn (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Tone'**
+  String get listenToneOn;
+
+  /// From ListenStrings.tone (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Tone frequency'**
+  String get listenTone;
+
+  /// From ListenStrings.toneLocked (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get listenToneLocked;
+
+  /// From ListenStrings.toneSearching (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Searching'**
+  String get listenToneSearching;
+
+  /// From ListenStrings.toneManual (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get listenToneManual;
+
+  /// From ListenStrings.autoTune (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-tune'**
+  String get listenAutoTune;
+
+  /// From ListenStrings.autoTuneHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the strongest tone between 400 and 1000 Hz. Drag the slider to tune by hand instead.'**
+  String get listenAutoTuneHelp;
+
+  /// From ListenStrings.retune (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get listenRetune;
+
+  /// From ListenStrings.blockSize (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis block'**
+  String get listenBlockSize;
+
+  /// From ListenStrings.blockSizeHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Smaller blocks place mark edges more precisely but pick up more noise. 256 samples (5.3 ms) suits 5-40 WPM.'**
+  String get listenBlockSizeHelp;
+
+  /// From ListenStrings.minElement (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Shortest element'**
+  String get listenMinElement;
+
+  /// From ListenStrings.minElementHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Tones and gaps shorter than this are ignored as clicks and dropouts.'**
+  String get listenMinElementHelp;
+
+  /// From ListenStrings.permissionDenied (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access was denied. Allow it in the system settings, then try again.'**
+  String get listenPermissionDenied;
+
+  /// From ListenStrings.permissionRetry (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get listenPermissionRetry;
+
+  /// From ListenStrings.startFailed (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the microphone.'**
+  String get listenStartFailed;
+
+  /// From ListenStrings.noInput (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'No microphone was found. Connect one and try again.'**
+  String get listenNoInput;
+
+  /// From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Listening stopped while the app was in the background.'**
+  String get listenStoppedInBackground;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

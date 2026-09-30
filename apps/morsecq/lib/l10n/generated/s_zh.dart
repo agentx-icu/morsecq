@@ -1591,4 +1591,103 @@ class SZh extends S {
 
   @override
   String get statsStreakExplanation => '连续天数按至少有一次练习的连续日历日计算。整天未练习会重置；一天内练习两次只算一天。';
+
+  @override
+  String get learnStatistics => '统计';
+
+  @override
+  String get listenTitle => '收听';
+
+  @override
+  String get listenStart => '开始';
+
+  @override
+  String get listenStop => '停止';
+
+  @override
+  String get listenStarting => '正在启动麦克风…';
+
+  @override
+  String get listenClear => '清空文本';
+
+  @override
+  String get listenCopy => '复制文本';
+
+  @override
+  String get listenCopied => '已复制解码文本';
+
+  @override
+  String get listenSettings => '收听设置';
+
+  @override
+  String get listenDecoded => '解码结果';
+
+  @override
+  String get listenEmptyHint => '把麦克风对准莫斯电码音，解码文本会显示在这里。';
+
+  @override
+  String get listenIdleHint => '点击「开始」以收听莫斯电码音。';
+
+  @override
+  String get listenPending => '接收中';
+
+  @override
+  String get listenSpeed => '速度';
+
+  @override
+  String get listenSpeedUnknown => '-- WPM';
+
+  @override
+  String get listenLevel => '信号';
+
+  @override
+  String get listenToneOn => '有音';
+
+  @override
+  String get listenTone => '音调频率';
+
+  @override
+  String get listenToneLocked => '已锁定';
+
+  @override
+  String get listenToneSearching => '搜索中';
+
+  @override
+  String get listenToneManual => '手动';
+
+  @override
+  String get listenAutoTune => '自动调谐';
+
+  @override
+  String get listenAutoTuneHelp => '跟踪 400–1000 Hz 之间最强的音调；拖动滑块可改为手动调谐。';
+
+  @override
+  String get listenRetune => '自动';
+
+  @override
+  String get listenBlockSize => '分析块长';
+
+  @override
+  String get listenBlockSizeHelp => '块越小，点划边沿定位越精确，但更容易受噪声影响。256 采样（5.3 ms）适合 5–40 WPM。';
+
+  @override
+  String get listenMinElement => '最短元素';
+
+  @override
+  String get listenMinElementHelp => '短于此时长的音与间隔将被视为杂音或断续而忽略。';
+
+  @override
+  String get listenPermissionDenied => '麦克风权限被拒绝。请在系统设置中允许后重试。';
+
+  @override
+  String get listenPermissionRetry => '重试';
+
+  @override
+  String get listenStartFailed => '无法启动麦克风。';
+
+  @override
+  String get listenNoInput => '未找到麦克风。请连接后重试。';
+
+  @override
+  String get listenStoppedInBackground => '应用进入后台，已停止收听。';
 }

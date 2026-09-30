@@ -61,6 +61,10 @@ jobs:
       - name: Import guard (layering)
         run: dart run tool/import_guard.dart
 
+      # Every `*_strings.dart` const must have an ARB entry (en + zh).
+      - name: Localisation strings in sync
+        run: dart run tool/strings_to_arb.dart --check
+
       # Tests tagged `needs-native` require libtim2tox_ffi and run from the
       # native workflow instead.
       - name: Tests

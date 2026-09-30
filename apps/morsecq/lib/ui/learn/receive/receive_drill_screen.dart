@@ -1,0 +1,313 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:morse_io/morse_io.dart';
+
+import '../../../training/receive_session.dart';
+import '../../../training/training_controller.dart';
+import '../learn_platform.dart';
+import '../learn_playback.dart';
+import '../learn_strings.dart';
+import 'answer_keypad.dart';
+import 'receive_summary_view.dart';
+import 'round_result_view.dart';
+
+enum _Phase { listen, result, summary }
+
+/// Plays each round of a [ReceiveSession], collects the copy (text field on
+/// desktop, restricted keypad everywhere), scores it, and on completion
+/// records the session through the controller.
+class ReceiveDrillScreen extends StatefulWidget {
+  const ReceiveDrillScreen({
+    super.key,
+    required this.controller,
+    required this.playback,
+    required this.session,
+    this.title,
+  });
+
+  final TrainingController controller;
+  final LearnPlaybackFactory playback;
+  final ReceiveSession session;
+  final String? title;
+
+  @override
+  State<ReceiveDrillScreen> createState() => _ReceiveDrillScreenState();
+}
+
+class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
+  final TextEditingController _answer = TextEditingController();
+  final FocusNode _answerFocus = FocusNode();
+  LearnPlayback? _playback;
+  StreamSubscription<PlayerEvent>? _playerSub;
+  _Phase _phase = _Phase.listen;
+  bool _playing = false;
+  bool _recording = false;
+  ReceiveRound? _lastRound;
+  ReceiveOutcome? _outcome;
+  String? _unlockedChar;
+
+  ReceiveSession get _session => widget.session;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_setup());
+  }
+
+  Future<void> _setup() async {
+    final playback = await widget.playback.create(widget.controller.settings);
+    if (!mounted) {
+      await playback.dispose();
+      return;
+    }
+    _playerSub = playback.player.events.listen(_onPlayerEvent);
+    setState(() => _playback = playback);
+    _play();
+  }
+
+  void _onPlayerEvent(PlayerEvent event) {
+    if (event is PlayerCompleted || event is PlayerStopped) {
+      if (mounted && _playing) {
+        setState(() => _playing = false);
+      }
+    }
+  }
+
+  void _play() {
+    final playback = _playback;
+    if (playback == null || _phase != _Phase.listen) {
+      return;
+    }
+    setState(() => _playing = true);
+    playback.player.play(_session.currentTimeline);
+  }
+
+  void _submit() {
+    if (_phase != _Phase.listen || _session.isFinished) {
+      return;
+    }
+    _playback?.player.stop();
+    final round = _session.submit(_answer.text);
+    _answer.clear();
+    setState(() {
+      _lastRound = round;
+      _phase = _Phase.result;
+    });
+  }
+
+  Future<void> _next() async {
+    if (_session.isComplete) {
+      await _finish();
+      return;
+    }
+    setState(() => _phase = _Phase.listen);
+    _play();
+    if (hasPhysicalKeyboardByDefault) {
+      _answerFocus.requestFocus();
+    }
+  }
+
+  Future<void> _finish() async {
+    if (_recording) {
+      return;
+    }
+    _recording = true;
+    final outcome = await widget.controller.recordReceiveSession(_session);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _outcome = outcome;
+      _unlockedChar = outcome.advanced ? widget.controller.newestChar : null;
+      _phase = _Phase.summary;
+    });
+  }
+
+  void _appendChar(String c) {
+    _answer.text = '${_answer.text}$c';
+  }
+
+  void _backspace() {
+    final text = _answer.text;
+    if (text.isEmpty) {
+      return;
+    }
+    // Remove a whole `<XX>` prosign token if that is what ends the text.
+    if (text.endsWith('>')) {
+      final open = text.lastIndexOf('<');
+      if (open >= 0) {
+        _answer.text = text.substring(0, open);
+        return;
+      }
+    }
+    _answer.text = text.substring(0, text.length - 1);
+  }
+
+  @override
+  void dispose() {
+    unawaited(_playerSub?.cancel());
+    unawaited(_playback?.dispose());
+    _answer.dispose();
+    _answerFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title =
+        widget.title ??
+        (_session.kind == ReceiveDrillKind.review
+            ? LearnStrings.reviewTitle
+            : LearnStrings.receiveTitle);
+    final body = SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: switch (_phase) {
+              _Phase.listen => _buildListen(context),
+              _Phase.result => _buildResult(context),
+              _Phase.summary => _buildSummary(context),
+            },
+          ),
+        ),
+      ),
+    );
+    final flash = _playback?.flash;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: LinearProgressIndicator(value: _session.progress, minHeight: 4),
+        ),
+      ),
+      body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
+    );
+  }
+
+  Widget _buildListen(BuildContext context) {
+    final theme = Theme.of(context);
+    final ready = _playback != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text(
+          LearnStrings.roundOf(_session.roundCount + 1),
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              _playing ? Icons.volume_up : Icons.volume_off_outlined,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                _playing ? LearnStrings.listen : LearnStrings.ready,
+                style: theme.textTheme.titleMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 12),
+            OutlinedButton.icon(
+              onPressed: ready && !_playing ? _play : null,
+              icon: const Icon(Icons.replay),
+              label: const Text(LearnStrings.replay),
+            ),
+          ],
+        ),
+        if (!widget.controller.settings.hasFeedback)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              LearnStrings.noFeedbackWarning,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _answer,
+          focusNode: _answerFocus,
+          autofocus: hasPhysicalKeyboardByDefault,
+          textCapitalization: TextCapitalization.characters,
+          autocorrect: false,
+          enableSuggestions: false,
+          keyboardType: isTouchPlatform ? TextInputType.none : null,
+          style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 2),
+          decoration: const InputDecoration(
+            hintText: LearnStrings.answerHint,
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (_) => _submit(),
+        ),
+        const SizedBox(height: 12),
+        AnswerKeypad(
+          chars: _session.chars,
+          onChar: _appendChar,
+          onBackspace: _backspace,
+          onSpace: () => _appendChar(' '),
+        ),
+        const SizedBox(height: 16),
+        FilledButton(
+          onPressed: _submit,
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+          child: const Text(LearnStrings.submit),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResult(BuildContext context) {
+    final round = _lastRound!;
+    final isLast = _session.isComplete;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        RoundResultView(round: round),
+        const SizedBox(height: 24),
+        FilledButton(
+          onPressed: _next,
+          autofocus: true,
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+          child: Text(isLast ? LearnStrings.finish : LearnStrings.next),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummary(BuildContext context) {
+    final outcome = _outcome;
+    if (outcome == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        ReceiveSummaryView(
+          session: _session,
+          outcome: outcome,
+          unlockedChar: _unlockedChar,
+        ),
+        const SizedBox(height: 24),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(outcome),
+          autofocus: true,
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+          child: const Text(LearnStrings.done),
+        ),
+      ],
+    );
+  }
+}
