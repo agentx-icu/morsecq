@@ -73,5 +73,8 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
 - SnackBar 会盖住输入区的发送按钮 4 秒；合成点击落在提示条上，而 `flutter test` 只
   打印一条警告。要么 `ScaffoldMessenger.clearSnackBars()`，要么断言结果，绝不能只
   断言输入过的文本。
+- Android 在没有 `libtim2tox_ffi.so` 时需要 `morsecqAllowMissingFfi` 才能做纯 UI 构建；
+  `capture.sh` 以 `ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true` 导出它。还需要
+  `JAVA_HOME` 指向 arm64 的 JDK——非交互式 ssh 不会加载设置它的 profile。
 - 从 ssh 会话启动 macOS 窗口照样能渲染和截帧（Flutter 层不依赖合成器），但运行中
   不要抢焦点。

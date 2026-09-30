@@ -63,6 +63,12 @@ SCENES=(welcome create_identity backup_wizard learn_home stats training_settings
         group_conversation reference translator listen me)
 MIN_BYTES=8192
 
+# Android: the Gradle build refuses to package without libtim2tox_ffi.so
+# unless morsecqAllowMissingFfi is set; the screenshots run the in-memory
+# backend and never load the library, so allow the UI-only build here
+# (Gradle reads ORG_GRADLE_PROJECT_<name> as a project property).
+export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
+
 STAGING="$(mktemp -d -t morsecq_shots.XXXXXX)"
 cleanup() { [[ "$KEEP" == "1" ]] || rm -rf "$STAGING"; }
 trap cleanup EXIT

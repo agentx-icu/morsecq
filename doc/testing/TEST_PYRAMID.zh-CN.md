@@ -38,9 +38,10 @@ tool/test_pyramid.sh --level e2e --device macos
    `DesktopShellController`（一个 `ChangeNotifier`），provider 的 debug 检查拒绝这种
    用法。密闭测试传的是 `desktopShell: null`，release 构建又跳过断言，所以下面几层
    都看不到。回归测试现在在集成层（`test/di/app_scope_desktop_shell_test.dart`）。
-2. **桌面上的添加好友面板**在滑出时触发框架的语义断言（"invisible SemanticsNodes"）：
-   输入框后缀槽里那个禁用的扫码按钮带了 tooltip。桌面上不再显示该按钮（输入框下方的
-   提示已经说明了原因）。
+2. **添加好友面板**在滑出时触发框架的语义断言（"invisible SemanticsNodes"），macOS 上
+   一次、iOS 上又一次：Tox ID 输入框后缀槽里的 `Tooltip`，在面板收缩时被布局成负高度。
+   现在移动端的扫码动作是输入框下方一个带文字的按钮（桌面保留提示行），任何平台的
+   输入框都不再有后缀图标。
 3. **正确率趋势图**把练习次数标成 `1 2 3 5 6 7`（分数步长四舍五入），坐标轴标题还压在
    最后一个刻度上。截图里看出来的；改为整数步长并把标题单独放一行。
 

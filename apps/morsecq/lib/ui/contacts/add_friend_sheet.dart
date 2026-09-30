@@ -147,20 +147,12 @@ class _AddFriendFormState extends State<AddFriendForm> {
                   labelText: s.chatToxIdLabel,
                   border: const OutlineInputBorder(),
                   errorText: serverError,
-                  // Desktop shows no scan button: the hint text below the
-                  // field already says why, and a tooltip on a disabled
-                  // button inside the suffix slot produced an invisible
-                  // SemanticsNode (framework assertion) while the sheet
-                  // slid away (integration_test/app_launch_test.dart).
-                  suffixIcon: widget.canScan
-                      ? Tooltip(
-                          message: s.chatScanQr,
-                          child: IconButton(
-                            icon: const Icon(Icons.qr_code_scanner),
-                            onPressed: () => unawaited(_scan()),
-                          ),
-                        )
-                      : null,
+                  // No suffixIcon on purpose: a Tooltip inside the suffix
+                  // slot produced an invisible SemanticsNode (framework
+                  // assertion) on every platform while the sheet slid away,
+                  // because the shrinking sheet lays the field out with a
+                  // negative height (integration_test/app_launch_test.dart on
+                  // macOS and iOS). The scan action lives below the field.
                 ),
                 validator: (v) =>
                     validateToxIdInput(s, v, ownToxId: widget.ownToxId),
@@ -170,7 +162,16 @@ class _AddFriendFormState extends State<AddFriendForm> {
                   }
                 },
               ),
-              if (!widget.canScan)
+              if (widget.canScan)
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    onPressed: () => unawaited(_scan()),
+                    icon: const Icon(Icons.qr_code_scanner),
+                    label: Text(s.chatScanQr),
+                  ),
+                )
+              else
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(

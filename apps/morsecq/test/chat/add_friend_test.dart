@@ -66,8 +66,9 @@ void main() {
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
-    // Desktop: no scan button (a disabled one carried a tooltip that tripped
-    // a semantics assertion while the sheet dismissed); the hint explains.
+    // Desktop: no scan action, the hint explains why. (Mobile gets a
+    // labelled button below the field instead of a suffix icon: see the
+    // `canScan: true` test.)
     expect(find.text(s.chatScanQrDesktopHint), findsOneWidget);
     expect(find.byIcon(Icons.qr_code_scanner), findsNothing);
     // The greeting defaults to the localized "morsecq CQ".
@@ -127,5 +128,39 @@ void main() {
     await tester.tap(find.byTooltip(s.chatMyToxId));
     await tester.pumpAndSettle();
     expect(find.text(kSelfToxId), findsOneWidget);
+  });
+
+  testWidgets('phone: the scan action is a labelled button below the field', (
+    tester,
+  ) async {
+    final h = ChatHarness();
+    addTearDown(h.dispose);
+    await tester.pumpWidget(
+      h.wrap(
+        Scaffold(
+          body: Builder(
+            builder: (context) => Center(
+              child: FilledButton(
+                onPressed: () => showAddFriendSheet(
+                  context,
+                  service: h.service,
+                  canScan: true,
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    // Not inside the text field's suffix slot: a Tooltip there raised a
+    // semantics assertion on every platform while the sheet dismissed.
+    expect(find.byType(Tooltip), findsNothing);
+    final scan = find.widgetWithText(TextButton, s.chatScanQr);
+    expect(scan, findsOneWidget);
+    expect(tester.widget<TextButton>(scan).onPressed, isNotNull);
+    expect(find.text(s.chatScanQrDesktopHint), findsNothing);
   });
 }

@@ -86,6 +86,11 @@ Adding a scene: navigate + `shots.capture(tester, locale, 'name')` in
   lands on the toast and `flutter test` only prints a warning. Clear it
   (`ScaffoldMessenger.clearSnackBars()`) or assert on the result, never on the
   typed text.
+- Android needs `morsecqAllowMissingFfi` for a UI-only build (no
+  `libtim2tox_ffi.so` staged); `capture.sh` exports it as
+  `ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true`. It also needs an arm64
+  JDK on `JAVA_HOME` — a non-interactive ssh shell does not source the
+  profile that sets it.
 - From an ssh session the macOS window still renders and captures (the
   Flutter layer does not depend on the compositor), but do not steal focus
   while a run is in progress.

@@ -46,10 +46,12 @@ and nothing is created on the device.
    `desktopShell: null` and release builds skip the assert, so nothing lower
    could see it. Regression test now at the integration tier
    (`test/di/app_scope_desktop_shell_test.dart`).
-2. **Add-friend sheet on desktop** tripped a framework semantics assertion
-   ("invisible SemanticsNodes") while sliding away: a tooltip on the disabled
-   scan button in the field's suffix slot. The button is gone on desktop
-   (the hint below the field already explains).
+2. **Add-friend sheet** tripped a framework semantics assertion ("invisible
+   SemanticsNodes") while sliding away, on macOS and again on iOS: a
+   `Tooltip` inside the Tox-ID field's suffix slot, laid out with a negative
+   height by the shrinking sheet. The scan action is now a labelled button
+   below the field on mobile (desktop keeps its hint line); the field has no
+   suffix icon on any platform.
 3. **Accuracy-trend chart** labelled sessions `1 2 3 5 6 7` (rounded
    fractional stride) and painted the axis caption over the last tick. Seen in
    the screenshots; fixed with an integer stride and a caption row.
