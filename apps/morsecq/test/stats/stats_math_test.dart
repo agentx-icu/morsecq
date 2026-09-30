@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:morsecq/ui/stats/stats_math.dart';
@@ -175,8 +177,36 @@ void main() {
       final idx = labelledIndices(30, maxLabels: 6);
       expect(idx.first, 0);
       expect(idx.last, 29);
-      expect(idx.length, lessThanOrEqualTo(7));
+      expect(idx.length, lessThanOrEqualTo(6));
       expect(idx, orderedEquals(idx.toSet().toList()..sort()));
+    });
+
+    test('drops the stride label that would crowd the last one', () {
+      // 14 sessions, budget 6: stride 3 -> 0 3 6 9 12, and 12 is only one
+      // step from 13, so it goes.
+      expect(labelledIndices(14, maxLabels: 6), <int>[0, 3, 6, 9, 13]);
+    });
+
+    test('one over budget with tiny budgets keeps both ends', () {
+      expect(labelledIndices(3, maxLabels: 2), <int>[0, 2]);
+      expect(labelledIndices(4, maxLabels: 3), <int>[0, 2, 3]);
+      // Budgets below two are treated as two.
+      expect(labelledIndices(9, maxLabels: 0), <int>[0, 8]);
+      expect(labelledIndices(9, maxLabels: 1), <int>[0, 8]);
+    });
+
+    test('never exceeds the budget and survives huge counts', () {
+      for (final count in <int>[7, 8, 11, 12, 13, 25, 100, 1 << 40]) {
+        for (final budget in <int>[2, 3, 4, 6, 9]) {
+          final idx = labelledIndices(count, maxLabels: budget);
+          expect(idx.first, 0, reason: '$count/$budget');
+          expect(idx.last, count - 1, reason: '$count/$budget');
+          expect(idx.length, lessThanOrEqualTo(math.max(2, budget)),
+              reason: '$count/$budget');
+          expect(idx, orderedEquals(idx.toSet().toList()..sort()),
+              reason: '$count/$budget');
+        }
+      }
     });
 
     test('steps evenly instead of skipping one index mid-run', () {

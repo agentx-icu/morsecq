@@ -21,8 +21,12 @@ tool/test_pyramid.sh --level e2e --device macos
 | **e2e (real UI)** | the app's own `main()` on the real platform, driven the way a first-time user clicks: onboarding → every tab → a drill → add a friend and send a line → translator → Me; plus the screenshot walk of 17 scenes × 2 locales | `apps/morsecq/integration_test` | macOS before release; `e2e.yml` on demand; verified on macOS, iOS simulator and Android emulator (2026-09-30) | 3 tests, 34 frames per platform |
 
 The e2e tier always runs with `--dart-define=MORSECQ_FAKE_BACKEND=true`: the
-in-memory backend keeps nothing on disk, so every launch starts at onboarding
-and nothing is created on the device.
+in-memory backend creates no Tox identity and keeps no profile, so every
+launch starts at onboarding. What does touch the device: the launch test runs
+the real `main()`, so the app's normal `settings.json` (language, window
+bounds) is written to its application-support directory; the screenshot walk
+writes its seeded progress and fake profile under a temporary directory that
+the test deletes at the end.
 
 ## What each tier is for
 
