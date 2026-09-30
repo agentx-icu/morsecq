@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'alphabet_grid.dart';
 import 'koch_order_view.dart';
 import 'reference_catalog.dart';
 import 'reference_entry_tile.dart';
-import 'reference_strings.dart';
 
 /// Renders one whole section of the reference in the layout that suits it:
 /// a grid for the alphabet, a numbered list for the Koch order, a plain list
@@ -20,7 +20,7 @@ class ReferenceSectionView extends StatelessWidget {
     return switch (section) {
       ReferenceSection.alphabet => AlphabetGrid(
         entries: entries,
-        hint: ReferenceStrings.alphabetHint,
+        hint: context.s.referenceAlphabetHint,
       ),
       ReferenceSection.koch => KochOrderView(entries: entries),
       _ => ListView.separated(
@@ -42,13 +42,14 @@ class ReferenceSearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     final Map<ReferenceSection, List<ReferenceEntry>> groups =
         ReferenceCatalog.search(query);
     if (groups.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(ReferenceStrings.noResults),
+          padding: const EdgeInsets.all(24),
+          child: Text(s.referenceNoResults),
         ),
       );
     }
@@ -64,14 +65,14 @@ class ReferenceSearchResults extends StatelessWidget {
               Icon(g.key.icon, size: 18, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
-                g.key.label,
+                g.key.label(s),
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
               ),
               const Spacer(),
               Text(
-                ReferenceStrings.entryCount(g.value.length),
+                s.referenceEntryCount(g.value.length),
                 style: theme.textTheme.labelSmall,
               ),
             ],

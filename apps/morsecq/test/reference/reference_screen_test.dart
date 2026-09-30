@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq/ui/reference/alphabet_grid.dart';
 import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/reference_catalog.dart';
 import 'package:morsecq/ui/reference/reference_entry_tile.dart';
 import 'package:morsecq/ui/reference/reference_screen.dart';
-import 'package:morsecq/ui/reference/reference_strings.dart';
 
 import 'reference_test_support.dart';
 
 const Duration _dit15 = Duration(milliseconds: 80); // 15 wpm default
+final S en = kTestStrings;
 
 Future<FakeReferencePlayer> _pump(
   WidgetTester tester, {
@@ -46,7 +47,7 @@ void main() {
       await _pump(tester, size: kDesktop);
       expect(find.byType(TabBar), findsNothing);
       expect(find.byType(ReferenceSectionRail), findsOneWidget);
-      await tester.tap(find.text(ReferenceStrings.sectionQCodes));
+      await tester.tap(find.text(en.referenceSectionQCodes));
       await tester.pumpAndSettle();
       expect(find.text('QRL'), findsOneWidget);
       expect(find.byType(AlphabetGrid), findsNothing);
@@ -71,7 +72,7 @@ void main() {
       expect(find.byType(TabBar), findsNothing);
       expect(find.text('QRL'), findsOneWidget);
       expect(find.text('QRM'), findsNothing);
-      expect(find.text(ReferenceStrings.sectionQCodes), findsOneWidget);
+      expect(find.text(en.referenceSectionQCodes), findsOneWidget);
       expect(_card('A'), findsNothing);
     });
 
@@ -91,8 +92,8 @@ void main() {
       // meaning containing the letter and push the Koch header off-screen.
       await tester.enterText(find.byKey(ReferenceScreen.searchFieldKey), 'KANG');
       await tester.pumpAndSettle();
-      expect(find.text(ReferenceStrings.sectionAlphabet), findsOneWidget);
-      expect(find.text(ReferenceStrings.sectionKoch), findsOneWidget);
+      expect(find.text(en.referenceSectionAlphabet), findsOneWidget);
+      expect(find.text(en.referenceSectionKoch), findsOneWidget);
       expect(find.byType(ReferenceEntryTile), findsNWidgets(2));
     });
 
@@ -100,8 +101,8 @@ void main() {
       await _pump(tester);
       await tester.enterText(find.byKey(ReferenceScreen.searchFieldKey), 'zzzzzz');
       await tester.pumpAndSettle();
-      expect(find.text(ReferenceStrings.noResults), findsOneWidget);
-      await tester.tap(find.byTooltip(ReferenceStrings.clearSearch));
+      expect(find.text(en.referenceNoResults), findsOneWidget);
+      await tester.tap(find.byTooltip(en.referenceClearSearch));
       await tester.pumpAndSettle();
       expect(find.byType(TabBar), findsOneWidget);
     });
@@ -162,12 +163,12 @@ void main() {
         matching: find.byType(ReferenceEntryTile),
       );
       await tester.tap(
-        find.descendant(of: row, matching: find.byTooltip(ReferenceStrings.play)),
+        find.descendant(of: row, matching: find.byTooltip(en.referencePlay)),
       );
       await tester.pump();
       expect(fake.sink.isOn, isTrue);
       expect(
-        find.descendant(of: row, matching: find.byTooltip(ReferenceStrings.stop)),
+        find.descendant(of: row, matching: find.byTooltip(en.referenceStop)),
         findsOneWidget,
       );
     });
@@ -192,7 +193,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
       expect(find.textContaining('A: di-DAH'), findsOneWidget);
-      await tester.tap(find.text(ReferenceStrings.close));
+      await tester.tap(find.text(en.referenceClose));
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsNothing);
     });

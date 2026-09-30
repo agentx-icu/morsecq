@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// Typed-confirmation dialog. Resolves true only when the user typed the
 /// confirm word exactly and pressed Delete; the caller performs the deletion.
@@ -28,18 +28,22 @@ class _DeleteIdentityDialogState extends State<DeleteIdentityDialog> {
     super.dispose();
   }
 
-  bool get _confirmed => _typed.text.trim() == AccountStrings.deleteConfirmWord;
+  /// The confirm word is a localized string so the body, the hint and the
+  /// check always agree.
+  bool _confirmed(S s) => _typed.text.trim() == s.accountDeleteConfirmWord;
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
+    final confirmed = _confirmed(s);
     return AlertDialog(
       icon: Icon(Icons.delete_forever, color: theme.colorScheme.error),
-      title: const Text(AccountStrings.deleteDialogTitle),
+      title: Text(s.accountDeleteDialogTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(AccountStrings.deleteDialogBody),
+          Text(s.accountDeleteDialogBody),
           const SizedBox(height: 16),
           TextField(
             controller: _typed,
@@ -49,11 +53,11 @@ class _DeleteIdentityDialogState extends State<DeleteIdentityDialog> {
             textCapitalization: TextCapitalization.characters,
             onChanged: (_) => setState(() {}),
             onSubmitted: (_) {
-              if (_confirmed) Navigator.of(context).pop(true);
+              if (_confirmed(s)) Navigator.of(context).pop(true);
             },
-            decoration: const InputDecoration(
-              hintText: AccountStrings.deleteConfirmHint,
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: s.accountDeleteConfirmHint,
+              border: const OutlineInputBorder(),
             ),
           ),
         ],
@@ -61,15 +65,15 @@ class _DeleteIdentityDialogState extends State<DeleteIdentityDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text(AccountStrings.cancel),
+          child: Text(s.actionCancel),
         ),
         FilledButton(
           style: FilledButton.styleFrom(
             backgroundColor: theme.colorScheme.error,
             foregroundColor: theme.colorScheme.onError,
           ),
-          onPressed: _confirmed ? () => Navigator.of(context).pop(true) : null,
-          child: const Text(AccountStrings.deleteButton),
+          onPressed: confirmed ? () => Navigator.of(context).pop(true) : null,
+          child: Text(s.accountDeleteButton),
         ),
       ],
     );

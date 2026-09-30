@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
-import '../learn_strings.dart';
 
 /// Shows one answered round: the sent text against the copy, column by
 /// column from the alignment, with misses and substitutions highlighted.
@@ -14,10 +14,11 @@ class RoundResultView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final s = context.s;
     final score = round.score;
     final headline = score.isPerfect
-        ? LearnStrings.roundPerfect
-        : LearnStrings.roundScore(score.correctChars, score.totalChars);
+        ? s.learnRoundPerfect
+        : s.learnRoundScore(score.correctChars, score.totalChars);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -28,12 +29,12 @@ class RoundResultView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _LabelledRow(
-          label: LearnStrings.sent,
+          label: s.learnSent,
           child: AlignedSymbols(alignment: score.alignment, showTarget: true),
         ),
         const SizedBox(height: 8),
         _LabelledRow(
-          label: LearnStrings.yourCopy,
+          label: s.learnYourCopy,
           child: AlignedSymbols(alignment: score.alignment, showTarget: false),
         ),
       ],

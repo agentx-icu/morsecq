@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import 'tox_id.dart';
 
 /// Pending inbound friend requests with accept / reject. Renders nothing
@@ -21,16 +21,18 @@ class FriendRequestInbox extends StatelessWidget {
   final bool showWhenEmpty;
 
   Future<void> _run(BuildContext context, Future<void> Function() op) async {
+    final S s = context.s;
     try {
       await op();
     } on Object catch (e) {
-      if (context.mounted) showSnack(context, describeError(e));
+      if (context.mounted) showSnack(context, describeChatError(s, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     return StreamBuilder<List<FriendRequest>>(
       stream: service.friendRequestChanges,
       initialData: service.friendRequests,
@@ -44,16 +46,16 @@ class FriendRequestInbox extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Text(
-                '${ChatStrings.friendRequests} (${requests.length})',
+                s.chatFriendRequestsCount(requests.length),
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
               ),
             ),
             if (requests.isEmpty)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: Text(ChatStrings.noRequests),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                child: Text(s.chatNoRequests),
               ),
             for (final FriendRequest r in requests)
               ListTile(
@@ -69,7 +71,7 @@ class FriendRequestInbox extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      tooltip: ChatStrings.reject,
+                      tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),
                       onPressed: () => unawaited(
                         _run(
@@ -79,7 +81,7 @@ class FriendRequestInbox extends StatelessWidget {
                       ),
                     ),
                     IconButton.filled(
-                      tooltip: ChatStrings.accept,
+                      tooltip: s.chatAccept,
                       icon: const Icon(Icons.check),
                       onPressed: () => unawaited(
                         _run(

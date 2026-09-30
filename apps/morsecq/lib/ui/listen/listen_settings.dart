@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'listen_strings.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// User-tunable decoder parameters for the Listen screen.
 final class ListenSettings {
@@ -85,6 +85,11 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final S s = context.s;
+    final String blockInfo = s.listenBlockSamples(
+      _draft.blockSize,
+      _draft.blockMs(widget.sampleRate).toStringAsFixed(1),
+    );
     return SafeArea(
       child: ListView(
         shrinkWrap: true,
@@ -92,19 +97,19 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
         children: <Widget>[
           ListTile(
             title: Text(
-              ListenStrings.settings,
+              s.listenSettings,
               style: theme.textTheme.titleMedium,
             ),
           ),
           SwitchListTile(
-            title: const Text(ListenStrings.autoTune),
-            subtitle: const Text(ListenStrings.autoTuneHelp),
+            title: Text(s.listenAutoTune),
+            subtitle: Text(s.listenAutoTuneHelp),
             value: _draft.autoTune,
             onChanged: (v) => _apply(_draft.copyWith(autoTune: v)),
           ),
           const Divider(),
           ListTile(
-            title: const Text(ListenStrings.blockSize),
+            title: Text(s.listenBlockSize),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 8),
               child: SegmentedButton<int>(
@@ -125,17 +130,16 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
             child: Text(
-              '${ListenStrings.blockSamples(_draft.blockSize, _draft.blockMs(widget.sampleRate))}\n'
-              '${ListenStrings.blockSizeHelp}',
+              '$blockInfo\n${s.listenBlockSizeHelp}',
               style: theme.textTheme.bodySmall,
             ),
           ),
           const Divider(),
           ListTile(
-            title: const Text(ListenStrings.minElement),
-            subtitle: const Text(ListenStrings.minElementHelp),
+            title: Text(s.listenMinElement),
+            subtitle: Text(s.listenMinElementHelp),
             trailing: Text(
-              ListenStrings.ms(_draft.minElementMs),
+              s.listenMsValue(_draft.minElementMs),
               style: theme.textTheme.titleMedium,
             ),
           ),
@@ -150,7 +154,7 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
             max: ListenSettings.minElementMaxMs.toDouble(),
             divisions:
                 ListenSettings.minElementMaxMs - ListenSettings.minElementMinMs,
-            label: ListenStrings.ms(_draft.minElementMs),
+            label: s.listenMsValue(_draft.minElementMs),
             onChanged: (v) =>
                 _apply(_draft.copyWith(minElementMs: v.round()), notify: false),
             onChangeEnd: (v) => _apply(_draft.copyWith(minElementMs: v.round())),

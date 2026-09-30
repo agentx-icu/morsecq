@@ -14,13 +14,14 @@ import 'di/app_services.dart';
 import 'di/app_settings.dart';
 import 'di/backend_factory.dart';
 import 'di/desktop_store_adapter.dart';
+import 'i18n/current_strings.dart';
 import 'i18n/key_value_store.dart';
 import 'i18n/l10n_extension.dart';
 import 'i18n/locale_controller.dart';
 import 'notifications/app_badge_plus_api.dart';
 import 'notifications/flutter_local_notifications_api.dart';
 import 'startup/startup_gate.dart';
-import 'ui/account/account_strings.dart';
+import 'ui/account/account_routes.dart';
 import 'ui/account/backup_file_gateway.dart';
 import 'ui/learn/settings/training_settings_entry.dart';
 import 'ui/shell/app_shell.dart';
@@ -39,7 +40,9 @@ Future<void> main() async {
     desktopShell = await initDesktopShell(
       DesktopShellConfig(
         store: DesktopStoreAdapter(settingsStore),
-        appName: AccountStrings.appName,
+        // Product name, never translated; resolved through S so the desktop
+        // shell has no English literal of its own.
+        appName: currentS().appName,
         log: kDebugMode ? debugPrint : null,
       ),
     );
@@ -117,7 +120,8 @@ class MorsecqApp extends StatelessWidget {
           );
           final locale = context.watch<LocaleController>().locale;
           return MaterialApp(
-            title: AccountStrings.appName,
+            // onGenerateTitle supersedes `title`; the window/task title is
+            // the (untranslated) product name from the ARB.
             onGenerateTitle: (context) => S.of(context).appName,
             localizationsDelegates: S.localizationsDelegates,
             supportedLocales: S.supportedLocales,
@@ -131,8 +135,7 @@ class MorsecqApp extends StatelessWidget {
             themeMode: themeMode,
             home: const StartupGate(child: AppShell()),
             routes: {
-              AccountStrings.trainingSettingsRoute: (_) =>
-                  const TrainingSettingsEntry(),
+              kTrainingSettingsRoute: (_) => const TrainingSettingsEntry(),
             },
           );
         },

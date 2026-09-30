@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../l10n/generated/s.dart';
 import 'badge_api.dart';
 import 'local_notifications_api.dart';
 import 'notification_composer.dart';
@@ -34,6 +35,10 @@ import 'notification_prefs.dart';
 /// chat UI, and calls [setActiveConversation] from the conversation screen's
 /// `initState` / `dispose`. All plugin access goes through the injected
 /// [LocalNotificationsApi] and [BadgeApi].
+///
+/// Text is resolved through [strings] at post time (default `currentS()`, or
+/// the `StringsResolver` the orchestrator owns), so a language change shows
+/// up in the next notification; banners already posted are not relabelled.
 class NotificationCenter {
   NotificationCenter({
     required ChatService chat,
@@ -43,6 +48,7 @@ class NotificationCenter {
     required ValueListenable<bool> isForeground,
     NotificationPlatform? platform,
     String Function(String text)? patternOf,
+    S Function()? strings,
   }) : _chat = chat,
        _notifications = notifications,
        _badge = badge,
@@ -53,6 +59,7 @@ class NotificationCenter {
          prefs: prefs,
          platform: platform ?? NotificationPlatform.detect(),
          patternOf: patternOf,
+         strings: strings,
        );
 
   final ChatService _chat;

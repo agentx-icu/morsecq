@@ -1,4 +1,4 @@
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// Coarse password strength for the create / change-password hints. Not a
 /// security boundary — it only nudges users away from trivially short
@@ -9,11 +9,12 @@ enum PasswordStrength {
   fair,
   strong;
 
-  String get label => switch (this) {
+  /// Hint shown under the field; empty for [empty].
+  String label(S s) => switch (this) {
     PasswordStrength.empty => '',
-    PasswordStrength.weak => AccountStrings.strengthWeak,
-    PasswordStrength.fair => AccountStrings.strengthFair,
-    PasswordStrength.strong => AccountStrings.strengthStrong,
+    PasswordStrength.weak => s.accountStrengthWeak,
+    PasswordStrength.fair => s.accountStrengthFair,
+    PasswordStrength.strong => s.accountStrengthStrong,
   };
 }
 

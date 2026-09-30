@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 
-import 'chat_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 
 /// Which hand-keying widget the input area shows.
@@ -148,8 +148,8 @@ class _KeyingInputState extends State<KeyingInput> {
               Expanded(
                 child: Text(
                   widget.mode == KeyingMode.straightKey
-                      ? ChatStrings.keyHint
-                      : ChatStrings.paddleHint,
+                      ? context.s.chatKeyHint
+                      : context.s.chatPaddleHint,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

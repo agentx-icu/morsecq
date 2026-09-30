@@ -35,6 +35,10 @@ enum StartupPhase {
 /// registry: one identity per device, no auto-login of an encrypted profile
 /// (the password is never cached across launches), connection never blocks
 /// the UI.
+///
+/// Holds no user-facing text: failures are kept as the thrown object (a
+/// `ChatException` with a stable code, or anything else) and the widgets
+/// translate them with `describeChatError(s, error)`.
 class StartupController extends ChangeNotifier {
   StartupController(this._identity) {
     _identitySub = _identity.identityChanges.listen(_onIdentityChanged);
@@ -43,19 +47,23 @@ class StartupController extends ChangeNotifier {
   final IdentityService _identity;
   late final StreamSubscription<Identity?> _identitySub;
 
+  /// Sentinel for [_set]: "leave the error as it is".
+  static const Object _keepError = Object();
+
   StartupPhase _phase = StartupPhase.inspecting;
-  String? _errorMessage;
-  String? _connectionError;
+  Object? _error;
+  Object? _connectionError;
   bool _started = false;
   bool _disposed = false;
 
   StartupPhase get phase => _phase;
 
-  /// Human-readable reason for [StartupPhase.failed].
-  String? get errorMessage => _errorMessage;
+  /// What `inspect()` / `open()` threw for [StartupPhase.failed]; null in
+  /// every other phase.
+  Object? get error => _error;
 
   /// Last `connect()` failure, if any. Cleared by a successful [reconnect].
-  String? get connectionError => _connectionError;
+  Object? get connectionError => _connectionError;
 
   IdentityService get identity => _identity;
 
@@ -85,7 +93,7 @@ class StartupController extends ChangeNotifier {
           _becomeReady();
       }
     } on Object catch (e) {
-      _set(StartupPhase.failed, error: describeError(e));
+      _set(StartupPhase.failed, error: e);
     }
   }
 
@@ -149,7 +157,7 @@ class StartupController extends ChangeNotifier {
         _notify();
       }
     } on Object catch (e) {
-      _connectionError = describeError(e);
+      _connectionError = e;
       _notify();
     }
   }
@@ -161,25 +169,18 @@ class StartupController extends ChangeNotifier {
     }
   }
 
-  void _set(StartupPhase phase, {String? error = ''}) {
-    // `error == ''` means "leave as is"; null clears; anything else sets.
-    final nextError = error == '' ? _errorMessage : error;
-    if (phase == _phase && nextError == _errorMessage) return;
+  void _set(StartupPhase phase, {Object? error = _keepError}) {
+    // `_keepError` means "leave as is"; null clears; anything else sets.
+    final nextError = identical(error, _keepError) ? _error : error;
+    if (phase == _phase && identical(nextError, _error)) return;
     _phase = phase;
-    _errorMessage = nextError;
+    _error = nextError;
     _notify();
   }
 
   void _notify() {
     if (!_disposed) notifyListeners();
   }
-
-  /// User-facing text for a thrown object: the message of a [ChatException],
-  /// otherwise the object's string form.
-  static String describeError(Object error) => switch (error) {
-    ChatException(:final message) => message,
-    _ => error.toString(),
-  };
 
   @override
   void dispose() {

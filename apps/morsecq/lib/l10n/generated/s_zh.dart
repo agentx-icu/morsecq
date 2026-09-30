@@ -24,6 +24,27 @@ class SZh extends S {
   String get navMe => '我';
 
   @override
+  String get navReference => '参考';
+
+  @override
+  String get navLearnDescription => 'Koch 课程、发报练习与听抄练习。';
+
+  @override
+  String get navChatDescription => '基于 Tox P2P 的无服务器一对一莫尔斯通联。';
+
+  @override
+  String get navGroupsDescription => '群组网络 — 多位报务员在同一共享频道上拍发。';
+
+  @override
+  String get navReferenceDescription => '字母表、规程符号、Q 简语、缩写，以及双向翻译器。';
+
+  @override
+  String get navMeDescription => '你的呼号、Tox 身份、进度与设置。';
+
+  @override
+  String get shellOfflineBanner => '离线：未连接到 Tox 网络。消息将在你恢复在线后发送。';
+
+  @override
   String get actionOk => '确定';
 
   @override
@@ -73,9 +94,6 @@ class SZh extends S {
 
   @override
   String get messageStatusSent => '已发送';
-
-  @override
-  String get messageStatusDelivered => '已送达';
 
   @override
   String get messageStatusFailed => '发送失败';
@@ -415,30 +433,14 @@ class SZh extends S {
   }
 
   @override
-  String referenceEstimatedSpeed(String wpm) {
-    return '估计 $wpm WPM';
+  String referenceKochPositionValue(int position) {
+    return 'Koch 序号：$position';
   }
 
   @override
-  String get accountAppName => 'morsecq';
-
-  @override
-  String get accountCancel => '取消';
-
-  @override
-  String get accountSave => '保存';
-
-  @override
-  String get accountRetry => '重试';
-
-  @override
-  String get accountContinueLabel => '继续';
-
-  @override
-  String get accountBack => '返回';
-
-  @override
-  String get accountCopy => '复制';
+  String referenceEstimatedSpeed(String wpm) {
+    return '估计 $wpm WPM';
+  }
 
   @override
   String get accountCopied => 'Tox ID 已复制到剪贴板';
@@ -474,16 +476,10 @@ class SZh extends S {
   String get accountPasswordsDoNotMatch => '两次输入的密码不一致';
 
   @override
-  String get accountWrongPassword => '密码错误，请重试。';
-
-  @override
   String get accountShowPassword => '显示密码';
 
   @override
   String get accountHidePassword => '隐藏密码';
-
-  @override
-  String get accountGenericError => '出了点问题';
 
   @override
   String get accountStrengthWeak => '弱：至少使用 8 个字符';
@@ -505,15 +501,6 @@ class SZh extends S {
 
   @override
   String get accountStartupFailedBody => 'morsecq 无法读取你的身份。没有做任何更改；你可以重试。';
-
-  @override
-  String get accountConnectionConnecting => '连接中…';
-
-  @override
-  String get accountConnectionOffline => '离线';
-
-  @override
-  String get accountConnectionOnline => '在线';
 
   @override
   String get accountConnectionTapToReconnect => '点按重新连接';
@@ -594,9 +581,6 @@ class SZh extends S {
   String get accountRestoreChooseFile => '选择备份文件';
 
   @override
-  String get accountRestoreFileChosen => '已选择备份文件';
-
-  @override
   String get accountRestoreNoFile => '请先选择备份文件';
 
   @override
@@ -625,9 +609,6 @@ class SZh extends S {
 
   @override
   String get accountUnlockRestoreInstead => '改为从备份恢复';
-
-  @override
-  String get accountMeTitle => '我';
 
   @override
   String get accountMeNoIdentity => '未加载身份';
@@ -726,7 +707,9 @@ class SZh extends S {
   String get accountDeleteButton => '删除';
 
   @override
-  String get chatChatTitle => '聊天';
+  String accountRestoreFileChosenSize(int bytes) {
+    return '已选择备份文件（$bytes 字节）';
+  }
 
   @override
   String get chatSearchConversations => '搜索会话';
@@ -756,9 +739,6 @@ class SZh extends S {
   String get chatDeleteConversationBody => '将删除本机上这个会话的历史记录。Tox 不保留副本。';
 
   @override
-  String get chatCancel => '取消';
-
-  @override
   String get chatDraftPrefix => '草稿：';
 
   @override
@@ -766,9 +746,6 @@ class SZh extends S {
 
   @override
   String get chatContacts => '联系人';
-
-  @override
-  String get chatBackendUnavailable => '聊天后端未连接。';
 
   @override
   String get chatNoMessages => '还没有消息 — 呼叫 CQ 开始通联。';
@@ -813,27 +790,6 @@ class SZh extends S {
   String get chatHz => 'Hz';
 
   @override
-  String get chatStatusPending => '已排队 — 对方离线';
-
-  @override
-  String get chatStatusPendingDetail => 'Tox 没有服务器：消息会在对方上线后送达。';
-
-  @override
-  String get chatStatusSending => '发送中';
-
-  @override
-  String get chatStatusSent => '已发送';
-
-  @override
-  String get chatStatusFailed => '发送失败';
-
-  @override
-  String get chatOnline => '在线';
-
-  @override
-  String get chatOffline => '离线';
-
-  @override
   String get chatMembers => '成员';
 
   @override
@@ -870,9 +826,6 @@ class SZh extends S {
   String get chatSend => '发送';
 
   @override
-  String get chatBytesLeft => '字节剩余';
-
-  @override
   String get chatTooLong => '超出单条 Tox 消息的长度上限';
 
   @override
@@ -882,19 +835,7 @@ class SZh extends S {
   String get chatPaddleHint => '点按双桨，或按住 Ctrl（左 点，右 划）';
 
   @override
-  String get chatClearDraft => '清空草稿';
-
-  @override
   String get chatDeleteLast => '删除最后一个字符';
-
-  @override
-  String get chatDecodedPreview => '译码';
-
-  @override
-  String get chatFriends => '好友';
-
-  @override
-  String get chatFriendRequests => '好友请求';
 
   @override
   String get chatNoFriends => '还没有好友。用对方的 Tox ID 添加一位。';
@@ -951,9 +892,6 @@ class SZh extends S {
   String get chatReject => '拒绝';
 
   @override
-  String get chatCopy => '复制';
-
-  @override
   String get chatCopied => '已复制到剪贴板';
 
   @override
@@ -970,9 +908,6 @@ class SZh extends S {
 
   @override
   String get chatRemove => '删除';
-
-  @override
-  String get chatGroupsTitle => '群组';
 
   @override
   String get chatNoGroups => '还没有群组。创建一个，或凭 chat id 加入。';
@@ -1017,37 +952,13 @@ class SZh extends S {
   String get chatJoinRequested => '加入中 — 找到一位成员后群组就会出现。';
 
   @override
-  String get chatGroupInvites => '群组邀请';
-
-  @override
-  String get chatNoInvites => '没有待处理的邀请';
-
-  @override
-  String get chatInvitedBy => '邀请人';
-
-  @override
-  String get chatMembersCount => '位成员';
-
-  @override
   String get chatConferenceBadge => '会议群';
 
   @override
   String get chatCopyChatId => '复制 chat id';
 
   @override
-  String get chatYou => '你';
-
-  @override
-  String get chatError => '出了点问题';
-
-  @override
-  String get learnLearnTitle => '学习';
-
-  @override
   String get learnLessonCardTitle => 'Koch 课程';
-
-  @override
-  String get learnNewestChar => '本课新字符';
 
   @override
   String get learnCourseComplete => '课程已完成 - 继续磨练！';
@@ -1116,9 +1027,6 @@ class SZh extends S {
   String get learnReplay => '重放';
 
   @override
-  String get learnPlay => '播放';
-
-  @override
   String get learnAnswerHint => '输入你听到的内容';
 
   @override
@@ -1183,9 +1091,6 @@ class SZh extends S {
 
   @override
   String get learnDecoded => '译码';
-
-  @override
-  String get learnPending => '键控中';
 
   @override
   String get learnWaitingForKey => '准备好后开始拍发';
@@ -1272,9 +1177,6 @@ class SZh extends S {
   String get learnDailyGoal => '每日目标';
 
   @override
-  String get learnSampleText => 'CQ';
-
-  @override
   String get referenceReferenceTitle => '莫尔斯电码手册';
 
   @override
@@ -1330,9 +1232,6 @@ class SZh extends S {
 
   @override
   String get referenceMnemonicTitle => '记忆口诀';
-
-  @override
-  String get referenceKochPosition => 'Koch 序号';
 
   @override
   String get referenceMeaningLabel => '含义';
@@ -1455,12 +1354,6 @@ class SZh extends S {
   String get statsTileAccuracy => '正确率';
 
   @override
-  String get statsAccuracyLast7Days => '最近 7 天';
-
-  @override
-  String get statsAccuracyAllTime => '全部';
-
-  @override
   String get statsNoData => '--';
 
   @override
@@ -1494,13 +1387,7 @@ class SZh extends S {
   String get statsSeriesSend => '发报';
 
   @override
-  String get statsSeriesAll => '练习';
-
-  @override
   String get statsAxisSessions => '练习次序';
-
-  @override
-  String get statsAxisAccuracy => '正确率';
 
   @override
   String get statsCharsTitle => '字符';
@@ -1683,5 +1570,329 @@ class SZh extends S {
   String get listenNoInput => '未找到麦克风。请连接后重试。';
 
   @override
+  String listenWpmValue(int wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String listenHzValue(int hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String listenBlockSamples(int samples, String ms) {
+    return '$samples 采样（$ms ms）';
+  }
+
+  @override
+  String listenMsValue(int ms) {
+    return '$ms ms';
+  }
+
+  @override
   String get listenStoppedInBackground => '应用进入后台，已停止收听。';
+
+  @override
+  String get learnWpmUnknown => '- wpm';
+
+  @override
+  String get learnTipDitTooLongTitle => '点太长';
+
+  @override
+  String get learnTipDahTooShortTitle => '划太短';
+
+  @override
+  String get learnTipIntraGapTooLongTitle => '码元过于分散';
+
+  @override
+  String get learnTipCharGapTooShortTitle => '字符过于拥挤';
+
+  @override
+  String get learnTipWordGapTooShortTitle => '单词过于拥挤';
+
+  @override
+  String get learnTipSpeedUnsteadyTitle => '速度不稳';
+
+  @override
+  String get learnSeverityMinor => '轻微';
+
+  @override
+  String get learnSeverityModerate => '明显';
+
+  @override
+  String get learnSeveritySevere => '严重';
+
+  @override
+  String get notificationOpen => '打开';
+
+  @override
+  String get notificationChannelMessages => '消息';
+
+  @override
+  String get notificationChannelMessagesDescription => '来自好友和群组的新摩尔斯电码消息';
+
+  @override
+  String get notificationChannelFriendRequests => '好友请求';
+
+  @override
+  String get notificationChannelFriendRequestsDescription => '有人想添加你为好友';
+
+  @override
+  String get notificationChannelGroupInvites => '群组邀请';
+
+  @override
+  String get notificationChannelGroupInvitesDescription => '好友邀请你加入群组';
+
+  @override
+  String get notificationNewMessage => '新消息';
+
+  @override
+  String get notificationFriendRequestTitle => '新的好友请求';
+
+  @override
+  String learnNewestCharIs(String char) {
+    return '本课新字符：$char';
+  }
+
+  @override
+  String learnCharNewSemantics(String char) {
+    return '$char，新字符';
+  }
+
+  @override
+  String learnPendingPattern(String pattern) {
+    return '键控中：$pattern';
+  }
+
+  @override
+  String learnIssueHeadline(String title, String severity) {
+    return '$title（$severity）';
+  }
+
+  @override
+  String learnRatioTimes(String ratio) {
+    return '$ratio 倍';
+  }
+
+  @override
+  String learnTipDitTooLong(String ratio) {
+    return '你的点拖得太长（约为一个点的 $ratio）。想着“嘀”而不是“嗒”——点是轻敲，不是长按。';
+  }
+
+  @override
+  String learnTipDahTooShort(String ratio) {
+    return '你的划太短（约为一个点的 $ratio；目标是 3 倍）。划要按住三个点的时长。';
+  }
+
+  @override
+  String learnTipIntraGapTooLong(String ratio) {
+    return '字符内部的间隔太宽（约为一个点的 $ratio）。同一字符的码元要紧凑相连。';
+  }
+
+  @override
+  String learnTipCharGapTooShort(String ratio) {
+    return '字符之间粘在一起了（间隔约为一个点的 $ratio；目标是 3 倍）。每个字符后留出明确的停顿。';
+  }
+
+  @override
+  String learnTipWordGapTooShort(String ratio) {
+    return '单词之间太近（间隔约为一个点的 $ratio；目标是 7 倍）。单词之间要数一个长停顿。';
+  }
+
+  @override
+  String learnTipSpeedUnsteady(int percent) {
+    return '你的速度飘忽不定（波动 $percent%）。定下一个节拍，整行保持不变。';
+  }
+
+  @override
+  String learnIssueDetailDitTooLong(int offending, int total, String ratio) {
+    return '$total 个点中有 $offending 个太长（平均 $ratio 点长）';
+  }
+
+  @override
+  String learnIssueDetailDahTooShort(int offending, int total, String ratio) {
+    return '$total 个划中有 $offending 个太短（平均 $ratio 点长）';
+  }
+
+  @override
+  String learnIssueDetailIntraGapTooLong(int offending, int total, String ratio) {
+    return '$total 个字符内间隔中有 $offending 个太长（平均 $ratio 点长）';
+  }
+
+  @override
+  String learnIssueDetailCharGapTooShort(int offending, int total, String ratio) {
+    return '$total 个字符间隔中有 $offending 个太短（平均 $ratio 点长）';
+  }
+
+  @override
+  String learnIssueDetailWordGapTooShort(int offending, int total, String ratio) {
+    return '$total 个单词间隔中有 $offending 个太短（平均 $ratio 点长）';
+  }
+
+  @override
+  String learnIssueDetailSpeedUnsteady(String cv) {
+    return '拍发速度不稳（变异系数 $cv）';
+  }
+
+  @override
+  String statsAccuracyDetail(String allTime) {
+    return '最近 7 天 / 全部 $allTime';
+  }
+
+  @override
+  String statsDurationHoursMinutes(int hours, int minutes) {
+    return '$hours 小时 $minutes 分';
+  }
+
+  @override
+  String statsDurationMinutes(int minutes) {
+    return '$minutes 分';
+  }
+
+  @override
+  String statsDurationSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get accountNewPasswordRequired => '请输入新密码';
+
+  @override
+  String get accountToxIdQrSemantics => 'Tox ID 二维码';
+
+  @override
+  String get accountBackupSaveDialogTitle => '保存 morsecq 备份';
+
+  @override
+  String get accountBackupShareSubject => 'morsecq 身份备份';
+
+  @override
+  String get accountBackupChooseDialogTitle => '选择 morsecq 备份';
+
+  @override
+  String notificationNewMessages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条新消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationFriendRequestFrom(String name) {
+    return '来自 $name 的好友请求';
+  }
+
+  @override
+  String notificationFriendRequestBody(String name, String message) {
+    return '$name：$message';
+  }
+
+  @override
+  String notificationGroupInviteTitle(String group) {
+    return '邀请加入 $group';
+  }
+
+  @override
+  String notificationGroupInviteBody(String name) {
+    return '$name 邀请你加入';
+  }
+
+  @override
+  String desktopTrayShow(String app) {
+    return '显示 $app';
+  }
+
+  @override
+  String desktopTrayHide(String app) {
+    return '隐藏 $app';
+  }
+
+  @override
+  String get desktopTraySoundOn => '声音已开';
+
+  @override
+  String get desktopTraySoundOff => '声音已关';
+
+  @override
+  String desktopTrayQuit(String app) {
+    return '退出 $app';
+  }
+
+  @override
+  String desktopTrayTooltipUnread(String app, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条未读',
+    );
+    return '$app — $_temp0';
+  }
+
+  @override
+  String desktopWindowTitleUnread(String badge, String app) {
+    return '($badge) $app';
+  }
+
+  @override
+  String get listenStateOn => '开';
+
+  @override
+  String get listenStateOff => '关';
+
+  @override
+  String chatBytesLeftCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '剩余 $count 字节',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 位成员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatFriendsCount(int count) {
+    return '好友（$count）';
+  }
+
+  @override
+  String chatFriendRequestsCount(int count) {
+    return '好友请求（$count）';
+  }
+
+  @override
+  String chatGroupInvitesCount(int count) {
+    return '群组邀请（$count）';
+  }
+
+  @override
+  String chatMembersTitleCount(int count) {
+    return '成员 · $count';
+  }
+
+  @override
+  String chatInvitedByName(String name) {
+    return '邀请人：$name';
+  }
+
+  @override
+  String chatMemberSelf(String name) {
+    return '$name（你）';
+  }
+
+  @override
+  String chatSliderValue(String label, int value, String unit) {
+    return '$label：$value $unit';
+  }
 }

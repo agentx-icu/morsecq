@@ -1,3 +1,4 @@
+import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'desktop_shell_controller.dart';
 import 'real/screen_retriever_api.dart';
@@ -16,18 +17,22 @@ import 'window_api.dart';
 /// unread count so callers need no platform branches of their own.
 ///
 /// The optional API parameters exist for tests and for the orchestrator's
-/// own fakes; production passes only [config].
+/// own fakes; production passes only [config]. [strings] pins the initial
+/// language (default: the platform locale via `currentS()`); `AppServices`
+/// re-labels the shell through `updateStrings` once the user's choice loads.
 Future<DesktopShellController> initDesktopShell(
   DesktopShellConfig config, {
   WindowApi? window,
   TrayApi? tray,
   ScreenApi? screen,
+  S? strings,
 }) async {
   final controller = DesktopShellController(
     config: config,
     window: window ?? WindowManagerApi(),
     tray: tray ?? TrayManagerApi(),
     screen: screen ?? ScreenRetrieverApi(),
+    strings: strings,
   );
   await controller.initialize();
   return controller;

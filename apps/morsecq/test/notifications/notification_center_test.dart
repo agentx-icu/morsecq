@@ -1,5 +1,8 @@
+import 'dart:ui' show Locale;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/notifications/notifications.dart';
 import 'package:morsecq/notifications/testing/fake_badge_api.dart';
 import 'package:morsecq/notifications/testing/fake_local_notifications_api.dart';
@@ -12,14 +15,21 @@ final String kBob = 'C' * 64;
 final String kBobConv = 'c2c_$kBob';
 const String kAnnPattern = '-.-. --.- / -.-. --.- / -.. . / .- -. -.';
 
+/// English strings, the language every assertion below is written against
+/// unless the harness is given another resolver.
+final S en = lookupS(const Locale('en'));
+final S zh = lookupS(const Locale('zh'));
+
 /// Everything a NotificationCenter test needs, wired the way the
-/// orchestrator will: fake backend, recording plugin fakes, prefs, and a
-/// foreground flag the test flips by hand.
+/// orchestrator will: fake backend, recording plugin fakes, prefs, a
+/// foreground flag the test flips by hand and a strings resolver (English
+/// by default, pinned rather than following the test host's locale).
 final class Harness {
   Harness({
     NotificationPlatform platform = NotificationPlatform.android,
     bool foreground = false,
     bool badgeSupported = true,
+    S Function()? strings,
   }) : chat = FakeChatService(
          selfPublicKey: 'F' * 64,
          clock: () => DateTime(2026, 9, 30, 12),
@@ -35,6 +45,7 @@ final class Harness {
       prefs: prefs,
       isForeground: this.foreground,
       platform: platform,
+      strings: strings ?? () => en,
     );
   }
 
@@ -69,11 +80,13 @@ Future<Harness> harness({
   NotificationPlatform platform = NotificationPlatform.android,
   bool foreground = false,
   bool badgeSupported = true,
+  S Function()? strings,
 }) async {
   final Harness h = Harness(
     platform: platform,
     foreground: foreground,
     badgeSupported: badgeSupported,
+    strings: strings,
   );
   addTearDown(h.dispose);
   await h.start();
@@ -164,7 +177,8 @@ void main() {
       expect(n.lines, hasLength(2));
       expect(n.lines.first, contains('CQ'));
       expect(n.lines.last, contains('K'));
-      expect(n.summary, NotificationStrings.newMessages(2));
+      expect(n.summary, en.notificationNewMessages(2));
+      expect(n.summary, '2 new messages');
     });
 
     test('inbox keeps only the newest five lines', () async {
@@ -250,8 +264,45 @@ void main() {
         ..showPattern = false
         ..sound = false;
       await h.receive('CQ');
-      expect(h.api.shown.single.body, NotificationStrings.newMessage);
+      expect(h.api.shown.single.body, en.notificationNewMessage);
+      expect(h.api.shown.single.body, 'New message');
       expect(h.api.shown.single.sound, isFalse);
+    });
+  });
+
+  group('language', () {
+    test('bodies and titles follow the strings resolver (zh)', () async {
+      final Harness h = await harness(strings: () => zh);
+      h.prefs
+        ..showText = false
+        ..showPattern = false;
+      await h.receive('CQ');
+      expect(h.api.shown.single.body, zh.notificationNewMessage);
+      expect(h.api.shown.single.body, '新消息');
+
+      h.chat.receiveFriendRequest(kBob);
+      await pumpEventQueue();
+      final NotificationRequest fr = h.api.shown.last;
+      expect(fr.title, zh.notificationFriendRequestTitle);
+      expect(fr.title, '新的好友请求');
+      expect(fr.body, zh.notificationFriendRequestFrom('C' * 8));
+      expect(fr.body, contains('好友请求'));
+    });
+
+    test('a language switch applies to the next notification', () async {
+      S current = en;
+      final Harness h = await harness(strings: () => current);
+      h.prefs
+        ..showText = false
+        ..showPattern = false;
+      await h.receive('CQ');
+      expect(h.api.shown.last.body, 'New message');
+
+      current = zh;
+      await h.receive('K');
+      expect(h.api.shown.last.body, '新消息');
+      // The grouped summary is rendered in the new language too.
+      expect(h.api.shown.last.summary, zh.notificationNewMessages(2));
     });
   });
 
@@ -326,7 +377,9 @@ void main() {
       await pumpEventQueue();
       final NotificationRequest n = h.api.shown.single;
       expect(n.channel, NotificationChannelKind.friendRequests);
-      expect(n.title, NotificationStrings.friendRequestTitle);
+      expect(n.title, en.notificationFriendRequestTitle);
+      expect(n.title, 'New friend request');
+      expect(n.body, en.notificationFriendRequestBody('C' * 8, 'CQ CQ'));
       expect(n.body, '${'C' * 8}: CQ CQ');
       expect(n.payload, FriendRequestTarget(kBob).encode());
 
@@ -343,6 +396,17 @@ void main() {
       expect(h.api.shown, isEmpty);
     });
 
+    test('a friend request without a message names the requester', () async {
+      final Harness h = await harness();
+      h.chat.receiveFriendRequest(kBob);
+      await pumpEventQueue();
+      expect(
+        h.api.shown.single.body,
+        en.notificationFriendRequestFrom('C' * 8),
+      );
+      expect(h.api.shown.single.body, 'Friend request from ${'C' * 8}');
+    });
+
     test('a group invite notifies with the group name', () async {
       final Harness h = await harness();
       final GroupInvite invite = h.chat.receiveGroupInvite(
@@ -352,8 +416,10 @@ void main() {
       await pumpEventQueue();
       final NotificationRequest n = h.api.shown.single;
       expect(n.channel, NotificationChannelKind.groupInvites);
-      expect(n.title, NotificationStrings.groupInviteTitle('Net'));
-      expect(n.body, NotificationStrings.groupInviteBody('Ann'));
+      expect(n.title, en.notificationGroupInviteTitle('Net'));
+      expect(n.title, 'Invite to Net');
+      expect(n.body, en.notificationGroupInviteBody('Ann'));
+      expect(n.body, 'Ann invited you');
       expect(n.payload, GroupInviteTarget(invite.inviteId).encode());
     });
   });

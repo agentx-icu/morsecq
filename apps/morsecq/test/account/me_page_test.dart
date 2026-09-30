@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/ui/account/account_strings.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/change_password_page.dart';
 import 'package:morsecq/ui/account/delete_identity_dialog.dart';
@@ -12,11 +12,14 @@ import 'package:morsecq_chat_api/testing.dart';
 
 import 'test_app.dart';
 
+/// The harness renders in English (no override, default test locale).
+final S en = lookupS(const Locale('en'));
+
 Future<void> _openMe(WidgetTester tester) async {
   await tester.tap(
     find.descendant(
       of: find.byType(NavigationBar),
-      matching: find.text(MePage.title),
+      matching: find.text(MePage.title(en)),
     ),
   );
   await settle(tester);
@@ -46,35 +49,35 @@ void main() {
 
     expect(find.text('Ann'), findsOneWidget);
     expect(find.text('QRV on 40m'), findsOneWidget);
-    expect(find.text(AccountStrings.connectionOnline), findsOneWidget);
+    expect(find.text(en.connectionOnline), findsOneWidget);
 
-    await tester.tap(find.byTooltip(AccountStrings.copy));
+    await tester.tap(find.byTooltip(en.actionCopy));
     await settle(tester);
     expect(clipboard.copied, [identity.current!.toxId]);
-    expect(find.text(AccountStrings.copied), findsOneWidget);
+    expect(find.text(en.accountCopied), findsOneWidget);
   });
 
   testWidgets('export backup saves through the gateway', (tester) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await _scrollTo(tester, find.text(AccountStrings.exportBackup));
-    await tester.tap(find.text(AccountStrings.exportBackup));
+    await _scrollTo(tester, find.text(en.accountExportBackup));
+    await tester.tap(find.text(en.accountExportBackup));
     await settle(tester);
     expect(files.saved, hasLength(1));
-    expect(find.text(AccountStrings.backupSaved), findsOneWidget);
+    expect(find.text(en.accountBackupSaved), findsOneWidget);
   });
 
   testWidgets('edit profile updates the card', (tester) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await tester.tap(find.text(AccountStrings.editProfile));
+    await tester.tap(find.text(en.accountEditProfile));
     await settle(tester);
     expect(find.byType(EditProfilePage), findsOneWidget);
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.displayName),
+      find.widgetWithText(TextField, en.accountDisplayName),
       'Bob',
     );
-    await tester.tap(find.text(AccountStrings.save));
+    await tester.tap(find.text(en.actionSave));
     await settle(tester);
     expect(find.byType(EditProfilePage), findsNothing);
     expect(identity.current?.displayName, 'Bob');
@@ -86,21 +89,21 @@ void main() {
   ) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await tester.tap(find.text(AccountStrings.setPassword));
+    await tester.tap(find.text(en.accountSetPassword));
     await settle(tester);
     expect(find.byType(ChangePasswordPage), findsOneWidget);
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.newPassword),
+      find.widgetWithText(TextField, en.accountNewPassword),
       'longer password 1',
     );
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.confirmPassword),
+      find.widgetWithText(TextField, en.accountConfirmPassword),
       'longer password 1',
     );
-    await tester.tap(find.text(AccountStrings.save));
+    await tester.tap(find.text(en.actionSave));
     await settle(tester);
     expect(identity.storedPassword, 'longer password 1');
-    expect(find.text(AccountStrings.changePassword), findsOneWidget);
+    expect(find.text(en.accountChangePassword), findsOneWidget);
   });
 
   testWidgets('training defaults tile navigates to /settings/training', (
@@ -108,13 +111,10 @@ void main() {
   ) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await _scrollTo(tester, find.text(AccountStrings.trainingDefaults));
-    await tester.tap(find.text(AccountStrings.trainingDefaults));
+    await _scrollTo(tester, find.text(en.accountTrainingDefaults));
+    await tester.tap(find.text(en.accountTrainingDefaults));
     await settle(tester);
-    expect(
-      find.text(AccountStrings.trainingDefaultsPlaceholder),
-      findsOneWidget,
-    );
+    expect(find.text(en.accountTrainingDefaultsPlaceholder), findsOneWidget);
   });
 
   testWidgets('delete requires typing DELETE; cancel keeps the identity', (
@@ -122,11 +122,11 @@ void main() {
   ) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await _scrollTo(tester, find.text(AccountStrings.deleteIdentity));
-    await tester.tap(find.text(AccountStrings.deleteIdentity));
+    await _scrollTo(tester, find.text(en.accountDeleteIdentity));
+    await tester.tap(find.text(en.accountDeleteIdentity));
     await settle(tester);
     expect(find.byType(DeleteIdentityDialog), findsOneWidget);
-    expect(buttonEnabled(tester, AccountStrings.deleteButton), isFalse);
+    expect(buttonEnabled(tester, en.accountDeleteButton), isFalse);
 
     await tester.enterText(
       find.descendant(
@@ -136,9 +136,9 @@ void main() {
       'delete',
     );
     await settle(tester);
-    expect(buttonEnabled(tester, AccountStrings.deleteButton), isFalse);
+    expect(buttonEnabled(tester, en.accountDeleteButton), isFalse);
 
-    await tester.tap(find.text(AccountStrings.cancel));
+    await tester.tap(find.text(en.actionCancel));
     await settle(tester);
     expect(find.byType(DeleteIdentityDialog), findsNothing);
     expect(identity.hasStoredProfile, isTrue);
@@ -149,19 +149,19 @@ void main() {
   ) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);
-    await _scrollTo(tester, find.text(AccountStrings.deleteIdentity));
-    await tester.tap(find.text(AccountStrings.deleteIdentity));
+    await _scrollTo(tester, find.text(en.accountDeleteIdentity));
+    await tester.tap(find.text(en.accountDeleteIdentity));
     await settle(tester);
     await tester.enterText(
       find.descendant(
         of: find.byType(DeleteIdentityDialog),
         matching: find.byType(TextField),
       ),
-      AccountStrings.deleteConfirmWord,
+      en.accountDeleteConfirmWord,
     );
     await settle(tester);
-    expect(buttonEnabled(tester, AccountStrings.deleteButton), isTrue);
-    await tester.tap(find.text(AccountStrings.deleteButton));
+    expect(buttonEnabled(tester, en.accountDeleteButton), isTrue);
+    await tester.tap(find.text(en.accountDeleteButton));
     await settle(tester);
 
     expect(identity.hasStoredProfile, isFalse);

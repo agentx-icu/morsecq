@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'chat_strings.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// At or above this width the chat and groups pages show the list and the
 /// open conversation side by side; below it the conversation is pushed as a
@@ -30,12 +30,15 @@ class MasterDetail extends StatelessWidget {
     super.key,
     required this.master,
     required this.detail,
-    this.emptyDetailText = ChatStrings.selectConversation,
+    this.emptyDetailText,
   });
 
   final Widget master;
   final Widget? detail;
-  final String emptyDetailText;
+
+  /// Prompt shown when [detail] is null; defaults to
+  /// [S.chatSelectConversation] in the current locale.
+  final String? emptyDetailText;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class MasterDetail extends StatelessWidget {
               detail ??
               Center(
                 child: Text(
-                  emptyDetailText,
+                  emptyDetailText ?? context.s.chatSelectConversation,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -86,7 +89,7 @@ Future<bool> confirm(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
-          child: const Text(ChatStrings.cancel),
+          child: Text(ctx.s.actionCancel),
         ),
         FilledButton(
           style: destructive
@@ -104,18 +107,26 @@ Future<bool> confirm(
   return result ?? false;
 }
 
-/// `HH:mm` for today, `MM-dd` otherwise, `yyyy-MM-dd` for other years.
-String formatMessageTime(DateTime time, {DateTime? now}) {
+/// Locale-aware short timestamp for lists and bubbles: the time of day for
+/// today, month + day for the current year, a short date otherwise. All
+/// three come from [MaterialLocalizations], so `zh` renders `9月30日` and
+/// `en` `Sep 30` without any format string in this file.
+String formatMessageTime(
+  BuildContext context,
+  DateTime time, {
+  DateTime? now,
+}) {
+  final MaterialLocalizations loc = MaterialLocalizations.of(context);
   final DateTime local = time.toLocal();
   final DateTime today = (now ?? DateTime.now()).toLocal();
-  String two(int n) => n.toString().padLeft(2, '0');
   if (local.year == today.year &&
       local.month == today.month &&
       local.day == today.day) {
-    return '${two(local.hour)}:${two(local.minute)}';
+    return loc.formatTimeOfDay(
+      TimeOfDay.fromDateTime(local),
+      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+    );
   }
-  if (local.year == today.year) {
-    return '${two(local.month)}-${two(local.day)}';
-  }
-  return '${local.year}-${two(local.month)}-${two(local.day)}';
+  if (local.year == today.year) return loc.formatShortMonthDay(local);
+  return loc.formatShortDate(local);
 }

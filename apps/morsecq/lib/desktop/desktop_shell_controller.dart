@@ -3,6 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 
+import '../i18n/current_strings.dart';
+import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'screen_api.dart';
 import 'tray_api.dart';
@@ -27,6 +29,12 @@ abstract final class TrayMenuKeys {
 /// The tray is cosmetic. Any tray failure (no StatusNotifier host on Linux,
 /// a per-platform gap such as Linux tooltips) is logged and swallowed; it
 /// never takes the app down and never blocks the first frame.
+///
+/// Language: menu labels, tooltip and title render from [strings]
+/// ([currentS] at construction, i.e. the platform locale before the app's
+/// `LocaleController` exists). `AppServices` calls [updateStrings] with the
+/// user's choice once the scope is up and again on every language change;
+/// the product name itself ([DesktopShellConfig.appName]) is never translated.
 class DesktopShellController extends ChangeNotifier
     implements WindowEventHandler, TrayEventHandler {
   DesktopShellController({
@@ -34,11 +42,13 @@ class DesktopShellController extends ChangeNotifier
     required WindowApi window,
     required TrayApi tray,
     required ScreenApi screen,
+    S? strings,
   }) : _window = window,
        _tray = tray,
        _screen = screen,
        _closeToTray = config.closeToTray,
-       _soundEnabled = config.soundEnabled;
+       _soundEnabled = config.soundEnabled,
+       _s = strings ?? currentS();
 
   static const String boundsKey = 'desktop.windowBounds';
   static const String closeToTrayKey = 'desktop.closeToTray';
@@ -55,6 +65,7 @@ class DesktopShellController extends ChangeNotifier
   bool _closing = false;
   bool _closeToTray;
   bool _soundEnabled;
+  S _s;
   int _unreadCount = 0;
   Timer? _persistTimer;
   Future<void> _trayQueue = Future<void>.value();
@@ -74,34 +85,56 @@ class DesktopShellController extends ChangeNotifier
 
   int get unreadCount => _unreadCount;
 
-  /// "(3) MorseCQ" while there is unread traffic, else the plain app name.
-  String get windowTitle =>
-      _unreadCount > 0 ? '($trayBadge) ${config.appName}' : config.appName;
+  /// The strings the title, tooltip and menu currently render from.
+  S get strings => _s;
 
-  /// Tray tooltip: "MorseCQ — 3 unread" or the plain app name.
+  /// "(3) MorseCQ" while there is unread traffic, else the plain app name.
+  String get windowTitle => _unreadCount > 0
+      ? _s.desktopWindowTitleUnread(trayBadge, config.appName)
+      : config.appName;
+
+  /// Tray tooltip: "MorseCQ — 3 unread messages" or the plain app name.
   String get trayTooltip => _unreadCount > 0
-      ? '${config.appName} — $_unreadCount unread'
+      ? _s.desktopTrayTooltipUnread(config.appName, _unreadCount)
       : config.appName;
 
   /// Short count shown next to the macOS status item (and in the title).
   String get trayBadge => _unreadCount > 99 ? '99+' : '$_unreadCount';
 
-  /// Current context-menu rows; labels follow visibility and sound state.
+  /// Current context-menu rows; labels follow visibility, sound state and
+  /// language. Shortcut hints are not part of the tray menu (the OS renders
+  /// accelerators itself); in-app labels come from `shortcutLabel`.
   List<TrayMenuEntry> get trayMenu => [
     TrayMenuEntry(
       key: TrayMenuKeys.showHide,
       label: _windowVisible
-          ? 'Hide ${config.appName}'
-          : 'Show ${config.appName}',
+          ? _s.desktopTrayHide(config.appName)
+          : _s.desktopTrayShow(config.appName),
     ),
     TrayMenuEntry(
       key: TrayMenuKeys.sound,
-      label: _soundEnabled ? 'Sound on' : 'Sound off',
+      label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
       checked: _soundEnabled,
     ),
     const TrayMenuEntry.separator(),
-    TrayMenuEntry(key: TrayMenuKeys.quit, label: 'Quit ${config.appName}'),
+    TrayMenuEntry(
+      key: TrayMenuKeys.quit,
+      label: _s.desktopTrayQuit(config.appName),
+    ),
   ];
+
+  /// Switches the language of the title, tooltip and menu. A no-op for the
+  /// locale already in use; otherwise the window title is re-set and the
+  /// tray rebuilt (queued behind pending tray updates). Safe before
+  /// [initialize] and on mobile (state only).
+  void updateStrings(S strings) {
+    if (strings.localeName == _s.localeName) return;
+    _s = strings;
+    notifyListeners();
+    if (!_active) return;
+    unawaited(_tolerate('setTitle', () => _window.setTitle(windowTitle)));
+    _enqueueTray(_applyTrayState);
+  }
 
   // ---------------------------------------------------------------- startup
 

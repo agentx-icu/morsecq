@@ -142,8 +142,8 @@ center.setActiveConversation(widget.target.id);   // initState
 center.setActiveConversation(null);               // dispose
 
 // Banner: ValueListenableBuilder(valueListenable: banner.offlineBannerVisible, ...)
-// with NotificationStrings.offlineBanner and a Reconnect action calling
-// StartupController.reconnect().
+// with context.s.shellOfflineBanner and a Reconnect action calling
+// StartupController.reconnect(). The policy exposes state only, no text.
 
 // Settings page: a "Notifications" tile calling center.ensurePermission()
 // and toggles bound to prefs.enabled / showText / showPattern / sound;

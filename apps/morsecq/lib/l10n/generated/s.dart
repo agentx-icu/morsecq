@@ -125,6 +125,48 @@ abstract class S {
   /// **'Me'**
   String get navMe;
 
+  /// Shell destination: Morse handbook (alphabet, prosigns, Q-codes, translator)
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get navReference;
+
+  /// One-line subtitle of the Learn destination (Learn home header)
+  ///
+  /// In en, this message translates to:
+  /// **'Koch-method lessons, keying drills and copy practice.'**
+  String get navLearnDescription;
+
+  /// One-line subtitle of the Chat destination (empty conversation list, placeholder)
+  ///
+  /// In en, this message translates to:
+  /// **'Serverless one-to-one Morse conversations over Tox P2P.'**
+  String get navChatDescription;
+
+  /// One-line subtitle of the Groups destination (empty group list, placeholder)
+  ///
+  /// In en, this message translates to:
+  /// **'Group nets — many operators keying on one shared channel.'**
+  String get navGroupsDescription;
+
+  /// One-line subtitle of the Reference destination
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabet, prosigns, Q-codes, abbreviations and a two-way translator.'**
+  String get navReferenceDescription;
+
+  /// One-line subtitle of the Me destination
+  ///
+  /// In en, this message translates to:
+  /// **'Your callsign, Tox identity, progress and settings.'**
+  String get navMeDescription;
+
+  /// Strip above the shell content after being offline for a while (ConnectionBannerPolicy)
+  ///
+  /// In en, this message translates to:
+  /// **'Offline: not connected to the Tox network. Messages will be sent when you are back online.'**
+  String get shellOfflineBanner;
+
   /// No description provided for @actionOk.
   ///
   /// In en, this message translates to:
@@ -226,12 +268,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Sent'**
   String get messageStatusSent;
-
-  /// No description provided for @messageStatusDelivered.
-  ///
-  /// In en, this message translates to:
-  /// **'Delivered'**
-  String get messageStatusDelivered;
 
   /// No description provided for @messageStatusFailed.
   ///
@@ -545,53 +581,17 @@ abstract class S {
   /// **'Skipped (no Morse code): {chars}'**
   String referenceSkippedChars(String chars);
 
+  /// Mnemonic dialog: 1-based position of the character in the Koch teaching order
+  ///
+  /// In en, this message translates to:
+  /// **'Koch position: {position}'**
+  String referenceKochPositionValue(int position);
+
   /// From ReferenceStrings.estimatedSpeed; wpm is pre-rounded
   ///
   /// In en, this message translates to:
   /// **'Estimated {wpm} WPM'**
   String referenceEstimatedSpeed(String wpm);
-
-  /// From AccountStrings.appName (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'morsecq'**
-  String get accountAppName;
-
-  /// From AccountStrings.cancel (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get accountCancel;
-
-  /// From AccountStrings.save (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get accountSave;
-
-  /// From AccountStrings.retry (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get accountRetry;
-
-  /// From AccountStrings.continueLabel (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get accountContinueLabel;
-
-  /// From AccountStrings.back (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Back'**
-  String get accountBack;
-
-  /// From AccountStrings.copy (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get accountCopy;
 
   /// From AccountStrings.copied (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
@@ -659,12 +659,6 @@ abstract class S {
   /// **'Passwords do not match'**
   String get accountPasswordsDoNotMatch;
 
-  /// From AccountStrings.wrongPassword (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Wrong password. Try again.'**
-  String get accountWrongPassword;
-
   /// From AccountStrings.showPassword (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
@@ -676,12 +670,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Hide password'**
   String get accountHidePassword;
-
-  /// From AccountStrings.genericError (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong'**
-  String get accountGenericError;
 
   /// From AccountStrings.strengthWeak (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
@@ -724,24 +712,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'morsecq could not read your identity. Nothing was changed; you can try again.'**
   String get accountStartupFailedBody;
-
-  /// From AccountStrings.connectionConnecting (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Connecting…'**
-  String get accountConnectionConnecting;
-
-  /// From AccountStrings.connectionOffline (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Offline'**
-  String get accountConnectionOffline;
-
-  /// From AccountStrings.connectionOnline (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Online'**
-  String get accountConnectionOnline;
 
   /// From AccountStrings.connectionTapToReconnect (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
@@ -899,12 +869,6 @@ abstract class S {
   /// **'Choose backup file'**
   String get accountRestoreChooseFile;
 
-  /// From AccountStrings.restoreFileChosen (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Backup file selected'**
-  String get accountRestoreFileChosen;
-
   /// From AccountStrings.restoreNoFile (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
@@ -964,12 +928,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Restore from backup instead'**
   String get accountUnlockRestoreInstead;
-
-  /// From AccountStrings.meTitle (apps/morsecq/lib/ui/account/account_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Me'**
-  String get accountMeTitle;
 
   /// From AccountStrings.meNoIdentity (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
@@ -1163,11 +1121,11 @@ abstract class S {
   /// **'Delete'**
   String get accountDeleteButton;
 
-  /// From ChatStrings.chatTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Restore page: confirmation line under the file picker with the picked file's size
   ///
   /// In en, this message translates to:
-  /// **'Chat'**
-  String get chatChatTitle;
+  /// **'Backup file selected ({bytes} bytes)'**
+  String accountRestoreFileChosenSize(int bytes);
 
   /// From ChatStrings.searchConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
@@ -1223,12 +1181,6 @@ abstract class S {
   /// **'Local history for this conversation is removed. Tox keeps no copy.'**
   String get chatDeleteConversationBody;
 
-  /// From ChatStrings.cancel (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get chatCancel;
-
   /// From ChatStrings.draftPrefix (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1246,12 +1198,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Contacts'**
   String get chatContacts;
-
-  /// From ChatStrings.backendUnavailable (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Chat backend is not connected.'**
-  String get chatBackendUnavailable;
 
   /// From ChatStrings.noMessages (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
@@ -1337,48 +1283,6 @@ abstract class S {
   /// **'Hz'**
   String get chatHz;
 
-  /// From ChatStrings.statusPending (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Queued — peer is offline'**
-  String get chatStatusPending;
-
-  /// From ChatStrings.statusPendingDetail (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Tox has no server: the message is delivered when the peer comes online.'**
-  String get chatStatusPendingDetail;
-
-  /// From ChatStrings.statusSending (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Sending'**
-  String get chatStatusSending;
-
-  /// From ChatStrings.statusSent (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Sent'**
-  String get chatStatusSent;
-
-  /// From ChatStrings.statusFailed (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to send'**
-  String get chatStatusFailed;
-
-  /// From ChatStrings.online (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Online'**
-  String get chatOnline;
-
-  /// From ChatStrings.offline (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Offline'**
-  String get chatOffline;
-
   /// From ChatStrings.members (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1451,12 +1355,6 @@ abstract class S {
   /// **'Send'**
   String get chatSend;
 
-  /// From ChatStrings.bytesLeft (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'bytes left'**
-  String get chatBytesLeft;
-
   /// From ChatStrings.tooLong (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1475,35 +1373,11 @@ abstract class S {
   /// **'Tap the paddles or hold Ctrl (left dit, right dah)'**
   String get chatPaddleHint;
 
-  /// From ChatStrings.clearDraft (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Clear draft'**
-  String get chatClearDraft;
-
   /// From ChatStrings.deleteLast (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
   /// **'Delete last character'**
   String get chatDeleteLast;
-
-  /// From ChatStrings.decodedPreview (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Decoded'**
-  String get chatDecodedPreview;
-
-  /// From ChatStrings.friends (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Friends'**
-  String get chatFriends;
-
-  /// From ChatStrings.friendRequests (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Friend requests'**
-  String get chatFriendRequests;
 
   /// From ChatStrings.noFriends (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
@@ -1613,12 +1487,6 @@ abstract class S {
   /// **'Reject'**
   String get chatReject;
 
-  /// From ChatStrings.copy (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get chatCopy;
-
   /// From ChatStrings.copied (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1654,12 +1522,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Remove'**
   String get chatRemove;
-
-  /// From ChatStrings.groupsTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Groups'**
-  String get chatGroupsTitle;
 
   /// From ChatStrings.noGroups (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
@@ -1745,30 +1607,6 @@ abstract class S {
   /// **'Joining — the group appears once a peer is found.'**
   String get chatJoinRequested;
 
-  /// From ChatStrings.groupInvites (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Group invites'**
-  String get chatGroupInvites;
-
-  /// From ChatStrings.noInvites (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'No pending invites'**
-  String get chatNoInvites;
-
-  /// From ChatStrings.invitedBy (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Invited by'**
-  String get chatInvitedBy;
-
-  /// From ChatStrings.membersCount (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'members'**
-  String get chatMembersCount;
-
   /// From ChatStrings.conferenceBadge (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1781,35 +1619,11 @@ abstract class S {
   /// **'Copy chat id'**
   String get chatCopyChatId;
 
-  /// From ChatStrings.you (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'You'**
-  String get chatYou;
-
-  /// From ChatStrings.error (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong'**
-  String get chatError;
-
-  /// From LearnStrings.learnTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Learn'**
-  String get learnLearnTitle;
-
   /// From LearnStrings.lessonCardTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
   ///
   /// In en, this message translates to:
   /// **'Koch lesson'**
   String get learnLessonCardTitle;
-
-  /// From LearnStrings.newestChar (apps/morsecq/lib/ui/learn/learn_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'New this lesson'**
-  String get learnNewestChar;
 
   /// From LearnStrings.courseComplete (apps/morsecq/lib/ui/learn/learn_strings.dart)
   ///
@@ -1943,12 +1757,6 @@ abstract class S {
   /// **'Replay'**
   String get learnReplay;
 
-  /// From LearnStrings.play (apps/morsecq/lib/ui/learn/learn_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Play'**
-  String get learnPlay;
-
   /// From LearnStrings.answerHint (apps/morsecq/lib/ui/learn/learn_strings.dart)
   ///
   /// In en, this message translates to:
@@ -2080,12 +1888,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Decoded'**
   String get learnDecoded;
-
-  /// From LearnStrings.pending (apps/morsecq/lib/ui/learn/learn_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Keying'**
-  String get learnPending;
 
   /// From LearnStrings.waitingForKey (apps/morsecq/lib/ui/learn/learn_strings.dart)
   ///
@@ -2255,12 +2057,6 @@ abstract class S {
   /// **'Daily goal'**
   String get learnDailyGoal;
 
-  /// From LearnStrings.sampleText (apps/morsecq/lib/ui/learn/learn_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'CQ'**
-  String get learnSampleText;
-
   /// From ReferenceStrings.referenceTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)
   ///
   /// In en, this message translates to:
@@ -2374,12 +2170,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Mnemonic'**
   String get referenceMnemonicTitle;
-
-  /// From ReferenceStrings.kochPosition (apps/morsecq/lib/ui/reference/reference_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Koch position'**
-  String get referenceKochPosition;
 
   /// From ReferenceStrings.meaningLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
   ///
@@ -2621,18 +2411,6 @@ abstract class S {
   /// **'Accuracy'**
   String get statsTileAccuracy;
 
-  /// From StatsStrings.accuracyLast7Days (apps/morsecq/lib/ui/stats/stats_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'last 7 days'**
-  String get statsAccuracyLast7Days;
-
-  /// From StatsStrings.accuracyAllTime (apps/morsecq/lib/ui/stats/stats_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'all time'**
-  String get statsAccuracyAllTime;
-
   /// From StatsStrings.noData (apps/morsecq/lib/ui/stats/stats_strings.dart)
   ///
   /// In en, this message translates to:
@@ -2699,23 +2477,11 @@ abstract class S {
   /// **'Send'**
   String get statsSeriesSend;
 
-  /// From StatsStrings.seriesAll (apps/morsecq/lib/ui/stats/stats_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Sessions'**
-  String get statsSeriesAll;
-
   /// From StatsStrings.axisSessions (apps/morsecq/lib/ui/stats/stats_strings.dart)
   ///
   /// In en, this message translates to:
   /// **'Session'**
   String get statsAxisSessions;
-
-  /// From StatsStrings.axisAccuracy (apps/morsecq/lib/ui/stats/stats_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Accuracy'**
-  String get statsAxisAccuracy;
 
   /// From StatsStrings.charsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
   ///
@@ -3077,11 +2843,443 @@ abstract class S {
   /// **'No microphone was found. Connect one and try again.'**
   String get listenNoInput;
 
+  /// From ListenStrings.wpm; estimated speed, pre-rounded
+  ///
+  /// In en, this message translates to:
+  /// **'{wpm} WPM'**
+  String listenWpmValue(int wpm);
+
+  /// From ListenStrings.hz; detected / manual tone frequency, pre-rounded
+  ///
+  /// In en, this message translates to:
+  /// **'{hz} Hz'**
+  String listenHzValue(int hz);
+
+  /// From ListenStrings.blockSamples; analysis block length, ms pre-formatted with one decimal
+  ///
+  /// In en, this message translates to:
+  /// **'{samples} samples ({ms} ms)'**
+  String listenBlockSamples(int samples, String ms);
+
+  /// From ListenStrings.ms; shortest-element debounce in milliseconds
+  ///
+  /// In en, this message translates to:
+  /// **'{ms} ms'**
+  String listenMsValue(int ms);
+
   /// From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)
   ///
   /// In en, this message translates to:
   /// **'Listening stopped while the app was in the background.'**
   String get listenStoppedInBackground;
+
+  /// From LearnStrings.wpmUnknown (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'- wpm'**
+  String get learnWpmUnknown;
+
+  /// From LearnStrings.tipDitTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Dits too long'**
+  String get learnTipDitTooLongTitle;
+
+  /// From LearnStrings.tipDahTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Dahs too short'**
+  String get learnTipDahTooShortTitle;
+
+  /// From LearnStrings.tipIntraGapTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Elements spread out'**
+  String get learnTipIntraGapTooLongTitle;
+
+  /// From LearnStrings.tipCharGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Characters crowded'**
+  String get learnTipCharGapTooShortTitle;
+
+  /// From LearnStrings.tipWordGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Words crowded'**
+  String get learnTipWordGapTooShortTitle;
+
+  /// From LearnStrings.tipSpeedUnsteadyTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Speed unsteady'**
+  String get learnTipSpeedUnsteadyTitle;
+
+  /// From LearnStrings.severityMinor (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'minor'**
+  String get learnSeverityMinor;
+
+  /// From LearnStrings.severityModerate (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'noticeable'**
+  String get learnSeverityModerate;
+
+  /// From LearnStrings.severitySevere (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'major'**
+  String get learnSeveritySevere;
+
+  /// Linux D-Bus notification default action label (required by the backend)
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get notificationOpen;
+
+  /// Android notification channel name (visible in system settings): inbound chat messages
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notificationChannelMessages;
+
+  /// Android channel description for the messages channel
+  ///
+  /// In en, this message translates to:
+  /// **'New Morse messages from friends and groups'**
+  String get notificationChannelMessagesDescription;
+
+  /// Android notification channel name: friend requests
+  ///
+  /// In en, this message translates to:
+  /// **'Friend requests'**
+  String get notificationChannelFriendRequests;
+
+  /// Android channel description for the friend-requests channel
+  ///
+  /// In en, this message translates to:
+  /// **'Someone wants to add you as a friend'**
+  String get notificationChannelFriendRequestsDescription;
+
+  /// Android notification channel name: group invites
+  ///
+  /// In en, this message translates to:
+  /// **'Group invites'**
+  String get notificationChannelGroupInvites;
+
+  /// Android channel description for the group-invites channel
+  ///
+  /// In en, this message translates to:
+  /// **'A friend invited you to a group'**
+  String get notificationChannelGroupInvitesDescription;
+
+  /// Neutral notification body when prefs hide both text and Morse pattern
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get notificationNewMessage;
+
+  /// Title of a friend-request notification
+  ///
+  /// In en, this message translates to:
+  /// **'New friend request'**
+  String get notificationFriendRequestTitle;
+
+  /// Lesson card footer naming the newest learned character
+  ///
+  /// In en, this message translates to:
+  /// **'New this lesson: {char}'**
+  String learnNewestCharIs(String char);
+
+  /// Semantics label of the newest learned-character chip
+  ///
+  /// In en, this message translates to:
+  /// **'{char}, new'**
+  String learnCharNewSemantics(String char);
+
+  /// Send live view: the dit/dah pattern of the character being keyed (or -)
+  ///
+  /// In en, this message translates to:
+  /// **'Keying: {pattern}'**
+  String learnPendingPattern(String pattern);
+
+  /// Send result: issue title followed by its severity label
+  ///
+  /// In en, this message translates to:
+  /// **'{title} ({severity})'**
+  String learnIssueHeadline(String title, String severity);
+
+  /// A measured ratio of a dit, pre-formatted with one decimal (e.g. 1.5)
+  ///
+  /// In en, this message translates to:
+  /// **'{ratio}x'**
+  String learnRatioTimes(String ratio);
+
+  /// Send tip for SendIssueKind.ditTooLong; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Your dits are running long (about {ratio} of a dit). Think \'di\', not \'daah\' - a dit is a tap, not a press.'**
+  String learnTipDitTooLong(String ratio);
+
+  /// Send tip for SendIssueKind.dahTooShort; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Your dahs are short (about {ratio} of a dit; aim for 3). Hold the dah for the length of three dits.'**
+  String learnTipDahTooShort(String ratio);
+
+  /// Send tip for SendIssueKind.intraGapTooLong; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Gaps inside characters are too wide (about {ratio} of a dit). Keep the elements of one character tight together.'**
+  String learnTipIntraGapTooLong(String ratio);
+
+  /// Send tip for SendIssueKind.charGapTooShort; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Characters are running into each other (gaps about {ratio} of a dit; aim for 3). Leave a clear pause after each character.'**
+  String learnTipCharGapTooShort(String ratio);
+
+  /// Send tip for SendIssueKind.wordGapTooShort; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Words are too close (gaps about {ratio} of a dit; aim for 7). Count a long pause between words.'**
+  String learnTipWordGapTooShort(String ratio);
+
+  /// Send tip for SendIssueKind.speedUnsteady; percent = coefficient of variation x 100, rounded
+  ///
+  /// In en, this message translates to:
+  /// **'Your speed wanders (variation {percent}%). Settle on one tempo and hold it for the whole line.'**
+  String learnTipSpeedUnsteady(int percent);
+
+  /// Measurement line under the ditTooLong tip; ratio pre-formatted with two decimals via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} dits too long (avg {ratio} dit)'**
+  String learnIssueDetailDitTooLong(int offending, int total, String ratio);
+
+  /// Measurement line under the dahTooShort tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} dahs too short (avg {ratio} dit)'**
+  String learnIssueDetailDahTooShort(int offending, int total, String ratio);
+
+  /// Measurement line under the intraGapTooLong tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} gaps inside characters too long (avg {ratio} dit)'**
+  String learnIssueDetailIntraGapTooLong(int offending, int total, String ratio);
+
+  /// Measurement line under the charGapTooShort tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} character gaps too short (avg {ratio} dit)'**
+  String learnIssueDetailCharGapTooShort(int offending, int total, String ratio);
+
+  /// Measurement line under the wordGapTooShort tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} word gaps too short (avg {ratio} dit)'**
+  String learnIssueDetailWordGapTooShort(int offending, int total, String ratio);
+
+  /// Measurement line under the speedUnsteady tip; cv pre-formatted with two decimals
+  ///
+  /// In en, this message translates to:
+  /// **'keying speed unsteady (cv {cv})'**
+  String learnIssueDetailSpeedUnsteady(String cv);
+
+  /// Accuracy tile detail line; allTime is the all-time accuracy already formatted via statsPercent (or statsNoData)
+  ///
+  /// In en, this message translates to:
+  /// **'last 7 days / {allTime} all time'**
+  String statsAccuracyDetail(String allTime);
+
+  /// Practice duration of one hour or more
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String statsDurationHoursMinutes(int hours, int minutes);
+
+  /// Practice duration under one hour
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m'**
+  String statsDurationMinutes(int minutes);
+
+  /// Practice duration under one minute
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String statsDurationSeconds(int seconds);
+
+  /// From AccountStrings.newPasswordRequired (apps/morsecq/lib/ui/account/account_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new password'**
+  String get accountNewPasswordRequired;
+
+  /// From AccountStrings.toxIdQrSemantics (apps/morsecq/lib/ui/account/account_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Tox ID QR code'**
+  String get accountToxIdQrSemantics;
+
+  /// From AccountStrings.backupSaveDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Save morsecq backup'**
+  String get accountBackupSaveDialogTitle;
+
+  /// From AccountStrings.backupShareSubject (apps/morsecq/lib/ui/account/account_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'morsecq identity backup'**
+  String get accountBackupShareSubject;
+
+  /// From AccountStrings.backupChooseDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose morsecq backup'**
+  String get accountBackupChooseDialogTitle;
+
+  /// Collapsed summary under Android inbox-style grouped message notifications
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 new message} other{{count} new messages}}'**
+  String notificationNewMessages(int count);
+
+  /// Body of a friend-request notification when the request carries no message; name = display name or short Tox key
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request from {name}'**
+  String notificationFriendRequestFrom(String name);
+
+  /// Body of a friend-request notification with the requester's message; localises the separator
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: {message}'**
+  String notificationFriendRequestBody(String name, String message);
+
+  /// Title of a group-invite notification; group = group name
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to {group}'**
+  String notificationGroupInviteTitle(String group);
+
+  /// Body of a group-invite notification; name = inviting friend's display name or short Tox key
+  ///
+  /// In en, this message translates to:
+  /// **'{name} invited you'**
+  String notificationGroupInviteBody(String name);
+
+  /// Tray menu row while the window is hidden; app = product name
+  ///
+  /// In en, this message translates to:
+  /// **'Show {app}'**
+  String desktopTrayShow(String app);
+
+  /// Tray menu row while the window is visible; app = product name
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {app}'**
+  String desktopTrayHide(String app);
+
+  /// Tray menu checkbox row label while the sidetone is on
+  ///
+  /// In en, this message translates to:
+  /// **'Sound on'**
+  String get desktopTraySoundOn;
+
+  /// Tray menu checkbox row label while the sidetone is off
+  ///
+  /// In en, this message translates to:
+  /// **'Sound off'**
+  String get desktopTraySoundOff;
+
+  /// Tray menu row that exits the app for real; app = product name
+  ///
+  /// In en, this message translates to:
+  /// **'Quit {app}'**
+  String desktopTrayQuit(String app);
+
+  /// Tray icon tooltip while there is unread traffic (plain app name otherwise)
+  ///
+  /// In en, this message translates to:
+  /// **'{app} — {count, plural, =1{1 unread message} other{{count} unread messages}}'**
+  String desktopTrayTooltipUnread(String app, int count);
+
+  /// Desktop window title while there is unread traffic; badge = count capped at 99+
+  ///
+  /// In en, this message translates to:
+  /// **'({badge}) {app}'**
+  String desktopWindowTitleUnread(String badge, String app);
+
+  /// From ListenStrings.stateOn (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get listenStateOn;
+
+  /// From ListenStrings.stateOff (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get listenStateOff;
+
+  /// Remaining UTF-8 byte budget under the compose field; count can be negative when the draft is too long
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 byte left} other{{count} bytes left}}'**
+  String chatBytesLeftCount(int count);
+
+  /// Group tile subtitle and conversation title subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String chatMemberCount(int count);
+
+  /// Contacts page section header
+  ///
+  /// In en, this message translates to:
+  /// **'Friends ({count})'**
+  String chatFriendsCount(int count);
+
+  /// Friend request inbox header
+  ///
+  /// In en, this message translates to:
+  /// **'Friend requests ({count})'**
+  String chatFriendRequestsCount(int count);
+
+  /// Group invite inbox header
+  ///
+  /// In en, this message translates to:
+  /// **'Group invites ({count})'**
+  String chatGroupInvitesCount(int count);
+
+  /// Group members sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Members · {count}'**
+  String chatMembersTitleCount(int count);
+
+  /// Group invite subtitle; name is the shortened public key of the inviter
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {name}'**
+  String chatInvitedByName(String name);
+
+  /// Own row in the group members sheet
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (You)'**
+  String chatMemberSelf(String name);
+
+  /// Playback settings slider caption, e.g. 'Character speed: 18 WPM'
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {value} {unit}'**
+  String chatSliderValue(String label, int value, String unit);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

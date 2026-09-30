@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
-import 'stats_strings.dart';
 import 'stats_widgets.dart';
 
 /// Target x answered heatmap of wrong answers for the learned set, built from
@@ -36,6 +36,7 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final palette = StatsPalette(scheme);
     final targets = widget.snapshot.confusedTargets;
     final answers = widget.snapshot.confusedAnswers;
@@ -45,8 +46,8 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
 
     if (targets.isEmpty || answers.isEmpty) {
       return StatsSection(
-        title: StatsStrings.heatmapTitle,
-        child: Text(StatsStrings.heatmapEmpty, style: muted),
+        title: s.statsHeatmapTitle,
+        child: Text(s.statsHeatmapEmpty, style: muted),
       );
     }
 
@@ -59,14 +60,13 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
     final sel = _selected;
 
     return StatsSection(
-      title: StatsStrings.heatmapTitle,
-      subtitle: StatsStrings.heatmapSubtitle,
+      title: s.statsHeatmapTitle,
+      subtitle: s.statsHeatmapSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '${StatsStrings.heatmapAxisTarget} ↓ / '
-            '${StatsStrings.heatmapAxisAnswered} →',
+            '${s.statsHeatmapAxisTarget} ↓ / ${s.statsHeatmapAxisAnswered} →',
             style: muted,
           ),
           const SizedBox(height: 6),
@@ -88,7 +88,7 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
                 });
               },
               child: Semantics(
-                label: StatsStrings.heatmapTitle,
+                label: s.statsHeatmapTitle,
                 child: CustomPaint(
                   size: size,
                   painter: HeatmapPainter(
@@ -107,9 +107,9 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
           const SizedBox(height: 8),
           if (sel != null)
             Text(
-              StatsStrings.heatmapCell(
+              s.statsHeatmapCell(
                 targets[sel.$1],
-                _answerLabel(answers[sel.$2]),
+                _answerLabel(s, answers[sel.$2]),
                 widget.snapshot.confusionCount(
                   targets[sel.$1],
                   answers[sel.$2],
@@ -124,25 +124,24 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
     );
   }
 
-  static String _answerLabel(String answered) =>
-      answered == ConfusionMatrix.missed
-      ? StatsStrings.confusionMissed
-      : answered;
+  static String _answerLabel(S s, String answered) =>
+      answered == ConfusionMatrix.missed ? s.statsConfusionMissed : answered;
 }
 
-/// Sequential colour key: "Rare" -> "Frequent".
+/// Sequential colour key: "Rare" -> "Frequent" unless the caller passes its
+/// own end labels (the calendar uses "Less" / "More").
 class HeatLegend extends StatelessWidget {
   const HeatLegend({
     super.key,
     required this.palette,
-    this.lowLabel = StatsStrings.heatmapLegendLow,
-    this.highLabel = StatsStrings.heatmapLegendHigh,
+    this.lowLabel,
+    this.highLabel,
     this.levels = 5,
   });
 
   final StatsPalette palette;
-  final String lowLabel;
-  final String highLabel;
+  final String? lowLabel;
+  final String? highLabel;
   final int levels;
 
   @override
@@ -153,7 +152,7 @@ class HeatLegend extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text(lowLabel, style: style),
+        Text(lowLabel ?? context.s.statsHeatmapLegendLow, style: style),
         const SizedBox(width: 6),
         for (var level = 0; level < levels; level++)
           Padding(
@@ -168,7 +167,7 @@ class HeatLegend extends StatelessWidget {
             ),
           ),
         const SizedBox(width: 3),
-        Text(highLabel, style: style),
+        Text(highLabel ?? context.s.statsHeatmapLegendHigh, style: style),
       ],
     );
   }

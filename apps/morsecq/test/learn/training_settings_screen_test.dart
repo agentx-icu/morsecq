@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/ui/learn/learn_strings.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 
 import 'helpers/fake_playback.dart';
+import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
 Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
@@ -24,7 +24,7 @@ Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
   addTearDown(t.controller.dispose);
   final playback = FakeLearnPlaybackFactory();
   await tester.pumpWidget(
-    MaterialApp(
+    l10nApp(
       home: TrainingSettingsScreen(
         controller: t.controller,
         playback: playback,
@@ -43,14 +43,14 @@ Finder _switchFor(String title) => find.ancestor(
 void main() {
   testWidgets('shows the current values', (tester) async {
     await _pump(tester);
-    expect(find.text(LearnStrings.wpm(20)), findsOneWidget);
-    expect(find.text(LearnStrings.hz(700)), findsOneWidget);
-    expect(find.text(LearnStrings.charsCount(50)), findsOneWidget);
-    expect(find.text(LearnStrings.charsCount(100)), findsOneWidget);
+    expect(find.text(en.learnWpmValue('20')), findsOneWidget);
+    expect(find.text(en.learnHzValue('700')), findsOneWidget);
+    expect(find.text(en.learnCharsCount(50)), findsOneWidget);
+    expect(find.text(en.learnCharsCount(100)), findsOneWidget);
     // Defaults have Farnsworth 8 wpm on.
-    expect(find.text(LearnStrings.wpm(8)), findsOneWidget);
+    expect(find.text(en.learnWpmValue('8')), findsOneWidget);
     expect(
-      tester.widget<SwitchListTile>(_switchFor(LearnStrings.farnsworth)).value,
+      tester.widget<SwitchListTile>(_switchFor(en.learnFarnsworth)).value,
       isTrue,
     );
   });
@@ -59,17 +59,17 @@ void main() {
     tester,
   ) async {
     final (t, _) = await _pump(tester);
-    await tester.tap(_switchFor(LearnStrings.farnsworth));
+    await tester.tap(_switchFor(en.learnFarnsworth));
     await tester.pumpAndSettle();
     expect(t.controller.settings.trainer.farnsworthWpm, isNull);
     expect(t.controller.settings.trainer.isFarnsworth, isFalse);
     expect(t.settingsStore.saveCount, 1);
-    expect(find.text(LearnStrings.effectiveSpeed), findsNothing);
+    expect(find.text(en.learnEffectiveSpeed), findsNothing);
 
-    await tester.tap(_switchFor(LearnStrings.farnsworth));
+    await tester.tap(_switchFor(en.learnFarnsworth));
     await tester.pumpAndSettle();
     expect(t.controller.settings.trainer.farnsworthWpm, 8);
-    expect(find.text(LearnStrings.effectiveSpeed), findsOneWidget);
+    expect(find.text(en.learnEffectiveSpeed), findsOneWidget);
     expect(await t.settingsStore.load(), t.controller.settings);
   });
 
@@ -90,7 +90,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(t.controller.settings.trainer.characterWpm, 40);
     expect(t.settingsStore.saveCount, 1);
-    expect(find.text(LearnStrings.wpm(40)), findsOneWidget);
+    expect(find.text(en.learnWpmValue('40')), findsOneWidget);
   });
 
   testWidgets('lowering character speed clamps Farnsworth below it', (
@@ -120,11 +120,11 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
     final (t, _) = await _pump(tester);
-    expect(find.text(LearnStrings.haptic), findsNothing);
-    await tester.tap(_switchFor(LearnStrings.flash));
+    expect(find.text(en.learnHaptic), findsNothing);
+    await tester.tap(_switchFor(en.learnFlash));
     await tester.pumpAndSettle();
     expect(t.controller.settings.flashEnabled, isTrue);
-    await tester.tap(_switchFor(LearnStrings.sound));
+    await tester.tap(_switchFor(en.learnSound));
     await tester.pumpAndSettle();
     expect(t.controller.settings.soundEnabled, isFalse);
     expect(t.settingsStore.saveCount, 2);
@@ -137,11 +137,11 @@ void main() {
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
     final (t, _) = await _pump(tester);
     await tester.scrollUntilVisible(
-      find.text(LearnStrings.haptic),
+      find.text(en.learnHaptic),
       200,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(_switchFor(LearnStrings.haptic));
+    await tester.tap(_switchFor(en.learnHaptic));
     await tester.pumpAndSettle();
     expect(t.controller.settings.hapticEnabled, isTrue);
     debugDefaultTargetPlatformOverride = null;
@@ -150,11 +150,11 @@ void main() {
   testWidgets('keyer mode segmented button persists', (tester) async {
     final (t, _) = await _pump(tester);
     await tester.scrollUntilVisible(
-      find.text(LearnStrings.keyerStraight),
+      find.text(en.learnKeyerStraight),
       200,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.tap(find.text(LearnStrings.keyerStraight));
+    await tester.tap(find.text(en.learnKeyerStraight));
     await tester.pumpAndSettle();
     expect(t.controller.settings.keyerMode, KeyerMode.straight);
     expect((await t.settingsStore.load())!.keyerMode, KeyerMode.straight);
@@ -164,12 +164,12 @@ void main() {
     tester,
   ) async {
     final (t, playback) = await _pump(tester);
-    await tester.tap(find.byTooltip(LearnStrings.playSample));
+    await tester.tap(find.byTooltip(en.learnPlaySample));
     await tester.pump();
     expect(playback.created.single, t.controller.settings);
     expect(playback.sink.events.first.on, isTrue);
     final timeline = MorseEncoder.encode(
-      LearnStrings.sampleText,
+      TrainingSettingsScreen.sampleText,
       t.controller.settings.trainer.toTiming(),
     );
     playback.clock.advance(
@@ -184,7 +184,7 @@ void main() {
     // Button is re-enabled after completion.
     final button = tester.widget<IconButton>(
       find.ancestor(
-        of: find.byTooltip(LearnStrings.playSample),
+        of: find.byTooltip(en.learnPlaySample),
         matching: find.byType(IconButton),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/reference/reference_player.dart';
 
 /// A [MorsePlayerFactory] for widget tests: every player it builds shares
@@ -40,8 +41,19 @@ void setSurfaceSize(WidgetTester tester, Size size) {
 const Size kPhone = Size(390, 844);
 const Size kDesktop = Size(1280, 800);
 
-/// Pumps [home] inside a `MaterialApp` and settles.
+/// The locale the widget tests run in, and its strings for expectations.
+const Locale kTestLocale = Locale('en');
+final S kTestStrings = lookupS(kTestLocale);
+
+/// Pumps [home] inside a localised `MaterialApp` and settles.
 Future<void> pumpScreen(WidgetTester tester, Widget home) async {
-  await tester.pumpWidget(MaterialApp(home: home));
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: S.localizationsDelegates,
+      supportedLocales: S.supportedLocales,
+      locale: kTestLocale,
+      home: home,
+    ),
+  );
   await tester.pumpAndSettle();
 }

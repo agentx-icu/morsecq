@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'reference_playback_settings.dart';
-import 'reference_strings.dart';
 
 /// Opens the speed / Farnsworth / tone sheet for [settings].
 Future<void> showReferencePlaybackSettings(
@@ -30,6 +30,8 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
+    String wpmLabel(double v) => s.referenceWpmValue('${v.round()}');
     return ListenableBuilder(
       listenable: settings,
       builder: (BuildContext context, _) {
@@ -38,12 +40,12 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(ReferenceStrings.playbackSettings, style: theme.textTheme.titleLarge),
+            Text(s.referencePlaybackSettings, style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             _SliderRow(
-              label: ReferenceStrings.characterSpeed,
+              label: s.referenceCharacterSpeed,
               value: settings.wpm,
-              valueLabel: ReferenceStrings.wpm(settings.wpm),
+              valueLabel: wpmLabel(settings.wpm),
               min: ReferencePlaybackSettings.minWpm,
               max: ReferencePlaybackSettings.maxWpm,
               divisions: (ReferencePlaybackSettings.maxWpm -
@@ -53,16 +55,16 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text(ReferenceStrings.farnsworth),
-              subtitle: const Text(ReferenceStrings.farnsworthHelp),
+              title: Text(s.referenceFarnsworth),
+              subtitle: Text(s.referenceFarnsworthHelp),
               value: settings.farnsworthEnabled,
               onChanged: settings.setFarnsworthEnabled,
             ),
             if (fw != null)
               _SliderRow(
-                label: ReferenceStrings.effectiveSpeed,
+                label: s.referenceEffectiveSpeed,
                 value: fw,
-                valueLabel: ReferenceStrings.wpm(fw),
+                valueLabel: wpmLabel(fw),
                 min: ReferencePlaybackSettings.minWpm,
                 max: settings.wpm,
                 divisions: (settings.wpm - ReferencePlaybackSettings.minWpm)
@@ -71,9 +73,9 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
                 onChanged: (double v) => settings.farnsworthWpm = v,
               ),
             _SliderRow(
-              label: ReferenceStrings.tone,
+              label: s.referenceTone,
               value: settings.toneHz,
-              valueLabel: ReferenceStrings.hz(settings.toneHz),
+              valueLabel: s.referenceHzValue('${settings.toneHz.round()}'),
               min: ReferencePlaybackSettings.minToneHz,
               max: ReferencePlaybackSettings.maxToneHz,
               divisions: ((ReferencePlaybackSettings.maxToneHz -

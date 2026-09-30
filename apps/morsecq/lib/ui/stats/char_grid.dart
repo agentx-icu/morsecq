@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
-import 'stats_strings.dart';
 import 'stats_widgets.dart';
 
 /// Every course symbol in Koch order, coloured by accuracy bucket with an
@@ -18,9 +18,10 @@ class CharGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final learned = snapshot.learnedChars.toSet();
+    final s = context.s;
     return StatsSection(
-      title: StatsStrings.charsTitle,
-      subtitle: StatsStrings.charsSubtitle,
+      title: s.statsCharsTitle,
+      subtitle: s.statsCharsSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -67,15 +68,16 @@ class CharCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final palette = StatsPalette(scheme);
     final b = bucket;
     final background = palette.bucketBackground(b);
     final foreground = palette.bucketForeground(b);
     final wide = char.length > 1;
     final semantics = stats.attempts == 0
-        ? '$char, ${StatsStrings.charsNotStarted}'
-        : '$char, ${StatsStrings.percent(stats.accuracy)}, '
-              '${StatsStrings.attempts(stats.attempts)}';
+        ? '$char, ${s.statsCharsNotStarted}'
+        : '$char, ${formatPercent(s, stats.accuracy)}, '
+              '${s.statsAttempts(stats.attempts)}';
     return Semantics(
       button: true,
       label: semantics,
@@ -135,13 +137,14 @@ class BucketLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final s = context.s;
     final palette = StatsPalette(theme.colorScheme);
-    const items = <(AccuracyBucket, String)>[
-      (AccuracyBucket.none, StatsStrings.bucketNone),
-      (AccuracyBucket.weak, StatsStrings.bucketWeak),
-      (AccuracyBucket.fair, StatsStrings.bucketFair),
-      (AccuracyBucket.good, StatsStrings.bucketGood),
-      (AccuracyBucket.strong, StatsStrings.bucketStrong),
+    final items = <(AccuracyBucket, String)>[
+      (AccuracyBucket.none, s.statsBucketNone),
+      (AccuracyBucket.weak, s.statsBucketWeak),
+      (AccuracyBucket.fair, s.statsBucketFair),
+      (AccuracyBucket.good, s.statsBucketGood),
+      (AccuracyBucket.strong, s.statsBucketStrong),
     ];
     return Wrap(
       spacing: 12,
@@ -149,7 +152,7 @@ class BucketLegend extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: <Widget>[
         Text(
-          StatsStrings.bucketLegendTitle,
+          s.statsBucketLegendTitle,
           style: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -201,6 +204,7 @@ class CharDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final palette = StatsPalette(scheme);
     final stats = snapshot.statsFor(char);
     final bucket = bucketFor(stats.accuracy, attempts: stats.attempts);
@@ -244,24 +248,21 @@ class CharDetailSheet extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         stats.attempts == 0
-                            ? StatsStrings.charsNotStarted
-                            : StatsStrings.percent(stats.accuracy),
+                            ? s.statsCharsNotStarted
+                            : formatPercent(s, stats.accuracy),
                         style: theme.textTheme.titleLarge,
                       ),
                       Text(
                         stats.attempts == 0
                             ? (lesson == null
-                                  ? StatsStrings.notInCourse
-                                  : StatsStrings.lessonIntroduced(lesson))
-                            : StatsStrings.correctOf(
-                                stats.correct,
-                                stats.attempts,
-                              ),
+                                  ? s.statsNotInCourse
+                                  : s.statsLessonIntroduced(lesson))
+                            : s.statsCorrectOf(stats.correct, stats.attempts),
                         style: muted,
                       ),
                       if (stats.attempts > 0 && lesson != null)
                         Text(
-                          StatsStrings.lessonIntroduced(lesson),
+                          s.statsLessonIntroduced(lesson),
                           style: muted,
                         ),
                     ],
@@ -270,10 +271,10 @@ class CharDetailSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Text(StatsStrings.srsTitle, style: theme.textTheme.titleSmall),
+            Text(s.statsSrsTitle, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
             if (card == null)
-              Text(StatsStrings.srsNotTracked, style: muted)
+              Text(s.statsSrsNotTracked, style: muted)
             else
               _SrsRow(
                 card: card,
@@ -282,12 +283,12 @@ class CharDetailSheet extends StatelessWidget {
               ),
             const SizedBox(height: 20),
             Text(
-              StatsStrings.confusionsTitle,
+              s.statsConfusionsTitle,
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: 6),
             if (confusions.isEmpty)
-              Text(StatsStrings.confusionsNone, style: muted)
+              Text(s.statsConfusionsNone, style: muted)
             else
               for (final c in confusions)
                 Padding(
@@ -305,15 +306,13 @@ class CharDetailSheet extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          c.isMissed
-                              ? StatsStrings.confusionMissed
-                              : c.answered,
+                          c.isMissed ? s.statsConfusionMissed : c.answered,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelLarge,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Text(StatsStrings.times(c.count), style: muted),
+                      Text(s.statsTimes(c.count), style: muted),
                     ],
                   ),
                 ),
@@ -335,11 +334,12 @@ class _SrsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final palette = StatsPalette(scheme);
     final dueDays = daysBetween(now, card.dueAt.toLocal());
     final due = card.isDue(now) || dueDays <= 0
-        ? StatsStrings.srsDueNow
-        : StatsStrings.srsDueIn(dueDays);
+        ? s.statsSrsDueNow
+        : s.statsSrsDueIn(dueDays);
     return Row(
       children: <Widget>[
         for (var b = 0; b <= maxBox; b++)
@@ -359,7 +359,7 @@ class _SrsRow extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            '${StatsStrings.srsBox(card.box, maxBox)} / $due',
+            '${s.statsSrsBox(card.box, maxBox)} / $due',
             style: theme.textTheme.bodySmall?.copyWith(
               color: scheme.onSurfaceVariant,
             ),

@@ -1,9 +1,16 @@
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/ui/reference/reference_abbreviations.dart';
 import 'package:morsecq/ui/reference/reference_catalog.dart';
+import 'package:morsecq/ui/reference/reference_localized_text.dart';
 import 'package:morsecq/ui/reference/reference_mnemonics.dart';
+import 'package:morsecq/ui/reference/reference_qcodes.dart';
+
+const Locale en = Locale('en');
+const Locale zh = Locale('zh');
+const Locale fr = Locale('fr');
 
 void main() {
   group('ReferenceCatalog', () {
@@ -28,22 +35,39 @@ void main() {
 
     test('every alphabet entry has a mnemonic with its spoken rhythm', () {
       for (final entry in ReferenceCatalog.alphabet) {
-        expect(entry.mnemonic, isNotNull, reason: entry.label);
+        expect(entry.hasMnemonic, isTrue, reason: entry.label);
         expect(
-          entry.mnemonic,
+          entry.mnemonic(en),
           contains(ReferenceMnemonics.spokenRhythm(entry.pattern)),
+          reason: entry.label,
+        );
+        expect(
+          entry.mnemonic(zh),
+          contains(
+            ReferenceMnemonics.spokenRhythm(entry.pattern, language: 'zh'),
+          ),
           reason: entry.label,
         );
       }
       final a = ReferenceCatalog.alphabet.first;
-      expect(a.mnemonic, startsWith('A: di-DAH'));
+      expect(a.mnemonic(en), startsWith('A: di-DAH'));
+      // The phonetic phrase stays English in Chinese, with a note.
+      expect(a.mnemonic(zh), startsWith('A：嘀嗒'));
+      expect(a.mnemonic(zh), contains('"a-PART"'));
+      // Digit phrases are descriptive, so they are translated.
+      final one = ReferenceCatalog.alphabet.firstWhere((e) => e.label == '1');
+      expect(one.mnemonic(zh), isNot(contains('one dit')));
+      expect(one.mnemonic(fr), one.mnemonic(en), reason: 'falls back to en');
     });
 
     test('prosigns are bracketed, playable and explained', () {
       for (final entry in ReferenceCatalog.prosigns) {
         expect(entry.label, matches(RegExp(r'^<[A-Z]+>$')));
         expect(MorseEncoder.toPattern(entry.playText), entry.pattern);
-        expect(entry.meaning, isNotEmpty, reason: entry.label);
+        for (final locale in <Locale>[en, zh]) {
+          expect(entry.meaning(locale), isNotEmpty, reason: entry.label);
+        }
+        expect(entry.meaning(zh), isNot(entry.meaning(en)), reason: entry.label);
       }
     });
 
@@ -56,8 +80,32 @@ void main() {
         expect(labels, contains(code));
       }
       for (final entry in ReferenceCatalog.qCodes) {
-        expect(entry.meaning, isNotEmpty, reason: entry.label);
+        expect(entry.meaning(en), isNotEmpty, reason: entry.label);
+        expect(entry.meaning(zh), isNotEmpty, reason: entry.label);
+        expect(entry.meaning(fr), entry.meaning(en), reason: entry.label);
         expect(entry.pattern, MorseEncoder.toPattern(entry.label));
+      }
+      expect(ReferenceQCodes.meaning('QRZ', en), 'Who is calling me?');
+      expect(ReferenceQCodes.meaning('QRZ', zh), '谁在呼叫我？');
+      expect(ReferenceQCodes.meaning('QZZ', en), isNull);
+    });
+
+    test('every content row carries every supported language', () {
+      for (final entry in ReferenceCatalog.all) {
+        if (entry.meanings.isNotEmpty) {
+          expect(
+            entry.meanings.keys,
+            containsAll(kReferenceLanguages),
+            reason: '${entry.id} meanings',
+          );
+        }
+        if (entry.hasMnemonic) {
+          expect(
+            entry.mnemonics.keys,
+            containsAll(kReferenceLanguages),
+            reason: '${entry.id} mnemonics',
+          );
+        }
       }
     });
 
@@ -65,8 +113,10 @@ void main() {
       final labels = ReferenceCatalog.abbreviations.map((e) => e.label).toList();
       for (final name in WordLists.cwAbbreviations) {
         expect(labels, contains(name));
-        expect(ReferenceAbbreviations.meaningOf(name), isNotEmpty, reason: name);
+        expect(ReferenceAbbreviations.meaningOf(name, en), isNotEmpty, reason: name);
+        expect(ReferenceAbbreviations.meaningOf(name, zh), isNotEmpty, reason: name);
       }
+      expect(ReferenceAbbreviations.meaningOf('ZZZ', en), isEmpty);
       expect(labels.toSet().length, labels.length, reason: 'no duplicates');
     });
 
@@ -99,9 +149,11 @@ void main() {
       expect(hits[ReferenceSection.qCodes]!.single.label, 'QRL');
     });
 
-    test('matches meanings', () {
+    test('matches meanings in every language', () {
       final hits = ReferenceCatalog.search('who is calling');
       expect(hits[ReferenceSection.qCodes]!.single.label, 'QRZ');
+      final zhHits = ReferenceCatalog.search('谁在呼叫');
+      expect(zhHits[ReferenceSection.qCodes]!.single.label, 'QRZ');
     });
 
     test('matches raw and display patterns', () {
@@ -134,6 +186,11 @@ void main() {
       expect(ReferenceMnemonics.spokenRhythm('-...'), 'DAH-di-di-dit');
       expect(ReferenceMnemonics.spokenRhythm('.'), 'dit');
       expect(ReferenceMnemonics.spokenRhythm('---'), 'DAH-DAH-DAH');
+    });
+
+    test('reads 嘀 / 嗒 in Chinese', () {
+      expect(ReferenceMnemonics.spokenRhythm('.-', language: 'zh'), '嘀嗒');
+      expect(ReferenceMnemonics.spokenRhythm('-...', language: 'zh'), '嗒嘀嘀嘀');
     });
   });
 }

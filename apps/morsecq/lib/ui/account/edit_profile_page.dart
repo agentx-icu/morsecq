@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
-import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 
 /// Display name and status message.
@@ -33,9 +33,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _save() async {
+    final s = context.s;
     final name = _name.text.trim();
     if (name.isEmpty) {
-      setState(() => _nameError = AccountStrings.displayNameRequired);
+      setState(() => _nameError = s.accountDisplayNameRequired);
       return;
     }
     setState(() {
@@ -52,29 +53,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
         statusMessage: _status.text.trim(),
       );
       messenger?.showSnackBar(
-        const SnackBar(content: Text(AccountStrings.profileUpdated)),
+        SnackBar(content: Text(s.accountProfileUpdated)),
       );
       navigator.pop();
     } on Object catch (e) {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = StartupController.describeError(e);
+        _error = describeChatError(s, e);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text(AccountStrings.editProfile)),
+      appBar: AppBar(title: Text(s.accountEditProfile)),
       body: AccountPageBody(
         children: [
-          Text(
-            AccountStrings.editProfileBody,
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(s.accountEditProfileBody, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 24),
           TextField(
             controller: _name,
@@ -82,7 +81,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             maxLength: 64,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
-              labelText: AccountStrings.displayName,
+              labelText: s.accountDisplayName,
               errorText: _nameError,
               border: const OutlineInputBorder(),
             ),
@@ -93,9 +92,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             maxLength: 128,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _save(),
-            decoration: const InputDecoration(
-              labelText: AccountStrings.statusMessage,
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: s.accountStatusMessage,
+              border: const OutlineInputBorder(),
             ),
           ),
           if (_error != null) ...[
@@ -110,7 +109,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: _busy ? null : _save,
-            child: const Text(AccountStrings.save),
+            child: Text(s.actionSave),
           ),
         ],
       ),

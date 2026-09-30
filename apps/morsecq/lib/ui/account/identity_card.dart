@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 import 'connection_chip.dart';
 import 'tox_id_qr_dialog.dart';
@@ -15,6 +15,7 @@ class IdentityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     final initial = identity.displayName.isEmpty
         ? '?'
@@ -59,7 +60,7 @@ class IdentityCard extends StatelessWidget {
                           if (identity.hasPassword) ...[
                             const SizedBox(width: 6),
                             Tooltip(
-                              message: AccountStrings.password,
+                              message: s.accountPassword,
                               child: Icon(
                                 Icons.lock_outline,
                                 size: 16,
@@ -76,7 +77,7 @@ class IdentityCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              AccountStrings.toxId,
+              s.accountToxId,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -94,12 +95,12 @@ class IdentityCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: AccountStrings.copy,
+                  tooltip: s.actionCopy,
                   icon: const Icon(Icons.copy),
                   onPressed: () => copyToClipboard(context, identity.toxId),
                 ),
                 IconButton(
-                  tooltip: AccountStrings.showQr,
+                  tooltip: s.accountShowQr,
                   icon: const Icon(Icons.qr_code_2),
                   onPressed: () => showToxIdQrDialog(context, identity.toxId),
                 ),

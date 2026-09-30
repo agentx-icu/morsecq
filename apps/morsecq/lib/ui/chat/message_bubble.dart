@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
-import 'chat_strings.dart';
 import 'message_status_icon.dart';
 import 'morse_pattern_text.dart';
 
@@ -39,6 +39,7 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
+    final S s = context.s;
     final bool mine = message.isMine;
     final Color background = mine
         ? scheme.primaryContainer
@@ -88,7 +89,7 @@ class MessageBubble extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        tooltip: playing ? ChatStrings.stop : ChatStrings.play,
+                        tooltip: playing ? s.chatStop : s.chatPlay,
                         onPressed: pattern.isEmpty ? null : onPlay,
                         icon: Icon(
                           playing ? Icons.stop_circle : Icons.play_circle,
@@ -111,7 +112,7 @@ class MessageBubble extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        formatMessageTime(message.timestamp),
+                        formatMessageTime(context, message.timestamp),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: foreground.withValues(alpha: 0.7),
                         ),
@@ -155,12 +156,12 @@ class _HiddenText extends StatelessWidget {
           color: theme.colorScheme.onSurfaceVariant,
         ),
         Text(
-          ChatStrings.hiddenText,
+          context.s.chatHiddenText,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        TextButton(onPressed: onReveal, child: const Text(ChatStrings.reveal)),
+        TextButton(onPressed: onReveal, child: Text(context.s.chatReveal)),
       ],
     );
   }

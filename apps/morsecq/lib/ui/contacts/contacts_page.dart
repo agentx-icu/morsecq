@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import '../chat/conversation_target.dart';
 import 'add_friend_sheet.dart';
 import 'friend_request_inbox.dart';
@@ -46,44 +46,47 @@ class ContactsPage extends StatelessWidget {
   );
 
   Future<void> _addFriend(BuildContext context) async {
+    final S s = context.s;
     final bool sent = await showAddFriendSheet(
       context,
       service: service,
       ownToxId: identity?.current?.toxId,
       canScan: canScan,
     );
-    if (sent && context.mounted) showSnack(context, ChatStrings.requestSent);
+    if (sent && context.mounted) showSnack(context, s.chatRequestSent);
   }
 
   Future<void> _removeFriend(BuildContext context, Friend f) async {
+    final S s = context.s;
     final bool ok = await confirm(
       context,
-      title: ChatStrings.removeFriendTitle,
-      body: ChatStrings.removeFriendBody,
-      confirmLabel: ChatStrings.remove,
+      title: s.chatRemoveFriendTitle,
+      body: s.chatRemoveFriendBody,
+      confirmLabel: s.chatRemove,
     );
     if (!ok) return;
     try {
       await service.removeFriend(f.publicKey);
     } on Object catch (e) {
-      if (context.mounted) showSnack(context, describeError(e));
+      if (context.mounted) showSnack(context, describeChatError(s, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(ChatStrings.contacts),
+        title: Text(s.chatContacts),
         actions: [
           IconButton(
-            tooltip: ChatStrings.myToxId,
+            tooltip: s.chatMyToxId,
             icon: const Icon(Icons.qr_code_2),
             onPressed: () =>
                 unawaited(showMyToxIdSheet(context, identity?.current)),
           ),
           IconButton(
-            tooltip: ChatStrings.addFriend,
+            tooltip: s.chatAddFriend,
             icon: const Icon(Icons.person_add_alt_1),
             onPressed: () => unawaited(_addFriend(context)),
           ),
@@ -106,17 +109,14 @@ class ContactsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Text(
-                  '${ChatStrings.friends} (${friends.length})',
+                  s.chatFriendsCount(friends.length),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               if (friends.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    ChatStrings.noFriends,
-                    textAlign: TextAlign.center,
-                  ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(s.chatNoFriends, textAlign: TextAlign.center),
                 ),
               for (final Friend f in friends)
                 _FriendTile(
@@ -149,6 +149,7 @@ class _FriendTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final S s = context.s;
     return ListTile(
       onTap: onTap,
       leading: Stack(
@@ -181,14 +182,14 @@ class _FriendTile extends StatelessWidget {
       subtitle: Text(
         friend.statusMessage.isNotEmpty
             ? friend.statusMessage
-            : (friend.online ? ChatStrings.online : ChatStrings.offline),
+            : (friend.online ? s.connectionOnline : s.connectionOffline),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: PopupMenuButton<String>(
         onSelected: (_) => onRemove(),
-        itemBuilder: (_) => const [
-          PopupMenuItem(value: 'remove', child: Text(ChatStrings.removeFriend)),
+        itemBuilder: (_) => [
+          PopupMenuItem(value: 'remove', child: Text(s.chatRemoveFriend)),
         ],
       ),
     );

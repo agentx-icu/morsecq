@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_controller_host.dart';
 import '../learn/learn_home.dart';
@@ -19,27 +20,33 @@ class LearnPage extends StatelessWidget {
     this.playback = const DevicePlaybackFactory(),
   });
 
-  static const String title = 'Learn';
-  static const String description =
-      'Koch-method lessons, keying drills and copy practice.';
+  /// Destination label, resolved in the current locale.
+  static String title(S s) => s.navLearn;
+
+  /// One-line subtitle, resolved in the current locale.
+  static String description(S s) => s.navLearnDescription;
 
   final Future<TrainingController> Function(BuildContext context)?
   controllerFactory;
   final LearnPlaybackFactory playback;
 
   @override
-  Widget build(BuildContext context) => LearnScope(
-    // Shared per-identity controller when the app provides a host (so the
-    // Me page's training-defaults route edits the same instance); tests may
-    // inject their own factory.
-    controllerFactory: controllerFactory ?? TrainingControllerHost.fromContext,
-    playback: playback,
-    title: title,
-    description: description,
-    builder: (context, controller, playback) => LearnHome(
-      controller: controller,
+  Widget build(BuildContext context) {
+    final s = context.s;
+    return LearnScope(
+      // Shared per-identity controller when the app provides a host (so the
+      // Me page's training-defaults route edits the same instance); tests may
+      // inject their own factory.
+      controllerFactory:
+          controllerFactory ?? TrainingControllerHost.fromContext,
       playback: playback,
-      subtitle: description,
-    ),
-  );
+      title: title(s),
+      description: description(s),
+      builder: (context, controller, playback) => LearnHome(
+        controller: controller,
+        playback: playback,
+        subtitle: description(s),
+      ),
+    );
+  }
 }

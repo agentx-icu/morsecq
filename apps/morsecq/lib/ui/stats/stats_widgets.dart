@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'stats_model.dart';
-import 'stats_strings.dart';
 
 /// Card wrapper every dashboard section uses: title, optional subtitle, body.
 class StatsSection extends StatelessWidget {
@@ -120,15 +120,25 @@ class StatTile extends StatelessWidget {
 }
 
 /// Formats a duration as `Xh Ym`, `Ym` or `Zs` for the practice tile.
-String formatPracticeDuration(Duration d) {
+String formatPracticeDuration(S s, Duration d) {
   if (d.inHours >= 1) {
-    return '${d.inHours}h ${d.inMinutes.remainder(60)}m';
+    return s.statsDurationHoursMinutes(d.inHours, d.inMinutes.remainder(60));
   }
   if (d.inMinutes >= 1) {
-    return '${d.inMinutes}m';
+    return s.statsDurationMinutes(d.inMinutes);
   }
-  return '${d.inSeconds}s';
+  return s.statsDurationSeconds(d.inSeconds);
 }
+
+/// Accuracy fraction as a percentage: one decimal, none from 99.5% up
+/// (`0.9236` -> `92.4%`, `0.997` -> `100%`).
+String formatPercent(S s, double fraction) => s.statsPercent(
+  (fraction * 100).toStringAsFixed(fraction >= 0.995 ? 0 : 1),
+);
+
+/// [formatPercent], or the no-data placeholder for a null accuracy.
+String formatPercentOrNoData(S s, double? fraction) =>
+    fraction == null ? s.statsNoData : formatPercent(s, fraction);
 
 /// The overview tile grid: lesson, accuracy, practice, streak, daily goal.
 class OverviewTiles extends StatelessWidget {
@@ -136,52 +146,50 @@ class OverviewTiles extends StatelessWidget {
 
   final StatsSnapshot snapshot;
 
-  static String _acc(double? value) =>
-      value == null ? StatsStrings.noData : StatsStrings.percent(value);
-
   @override
   Widget build(BuildContext context) {
-    final s = snapshot;
+    final s = context.s;
+    final snap = snapshot;
     final tiles = <Widget>[
       StatTile(
         icon: Icons.school_outlined,
-        label: StatsStrings.tileLesson,
-        value: StatsStrings.lessonOf(s.currentLesson, s.lessonCount),
-        detail: StatsStrings.charsLearned(s.learnedChars.length),
+        label: s.statsTileLesson,
+        value: s.statsLessonOf(snap.currentLesson, snap.lessonCount),
+        detail: s.statsCharsLearned(snap.learnedChars.length),
       ),
       StatTile(
         icon: Icons.track_changes_outlined,
-        label: StatsStrings.tileAccuracy,
-        value: _acc(s.accuracyLast7Days),
-        detail:
-            '${StatsStrings.accuracyLast7Days} / '
-            '${_acc(s.accuracyAllTime)} ${StatsStrings.accuracyAllTime}',
+        label: s.statsTileAccuracy,
+        value: formatPercentOrNoData(s, snap.accuracyLast7Days),
+        detail: s.statsAccuracyDetail(
+          formatPercentOrNoData(s, snap.accuracyAllTime),
+        ),
       ),
       StatTile(
         icon: Icons.timer_outlined,
-        label: StatsStrings.tilePractice,
-        value: formatPracticeDuration(s.totalPracticeTime),
+        label: s.statsTilePractice,
+        value: formatPracticeDuration(s, snap.totalPracticeTime),
         detail:
-            '${StatsStrings.charsCopied(s.totalChars)} / '
-            '${StatsStrings.sessions(s.sessionCount)}',
+            '${s.statsCharsCopied(snap.totalChars)} / '
+            '${s.statsSessions(snap.sessionCount)}',
       ),
       StatTile(
         icon: Icons.local_fire_department_outlined,
-        label: StatsStrings.tileStreak,
-        value: StatsStrings.days(s.currentStreak),
-        detail: StatsStrings.bestStreak(s.bestStreak),
+        label: s.statsTileStreak,
+        value: s.statsDays(snap.currentStreak),
+        detail: s.statsBestStreak(snap.bestStreak),
       ),
       StatTile(
         icon: Icons.flag_outlined,
-        label: StatsStrings.tileDailyGoal,
-        value: StatsStrings.goalProgress(s.charsToday, s.dailyGoal),
-        detail: s.dailyGoalMet
-            ? StatsStrings.goalMet
-            : StatsStrings.goalRemaining(s.dailyGoal - s.charsToday),
+        label: s.statsTileDailyGoal,
+        value: s.statsGoalProgress(snap.charsToday, snap.dailyGoal),
+        detail: snap.dailyGoalMet
+            ? s.statsGoalMet
+            : s.statsGoalRemaining(snap.dailyGoal - snap.charsToday),
       ),
     ];
     return StatsSection(
-      title: StatsStrings.overviewTitle,
+      title: s.statsOverviewTitle,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final columns = constraints.maxWidth >= 560
@@ -224,8 +232,9 @@ class StatsSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final s = StatsSnapshot.from(progress, course: course, now: now);
-    final accuracy = s.accuracyLast7Days ?? s.accuracyAllTime;
+    final s = context.s;
+    final snap = StatsSnapshot.from(progress, course: course, now: now);
+    final accuracy = snap.accuracyLast7Days ?? snap.accuracyAllTime;
     return Card(
       child: InkWell(
         onTap: onOpen,
@@ -239,7 +248,7 @@ class StatsSummaryCard extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      StatsStrings.summaryTitle,
+                      s.statsSummaryTitle,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -250,31 +259,29 @@ class StatsSummaryCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              if (s.isEmpty)
-                Text(StatsStrings.emptyTitle, style: theme.textTheme.bodyMedium)
+              if (snap.isEmpty)
+                Text(s.statsEmptyTitle, style: theme.textTheme.bodyMedium)
               else
                 Row(
                   children: <Widget>[
                     _SummaryStat(
-                      label: StatsStrings.tileAccuracy,
-                      value: accuracy == null
-                          ? StatsStrings.noData
-                          : StatsStrings.percent(accuracy),
+                      label: s.statsTileAccuracy,
+                      value: formatPercentOrNoData(s, accuracy),
                     ),
                     _SummaryStat(
-                      label: StatsStrings.tileStreak,
-                      value: StatsStrings.days(s.currentStreak),
+                      label: s.statsTileStreak,
+                      value: s.statsDays(snap.currentStreak),
                     ),
                     _SummaryStat(
-                      label: StatsStrings.sessions(s.sessionCount),
-                      value: '${s.sessionCount}',
+                      label: s.statsSessions(snap.sessionCount),
+                      value: '${snap.sessionCount}',
                     ),
                   ],
                 ),
               if (onOpen != null) ...<Widget>[
                 const SizedBox(height: 8),
                 Text(
-                  StatsStrings.summaryOpen,
+                  s.statsSummaryOpen,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: scheme.primary,
                   ),
@@ -323,6 +330,7 @@ class StatsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
@@ -334,13 +342,13 @@ class StatsEmptyState extends StatelessWidget {
               Icon(Icons.insights_outlined, size: 56, color: scheme.primary),
               const SizedBox(height: 16),
               Text(
-                StatsStrings.emptyTitle,
+                s.statsEmptyTitle,
                 style: theme.textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
-                StatsStrings.emptyBody,
+                s.statsEmptyBody,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -348,7 +356,7 @@ class StatsEmptyState extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                StatsStrings.emptyCallToAction,
+                s.statsEmptyCallToAction,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: scheme.primary,
                   fontWeight: FontWeight.w600,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
-import '../learn_strings.dart';
+import '../../../i18n/l10n_extension.dart';
+import '../receive/receive_widgets.dart';
 import '../receive/round_result_view.dart';
 import 'send_tips.dart';
 
@@ -16,6 +17,7 @@ class SendResultView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final score = diagnostics.score;
     final issues = diagnostics.issues.toList()
       ..sort((a, b) => b.severity.index.compareTo(a.severity.index));
@@ -31,7 +33,7 @@ class SendResultView extends StatelessWidget {
           spacing: 12,
           children: <Widget>[
             Text(
-              LearnStrings.accuracyPercent(score.accuracy),
+              formatAccuracy(s, score.accuracy),
               style: theme.textTheme.displaySmall?.copyWith(
                 color: score.accuracy >= 0.9 ? scheme.primary : scheme.error,
                 fontWeight: FontWeight.bold,
@@ -40,9 +42,7 @@ class SendResultView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                diagnostics.measuredWpm <= 0
-                    ? '- wpm'
-                    : LearnStrings.wpm(diagnostics.measuredWpm),
+                formatWpm(s, diagnostics.measuredWpm),
                 style: theme.textTheme.titleMedium,
               ),
             ),
@@ -50,7 +50,7 @@ class SendResultView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          LearnStrings.sendThis,
+          s.learnSendThis,
           style: theme.textTheme.labelMedium?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
@@ -59,7 +59,7 @@ class SendResultView extends StatelessWidget {
         AlignedSymbols(alignment: score.alignment, showTarget: true),
         const SizedBox(height: 8),
         Text(
-          LearnStrings.yourSending,
+          s.learnYourSending,
           style: theme.textTheme.labelMedium?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
@@ -68,7 +68,7 @@ class SendResultView extends StatelessWidget {
         AlignedSymbols(alignment: score.alignment, showTarget: false),
         const SizedBox(height: 20),
         Text(
-          LearnStrings.sendIssues,
+          s.learnSendIssues,
           style: theme.textTheme.labelLarge?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
@@ -81,7 +81,7 @@ class SendResultView extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  LearnStrings.sendClean,
+                  s.learnSendClean,
                   style: theme.textTheme.bodyLarge,
                 ),
               ),
@@ -103,6 +103,7 @@ class _IssueTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final color = switch (issue.severity) {
       SendSeverity.minor => scheme.tertiary,
       SendSeverity.moderate => scheme.primary,
@@ -120,14 +121,16 @@ class _IssueTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '${SendTips.titleFor(issue.kind)} '
-                  '(${SendTips.severityLabel(issue.severity)})',
+                  s.learnIssueHeadline(
+                    titleFor(s, issue.kind),
+                    severityLabel(s, issue.severity),
+                  ),
                   style: theme.textTheme.titleSmall?.copyWith(color: color),
                 ),
                 const SizedBox(height: 2),
-                Text(SendTips.tipFor(issue), style: theme.textTheme.bodyMedium),
+                Text(tipFor(s, issue), style: theme.textTheme.bodyMedium),
                 Text(
-                  issue.describe(),
+                  detailFor(s, issue),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),

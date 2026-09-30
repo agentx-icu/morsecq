@@ -1,36 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 import 'reference_abbreviations.dart';
+import 'reference_localized_text.dart';
 import 'reference_mnemonics.dart';
 import 'reference_qcodes.dart';
-import 'reference_strings.dart';
 
 /// The sections of the reference, in display order.
 enum ReferenceSection {
-  alphabet(ReferenceStrings.sectionAlphabet, Icons.abc),
-  punctuation(ReferenceStrings.sectionPunctuation, Icons.more_horiz),
-  prosigns(ReferenceStrings.sectionProsigns, Icons.code),
-  qCodes(ReferenceStrings.sectionQCodes, Icons.question_answer_outlined),
-  abbreviations(ReferenceStrings.sectionAbbreviations, Icons.short_text),
-  koch(ReferenceStrings.sectionKoch, Icons.format_list_numbered);
+  alphabet(Icons.abc),
+  punctuation(Icons.more_horiz),
+  prosigns(Icons.code),
+  qCodes(Icons.question_answer_outlined),
+  abbreviations(Icons.short_text),
+  koch(Icons.format_list_numbered);
 
-  const ReferenceSection(this.label, this.icon);
+  const ReferenceSection(this.icon);
 
-  final String label;
   final IconData icon;
+
+  /// Localised tab / rail title.
+  String label(S s) => switch (this) {
+        ReferenceSection.alphabet => s.referenceSectionAlphabet,
+        ReferenceSection.punctuation => s.referenceSectionPunctuation,
+        ReferenceSection.prosigns => s.referenceSectionProsigns,
+        ReferenceSection.qCodes => s.referenceSectionQCodes,
+        ReferenceSection.abbreviations => s.referenceSectionAbbreviations,
+        ReferenceSection.koch => s.referenceSectionKoch,
+      };
 }
 
 /// One playable row of the reference.
+///
+/// [meanings] and [mnemonics] are content, given per language code (see
+/// [kReferenceLanguages]); [meaning] / [mnemonic] pick the text for a locale
+/// with an English fallback.
 final class ReferenceEntry {
   const ReferenceEntry({
     required this.section,
     required this.label,
     required this.pattern,
     required this.playText,
-    this.meaning,
-    this.mnemonic,
+    this.meanings = const <String, String>{},
+    this.mnemonics = const <String, String>{},
     this.position,
   });
 
@@ -46,8 +60,11 @@ final class ReferenceEntry {
   /// Text handed to `MorseEncoder` to play this entry.
   final String playText;
 
-  final String? meaning;
-  final String? mnemonic;
+  /// Meaning per language code; empty for entries without one (letters).
+  final Map<String, String> meanings;
+
+  /// Mnemonic line per language code; empty for entries without one.
+  final Map<String, String> mnemonics;
 
   /// 1-based position for Koch-order entries.
   final int? position;
@@ -55,8 +72,16 @@ final class ReferenceEntry {
   /// Stable id used by the playback controller.
   String get id => '${section.name}:$label';
 
-  /// Case-insensitive match over label, meaning, mnemonic, and the pattern in
-  /// both raw and display forms.
+  bool get hasMnemonic => mnemonics.isNotEmpty;
+
+  /// Meaning in [locale]'s language (English fallback), or null.
+  String? meaning(Locale locale) => localizedReferenceText(meanings, locale);
+
+  /// Mnemonic in [locale]'s language (English fallback), or null.
+  String? mnemonic(Locale locale) => localizedReferenceText(mnemonics, locale);
+
+  /// Case-insensitive match over label, every language's meaning and
+  /// mnemonic, and the pattern in both raw and display forms.
   bool matches(String query) {
     final String q = query.trim().toLowerCase();
     if (q.isEmpty) return true;
@@ -64,10 +89,8 @@ final class ReferenceEntry {
     if (pattern.contains(q) || displayMorsePattern(pattern).contains(q)) {
       return true;
     }
-    final String? m = meaning;
-    if (m != null && m.toLowerCase().contains(q)) return true;
-    final String? n = mnemonic;
-    return n != null && n.toLowerCase().contains(q);
+    bool hit(String text) => text.toLowerCase().contains(q);
+    return meanings.values.any(hit) || mnemonics.values.any(hit);
   }
 }
 
@@ -75,16 +98,42 @@ final class ReferenceEntry {
 abstract final class ReferenceCatalog {
   static final RegExp _alnum = RegExp(r'^[A-Z0-9]$');
 
-  static const Map<String, String> _prosignMeanings = <String, String>{
-    'AR': 'End of message.',
-    'SK': 'End of contact (silent key).',
-    'BT': 'Break / new paragraph.',
-    'KN': 'Go ahead, named station only.',
-    'AS': 'Wait / stand by.',
-    'SN': 'Understood.',
-    'SOS': 'Distress.',
-    'CT': 'Start of transmission (attention).',
-    'HH': 'Error; the last word will be repeated.',
+  static const Map<String, Map<String, String>> _prosignMeanings =
+      <String, Map<String, String>>{
+    'AR': {'en': 'End of message.', 'zh': '报文结束。'},
+    'SK': {'en': 'End of contact (silent key).', 'zh': '通联结束（silent key）。'},
+    'BT': {'en': 'Break / new paragraph.', 'zh': '分隔 / 另起一段。'},
+    'KN': {'en': 'Go ahead, named station only.', 'zh': '请讲，仅限被呼叫的电台。'},
+    'AS': {'en': 'Wait / stand by.', 'zh': '请等待 / 稍候。'},
+    'SN': {'en': 'Understood.', 'zh': '已明白。'},
+    'SOS': {'en': 'Distress.', 'zh': '遇险求救。'},
+    'CT': {'en': 'Start of transmission (attention).', 'zh': '发报开始（注意）。'},
+    'HH': {
+      'en': 'Error; the last word will be repeated.',
+      'zh': '发错；将重发上一个词。',
+    },
+  };
+
+  static const Map<String, Map<String, String>> _punctuationNames =
+      <String, Map<String, String>>{
+    '.': {'en': 'Period (full stop)', 'zh': '句号'},
+    ',': {'en': 'Comma', 'zh': '逗号'},
+    '?': {'en': 'Question mark', 'zh': '问号'},
+    "'": {'en': 'Apostrophe', 'zh': '撇号'},
+    '!': {'en': 'Exclamation mark', 'zh': '感叹号'},
+    '/': {'en': 'Slash (fraction bar)', 'zh': '斜杠（分数线）'},
+    '(': {'en': 'Open parenthesis', 'zh': '左括号'},
+    ')': {'en': 'Close parenthesis', 'zh': '右括号'},
+    '&': {'en': 'Ampersand (wait)', 'zh': '和号（等待）'},
+    ':': {'en': 'Colon', 'zh': '冒号'},
+    ';': {'en': 'Semicolon', 'zh': '分号'},
+    '=': {'en': 'Equals (break, BT)', 'zh': '等号（分隔，BT）'},
+    '+': {'en': 'Plus (end of message, AR)', 'zh': '加号（报文结束，AR）'},
+    '-': {'en': 'Hyphen / minus', 'zh': '连字符 / 减号'},
+    '_': {'en': 'Underscore', 'zh': '下划线'},
+    '"': {'en': 'Quotation mark', 'zh': '引号'},
+    r'$': {'en': 'Dollar sign', 'zh': '美元符号'},
+    '@': {'en': 'At sign', 'zh': '@ 符号'},
   };
 
   static final List<ReferenceEntry> alphabet = <ReferenceEntry>[
@@ -95,7 +144,7 @@ abstract final class ReferenceCatalog {
           label: e.key,
           pattern: e.value,
           playText: e.key,
-          mnemonic: ReferenceMnemonics.forCharacter(e.key, e.value),
+          mnemonics: ReferenceMnemonics.linesForCharacter(e.key, e.value),
         ),
   ];
 
@@ -107,8 +156,8 @@ abstract final class ReferenceCatalog {
           label: e.key,
           pattern: e.value,
           playText: e.key,
-          meaning: _punctuationName(e.key),
-          mnemonic: ReferenceMnemonics.forCharacter(e.key, e.value),
+          meanings: _punctuationNames[e.key] ?? const <String, String>{},
+          mnemonics: ReferenceMnemonics.linesForCharacter(e.key, e.value),
         ),
   ];
 
@@ -119,19 +168,20 @@ abstract final class ReferenceCatalog {
         label: '<${e.key}>',
         pattern: e.value,
         playText: '<${e.key}>',
-        meaning: _prosignMeanings[e.key],
-        mnemonic: '<${e.key}>: ${ReferenceMnemonics.spokenRhythm(e.value)}',
+        meanings: _prosignMeanings[e.key] ?? const <String, String>{},
+        mnemonics: ReferenceMnemonics.rhythmLines('<${e.key}>', e.value),
       ),
   ];
 
   static final List<ReferenceEntry> qCodes = <ReferenceEntry>[
-    for (final MapEntry<String, String> e in ReferenceQCodes.meanings.entries)
+    for (final MapEntry<String, Map<String, String>> e
+        in ReferenceQCodes.meanings.entries)
       ReferenceEntry(
         section: ReferenceSection.qCodes,
         label: e.key,
         pattern: MorseEncoder.toPattern(e.key),
         playText: e.key,
-        meaning: e.value,
+        meanings: e.value,
       ),
   ];
 
@@ -142,7 +192,7 @@ abstract final class ReferenceCatalog {
         label: name,
         pattern: MorseEncoder.toPattern(name),
         playText: name,
-        meaning: ReferenceAbbreviations.meaningOf(name),
+        meanings: ReferenceAbbreviations.meaningsOf(name),
       ),
   ];
 
@@ -160,12 +210,13 @@ abstract final class ReferenceCatalog {
       pattern: pattern,
       playText: symbol,
       position: position,
-      meaning: isProsign
-          ? _prosignMeanings[symbol.substring(1, symbol.length - 1)]
-          : _punctuationName(symbol),
-      mnemonic: isProsign
-          ? '$symbol: ${ReferenceMnemonics.spokenRhythm(pattern)}'
-          : ReferenceMnemonics.forCharacter(symbol, pattern),
+      meanings: (isProsign
+              ? _prosignMeanings[symbol.substring(1, symbol.length - 1)]
+              : _punctuationNames[symbol]) ??
+          const <String, String>{},
+      mnemonics: isProsign
+          ? ReferenceMnemonics.rhythmLines(symbol, pattern)
+          : ReferenceMnemonics.linesForCharacter(symbol, pattern),
     );
   }
 
@@ -197,26 +248,4 @@ abstract final class ReferenceCatalog {
     }
     return out;
   }
-
-  static String? _punctuationName(String ch) => switch (ch) {
-    '.' => 'Period (full stop)',
-    ',' => 'Comma',
-    '?' => 'Question mark',
-    "'" => 'Apostrophe',
-    '!' => 'Exclamation mark',
-    '/' => 'Slash (fraction bar)',
-    '(' => 'Open parenthesis',
-    ')' => 'Close parenthesis',
-    '&' => 'Ampersand (wait)',
-    ':' => 'Colon',
-    ';' => 'Semicolon',
-    '=' => 'Equals (break, BT)',
-    '+' => 'Plus (end of message, AR)',
-    '-' => 'Hyphen / minus',
-    '_' => 'Underscore',
-    '"' => 'Quotation mark',
-    r'$' => 'Dollar sign',
-    '@' => 'At sign',
-    _ => null,
-  };
 }

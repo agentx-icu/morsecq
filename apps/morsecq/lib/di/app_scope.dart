@@ -74,6 +74,7 @@ class _AppScopeState extends State<AppScope> {
   late final AppServices _services = AppServices(
     identity: _identity,
     chat: _chat,
+    locale: _locale,
     notificationApis: widget.notificationApis,
     desktopShell: widget.desktopShell,
   );
@@ -86,7 +87,9 @@ class _AppScopeState extends State<AppScope> {
   void initState() {
     super.initState();
     // Context-free code (notifications, tray) reads strings through
-    // currentS(), which follows this controller.
+    // currentS() / the services' StringsResolver, both following this
+    // controller. Set before start(): the resolver is built from _locale, and
+    // start() pushes the persisted language into the desktop shell.
     LocaleController.active = _locale;
     _services.start();
   }

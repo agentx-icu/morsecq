@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
-import '../learn_strings.dart';
 import 'answer_keypad.dart';
 import 'receive_summary_view.dart';
 import 'round_result_view.dart';
@@ -155,11 +155,12 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final title =
         widget.title ??
         (_session.kind == ReceiveDrillKind.review
-            ? LearnStrings.reviewTitle
-            : LearnStrings.receiveTitle);
+            ? s.learnReviewTitle
+            : s.learnReceiveTitle);
     final body = SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -190,12 +191,13 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
 
   Widget _buildListen(BuildContext context) {
     final theme = Theme.of(context);
+    final s = context.s;
     final ready = _playback != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          LearnStrings.roundOf(_session.roundCount + 1),
+          s.learnRoundOf(_session.roundCount + 1),
           style: theme.textTheme.labelLarge?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -212,7 +214,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
             const SizedBox(width: 8),
             Flexible(
               child: Text(
-                _playing ? LearnStrings.listen : LearnStrings.ready,
+                _playing ? s.learnListen : s.learnReady,
                 style: theme.textTheme.titleMedium,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -221,7 +223,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
             OutlinedButton.icon(
               onPressed: ready && !_playing ? _play : null,
               icon: const Icon(Icons.replay),
-              label: const Text(LearnStrings.replay),
+              label: Text(s.learnReplay),
             ),
           ],
         ),
@@ -229,7 +231,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              LearnStrings.noFeedbackWarning,
+              s.learnNoFeedbackWarning,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
               ),
@@ -246,9 +248,9 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
           enableSuggestions: false,
           keyboardType: isTouchPlatform ? TextInputType.none : null,
           style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 2),
-          decoration: const InputDecoration(
-            hintText: LearnStrings.answerHint,
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            hintText: s.learnAnswerHint,
+            border: const OutlineInputBorder(),
           ),
           onSubmitted: (_) => _submit(),
         ),
@@ -263,7 +265,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
         FilledButton(
           onPressed: _submit,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: const Text(LearnStrings.submit),
+          child: Text(s.learnSubmit),
         ),
       ],
     );
@@ -272,6 +274,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
   Widget _buildResult(BuildContext context) {
     final round = _lastRound!;
     final isLast = _session.isComplete;
+    final s = context.s;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -281,7 +284,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
           onPressed: _next,
           autofocus: true,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(isLast ? LearnStrings.finish : LearnStrings.next),
+          child: Text(isLast ? s.learnFinish : s.learnNext),
         ),
       ],
     );
@@ -305,7 +308,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
           onPressed: () => Navigator.of(context).pop(outcome),
           autofocus: true,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: const Text(LearnStrings.done),
+          child: Text(context.s.learnDone),
         ),
       ],
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
 import 'account_widgets.dart';
 import 'restore_backup_page.dart';
 
@@ -29,6 +29,7 @@ class _UnlockPageState extends State<UnlockPage> {
 
   Future<void> _unlock() async {
     if (_password.text.isEmpty) return;
+    final s = context.s;
     setState(() {
       _busy = true;
       _error = null;
@@ -36,25 +37,20 @@ class _UnlockPageState extends State<UnlockPage> {
     try {
       await context.read<StartupController>().unlock(_password.text);
       // On success the gate swaps this page out; nothing to do here.
-    } on ChatException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _busy = false;
-        _error = e.code == 'wrong_password'
-            ? AccountStrings.wrongPassword
-            : e.message;
-      });
     } on Object catch (e) {
+      // `wrong_password` and any other ChatException code map through the
+      // shared table; anything else reads as the generic error.
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = StartupController.describeError(e);
+        _error = describeChatError(s, e);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     return Scaffold(
       body: AccountPageBody(
@@ -63,20 +59,20 @@ class _UnlockPageState extends State<UnlockPage> {
           Icon(Icons.lock_outline, size: 56, color: theme.colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            AccountStrings.unlockTitle,
+            s.accountUnlockTitle,
             style: theme.textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            AccountStrings.unlockBody,
+            s.accountUnlockBody,
             style: theme.textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           PasswordField(
             controller: _password,
-            label: AccountStrings.password,
+            label: s.accountPassword,
             errorText: _error,
             autofocus: true,
             textInputAction: TextInputAction.done,
@@ -86,9 +82,7 @@ class _UnlockPageState extends State<UnlockPage> {
           const SizedBox(height: 24),
           FilledButton(
             onPressed: _busy || _password.text.isEmpty ? null : _unlock,
-            child: Text(
-              _busy ? AccountStrings.unlocking : AccountStrings.unlockButton,
-            ),
+            child: Text(_busy ? s.accountUnlocking : s.accountUnlockButton),
           ),
           const SizedBox(height: 8),
           TextButton(
@@ -97,7 +91,7 @@ class _UnlockPageState extends State<UnlockPage> {
                 builder: (_) => const RestoreBackupPage(),
               ),
             ),
-            child: const Text(AccountStrings.unlockRestoreInstead),
+            child: Text(s.accountUnlockRestoreInstead),
           ),
         ],
       ),

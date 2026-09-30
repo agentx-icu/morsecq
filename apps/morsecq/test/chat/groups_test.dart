@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/ui/chat/chat_strings.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/conversation_target.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
@@ -17,22 +16,22 @@ void main() {
       (_) => const GroupsPage(),
       size: kPhone,
     );
-    expect(find.text(ChatStrings.noGroups), findsOneWidget);
+    expect(find.text(s.chatNoGroups), findsOneWidget);
 
-    await tester.tap(find.byTooltip(ChatStrings.createGroup));
+    await tester.tap(find.byTooltip(s.chatCreateGroup));
     await tester.pumpAndSettle();
     // Advanced toggle is collapsed by default.
-    expect(find.text(ChatStrings.legacyConference), findsNothing);
-    await tester.tap(find.text(ChatStrings.advanced));
+    expect(find.text(s.chatLegacyConference), findsNothing);
+    await tester.tap(find.text(s.chatAdvanced));
     await tester.pumpAndSettle();
-    expect(find.text(ChatStrings.legacyConference), findsOneWidget);
+    expect(find.text(s.chatLegacyConference), findsOneWidget);
 
-    await tester.tap(find.text(ChatStrings.create));
+    await tester.tap(find.text(s.chatCreate));
     await tester.pumpAndSettle();
-    expect(find.text(ChatStrings.groupNameRequired), findsOneWidget);
+    expect(find.text(s.chatGroupNameRequired), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField), 'Net 40m');
-    await tester.tap(find.text(ChatStrings.create));
+    await tester.tap(find.text(s.chatCreate));
     await tester.pumpAndSettle();
 
     final Group g = h.service.groups.single;
@@ -41,8 +40,8 @@ void main() {
     expect(g.chatId, hasLength(64));
     // Phone: the group conversation was pushed.
     expect(find.byType(ConversationScreen), findsOneWidget);
-    expect(find.text(ChatStrings.conferenceNote), findsNothing);
-    expect(find.text('1 ${ChatStrings.membersCount}'), findsOneWidget);
+    expect(find.text(s.chatConferenceNote), findsNothing);
+    expect(find.text(s.chatMemberCount(1)), findsOneWidget);
   });
 
   testWidgets('legacy conference shows the metadata note', (tester) async {
@@ -52,8 +51,8 @@ void main() {
       );
       return ConversationScreen(target: ConversationTarget.fromGroup(g));
     });
-    expect(find.text(ChatStrings.conferenceNote), findsOneWidget);
-    expect(find.textContaining(ChatStrings.conferenceBadge), findsOneWidget);
+    expect(find.text(s.chatConferenceNote), findsOneWidget);
+    expect(find.textContaining(s.chatConferenceBadge), findsOneWidget);
   });
 
   testWidgets('join by chat id validates then joins', (tester) async {
@@ -62,22 +61,22 @@ void main() {
       (_) => const GroupsPage(),
       size: kPhone,
     );
-    await tester.tap(find.byTooltip(ChatStrings.joinGroup));
+    await tester.tap(find.byTooltip(s.chatJoinGroup));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextFormField).first, 'abc');
     await tester.pump();
-    expect(find.text(ChatStrings.chatIdInvalid), findsOneWidget);
-    await tester.tap(find.text(ChatStrings.join));
+    expect(find.text(s.chatChatIdInvalid), findsOneWidget);
+    await tester.tap(find.text(s.chatJoin));
     await tester.pumpAndSettle();
     expect(h.service.groups, isEmpty);
 
     await tester.enterText(find.byType(TextFormField).first, 'c' * 64);
     await tester.pump();
-    await tester.tap(find.text(ChatStrings.join));
+    await tester.tap(find.text(s.chatJoin));
     await tester.pumpAndSettle();
     expect(h.service.groups.single.chatId, 'C' * 64);
-    expect(find.text(ChatStrings.joinRequested), findsOneWidget);
+    expect(find.text(s.chatJoinRequested), findsOneWidget);
     expect(find.text('Group CCCCCCCC'), findsOneWidget);
   });
 
@@ -89,13 +88,17 @@ void main() {
       return const GroupsPage();
     });
     expect(find.text('DX'), findsOneWidget);
-    expect(find.textContaining(ChatStrings.invitedBy), findsOneWidget);
-    await tester.tap(find.byTooltip(ChatStrings.accept));
+    expect(find.text(s.chatGroupInvitesCount(1)), findsOneWidget);
+    expect(
+      find.textContaining(s.chatInvitedByName('AAAAAAAAAAAA…')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip(s.chatAccept));
     await tester.pumpAndSettle();
     expect(h.service.groupInvites, isEmpty);
     expect(h.service.groups.single.name, 'DX');
     expect(find.text('DX'), findsOneWidget);
-    expect(find.textContaining(ChatStrings.invitedBy), findsNothing);
+    expect(find.text(s.chatGroupInvitesCount(1)), findsNothing);
   });
 
   testWidgets('leave from the conversation menu pops and removes the group', (
@@ -113,14 +116,14 @@ void main() {
 
     await tester.tap(find.byType(PopupMenuButton<String>).last);
     await tester.pumpAndSettle();
-    await tester.tap(find.text(ChatStrings.leaveGroup));
+    await tester.tap(find.text(s.chatLeaveGroup));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(ChatStrings.leave));
+    await tester.tap(find.text(s.chatLeave));
     await tester.pumpAndSettle();
 
     expect(h.service.groups, isEmpty);
     expect(find.byType(ConversationScreen), findsNothing);
-    expect(find.text(ChatStrings.noGroups), findsOneWidget);
+    expect(find.text(s.chatNoGroups), findsOneWidget);
   });
 
   testWidgets('group messages show the sender and send as sent', (
@@ -141,7 +144,7 @@ void main() {
     expect(find.text('Ann'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'K');
     await tester.pump();
-    await tester.tap(find.byTooltip(ChatStrings.send));
+    await tester.tap(find.byTooltip(s.chatSend));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.check), findsOneWidget);
   });

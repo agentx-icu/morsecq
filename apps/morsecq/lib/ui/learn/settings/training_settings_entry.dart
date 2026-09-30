@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
 import '../learn_playback.dart';
-import '../learn_strings.dart';
 import 'training_settings_screen.dart';
 
 /// Named-route target for `/settings/training` (pushed from the Me page).
@@ -39,13 +39,13 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
           );
         }
         return Scaffold(
-          appBar: AppBar(title: const Text(LearnStrings.settings)),
+          appBar: AppBar(title: Text(context.s.learnSettings)),
           body: Center(
             child: snapshot.hasError
                 ? Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      LearnStrings.identityRequired,
+                      context.s.learnIdentityRequired,
                       textAlign: TextAlign.center,
                     ),
                   )

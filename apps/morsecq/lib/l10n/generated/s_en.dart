@@ -24,6 +24,27 @@ class SEn extends S {
   String get navMe => 'Me';
 
   @override
+  String get navReference => 'Reference';
+
+  @override
+  String get navLearnDescription => 'Koch-method lessons, keying drills and copy practice.';
+
+  @override
+  String get navChatDescription => 'Serverless one-to-one Morse conversations over Tox P2P.';
+
+  @override
+  String get navGroupsDescription => 'Group nets — many operators keying on one shared channel.';
+
+  @override
+  String get navReferenceDescription => 'Alphabet, prosigns, Q-codes, abbreviations and a two-way translator.';
+
+  @override
+  String get navMeDescription => 'Your callsign, Tox identity, progress and settings.';
+
+  @override
+  String get shellOfflineBanner => 'Offline: not connected to the Tox network. Messages will be sent when you are back online.';
+
+  @override
   String get actionOk => 'OK';
 
   @override
@@ -73,9 +94,6 @@ class SEn extends S {
 
   @override
   String get messageStatusSent => 'Sent';
-
-  @override
-  String get messageStatusDelivered => 'Delivered';
 
   @override
   String get messageStatusFailed => 'Failed to send';
@@ -431,30 +449,14 @@ class SEn extends S {
   }
 
   @override
-  String referenceEstimatedSpeed(String wpm) {
-    return 'Estimated $wpm WPM';
+  String referenceKochPositionValue(int position) {
+    return 'Koch position: $position';
   }
 
   @override
-  String get accountAppName => 'morsecq';
-
-  @override
-  String get accountCancel => 'Cancel';
-
-  @override
-  String get accountSave => 'Save';
-
-  @override
-  String get accountRetry => 'Retry';
-
-  @override
-  String get accountContinueLabel => 'Continue';
-
-  @override
-  String get accountBack => 'Back';
-
-  @override
-  String get accountCopy => 'Copy';
+  String referenceEstimatedSpeed(String wpm) {
+    return 'Estimated $wpm WPM';
+  }
 
   @override
   String get accountCopied => 'Tox ID copied to clipboard';
@@ -490,16 +492,10 @@ class SEn extends S {
   String get accountPasswordsDoNotMatch => 'Passwords do not match';
 
   @override
-  String get accountWrongPassword => 'Wrong password. Try again.';
-
-  @override
   String get accountShowPassword => 'Show password';
 
   @override
   String get accountHidePassword => 'Hide password';
-
-  @override
-  String get accountGenericError => 'Something went wrong';
 
   @override
   String get accountStrengthWeak => 'Weak: use at least 8 characters';
@@ -521,15 +517,6 @@ class SEn extends S {
 
   @override
   String get accountStartupFailedBody => 'morsecq could not read your identity. Nothing was changed; you can try again.';
-
-  @override
-  String get accountConnectionConnecting => 'Connecting…';
-
-  @override
-  String get accountConnectionOffline => 'Offline';
-
-  @override
-  String get accountConnectionOnline => 'Online';
 
   @override
   String get accountConnectionTapToReconnect => 'Tap to reconnect';
@@ -610,9 +597,6 @@ class SEn extends S {
   String get accountRestoreChooseFile => 'Choose backup file';
 
   @override
-  String get accountRestoreFileChosen => 'Backup file selected';
-
-  @override
   String get accountRestoreNoFile => 'Choose a backup file first';
 
   @override
@@ -641,9 +625,6 @@ class SEn extends S {
 
   @override
   String get accountUnlockRestoreInstead => 'Restore from backup instead';
-
-  @override
-  String get accountMeTitle => 'Me';
 
   @override
   String get accountMeNoIdentity => 'No identity loaded';
@@ -742,7 +723,9 @@ class SEn extends S {
   String get accountDeleteButton => 'Delete';
 
   @override
-  String get chatChatTitle => 'Chat';
+  String accountRestoreFileChosenSize(int bytes) {
+    return 'Backup file selected ($bytes bytes)';
+  }
 
   @override
   String get chatSearchConversations => 'Search conversations';
@@ -772,9 +755,6 @@ class SEn extends S {
   String get chatDeleteConversationBody => 'Local history for this conversation is removed. Tox keeps no copy.';
 
   @override
-  String get chatCancel => 'Cancel';
-
-  @override
   String get chatDraftPrefix => 'Draft: ';
 
   @override
@@ -782,9 +762,6 @@ class SEn extends S {
 
   @override
   String get chatContacts => 'Contacts';
-
-  @override
-  String get chatBackendUnavailable => 'Chat backend is not connected.';
 
   @override
   String get chatNoMessages => 'No messages yet — send CQ to start.';
@@ -829,27 +806,6 @@ class SEn extends S {
   String get chatHz => 'Hz';
 
   @override
-  String get chatStatusPending => 'Queued — peer is offline';
-
-  @override
-  String get chatStatusPendingDetail => 'Tox has no server: the message is delivered when the peer comes online.';
-
-  @override
-  String get chatStatusSending => 'Sending';
-
-  @override
-  String get chatStatusSent => 'Sent';
-
-  @override
-  String get chatStatusFailed => 'Failed to send';
-
-  @override
-  String get chatOnline => 'Online';
-
-  @override
-  String get chatOffline => 'Offline';
-
-  @override
   String get chatMembers => 'Members';
 
   @override
@@ -886,9 +842,6 @@ class SEn extends S {
   String get chatSend => 'Send';
 
   @override
-  String get chatBytesLeft => 'bytes left';
-
-  @override
   String get chatTooLong => 'Too long for one Tox message';
 
   @override
@@ -898,19 +851,7 @@ class SEn extends S {
   String get chatPaddleHint => 'Tap the paddles or hold Ctrl (left dit, right dah)';
 
   @override
-  String get chatClearDraft => 'Clear draft';
-
-  @override
   String get chatDeleteLast => 'Delete last character';
-
-  @override
-  String get chatDecodedPreview => 'Decoded';
-
-  @override
-  String get chatFriends => 'Friends';
-
-  @override
-  String get chatFriendRequests => 'Friend requests';
 
   @override
   String get chatNoFriends => 'No friends yet. Add one with their Tox ID.';
@@ -967,9 +908,6 @@ class SEn extends S {
   String get chatReject => 'Reject';
 
   @override
-  String get chatCopy => 'Copy';
-
-  @override
   String get chatCopied => 'Copied to clipboard';
 
   @override
@@ -986,9 +924,6 @@ class SEn extends S {
 
   @override
   String get chatRemove => 'Remove';
-
-  @override
-  String get chatGroupsTitle => 'Groups';
 
   @override
   String get chatNoGroups => 'No groups yet. Create one or join by chat id.';
@@ -1033,37 +968,13 @@ class SEn extends S {
   String get chatJoinRequested => 'Joining — the group appears once a peer is found.';
 
   @override
-  String get chatGroupInvites => 'Group invites';
-
-  @override
-  String get chatNoInvites => 'No pending invites';
-
-  @override
-  String get chatInvitedBy => 'Invited by';
-
-  @override
-  String get chatMembersCount => 'members';
-
-  @override
   String get chatConferenceBadge => 'Conference';
 
   @override
   String get chatCopyChatId => 'Copy chat id';
 
   @override
-  String get chatYou => 'You';
-
-  @override
-  String get chatError => 'Something went wrong';
-
-  @override
-  String get learnLearnTitle => 'Learn';
-
-  @override
   String get learnLessonCardTitle => 'Koch lesson';
-
-  @override
-  String get learnNewestChar => 'New this lesson';
 
   @override
   String get learnCourseComplete => 'Course complete - keep sharpening!';
@@ -1132,9 +1043,6 @@ class SEn extends S {
   String get learnReplay => 'Replay';
 
   @override
-  String get learnPlay => 'Play';
-
-  @override
   String get learnAnswerHint => 'Type what you heard';
 
   @override
@@ -1199,9 +1107,6 @@ class SEn extends S {
 
   @override
   String get learnDecoded => 'Decoded';
-
-  @override
-  String get learnPending => 'Keying';
 
   @override
   String get learnWaitingForKey => 'Start keying when ready';
@@ -1288,9 +1193,6 @@ class SEn extends S {
   String get learnDailyGoal => 'Daily goal';
 
   @override
-  String get learnSampleText => 'CQ';
-
-  @override
   String get referenceReferenceTitle => 'Morse reference';
 
   @override
@@ -1346,9 +1248,6 @@ class SEn extends S {
 
   @override
   String get referenceMnemonicTitle => 'Mnemonic';
-
-  @override
-  String get referenceKochPosition => 'Koch position';
 
   @override
   String get referenceMeaningLabel => 'Meaning';
@@ -1471,12 +1370,6 @@ class SEn extends S {
   String get statsTileAccuracy => 'Accuracy';
 
   @override
-  String get statsAccuracyLast7Days => 'last 7 days';
-
-  @override
-  String get statsAccuracyAllTime => 'all time';
-
-  @override
   String get statsNoData => '--';
 
   @override
@@ -1510,13 +1403,7 @@ class SEn extends S {
   String get statsSeriesSend => 'Send';
 
   @override
-  String get statsSeriesAll => 'Sessions';
-
-  @override
   String get statsAxisSessions => 'Session';
-
-  @override
-  String get statsAxisAccuracy => 'Accuracy';
 
   @override
   String get statsCharsTitle => 'Characters';
@@ -1699,5 +1586,333 @@ class SEn extends S {
   String get listenNoInput => 'No microphone was found. Connect one and try again.';
 
   @override
+  String listenWpmValue(int wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String listenHzValue(int hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String listenBlockSamples(int samples, String ms) {
+    return '$samples samples ($ms ms)';
+  }
+
+  @override
+  String listenMsValue(int ms) {
+    return '$ms ms';
+  }
+
+  @override
   String get listenStoppedInBackground => 'Listening stopped while the app was in the background.';
+
+  @override
+  String get learnWpmUnknown => '- wpm';
+
+  @override
+  String get learnTipDitTooLongTitle => 'Dits too long';
+
+  @override
+  String get learnTipDahTooShortTitle => 'Dahs too short';
+
+  @override
+  String get learnTipIntraGapTooLongTitle => 'Elements spread out';
+
+  @override
+  String get learnTipCharGapTooShortTitle => 'Characters crowded';
+
+  @override
+  String get learnTipWordGapTooShortTitle => 'Words crowded';
+
+  @override
+  String get learnTipSpeedUnsteadyTitle => 'Speed unsteady';
+
+  @override
+  String get learnSeverityMinor => 'minor';
+
+  @override
+  String get learnSeverityModerate => 'noticeable';
+
+  @override
+  String get learnSeveritySevere => 'major';
+
+  @override
+  String get notificationOpen => 'Open';
+
+  @override
+  String get notificationChannelMessages => 'Messages';
+
+  @override
+  String get notificationChannelMessagesDescription => 'New Morse messages from friends and groups';
+
+  @override
+  String get notificationChannelFriendRequests => 'Friend requests';
+
+  @override
+  String get notificationChannelFriendRequestsDescription => 'Someone wants to add you as a friend';
+
+  @override
+  String get notificationChannelGroupInvites => 'Group invites';
+
+  @override
+  String get notificationChannelGroupInvitesDescription => 'A friend invited you to a group';
+
+  @override
+  String get notificationNewMessage => 'New message';
+
+  @override
+  String get notificationFriendRequestTitle => 'New friend request';
+
+  @override
+  String learnNewestCharIs(String char) {
+    return 'New this lesson: $char';
+  }
+
+  @override
+  String learnCharNewSemantics(String char) {
+    return '$char, new';
+  }
+
+  @override
+  String learnPendingPattern(String pattern) {
+    return 'Keying: $pattern';
+  }
+
+  @override
+  String learnIssueHeadline(String title, String severity) {
+    return '$title ($severity)';
+  }
+
+  @override
+  String learnRatioTimes(String ratio) {
+    return '${ratio}x';
+  }
+
+  @override
+  String learnTipDitTooLong(String ratio) {
+    return 'Your dits are running long (about $ratio of a dit). Think \'di\', not \'daah\' - a dit is a tap, not a press.';
+  }
+
+  @override
+  String learnTipDahTooShort(String ratio) {
+    return 'Your dahs are short (about $ratio of a dit; aim for 3). Hold the dah for the length of three dits.';
+  }
+
+  @override
+  String learnTipIntraGapTooLong(String ratio) {
+    return 'Gaps inside characters are too wide (about $ratio of a dit). Keep the elements of one character tight together.';
+  }
+
+  @override
+  String learnTipCharGapTooShort(String ratio) {
+    return 'Characters are running into each other (gaps about $ratio of a dit; aim for 3). Leave a clear pause after each character.';
+  }
+
+  @override
+  String learnTipWordGapTooShort(String ratio) {
+    return 'Words are too close (gaps about $ratio of a dit; aim for 7). Count a long pause between words.';
+  }
+
+  @override
+  String learnTipSpeedUnsteady(int percent) {
+    return 'Your speed wanders (variation $percent%). Settle on one tempo and hold it for the whole line.';
+  }
+
+  @override
+  String learnIssueDetailDitTooLong(int offending, int total, String ratio) {
+    return '$offending of $total dits too long (avg $ratio dit)';
+  }
+
+  @override
+  String learnIssueDetailDahTooShort(int offending, int total, String ratio) {
+    return '$offending of $total dahs too short (avg $ratio dit)';
+  }
+
+  @override
+  String learnIssueDetailIntraGapTooLong(int offending, int total, String ratio) {
+    return '$offending of $total gaps inside characters too long (avg $ratio dit)';
+  }
+
+  @override
+  String learnIssueDetailCharGapTooShort(int offending, int total, String ratio) {
+    return '$offending of $total character gaps too short (avg $ratio dit)';
+  }
+
+  @override
+  String learnIssueDetailWordGapTooShort(int offending, int total, String ratio) {
+    return '$offending of $total word gaps too short (avg $ratio dit)';
+  }
+
+  @override
+  String learnIssueDetailSpeedUnsteady(String cv) {
+    return 'keying speed unsteady (cv $cv)';
+  }
+
+  @override
+  String statsAccuracyDetail(String allTime) {
+    return 'last 7 days / $allTime all time';
+  }
+
+  @override
+  String statsDurationHoursMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String statsDurationMinutes(int minutes) {
+    return '${minutes}m';
+  }
+
+  @override
+  String statsDurationSeconds(int seconds) {
+    return '${seconds}s';
+  }
+
+  @override
+  String get accountNewPasswordRequired => 'Enter a new password';
+
+  @override
+  String get accountToxIdQrSemantics => 'Tox ID QR code';
+
+  @override
+  String get accountBackupSaveDialogTitle => 'Save morsecq backup';
+
+  @override
+  String get accountBackupShareSubject => 'morsecq identity backup';
+
+  @override
+  String get accountBackupChooseDialogTitle => 'Choose morsecq backup';
+
+  @override
+  String notificationNewMessages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new messages',
+      one: '1 new message',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationFriendRequestFrom(String name) {
+    return 'Friend request from $name';
+  }
+
+  @override
+  String notificationFriendRequestBody(String name, String message) {
+    return '$name: $message';
+  }
+
+  @override
+  String notificationGroupInviteTitle(String group) {
+    return 'Invite to $group';
+  }
+
+  @override
+  String notificationGroupInviteBody(String name) {
+    return '$name invited you';
+  }
+
+  @override
+  String desktopTrayShow(String app) {
+    return 'Show $app';
+  }
+
+  @override
+  String desktopTrayHide(String app) {
+    return 'Hide $app';
+  }
+
+  @override
+  String get desktopTraySoundOn => 'Sound on';
+
+  @override
+  String get desktopTraySoundOff => 'Sound off';
+
+  @override
+  String desktopTrayQuit(String app) {
+    return 'Quit $app';
+  }
+
+  @override
+  String desktopTrayTooltipUnread(String app, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unread messages',
+      one: '1 unread message',
+    );
+    return '$app — $_temp0';
+  }
+
+  @override
+  String desktopWindowTitleUnread(String badge, String app) {
+    return '($badge) $app';
+  }
+
+  @override
+  String get listenStateOn => 'On';
+
+  @override
+  String get listenStateOff => 'Off';
+
+  @override
+  String chatBytesLeftCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bytes left',
+      one: '1 byte left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatFriendsCount(int count) {
+    return 'Friends ($count)';
+  }
+
+  @override
+  String chatFriendRequestsCount(int count) {
+    return 'Friend requests ($count)';
+  }
+
+  @override
+  String chatGroupInvitesCount(int count) {
+    return 'Group invites ($count)';
+  }
+
+  @override
+  String chatMembersTitleCount(int count) {
+    return 'Members · $count';
+  }
+
+  @override
+  String chatInvitedByName(String name) {
+    return 'Invited by $name';
+  }
+
+  @override
+  String chatMemberSelf(String name) {
+    return '$name (You)';
+  }
+
+  @override
+  String chatSliderValue(String label, int value, String unit) {
+    return '$label: $value $unit';
+  }
 }

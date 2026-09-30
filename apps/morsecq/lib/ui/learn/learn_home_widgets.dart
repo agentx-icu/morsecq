@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
-import 'learn_strings.dart';
 
 /// Koch position: lesson n / total, the learned set with the newest symbol
 /// highlighted.
@@ -16,6 +16,7 @@ class LessonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final learned = controller.learnedChars;
     final newest = controller.newestChar;
     return Card(
@@ -25,17 +26,14 @@ class LessonCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              LearnStrings.lessonCardTitle,
+              s.learnLessonCardTitle,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              LearnStrings.lessonOf(
-                controller.currentLesson,
-                controller.lessonCount,
-              ),
+              s.learnLessonOf(controller.currentLesson, controller.lessonCount),
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: 4),
@@ -48,7 +46,7 @@ class LessonCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              LearnStrings.charsLearned(learned.length),
+              s.learnCharsLearned(learned.length),
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 8),
@@ -67,8 +65,8 @@ class LessonCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               controller.isCourseComplete
-                  ? LearnStrings.courseComplete
-                  : '${LearnStrings.newestChar}: $newest',
+                  ? s.learnCourseComplete
+                  : s.learnNewestCharIs(newest),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -111,7 +109,7 @@ class LearnedCharChip extends StatelessWidget {
       foreground = scheme.onSurface;
     }
     return Semantics(
-      label: isNewest ? '$char, new' : char,
+      label: isNewest ? context.s.learnCharNewSemantics(char) : char,
       child: Container(
         constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -143,6 +141,7 @@ class DailyGoalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final streak = controller.streak;
     return Card(
       child: Padding(
@@ -153,7 +152,9 @@ class DailyGoalCard extends StatelessWidget {
               fraction: controller.dailyGoalFraction,
               size: 88,
               child: Text(
-                '${(controller.dailyGoalFraction * 100).round()}%',
+                s.learnAccuracyPercent(
+                  (controller.dailyGoalFraction * 100).round(),
+                ),
                 style: theme.textTheme.titleMedium,
               ),
             ),
@@ -163,14 +164,14 @@ class DailyGoalCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    LearnStrings.dailyGoalTitle,
+                    s.learnDailyGoalTitle,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    LearnStrings.dailyGoalProgress(
+                    s.learnDailyGoalProgress(
                       controller.charsToday,
                       controller.dailyGoal,
                     ),
@@ -178,7 +179,7 @@ class DailyGoalCard extends StatelessWidget {
                   ),
                   if (controller.dailyGoalMet)
                     Text(
-                      LearnStrings.dailyGoalMet,
+                      s.learnDailyGoalMet,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.primary,
                       ),
@@ -195,8 +196,8 @@ class DailyGoalCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           streak > 0
-                              ? LearnStrings.streakDays(streak)
-                              : LearnStrings.noStreak,
+                              ? s.learnStreakDays(streak)
+                              : s.learnNoStreak,
                           style: theme.textTheme.bodyMedium,
                         ),
                       ),
@@ -305,13 +306,14 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         FilledButton.icon(
           onPressed: onContinueLesson,
           icon: const Icon(Icons.play_arrow),
-          label: const Text(LearnStrings.continueLesson),
+          label: Text(s.learnContinueLesson),
           style: FilledButton.styleFrom(
             minimumSize: const Size.fromHeight(56),
           ),
@@ -319,18 +321,18 @@ class QuickActions extends StatelessWidget {
         const SizedBox(height: 10),
         _ActionTile(
           icon: Icons.hearing,
-          label: LearnStrings.receivePractice,
+          label: s.learnReceivePractice,
           onTap: onReceivePractice,
         ),
         _ActionTile(
           icon: Icons.touch_app_outlined,
-          label: LearnStrings.sendPractice,
+          label: s.learnSendPractice,
           onTap: onSendPractice,
         ),
         _ActionTile(
           icon: Icons.replay,
-          label: LearnStrings.reviewDue,
-          trailing: LearnStrings.reviewDueCount(dueCount),
+          label: s.learnReviewDue,
+          trailing: s.learnReviewDueCount(dueCount),
           onTap: onReview,
         ),
       ],

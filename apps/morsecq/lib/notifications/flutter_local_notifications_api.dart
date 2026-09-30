@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../i18n/current_strings.dart';
+import '../l10n/generated/s.dart';
 import 'local_notifications_api.dart';
 import 'notification_platform.dart';
-import 'notification_strings.dart';
 
 /// Production [LocalNotificationsApi] on `flutter_local_notifications`
 /// (22.x). The only file in the app that imports the plugin.
@@ -20,18 +21,32 @@ import 'notification_strings.dart';
 /// - Windows: WinRT toasts via the endorsed FFI package
 ///   `flutter_local_notifications_windows`; no permission, no grouping;
 ///   `cancel` is a no-op unless the app is packaged as MSIX (plugin README).
+///
+/// Language: [strings] (default `currentS()`) is read on every [show] for the
+/// Android channel name/description and the Linux action label, so those
+/// follow the app language. Android **creates** the channels once, in
+/// [initialize]; the OS keeps the name/description of an existing channel
+/// (`createIfNotExists`), so what Android Settings shows is the language of
+/// the first launch until the channels are re-created (see README).
 final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   FlutterLocalNotificationsApi({
     FlutterLocalNotificationsPlugin? plugin,
     NotificationPlatform? platform,
     this.androidIcon = defaultAndroidIcon,
+    S Function()? strings,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-       _platform = platform ?? NotificationPlatform.detect();
+       _platform = platform ?? NotificationPlatform.detect(),
+       _strings = strings ?? currentS;
 
   /// The launcher icon. Android guidance prefers an alpha-only drawable; the
   /// launcher mipmap is a known-acceptable fallback until branding ships a
   /// status-bar glyph (keep it out of R8 resource shrinking if that changes).
   static const String defaultAndroidIcon = '@mipmap/ic_launcher';
+
+  /// Display name Windows registers for the toast platform together with
+  /// [windowsAppUserModelId]. A product name, never translated, and kept
+  /// stable so the registry entry of an unpackaged app is not duplicated.
+  static const String windowsAppName = 'Morsecq';
 
   /// Windows registers the app with the toast platform under this
   /// AppUserModelID; unpackaged apps register it in the registry on first
@@ -45,6 +60,7 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   final FlutterLocalNotificationsPlugin _plugin;
   final NotificationPlatform _platform;
   final String androidIcon;
+  final S Function() _strings;
   bool _initialized = false;
 
   @override
@@ -63,11 +79,11 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
         android: AndroidInitializationSettings(androidIcon),
         iOS: darwin,
         macOS: darwin,
-        linux: const LinuxInitializationSettings(
-          defaultActionName: NotificationStrings.open,
+        linux: LinuxInitializationSettings(
+          defaultActionName: _strings().notificationOpen,
         ),
         windows: const WindowsInitializationSettings(
-          appName: NotificationStrings.appName,
+          appName: windowsAppName,
           appUserModelId: windowsAppUserModelId,
           guid: windowsGuid,
         ),
@@ -179,12 +195,13 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   }
 
   NotificationDetails _details(NotificationRequest request) {
+    final S s = _strings();
     final bool grouped = request.lines.length > 1;
     final NotificationChannelKind channel = request.channel;
     final AndroidNotificationDetails android = AndroidNotificationDetails(
       channel.androidId,
-      channel.displayName,
-      channelDescription: channel.description,
+      channel.displayName(s),
+      channelDescription: channel.description(s),
       importance: Importance.high,
       priority: Priority.high,
       category: channel.androidCategory,
@@ -213,7 +230,7 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
           ? LinuxNotificationCategory.imReceived
           : LinuxNotificationCategory.im,
       suppressSound: !request.sound,
-      defaultActionName: NotificationStrings.open,
+      defaultActionName: s.notificationOpen,
     );
     final WindowsNotificationDetails windows = WindowsNotificationDetails(
       audio: request.sound ? null : WindowsNotificationAudio.silent(),
@@ -233,14 +250,17 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
           AndroidFlutterLocalNotificationsPlugin
         >();
     if (impl == null) return;
+    final S s = _strings();
     for (final NotificationChannelKind kind in NotificationChannelKind.values) {
       // Re-creating an existing channel only updates name/description;
       // importance and sound are frozen by Android once the channel exists.
+      // Names are therefore in the language of the first launch; a later
+      // language switch is reflected on the next channel re-creation only.
       await impl.createNotificationChannel(
         AndroidNotificationChannel(
           kind.androidId,
-          kind.displayName,
-          description: kind.description,
+          kind.displayName(s),
+          description: kind.description(s),
           importance: Importance.high,
         ),
       );
@@ -260,21 +280,21 @@ extension NotificationChannelKindAndroid on NotificationChannelKind {
     NotificationChannelKind.groupInvites => 'morsecq_group_invites',
   };
 
-  String get displayName => switch (this) {
-    NotificationChannelKind.messages => NotificationStrings.channelMessages,
+  /// Channel name as shown in Android Settings, in the language of [s].
+  String displayName(S s) => switch (this) {
+    NotificationChannelKind.messages => s.notificationChannelMessages,
     NotificationChannelKind.friendRequests =>
-      NotificationStrings.channelFriendRequests,
-    NotificationChannelKind.groupInvites =>
-      NotificationStrings.channelGroupInvites,
+      s.notificationChannelFriendRequests,
+    NotificationChannelKind.groupInvites => s.notificationChannelGroupInvites,
   };
 
-  String get description => switch (this) {
+  String description(S s) => switch (this) {
     NotificationChannelKind.messages =>
-      NotificationStrings.channelMessagesDescription,
+      s.notificationChannelMessagesDescription,
     NotificationChannelKind.friendRequests =>
-      NotificationStrings.channelFriendRequestsDescription,
+      s.notificationChannelFriendRequestsDescription,
     NotificationChannelKind.groupInvites =>
-      NotificationStrings.channelGroupInvitesDescription,
+      s.notificationChannelGroupInvitesDescription,
   };
 
   AndroidNotificationCategory get androidCategory => switch (this) {

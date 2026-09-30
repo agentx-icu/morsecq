@@ -21,9 +21,3 @@ IdentityService? maybeIdentityService(BuildContext context) {
     return null;
   }
 }
-
-/// Human-readable text for a [ChatException] or any other error.
-String describeError(Object error) {
-  if (error is ChatException) return error.message;
-  return error.toString();
-}

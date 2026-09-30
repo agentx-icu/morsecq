@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
-import '../chat/chat_strings.dart';
 
 /// Shows the local identity's Tox ID as a QR code (scannable by another
 /// morsecq / toxee) plus the hex text with a copy button.
@@ -24,6 +24,7 @@ class MyToxIdCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     final Identity? id = identity;
     return SafeArea(
       child: SingleChildScrollView(
@@ -31,12 +32,12 @@ class MyToxIdCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(ChatStrings.myToxId, style: theme.textTheme.titleLarge),
+            Text(s.chatMyToxId, style: theme.textTheme.titleLarge),
             const SizedBox(height: 4),
             if (id == null)
-              const Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(ChatStrings.noIdentity),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(s.chatNoIdentity),
               )
             else ...[
               Text(id.displayName, style: theme.textTheme.titleMedium),
@@ -68,10 +69,10 @@ class MyToxIdCard extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: id.toxId));
-                  if (context.mounted) showSnack(context, ChatStrings.copied);
+                  if (context.mounted) showSnack(context, s.chatCopied);
                 },
                 icon: const Icon(Icons.copy),
-                label: const Text(ChatStrings.copy),
+                label: Text(s.actionCopy),
               ),
             ],
           ],

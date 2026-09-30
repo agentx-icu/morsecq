@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 import 'reference_catalog.dart';
 import 'reference_entry_tile.dart';
 import 'reference_mnemonics.dart';
 import 'reference_playback_controller.dart';
-import 'reference_strings.dart';
 
 /// A–Z and 0–9 as tappable cards. Tap plays, long-press shows the mnemonic.
 ///
@@ -70,11 +70,13 @@ class AlphabetCard extends StatelessWidget {
     final ColorScheme scheme = theme.colorScheme;
     final bool playing = controller.isPlayingId(entry.id);
     final int? active = controller.activeMarkFor(entry.id);
+    final String language = Localizations.localeOf(context).languageCode;
 
     return Semantics(
       button: true,
-      label: '${entry.label}, ${ReferenceMnemonics.spokenRhythm(entry.pattern)}',
-      hint: ReferenceStrings.alphabetHint,
+      label:
+          '${entry.label}, ${ReferenceMnemonics.spokenRhythm(entry.pattern, language: language)}',
+      hint: context.s.referenceAlphabetHint,
       child: Card(
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,

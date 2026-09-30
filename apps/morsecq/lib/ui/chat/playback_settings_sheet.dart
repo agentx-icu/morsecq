@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'chat_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'morse_playback_settings.dart';
 
 /// Bottom sheet with the listener's speed / Farnsworth / tone sliders.
@@ -22,6 +22,7 @@ class _PlaybackSettingsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return ListenableBuilder(
       listenable: settings,
       builder: (context, _) => SafeArea(
@@ -32,31 +33,31 @@ class _PlaybackSettingsSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                ChatStrings.playbackSettings,
+                s.chatPlaybackSettings,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               _SliderRow(
-                label: ChatStrings.characterSpeed,
+                label: s.chatCharacterSpeed,
                 value: settings.wpm,
                 min: MorsePlaybackSettings.minWpm,
                 max: MorsePlaybackSettings.maxWpm,
-                unit: ChatStrings.wpm,
+                unit: s.chatWpm,
                 onChanged: (v) => settings.wpm = v.roundToDouble(),
               ),
               _SliderRow(
-                label: ChatStrings.farnsworthSpeed,
+                label: s.chatFarnsworthSpeed,
                 value: settings.farnsworthWpm,
                 min: MorsePlaybackSettings.minWpm,
                 max: settings.wpm,
-                unit: ChatStrings.wpm,
+                unit: s.chatWpm,
                 onChanged: (v) => settings.farnsworthWpm = v.roundToDouble(),
               ),
               _SliderRow(
-                label: ChatStrings.tone,
+                label: s.chatTone,
                 value: settings.toneHz,
                 min: MorsePlaybackSettings.minToneHz,
                 max: MorsePlaybackSettings.maxToneHz,
-                unit: ChatStrings.hz,
+                unit: s.chatHz,
                 onChanged: (v) => settings.toneHz = (v / 10).round() * 10,
               ),
             ],
@@ -90,7 +91,7 @@ class _SliderRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$label: ${clamped.round()} $unit'),
+        Text(context.s.chatSliderValue(label, clamped.round(), unit)),
         Slider(
           value: clamped,
           min: min,

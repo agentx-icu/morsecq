@@ -1,3 +1,5 @@
+[简体中文](./README.zh-CN.md)
+
 # Localisation (l10n) for the morsecq app
 
 English (`en`, template) and Simplified Chinese (`zh`) via Flutter's gen-l10n.
@@ -13,6 +15,9 @@ English (`en`, template) and Simplified Chinese (`zh`) via Flutter's gen-l10n.
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`; re-exports `S` |
 | `lib/i18n/language_settings_tile.dart` | `LanguageSettingsTile` for the Me page (+ `showLanguageDialog`) |
 | `lib/i18n/chat_error_messages.dart` | `chatErrorMessage(s, code)` / `describeChatError(s, error)` for `ChatException` codes |
+| `lib/i18n/current_strings.dart`, `lib/i18n/strings_resolver.dart` | `currentS()` / `StringsResolver` for code without a `BuildContext` (see below) |
+| `lib/notifications/**` | `notification*` keys: OS notification titles/bodies, inbox summary plural, Android channel names, Linux action. Resolved via `S Function()` at post time |
+| `lib/desktop/**` | `desktop*` keys: tray menu (Show/Hide/Sound/Quit), tooltip plural, unread window title. `DesktopShellController.updateStrings(S)` |
 | `tool/strings_to_arb.dart` (repo root) | Migration tool: `*_strings.dart` consts → ARB keys |
 
 ## Wiring (main.dart)
@@ -46,6 +51,22 @@ Text(context.s.statsSessions(count))          // ICU plural
 Outside a widget (controllers, background code) pass the `S` instance in
 rather than reaching for a context. `S.of(context)` throws above the
 `MaterialApp`, so tests pump `localizationsDelegates: S.localizationsDelegates`.
+
+### Context-free strings (notifications, tray, lifecycle)
+
+Services that outlive any widget take an `S Function()` (default `currentS()`,
+which follows `LocaleController.active` — toxee's `currentAppL10n()` scheme)
+and call it when they need text, so the *next* notification or tray rebuild is
+in the new language with no re-wiring. `AppServices` owns one `StringsResolver`
+(a `ChangeNotifier` over the scope's `LocaleController`; fires on the setting
+and, while following the system, on OS locale changes), hands notifications
+`() => strings.s` and calls `DesktopShellController.updateStrings(strings.s)`
+on start and on every change. Product names (`appName`, `MorseCQ`) are
+placeholders, never translated. Limits: notifications already on screen keep
+their language, and Android channel names are frozen at first creation (see
+`lib/notifications/README.md`). Tests pin the language with
+`lookupS(const Locale('en'))` / `lookupS(const Locale('zh'))` instead of
+relying on the host locale.
 
 ## Adding a string
 
@@ -106,13 +127,14 @@ owning agents replace them file by file (`AccountStrings.x` → `context.s.accou
 
 | Const class | ARB prefix | Files that reference it |
 |-------------|-----------|-------------------------|
-| `AccountStrings` (`ui/account/account_strings.dart`) | `account*` | `main.dart` (title, placeholder route), `startup/startup_controller.dart`, `startup/startup_screens.dart`, `ui/account/{account_widgets,backup_actions,backup_wizard_page,change_password_page,connection_chip,create_identity_page,delete_identity_dialog,edit_profile_page,identity_card,password_strength,restore_backup_page,tox_id_qr_dialog,unlock_page,welcome_page}.dart`, `ui/pages/me_page.dart` |
-| `ChatStrings` (`ui/chat/chat_strings.dart`) | `chat*` | `ui/chat/{chat_layout,conversation_list,conversation_screen,conversation_tile,keying_input,message_bubble,message_input,message_status_icon,playback_settings_sheet}.dart`, `ui/contacts/{add_friend_sheet,contacts_page,friend_request_inbox,my_tox_id_sheet,qr_scan_page}.dart`, `ui/groups/{create_group_sheet,group_invites_inbox,group_list,group_members_sheet,join_group_sheet}.dart`, `ui/pages/{chat_page,groups_page}.dart` |
-| `LearnStrings` (`ui/learn/learn_strings.dart`) | `learn*` | `ui/learn/{learn_home,learn_home_widgets}.dart`, `ui/learn/receive/{answer_keypad,receive_drill_screen,receive_summary_view,round_result_view}.dart`, `ui/learn/review/review_screen.dart`, `ui/learn/send/{keyer_legend,send_live_view,send_practice_screen,send_result_view,send_tips}.dart`, `ui/learn/settings/training_settings_screen.dart` |
-| `StatsStrings` (`ui/stats/stats_strings.dart`) | `stats*` | `ui/stats/**` (dashboard, tiles, trend chart, character grid, heatmap, calendar) |
-| `ReferenceStrings` (`ui/reference/reference_strings.dart`) | `reference*` | `ui/reference/**` (reference screen, translator, keypad) |
-| Hard-coded page titles | `nav*` | `ui/pages/learn_page.dart` (`'Learn'`), `ui/pages/me_page.dart` (`'Me'`), `ui/shell/app_shell.dart` (`kShellDestinations` labels — make them a function of `S` or resolve in `build`) |
-| Hard-coded page descriptions | — (not yet in ARB) | `ui/pages/{learn,chat,groups,me}_page.dart` `description` consts |
+| ~~`AccountStrings`~~ (deleted 2026-09-30) | `account*` (+ shared `action*`, `connection*`, `error*`, `appName`) | **Done.** `main.dart`, `startup/**`, `ui/account/**`, `ui/pages/me_page.dart` read `context.s`. Routes/URLs live in `ui/account/account_routes.dart` (`kTrainingSettingsRoute`, `kAboutSourceUrl`). `StartupController` holds no text: `error` / `connectionError` are the thrown objects and widgets call `describeChatError(s, e)`; `PasswordStrength.label(S s)`; the backup gateway's native dialog titles use `currentS()` (no context). `invalid_backup` is mapped in `restore_backup_page.dart` only (not part of `chat_error_messages.dart`) |
+| ~~`ChatStrings`~~ (deleted 2026-09-30) | `chat*` (+ shared `action*`, `connection*`, `messageStatus*`, `error*`, `nav*`; placeholder keys `chatBytesLeftCount`, `chatMemberCount`, `chatFriendsCount`, `chatFriendRequestsCount`, `chatGroupInvitesCount`, `chatMembersTitleCount`, `chatInvitedByName`, `chatMemberSelf`, `chatSliderValue` added) | **Done.** `ui/chat/**`, `ui/contacts/**`, `ui/groups/**` and the bodies of `ui/pages/{chat,groups}_page.dart` read `context.s`. The duplicates below were collapsed on the way (`chatCancel`→`actionCancel`, `chatCopy`→`actionCopy`, `chatOnline/Offline`→`connection*`, `chatStatus*`→`messageStatus*`; the old `chat*` twins stay in the ARB unused). Errors: widgets keep the thrown object / `ChatException.code` and call `describeChatError(s, e)` in `build`; the add-friend sheet maps `invalid_tox_id`/`own_id`/`already_friend` to the short field texts `chatToxId*`. Validators: `ui/contacts/tox_id.dart` exposes locale-free `validateToxId(...) → ToxIdError?` / `isValidChatIdInput` plus `validateToxIdInput(S, …)` / `validateChatIdInput(S, …)` wrappers. Timestamps: `formatMessageTime(context, time)` in `chat_layout.dart` uses `MaterialLocalizations` (`formatTimeOfDay` / `formatShortMonthDay` / `formatShortDate`), no format string. Count strings are ICU (`chatBytesLeftCount` accepts a negative count for over-budget drafts). `ConversationList.emptyText` / `MasterDetail.emptyDetailText` are nullable and fall back to `chatNoConversations` / `chatSelectConversation`. Tests: `test/chat/test_support.dart` pins `Locale('en')` and exports `final S s = lookupS(const Locale('en'))` |
+| ~~`LearnStrings`~~ (deleted 2026-09-30) | `learn*` | **Done.** `ui/learn/**` reads `context.s`; helpers that need an `S` take it as a parameter (`send/send_tips.dart`: `tipFor/titleFor/severityLabel/detailFor/formatWpm(S, …)`, `receive/receive_widgets.dart`: `formatAccuracy/confusedAs(S, …)`). `LearnScope.title` is nullable and falls back to `navLearn`. Tests pump `l10nApp(...)` from `test/learn/helpers/l10n.dart` and compare against `en.learn*` |
+| ~~`StatsStrings`~~ (deleted 2026-09-30) | `stats*` | **Done.** `ui/stats/**` reads `context.s`; `formatPercent/formatPercentOrNoData/formatPracticeDuration(S, …)` live in `stats_widgets.dart`; painters receive pre-localised labels (`TrendPainter.axisLabel/percentLabel`, `CalendarPainter.locale`); dates via `DateFormat.yMd(locale)`, weekday/month labels via `weekdayInitial/monthAbbreviation(…, locale:)` in `stats_math.dart` |
+| ~~`ReferenceStrings`~~ (deleted 2026-09-30) | `reference*` (`referenceKochPositionValue` added) | **Done.** `ui/reference/**` reads `context.s` / `S s`; `ReferenceSection.label(S)` and `TranslatorMode.label(S)` replace the enum const labels. Reference *content* (Q-code / CW-abbreviation / prosign / punctuation meanings, mnemonics) is data, not ARB: each row is a `Map<String, String>` keyed by language code (`'en'`, `'zh'`), read through `ReferenceEntry.meaning(Locale)` / `mnemonic(Locale)` with English fallback (`ui/reference/reference_localized_text.dart`, `kReferenceLanguages`). A new language adds one entry per row there (plus a `ReferenceMnemonics.spokenRhythm` reading if it voices dit/dah differently); search matches every language's text |
+| ~~`ListenStrings`~~ (deleted 2026-09-30) | `listen*` (`listenWpmValue`, `listenHzValue`, `listenMsValue`, `listenBlockSamples`, `listenStateOn/Off` added) | **Done.** `ui/listen/**` reads `context.s`; `ListenController` holds no text (it exposes `ListenStatus` + the raw platform `errorMessage`; `ListenStatusBanner._failureText(S, detail)` maps them). Units are ICU placeholders; tests pin `Locale('en')` and compare against `lookupS(...)` |
+| ~~Hard-coded page titles~~ | `nav*` (`navReference` added) | **Done.** Every `ui/pages/*_page.dart` exposes `static String title(S s)`; `ShellDestination.label` is a `String Function(S s)` resolved in `AppShell.build`, so a language switch relabels the bar/rail. Tests: `LearnPage.title(lookupS(const Locale('en')))` |
+| ~~Hard-coded page descriptions~~ | `nav*Description`, `shellOfflineBanner` | **Done.** `static String description(S s)` on the same pages (`navLearnDescription`, `navChatDescription`, `navGroupsDescription`, `navReferenceDescription`, `navMeDescription`); the offline strip in `ui/shell/app_shell.dart` reads `shellOfflineBanner` |
 
 Duplicates worth collapsing during the swap: `accountCancel`/`chatCancel` →
 `actionCancel`; `accountCopy`/`chatCopy` → `actionCopy`; `accountRetry`/
@@ -123,5 +145,5 @@ Duplicates worth collapsing during the swap: `accountCancel`/`chatCancel` →
 Once a const class has no remaining references, delete it and the ARB keeps
 the keys (nothing depends on the const file any more).
 
-Also still to do: a `listen_strings.dart` (audio decoder UI) did not exist
-when this pass ran — run the migration tool when it lands.
+The Listen screen (`listen*`) was migrated on 2026-09-30 together with the
+reference; its const file is gone (see the table above).

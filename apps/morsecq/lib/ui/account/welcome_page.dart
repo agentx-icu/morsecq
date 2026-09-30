@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 import 'create_identity_page.dart';
 import 'restore_backup_page.dart';
@@ -12,6 +12,7 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     return Scaffold(
       body: AccountPageBody(
@@ -20,26 +21,26 @@ class WelcomePage extends StatelessWidget {
           Icon(Icons.radio, size: 64, color: theme.colorScheme.primary),
           const SizedBox(height: 16),
           Text(
-            AccountStrings.appName,
+            s.appName,
             style: theme.textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          Text(AccountStrings.welcomeTitle, style: theme.textTheme.titleLarge),
+          Text(s.accountWelcomeTitle, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(AccountStrings.welcomeIntro, style: theme.textTheme.bodyMedium),
+          Text(s.accountWelcomeIntro, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
-          const BulletLine(
+          BulletLine(
             icon: Icons.cloud_off_outlined,
-            text: AccountStrings.welcomePointNoServer,
+            text: s.accountWelcomePointNoServer,
           ),
-          const BulletLine(
+          BulletLine(
             icon: Icons.school_outlined,
-            text: AccountStrings.welcomePointTraining,
+            text: s.accountWelcomePointTraining,
           ),
-          const BulletLine(
+          BulletLine(
             icon: Icons.warning_amber_outlined,
-            text: AccountStrings.welcomePointBackup,
+            text: s.accountWelcomePointBackup,
           ),
           const SizedBox(height: 32),
           FilledButton.icon(
@@ -49,7 +50,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
             icon: const Icon(Icons.person_add_alt_1),
-            label: const Text(AccountStrings.createIdentity),
+            label: Text(s.accountCreateIdentity),
           ),
           const SizedBox(height: 8),
           TextButton.icon(
@@ -59,7 +60,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
             icon: const Icon(Icons.restore),
-            label: const Text(AccountStrings.restoreFromBackup),
+            label: Text(s.accountRestoreFromBackup),
           ),
         ],
       ),

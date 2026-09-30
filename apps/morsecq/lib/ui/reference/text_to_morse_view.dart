@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 import 'reference_playback_controller.dart';
-import 'reference_strings.dart';
 
 /// Text → Morse: the pattern updates as the user types, can be played with
 /// the current mark highlighted, and copied to the clipboard.
@@ -71,11 +71,12 @@ class _TextToMorseViewState extends State<TextToMorseView> {
   }
 
   Future<void> _copy() async {
+    final String copied = context.s.referencePatternCopied;
     await Clipboard.setData(ClipboardData(text: displayMorsePattern(_pattern)));
     if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(const SnackBar(content: Text(ReferenceStrings.patternCopied)));
+      ..showSnackBar(SnackBar(content: Text(copied)));
   }
 
   @override
@@ -83,6 +84,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
     final ReferencePlaybackController controller =
         context.watch<ReferencePlaybackController>();
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     final bool playing = controller.isPlayingId(TextToMorseView.playId);
     final int? active = controller.activeMarkFor(TextToMorseView.playId);
     final bool hasPattern = _pattern.isNotEmpty;
@@ -98,10 +100,10 @@ class _TextToMorseViewState extends State<TextToMorseView> {
         expands: widget.twoPane,
         textAlignVertical: TextAlignVertical.top,
         textCapitalization: TextCapitalization.characters,
-        decoration: const InputDecoration(
-          labelText: ReferenceStrings.textInputLabel,
-          hintText: ReferenceStrings.textInputHint,
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          labelText: s.referenceTextInputLabel,
+          hintText: s.referenceTextInputHint,
+          border: const OutlineInputBorder(),
           alignLabelWithHint: true,
         ),
       ),
@@ -116,13 +118,13 @@ class _TextToMorseViewState extends State<TextToMorseView> {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  ReferenceStrings.patternOutputLabel,
+                  s.referencePatternOutputLabel,
                   style: theme.textTheme.titleSmall,
                 ),
               ),
               IconButton(
                 key: TextToMorseView.copyKey,
-                tooltip: ReferenceStrings.copyPattern,
+                tooltip: s.referenceCopyPattern,
                 icon: const Icon(Icons.copy),
                 onPressed: hasPattern ? _copy : null,
               ),
@@ -133,7 +135,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
                     ? () => controller.toggle(TextToMorseView.playId, _text.text)
                     : null,
                 icon: Icon(playing ? Icons.stop : Icons.play_arrow),
-                label: Text(playing ? ReferenceStrings.stop : ReferenceStrings.play),
+                label: Text(playing ? s.referenceStop : s.referencePlay),
               ),
             ],
           ),
@@ -141,7 +143,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
           Expanded(
             child: SingleChildScrollView(
               child: MorsePatternText(
-                hasPattern ? _pattern : ReferenceStrings.emptyOutput,
+                hasPattern ? _pattern : s.referenceEmptyOutput,
                 activeMark: active,
                 style: theme.textTheme.headlineSmall,
               ),
@@ -151,7 +153,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                ReferenceStrings.skippedChars(_skipped),
+                s.referenceSkippedChars(_skipped),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.error,
                 ),

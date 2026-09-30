@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'accuracy_trend_chart.dart';
 import 'char_grid.dart';
 import 'confusion_heatmap.dart';
 import 'practice_calendar.dart';
 import 'stats_model.dart';
-import 'stats_strings.dart';
 import 'stats_widgets.dart';
 
 /// Minimum width at which the dashboard lays its sections out in two columns.
@@ -81,7 +81,7 @@ class _StatsScreenState extends State<StatsScreen> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(title: const Text(StatsStrings.title)),
+      appBar: AppBar(title: Text(context.s.statsTitle)),
       body: body,
     );
   }
@@ -142,7 +142,7 @@ class _LoadingState extends StatelessWidget {
           const CircularProgressIndicator(),
           const SizedBox(height: 16),
           Text(
-            StatsStrings.loading,
+            context.s.statsLoading,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -159,6 +159,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final s = context.s;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -168,14 +169,14 @@ class _ErrorState extends StatelessWidget {
             Icon(Icons.error_outline, size: 40, color: theme.colorScheme.error),
             const SizedBox(height: 12),
             Text(
-              StatsStrings.loadFailed,
+              s.statsLoadFailed,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
             FilledButton.tonal(
               onPressed: onRetry,
-              child: const Text(StatsStrings.retry),
+              child: Text(s.statsRetry),
             ),
           ],
         ),

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../contacts/tox_id.dart';
 
 /// Join an NGC group by its 64-hex chat id (+ optional password). Resolves
@@ -40,7 +40,9 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
   final TextEditingController _chatId = TextEditingController();
   final TextEditingController _password = TextEditingController();
   bool _busy = false;
-  String? _error;
+
+  /// Last backend failure, translated in [build].
+  Object? _error;
 
   @override
   void dispose() {
@@ -60,7 +62,7 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
       );
       if (mounted) Navigator.of(context).pop(true);
     } on Object catch (e) {
-      if (mounted) setState(() => _error = describeError(e));
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -69,6 +71,8 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
+    final Object? error = _error;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -79,7 +83,7 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(ChatStrings.joinGroup, style: theme.textTheme.titleLarge),
+              Text(s.chatJoinGroup, style: theme.textTheme.titleLarge),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _chatId,
@@ -90,11 +94,11 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
                 enableSuggestions: false,
                 style: const TextStyle(fontFamily: 'monospace'),
                 decoration: InputDecoration(
-                  labelText: ChatStrings.chatIdLabel,
+                  labelText: s.chatChatIdLabel,
                   border: const OutlineInputBorder(),
-                  errorText: _error,
+                  errorText: error == null ? null : describeChatError(s, error),
                 ),
-                validator: validateChatIdInput,
+                validator: (v) => validateChatIdInput(s, v),
                 onChanged: (_) {
                   if (_error != null) setState(() => _error = null);
                 },
@@ -103,16 +107,16 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
               TextFormField(
                 controller: _password,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: ChatStrings.password,
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: s.chatPassword,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: _busy ? null : () => unawaited(_submit()),
                 icon: const Icon(Icons.login),
-                label: const Text(ChatStrings.join),
+                label: Text(s.chatJoin),
               ),
             ],
           ),

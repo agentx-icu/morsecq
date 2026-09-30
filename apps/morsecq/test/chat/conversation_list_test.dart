@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/ui/chat/chat_strings.dart';
 import 'package:morsecq/ui/chat/conversation_list.dart';
 import 'package:morsecq/ui/chat/conversation_tile.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
@@ -57,7 +56,7 @@ void main() {
     );
     await tester.tap(annMenu);
     await tester.pumpAndSettle();
-    await tester.tap(find.text(ChatStrings.pin));
+    await tester.tap(find.text(s.chatPin));
     await tester.pumpAndSettle();
 
     expect(
@@ -84,7 +83,17 @@ void main() {
     expect(find.text('Bob'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'zzz');
     await tester.pumpAndSettle();
-    expect(find.text(ChatStrings.noSearchResults), findsOneWidget);
+    expect(find.text(s.chatNoSearchResults), findsOneWidget);
+  });
+
+  testWidgets('empty list falls back to the localized prompt', (tester) async {
+    await pumpChat(
+      tester,
+      (h) => Scaffold(
+        body: ConversationList(service: h.service, onOpen: (_) {}),
+      ),
+    );
+    expect(find.text(s.chatNoConversations), findsOneWidget);
   });
 
   testWidgets('swipe right pins on touch platforms; tap opens', (tester) async {

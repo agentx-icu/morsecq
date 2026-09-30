@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 
 /// Shows the Tox ID as a QR code (plain 76-hex payload, the format other Tox
@@ -20,9 +20,10 @@ class ToxIdQrDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     return AlertDialog(
-      title: const Text(AccountStrings.toxId),
+      title: Text(s.accountToxId),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -39,7 +40,7 @@ class ToxIdQrDialog extends StatelessWidget {
                   data: toxId,
                   size: 220,
                   backgroundColor: Colors.white,
-                  semanticsLabel: 'Tox ID QR code',
+                  semanticsLabel: s.accountToxIdQrSemantics,
                 ),
               ),
             ),
@@ -59,11 +60,11 @@ class ToxIdQrDialog extends StatelessWidget {
         TextButton.icon(
           onPressed: () => copyToClipboard(context, toxId),
           icon: const Icon(Icons.copy, size: 18),
-          label: const Text(AccountStrings.copy),
+          label: Text(s.actionCopy),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: Text(s.actionClose),
         ),
       ],
     );

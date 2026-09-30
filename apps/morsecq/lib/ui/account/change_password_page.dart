@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
-import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 
 /// Set, change or remove the profile password. When the identity already has
@@ -35,16 +35,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<void> _apply({required bool remove}) async {
+    final s = context.s;
     setState(() {
       _currentError = null;
       _nextError = remove || _next.text.isNotEmpty
           ? null
-          : AccountStrings.displayNameRequired.replaceFirst(
-              'display name',
-              'new password',
-            );
+          : s.accountNewPasswordRequired;
       _confirmError = !remove && _confirm.text != _next.text
-          ? AccountStrings.passwordsDoNotMatch
+          ? s.accountPasswordsDoNotMatch
           : null;
     });
     if (_nextError != null || _confirmError != null) return;
@@ -61,9 +59,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       messenger?.showSnackBar(
         SnackBar(
           content: Text(
-            remove
-                ? AccountStrings.passwordRemoved
-                : AccountStrings.passwordUpdated,
+            remove ? s.accountPasswordRemoved : s.accountPasswordUpdated,
           ),
         ),
       );
@@ -73,25 +69,26 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       setState(() {
         _busy = false;
         if (e.code == 'wrong_password') {
-          _currentError = AccountStrings.wrongPassword;
+          _currentError = describeChatError(s, e);
         } else {
-          _nextError = e.message;
+          _nextError = describeChatError(s, e);
         }
       });
     } on Object catch (e) {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _nextError = StartupController.describeError(e);
+        _nextError = describeChatError(s, e);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final title = widget.hasPassword
-        ? AccountStrings.changePassword
-        : AccountStrings.setPassword;
+        ? s.accountChangePassword
+        : s.accountSetPassword;
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: AccountPageBody(
@@ -99,7 +96,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           if (widget.hasPassword) ...[
             PasswordField(
               controller: _current,
-              label: AccountStrings.currentPassword,
+              label: s.accountCurrentPassword,
               errorText: _currentError,
               autofocus: true,
               textInputAction: TextInputAction.next,
@@ -108,7 +105,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           ],
           PasswordField(
             controller: _next,
-            label: AccountStrings.newPassword,
+            label: s.accountNewPassword,
             errorText: _nextError,
             showStrength: true,
             autofocus: !widget.hasPassword,
@@ -118,7 +115,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           const SizedBox(height: 16),
           PasswordField(
             controller: _confirm,
-            label: AccountStrings.confirmPassword,
+            label: s.accountConfirmPassword,
             errorText: _confirmError,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _apply(remove: false),
@@ -126,13 +123,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: _busy ? null : () => _apply(remove: false),
-            child: const Text(AccountStrings.save),
+            child: Text(s.actionSave),
           ),
           if (widget.hasPassword) ...[
             const SizedBox(height: 8),
             OutlinedButton(
               onPressed: _busy ? null : () => _apply(remove: true),
-              child: const Text(AccountStrings.removePassword),
+              child: Text(s.accountRemovePassword),
             ),
           ],
         ],

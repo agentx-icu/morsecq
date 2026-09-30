@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_settings_store.dart';
 import 'learn_playback.dart';
-import 'learn_strings.dart';
 
 /// Builds the [TrainingController] for the current identity and hands it to
 /// [builder].
@@ -24,7 +24,7 @@ class LearnScope extends StatefulWidget {
     required this.builder,
     this.controllerFactory,
     this.playback = const DevicePlaybackFactory(),
-    this.title = LearnStrings.learnTitle,
+    this.title,
     this.description,
   });
 
@@ -41,8 +41,9 @@ class LearnScope extends StatefulWidget {
   )
   builder;
 
-  /// Shown in the loading / identity-required placeholder.
-  final String title;
+  /// Shown in the loading / identity-required placeholder; defaults to the
+  /// localised Learn destination label.
+  final String? title;
   final String? description;
 
   /// Default factory: file stores under `<dataDirectory>/training/`.
@@ -152,16 +153,16 @@ class _LearnScopeState extends State<LearnScope> {
         return widget.builder(context, controller!, widget.playback);
       case _ScopeState.loading:
         return _Placeholder(
-          title: widget.title,
+          title: widget.title ?? context.s.navLearn,
           description: widget.description,
-          message: LearnStrings.loading,
+          message: context.s.learnLoading,
           busy: true,
         );
       case _ScopeState.identityRequired:
         return _Placeholder(
-          title: widget.title,
+          title: widget.title ?? context.s.navLearn,
           description: widget.description,
-          message: LearnStrings.identityRequired,
+          message: context.s.learnIdentityRequired,
           busy: false,
         );
     }

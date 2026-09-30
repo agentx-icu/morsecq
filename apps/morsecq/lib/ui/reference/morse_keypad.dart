@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
-import 'reference_strings.dart';
 
 /// On-screen dit / dah / gap keypad for typing a pattern on a phone, where
 /// `.` and `-` are awkward to reach and `/` is on a second keyboard page.
@@ -29,6 +29,7 @@ class MorseKeypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     final TextStyle glyph = theme.textTheme.headlineSmall!.copyWith(
       fontFamily: 'monospace',
       fontFamilyFallback: const <String>['Menlo', 'Consolas'],
@@ -41,37 +42,37 @@ class MorseKeypad extends StatelessWidget {
       children: <Widget>[
         _KeypadButton(
           key: ditKey,
-          tooltip: ReferenceStrings.keypadDit,
+          tooltip: s.referenceKeypadDit,
           onPressed: () => onInsert('.'),
           child: Text(kDitGlyph, style: glyph),
         ),
         _KeypadButton(
           key: dahKey,
-          tooltip: ReferenceStrings.keypadDah,
+          tooltip: s.referenceKeypadDah,
           onPressed: () => onInsert('-'),
           child: Text(kDahGlyph, style: glyph),
         ),
         _KeypadButton(
           key: charGapKey,
-          tooltip: ReferenceStrings.keypadCharGap,
+          tooltip: s.referenceKeypadCharGap,
           onPressed: () => onInsert(' '),
           child: const Icon(Icons.space_bar),
         ),
         _KeypadButton(
           key: wordGapKey,
-          tooltip: ReferenceStrings.keypadWordGap,
+          tooltip: s.referenceKeypadWordGap,
           onPressed: () => onInsert(' / '),
           child: Text('/', style: glyph),
         ),
         _KeypadButton(
           key: backspaceKey,
-          tooltip: ReferenceStrings.keypadBackspace,
+          tooltip: s.referenceKeypadBackspace,
           onPressed: onBackspace,
           child: const Icon(Icons.backspace_outlined),
         ),
         _KeypadButton(
           key: clearKey,
-          tooltip: ReferenceStrings.clear,
+          tooltip: s.referenceClear,
           onPressed: onClear,
           child: const Icon(Icons.clear_all),
         ),

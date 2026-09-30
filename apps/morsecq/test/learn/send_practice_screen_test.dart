@@ -7,12 +7,12 @@ import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
 import 'package:morsecq/training/send_session.dart';
 import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/ui/learn/learn_strings.dart';
 import 'package:morsecq/ui/learn/send/keyer_legend.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
 import 'package:morsecq/ui/learn/send/send_result_view.dart';
 
 import 'helpers/fake_playback.dart';
+import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
 const Duration _dit = Duration(milliseconds: 60); // 20 wpm
@@ -39,7 +39,7 @@ Future<(TestTraining, SendSession, FakeLearnPlaybackFactory)> _pump(
     lesson: 1,
   );
   await tester.pumpWidget(
-    MaterialApp(
+    l10nApp(
       home: SendPracticeScreen(
         controller: t.controller,
         playback: playback,
@@ -99,18 +99,18 @@ void main() {
       expect(playback.sink.isOn, isFalse);
       expect(find.textContaining('wpm'), findsWidgets);
 
-      await tester.tap(find.text(LearnStrings.done));
+      await tester.tap(find.text(en.learnDone));
       await tester.pumpAndSettle();
       expect(find.byType(SendResultView), findsOneWidget);
-      expect(find.text(LearnStrings.accuracyPercent(1)), findsOneWidget);
-      expect(find.text(LearnStrings.sendClean), findsOneWidget);
+      expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
+      expect(find.text(en.learnSendClean), findsOneWidget);
     });
 
     testWidgets('done is disabled until something was keyed', (tester) async {
       await _pump(tester, mode: KeyerMode.straight);
       final done = tester.widget<FilledButton>(
         find.ancestor(
-          of: find.text(LearnStrings.done),
+          of: find.text(en.learnDone),
           matching: find.bySubtype<FilledButton>(),
         ),
       );
@@ -142,7 +142,7 @@ void main() {
       );
       expect(find.byType(PaddleButtons), findsOneWidget);
       expect(find.byType(KeyerLegend), findsOneWidget);
-      expect(find.text(LearnStrings.legendPaddles), findsOneWidget);
+      expect(find.text(en.learnLegendPaddles), findsOneWidget);
       final clock = playback.clock;
 
       // Right Ctrl = dah. The keyer times the element itself; release before
@@ -187,14 +187,14 @@ void main() {
       final paddles = find.byType(PaddleButtons);
       final size = tester.getSize(paddles);
       expect(size.height, greaterThanOrEqualTo(48));
-      final ditCenter = tester.getCenter(find.text(LearnStrings.ditLabel));
+      final ditCenter = tester.getCenter(find.text(en.learnDitLabel));
       final dit = await tester.startGesture(ditCenter);
       await tester.pump();
       await _advance(tester, playback.clock, const Duration(milliseconds: 30));
       await dit.up();
       await tester.pump();
       await _advance(tester, playback.clock, const Duration(milliseconds: 90));
-      final dahCenter = tester.getCenter(find.text(LearnStrings.dahLabel));
+      final dahCenter = tester.getCenter(find.text(en.learnDahLabel));
       final dah = await tester.startGesture(dahCenter);
       await tester.pump();
       await _advance(tester, playback.clock, const Duration(milliseconds: 30));
@@ -211,7 +211,7 @@ void main() {
   ) async {
     final (t, _, _) = await _pump(tester, mode: KeyerMode.iambicB);
     expect(find.byType(PaddleButtons), findsOneWidget);
-    await tester.tap(find.text(LearnStrings.keyerStraight));
+    await tester.tap(find.text(en.learnKeyerStraight));
     await tester.pumpAndSettle();
     expect(find.byType(StraightKeyButton), findsOneWidget);
     expect(find.byType(PaddleButtons), findsNothing);
@@ -230,7 +230,7 @@ void main() {
     expect(find.text('M'), findsOneWidget);
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();
-    expect(find.text(LearnStrings.hiddenTarget), findsOneWidget);
+    expect(find.text(en.learnHiddenTarget), findsOneWidget);
     expect(find.text('M'), findsNothing);
 
     final key = find.byType(StraightKeyButton);
@@ -240,9 +240,9 @@ void main() {
     await tester.pump();
     await _advance(tester, playback.clock, _dit * 4);
     expect(session.decodedText, 'E');
-    await tester.tap(find.text(LearnStrings.done));
+    await tester.tap(find.text(en.learnDone));
     await tester.pumpAndSettle();
     expect(find.byType(SendResultView), findsOneWidget);
-    expect(find.text(LearnStrings.accuracyPercent(0)), findsOneWidget);
+    expect(find.text(en.learnAccuracyPercent(0)), findsOneWidget);
   });
 }

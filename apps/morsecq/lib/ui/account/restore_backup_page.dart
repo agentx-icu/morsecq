@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
 import 'account_widgets.dart';
 import 'backup_file_gateway.dart';
 
@@ -32,6 +33,7 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
   }
 
   Future<void> _pick() async {
+    final s = context.s;
     final gateway = context.read<BackupFileGateway>();
     try {
       final bytes = await gateway.pickBackup();
@@ -43,14 +45,15 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
       });
     } on Object catch (e) {
       if (!mounted) return;
-      setState(() => _fileError = StartupController.describeError(e));
+      setState(() => _fileError = describeChatError(s, e));
     }
   }
 
   Future<void> _restore() async {
+    final s = context.s;
     final bytes = _bytes;
     if (bytes == null) {
-      setState(() => _fileError = AccountStrings.restoreNoFile);
+      setState(() => _fileError = s.accountRestoreNoFile);
       return;
     }
     setState(() {
@@ -70,36 +73,40 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        if (e.code == 'wrong_password') {
-          _passwordError = AccountStrings.wrongPassword;
-        } else if (e.code == 'invalid_backup') {
-          _fileError = AccountStrings.restoreInvalidFile;
-        } else {
-          _fileError = e.message;
+        switch (e.code) {
+          case 'wrong_password':
+            _passwordError = describeChatError(s, e);
+          case 'invalid_backup':
+            // Backup-only code; not part of the shared chat error table.
+            _fileError = s.accountRestoreInvalidFile;
+          default:
+            _fileError = describeChatError(s, e);
         }
       });
     } on Object catch (e) {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _fileError = StartupController.describeError(e);
+        _fileError = describeChatError(s, e);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     final hasCurrent = context.read<IdentityService>().current != null;
+    final bytes = _bytes;
     return Scaffold(
-      appBar: AppBar(title: const Text(AccountStrings.restoreTitle)),
+      appBar: AppBar(title: Text(s.accountRestoreTitle)),
       body: AccountPageBody(
         children: [
-          Text(AccountStrings.restoreBody, style: theme.textTheme.bodyMedium),
+          Text(s.accountRestoreBody, style: theme.textTheme.bodyMedium),
           if (hasCurrent) ...[
             const SizedBox(height: 12),
             Text(
-              AccountStrings.restoreReplacesWarning,
+              s.accountRestoreReplacesWarning,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.error,
               ),
@@ -109,9 +116,9 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
           OutlinedButton.icon(
             onPressed: _busy ? null : _pick,
             icon: const Icon(Icons.folder_open),
-            label: const Text(AccountStrings.restoreChooseFile),
+            label: Text(s.accountRestoreChooseFile),
           ),
-          if (_bytes != null) ...[
+          if (bytes != null) ...[
             const SizedBox(height: 8),
             Row(
               children: [
@@ -123,8 +130,7 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    '${AccountStrings.restoreFileChosen} '
-                    '(${_bytes!.length} bytes)',
+                    s.accountRestoreFileChosenSize(bytes.length),
                     style: theme.textTheme.bodySmall,
                   ),
                 ),
@@ -143,7 +149,7 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
           const SizedBox(height: 16),
           PasswordField(
             controller: _password,
-            label: AccountStrings.passwordOptional,
+            label: s.accountPasswordOptional,
             errorText: _passwordError,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _restore(),
@@ -151,9 +157,7 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: _busy ? null : _restore,
-            child: Text(
-              _busy ? AccountStrings.restoring : AccountStrings.restoreButton,
-            ),
+            child: Text(_busy ? s.accountRestoring : s.accountRestoreButton),
           ),
         ],
       ),

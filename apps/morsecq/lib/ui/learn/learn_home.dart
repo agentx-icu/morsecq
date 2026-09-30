@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../training/receive_session.dart';
+import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
 import '../stats/stats_screen.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
-import 'learn_strings.dart';
 import 'receive/receive_drill_screen.dart';
 import 'review/review_screen.dart';
 import 'send/send_practice_screen.dart';
@@ -44,6 +44,7 @@ class LearnHome extends StatelessWidget {
 
   Future<void> _receivePractice(BuildContext context) async {
     final kinds = controller.availableReceiveKinds;
+    final s = context.s;
     final kind = await showModalBottomSheet<ReceiveDrillKind>(
       context: context,
       showDragHandle: true,
@@ -54,14 +55,14 @@ class LearnHome extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Text(
-                LearnStrings.chooseDrill,
+                s.learnChooseDrill,
                 style: Theme.of(sheetContext).textTheme.titleMedium,
               ),
             ),
             for (final k in kinds)
               ListTile(
                 leading: Icon(_iconFor(k)),
-                title: Text(_labelFor(k)),
+                title: Text(_labelFor(s, k)),
                 onTap: () => Navigator.of(sheetContext).pop(k),
               ),
           ],
@@ -103,22 +104,23 @@ class LearnHome extends StatelessWidget {
     ReceiveDrillKind.review => Icons.replay,
   };
 
-  static String _labelFor(ReceiveDrillKind kind) => switch (kind) {
-    ReceiveDrillKind.groups => LearnStrings.drillGroups,
-    ReceiveDrillKind.words => LearnStrings.drillWords,
-    ReceiveDrillKind.callsigns => LearnStrings.drillCallsigns,
-    ReceiveDrillKind.qso => LearnStrings.drillQso,
-    ReceiveDrillKind.review => LearnStrings.reviewTitle,
+  static String _labelFor(S s, ReceiveDrillKind kind) => switch (kind) {
+    ReceiveDrillKind.groups => s.learnDrillGroups,
+    ReceiveDrillKind.words => s.learnDrillWords,
+    ReceiveDrillKind.callsigns => s.learnDrillCallsigns,
+    ReceiveDrillKind.qso => s.learnDrillQso,
+    ReceiveDrillKind.review => s.learnReviewTitle,
   };
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(LearnStrings.learnTitle),
+        title: Text(s.navLearn),
         actions: <Widget>[
           IconButton(
-            tooltip: LearnStrings.statistics,
+            tooltip: s.learnStatistics,
             icon: const Icon(Icons.insights_outlined),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
@@ -130,7 +132,7 @@ class LearnHome extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: LearnStrings.settings,
+            tooltip: s.learnSettings,
             icon: const Icon(Icons.settings_outlined),
             onPressed: () => _settings(context),
           ),
@@ -183,7 +185,7 @@ class LearnHome extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
-              LearnStrings.loadFailed,
+              context.s.learnLoadFailed,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
               ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../learn_playback.dart';
-import '../learn_strings.dart';
 import '../receive/receive_drill_screen.dart';
 
 /// SRS review: a receive drill over the due symbols, weighted by weakness
@@ -30,6 +30,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
     controller: widget.controller,
     playback: widget.playback,
     session: _session,
-    title: LearnStrings.reviewTitle,
+    title: context.s.learnReviewTitle,
   );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../ui/account/account_strings.dart';
+import '../i18n/l10n_extension.dart';
 import '../ui/account/backup_wizard_page.dart';
 import '../ui/account/connection_chip.dart';
 import '../ui/account/unlock_page.dart';
@@ -34,20 +34,19 @@ class _StartupGateState extends State<StartupGate> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final controller = context.watch<StartupController>();
     final phase = controller.phase;
     final Widget page = switch (phase) {
-      StartupPhase.inspecting => const StartupSplash(
-        message: AccountStrings.startupInspecting,
+      StartupPhase.inspecting => StartupSplash(
+        message: s.accountStartupInspecting,
       ),
-      StartupPhase.opening => const StartupSplash(
-        message: AccountStrings.startupOpening,
-      ),
+      StartupPhase.opening => StartupSplash(message: s.accountStartupOpening),
       StartupPhase.onboarding => const WelcomePage(),
       StartupPhase.locked => const UnlockPage(),
       StartupPhase.backupRequired => const BackupWizardPage(mandatory: true),
       StartupPhase.failed => StartupErrorPage(
-        message: controller.errorMessage,
+        error: controller.error,
         onRetry: () => controller.retry().ignore(),
       ),
       StartupPhase.ready => Stack(

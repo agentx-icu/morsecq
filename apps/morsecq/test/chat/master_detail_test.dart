@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/ui/chat/chat_layout.dart';
-import 'package:morsecq/ui/chat/chat_strings.dart';
 import 'package:morsecq/ui/chat/conversation_list.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
@@ -23,7 +22,7 @@ void main() {
       return const ChatPage();
     }, size: kDesktop);
     expect(find.byType(MasterDetail), findsOneWidget);
-    expect(find.text(ChatStrings.selectConversation), findsOneWidget);
+    expect(find.text(s.chatSelectConversation), findsOneWidget);
     expect(find.byType(ConversationScreen), findsNothing);
 
     await tester.tap(find.text('Ann').first);
@@ -33,7 +32,7 @@ void main() {
     expect(find.byType(ConversationList), findsOneWidget);
     expect(find.byType(ConversationScreen), findsOneWidget);
     expect(find.byType(BackButton), findsNothing);
-    expect(find.text(ChatStrings.selectConversation), findsNothing);
+    expect(find.text(s.chatSelectConversation), findsNothing);
     // The list keeps the open row highlighted.
     final ListTile tile = tester.widget<ListTile>(
       find.ancestor(
@@ -70,11 +69,11 @@ void main() {
       h.service.receiveFriendRequest('D' * 64);
       return const ChatPage();
     }, size: kDesktop);
-    expect(find.text(ChatPage.description), findsOneWidget); // empty state
+    expect(find.text(ChatPage.description(s)), findsOneWidget); // empty state
     expect(find.text('1'), findsOneWidget); // requests badge
-    await tester.tap(find.byTooltip(ChatStrings.contacts));
+    await tester.tap(find.byTooltip(s.chatContacts));
     await tester.pumpAndSettle();
-    expect(find.text('${ChatStrings.friendRequests} (1)'), findsOneWidget);
+    expect(find.text(s.chatFriendRequestsCount(1)), findsOneWidget);
     await tester.tap(find.text('Ann'));
     await tester.pumpAndSettle();
     // Back on the chat page, Ann is open in the detail pane.
@@ -99,9 +98,17 @@ void main() {
   testWidgets('without providers the pages fall back to the placeholder', (
     tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: ChatPage()));
-    expect(find.text(ChatPage.description), findsOneWidget);
-    await tester.pumpWidget(const MaterialApp(home: GroupsPage()));
-    expect(find.text(GroupsPage.description), findsOneWidget);
+    const MaterialApp Function(Widget) app = _localizedApp;
+    await tester.pumpWidget(app(const ChatPage()));
+    expect(find.text(ChatPage.description(s)), findsOneWidget);
+    await tester.pumpWidget(app(const GroupsPage()));
+    expect(find.text(GroupsPage.description(s)), findsOneWidget);
   });
 }
+
+MaterialApp _localizedApp(Widget home) => MaterialApp(
+  localizationsDelegates: S.localizationsDelegates,
+  supportedLocales: S.supportedLocales,
+  locale: const Locale('en'),
+  home: home,
+);

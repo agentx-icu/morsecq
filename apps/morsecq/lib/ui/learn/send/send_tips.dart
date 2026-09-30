@@ -1,47 +1,72 @@
 import 'package:morse_trainer/morse_trainer.dart';
 
-/// Plain-language coaching for each `SendIssueKind`. Kept separate from the
-/// strings file because the wording depends on the measured ratio.
-abstract final class SendTips {
-  static String tipFor(SendIssue issue) {
-    final ratio = issue.meanRatio;
-    return switch (issue.kind) {
-      SendIssueKind.ditTooLong =>
-        'Your dits are running long (about ${_x(ratio)} of a dit). '
-            "Think 'di', not 'daah' - a dit is a tap, not a press.",
-      SendIssueKind.dahTooShort =>
-        'Your dahs are short (about ${_x(ratio)} of a dit; aim for 3). '
-            'Hold the dah for the length of three dits.',
-      SendIssueKind.intraGapTooLong =>
-        'Gaps inside characters are too wide (about ${_x(ratio)} of a dit). '
-            'Keep the elements of one character tight together.',
-      SendIssueKind.charGapTooShort =>
-        'Characters are running into each other (gaps about ${_x(ratio)} '
-            'of a dit; aim for 3). Leave a clear pause after each character.',
-      SendIssueKind.wordGapTooShort =>
-        'Words are too close (gaps about ${_x(ratio)} of a dit; aim for 7). '
-            'Count a long pause between words.',
-      SendIssueKind.speedUnsteady =>
-        'Your speed wanders (variation ${(ratio * 100).round()}%). '
-            'Settle on one tempo and hold it for the whole line.',
-    };
-  }
+import '../../../i18n/l10n_extension.dart';
 
-  /// Short headline for an issue kind.
-  static String titleFor(SendIssueKind kind) => switch (kind) {
-    SendIssueKind.ditTooLong => 'Dits too long',
-    SendIssueKind.dahTooShort => 'Dahs too short',
-    SendIssueKind.intraGapTooLong => 'Elements spread out',
-    SendIssueKind.charGapTooShort => 'Characters crowded',
-    SendIssueKind.wordGapTooShort => 'Words crowded',
-    SendIssueKind.speedUnsteady => 'Speed unsteady',
+/// Plain-language coaching for one [SendIssue], in the current locale. The
+/// wording depends on the measured ratio, so this is a function of the
+/// issue rather than a fixed string per kind.
+String tipFor(S s, SendIssue issue) {
+  final ratio = issue.meanRatio;
+  return switch (issue.kind) {
+    SendIssueKind.ditTooLong => s.learnTipDitTooLong(_x(s, ratio)),
+    SendIssueKind.dahTooShort => s.learnTipDahTooShort(_x(s, ratio)),
+    SendIssueKind.intraGapTooLong => s.learnTipIntraGapTooLong(_x(s, ratio)),
+    SendIssueKind.charGapTooShort => s.learnTipCharGapTooShort(_x(s, ratio)),
+    SendIssueKind.wordGapTooShort => s.learnTipWordGapTooShort(_x(s, ratio)),
+    SendIssueKind.speedUnsteady => s.learnTipSpeedUnsteady(
+      (ratio * 100).round(),
+    ),
   };
-
-  static String severityLabel(SendSeverity severity) => switch (severity) {
-    SendSeverity.minor => 'minor',
-    SendSeverity.moderate => 'noticeable',
-    SendSeverity.severe => 'major',
-  };
-
-  static String _x(double ratio) => '${ratio.toStringAsFixed(1)}x';
 }
+
+/// Short headline for an issue kind.
+String titleFor(S s, SendIssueKind kind) => switch (kind) {
+  SendIssueKind.ditTooLong => s.learnTipDitTooLongTitle,
+  SendIssueKind.dahTooShort => s.learnTipDahTooShortTitle,
+  SendIssueKind.intraGapTooLong => s.learnTipIntraGapTooLongTitle,
+  SendIssueKind.charGapTooShort => s.learnTipCharGapTooShortTitle,
+  SendIssueKind.wordGapTooShort => s.learnTipWordGapTooShortTitle,
+  SendIssueKind.speedUnsteady => s.learnTipSpeedUnsteadyTitle,
+};
+
+/// Severity label shown after the headline.
+String severityLabel(S s, SendSeverity severity) => switch (severity) {
+  SendSeverity.minor => s.learnSeverityMinor,
+  SendSeverity.moderate => s.learnSeverityModerate,
+  SendSeverity.severe => s.learnSeveritySevere,
+};
+
+/// Localised counterpart of `SendIssue.describe()`: how many elements were
+/// off and the average ratio, e.g. "2 of 5 dits too long (avg 1.60x dit)".
+String detailFor(S s, SendIssue issue) {
+  final ratio = issue.meanRatio.toStringAsFixed(2);
+  final x = s.learnRatioTimes(ratio);
+  final n = issue.offending;
+  final total = issue.total;
+  return switch (issue.kind) {
+    SendIssueKind.ditTooLong => s.learnIssueDetailDitTooLong(n, total, x),
+    SendIssueKind.dahTooShort => s.learnIssueDetailDahTooShort(n, total, x),
+    SendIssueKind.intraGapTooLong => s.learnIssueDetailIntraGapTooLong(
+      n,
+      total,
+      x,
+    ),
+    SendIssueKind.charGapTooShort => s.learnIssueDetailCharGapTooShort(
+      n,
+      total,
+      x,
+    ),
+    SendIssueKind.wordGapTooShort => s.learnIssueDetailWordGapTooShort(
+      n,
+      total,
+      x,
+    ),
+    SendIssueKind.speedUnsteady => s.learnIssueDetailSpeedUnsteady(ratio),
+  };
+}
+
+/// Speed readout: `18 wpm`, or the placeholder while the speed is unknown.
+String formatWpm(S s, double wpm) =>
+    wpm <= 0 ? s.learnWpmUnknown : s.learnWpmValue(wpm.toStringAsFixed(0));
+
+String _x(S s, double ratio) => s.learnRatioTimes(ratio.toStringAsFixed(1));

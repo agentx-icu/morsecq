@@ -5,25 +5,15 @@ import 'dart:io';
 /// app's ARB files. Run from the repository root:
 ///
 /// ```bash
-/// dart run tool/strings_to_arb.dart                 # all apps/morsecq/lib/ui/**/*_strings.dart
-/// dart run tool/strings_to_arb.dart lib/ui/x/x_strings.dart   # specific files
-/// dart run tool/strings_to_arb.dart --check         # exit 1 if anything is missing
-/// dart run tool/strings_to_arb.dart --dry-run       # report, write nothing
+/// dart run tool/strings_to_arb.dart [files]   # migrate (default: lib/ui/**/*_strings.dart)
+/// dart run tool/strings_to_arb.dart --check     # CI gate; --dry-run reports only
 /// ```
 ///
-/// Rules (all of them make the tool safe to re-run at any time):
-///   * Only `static const [String] name = '...';` members are extracted
-///     (adjacent literals and `r'...'` supported). Interpolating consts,
-///     functions, non-strings and route/URL values (`/x`, `https://`) are
-///     skipped and listed.
-///   * The ARB key is `<area><Member>` from the class name
-///     (`ChatStrings.sendHint` -> `chatSendHint`).
-///   * The template (`app_en.arb`) only ever GAINS keys; existing keys and
-///     metadata are never touched. New keys get an `@key` description naming
-///     the source member and file.
-///   * Every other ARB gains the template keys it lacks, valued with the
-///     English text and a `@key.description` starting with `@@TODO`.
-///     Existing translations are never modified or removed.
+/// Rules: only `static const [String] name = '...';` members are extracted
+/// (adjacent literals and raw strings supported); key = `<area><Member>` from
+/// the class name; the template only ever gains keys; other ARBs gain missing
+/// keys with the English text and an `@@TODO` description; existing
+/// translations are never modified. `--check` with no sources left is a pass.
 void main(List<String> args) {
   final options = _Options.parse(args);
   if (options == null) {
@@ -34,6 +24,15 @@ void main(List<String> args) {
       ? _defaultSources(options.appDir)
       : options.sources;
   if (sources.isEmpty) {
+    // The steady state once every UI area reads `S` directly: nothing left to
+    // migrate, so the gate has nothing to complain about. Only an explicit
+    // migration run with no inputs is an error.
+    if (options.check) {
+      stdout.writeln(
+        '[strings_to_arb] --check: no *_strings.dart files left to migrate',
+      );
+      exit(0);
+    }
     stderr.writeln('[strings_to_arb] no *_strings.dart files found');
     exit(2);
   }

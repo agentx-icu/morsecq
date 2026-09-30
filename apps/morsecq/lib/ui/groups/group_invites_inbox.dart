@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import '../contacts/tox_id.dart';
 
 /// Pending group invites with accept / reject; hidden when empty.
@@ -15,16 +15,18 @@ class GroupInvitesInbox extends StatelessWidget {
   final ChatService service;
 
   Future<void> _run(BuildContext context, Future<void> Function() op) async {
+    final S s = context.s;
     try {
       await op();
     } on Object catch (e) {
-      if (context.mounted) showSnack(context, describeError(e));
+      if (context.mounted) showSnack(context, describeChatError(s, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     return StreamBuilder<List<GroupInvite>>(
       stream: service.groupInviteChanges,
       initialData: service.groupInvites,
@@ -38,7 +40,7 @@ class GroupInvitesInbox extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Text(
-                '${ChatStrings.groupInvites} (${invites.length})',
+                s.chatGroupInvitesCount(invites.length),
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -50,8 +52,10 @@ class GroupInvitesInbox extends StatelessWidget {
                 leading: const CircleAvatar(child: Icon(Icons.group_add)),
                 title: Text(i.groupName),
                 subtitle: Text(
-                  '${ChatStrings.invitedBy} ${shortKey(i.fromPublicKey, length: 12)}'
-                  '${i.kind == GroupKind.conference ? ' · ${ChatStrings.conferenceBadge}' : ''}',
+                  [
+                    s.chatInvitedByName(shortKey(i.fromPublicKey, length: 12)),
+                    if (i.kind == GroupKind.conference) s.chatConferenceBadge,
+                  ].join(' · '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -59,7 +63,7 @@ class GroupInvitesInbox extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      tooltip: ChatStrings.reject,
+                      tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),
                       onPressed: () => unawaited(
                         _run(
@@ -69,7 +73,7 @@ class GroupInvitesInbox extends StatelessWidget {
                       ),
                     ),
                     IconButton.filled(
-                      tooltip: ChatStrings.accept,
+                      tooltip: s.chatAccept,
                       icon: const Icon(Icons.check),
                       onPressed: () => unawaited(
                         _run(

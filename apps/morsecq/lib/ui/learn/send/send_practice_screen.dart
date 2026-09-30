@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
-import '../learn_strings.dart';
 import 'keyer_legend.dart';
 import 'send_live_view.dart';
 import 'send_result_view.dart';
@@ -163,6 +163,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final body = SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -179,11 +180,11 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
     final flash = _playback?.flash;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(LearnStrings.sendTitle),
+        title: Text(s.learnSendTitle),
         actions: <Widget>[
           Row(
             children: <Widget>[
-              const Text(LearnStrings.copyFromMemory),
+              Text(s.learnCopyFromMemory),
               Switch(
                 value: _hideTarget,
                 onChanged: _result == null
@@ -201,22 +202,23 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
 
   Widget _buildPractice(BuildContext context) {
     final playback = _playback;
+    final s = context.s;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         SegmentedButton<KeyerMode>(
-          segments: const <ButtonSegment<KeyerMode>>[
+          segments: <ButtonSegment<KeyerMode>>[
             ButtonSegment(
               value: KeyerMode.straight,
-              label: Text(LearnStrings.keyerStraight),
+              label: Text(s.learnKeyerStraight),
             ),
             ButtonSegment(
               value: KeyerMode.iambicA,
-              label: Text(LearnStrings.keyerIambicA),
+              label: Text(s.learnKeyerIambicA),
             ),
             ButtonSegment(
               value: KeyerMode.iambicB,
-              label: Text(LearnStrings.keyerIambicB),
+              label: Text(s.learnKeyerIambicB),
             ),
           ],
           selected: <KeyerMode>{_mode},
@@ -232,7 +234,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
             child: Center(child: CircularProgressIndicator()),
           )
         else
-          _buildKey(playback),
+          _buildKey(playback, s),
         if (hasPhysicalKeyboardByDefault) ...<Widget>[
           const SizedBox(height: 8),
           KeyerLegend(mode: _mode),
@@ -244,7 +246,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
               child: OutlinedButton.icon(
                 onPressed: _restart,
                 icon: const Icon(Icons.refresh),
-                label: const Text(LearnStrings.restart),
+                label: Text(s.learnRestart),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
                 ),
@@ -259,7 +261,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
                 builder: (context, _) => FilledButton.icon(
                   onPressed: _session.hasInput ? _finish : null,
                   icon: const Icon(Icons.check),
-                  label: const Text(LearnStrings.done),
+                  label: Text(s.learnDone),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
@@ -272,7 +274,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
     );
   }
 
-  Widget _buildKey(LearnPlayback playback) {
+  Widget _buildKey(LearnPlayback playback, S s) {
     // The keyers are rebuilt whenever the mode changes; the widgets get a
     // key per mode so Flutter never reuses a paddle state for a straight key.
     final straight = _straight;
@@ -284,7 +286,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
           clock: playback.clock,
           autofocus: true,
           size: 180,
-          label: LearnStrings.straightKeyLabel,
+          label: s.learnStraightKeyLabel,
         ),
       );
     }
@@ -295,12 +297,13 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
       clock: playback.clock,
       autofocus: true,
       height: 180,
-      ditLabel: LearnStrings.ditLabel,
-      dahLabel: LearnStrings.dahLabel,
+      ditLabel: s.learnDitLabel,
+      dahLabel: s.learnDahLabel,
     );
   }
 
   Widget _buildResult(BuildContext context) {
+    final s = context.s;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -314,7 +317,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
                 ),
-                child: const Text(LearnStrings.done),
+                child: Text(s.learnDone),
               ),
             ),
             const SizedBox(width: 12),
@@ -325,7 +328,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
                 ),
-                child: const Text(LearnStrings.tryAnother),
+                child: Text(s.learnTryAnother),
               ),
             ),
           ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/ui/chat/chat_strings.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/conversation_target.dart';
 import 'package:morsecq/ui/chat/message_bubble.dart';
@@ -17,7 +16,7 @@ ConversationTarget _ann() => ConversationTarget(
 Future<void> _send(WidgetTester tester, String text) async {
   await tester.enterText(find.byType(TextField), text);
   await tester.pump();
-  await tester.tap(find.byTooltip(ChatStrings.send));
+  await tester.tap(find.byTooltip(s.chatSend));
   await tester.pumpAndSettle();
 }
 
@@ -29,8 +28,8 @@ void main() {
       h.addAnn(withMessage: false);
       return ConversationScreen(target: _ann());
     });
-    expect(find.text(ChatStrings.noMessages), findsOneWidget);
-    expect(find.text(ChatStrings.offline), findsOneWidget);
+    expect(find.text(s.chatNoMessages), findsOneWidget);
+    expect(find.text(s.connectionOffline), findsOneWidget);
 
     await _send(tester, 'CQ');
     expect(find.byType(MessageBubble), findsOneWidget);
@@ -41,13 +40,21 @@ void main() {
       h.service.conversations.single.lastMessage?.status,
       MessageStatus.pending,
     );
+    // The pending glyph explains that Tox has no store-and-forward server.
+    expect(
+      find.byTooltip(
+        '${s.messageStatusPending}\n${s.messageStatusPendingDetail}',
+      ),
+      findsOneWidget,
+    );
 
     // Peer comes online: the status event flips the glyph to sent.
     h.service.setFriendOnline(kPeerKey, true);
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.schedule), findsNothing);
     expect(find.byIcon(Icons.check), findsOneWidget);
-    expect(find.text(ChatStrings.online), findsOneWidget);
+    expect(find.byTooltip(s.messageStatusSent), findsOneWidget);
+    expect(find.text(s.connectionOnline), findsOneWidget);
   });
 
   testWidgets('sending to an online peer appends a sent bubble', (
@@ -61,7 +68,7 @@ void main() {
     expect(find.byIcon(Icons.check), findsOneWidget);
     expect(find.byIcon(Icons.schedule), findsNothing);
     // Draft field is cleared and the byte counter is back to the budget.
-    expect(find.text('1322 ${ChatStrings.bytesLeft}'), findsOneWidget);
+    expect(find.text(s.chatBytesLeftCount(1322)), findsOneWidget);
   });
 
   testWidgets('training mode hides inbound text until revealed', (
@@ -73,25 +80,25 @@ void main() {
     });
     expect(find.text('CQ CQ DE ANN'), findsOneWidget);
 
-    await tester.tap(find.byTooltip(ChatStrings.trainingMode));
+    await tester.tap(find.byTooltip(s.chatTrainingMode));
     await tester.pumpAndSettle();
     expect(h.settings.trainingMode, isTrue);
     expect(find.text('CQ CQ DE ANN'), findsNothing);
-    expect(find.text(ChatStrings.hiddenText), findsOneWidget);
+    expect(find.text(s.chatHiddenText), findsOneWidget);
     // The pattern layer stays visible so the listener can follow along.
     expect(
       find.text('-.-. --.- / -.-. --.- / -.. . / .- -. -.'),
       findsOneWidget,
     );
 
-    await tester.tap(find.text(ChatStrings.reveal));
+    await tester.tap(find.text(s.chatReveal));
     await tester.pumpAndSettle();
     expect(find.text('CQ CQ DE ANN'), findsOneWidget);
 
     // A new inbound message is hidden again; revealed state is per message.
     h.service.receiveMessage('c2c_$kPeerKey', 'R');
     await tester.pumpAndSettle();
-    expect(find.text(ChatStrings.hiddenText), findsOneWidget);
+    expect(find.text(s.chatHiddenText), findsOneWidget);
     expect(find.text('CQ CQ DE ANN'), findsOneWidget);
   });
 
@@ -102,11 +109,11 @@ void main() {
       h.addAnn();
       return ConversationScreen(target: _ann());
     });
-    await tester.tap(find.byTooltip(ChatStrings.play));
+    await tester.tap(find.byTooltip(s.chatPlay));
     await tester.pumpAndSettle();
     expect(h.playback.playingId, 'msg_1');
-    expect(find.byTooltip(ChatStrings.stop), findsOneWidget);
-    await tester.tap(find.byTooltip(ChatStrings.stop));
+    expect(find.byTooltip(s.chatStop), findsOneWidget);
+    await tester.tap(find.byTooltip(s.chatStop));
     await tester.pumpAndSettle();
     expect(h.playback.playingId, isNull);
   });
@@ -128,7 +135,7 @@ void main() {
       tester.widget<TextField>(find.byType(TextField)).controller?.text,
       'CQ DE',
     );
-    expect(find.text('1317 ${ChatStrings.bytesLeft}'), findsOneWidget);
+    expect(find.text(s.chatBytesLeftCount(1317)), findsOneWidget);
   });
 
   testWidgets('over-budget draft disables send and shows the error', (
@@ -143,9 +150,9 @@ void main() {
     }, harness: h);
     await tester.enterText(find.byType(TextField), 'ABCD');
     await tester.pump();
-    expect(find.text(ChatStrings.tooLong), findsOneWidget);
-    expect(find.text('-1 ${ChatStrings.bytesLeft}'), findsOneWidget);
-    await tester.tap(find.byTooltip(ChatStrings.send));
+    expect(find.text(s.chatTooLong), findsOneWidget);
+    expect(find.text(s.chatBytesLeftCount(-1)), findsOneWidget);
+    await tester.tap(find.byTooltip(s.chatSend));
     await tester.pumpAndSettle();
     expect(find.byType(MessageBubble), findsNothing);
   });
@@ -157,15 +164,15 @@ void main() {
       h.addAnn(withMessage: false);
       return ConversationScreen(target: _ann());
     });
-    await tester.tap(find.byTooltip(ChatStrings.modeStraightKey));
+    await tester.tap(find.byTooltip(s.chatModeStraightKey));
     await tester.pumpAndSettle();
     expect(find.text('KEY'), findsOneWidget);
-    expect(find.text(ChatStrings.keyHint), findsOneWidget);
-    await tester.tap(find.byTooltip(ChatStrings.modePaddles));
+    expect(find.text(s.chatKeyHint), findsOneWidget);
+    await tester.tap(find.byTooltip(s.chatModePaddles));
     await tester.pumpAndSettle();
     expect(find.text('DIT'), findsOneWidget);
     expect(find.text('DAH'), findsOneWidget);
-    await tester.tap(find.byTooltip(ChatStrings.modeKeyboard));
+    await tester.tap(find.byTooltip(s.chatModeKeyboard));
     await tester.pumpAndSettle();
     expect(find.text('DIT'), findsNothing);
   });

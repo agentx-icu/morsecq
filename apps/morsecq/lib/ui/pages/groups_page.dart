@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
 import '../groups/create_group_sheet.dart';
@@ -21,9 +21,11 @@ import 'placeholder_page.dart';
 class GroupsPage extends StatefulWidget {
   const GroupsPage({super.key});
 
-  static const String title = ChatStrings.groupsTitle;
-  static const String description =
-      'Group nets — many operators keying on one shared channel.';
+  /// Destination label, resolved in the current locale.
+  static String title(S s) => s.navGroups;
+
+  /// One-line subtitle, resolved in the current locale.
+  static String description(S s) => s.navGroupsDescription;
 
   @override
   State<GroupsPage> createState() => _GroupsPageState();
@@ -53,19 +55,19 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   Future<void> _join(BuildContext context, ChatService service) async {
+    final String joinRequested = context.s.chatJoinRequested;
     final bool joined = await showJoinGroupSheet(context, service: service);
-    if (joined && context.mounted) {
-      showSnack(context, ChatStrings.joinRequested);
-    }
+    if (joined && context.mounted) showSnack(context, joinRequested);
   }
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     final ChatService? service = maybeChatService(context);
     if (service == null) {
-      return const PlaceholderPage(
-        title: GroupsPage.title,
-        description: GroupsPage.description,
+      return PlaceholderPage(
+        title: GroupsPage.title(s),
+        description: GroupsPage.description(s),
         icon: Icons.groups_outlined,
       );
     }
@@ -74,15 +76,15 @@ class _GroupsPageState extends State<GroupsPage> {
 
     final Widget list = Scaffold(
       appBar: AppBar(
-        title: const Text(GroupsPage.title),
+        title: Text(GroupsPage.title(s)),
         actions: [
           IconButton(
-            tooltip: ChatStrings.joinGroup,
+            tooltip: s.chatJoinGroup,
             icon: const Icon(Icons.login),
             onPressed: () => unawaited(_join(context, service)),
           ),
           IconButton(
-            tooltip: ChatStrings.createGroup,
+            tooltip: s.chatCreateGroup,
             icon: const Icon(Icons.group_add_outlined),
             onPressed: () => unawaited(_create(context, service)),
           ),
@@ -108,7 +110,7 @@ class _GroupsPageState extends State<GroupsPage> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                   child: Text(
-                    GroupsPage.description,
+                    GroupsPage.description(s),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,

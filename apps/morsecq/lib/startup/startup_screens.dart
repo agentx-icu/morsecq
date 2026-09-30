@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
-import '../ui/account/account_strings.dart';
+import '../i18n/chat_error_messages.dart';
+import '../i18n/l10n_extension.dart';
 
 /// Shown while `inspect()` / `open()` run. Deliberately quiet: a spinner and
 /// one line, so a fast launch does not flash a whole screen of chrome.
@@ -38,19 +40,30 @@ class StartupSplash extends StatelessWidget {
 
 /// Startup failure with the reason and a retry button. Nothing on disk was
 /// changed by a failed inspect/open, so retrying is always safe.
+///
+/// [error] is whatever `inspect()` / `open()` threw: a `ChatException` is
+/// shown as its localized message; anything else as the generic message plus
+/// its raw string, which is the only clue a bug report will have.
 class StartupErrorPage extends StatelessWidget {
   const StartupErrorPage({
     super.key,
-    required this.message,
+    required this.error,
     required this.onRetry,
   });
 
-  final String? message;
+  final Object? error;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
+    final error = this.error;
+    final String? detail = switch (error) {
+      null => null,
+      ChatException() => describeChatError(s, error),
+      _ => '${s.errorUnknown}\n$error',
+    };
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -68,20 +81,20 @@ class StartupErrorPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    AccountStrings.startupFailedTitle,
+                    s.accountStartupFailedTitle,
                     style: theme.textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    AccountStrings.startupFailedBody,
+                    s.accountStartupFailedBody,
                     style: theme.textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
-                  if (message != null && message!.isNotEmpty) ...[
+                  if (detail != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      message!,
+                      detail,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -92,7 +105,7 @@ class StartupErrorPage extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh),
-                    label: const Text(AccountStrings.retry),
+                    label: Text(s.actionRetry),
                   ),
                 ],
               ),

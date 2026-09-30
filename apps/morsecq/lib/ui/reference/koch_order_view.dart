@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'reference_catalog.dart';
 import 'reference_entry_tile.dart';
-import 'reference_strings.dart';
 
 /// The Koch teaching order as a numbered list.
 class KochOrderView extends StatelessWidget {
@@ -23,7 +23,7 @@ class KochOrderView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Text(
-              ReferenceStrings.kochHint,
+              context.s.referenceKochHint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

@@ -4,6 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/desktop/desktop.dart';
 import 'package:morsecq/desktop/testing/testing.dart';
+import 'package:morsecq/l10n/generated/s.dart';
+
+/// Every label assertion is written against English; the harness pins it so
+/// the test host's locale never leaks in.
+final S en = lookupS(const Locale('en'));
 
 /// Builds a controller on fakes. [platform] defaults to Linux so the tray
 /// tooltip path is exercised without the macOS badge title.
@@ -24,6 +29,7 @@ _harness({
   FakeWindowApi? window,
   Future<void> Function()? onBeforeQuit,
   void Function(bool enabled)? onToggleSound,
+  S? strings,
 }) {
   final store = InMemoryKeyValueStore(stored);
   final log = <String>[];
@@ -43,6 +49,7 @@ _harness({
     window: w,
     tray: t,
     screen: s,
+    strings: strings ?? en,
   );
   return (
     controller: controller,
@@ -371,7 +378,7 @@ void main() {
       expect(notified, 1);
       expect(h.controller.windowTitle, '(3) MorseCQ');
       expect(h.window.title, '(3) MorseCQ');
-      expect(h.tray.tooltip, 'MorseCQ — 3 unread');
+      expect(h.tray.tooltip, 'MorseCQ — 3 unread messages');
       expect(h.tray.title, '3');
 
       h.controller.setUnreadCount(0);
@@ -388,11 +395,12 @@ void main() {
       h.controller.setUnreadCount(250);
       await h.controller.flushTrayUpdates();
       expect(h.controller.windowTitle, '(99+) MorseCQ');
-      expect(h.tray.tooltip, 'MorseCQ — 250 unread');
+      expect(h.tray.tooltip, 'MorseCQ — 250 unread messages');
 
       h.controller.setUnreadCount(-4);
       expect(h.controller.unreadCount, 0);
     });
+
 
     test('does not touch the tray title off macOS', () async {
       final h = _harness(platform: TargetPlatform.windows);
@@ -411,6 +419,9 @@ void main() {
       expect(h.window.calls.length, calls);
     });
   });
+
+  // Language switching (updateStrings) is covered in
+  // desktop_shell_strings_test.dart.
 
   group('mobile platforms are inert', () {
     for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {

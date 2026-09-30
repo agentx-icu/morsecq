@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:intl/intl.dart';
+
 /// Pure helpers behind the statistics painters: accuracy buckets, "nice" axis
 /// scaling, heat-level quantisation and calendar-day arithmetic. No Flutter
 /// imports so they unit-test with plain `test`.
@@ -218,32 +220,16 @@ DateTime weekStartOf(DateTime day) {
   return d.subtract(Duration(days: d.weekday - DateTime.monday));
 }
 
-/// Shortest ISO weekday label for [weekday] (1 = Monday).
-String weekdayInitial(int weekday) => const <String>[
-  'M',
-  'T',
-  'W',
-  'T',
-  'F',
-  'S',
-  'S',
-][(weekday - 1).clamp(0, 6)];
+/// Narrow weekday label for [weekday] (1 = Monday) in [locale] (intl's
+/// default when null): `M`/`T`/`W` in English, `一`/`二`/`三` in Chinese.
+String weekdayInitial(int weekday, {String? locale}) => DateFormat.EEEEE(
+  locale,
+  // 2024-01-01 is a Monday, so day n of that week has weekday n.
+).format(DateTime(2024, 1, (weekday - 1).clamp(0, 6) + 1));
 
-/// Three-letter month name for [month] (1..12).
-String monthAbbreviation(int month) => const <String>[
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-][(month - 1).clamp(0, 11)];
+/// Abbreviated month name for [month] (1..12) in [locale]: `Jan` / `1月`.
+String monthAbbreviation(int month, {String? locale}) =>
+    DateFormat.MMM(locale).format(DateTime(2024, (month - 1).clamp(0, 11) + 1));
 
 /// Chooses which x indices (0..count-1) get an axis label so at most
 /// [maxLabels] are shown and both ends are always included.

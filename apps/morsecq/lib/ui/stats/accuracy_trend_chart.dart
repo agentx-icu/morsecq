@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
+import '../../i18n/l10n_extension.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
-import 'stats_strings.dart';
 import 'stats_widgets.dart';
 
 /// Pixel layout of the trend chart for a given size: where each session sits
@@ -70,6 +71,7 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final palette = StatsPalette(scheme);
     final points = widget.snapshot.trend;
     final split = widget.snapshot.trendHasBothKinds;
@@ -79,8 +81,8 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
     final selected = _selected;
 
     return StatsSection(
-      title: StatsStrings.trendTitle,
-      subtitle: StatsStrings.trendSubtitle(points.length),
+      title: s.statsTrendTitle,
+      subtitle: s.statsTrendSubtitle(points.length),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -92,11 +94,11 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
                 children: <Widget>[
                   _LegendItem(
                     color: palette.receive,
-                    label: StatsStrings.seriesReceive,
+                    label: s.statsSeriesReceive,
                   ),
                   _LegendItem(
                     color: palette.send,
-                    label: StatsStrings.seriesSend,
+                    label: s.statsSeriesSend,
                   ),
                 ],
               ),
@@ -120,7 +122,7 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
                     setState(() => _selected = hit == _selected ? null : hit);
                   },
                   child: Semantics(
-                    label: StatsStrings.trendTitle,
+                    label: s.statsTrendTitle,
                     child: CustomPaint(
                       size: size,
                       painter: TrendPainter(
@@ -130,6 +132,9 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
                         split: split,
                         selected: selected,
                         labelStyle: labelStyle,
+                        axisLabel: s.statsAxisSessions,
+                        percentLabel: (tick) =>
+                            s.statsPercent('${(tick * 100).round()}'),
                       ),
                     ),
                   ),
@@ -146,7 +151,7 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
             )
           else
             Text(
-              StatsStrings.trendHint,
+              s.statsTrendHint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -195,17 +200,17 @@ class _TrendTooltip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final s = point.summary;
-    final kind = point.isSend
-        ? StatsStrings.seriesSend
-        : StatsStrings.seriesReceive;
-    final lesson = s.lesson;
+    final s = context.s;
+    final summary = point.summary;
+    final kind = point.isSend ? s.statsSeriesSend : s.statsSeriesReceive;
+    final lesson = summary.lesson;
     final details = <String>[
-      StatsStrings.tooltipCopied(s.correctChars, s.totalChars),
-      if (lesson != null) StatsStrings.tooltipLesson(lesson),
+      s.statsTooltipCopied(summary.correctChars, summary.totalChars),
+      if (lesson != null) s.statsTooltipLesson(lesson),
       if (split || point.isSend) kind,
-      if (s.elapsed != null) formatPracticeDuration(s.elapsed!),
+      if (summary.elapsed != null) formatPracticeDuration(s, summary.elapsed!),
     ];
+    final locale = Localizations.localeOf(context).toString();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -217,8 +222,8 @@ class _TrendTooltip extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '${StatsStrings.tooltipSession(point.index, total)} - '
-            '${StatsStrings.percent(point.accuracy)}',
+            '${s.statsTooltipSession(point.index, total)} - '
+            '${formatPercent(s, point.accuracy)}',
             style: theme.textTheme.labelLarge,
           ),
           Text(
@@ -228,7 +233,7 @@ class _TrendTooltip extends StatelessWidget {
             ),
           ),
           Text(
-            _formatDate(s.at),
+            _formatDate(summary.at, locale),
             style: theme.textTheme.bodySmall?.copyWith(
               color: scheme.onSurfaceVariant,
             ),
@@ -238,13 +243,8 @@ class _TrendTooltip extends StatelessWidget {
     );
   }
 
-  static String _formatDate(DateTime at) {
-    final local = at.toLocal();
-    final hh = local.hour.toString().padLeft(2, '0');
-    final mm = local.minute.toString().padLeft(2, '0');
-    return '${local.year}-${local.month.toString().padLeft(2, '0')}-'
-        '${local.day.toString().padLeft(2, '0')} $hh:$mm';
-  }
+  static String _formatDate(DateTime at, String locale) =>
+      DateFormat.yMd(locale).add_Hm().format(at.toLocal());
 }
 
 /// Draws grid, axes, series polylines, markers and the selection crosshair.
@@ -256,6 +256,8 @@ class TrendPainter extends CustomPainter {
     required this.split,
     required this.selected,
     required this.labelStyle,
+    required this.axisLabel,
+    required this.percentLabel,
   });
 
   final List<TrendPoint> points;
@@ -264,6 +266,12 @@ class TrendPainter extends CustomPainter {
   final bool split;
   final int? selected;
   final TextStyle labelStyle;
+
+  /// Caption of the x axis (localised by the widget).
+  final String axisLabel;
+
+  /// Formats a y-axis tick (0..1) as a percentage in the current locale.
+  final String Function(double tick) percentLabel;
 
   static const double kMarkerRadius = 4;
 
@@ -279,7 +287,7 @@ class TrendPainter extends CustomPainter {
       canvas.drawLine(Offset(plot.left, y), Offset(plot.right, y), gridPaint);
       _label(
         canvas,
-        '${(tick * 100).round()}%',
+        percentLabel(tick),
         Offset(plot.left - 6, y),
         anchor: Alignment.centerRight,
       );
@@ -296,7 +304,7 @@ class TrendPainter extends CustomPainter {
     }
     _label(
       canvas,
-      StatsStrings.axisSessions,
+      axisLabel,
       Offset(plot.right, size.height - 2),
       anchor: Alignment.bottomRight,
     );
@@ -392,5 +400,6 @@ class TrendPainter extends CustomPainter {
       oldDelegate.selected != selected ||
       oldDelegate.split != split ||
       oldDelegate.palette.scheme != palette.scheme ||
-      oldDelegate.geometry.plot != geometry.plot;
+      oldDelegate.geometry.plot != geometry.plot ||
+      oldDelegate.axisLabel != axisLabel;
 }

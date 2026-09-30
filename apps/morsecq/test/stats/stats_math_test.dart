@@ -152,10 +152,10 @@ void main() {
     });
 
     test('labels', () {
-      expect(weekdayInitial(DateTime.monday), 'M');
-      expect(weekdayInitial(DateTime.sunday), 'S');
-      expect(monthAbbreviation(1), 'Jan');
-      expect(monthAbbreviation(12), 'Dec');
+      expect(weekdayInitial(DateTime.monday, locale: 'en'), 'M');
+      expect(weekdayInitial(DateTime.sunday, locale: 'en'), 'S');
+      expect(monthAbbreviation(1, locale: 'en'), 'Jan');
+      expect(monthAbbreviation(12, locale: 'en'), 'Dec');
     });
   });
 

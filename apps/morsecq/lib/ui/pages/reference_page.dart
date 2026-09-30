@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../reference/reference.dart';
 
 /// Shell destination hosting the Morse handbook. The translator is reached
@@ -9,9 +10,11 @@ import '../reference/reference.dart';
 class ReferencePage extends StatefulWidget {
   const ReferencePage({super.key});
 
-  static const String title = 'Reference';
-  static const String description =
-      'Alphabet, prosigns, Q-codes, abbreviations and a two-way translator.';
+  /// Destination label, resolved in the current locale.
+  static String title(S s) => s.navReference;
+
+  /// One-line subtitle, resolved in the current locale.
+  static String description(S s) => s.navReferenceDescription;
 
   @override
   State<ReferencePage> createState() => _ReferencePageState();

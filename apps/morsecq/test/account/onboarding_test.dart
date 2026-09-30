@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/ui/account/account_strings.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/backup_wizard_page.dart';
 import 'package:morsecq/ui/account/create_identity_page.dart';
@@ -12,17 +12,20 @@ import 'package:morsecq_chat_api/testing.dart';
 
 import 'test_app.dart';
 
+/// The harness renders in English (no override, default test locale).
+final S en = lookupS(const Locale('en'));
+
 Future<void> _openCreatePage(WidgetTester tester) async {
-  await tapVisible(tester, find.text(AccountStrings.createIdentity));
+  await tapVisible(tester, find.text(en.accountCreateIdentity));
   expect(find.byType(CreateIdentityPage), findsOneWidget);
 }
 
 Future<void> _createNamed(WidgetTester tester, String name) async {
   await tester.enterText(
-    find.widgetWithText(TextField, AccountStrings.displayName),
+    find.widgetWithText(TextField, en.accountDisplayName),
     name,
   );
-  await tapVisible(tester, find.text(AccountStrings.createButton));
+  await tapVisible(tester, find.text(en.accountCreateButton));
 }
 
 void main() {
@@ -48,7 +51,7 @@ void main() {
     expect(find.byType(AppShell), findsNothing);
     // Mandatory: no back arrow.
     expect(find.byType(BackButton), findsNothing);
-    expect(buttonEnabled(tester, AccountStrings.backupContinue), isFalse);
+    expect(buttonEnabled(tester, en.accountBackupContinue), isFalse);
 
     // Saving works but is not enough on its own.
     // Label is "Save" on desktop and "Share" on mobile; find by key.
@@ -56,12 +59,12 @@ void main() {
     expect(files.saved, hasLength(1));
     expect(files.savedNames.single, startsWith('morsecq-Ann-'));
     expect(files.savedNames.single, endsWith('.mcqbackup'));
-    expect(buttonEnabled(tester, AccountStrings.backupContinue), isFalse);
+    expect(buttonEnabled(tester, en.accountBackupContinue), isFalse);
 
     await tapVisible(tester, find.byType(Checkbox));
-    expect(buttonEnabled(tester, AccountStrings.backupContinue), isTrue);
+    expect(buttonEnabled(tester, en.accountBackupContinue), isTrue);
 
-    await tapVisible(tester, find.text(AccountStrings.backupContinue));
+    await tapVisible(tester, find.text(en.accountBackupContinue));
     expect(find.byType(AppShell), findsOneWidget);
     expect(find.byType(BackupWizardPage), findsNothing);
   });
@@ -70,9 +73,9 @@ void main() {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openCreatePage(tester);
     await _createNamed(tester, 'Ann');
-    await tapVisible(tester, find.text(AccountStrings.showQr));
+    await tapVisible(tester, find.text(en.accountShowQr));
     expect(find.byType(ToxIdQrDialog), findsOneWidget);
-    expect(find.text('Close'), findsOneWidget);
+    expect(find.text(en.actionClose), findsOneWidget);
   });
 
   testWidgets('empty name is rejected before creating anything', (
@@ -80,8 +83,8 @@ void main() {
   ) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openCreatePage(tester);
-    await tapVisible(tester, find.text(AccountStrings.createButton));
-    expect(find.text(AccountStrings.displayNameRequired), findsOneWidget);
+    await tapVisible(tester, find.text(en.accountCreateButton));
+    expect(find.text(en.accountDisplayNameRequired), findsOneWidget);
     expect(identity.hasStoredProfile, isFalse);
     expect(find.byType(CreateIdentityPage), findsOneWidget);
   });
@@ -92,27 +95,27 @@ void main() {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openCreatePage(tester);
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.displayName),
+      find.widgetWithText(TextField, en.accountDisplayName),
       'Ann',
     );
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.passwordOptional),
+      find.widgetWithText(TextField, en.accountPasswordOptional),
       'correct horse',
     );
     await settle(tester);
-    expect(find.text(AccountStrings.strengthStrong), findsNothing);
-    expect(find.text(AccountStrings.strengthFair), findsOneWidget);
-    expect(find.text(AccountStrings.confirmPassword), findsOneWidget);
+    expect(find.text(en.accountStrengthStrong), findsNothing);
+    expect(find.text(en.accountStrengthFair), findsOneWidget);
+    expect(find.text(en.accountConfirmPassword), findsOneWidget);
 
-    await tapVisible(tester, find.text(AccountStrings.createButton));
-    expect(find.text(AccountStrings.passwordsDoNotMatch), findsOneWidget);
+    await tapVisible(tester, find.text(en.accountCreateButton));
+    expect(find.text(en.accountPasswordsDoNotMatch), findsOneWidget);
     expect(identity.hasStoredProfile, isFalse);
 
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.confirmPassword),
+      find.widgetWithText(TextField, en.accountConfirmPassword),
       'correct horse',
     );
-    await tapVisible(tester, find.text(AccountStrings.createButton));
+    await tapVisible(tester, find.text(en.accountCreateButton));
     expect(identity.current?.hasPassword, isTrue);
     expect(identity.storedPassword, 'correct horse');
     expect(find.byType(BackupWizardPage), findsOneWidget);
@@ -131,25 +134,28 @@ void main() {
     files.pickResult = await source.exportBackup();
 
     await pumpApp(tester, identity: identity, backupFiles: files);
-    await tapVisible(tester, find.text(AccountStrings.restoreFromBackup));
+    await tapVisible(tester, find.text(en.accountRestoreFromBackup));
     expect(find.byType(RestoreBackupPage), findsOneWidget);
 
     // No file yet.
-    await tapVisible(tester, find.text(AccountStrings.restoreButton));
-    expect(find.text(AccountStrings.restoreNoFile), findsOneWidget);
+    await tapVisible(tester, find.text(en.accountRestoreButton));
+    expect(find.text(en.accountRestoreNoFile), findsOneWidget);
 
-    await tapVisible(tester, find.text(AccountStrings.restoreChooseFile));
-    expect(find.textContaining(AccountStrings.restoreFileChosen), findsOne);
+    await tapVisible(tester, find.text(en.accountRestoreChooseFile));
+    expect(
+      find.text(en.accountRestoreFileChosenSize(files.pickResult!.length)),
+      findsOne,
+    );
 
     // Wrong password is reported inline.
-    await tapVisible(tester, find.text(AccountStrings.restoreButton));
-    expect(find.text(AccountStrings.wrongPassword), findsOneWidget);
+    await tapVisible(tester, find.text(en.accountRestoreButton));
+    expect(find.text(en.errorWrongPassword), findsOneWidget);
 
     await tester.enterText(
-      find.widgetWithText(TextField, AccountStrings.passwordOptional),
+      find.widgetWithText(TextField, en.accountPasswordOptional),
       'pw',
     );
-    await tapVisible(tester, find.text(AccountStrings.restoreButton));
+    await tapVisible(tester, find.text(en.accountRestoreButton));
     expect(find.byType(AppShell), findsOneWidget);
     expect(find.byType(BackupWizardPage), findsNothing);
     expect(identity.current?.toxId, testIdentity().toxId);
@@ -158,7 +164,7 @@ void main() {
   testWidgets('welcome page explains the no-server model', (tester) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     expect(find.byType(WelcomePage), findsOneWidget);
-    expect(find.text(AccountStrings.welcomePointNoServer), findsOneWidget);
-    expect(find.text(AccountStrings.welcomePointBackup), findsOneWidget);
+    expect(find.text(en.accountWelcomePointNoServer), findsOneWidget);
+    expect(find.text(en.accountWelcomePointBackup), findsOneWidget);
   });
 }

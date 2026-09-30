@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
 import 'account_widgets.dart';
 import 'backup_actions.dart';
 import 'tox_id_qr_dialog.dart';
@@ -44,6 +44,7 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     final identity = context.read<IdentityService>().current;
     final isMobile = switch (Theme.of(context).platform) {
@@ -52,7 +53,7 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
     };
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AccountStrings.backupTitle),
+        title: Text(s.accountBackupTitle),
         automaticallyImplyLeading: !widget.mandatory,
       ),
       body: AccountPageBody(
@@ -63,21 +64,16 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
             color: theme.colorScheme.primary,
           ),
           const SizedBox(height: 16),
-          Text(AccountStrings.backupBody, style: theme.textTheme.bodyMedium),
+          Text(s.accountBackupBody, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 12),
-          Text(
-            AccountStrings.backupWhatIsInside,
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(s.accountBackupWhatIsInside, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 24),
           FilledButton.tonalIcon(
             key: BackupWizardPage.saveButtonKey,
             onPressed: _saving ? null : _save,
             icon: Icon(isMobile ? Icons.ios_share : Icons.save_alt),
             label: Text(
-              isMobile
-                  ? AccountStrings.backupShareFile
-                  : AccountStrings.backupSaveFile,
+              isMobile ? s.accountBackupShareFile : s.accountBackupSaveFile,
             ),
           ),
           if (_lastExport == BackupExportResult.saved) ...[
@@ -93,7 +89,7 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
-                    AccountStrings.backupSaved,
+                    s.accountBackupSaved,
                     style: theme.textTheme.bodySmall,
                   ),
                 ),
@@ -102,7 +98,7 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
           ],
           const SizedBox(height: 24),
           Text(
-            AccountStrings.backupShowQrHint,
+            s.accountBackupShowQrHint,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -113,7 +109,7 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
                 ? null
                 : () => showToxIdQrDialog(context, identity.toxId),
             icon: const Icon(Icons.qr_code_2),
-            label: const Text(AccountStrings.showQr),
+            label: Text(s.accountShowQr),
           ),
           const SizedBox(height: 24),
           CheckboxListTile(
@@ -121,14 +117,14 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
             onChanged: (v) => setState(() => _acknowledged = v ?? false),
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
-            title: const Text(AccountStrings.backupAcknowledge),
+            title: Text(s.accountBackupAcknowledge),
           ),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: _acknowledged
                 ? () => context.read<StartupController>().completeBackupWizard()
                 : null,
-            child: const Text(AccountStrings.backupContinue),
+            child: Text(s.accountBackupContinue),
           ),
         ],
       ),

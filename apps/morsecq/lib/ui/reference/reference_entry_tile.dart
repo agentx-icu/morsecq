@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 import 'reference_catalog.dart';
 import 'reference_playback_controller.dart';
-import 'reference_strings.dart';
 
 /// One list row of the reference: label, pattern (with playback highlight),
 /// meaning and a play / stop button. Tap plays, long-press shows the
@@ -22,9 +22,10 @@ class ReferenceEntryTile extends StatelessWidget {
     final ReferencePlaybackController controller =
         context.watch<ReferencePlaybackController>();
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     final bool playing = controller.isPlayingId(entry.id);
     final int? active = controller.activeMarkFor(entry.id);
-    final String? meaning = entry.meaning;
+    final String? meaning = entry.meaning(Localizations.localeOf(context));
     final int? position = entry.position;
 
     return ListTile(
@@ -62,14 +63,14 @@ class ReferenceEntryTile extends StatelessWidget {
       title: MorsePatternText(entry.pattern, activeMark: active),
       subtitle: meaning == null || meaning.isEmpty ? null : Text(meaning),
       trailing: IconButton(
-        tooltip: playing ? ReferenceStrings.stop : ReferenceStrings.play,
+        tooltip: playing ? s.referenceStop : s.referencePlay,
         icon: Icon(playing ? Icons.stop_circle_outlined : Icons.play_circle_outline),
         onPressed: () => controller.toggle(entry.id, entry.playText),
       ),
       onTap: () => controller.toggle(entry.id, entry.playText),
-      onLongPress: entry.mnemonic == null
-          ? null
-          : () => showReferenceMnemonic(context, entry),
+      onLongPress: entry.hasMnemonic
+          ? () => showReferenceMnemonic(context, entry)
+          : null,
     );
   }
 }
@@ -82,7 +83,9 @@ Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
     context: context,
     builder: (BuildContext dialogContext) {
       final ThemeData theme = Theme.of(dialogContext);
-      final String? meaning = entry.meaning;
+      final S s = dialogContext.s;
+      final Locale locale = Localizations.localeOf(dialogContext);
+      final String? meaning = entry.meaning(locale);
       final int? position = entry.position;
       return AlertDialog(
         title: Text(entry.label, style: theme.textTheme.displaySmall),
@@ -101,16 +104,16 @@ Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
               ),
             ),
             const SizedBox(height: 16),
-            Text(ReferenceStrings.mnemonicTitle, style: theme.textTheme.labelLarge),
-            Text(entry.mnemonic ?? '', style: theme.textTheme.bodyLarge),
+            Text(s.referenceMnemonicTitle, style: theme.textTheme.labelLarge),
+            Text(entry.mnemonic(locale) ?? '', style: theme.textTheme.bodyLarge),
             if (meaning != null && meaning.isNotEmpty) ...<Widget>[
               const SizedBox(height: 12),
-              Text(ReferenceStrings.meaningLabel, style: theme.textTheme.labelLarge),
+              Text(s.referenceMeaningLabel, style: theme.textTheme.labelLarge),
               Text(meaning),
             ],
             if (position != null) ...<Widget>[
               const SizedBox(height: 12),
-              Text('${ReferenceStrings.kochPosition}: $position'),
+              Text(s.referenceKochPositionValue(position)),
             ],
           ],
         ),
@@ -118,11 +121,11 @@ Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
           TextButton.icon(
             onPressed: () => controller.play(entry.id, entry.playText),
             icon: const Icon(Icons.play_arrow),
-            label: const Text(ReferenceStrings.play),
+            label: Text(s.referencePlay),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text(ReferenceStrings.close),
+            child: Text(s.referenceClose),
           ),
         ],
       );

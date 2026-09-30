@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../notifications/connection_banner_policy.dart';
 import '../../notifications/notification_center.dart';
 import '../chat/conversation_screen.dart';
@@ -16,7 +17,8 @@ import '../pages/reference_page.dart';
 import '../responsive.dart';
 
 /// One top-level destination. Kept as data so the bar and the rail render the
-/// same list and cannot drift apart.
+/// same list and cannot drift apart. The label is resolved against the
+/// current locale at build time, so a language switch relabels the bar.
 class ShellDestination {
   const ShellDestination({
     required this.label,
@@ -25,7 +27,7 @@ class ShellDestination {
     required this.page,
   });
 
-  final String label;
+  final String Function(S s) label;
   final IconData icon;
   final IconData selectedIcon;
   final Widget page;
@@ -141,6 +143,7 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final layout = layoutClassOf(context);
     final body = _withBanner(
       IndexedStack(
@@ -161,7 +164,7 @@ class _AppShellState extends State<AppShell> {
                 NavigationDestination(
                   icon: Icon(d.icon),
                   selectedIcon: Icon(d.selectedIcon),
-                  label: d.label,
+                  label: d.label(s),
                 ),
             ],
           ),
@@ -178,7 +181,7 @@ class _AppShellState extends State<AppShell> {
                     NavigationRailDestination(
                       icon: Icon(d.icon),
                       selectedIcon: Icon(d.selectedIcon),
-                      label: Text(d.label),
+                      label: Text(d.label(s)),
                     ),
                 ],
               ),
@@ -211,8 +214,7 @@ class _OfflineBanner extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Offline: not connected to the Tox network. Messages will '
-                  'be sent when you are back online.',
+                  context.s.shellOfflineBanner,
                   style: TextStyle(color: scheme.onErrorContainer),
                 ),
               ),

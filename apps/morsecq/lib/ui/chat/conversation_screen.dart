@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../groups/group_members_sheet.dart';
 import 'chat_layout.dart';
-import 'chat_scope.dart';
-import 'chat_strings.dart';
 import 'conversation_target.dart';
 import 'message_bubble.dart';
 import 'message_input.dart';
@@ -135,17 +135,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Future<void> _leaveGroup() async {
+    final S s = context.s;
     final bool ok = await confirm(
       context,
-      title: ChatStrings.leaveGroupTitle,
-      body: ChatStrings.leaveGroupBody,
-      confirmLabel: ChatStrings.leave,
+      title: s.chatLeaveGroupTitle,
+      body: s.chatLeaveGroupBody,
+      confirmLabel: s.chatLeave,
     );
     if (!ok || !mounted) return;
     try {
       await _service.leaveGroup(widget.target.peerId);
     } on Object catch (e) {
-      if (mounted) showSnack(context, describeError(e));
+      if (mounted) showSnack(context, describeChatError(s, e));
       return;
     }
     if (!mounted) return;
@@ -157,11 +158,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Future<void> _clearHistory() async {
+    final S s = context.s;
     try {
       await _service.clearHistory(_id);
       if (mounted) setState(_messages.clear);
     } on Object catch (e) {
-      if (mounted) showSnack(context, describeError(e));
+      if (mounted) showSnack(context, describeChatError(s, e));
     }
   }
 
@@ -181,6 +183,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     final MorsePlaybackSettings settings = MorsePlaybackSettings.of(context);
     final Group? group = _group();
     final bool conference = group?.kind == GroupKind.conference;
@@ -191,7 +194,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         title: _TitleBlock(service: _service, target: widget.target),
         actions: [
           IconButton(
-            tooltip: ChatStrings.trainingMode,
+            tooltip: s.chatTrainingMode,
             isSelected: settings.trainingMode,
             icon: const Icon(Icons.school_outlined),
             selectedIcon: const Icon(Icons.school),
@@ -200,13 +203,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
               showSnack(
                 context,
                 settings.trainingMode
-                    ? ChatStrings.trainingModeOn
-                    : ChatStrings.trainingModeOff,
+                    ? s.chatTrainingModeOn
+                    : s.chatTrainingModeOff,
               );
             },
           ),
           IconButton(
-            tooltip: ChatStrings.playbackSettings,
+            tooltip: s.chatPlaybackSettings,
             icon: const Icon(Icons.speed),
             onPressed: () =>
                 unawaited(showPlaybackSettingsSheet(context, settings)),
@@ -215,19 +218,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
             onSelected: (a) => unawaited(_onMenu(a)),
             itemBuilder: (_) => [
               if (_isGroup)
-                const PopupMenuItem(
-                  value: 'members',
-                  child: Text(ChatStrings.members),
-                ),
-              const PopupMenuItem(
-                value: 'clear',
-                child: Text(ChatStrings.clearHistory),
-              ),
+                PopupMenuItem(value: 'members', child: Text(s.chatMembers)),
+              PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
               if (_isGroup)
-                const PopupMenuItem(
-                  value: 'leave',
-                  child: Text(ChatStrings.leaveGroup),
-                ),
+                PopupMenuItem(value: 'leave', child: Text(s.chatLeaveGroup)),
             ],
           ),
         ],
@@ -257,12 +251,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Widget _buildList(MorsePlaybackSettings settings) {
     final Object? error = _error;
-    if (error != null) return Center(child: Text(describeError(error)));
+    if (error != null) {
+      return Center(child: Text(describeChatError(context.s, error)));
+    }
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_messages.isEmpty) {
       return Center(
         child: Text(
-          ChatStrings.noMessages,
+          context.s.chatNoMessages,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -313,6 +309,7 @@ class _TitleBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final S s = context.s;
     final Widget subtitle = target.kind == ConversationKind.c2c
         ? StreamBuilder<List<Friend>>(
             stream: service.friendChanges,
@@ -334,7 +331,7 @@ class _TitleBlock extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    online ? ChatStrings.online : ChatStrings.offline,
+                    online ? s.connectionOnline : s.connectionOffline,
                     style: text.labelSmall,
                   ),
                 ],
@@ -350,11 +347,11 @@ class _TitleBlock extends StatelessWidget {
                 if (g.id == target.peerId) group = g;
               }
               if (group == null) return const SizedBox.shrink();
-              final String kind = group.kind == GroupKind.conference
-                  ? ' · ${ChatStrings.conferenceBadge}'
-                  : '';
               return Text(
-                '${group.memberCount} ${ChatStrings.membersCount}$kind',
+                [
+                  s.chatMemberCount(group.memberCount),
+                  if (group.kind == GroupKind.conference) s.chatConferenceBadge,
+                ].join(' · '),
                 style: text.labelSmall,
               );
             },
@@ -390,7 +387,7 @@ class _ConferenceNote extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                ChatStrings.conferenceNote,
+                context.s.chatConferenceNote,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: scheme.onTertiaryContainer,
                 ),

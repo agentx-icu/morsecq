@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'listen_controller.dart';
 import 'listen_settings.dart';
-import 'listen_strings.dart';
 import 'listen_widgets.dart';
 import 'pcm_source.dart';
 import 'record_pcm_source.dart';
@@ -102,10 +102,9 @@ class _ListenScreenState extends State<ListenScreen>
 
   Future<void> _copy() async {
     final messenger = ScaffoldMessenger.of(context);
+    final String copied = context.s.listenCopied;
     await Clipboard.setData(ClipboardData(text: _controller.text));
-    messenger.showSnackBar(
-      const SnackBar(content: Text(ListenStrings.copied)),
-    );
+    messenger.showSnackBar(SnackBar(content: Text(copied)));
   }
 
   Future<void> _openSettings() => showModalBottomSheet<void>(
@@ -123,17 +122,18 @@ class _ListenScreenState extends State<ListenScreen>
   Widget build(BuildContext context) {
     final listening = _controller.isListening;
     final busy = _controller.isBusy;
+    final S s = context.s;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(ListenStrings.title),
+        title: Text(s.listenTitle),
         actions: <Widget>[
           IconButton(
-            tooltip: ListenStrings.clear,
+            tooltip: s.listenClear,
             onPressed: _controller.hasText ? _controller.clear : null,
             icon: const Icon(Icons.backspace_outlined),
           ),
           IconButton(
-            tooltip: ListenStrings.settings,
+            tooltip: s.listenSettings,
             onPressed: _openSettings,
             icon: const Icon(Icons.tune),
           ),
@@ -174,7 +174,7 @@ class _ListenScreenState extends State<ListenScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: busy ? null : _toggle,
         icon: Icon(listening ? Icons.stop : Icons.mic),
-        label: Text(listening ? ListenStrings.stop : ListenStrings.start),
+        label: Text(listening ? s.listenStop : s.listenStart),
       ),
     );
   }

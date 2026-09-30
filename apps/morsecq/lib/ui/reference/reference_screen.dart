@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../listen/listen_screen.dart';
-import '../listen/listen_strings.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_catalog.dart';
 import 'reference_layout.dart';
@@ -10,7 +10,6 @@ import 'reference_playback_controller.dart';
 import 'reference_playback_settings.dart';
 import 'reference_player.dart';
 import 'reference_section_view.dart';
-import 'reference_strings.dart';
 import 'translator_screen.dart';
 
 /// Browsable Morse reference: alphabet, punctuation, prosigns, Q-codes, CW
@@ -95,29 +94,32 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
     );
   }
 
-  AppBar _appBar(BuildContext context) => AppBar(
-    title: const Text(ReferenceStrings.referenceTitle),
-    actions: <Widget>[
-      IconButton(
-        tooltip: ListenStrings.title,
-        icon: const Icon(Icons.mic_none),
-        onPressed: () {
-          _controller.stop();
-          Navigator.of(context).push(ListenScreen.route());
-        },
-      ),
-      IconButton(
-        tooltip: ReferenceStrings.translatorTitle,
-        icon: const Icon(Icons.swap_horiz),
-        onPressed: () => _openTranslator(context),
-      ),
-      IconButton(
-        tooltip: ReferenceStrings.playbackSettings,
-        icon: const Icon(Icons.tune),
-        onPressed: () => showReferencePlaybackSettings(context, _settings),
-      ),
-    ],
-  );
+  AppBar _appBar(BuildContext context) {
+    final S s = context.s;
+    return AppBar(
+      title: Text(s.referenceReferenceTitle),
+      actions: <Widget>[
+        IconButton(
+          tooltip: s.listenTitle,
+          icon: const Icon(Icons.mic_none),
+          onPressed: () {
+            _controller.stop();
+            Navigator.of(context).push(ListenScreen.route());
+          },
+        ),
+        IconButton(
+          tooltip: s.referenceTranslatorTitle,
+          icon: const Icon(Icons.swap_horiz),
+          onPressed: () => _openTranslator(context),
+        ),
+        IconButton(
+          tooltip: s.referencePlaybackSettings,
+          icon: const Icon(Icons.tune),
+          onPressed: () => showReferencePlaybackSettings(context, _settings),
+        ),
+      ],
+    );
+  }
 
   /// Pushed as a route (not a tab) so only one sidetone engine is alive at a
   /// time; the settings object is shared so speed/tone follow the user.
@@ -133,7 +135,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
     );
   }
 
-  Widget _searchField() => Padding(
+  Widget _searchField(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
     child: TextField(
       key: ReferenceScreen.searchFieldKey,
@@ -141,12 +143,12 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
       onChanged: _onQueryChanged,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: ReferenceStrings.searchHint,
+        hintText: context.s.referenceSearchHint,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _query.isEmpty
             ? null
             : IconButton(
-                tooltip: ReferenceStrings.clearSearch,
+                tooltip: context.s.referenceClearSearch,
                 icon: const Icon(Icons.close),
                 onPressed: _clearQuery,
               ),
@@ -158,6 +160,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
 
   Widget _buildCompact(BuildContext context) {
     const List<ReferenceSection> sections = ReferenceSection.values;
+    final S s = context.s;
     return DefaultTabController(
       length: sections.length,
       initialIndex: widget.initialSection.index,
@@ -166,7 +169,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
         body: SafeArea(
           child: Column(
             children: <Widget>[
-              _searchField(),
+              _searchField(context),
               Expanded(
                 child: _query.isEmpty
                     ? Column(
@@ -175,15 +178,15 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
                             isScrollable: true,
                             tabAlignment: TabAlignment.start,
                             tabs: <Widget>[
-                              for (final ReferenceSection s in sections)
-                                Tab(text: s.label),
+                              for (final ReferenceSection section in sections)
+                                Tab(text: section.label(s)),
                             ],
                           ),
                           Expanded(
                             child: TabBarView(
                               children: <Widget>[
-                                for (final ReferenceSection s in sections)
-                                  ReferenceSectionView(section: s),
+                                for (final ReferenceSection section in sections)
+                                  ReferenceSectionView(section: section),
                               ],
                             ),
                           ),
@@ -218,7 +221,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
             Expanded(
               child: Column(
                 children: <Widget>[
-                  _searchField(),
+                  _searchField(context),
                   Expanded(
                     child: _query.isEmpty
                         ? ReferenceSectionView(section: _selected)
@@ -248,20 +251,21 @@ class ReferenceSectionRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: <Widget>[
-        for (final ReferenceSection s in ReferenceSection.values)
+        for (final ReferenceSection section in ReferenceSection.values)
           ListTile(
-            leading: Icon(s.icon),
-            title: Text(s.label),
+            leading: Icon(section.icon),
+            title: Text(section.label(s)),
             trailing: Text(
-              '${ReferenceCatalog.entriesFor(s).length}',
+              '${ReferenceCatalog.entriesFor(section).length}',
               style: theme.textTheme.labelMedium,
             ),
-            selected: s == selected,
+            selected: section == selected,
             selectedTileColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
-            onTap: () => onSelected(s),
+            onTap: () => onSelected(section),
           ),
       ],
     );

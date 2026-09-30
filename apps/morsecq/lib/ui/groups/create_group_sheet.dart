@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// Create a group. Kind is fixed to NGC; an "advanced" expander exposes the
 /// legacy conference switch for interop with old clients (plan §5.4).
@@ -39,7 +39,9 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
   bool _advanced = false;
   bool _conference = false;
   bool _busy = false;
-  String? _error;
+
+  /// Last backend failure, translated in [build].
+  Object? _error;
 
   @override
   void dispose() {
@@ -60,7 +62,7 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
       );
       if (mounted) Navigator.of(context).pop(group);
     } on Object catch (e) {
-      if (mounted) setState(() => _error = describeError(e));
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -69,6 +71,8 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
+    final Object? error = _error;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -78,7 +82,7 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(ChatStrings.createGroup, style: theme.textTheme.titleLarge),
+              Text(s.chatCreateGroup, style: theme.textTheme.titleLarge),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _name,
@@ -86,26 +90,25 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => unawaited(_submit()),
                 decoration: InputDecoration(
-                  labelText: ChatStrings.groupName,
+                  labelText: s.chatGroupName,
                   border: const OutlineInputBorder(),
-                  errorText: _error,
+                  errorText: error == null ? null : describeChatError(s, error),
                 ),
-                validator: (v) => (v ?? '').trim().isEmpty
-                    ? ChatStrings.groupNameRequired
-                    : null,
+                validator: (v) =>
+                    (v ?? '').trim().isEmpty ? s.chatGroupNameRequired : null,
               ),
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: () => setState(() => _advanced = !_advanced),
                 icon: Icon(_advanced ? Icons.expand_less : Icons.expand_more),
-                label: const Text(ChatStrings.advanced),
+                label: Text(s.chatAdvanced),
                 style: TextButton.styleFrom(alignment: Alignment.centerLeft),
               ),
               if (_advanced)
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text(ChatStrings.legacyConference),
-                  subtitle: const Text(ChatStrings.legacyConferenceHint),
+                  title: Text(s.chatLegacyConference),
+                  subtitle: Text(s.chatLegacyConferenceHint),
                   value: _conference,
                   onChanged: (v) => setState(() => _conference = v),
                 ),
@@ -113,7 +116,7 @@ class _CreateGroupFormState extends State<CreateGroupForm> {
               FilledButton.icon(
                 onPressed: _busy ? null : () => unawaited(_submit()),
                 icon: const Icon(Icons.group_add),
-                label: const Text(ChatStrings.create),
+                label: Text(s.chatCreate),
               ),
             ],
           ),

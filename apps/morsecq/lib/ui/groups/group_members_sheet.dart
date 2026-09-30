@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
-import '../chat/chat_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 
 /// Bottom sheet listing a group's members with online dots.
 Future<void> showGroupMembersSheet(
@@ -39,11 +40,13 @@ class _MembersBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     return FutureBuilder<List<GroupMember>>(
       future: future,
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text(snapshot.error.toString()));
+        final Object? error = snapshot.error;
+        if (error != null) {
+          return Center(child: Text(describeChatError(s, error)));
         }
         final List<GroupMember>? members = snapshot.data;
         if (members == null) {
@@ -55,7 +58,7 @@ class _MembersBody extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
               child: Text(
-                '${ChatStrings.members} · ${members.length}',
+                s.chatMembersTitleCount(members.length),
                 style: theme.textTheme.titleMedium,
               ),
             ),
@@ -63,9 +66,7 @@ class _MembersBody extends StatelessWidget {
               ListTile(
                 leading: _OnlineDot(online: m.online),
                 title: Text(
-                  m.isSelf
-                      ? '${m.displayName} (${ChatStrings.you})'
-                      : m.displayName,
+                  m.isSelf ? s.chatMemberSelf(m.displayName) : m.displayName,
                 ),
                 subtitle: Text(
                   m.publicKey.length > 16

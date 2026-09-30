@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
-import 'chat_strings.dart';
 import 'conversation_tile.dart';
 
 /// Searchable, pinned-first conversation list bound to
@@ -19,14 +20,17 @@ class ConversationList extends StatefulWidget {
     required this.service,
     required this.onOpen,
     this.selectedId,
-    this.emptyText = ChatStrings.noConversations,
+    this.emptyText,
     this.swipeEnabled,
   });
 
   final ChatService service;
   final ValueChanged<Conversation> onOpen;
   final String? selectedId;
-  final String emptyText;
+
+  /// Shown when there are no conversations at all; defaults to
+  /// [S.chatNoConversations] in the current locale.
+  final String? emptyText;
   final bool? swipeEnabled;
 
   @override
@@ -75,6 +79,7 @@ class _ConversationListState extends State<ConversationList> {
 
   Future<void> _handle(Conversation c, ConversationAction action) async {
     final ChatService service = widget.service;
+    final S s = context.s;
     try {
       switch (action) {
         case ConversationAction.togglePin:
@@ -84,26 +89,27 @@ class _ConversationListState extends State<ConversationList> {
         case ConversationAction.delete:
           final bool ok = await confirm(
             context,
-            title: ChatStrings.deleteConversationTitle,
-            body: ChatStrings.deleteConversationBody,
-            confirmLabel: ChatStrings.delete,
+            title: s.chatDeleteConversationTitle,
+            body: s.chatDeleteConversationBody,
+            confirmLabel: s.chatDelete,
           );
           if (ok) await service.deleteConversation(c.id);
       }
     } on Object catch (e) {
-      if (mounted) showSnack(context, e.toString());
+      if (mounted) showSnack(context, describeChatError(s, e));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
           child: SearchBar(
             controller: _search,
-            hintText: ChatStrings.searchConversations,
+            hintText: s.chatSearchConversations,
             leading: const Icon(Icons.search),
             trailing: [
               if (_query.isNotEmpty)
@@ -126,8 +132,8 @@ class _ConversationListState extends State<ConversationList> {
               if (items.isEmpty) {
                 return _Empty(
                   text: _query.isEmpty
-                      ? widget.emptyText
-                      : ChatStrings.noSearchResults,
+                      ? (widget.emptyText ?? s.chatNoConversations)
+                      : s.chatNoSearchResults,
                 );
               }
               return ListView.separated(

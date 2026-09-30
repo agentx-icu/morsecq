@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_settings.dart';
-import '../learn_strings.dart';
 
 /// Desktop hint under the on-screen key(s): which keyboard keys drive them.
 /// Hidden on touch platforms by the caller.
@@ -14,8 +14,8 @@ class KeyerLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final text = mode.isPaddle
-        ? LearnStrings.legendPaddles
-        : LearnStrings.legendStraight;
+        ? context.s.learnLegendPaddles
+        : context.s.learnLegendStraight;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

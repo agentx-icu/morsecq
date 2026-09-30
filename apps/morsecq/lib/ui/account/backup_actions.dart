@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
-import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import 'backup_file_gateway.dart';
 
 /// File name for a backup of [identity]: readable, unique per identity, and
@@ -25,14 +25,13 @@ enum BackupExportResult { saved, cancelled, failed }
 Future<BackupExportResult> exportBackupWithFeedback(
   BuildContext context,
 ) async {
+  final s = context.s;
   final identityService = context.read<IdentityService>();
   final gateway = context.read<BackupFileGateway>();
   final messenger = ScaffoldMessenger.maybeOf(context);
   final identity = identityService.current;
   if (identity == null) {
-    messenger?.showSnackBar(
-      const SnackBar(content: Text(AccountStrings.meNoIdentity)),
-    );
+    messenger?.showSnackBar(SnackBar(content: Text(s.accountMeNoIdentity)));
     return BackupExportResult.failed;
   }
   try {
@@ -44,7 +43,7 @@ Future<BackupExportResult> exportBackupWithFeedback(
     messenger?.showSnackBar(
       SnackBar(
         content: Text(
-          saved ? AccountStrings.backupSaved : AccountStrings.backupNotSaved,
+          saved ? s.accountBackupSaved : s.accountBackupNotSaved,
         ),
       ),
     );
@@ -52,10 +51,7 @@ Future<BackupExportResult> exportBackupWithFeedback(
   } on Object catch (e) {
     messenger?.showSnackBar(
       SnackBar(
-        content: Text(
-          '${AccountStrings.backupFailed}: '
-          '${StartupController.describeError(e)}',
-        ),
+        content: Text('${s.accountBackupFailed}: ${describeChatError(s, e)}'),
       ),
     );
     return BackupExportResult.failed;

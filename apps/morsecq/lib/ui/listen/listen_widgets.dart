@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'listen_controller.dart';
 import 'listen_settings.dart';
-import 'listen_strings.dart';
 
 /// Signal meter plus tone indicator, rebuilt per audio chunk from
 /// [ListenController.meter] without touching the rest of the screen.
@@ -28,7 +28,7 @@ class ListenLevelMeter extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Semantics(
-              label: ListenStrings.level,
+              label: context.s.listenLevel,
               value: '${(m.level * 100).round()}%',
               child: LinearProgressIndicator(
                 value: m.level,
@@ -54,9 +54,10 @@ class _ToneDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final S s = context.s;
     return Semantics(
-      label: ListenStrings.toneOn,
-      value: on ? 'on' : 'off',
+      label: s.listenToneOn,
+      value: on ? s.listenStateOn : s.listenStateOff,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 40),
         width: 16,
@@ -80,12 +81,13 @@ class ListenFrequencyPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final S s = context.s;
     final auto = controller.settings.autoTune;
     final String badge = !auto
-        ? ListenStrings.toneManual
+        ? s.listenToneManual
         : controller.isToneLocked
-            ? ListenStrings.toneLocked
-            : ListenStrings.toneSearching;
+            ? s.listenToneLocked
+            : s.listenToneSearching;
     final hz = controller.frequencyHz.clamp(
       ListenSettings.minHz,
       ListenSettings.maxHz,
@@ -95,20 +97,20 @@ class ListenFrequencyPanel extends StatelessWidget {
       children: <Widget>[
         ListTile(
           dense: true,
-          title: const Text(ListenStrings.tone),
+          title: Text(s.listenTone),
           subtitle: Text(badge),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                ListenStrings.hz(controller.frequencyHz),
+                s.listenHzValue(controller.frequencyHz.round()),
                 style: theme.textTheme.titleMedium,
               ),
               if (!auto) ...<Widget>[
                 const SizedBox(width: 8),
                 TextButton(
                   onPressed: () => controller.setAutoTune(true),
-                  child: const Text(ListenStrings.retune),
+                  child: Text(s.listenRetune),
                 ),
               ],
             ],
@@ -120,7 +122,7 @@ class ListenFrequencyPanel extends StatelessWidget {
           max: ListenSettings.maxHz,
           divisions:
               ((ListenSettings.maxHz - ListenSettings.minHz) / 5).round(),
-          label: ListenStrings.hz(hz),
+          label: s.listenHzValue(hz.round()),
           onChanged: controller.setManualFrequency,
         ),
       ],
@@ -148,6 +150,7 @@ class ListenDecodedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final S s = context.s;
     final mono = theme.textTheme.headlineSmall?.copyWith(
       fontFamily: 'monospace',
       fontFamilyFallback: const <String>['Menlo', 'Consolas', 'Courier New'],
@@ -162,10 +165,10 @@ class ListenDecodedText extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
             child: Row(
               children: <Widget>[
-                Text(ListenStrings.decoded, style: theme.textTheme.labelLarge),
+                Text(s.listenDecoded, style: theme.textTheme.labelLarge),
                 const Spacer(),
                 IconButton(
-                  tooltip: ListenStrings.copy,
+                  tooltip: s.listenCopy,
                   onPressed: text.isEmpty ? null : onCopy,
                   icon: const Icon(Icons.copy_outlined),
                 ),
@@ -187,9 +190,7 @@ class ListenDecodedText extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      isListening
-                          ? ListenStrings.emptyHint
-                          : ListenStrings.idleHint,
+                      isListening ? s.listenEmptyHint : s.listenIdleHint,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -213,13 +214,14 @@ class ListenStatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final S s = context.s;
     final pending = controller.pendingPattern;
     final wpm = controller.wpm;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
       child: Row(
         children: <Widget>[
-          Text(ListenStrings.pending, style: theme.textTheme.labelMedium),
+          Text(s.listenPending, style: theme.textTheme.labelMedium),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -231,10 +233,10 @@ class ListenStatsRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(ListenStrings.speed, style: theme.textTheme.labelMedium),
+          Text(s.listenSpeed, style: theme.textTheme.labelMedium),
           const SizedBox(width: 8),
           Text(
-            wpm == null ? ListenStrings.speedUnknown : ListenStrings.wpm(wpm),
+            wpm == null ? s.listenSpeedUnknown : s.listenWpmValue(wpm.round()),
             style: theme.textTheme.titleMedium,
           ),
         ],
@@ -257,12 +259,13 @@ class ListenStatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final S s = context.s;
     final String? message = switch (controller.status) {
-      ListenStatus.permissionDenied => ListenStrings.permissionDenied,
-      ListenStatus.failed => _failureText(controller.errorMessage),
-      ListenStatus.starting => ListenStrings.starting,
+      ListenStatus.permissionDenied => s.listenPermissionDenied,
+      ListenStatus.failed => _failureText(s, controller.errorMessage),
+      ListenStatus.starting => s.listenStarting,
       ListenStatus.idle when controller.stoppedInBackground =>
-        ListenStrings.stoppedInBackground,
+        s.listenStoppedInBackground,
       _ => null,
     };
     if (message == null) return const SizedBox.shrink();
@@ -285,7 +288,7 @@ class ListenStatusBanner extends StatelessWidget {
         if (isError)
           TextButton(
             onPressed: onRetry,
-            child: const Text(ListenStrings.permissionRetry),
+            child: Text(s.listenPermissionRetry),
           )
         else
           const SizedBox.shrink(),
@@ -293,14 +296,17 @@ class ListenStatusBanner extends StatelessWidget {
     );
   }
 
-  static String _failureText(String? detail) {
-    if (detail == null || detail.isEmpty) return ListenStrings.startFailed;
+  /// [detail] is the platform's own error text (not localised); the known
+  /// "no microphone" shapes map to a friendly message, anything else is
+  /// appended verbatim under the generic one.
+  static String _failureText(S s, String? detail) {
+    if (detail == null || detail.isEmpty) return s.listenStartFailed;
     final lower = detail.toLowerCase();
     if (lower.contains('no input') ||
         lower.contains('no device') ||
         lower.contains('not found')) {
-      return ListenStrings.noInput;
+      return s.listenNoInput;
     }
-    return '${ListenStrings.startFailed}\n$detail';
+    return '${s.listenStartFailed}\n$detail';
   }
 }

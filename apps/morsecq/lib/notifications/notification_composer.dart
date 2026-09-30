@@ -1,22 +1,30 @@
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../i18n/current_strings.dart';
+import '../l10n/generated/s.dart';
 import 'local_notifications_api.dart';
 import 'notification_payload.dart';
 import 'notification_platform.dart';
 import 'notification_prefs.dart';
-import 'notification_strings.dart';
 
 /// Turns chat events into [NotificationRequest]s. Pure: no I/O, no state
 /// beyond the injected [NotificationPrefs] (read at call time) and platform.
+///
+/// User-facing text comes from [strings], resolved on every call (default
+/// [currentS], which follows the app's `LocaleController`), so a language
+/// switch applies to the very next notification. Notifications already on
+/// screen keep the language they were posted in.
 final class NotificationComposer {
   NotificationComposer({
     required NotificationPrefs prefs,
     required NotificationPlatform platform,
     String Function(String text)? patternOf,
+    S Function()? strings,
   }) : _prefs = prefs,
        _platform = platform,
-       _patternOf = patternOf ?? MorseEncoder.toPattern;
+       _patternOf = patternOf ?? MorseEncoder.toPattern,
+       _strings = strings ?? currentS;
 
   /// Android inbox style shows at most this many lines; older ones roll off.
   static const int maxInboxLines = 5;
@@ -24,6 +32,7 @@ final class NotificationComposer {
   final NotificationPrefs _prefs;
   final NotificationPlatform _platform;
   final String Function(String text) _patternOf;
+  final S Function() _strings;
 
   /// One inbox line: `text  pattern` (either part optional per prefs), with
   /// a `Sender: ` prefix inside groups where the title is the group name.
@@ -57,21 +66,23 @@ final class NotificationComposer {
           ? 'morsecq.messages.$conversationId'
           : null,
       lines: grouped ? List<String>.unmodifiable(lines) : const <String>[],
-      summary: grouped ? NotificationStrings.newMessages(lines.length) : null,
+      summary: grouped ? _strings().notificationNewMessages(lines.length) : null,
       sound: _prefs.sound,
     );
   }
 
   NotificationRequest friendRequest(FriendRequest request) {
+    final S s = _strings();
     final String payload = FriendRequestTarget(request.publicKey).encode();
+    final String who = shortKey(request.publicKey);
+    final String text = request.message.trim();
     return NotificationRequest(
       id: stableNotificationId(payload),
       channel: NotificationChannelKind.friendRequests,
-      title: NotificationStrings.friendRequestTitle,
-      body: NotificationStrings.friendRequestBody(
-        shortKey(request.publicKey),
-        request.message,
-      ),
+      title: s.notificationFriendRequestTitle,
+      body: text.isEmpty
+          ? s.notificationFriendRequestFrom(who)
+          : s.notificationFriendRequestBody(who, text),
       payload: payload,
       groupKey: _platform.supportsGrouping ? 'morsecq.friend_requests' : null,
       sound: _prefs.sound,
@@ -79,12 +90,13 @@ final class NotificationComposer {
   }
 
   NotificationRequest groupInvite(GroupInvite invite, {String? fromName}) {
+    final S s = _strings();
     final String payload = GroupInviteTarget(invite.inviteId).encode();
     return NotificationRequest(
       id: stableNotificationId(payload),
       channel: NotificationChannelKind.groupInvites,
-      title: NotificationStrings.groupInviteTitle(invite.groupName),
-      body: NotificationStrings.groupInviteBody(
+      title: s.notificationGroupInviteTitle(invite.groupName),
+      body: s.notificationGroupInviteBody(
         fromName ?? shortKey(invite.fromPublicKey),
       ),
       payload: payload,
@@ -101,7 +113,7 @@ final class NotificationComposer {
       final String pattern = _patternOf(text);
       if (pattern.isNotEmpty) parts.add(pattern);
     }
-    if (parts.isEmpty) parts.add(NotificationStrings.newMessage);
+    if (parts.isEmpty) parts.add(_strings().notificationNewMessage);
     return parts;
   }
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_keypad.dart';
 import 'pattern_decoder.dart';
-import 'reference_strings.dart';
 
 /// Morse → Text: the user types `.` / `-` / space / `/` (or taps the
 /// keypad) and the decoded text follows. Unknown patterns render as
@@ -82,16 +82,18 @@ class _MorseToTextViewState extends State<MorseToTextView> {
   }
 
   Future<void> _copy() async {
+    final String copied = context.s.referenceTextCopied;
     await Clipboard.setData(ClipboardData(text: _decoded));
     if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(const SnackBar(content: Text(ReferenceStrings.textCopied)));
+      ..showSnackBar(SnackBar(content: Text(copied)));
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
     final TextStyle mono = (theme.textTheme.titleLarge ?? const TextStyle()).copyWith(
       fontFamily: 'monospace',
       fontFamilyFallback: const <String>['Menlo', 'Consolas', 'Courier New'],
@@ -115,10 +117,10 @@ class _MorseToTextViewState extends State<MorseToTextView> {
             inputFormatters: <TextInputFormatter>[
               FilteringTextInputFormatter.allow(MorseToTextView.allowedInput),
             ],
-            decoration: const InputDecoration(
-              labelText: ReferenceStrings.patternInputLabel,
-              hintText: ReferenceStrings.patternInputHint,
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: s.referencePatternInputLabel,
+              hintText: s.referencePatternInputHint,
+              border: const OutlineInputBorder(),
               alignLabelWithHint: true,
             ),
           ),
@@ -141,13 +143,13 @@ class _MorseToTextViewState extends State<MorseToTextView> {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  ReferenceStrings.textOutputLabel,
+                  s.referenceTextOutputLabel,
                   style: theme.textTheme.titleSmall,
                 ),
               ),
               IconButton(
                 key: MorseToTextView.copyKey,
-                tooltip: ReferenceStrings.copyText,
+                tooltip: s.referenceCopyText,
                 icon: const Icon(Icons.copy),
                 onPressed: _decoded.isEmpty ? null : _copy,
               ),
@@ -157,7 +159,7 @@ class _MorseToTextViewState extends State<MorseToTextView> {
           Expanded(
             child: SingleChildScrollView(
               child: SelectableText(
-                _decoded.isEmpty ? ReferenceStrings.emptyOutput : _decoded,
+                _decoded.isEmpty ? s.referenceEmptyOutput : _decoded,
                 key: MorseToTextView.outputKey,
                 style: theme.textTheme.headlineSmall,
               ),
@@ -167,7 +169,7 @@ class _MorseToTextViewState extends State<MorseToTextView> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                ReferenceStrings.unknownPatternHelp,
+                s.referenceUnknownPatternHelp,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

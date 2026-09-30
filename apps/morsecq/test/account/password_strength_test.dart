@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/account/account_widgets.dart';
 import 'package:morsecq/ui/account/password_strength.dart';
 
@@ -13,9 +14,16 @@ void main() {
     expect(ratePassword('abcdefghijklmnop'), PasswordStrength.fair);
   });
 
-  test('labels exist for every non-empty bucket', () {
-    for (final s in PasswordStrength.values) {
-      expect(s.label.isEmpty, s == PasswordStrength.empty);
+  test('labels exist for every non-empty bucket, in every locale', () {
+    for (final locale in S.supportedLocales) {
+      final s = lookupS(locale);
+      for (final strength in PasswordStrength.values) {
+        expect(
+          strength.label(s).isEmpty,
+          strength == PasswordStrength.empty,
+          reason: '$strength in $locale',
+        );
+      }
     }
   });
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
-import 'chat_strings.dart';
 import 'morse_pattern_text.dart';
 
 /// Actions a tile can ask its owner to perform.
@@ -38,19 +38,20 @@ class ConversationTile extends StatelessWidget {
     final Widget tile = _buildTile(context);
     if (!(swipeEnabled ?? isTouchPlatform)) return tile;
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final S s = context.s;
     return Dismissible(
       key: ValueKey<String>('dismiss_${conversation.id}'),
       background: _SwipeBackground(
         alignment: Alignment.centerLeft,
         color: scheme.primaryContainer,
         icon: conversation.pinned ? Icons.push_pin_outlined : Icons.push_pin,
-        label: conversation.pinned ? ChatStrings.unpin : ChatStrings.pin,
+        label: conversation.pinned ? s.chatUnpin : s.chatPin,
       ),
       secondaryBackground: _SwipeBackground(
         alignment: Alignment.centerRight,
         color: scheme.errorContainer,
         icon: Icons.delete_outline,
-        label: ChatStrings.delete,
+        label: s.chatDelete,
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
@@ -116,7 +117,7 @@ class ConversationTile extends StatelessWidget {
             ),
             if (last != null)
               Text(
-                formatMessageTime(last.timestamp),
+                formatMessageTime(context, last.timestamp),
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: unread ? scheme.primary : scheme.onSurfaceVariant,
                 ),
@@ -133,7 +134,7 @@ class ConversationTile extends StatelessWidget {
                       children: [
                         if (hasDraft)
                           TextSpan(
-                            text: ChatStrings.draftPrefix,
+                            text: context.s.chatDraftPrefix,
                             style: TextStyle(color: scheme.error),
                           ),
                         TextSpan(text: previewText),
@@ -161,7 +162,7 @@ class ConversationTile extends StatelessWidget {
             PopupMenuButton<ConversationAction>(
               tooltip: '',
               onSelected: onAction,
-              itemBuilder: (_) => _menuItems(),
+              itemBuilder: (context) => _menuItems(context.s),
             ),
           ],
         ),
@@ -169,19 +170,19 @@ class ConversationTile extends StatelessWidget {
     );
   }
 
-  List<PopupMenuEntry<ConversationAction>> _menuItems() => [
+  List<PopupMenuEntry<ConversationAction>> _menuItems(S s) => [
     PopupMenuItem(
       value: ConversationAction.togglePin,
-      child: Text(conversation.pinned ? ChatStrings.unpin : ChatStrings.pin),
+      child: Text(conversation.pinned ? s.chatUnpin : s.chatPin),
     ),
     if (conversation.unreadCount > 0)
-      const PopupMenuItem(
+      PopupMenuItem(
         value: ConversationAction.markRead,
-        child: Text(ChatStrings.markRead),
+        child: Text(s.chatMarkRead),
       ),
-    const PopupMenuItem(
+    PopupMenuItem(
       value: ConversationAction.delete,
-      child: Text(ChatStrings.delete),
+      child: Text(s.chatDelete),
     ),
   ];
 
@@ -194,7 +195,7 @@ class ConversationTile extends StatelessWidget {
         Rect.fromPoints(globalPosition, globalPosition),
         Offset.zero & overlay.size,
       ),
-      items: _menuItems(),
+      items: _menuItems(context.s),
     );
     if (picked != null) onAction(picked);
   }

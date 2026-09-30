@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
 
 /// Small status chip: visible while connecting or offline, gone once online.
 /// Tapping an offline chip retries `connect()`.
@@ -37,20 +37,22 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final scheme = Theme.of(context).colorScheme;
+    // Shared `connection*` keys: the chat list uses the same words.
     final (label, color, icon) = switch (status) {
       ConnectionStatus.online => (
-        AccountStrings.connectionOnline,
+        s.connectionOnline,
         scheme.primary,
         Icons.cloud_done_outlined,
       ),
       ConnectionStatus.connecting => (
-        AccountStrings.connectionConnecting,
+        s.connectionConnecting,
         scheme.tertiary,
         Icons.cloud_sync_outlined,
       ),
       ConnectionStatus.offline => (
-        AccountStrings.connectionOffline,
+        s.connectionOffline,
         scheme.error,
         Icons.cloud_off_outlined,
       ),
@@ -61,7 +63,7 @@ class _StatusChip extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: Tooltip(
-        message: offline ? AccountStrings.connectionTapToReconnect : label,
+        message: offline ? s.accountConnectionTapToReconnect : label,
         child: ActionChip(
           avatar: Icon(icon, size: 18, color: color),
           label: Text(label),

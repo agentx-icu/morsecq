@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
@@ -16,23 +17,26 @@ import 'package:morsecq_chat_api/testing.dart';
 
 import 'account/test_app.dart';
 
-const _labels = [
-  LearnPage.title,
-  ChatPage.title,
-  GroupsPage.title,
-  ReferencePage.title,
-  MePage.title,
+/// The harness renders in English (no override, default test locale).
+final S en = lookupS(const Locale('en'));
+
+final List<String> _labels = [
+  LearnPage.title(en),
+  ChatPage.title(en),
+  GroupsPage.title(en),
+  ReferencePage.title(en),
+  MePage.title(en),
 ];
 
 /// One widget that only the selected destination's page renders. The
 /// placeholder pages show their description; the Me page shows the identity
 /// card.
 final Map<String, Finder> _pageMarkers = {
-  LearnPage.title: find.text(LearnPage.description),
-  ChatPage.title: find.text(ChatPage.description),
-  GroupsPage.title: find.text(GroupsPage.description),
-  ReferencePage.title: find.byType(ReferenceScreen),
-  MePage.title: find.byType(IdentityCard),
+  LearnPage.title(en): find.text(LearnPage.description(en)),
+  ChatPage.title(en): find.text(ChatPage.description(en)),
+  GroupsPage.title(en): find.text(GroupsPage.description(en)),
+  ReferencePage.title(en): find.byType(ReferenceScreen),
+  MePage.title(en): find.byType(IdentityCard),
 };
 
 /// The shell renders only behind the startup gate, so every test boots the
@@ -85,7 +89,7 @@ void main() {
           findsOneWidget,
         );
       }
-      _expectSelected(LearnPage.title);
+      _expectSelected(LearnPage.title(en));
     });
 
     testWidgets('tapping a destination switches the page', (tester) async {
@@ -119,7 +123,7 @@ void main() {
           findsOneWidget,
         );
       }
-      _expectSelected(LearnPage.title);
+      _expectSelected(LearnPage.title(en));
     });
 
     testWidgets('tapping a rail destination switches the page', (tester) async {

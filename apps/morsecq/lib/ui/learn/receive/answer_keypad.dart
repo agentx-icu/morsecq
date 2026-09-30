@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../learn_strings.dart';
+import '../../../i18n/l10n_extension.dart';
 
 /// On-screen keypad restricted to the symbols the trainee has learned.
 ///
@@ -30,6 +30,7 @@ class AnswerKeypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final s = context.s;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -53,8 +54,8 @@ class AnswerKeypad extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _Key(
-              label: LearnStrings.space,
-              semanticsLabel: LearnStrings.space,
+              label: s.learnSpace,
+              semanticsLabel: s.learnSpace,
               enabled: enabled,
               onTap: onSpace,
               minWidth: keySize * 3,
@@ -63,7 +64,7 @@ class AnswerKeypad extends StatelessWidget {
             const SizedBox(width: keyGap),
             _Key(
               label: '⌫',
-              semanticsLabel: LearnStrings.backspace,
+              semanticsLabel: s.learnBackspace,
               enabled: enabled,
               onTap: onBackspace,
               minWidth: keySize * 1.5,

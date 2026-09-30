@@ -9,7 +9,6 @@ import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
 import 'package:morsecq/ui/learn/learn_home_widgets.dart';
 import 'package:morsecq/ui/learn/learn_scope.dart';
-import 'package:morsecq/ui/learn/learn_strings.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
@@ -17,6 +16,7 @@ import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import 'helpers/fake_playback.dart';
+import 'helpers/l10n.dart';
 import 'helpers/stub_identity_service.dart';
 import 'helpers/test_controller.dart';
 
@@ -36,11 +36,11 @@ Future<TestTraining> _pumpHome(
   final t = await TestTraining.create(progress: progress);
   addTearDown(t.controller.dispose);
   await tester.pumpWidget(
-    MaterialApp(
+    l10nApp(
       home: LearnHome(
         controller: t.controller,
         playback: FakeLearnPlaybackFactory(),
-        subtitle: LearnPage.description,
+        subtitle: LearnPage.description(en),
       ),
     ),
   );
@@ -58,8 +58,8 @@ void main() {
       ).recordSession(score, now: kTestNow);
       await _pumpHome(tester, size: const Size(390, 844), progress: progress);
 
-      expect(find.text(LearnStrings.lessonOf(3, 42)), findsOneWidget);
-      expect(find.text(LearnStrings.charsLearned(4)), findsOneWidget);
+      expect(find.text(en.learnLessonOf(3, 42)), findsOneWidget);
+      expect(find.text(en.learnCharsLearned(4)), findsOneWidget);
       for (final c in <String>['K', 'M', 'R', 'S']) {
         expect(
           find.descendant(
@@ -74,14 +74,14 @@ void main() {
       );
       expect(newest.where((c) => c.isNewest).map((c) => c.char), <String>['S']);
       // Lesson n teaches order[0..n]; lesson 3 = K M R S, so S is newest.
-      expect(find.text('${LearnStrings.newestChar}: S'), findsOneWidget);
-      expect(find.text(LearnStrings.dailyGoalProgress(8, 100)), findsOneWidget);
-      expect(find.text(LearnStrings.streakDays(1)), findsOneWidget);
-      expect(find.text(LearnStrings.continueLesson), findsOneWidget);
-      expect(find.text(LearnStrings.receivePractice), findsOneWidget);
-      expect(find.text(LearnStrings.sendPractice), findsOneWidget);
-      expect(find.text(LearnStrings.reviewDue), findsOneWidget);
-      expect(find.text(LearnPage.description), findsOneWidget);
+      expect(find.text(en.learnNewestCharIs('S')), findsOneWidget);
+      expect(find.text(en.learnDailyGoalProgress(8, 100)), findsOneWidget);
+      expect(find.text(en.learnStreakDays(1)), findsOneWidget);
+      expect(find.text(en.learnContinueLesson), findsOneWidget);
+      expect(find.text(en.learnReceivePractice), findsOneWidget);
+      expect(find.text(en.learnSendPractice), findsOneWidget);
+      expect(find.text(en.learnReviewDue), findsOneWidget);
+      expect(find.text(LearnPage.description(en)), findsOneWidget);
     });
 
     testWidgets('lays out one column on a phone and two on a desktop', (
@@ -105,10 +105,10 @@ void main() {
       tester,
     ) async {
       await _pumpHome(tester, size: const Size(390, 844));
-      await tester.tap(find.byTooltip(LearnStrings.settings));
+      await tester.tap(find.byTooltip(en.learnSettings));
       await tester.pumpAndSettle();
       expect(find.byType(TrainingSettingsScreen), findsOneWidget);
-      expect(find.text(LearnStrings.settingsTitle), findsOneWidget);
+      expect(find.text(en.learnSettingsTitle), findsOneWidget);
     });
   });
 
@@ -118,11 +118,11 @@ void main() {
     ) async {
       await _setSize(tester, const Size(390, 844));
       await tester.pumpWidget(
-        MaterialApp(home: LearnPage(playback: FakeLearnPlaybackFactory())),
+        l10nApp(home: LearnPage(playback: FakeLearnPlaybackFactory())),
       );
       await tester.pumpAndSettle();
-      expect(find.text(LearnStrings.identityRequired), findsOneWidget);
-      expect(find.text(LearnPage.description), findsOneWidget);
+      expect(find.text(en.learnIdentityRequired), findsOneWidget);
+      expect(find.text(LearnPage.description(en)), findsOneWidget);
       expect(find.byType(LearnHome), findsNothing);
     });
 
@@ -168,7 +168,7 @@ void main() {
       await tester.pumpWidget(
         Provider<IdentityService>.value(
           value: identity,
-          child: MaterialApp(
+          child: l10nApp(
             home: LearnPage(
               playback: FakeLearnPlaybackFactory(),
               controllerFactory: (context) async {
@@ -192,7 +192,7 @@ void main() {
         progress: TrainerProgress(currentLesson: 2),
       );
       await tester.pumpWidget(
-        MaterialApp(
+        l10nApp(
           home: LearnPage(
             playback: FakeLearnPlaybackFactory(),
             controllerFactory: (_) async => t.controller,
@@ -200,7 +200,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text(LearnStrings.lessonOf(2, 42)), findsOneWidget);
+      expect(find.text(en.learnLessonOf(2, 42)), findsOneWidget);
       expect(
         tester.widget<LearnHome>(find.byType(LearnHome)).controller,
         same(t.controller),

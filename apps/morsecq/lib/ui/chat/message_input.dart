@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
-import 'chat_scope.dart';
-import 'chat_strings.dart';
 import 'keying_input.dart';
 import 'morse_pattern_text.dart';
 import 'morse_playback_controller.dart';
@@ -99,6 +99,7 @@ class _MessageInputState extends State<MessageInput> {
   Future<void> _send() async {
     if (!_canSend) return;
     final String text = _text.text.trim();
+    final S s = context.s;
     setState(() => _sending = true);
     try {
       final ChatMessage sent = await widget.service.sendText(
@@ -111,7 +112,7 @@ class _MessageInputState extends State<MessageInput> {
       unawaited(widget.service.setDraft(widget.conversationId, ''));
       widget.onSent?.call(sent);
     } on Object catch (e) {
-      if (mounted) showSnack(context, describeError(e));
+      if (mounted) showSnack(context, describeChatError(s, e));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -141,6 +142,7 @@ class _MessageInputState extends State<MessageInput> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
+    final S s = context.s;
     final MorsePlaybackSettings settings = MorsePlaybackSettings.of(context);
     final String pattern = MorseEncoder.toPattern(_text.text);
     final int left = _bytesLeft;
@@ -191,21 +193,21 @@ class _MessageInputState extends State<MessageInput> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => unawaited(_send()),
                       decoration: InputDecoration(
-                        hintText: ChatStrings.typeMessage,
+                        hintText: s.chatTypeMessage,
                         border: const OutlineInputBorder(),
                         isDense: true,
-                        errorText: tooLong ? ChatStrings.tooLong : null,
+                        errorText: tooLong ? s.chatTooLong : null,
                       ),
                     ),
                   ),
                   if (_mode != InputMode.keyboard)
                     IconButton(
-                      tooltip: ChatStrings.deleteLast,
+                      tooltip: s.chatDeleteLast,
                       onPressed: _text.text.isEmpty ? null : _deleteLast,
                       icon: const Icon(Icons.backspace_outlined),
                     ),
                   IconButton.filled(
-                    tooltip: ChatStrings.send,
+                    tooltip: s.chatSend,
                     onPressed: _canSend ? () => unawaited(_send()) : null,
                     icon: _sending
                         ? const SizedBox.square(
@@ -231,7 +233,7 @@ class _MessageInputState extends State<MessageInput> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '$left ${ChatStrings.bytesLeft}',
+                    s.chatBytesLeftCount(left),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: tooLong ? scheme.error : scheme.onSurfaceVariant,
                     ),
@@ -270,26 +272,23 @@ class _ModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return SegmentedButton<InputMode>(
       showSelectedIcon: false,
       selected: <InputMode>{mode},
-      onSelectionChanged: (s) => onChanged(s.first),
+      onSelectionChanged: (sel) => onChanged(sel.first),
       segments: [
         _segment(
           InputMode.keyboard,
           Icons.keyboard_alt_outlined,
-          ChatStrings.modeKeyboard,
+          s.chatModeKeyboard,
         ),
         _segment(
           InputMode.straightKey,
           Icons.radio_button_checked,
-          ChatStrings.modeStraightKey,
+          s.chatModeStraightKey,
         ),
-        _segment(
-          InputMode.paddles,
-          Icons.view_column_outlined,
-          ChatStrings.modePaddles,
-        ),
+        _segment(InputMode.paddles, Icons.view_column_outlined, s.chatModePaddles),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/chat/morse_playback_controller.dart';
 import 'package:morsecq/ui/chat/morse_playback_settings.dart';
 import 'package:morsecq/ui/theme.dart';
@@ -13,7 +14,12 @@ import 'package:provider/provider.dart';
 
 // The fake's test hooks are an extension; re-export so every chat test that
 // imports this file can call `service.receiveMessage(...)` etc.
+export 'package:morsecq/l10n/generated/s.dart' show S;
 export 'package:morsecq_chat_api/testing.dart';
+
+/// The English strings the harness renders with (`MaterialApp.locale` is
+/// pinned to `en`), so finders can say `find.text(s.chatSend)`.
+final S s = lookupS(const Locale('en'));
 
 /// 64-hex public keys / 76-hex Tox IDs used across the chat tests.
 final String kPeerKey = 'A' * 64;
@@ -121,6 +127,9 @@ final class ChatHarness {
     child: MaterialApp(
       theme: MorsecqTheme.light(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: S.localizationsDelegates,
+      supportedLocales: S.supportedLocales,
+      locale: const Locale('en'),
       home: child,
     ),
   );

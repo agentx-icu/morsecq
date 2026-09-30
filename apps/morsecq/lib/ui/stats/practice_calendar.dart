@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
+import '../../i18n/l10n_extension.dart';
 import 'confusion_heatmap.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
-import 'stats_strings.dart';
 import 'stats_widgets.dart';
 
 /// GitHub-style heat squares for the last 12 weeks of practice: one column
@@ -33,6 +34,8 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
+    final locale = Localizations.localeOf(context).toString();
     final palette = StatsPalette(scheme);
     final days = widget.snapshot.calendar;
     final max = widget.snapshot.calendarMaxChars;
@@ -45,10 +48,10 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
     final sel = _selected;
 
     return StatsSection(
-      title: StatsStrings.calendarTitle,
+      title: s.statsCalendarTitle,
       subtitle:
-          '${StatsStrings.calendarSubtitle} / '
-          '${StatsStrings.activeDays(widget.snapshot.activeDays)}',
+          '${s.statsCalendarSubtitle} / '
+          '${s.statsActiveDays(widget.snapshot.activeDays)}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -65,7 +68,7 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
                   setState(() => _selected = hit == _selected ? null : hit);
                 },
                 child: Semantics(
-                  label: StatsStrings.calendarTitle,
+                  label: s.statsCalendarTitle,
                   child: CustomPaint(
                     size: geometry.size,
                     painter: CalendarPainter(
@@ -76,6 +79,7 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
                       labelStyle: labelStyle,
                       selected: sel,
                       today: dayOf(widget.snapshot.now),
+                      locale: locale,
                     ),
                   ),
                 ),
@@ -85,8 +89,8 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
           const SizedBox(height: 8),
           if (sel != null && sel < days.length)
             Text(
-              StatsStrings.calendarDay(
-                _formatDay(days[sel].day),
+              s.statsCalendarDay(
+                DateFormat.yMd(locale).format(days[sel].day),
                 days[sel].chars,
               ),
               style: theme.textTheme.labelLarge,
@@ -94,19 +98,15 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
           const SizedBox(height: 8),
           HeatLegend(
             palette: palette,
-            lowLabel: StatsStrings.calendarLegendLess,
-            highLabel: StatsStrings.calendarLegendMore,
+            lowLabel: s.statsCalendarLegendLess,
+            highLabel: s.statsCalendarLegendMore,
           ),
           const SizedBox(height: 12),
-          Text(StatsStrings.streakExplanation, style: muted),
+          Text(s.statsStreakExplanation, style: muted),
         ],
       ),
     );
   }
-
-  static String _formatDay(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-'
-      '${d.day.toString().padLeft(2, '0')}';
 }
 
 /// Cell/gap sizes and hit-testing for the calendar grid.
@@ -185,6 +185,7 @@ class CalendarPainter extends CustomPainter {
     required this.labelStyle,
     required this.selected,
     required this.today,
+    this.locale,
   });
 
   final List<CalendarDay> days;
@@ -195,6 +196,9 @@ class CalendarPainter extends CustomPainter {
   final int? selected;
   final DateTime today;
 
+  /// Locale for the weekday / month labels; intl's default when null.
+  final String? locale;
+
   @override
   void paint(Canvas canvas, Size size) {
     for (final weekday in const <int>[
@@ -203,7 +207,11 @@ class CalendarPainter extends CustomPainter {
       DateTime.friday,
     ]) {
       final r = geometry.rectFor(weekday - 1);
-      _text(canvas, weekdayInitial(weekday), Offset(0, r.center.dy));
+      _text(
+        canvas,
+        weekdayInitial(weekday, locale: locale),
+        Offset(0, r.center.dy),
+      );
     }
 
     int? lastMonth;
@@ -217,7 +225,7 @@ class CalendarPainter extends CustomPainter {
             lastMonth = days[d].day.month;
             _text(
               canvas,
-              monthAbbreviation(lastMonth),
+              monthAbbreviation(lastMonth, locale: locale),
               Offset(rect.left, CalendarGeometry.kHeaderHeight / 2),
               anchorLeft: true,
             );
@@ -275,5 +283,6 @@ class CalendarPainter extends CustomPainter {
       oldDelegate.max != max ||
       oldDelegate.selected != selected ||
       oldDelegate.geometry.cell != geometry.cell ||
-      oldDelegate.palette.scheme != palette.scheme;
+      oldDelegate.palette.scheme != palette.scheme ||
+      oldDelegate.locale != locale;
 }

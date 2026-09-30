@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/startup/startup_controller.dart';
+import 'package:morsecq/i18n/chat_error_messages.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/startup/startup_screens.dart';
-import 'package:morsecq/ui/account/account_strings.dart';
 import 'package:morsecq/ui/account/connection_chip.dart';
 import 'package:morsecq/ui/account/unlock_page.dart';
 import 'package:morsecq/ui/account/welcome_page.dart';
@@ -11,13 +11,16 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import 'test_app.dart';
 
+/// The harness renders in English (no override, default test locale).
+final S en = lookupS(const Locale('en'));
+
 void main() {
   testWidgets('IdentityState.none routes to the welcome page', (tester) async {
     await pumpApp(tester, identity: freshIdentityService());
     expect(find.byType(WelcomePage), findsOneWidget);
     expect(find.byType(AppShell), findsNothing);
-    expect(find.text(AccountStrings.createIdentity), findsOneWidget);
-    expect(find.text(AccountStrings.restoreFromBackup), findsOneWidget);
+    expect(find.text(en.accountCreateIdentity), findsOneWidget);
+    expect(find.text(en.accountRestoreFromBackup), findsOneWidget);
   });
 
   testWidgets('IdentityState.locked routes to the unlock page', (tester) async {
@@ -35,8 +38,8 @@ void main() {
     expect(identity.current, isNotNull);
     expect(identity.connectionStatus, ConnectionStatus.online);
     // Online → the overlay chip is hidden; the shell is unobstructed.
-    expect(find.text(AccountStrings.connectionConnecting), findsNothing);
-    expect(find.text(AccountStrings.connectionOffline), findsNothing);
+    expect(find.text(en.connectionConnecting), findsNothing);
+    expect(find.text(en.connectionOffline), findsNothing);
   });
 
   testWidgets('connection does not block the shell; chip shows meanwhile', (
@@ -49,11 +52,11 @@ void main() {
     expect(find.byType(AppShell), findsOneWidget);
     expect(identity.connectionStatus, ConnectionStatus.connecting);
     expect(find.byType(ConnectionChip), findsWidgets);
-    expect(find.text(AccountStrings.connectionConnecting), findsOneWidget);
+    expect(find.text(en.connectionConnecting), findsOneWidget);
     await tester.pump(const Duration(seconds: 3));
     await settle(tester);
     expect(identity.connectionStatus, ConnectionStatus.online);
-    expect(find.text(AccountStrings.connectionConnecting), findsNothing);
+    expect(find.text(en.connectionConnecting), findsNothing);
   });
 
   testWidgets('inspect failure shows the retry screen; retry recovers', (
@@ -63,22 +66,22 @@ void main() {
       ..inspectError = StateError('disk unreadable');
     await pumpApp(tester, identity: identity);
     expect(find.byType(StartupErrorPage), findsOneWidget);
+    // Non-ChatException: generic message plus the raw detail for bug reports.
+    expect(find.textContaining(en.errorUnknown), findsOneWidget);
     expect(find.textContaining('disk unreadable'), findsOneWidget);
     expect(find.byType(AppShell), findsNothing);
 
-    await tester.tap(find.text(AccountStrings.retry));
+    await tester.tap(find.text(en.actionRetry));
     await settle(tester);
     expect(find.byType(AppShell), findsOneWidget);
   });
 
-  test('StartupController.describeError prefers ChatException messages', () {
+  test('describeChatError maps ChatException codes, not their messages', () {
     expect(
-      StartupController.describeError(
-        const ChatException('wrong_password', 'Wrong password.'),
-      ),
-      'Wrong password.',
+      describeChatError(en, const ChatException('wrong_password', 'raw')),
+      en.errorWrongPassword,
     );
-    expect(StartupController.describeError(StateError('x')), contains('x'));
+    expect(describeChatError(en, StateError('x')), en.errorUnknown);
   });
 
   testWidgets('deleting the identity returns to onboarding', (tester) async {

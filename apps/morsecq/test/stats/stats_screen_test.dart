@@ -7,9 +7,9 @@ import 'package:morsecq/ui/stats/confusion_heatmap.dart';
 import 'package:morsecq/ui/stats/practice_calendar.dart';
 import 'package:morsecq/ui/stats/stats_model.dart';
 import 'package:morsecq/ui/stats/stats_screen.dart';
-import 'package:morsecq/ui/stats/stats_strings.dart';
 import 'package:morsecq/ui/stats/stats_widgets.dart';
 
+import '../learn/helpers/l10n.dart';
 import 'stats_model_test.dart' show buildProgress, kNow;
 
 const Size kPhone = Size(390, 844);
@@ -30,10 +30,7 @@ Future<void> _pump(
 }) async {
   await _setSize(tester, size);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: theme,
-      home: StatsScreen(loadProgress: load, now: kNow),
-    ),
+    l10nApp(theme: theme, home: StatsScreen(loadProgress: load, now: kNow)),
   );
   await tester.pumpAndSettle();
 }
@@ -42,9 +39,9 @@ void main() {
   group('StatsScreen', () {
     testWidgets('shows the empty state for a fresh identity', (tester) async {
       await _pump(tester, size: kPhone, load: () async => TrainerProgress());
-      expect(find.text(StatsStrings.title), findsOneWidget);
-      expect(find.text(StatsStrings.emptyTitle), findsOneWidget);
-      expect(find.text(StatsStrings.emptyCallToAction), findsOneWidget);
+      expect(find.text(en.statsTitle), findsOneWidget);
+      expect(find.text(en.statsEmptyTitle), findsOneWidget);
+      expect(find.text(en.statsEmptyCallToAction), findsOneWidget);
       expect(find.byType(OverviewTiles), findsNothing);
       expect(find.byType(AccuracyTrendChart), findsNothing);
     });
@@ -54,7 +51,7 @@ void main() {
     ) async {
       await _setSize(tester, kPhone);
       await tester.pumpWidget(
-        MaterialApp(
+        l10nApp(
           home: StatsScreen(
             loadProgress: () => Future<TrainerProgress>.delayed(
               const Duration(seconds: 1),
@@ -65,10 +62,10 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(find.text(StatsStrings.loading), findsOneWidget);
+      expect(find.text(en.statsLoading), findsOneWidget);
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
-      expect(find.text(StatsStrings.emptyTitle), findsOneWidget);
+      expect(find.text(en.statsEmptyTitle), findsOneWidget);
     });
 
     testWidgets('shows an error state with retry', (tester) async {
@@ -84,8 +81,8 @@ void main() {
           return Future<TrainerProgress>.value(buildProgress());
         },
       );
-      expect(find.text(StatsStrings.loadFailed), findsOneWidget);
-      await tester.tap(find.text(StatsStrings.retry));
+      expect(find.text(en.statsLoadFailed), findsOneWidget);
+      await tester.tap(find.text(en.statsRetry));
       await tester.pumpAndSettle();
       expect(calls, 2);
       expect(find.byType(OverviewTiles), findsOneWidget);
@@ -97,19 +94,19 @@ void main() {
         size: kPhone,
         load: () async => buildProgress(days: 3),
       );
-      expect(find.text(StatsStrings.tileLesson), findsOneWidget);
-      expect(find.text(StatsStrings.lessonOf(3, 42)), findsOneWidget);
-      expect(find.text(StatsStrings.charsLearned(4)), findsOneWidget);
-      expect(find.text(StatsStrings.percent(34 / 36)), findsOneWidget);
+      expect(find.text(en.statsTileLesson), findsOneWidget);
+      expect(find.text(en.statsLessonOf(3, 42)), findsOneWidget);
+      expect(find.text(en.statsCharsLearned(4)), findsOneWidget);
+      expect(find.text(formatPercent(en, 34 / 36)), findsOneWidget);
       expect(
-        find.text(formatPracticeDuration(const Duration(minutes: 6))),
+        find.text(formatPracticeDuration(en, const Duration(minutes: 6))),
         findsOneWidget,
       );
-      expect(find.text(StatsStrings.days(3)), findsOneWidget);
-      expect(find.text(StatsStrings.bestStreak(3)), findsOneWidget);
-      expect(find.text(StatsStrings.goalProgress(12, 20)), findsOneWidget);
-      expect(find.text(StatsStrings.goalRemaining(8)), findsOneWidget);
-      expect(find.text(StatsStrings.trendTitle), findsOneWidget);
+      expect(find.text(en.statsDays(3)), findsOneWidget);
+      expect(find.text(en.statsBestStreak(3)), findsOneWidget);
+      expect(find.text(en.statsGoalProgress(12, 20)), findsOneWidget);
+      expect(find.text(en.statsGoalRemaining(8)), findsOneWidget);
+      expect(find.text(en.statsTrendTitle), findsOneWidget);
 
       // Single column: the trend chart sits below the overview.
       final overview = tester.getRect(find.byType(OverviewTiles));
@@ -135,7 +132,7 @@ void main() {
     testWidgets('daily goal met is reported', (tester) async {
       final progress = buildProgress(days: 1).copyWith(dailyGoalChars: 10);
       await _pump(tester, size: kPhone, load: () async => progress);
-      expect(find.text(StatsStrings.goalMet), findsOneWidget);
+      expect(find.text(en.statsGoalMet), findsOneWidget);
     });
 
     testWidgets('tapping the trend chart shows a session tooltip', (
@@ -146,7 +143,7 @@ void main() {
         size: kDesktop,
         load: () async => buildProgress(days: 3),
       );
-      expect(find.text(StatsStrings.trendHint), findsOneWidget);
+      expect(find.text(en.statsTrendHint), findsOneWidget);
       final chart = find.descendant(
         of: find.byType(AccuracyTrendChart),
         matching: find.byType(CustomPaint),
@@ -158,10 +155,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
-        find.textContaining(StatsStrings.tooltipSession(3, 3)),
+        find.textContaining(en.statsTooltipSession(3, 3)),
         findsOneWidget,
       );
-      expect(find.text(StatsStrings.trendHint), findsNothing);
+      expect(find.text(en.statsTrendHint), findsNothing);
     });
 
     testWidgets('legend appears only when send and receive both exist', (
@@ -172,8 +169,8 @@ void main() {
         size: kDesktop,
         load: () async => buildProgress(days: 2, withSendToday: true),
       );
-      expect(find.text(StatsStrings.seriesReceive), findsOneWidget);
-      expect(find.text(StatsStrings.seriesSend), findsOneWidget);
+      expect(find.text(en.statsSeriesReceive), findsOneWidget);
+      expect(find.text(en.statsSeriesSend), findsOneWidget);
     });
 
     testWidgets('tapping a character opens the detail sheet', (tester) async {
@@ -189,13 +186,13 @@ void main() {
       await tester.tap(cell);
       await tester.pumpAndSettle();
       expect(find.byType(CharDetailSheet), findsOneWidget);
-      expect(find.text(StatsStrings.srsTitle), findsOneWidget);
-      expect(find.text(StatsStrings.correctOf(7, 9)), findsOneWidget);
-      expect(find.text(StatsStrings.confusionsTitle), findsOneWidget);
-      expect(find.text(StatsStrings.times(2)), findsOneWidget);
+      expect(find.text(en.statsSrsTitle), findsOneWidget);
+      expect(find.text(en.statsCorrectOf(7, 9)), findsOneWidget);
+      expect(find.text(en.statsConfusionsTitle), findsOneWidget);
+      expect(find.text(en.statsTimes(2)), findsOneWidget);
       // Two demotions at box 0 then one promotion: box 1, due tomorrow.
-      expect(find.textContaining(StatsStrings.srsBox(1, 4)), findsOneWidget);
-      expect(find.textContaining(StatsStrings.srsDueIn(1)), findsOneWidget);
+      expect(find.textContaining(en.statsSrsBox(1, 4)), findsOneWidget);
+      expect(find.textContaining(en.statsSrsDueIn(1)), findsOneWidget);
     });
 
     testWidgets('unpractised character reports no data', (tester) async {
@@ -208,10 +205,10 @@ void main() {
         find.byWidgetPredicate((w) => w is CharCell && w.char == 'U'),
       );
       await tester.pumpAndSettle();
-      expect(find.text(StatsStrings.charsNotStarted), findsWidgets);
-      expect(find.text(StatsStrings.lessonIntroduced(4)), findsOneWidget);
-      expect(find.text(StatsStrings.srsNotTracked), findsOneWidget);
-      expect(find.text(StatsStrings.confusionsNone), findsOneWidget);
+      expect(find.text(en.statsCharsNotStarted), findsWidgets);
+      expect(find.text(en.statsLessonIntroduced(4)), findsOneWidget);
+      expect(find.text(en.statsSrsNotTracked), findsOneWidget);
+      expect(find.text(en.statsConfusionsNone), findsOneWidget);
     });
 
     testWidgets('heatmap hides when nothing was confused', (tester) async {
@@ -220,7 +217,7 @@ void main() {
         size: kDesktop,
         load: () async => buildProgress(days: 1),
       );
-      expect(find.text(StatsStrings.heatmapEmpty), findsOneWidget);
+      expect(find.text(en.statsHeatmapEmpty), findsOneWidget);
     });
 
     testWidgets('heatmap renders and reads a tapped cell', (tester) async {
@@ -229,7 +226,7 @@ void main() {
         size: kDesktop,
         load: () async => buildProgress(days: 3),
       );
-      expect(find.text(StatsStrings.heatmapEmpty), findsNothing);
+      expect(find.text(en.statsHeatmapEmpty), findsNothing);
       final paint = find.descendant(
         of: find.byType(ConfusionHeatmap),
         matching: find.byType(CustomPaint),
@@ -238,7 +235,7 @@ void main() {
       const cell = ConfusionHeatmap.kCell;
       await tester.tapAt(rect.topLeft + const Offset(cell * 1.5, cell * 1.5));
       await tester.pumpAndSettle();
-      expect(find.text(StatsStrings.heatmapCell('S', 'R', 2)), findsOneWidget);
+      expect(find.text(en.statsHeatmapCell('S', 'R', 2)), findsOneWidget);
     });
 
     testWidgets('calendar shows active days and streak explanation', (
@@ -249,8 +246,8 @@ void main() {
         size: kDesktop,
         load: () async => buildProgress(days: 3),
       );
-      expect(find.textContaining(StatsStrings.activeDays(3)), findsOneWidget);
-      expect(find.text(StatsStrings.streakExplanation), findsOneWidget);
+      expect(find.textContaining(en.statsActiveDays(3)), findsOneWidget);
+      expect(find.text(en.statsStreakExplanation), findsOneWidget);
     });
 
     testWidgets('renders under the dark theme', (tester) async {
@@ -269,23 +266,23 @@ void main() {
     testWidgets('shows headline numbers', (tester) async {
       await _setSize(tester, kPhone);
       await tester.pumpWidget(
-        MaterialApp(
+        l10nApp(
           home: Scaffold(
             body: StatsSummaryCard(progress: buildProgress(days: 3), now: kNow),
           ),
         ),
       );
-      expect(find.text(StatsStrings.summaryTitle), findsOneWidget);
-      expect(find.text(StatsStrings.percent(34 / 36)), findsOneWidget);
-      expect(find.text(StatsStrings.days(3)), findsOneWidget);
-      expect(find.text(StatsStrings.summaryOpen), findsNothing);
+      expect(find.text(en.statsSummaryTitle), findsOneWidget);
+      expect(find.text(formatPercent(en, 34 / 36)), findsOneWidget);
+      expect(find.text(en.statsDays(3)), findsOneWidget);
+      expect(find.text(en.statsSummaryOpen), findsNothing);
     });
 
     testWidgets('empty progress and open action', (tester) async {
       var opened = 0;
       await _setSize(tester, kPhone);
       await tester.pumpWidget(
-        MaterialApp(
+        l10nApp(
           home: Scaffold(
             body: StatsSummaryCard(
               progress: TrainerProgress(),
@@ -295,8 +292,8 @@ void main() {
           ),
         ),
       );
-      expect(find.text(StatsStrings.emptyTitle), findsOneWidget);
-      await tester.tap(find.text(StatsStrings.summaryOpen));
+      expect(find.text(en.statsEmptyTitle), findsOneWidget);
+      await tester.tap(find.text(en.statsSummaryOpen));
       expect(opened, 1);
     });
   });

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
-import '../learn_strings.dart';
+import 'receive_widgets.dart';
 
 /// End-of-session card: accuracy, pass / unlock state, weak symbols and the
 /// most frequent confusions. Rendered after the controller has recorded the
@@ -26,6 +27,7 @@ class ReceiveSummaryView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final score = outcome.score;
     final weak = score.weakChars();
     final confusions = session.confusionPairs();
@@ -34,16 +36,16 @@ class ReceiveSummaryView extends StatelessWidget {
     final String verdict;
     final IconData verdictIcon;
     if (isReview) {
-      verdict = LearnStrings.reviewRecorded;
+      verdict = s.learnReviewRecorded;
       verdictIcon = Icons.check_circle_outline;
     } else if (outcome.advanced && unlockedChar != null) {
-      verdict = LearnStrings.lessonUnlocked(unlockedChar!);
+      verdict = s.learnLessonUnlocked(unlockedChar!);
       verdictIcon = Icons.lock_open;
     } else if (outcome.passed) {
-      verdict = LearnStrings.lessonPassed;
+      verdict = s.learnLessonPassed;
       verdictIcon = Icons.check_circle_outline;
     } else {
-      verdict = LearnStrings.lessonNotPassed;
+      verdict = s.learnLessonNotPassed;
       verdictIcon = Icons.trending_up;
     }
 
@@ -51,13 +53,13 @@ class ReceiveSummaryView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          LearnStrings.sessionSummary,
+          s.learnSessionSummary,
           style: theme.textTheme.titleMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         Text(
-          LearnStrings.accuracyPercent(score.accuracy),
+          formatAccuracy(s, score.accuracy),
           style: theme.textTheme.displayMedium?.copyWith(
             color: outcome.passed || isReview ? scheme.primary : scheme.error,
             fontWeight: FontWeight.bold,
@@ -65,7 +67,7 @@ class ReceiveSummaryView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         Text(
-          LearnStrings.charsSent(score.totalChars),
+          s.learnCharsSent(score.totalChars),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
@@ -83,7 +85,7 @@ class ReceiveSummaryView extends StatelessWidget {
         if (weak.isNotEmpty) ...<Widget>[
           const SizedBox(height: 20),
           _Section(
-            title: LearnStrings.weakChars,
+            title: s.learnWeakChars,
             child: Wrap(
               spacing: 6,
               runSpacing: 6,
@@ -91,7 +93,7 @@ class ReceiveSummaryView extends StatelessWidget {
                 for (final c in weak.take(10))
                   Chip(
                     label: Text(
-                      '$c ${LearnStrings.accuracyPercent(score.perCharAccuracy[c] ?? 0)}',
+                      '$c ${formatAccuracy(s, score.perCharAccuracy[c] ?? 0)}',
                     ),
                   ),
               ],
@@ -101,7 +103,7 @@ class ReceiveSummaryView extends StatelessWidget {
         if (confusions.isNotEmpty) ...<Widget>[
           const SizedBox(height: 12),
           _Section(
-            title: LearnStrings.confusions,
+            title: s.learnConfusions,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -109,7 +111,7 @@ class ReceiveSummaryView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Text(
-                      '${LearnStrings.confusedAs(target, answered)}  ×$count',
+                      '${confusedAs(s, target, answered)}  ×$count',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),

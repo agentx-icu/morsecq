@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../chat/chat_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'tox_id.dart';
 
 /// Full-screen camera scanner that pops with the first valid Tox ID it sees.
@@ -23,7 +23,10 @@ class _QrScanPageState extends State<QrScanPage> {
     formats: const [BarcodeFormat.qrCode],
   );
   bool _done = false;
-  String? _hint;
+
+  /// A QR code was seen that is not a Tox ID; the hint text is resolved in
+  /// [build] so it follows the locale.
+  bool _sawForeignCode = false;
 
   @override
   void dispose() {
@@ -41,20 +44,21 @@ class _QrScanPageState extends State<QrScanPage> {
         return;
       }
     }
-    if (_hint == null && mounted) {
-      setState(() => _hint = ChatStrings.scanQrNotToxId);
+    if (!_sawForeignCode && mounted) {
+      setState(() => _sawForeignCode = true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return Scaffold(
-      appBar: AppBar(title: const Text(ChatStrings.scanQrTitle)),
+      appBar: AppBar(title: Text(s.chatScanQrTitle)),
       body: Stack(
         fit: StackFit.expand,
         children: [
           MobileScanner(controller: _controller, onDetect: _onDetect),
-          if (_hint != null)
+          if (_sawForeignCode)
             Positioned(
               left: 16,
               right: 16,
@@ -64,7 +68,7 @@ class _QrScanPageState extends State<QrScanPage> {
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Text(_hint!, textAlign: TextAlign.center),
+                  child: Text(s.chatScanQrNotToxId, textAlign: TextAlign.center),
                 ),
               ),
             ),

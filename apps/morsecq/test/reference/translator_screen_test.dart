@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/reference/morse_keypad.dart';
 import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/morse_to_text_view.dart';
-import 'package:morsecq/ui/reference/reference_strings.dart';
 import 'package:morsecq/ui/reference/tap_to_key_view.dart';
 import 'package:morsecq/ui/reference/text_to_morse_view.dart';
 import 'package:morsecq/ui/reference/translator_screen.dart';
@@ -13,6 +13,7 @@ import 'package:morsecq/ui/reference/translator_screen.dart';
 import 'reference_test_support.dart';
 
 const Duration _dit15 = Duration(milliseconds: 80);
+final S en = kTestStrings;
 
 /// Between the decoder's char-gap (2 dit = 160 ms) and word-gap (5 dit =
 /// 400 ms) thresholds at its 80 ms initial dit.
@@ -59,7 +60,7 @@ void main() {
       await tester.enterText(find.byKey(TextToMorseView.inputKey), 'K <AR> é');
       await tester.pump();
       expect(find.text(_display('-.- / .-.-.'), findRichText: true), findsOneWidget);
-      expect(find.text(ReferenceStrings.skippedChars('é')), findsOneWidget);
+      expect(find.text(en.referenceSkippedChars('é')), findsOneWidget);
     });
 
     testWidgets('play keys the injected player and highlights progress', (tester) async {
@@ -69,7 +70,7 @@ void main() {
       await tester.tap(find.byKey(TextToMorseView.playKey));
       await tester.pump();
       expect(fake.sink.isOn, isTrue);
-      expect(find.text(ReferenceStrings.stop), findsOneWidget);
+      expect(find.text(en.referenceStop), findsOneWidget);
       // First dit is highlighted (rich text with three spans).
       final MorsePatternText shown = tester.widget(
         find.byWidgetPredicate((w) => w is MorsePatternText && w.pattern == '. .'),
@@ -85,7 +86,7 @@ void main() {
       fake.clock.advance(_dit15 * 2);
       await tester.pump();
       expect(fake.sink.isOn, isFalse);
-      expect(find.text(ReferenceStrings.play), findsOneWidget);
+      expect(find.text(en.referencePlay), findsOneWidget);
     });
 
     testWidgets('play is disabled with no pattern', (tester) async {
@@ -112,7 +113,7 @@ void main() {
       await tester.pumpAndSettle();
       final MethodCall set = calls.singleWhere((c) => c.method == 'Clipboard.setData');
       expect((set.arguments as Map<Object?, Object?>)['text'], _display('... --- ...'));
-      expect(find.text(ReferenceStrings.patternCopied), findsOneWidget);
+      expect(find.text(en.referencePatternCopied), findsOneWidget);
     });
   });
 
@@ -135,7 +136,7 @@ void main() {
       await tester.enterText(find.byKey(MorseToTextView.inputKey), '.- ......');
       await tester.pump();
       expect(find.text('A<......>'), findsOneWidget);
-      expect(find.text(ReferenceStrings.unknownPatternHelp), findsOneWidget);
+      expect(find.text(en.referenceUnknownPatternHelp), findsOneWidget);
     });
 
     testWidgets('prosign patterns render bracketed', (tester) async {
@@ -172,7 +173,7 @@ void main() {
       await tester.tap(find.byKey(MorseKeypad.clearKey));
       await tester.pump();
       expect(field.controller!.text, isEmpty);
-      expect(find.text(ReferenceStrings.emptyOutput), findsOneWidget);
+      expect(find.text(en.referenceEmptyOutput), findsOneWidget);
     });
 
     testWidgets('keypad keys are touch-sized', (tester) async {
@@ -235,7 +236,7 @@ void main() {
       await tester.tap(find.byKey(TapToKeyView.clearKey));
       await tester.pump();
       expect(find.text('E'), findsNothing);
-      expect(find.text(ReferenceStrings.emptyOutput), findsWidgets);
+      expect(find.text(en.referenceEmptyOutput), findsWidgets);
     });
   });
 
@@ -253,7 +254,7 @@ void main() {
       await tester.tap(find.byKey(TextToMorseView.playKey));
       await tester.pump();
       expect(fake.sink.isOn, isTrue);
-      await tester.tap(find.text(ReferenceStrings.modeMorseToText));
+      await tester.tap(find.text(en.referenceModeMorseToText));
       await tester.pumpAndSettle();
       expect(fake.sink.isOn, isFalse);
       expect(find.byType(MorseToTextView), findsOneWidget);

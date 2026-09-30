@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'account_strings.dart';
+import '../../i18n/l10n_extension.dart';
 import 'password_strength.dart';
 
 /// Narrow, centred, scrollable column used by every onboarding page so phones
@@ -72,6 +72,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final strength = widget.showStrength
         ? ratePassword(widget.controller.text)
         : PasswordStrength.empty;
@@ -87,13 +88,13 @@ class _PasswordFieldState extends State<PasswordField> {
       decoration: InputDecoration(
         labelText: widget.label,
         errorText: widget.errorText,
-        helperText: strength == PasswordStrength.empty ? null : strength.label,
+        helperText: strength == PasswordStrength.empty
+            ? null
+            : strength.label(s),
         helperMaxLines: 2,
         border: const OutlineInputBorder(),
         suffixIcon: IconButton(
-          tooltip: _obscure
-              ? AccountStrings.showPassword
-              : AccountStrings.hidePassword,
+          tooltip: _obscure ? s.accountShowPassword : s.accountHidePassword,
           icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
           onPressed: () => setState(() => _obscure = !_obscure),
         ),
@@ -126,15 +127,17 @@ class BulletLine extends StatelessWidget {
   }
 }
 
-/// Copies [text] and confirms with a snackbar.
+/// Copies [text] and confirms with a snackbar ("Tox ID copied" unless
+/// [confirmation] says otherwise).
 Future<void> copyToClipboard(
   BuildContext context,
   String text, {
-  String confirmation = AccountStrings.copied,
+  String? confirmation,
 }) async {
+  final message = confirmation ?? context.s.accountCopied;
   final messenger = ScaffoldMessenger.maybeOf(context);
   await Clipboard.setData(ClipboardData(text: text));
-  messenger?.showSnackBar(SnackBar(content: Text(confirmation)));
+  messenger?.showSnackBar(SnackBar(content: Text(message)));
 }
 
 /// Tox IDs are 76 hex chars; break them into groups so they wrap sanely on a

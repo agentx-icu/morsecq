@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
-import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import 'qr_scan_page.dart';
 import 'tox_id.dart';
 
@@ -54,11 +54,24 @@ class AddFriendForm extends StatefulWidget {
 class _AddFriendFormState extends State<AddFriendForm> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   final TextEditingController _id = TextEditingController();
-  final TextEditingController _message = TextEditingController(
-    text: ChatStrings.defaultRequestMessage,
-  );
-  String? _serverError;
+  final TextEditingController _message = TextEditingController();
+  bool _messageSeeded = false;
+
+  /// Backend rejection, kept as the [ChatException] code and translated in
+  /// [build] so a locale change re-renders it.
+  String? _serverErrorCode;
   bool _busy = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The greeting default is a localized string, so it cannot be seeded in
+    // the field initializer; do it once the first time S is reachable.
+    if (!_messageSeeded) {
+      _messageSeeded = true;
+      _message.text = context.s.chatDefaultRequestMessage;
+    }
+  }
 
   @override
   void dispose() {
@@ -75,38 +88,41 @@ class _AddFriendFormState extends State<AddFriendForm> {
   }
 
   Future<void> _submit() async {
-    setState(() => _serverError = null);
+    setState(() => _serverErrorCode = null);
     if (!(_form.currentState?.validate() ?? false)) return;
+    final String fallback = context.s.chatDefaultRequestMessage;
     setState(() => _busy = true);
     try {
       await widget.service.addFriend(
         normalizeToxId(_id.text),
-        message: _message.text.trim().isEmpty
-            ? ChatStrings.defaultRequestMessage
-            : _message.text.trim(),
+        message: _message.text.trim().isEmpty ? fallback : _message.text.trim(),
       );
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } on ChatException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _serverError = switch (e.code) {
-          'invalid_tox_id' => ChatStrings.toxIdInvalid,
-          'own_id' => ChatStrings.toxIdOwn,
-          'already_friend' => ChatStrings.toxIdAlreadyFriend,
-          _ => e.message,
-        };
-      });
-    } on Object catch (e) {
-      if (mounted) setState(() => _serverError = describeError(e));
+      if (mounted) setState(() => _serverErrorCode = e.code);
+    } on Object {
+      if (mounted) setState(() => _serverErrorCode = '');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
+  /// Field-level wording for the codes the validator also produces, the
+  /// shared error table for everything else.
+  String? _serverError(S s) => switch (_serverErrorCode) {
+    null => null,
+    'invalid_tox_id' => s.chatToxIdInvalid,
+    'own_id' => s.chatToxIdOwn,
+    'already_friend' => s.chatToxIdAlreadyFriend,
+    final String code => chatErrorMessage(s, code),
+  };
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
+    final String? serverError = _serverError(s);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -117,7 +133,7 @@ class _AddFriendFormState extends State<AddFriendForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(ChatStrings.addFriend, style: theme.textTheme.titleLarge),
+              Text(s.chatAddFriend, style: theme.textTheme.titleLarge),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _id,
@@ -128,13 +144,13 @@ class _AddFriendFormState extends State<AddFriendForm> {
                 enableSuggestions: false,
                 style: const TextStyle(fontFamily: 'monospace'),
                 decoration: InputDecoration(
-                  labelText: ChatStrings.toxIdLabel,
+                  labelText: s.chatToxIdLabel,
                   border: const OutlineInputBorder(),
-                  errorText: _serverError,
+                  errorText: serverError,
                   suffixIcon: Tooltip(
                     message: widget.canScan
-                        ? ChatStrings.scanQr
-                        : ChatStrings.scanQrDesktopHint,
+                        ? s.chatScanQr
+                        : s.chatScanQrDesktopHint,
                     child: IconButton(
                       icon: const Icon(Icons.qr_code_scanner),
                       onPressed: widget.canScan
@@ -144,10 +160,10 @@ class _AddFriendFormState extends State<AddFriendForm> {
                   ),
                 ),
                 validator: (v) =>
-                    validateToxIdInput(v, ownToxId: widget.ownToxId),
+                    validateToxIdInput(s, v, ownToxId: widget.ownToxId),
                 onChanged: (_) {
-                  if (_serverError != null) {
-                    setState(() => _serverError = null);
+                  if (_serverErrorCode != null) {
+                    setState(() => _serverErrorCode = null);
                   }
                 },
               ),
@@ -155,7 +171,7 @@ class _AddFriendFormState extends State<AddFriendForm> {
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    ChatStrings.scanQrDesktopHint,
+                    s.chatScanQrDesktopHint,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -164,9 +180,9 @@ class _AddFriendFormState extends State<AddFriendForm> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _message,
-                decoration: const InputDecoration(
-                  labelText: ChatStrings.requestMessage,
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: s.chatRequestMessage,
+                  border: const OutlineInputBorder(),
                 ),
                 maxLength: 200,
               ),
@@ -174,7 +190,7 @@ class _AddFriendFormState extends State<AddFriendForm> {
               FilledButton.icon(
                 onPressed: _busy ? null : () => unawaited(_submit()),
                 icon: const Icon(Icons.person_add_alt_1),
-                label: const Text(ChatStrings.sendRequest),
+                label: Text(s.chatSendRequest),
               ),
             ],
           ),

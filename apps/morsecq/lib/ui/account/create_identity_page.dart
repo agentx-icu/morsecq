@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/chat_error_messages.dart';
+import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
-import 'account_strings.dart';
 import 'account_widgets.dart';
 
 /// Display name + optional password (with strength hint and confirmation).
@@ -35,11 +36,12 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
   bool get _wantsPassword => _password.text.isNotEmpty;
 
   Future<void> _submit() async {
+    final s = context.s;
     final name = _name.text.trim();
     setState(() {
-      _nameError = name.isEmpty ? AccountStrings.displayNameRequired : null;
+      _nameError = name.isEmpty ? s.accountDisplayNameRequired : null;
       _confirmError = _wantsPassword && _confirm.text != _password.text
-          ? AccountStrings.passwordsDoNotMatch
+          ? s.accountPasswordsDoNotMatch
           : null;
       _submitError = null;
     });
@@ -59,19 +61,20 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _submitError = StartupController.describeError(e);
+        _submitError = describeChatError(s, e);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text(AccountStrings.createTitle)),
+      appBar: AppBar(title: Text(s.accountCreateTitle)),
       body: AccountPageBody(
         children: [
-          Text(AccountStrings.createBody, style: theme.textTheme.bodyMedium),
+          Text(s.accountCreateBody, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 24),
           TextField(
             controller: _name,
@@ -79,8 +82,8 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
             textInputAction: TextInputAction.next,
             maxLength: 64,
             decoration: InputDecoration(
-              labelText: AccountStrings.displayName,
-              hintText: AccountStrings.displayNameHint,
+              labelText: s.accountDisplayName,
+              hintText: s.accountDisplayNameHint,
               errorText: _nameError,
               border: const OutlineInputBorder(),
             ),
@@ -88,7 +91,7 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
           const SizedBox(height: 16),
           PasswordField(
             controller: _password,
-            label: AccountStrings.passwordOptional,
+            label: s.accountPasswordOptional,
             showStrength: true,
             textInputAction: TextInputAction.next,
             onChanged: (_) => setState(() {}),
@@ -97,7 +100,7 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
             const SizedBox(height: 16),
             PasswordField(
               controller: _confirm,
-              label: AccountStrings.confirmPassword,
+              label: s.accountConfirmPassword,
               errorText: _confirmError,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _submit(),
@@ -115,9 +118,7 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: _busy ? null : _submit,
-            child: Text(
-              _busy ? AccountStrings.creating : AccountStrings.createButton,
-            ),
+            child: Text(_busy ? s.accountCreating : s.accountCreateButton),
           ),
         ],
       ),

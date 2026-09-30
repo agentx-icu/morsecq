@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../i18n/l10n_extension.dart';
 import '../../../training/send_session.dart';
-import '../learn_strings.dart';
+import 'send_tips.dart';
 
 /// Live send-practice readout: the target (or a "hidden" placeholder), the
 /// decoded text so far, the pattern of the character being keyed and the
@@ -37,6 +38,7 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final s = context.s;
     final mono = theme.textTheme.headlineSmall?.copyWith(
       fontFamily: 'monospace',
       letterSpacing: 2,
@@ -48,11 +50,11 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _Label(LearnStrings.sendThis),
+        _Label(s.learnSendThis),
         const SizedBox(height: 4),
         if (hideTarget)
           Text(
-            LearnStrings.hiddenTarget,
+            s.learnHiddenTarget,
             style: theme.textTheme.titleMedium?.copyWith(
               color: scheme.onSurfaceVariant,
               fontStyle: FontStyle.italic,
@@ -69,7 +71,7 @@ class _Body extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 16),
-        _Label(LearnStrings.decoded),
+        _Label(s.learnDecoded),
         const SizedBox(height: 4),
         Container(
           constraints: const BoxConstraints(minHeight: 56),
@@ -83,7 +85,7 @@ class _Body extends StatelessWidget {
               Expanded(
                 child: Text(
                   decoded.isEmpty && pending.isEmpty
-                      ? LearnStrings.waitingForKey
+                      ? s.learnWaitingForKey
                       : decoded,
                   style: decoded.isEmpty && pending.isEmpty
                       ? theme.textTheme.bodyLarge?.copyWith(
@@ -106,7 +108,7 @@ class _Body extends StatelessWidget {
           children: <Widget>[
             Flexible(
               child: Text(
-                '${LearnStrings.pending}: ${pending.isEmpty ? '-' : pending}',
+                s.learnPendingPattern(pending.isEmpty ? '-' : pending),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,
                   fontFamily: 'monospace',
@@ -115,7 +117,7 @@ class _Body extends StatelessWidget {
               ),
             ),
             Text(
-              wpm <= 0 ? '- wpm' : LearnStrings.wpm(wpm),
+              formatWpm(s, wpm),
               style: theme.textTheme.labelLarge,
             ),
           ],

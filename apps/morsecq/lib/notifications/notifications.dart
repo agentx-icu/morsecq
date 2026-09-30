@@ -14,4 +14,3 @@ export 'notification_composer.dart';
 export 'notification_payload.dart';
 export 'notification_platform.dart';
 export 'notification_prefs.dart';
-export 'notification_strings.dart';

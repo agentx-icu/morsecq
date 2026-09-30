@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../i18n/current_strings.dart';
+
 /// Where backup bytes go and come from. Abstracted so widget tests never
 /// touch the native pickers and so the platform split (save dialog on
 /// desktop, share sheet on mobile) lives in exactly one place.
@@ -36,7 +38,9 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
       fileName: fileName,
       bytes: bytes,
       mimeType: _mimeType,
-      dialogTitle: 'Save morsecq backup',
+      // No BuildContext this deep: the native dialog reads the current
+      // UI language through currentS().
+      dialogTitle: currentS().accountBackupSaveDialogTitle,
     );
     return uri != null;
   }
@@ -51,7 +55,7 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
       final result = await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path, mimeType: _mimeType, name: fileName)],
-          subject: 'morsecq identity backup',
+          subject: currentS().accountBackupShareSubject,
         ),
       );
       return result.status != ShareResultStatus.dismissed;
@@ -64,7 +68,7 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
   @override
   Future<Uint8List?> pickBackup() async {
     final file = await FilePicker.pickFile(
-      dialogTitle: 'Choose morsecq backup',
+      dialogTitle: currentS().accountBackupChooseDialogTitle,
     );
     if (file == null) return null;
     return file.readAsBytes();

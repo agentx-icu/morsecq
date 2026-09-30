@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
-import '../chat/chat_strings.dart';
 import '../chat/conversation_list.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
@@ -21,9 +21,11 @@ import 'placeholder_page.dart';
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
-  static const String title = ChatStrings.chatTitle;
-  static const String description =
-      'Serverless one-to-one Morse conversations over Tox P2P.';
+  /// Destination label, resolved in the current locale.
+  static String title(S s) => s.navChat;
+
+  /// One-line subtitle, resolved in the current locale.
+  static String description(S s) => s.navChatDescription;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -61,11 +63,12 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     final ChatService? service = maybeChatService(context);
     if (service == null) {
-      return const PlaceholderPage(
-        title: ChatPage.title,
-        description: ChatPage.description,
+      return PlaceholderPage(
+        title: ChatPage.title(s),
+        description: ChatPage.description(s),
         icon: Icons.chat_bubble_outline,
       );
     }
@@ -78,7 +81,7 @@ class _ChatPageState extends State<ChatPage> {
 
     final Widget list = Scaffold(
       appBar: AppBar(
-        title: const Text(ChatPage.title),
+        title: Text(ChatPage.title(s)),
         actions: [
           _RequestsBadge(
             service: service,
@@ -89,7 +92,7 @@ class _ChatPageState extends State<ChatPage> {
       body: ConversationList(
         service: service,
         selectedId: _selected?.id,
-        emptyText: ChatPage.description,
+        emptyText: ChatPage.description(s),
         onOpen: (c) => _open(context, ConversationTarget.fromConversation(c)),
       ),
     );
@@ -125,7 +128,7 @@ class _RequestsBadge extends StatelessWidget {
       builder: (context, snapshot) {
         final int count = snapshot.data?.length ?? 0;
         return IconButton(
-          tooltip: ChatStrings.contacts,
+          tooltip: context.s.chatContacts,
           onPressed: onPressed,
           icon: Badge.count(
             count: count,

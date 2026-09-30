@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq/training/receive_session.dart';
-import 'package:morsecq/ui/learn/learn_strings.dart';
 import 'package:morsecq/ui/learn/receive/answer_keypad.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/receive/receive_summary_view.dart';
 import 'package:morsecq/ui/learn/receive/round_result_view.dart';
 
 import 'helpers/fake_playback.dart';
+import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
 Future<void> _setSize(WidgetTester tester, Size size) async {
@@ -28,7 +28,7 @@ Future<(TestTraining, ReceiveSession, FakeLearnPlaybackFactory)> _pump(
   final playback = FakeLearnPlaybackFactory();
   final session = t.controller.startLessonSession();
   await tester.pumpWidget(
-    MaterialApp(
+    l10nApp(
       home: Builder(
         builder: (context) => Scaffold(
           body: Center(
@@ -58,7 +58,7 @@ void main() {
   testWidgets('plays the drill through the player on open', (tester) async {
     final (_, session, playback) = await _pump(tester);
     expect(playback.created.single, kShortSettings);
-    expect(find.text(LearnStrings.listen), findsOneWidget);
+    expect(find.text(en.learnListen), findsOneWidget);
     // The first element keys the sink immediately; the rest follow the clock.
     expect(playback.sink.events.first.on, isTrue);
     final total = MorseEncoder.totalDuration(session.currentTimeline);
@@ -67,7 +67,7 @@ void main() {
     final marks = session.currentTimeline.where((e) => e.on).length;
     expect(playback.sink.events.where((e) => e.on).length, marks);
     expect(playback.sink.isOn, isFalse);
-    expect(find.text(LearnStrings.ready), findsOneWidget);
+    expect(find.text(en.learnReady), findsOneWidget);
   });
 
   testWidgets('replay plays the same round again', (tester) async {
@@ -76,7 +76,7 @@ void main() {
     playback.clock.advance(total + const Duration(milliseconds: 1));
     await tester.pump();
     final before = playback.sink.events.length;
-    await tester.tap(find.text(LearnStrings.replay));
+    await tester.tap(find.text(en.learnReplay));
     await tester.pump();
     playback.clock.advance(total + const Duration(milliseconds: 1));
     expect(playback.sink.events.length, before * 2);
@@ -89,26 +89,26 @@ void main() {
       final target = session.currentDrill.text;
 
       await tester.enterText(find.byType(TextField), target);
-      await tester.tap(find.widgetWithText(FilledButton, LearnStrings.submit));
+      await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
       await tester.pumpAndSettle();
 
       expect(find.byType(RoundResultView), findsOneWidget);
-      expect(find.text(LearnStrings.roundPerfect), findsOneWidget);
+      expect(find.text(en.learnRoundPerfect), findsOneWidget);
       // Budget of 5 chars is spent after one round of 5.
       expect(session.isComplete, isTrue);
-      await tester.tap(find.widgetWithText(FilledButton, LearnStrings.finish));
+      await tester.tap(find.widgetWithText(FilledButton, en.learnFinish));
       await tester.pumpAndSettle();
 
       expect(find.byType(ReceiveSummaryView), findsOneWidget);
-      expect(find.text(LearnStrings.accuracyPercent(1)), findsOneWidget);
+      expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
       // 5 chars is below the 50-char Koch minimum, so no unlock.
-      expect(find.text(LearnStrings.lessonNotPassed), findsOneWidget);
+      expect(find.text(en.learnLessonNotPassed), findsOneWidget);
       expect(t.progressStore.saveCount, 1);
       expect(t.controller.progress.history.single.totalChars, 5);
       expect(t.controller.charsToday, 5);
       expect(t.controller.streak, 1);
 
-      await tester.tap(find.widgetWithText(FilledButton, LearnStrings.done));
+      await tester.tap(find.widgetWithText(FilledButton, en.learnDone));
       await tester.pumpAndSettle();
       expect(find.byType(ReceiveDrillScreen), findsNothing);
     },
@@ -131,7 +131,7 @@ void main() {
     );
     await tester.tap(key('K'));
     await tester.tap(key('M'));
-    await tester.tap(key(LearnStrings.space));
+    await tester.tap(key(en.learnSpace));
     await tester.tap(key('K'));
     await tester.tap(key('⌫'));
     await tester.pump();
@@ -157,13 +157,13 @@ void main() {
     final target = session.currentDrill.text;
     final wrong = target.split('').map((c) => c == 'K' ? 'M' : 'K').join();
     await tester.enterText(find.byType(TextField), wrong);
-    await tester.tap(find.widgetWithText(FilledButton, LearnStrings.submit));
+    await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
     await tester.pumpAndSettle();
-    expect(find.text(LearnStrings.roundPerfect), findsNothing);
+    expect(find.text(en.learnRoundPerfect), findsNothing);
     expect(find.textContaining('of 5 correct'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, LearnStrings.finish));
+    await tester.tap(find.widgetWithText(FilledButton, en.learnFinish));
     await tester.pumpAndSettle();
-    expect(find.text(LearnStrings.confusions), findsOneWidget);
+    expect(find.text(en.learnConfusions), findsOneWidget);
     expect(find.textContaining('heard as'), findsWidgets);
     expect(t.controller.progress.confusion.isEmpty, isFalse);
   });

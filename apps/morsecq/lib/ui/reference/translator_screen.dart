@@ -2,26 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_to_text_view.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
 import 'reference_playback_settings.dart';
 import 'reference_player.dart';
-import 'reference_strings.dart';
 import 'tap_to_key_view.dart';
 import 'text_to_morse_view.dart';
 
 /// The three tools of the translator.
 enum TranslatorMode {
-  textToMorse(ReferenceStrings.modeTextToMorse, Icons.text_fields),
-  morseToText(ReferenceStrings.modeMorseToText, Icons.graphic_eq),
-  key(ReferenceStrings.modeKey, Icons.radio_button_checked);
+  textToMorse(Icons.text_fields),
+  morseToText(Icons.graphic_eq),
+  key(Icons.radio_button_checked);
 
-  const TranslatorMode(this.label, this.icon);
+  const TranslatorMode(this.icon);
 
-  final String label;
   final IconData icon;
+
+  /// Localised segment label.
+  String label(S s) => switch (this) {
+        TranslatorMode.textToMorse => s.referenceModeTextToMorse,
+        TranslatorMode.morseToText => s.referenceModeMorseToText,
+        TranslatorMode.key => s.referenceModeKey,
+      };
 }
 
 /// Two-way Morse translator: text to pattern (with playback), typed pattern
@@ -92,6 +98,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final S s = context.s;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ReferencePlaybackController>.value(value: _controller),
@@ -99,10 +106,10 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(ReferenceStrings.translatorTitle),
+          title: Text(s.referenceTranslatorTitle),
           actions: <Widget>[
             IconButton(
-              tooltip: ReferenceStrings.playbackSettings,
+              tooltip: s.referencePlaybackSettings,
               icon: const Icon(Icons.tune),
               onPressed: () => showReferencePlaybackSettings(context, _settings),
             ),
@@ -125,7 +132,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         for (final TranslatorMode m in TranslatorMode.values)
                           ButtonSegment<TranslatorMode>(
                             value: m,
-                            label: Text(m.label, maxLines: 1, softWrap: false),
+                            label: Text(m.label(s), maxLines: 1, softWrap: false),
                             icon: twoPane ? Icon(m.icon) : null,
                           ),
                       ],

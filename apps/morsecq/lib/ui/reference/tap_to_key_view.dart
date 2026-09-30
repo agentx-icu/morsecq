@@ -5,9 +5,9 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
 import 'reference_playback_controller.dart';
-import 'reference_strings.dart';
 
 /// Tap to key: a straight key (touch, or Space on a keyboard) feeding a
 /// [MorseDecoder]; the decoded text and the character being keyed are shown
@@ -93,6 +93,7 @@ class _TapToKeyViewState extends State<TapToKeyView> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final S s = context.s;
 
     final Widget textPane = Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -103,17 +104,17 @@ class _TapToKeyViewState extends State<TapToKeyView> {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  ReferenceStrings.keyDecodedLabel,
+                  s.referenceKeyDecodedLabel,
                   style: theme.textTheme.titleSmall,
                 ),
               ),
               Text(
-                ReferenceStrings.estimatedSpeed(_estimatedWpm),
+                s.referenceEstimatedSpeed('${_estimatedWpm.round()}'),
                 style: theme.textTheme.labelMedium,
               ),
               IconButton(
                 key: TapToKeyView.clearKey,
-                tooltip: ReferenceStrings.clear,
+                tooltip: s.referenceClear,
                 icon: const Icon(Icons.clear_all),
                 onPressed: _text.isEmpty && _pending.isEmpty ? null : _clear,
               ),
@@ -122,15 +123,15 @@ class _TapToKeyViewState extends State<TapToKeyView> {
           Expanded(
             child: SingleChildScrollView(
               child: SelectableText(
-                _text.isEmpty ? ReferenceStrings.emptyOutput : _text,
+                _text.isEmpty ? s.referenceEmptyOutput : _text,
                 key: TapToKeyView.decodedKey,
                 style: theme.textTheme.headlineSmall,
               ),
             ),
           ),
-          Text(ReferenceStrings.keyPendingLabel, style: theme.textTheme.labelLarge),
+          Text(s.referenceKeyPendingLabel, style: theme.textTheme.labelLarge),
           MorsePatternText(
-            _pending.isEmpty ? ReferenceStrings.emptyOutput : _pending,
+            _pending.isEmpty ? s.referenceEmptyOutput : _pending,
             style: theme.textTheme.titleLarge,
             maxLines: 1,
           ),
@@ -146,12 +147,12 @@ class _TapToKeyViewState extends State<TapToKeyView> {
           StraightKeyButton(
             input: _key,
             clock: widget.clock,
-            label: ReferenceStrings.keyLabel,
+            label: s.referenceKeyLabel,
             autofocus: true,
           ),
           const SizedBox(height: 12),
           Text(
-            ReferenceStrings.keyHint,
+            s.referenceKeyHint,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,

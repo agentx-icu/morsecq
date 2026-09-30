@@ -1,8 +1,13 @@
+import 'reference_localized_text.dart';
+
 /// Mnemonics shown when a learner long-presses a character in the reference.
 ///
-/// Two layers: the spoken rhythm (`di-DAH`), derived from the pattern so it
-/// can never drift from `MorseAlphabet`, and a memory phrase whose syllable
-/// stress mirrors the rhythm (a stressed syllable is a dah).
+/// Two layers: the spoken rhythm (`di-DAH`, or `嘀嗒` in Chinese), derived
+/// from the pattern so it can never drift from `MorseAlphabet`, and a memory
+/// phrase whose syllable stress mirrors the rhythm (a stressed syllable is a
+/// dah). The phrases are English and phonetic, so they stay English in every
+/// language; other languages get a translated description where the phrase
+/// is descriptive (digits) or an explanation note where it is phonetic.
 abstract final class ReferenceMnemonics {
   /// Memory phrases for letters and digits, upper-case key.
   static const Map<String, String> phrases = <String, String>{
@@ -44,30 +49,81 @@ abstract final class ReferenceMnemonics {
     '0': 'five dahs',
   };
 
+  /// Translated phrases, by language then character, for phrases that
+  /// describe the pattern rather than sound it out (the digits). A letter
+  /// missing here keeps its English phrase plus [phraseNotes].
+  static const Map<String, Map<String, String>> localizedPhrases =
+      <String, Map<String, String>>{
+    'zh': <String, String>{
+      '1': '一点，然后四划',
+      '2': '两点，然后三划',
+      '3': '三点，然后两划',
+      '4': '四点，然后一划',
+      '5': '五点',
+      '6': '一划，然后四点',
+      '7': '两划，然后三点',
+      '8': '三划，然后两点',
+      '9': '四划，然后一点',
+      '0': '五划',
+    },
+  };
+
+  /// Explanation appended to an English phonetic phrase in other languages.
+  static const Map<String, String> phraseNotes = <String, String>{
+    'zh': '（英文口诀中重读音节为划）',
+  };
+
   /// `.-` -> `di-DAH`, `-...` -> `DAH-di-di-dit`, `.` -> `dit`.
   ///
   /// The last dit is voiced `dit`; every dit before the end is `di`, the
-  /// way operators say patterns aloud.
-  static String spokenRhythm(String pattern) {
+  /// way operators say patterns aloud. In Chinese (`language: 'zh'`) the
+  /// same pattern is read `嘀嗒` / `嗒嘀嘀嘀`, as Chinese hams voice it.
+  static String spokenRhythm(String pattern, {String language = 'en'}) {
     final List<String> parts = <String>[];
+    final bool zh = language == 'zh';
     for (int i = 0; i < pattern.length; i++) {
       final String ch = pattern[i];
       if (ch == '-') {
-        parts.add('DAH');
+        parts.add(zh ? '嗒' : 'DAH');
       } else if (ch == '.') {
-        parts.add(i == pattern.length - 1 ? 'dit' : 'di');
+        parts.add(zh ? '嘀' : (i == pattern.length - 1 ? 'dit' : 'di'));
       }
     }
-    return parts.join('-');
+    return parts.join(zh ? '' : '-');
   }
 
-  /// Full mnemonic line for a character with [pattern], e.g.
-  /// `A: di-DAH — "a-PART"`. Falls back to the rhythm alone for characters
-  /// without a phrase (punctuation).
-  static String forCharacter(String char, String pattern) {
-    final String rhythm = spokenRhythm(pattern);
-    final String? phrase = phrases[char.toUpperCase()];
-    if (phrase == null) return '$char: $rhythm';
-    return '$char: $rhythm — "$phrase"';
+  /// Full mnemonic line for a character with [pattern] in [language], e.g.
+  /// `A: di-DAH — "a-PART"` or `A：嘀嗒 — "a-PART"（英文口诀中重读音节为划）`.
+  /// Falls back to the rhythm alone for characters without a phrase
+  /// (punctuation).
+  static String forCharacter(
+    String char,
+    String pattern, {
+    String language = 'en',
+  }) {
+    final String head =
+        '$char${referenceLabelSeparator(language)}${spokenRhythm(pattern, language: language)}';
+    final String key = char.toUpperCase();
+    final String? phrase = phrases[key];
+    if (phrase == null) return head;
+    final String? local = localizedPhrases[language]?[key];
+    if (local != null) return '$head — $local';
+    return '$head — "$phrase"${phraseNotes[language] ?? ''}';
   }
+
+  /// [forCharacter] for every language in [kReferenceLanguages].
+  static Map<String, String> linesForCharacter(String char, String pattern) =>
+      <String, String>{
+        for (final String language in kReferenceLanguages)
+          language: forCharacter(char, pattern, language: language),
+      };
+
+  /// Rhythm-only lines (`<AR>: di-DAH-di-DAH-dit`) for every language, used
+  /// for prosigns, which have no memory phrase.
+  static Map<String, String> rhythmLines(String label, String pattern) =>
+      <String, String>{
+        for (final String language in kReferenceLanguages)
+          language:
+              '$label${referenceLabelSeparator(language)}${spokenRhythm(pattern, language: language)}',
+      };
 }
