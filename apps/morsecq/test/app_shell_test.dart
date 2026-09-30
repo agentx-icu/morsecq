@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/main.dart';
+import 'package:morsecq/ui/account/backup_file_gateway.dart';
+import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
 import 'package:morsecq/ui/responsive.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:morsecq_chat_api/testing.dart';
+
+import 'account/test_app.dart';
 
 const _labels = [
   LearnPage.title,
@@ -14,28 +21,46 @@ const _labels = [
   MePage.title,
 ];
 
-const _descriptions = {
-  LearnPage.title: LearnPage.description,
-  ChatPage.title: ChatPage.description,
-  GroupsPage.title: GroupsPage.description,
-  MePage.title: MePage.description,
+/// One widget that only the selected destination's page renders. The
+/// placeholder pages show their description; the Me page shows the identity
+/// card.
+final Map<String, Finder> _pageMarkers = {
+  LearnPage.title: find.text(LearnPage.description),
+  ChatPage.title: find.text(ChatPage.description),
+  GroupsPage.title: find.text(GroupsPage.description),
+  MePage.title: find.byType(IdentityCard),
 };
 
+/// The shell renders only behind the startup gate, so every test boots the
+/// app with a ready (plain, already-created) fake identity.
 Future<void> _pumpAt(WidgetTester tester, Size logicalSize) async {
   tester.view.physicalSize = logicalSize;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  await tester.pumpWidget(const MorsecqApp());
-  await tester.pumpAndSettle();
+  final identity = FakeIdentityService.withProfile(
+    identity: Identity(
+      toxId: FakeIdentityService.toxIdForSeed(1),
+      displayName: 'Shell Tester',
+    ),
+    connectDelay: Duration.zero,
+    dataDirectoryPath: freshDataDirectory(),
+  );
+  await tester.pumpWidget(
+    MorsecqApp(
+      backend: FakeBackendFactory(identityService: identity),
+      backupFiles: FakeBackupFileGateway(),
+    ),
+  );
+  await settle(tester);
 }
 
 /// Only the selected destination's page is visible in the IndexedStack, so
-/// its description appearing exactly once is the switch signal.
+/// its marker appearing exactly once is the switch signal.
 void _expectSelected(String label) {
-  expect(find.text(_descriptions[label]!), findsOneWidget);
+  expect(_pageMarkers[label]!, findsOneWidget);
   for (final other in _labels.where((l) => l != label)) {
-    expect(find.text(_descriptions[other]!), findsNothing);
+    expect(_pageMarkers[other]!, findsNothing);
   }
 }
 
@@ -44,7 +69,7 @@ void main() {
     testWidgets('renders a bottom NavigationBar with four destinations', (
       tester,
     ) async {
-      await _pumpAt(tester, const Size(390, 844));
+      await _pumpAt(tester, kPhoneSize);
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
       for (final label in _labels) {
@@ -60,7 +85,7 @@ void main() {
     });
 
     testWidgets('tapping a destination switches the page', (tester) async {
-      await _pumpAt(tester, const Size(390, 844));
+      await _pumpAt(tester, kPhoneSize);
       for (final label in _labels.skip(1)) {
         await tester.tap(
           find.descendant(
@@ -68,7 +93,7 @@ void main() {
             matching: find.text(label),
           ),
         );
-        await tester.pumpAndSettle();
+        await settle(tester);
         _expectSelected(label);
       }
     });
@@ -78,7 +103,7 @@ void main() {
     testWidgets('renders a NavigationRail with four destinations', (
       tester,
     ) async {
-      await _pumpAt(tester, const Size(1280, 800));
+      await _pumpAt(tester, kDesktopSize);
       expect(find.byType(NavigationRail), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
       for (final label in _labels) {
@@ -94,7 +119,7 @@ void main() {
     });
 
     testWidgets('tapping a rail destination switches the page', (tester) async {
-      await _pumpAt(tester, const Size(1280, 800));
+      await _pumpAt(tester, kDesktopSize);
       for (final label in _labels.skip(1)) {
         await tester.tap(
           find.descendant(
@@ -102,7 +127,7 @@ void main() {
             matching: find.text(label),
           ),
         );
-        await tester.pumpAndSettle();
+        await settle(tester);
         _expectSelected(label);
       }
     });

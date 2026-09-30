@@ -115,20 +115,27 @@ void main() {
       await sub.cancel();
     });
 
-    test('changePassword requires the old password and can remove it', () async {
-      await service.unlock('secret');
-      expect(
-        () => service.changePassword(oldPassword: 'bad', newPassword: 'x'),
-        throwsA(
-          isA<ChatException>().having((e) => e.code, 'code', 'wrong_password'),
-        ),
-      );
-      await service.changePassword(oldPassword: 'secret', newPassword: 'new');
-      expect(service.storedPassword, 'new');
-      await service.changePassword(oldPassword: 'new');
-      expect(service.storedPassword, isNull);
-      expect(service.current!.hasPassword, isFalse);
-    });
+    test(
+      'changePassword requires the old password and can remove it',
+      () async {
+        await service.unlock('secret');
+        expect(
+          () => service.changePassword(oldPassword: 'bad', newPassword: 'x'),
+          throwsA(
+            isA<ChatException>().having(
+              (e) => e.code,
+              'code',
+              'wrong_password',
+            ),
+          ),
+        );
+        await service.changePassword(oldPassword: 'secret', newPassword: 'new');
+        expect(service.storedPassword, 'new');
+        await service.changePassword(oldPassword: 'new');
+        expect(service.storedPassword, isNull);
+        expect(service.current!.hasPassword, isFalse);
+      },
+    );
   });
 
   group('ready profile', () {

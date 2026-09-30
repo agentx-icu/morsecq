@@ -284,7 +284,9 @@ final class FakeIdentityService implements IdentityService {
     final dir = Directory(
       '$base${Platform.pathSeparator}${identity.publicKey.substring(0, 16)}',
     );
-    await dir.create(recursive: true);
+    // Synchronous on purpose: widget tests run in a FakeAsync zone where real
+    // asynchronous I/O never completes unless wrapped in `runAsync`.
+    dir.createSync(recursive: true);
     return dir.path;
   }
 
