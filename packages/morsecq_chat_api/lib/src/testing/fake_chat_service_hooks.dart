@@ -73,6 +73,27 @@ extension FakeChatServiceTestHooks on FakeChatService {
     return message;
   }
 
+  /// Adds (or replaces) a member of [groupId] and bumps the group's
+  /// [Group.memberCount] to match, as a peer joining the NGC group would.
+  void addFakeGroupMember(String groupId, GroupMember member) {
+    final Group group = _requireGroup(groupId);
+    final List<GroupMember> members = _members.putIfAbsent(
+      groupId,
+      () => <GroupMember>[_selfMember()],
+    );
+    members.removeWhere((m) => m.publicKey == member.publicKey);
+    members.add(member);
+    _groups[groupId] = Group(
+      id: group.id,
+      name: group.name,
+      kind: group.kind,
+      chatId: group.chatId,
+      memberCount: members.length,
+      topic: group.topic,
+    );
+    _groupChanges.add(groups);
+  }
+
   void receiveFriendRequest(String publicKey, {String message = 'CQ CQ'}) {
     _friendRequests.add(
       FriendRequest(

@@ -178,6 +178,19 @@ void main() {
       expect(idx.length, lessThanOrEqualTo(7));
       expect(idx, orderedEquals(idx.toSet().toList()..sort()));
     });
+
+    test('steps evenly instead of skipping one index mid-run', () {
+      // Seven sessions used to label 1 2 3 5 6 7 (the rounded fractional
+      // step skipped the 4). Every gap must be the same stride.
+      expect(labelledIndices(7, maxLabels: 6), <int>[0, 2, 4, 6]);
+      final idx = labelledIndices(30, maxLabels: 6);
+      final gaps = <int>{
+        for (var i = 1; i < idx.length - 1; i++) idx[i] - idx[i - 1],
+      };
+      expect(gaps, hasLength(1));
+      // The last label never crowds the stride label before it.
+      expect(idx.last - idx[idx.length - 2], greaterThanOrEqualTo(3));
+    });
   });
 
   group('nearestIndex', () {

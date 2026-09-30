@@ -126,7 +126,12 @@ class _AppScopeState extends State<AppScope> {
           value: _services.notificationPrefs,
         ),
         Provider<NotificationCenter?>.value(value: _services.notifications),
-        Provider<DesktopShellController?>.value(value: widget.desktopShell),
+        // A ChangeNotifier must go through a listenable provider: a plain
+        // Provider fails provider's debug type check, which crashed every
+        // debug launch on desktop (caught by integration_test/app_launch_test).
+        ChangeNotifierProvider<DesktopShellController?>.value(
+          value: widget.desktopShell,
+        ),
         Provider<TrainingControllerHost?>.value(value: _training),
       ],
       child: widget.child,

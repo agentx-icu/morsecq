@@ -187,6 +187,35 @@ void main() {
       expect(service.conversations.single.kind, ConversationKind.group);
     });
 
+    test('addFakeGroupMember lists the member and bumps the count', () async {
+      final Group g = await service.createGroup('Net');
+      expect(g.memberCount, 1);
+      final List<Group> seen = <Group>[];
+      final sub = service.groupChanges.listen((groups) => seen.add(groups.single));
+      addTearDown(sub.cancel);
+      service.addFakeGroupMember(
+        g.id,
+        GroupMember(publicKey: 'B' * 64, displayName: 'Bea'),
+      );
+      // Replacing the same key does not double-count.
+      service.addFakeGroupMember(
+        g.id,
+        GroupMember(publicKey: 'B' * 64, displayName: 'Bea (renamed)'),
+      );
+      final List<GroupMember> members = await service.groupMembers(g.id);
+      expect(members.map((m) => m.displayName), <String>['Me', 'Bea (renamed)']);
+      expect(service.groups.single.memberCount, 2);
+      await Future<void>.delayed(Duration.zero);
+      expect(seen.last.memberCount, 2);
+      expect(
+        () => service.addFakeGroupMember(
+          'nope',
+          const GroupMember(publicKey: 'C', displayName: 'C'),
+        ),
+        throwsA(isA<ChatException>()),
+      );
+    });
+
     test('conference groups have no chat id', () async {
       final Group g = await service.createGroup(
         'Old',
