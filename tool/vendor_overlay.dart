@@ -165,10 +165,17 @@ class VendorOverlay {
     }
   }
 
+  /// [path] relative to [root] with POSIX separators. On Windows the roots
+  /// are passed with forward slashes while `listSync` joins with `\\`, so
+  /// both separators are normalised before the leading one is dropped.
   static String _relative(String path, String root) {
-    var rel = path.substring(root.length);
-    if (rel.startsWith(Platform.pathSeparator)) rel = rel.substring(1);
-    return rel.replaceAll('\\', '/');
+    final p = path.replaceAll('\\', '/');
+    final r = root.replaceAll('\\', '/');
+    var rel = p.startsWith(r) ? p.substring(r.length) : p;
+    while (rel.startsWith('/')) {
+      rel = rel.substring(1);
+    }
+    return rel;
   }
 }
 

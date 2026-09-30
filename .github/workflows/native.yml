@@ -17,6 +17,9 @@ on:
     paths:
       - ".github/workflows/native.yml"
       - "tool/ci/**"
+      - "tool/bootstrap_deps.dart"
+      - "tool/vendor_overlay.dart"
+      - "third_party/overlays/**"
       - "tool/build_android_ffi.sh"
       - "tool/build_ios_ffi.sh"
       - "build_all.sh"
@@ -33,6 +36,9 @@ on:
     paths:
       - ".github/workflows/native.yml"
       - "tool/ci/**"
+      - "tool/bootstrap_deps.dart"
+      - "tool/vendor_overlay.dart"
+      - "third_party/overlays/**"
       - "tool/build_android_ffi.sh"
       - "tool/build_ios_ffi.sh"
       - "build_all.sh"
