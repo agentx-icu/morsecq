@@ -14,7 +14,6 @@ PODS:
     - FlutterMacOS
   - flutter_soloud (0.0.1):
     - Flutter
-  - HydraAsync (2.0.6)
   - mobile_scanner (7.0.0):
     - Flutter
     - FlutterMacOS
@@ -27,12 +26,9 @@ PODS:
     - FlutterMacOS
   - tencent_cloud_chat_sdk (8.0.0):
     - Flutter
-    - HydraAsync
-    - TXIMSDK_Plus_iOS_XCFramework (~> 8.9.7540)
   - Tim2ToxFFI (0.1.0)
   - torch_light (0.0.1):
     - Flutter
-  - TXIMSDK_Plus_iOS_XCFramework (8.9.7545)
   - vibration (3.0.0):
     - Flutter
 
@@ -52,11 +48,6 @@ DEPENDENCIES:
   - Tim2ToxFFI (from `Frameworks`)
   - torch_light (from `.symlinks/plugins/torch_light/ios`)
   - vibration (from `.symlinks/plugins/vibration/ios`)
-
-SPEC REPOS:
-  trunk:
-    - HydraAsync
-    - TXIMSDK_Plus_iOS_XCFramework
 
 EXTERNAL SOURCES:
   app_badge_plus:
@@ -98,15 +89,13 @@ SPEC CHECKSUMS:
   flutter_local_notifications: 643a3eda1ce1c0599413ca31672536d423dee214
   flutter_secure_storage_darwin: 46e401699982ee74142909676535e0f6a7321e58
   flutter_soloud: a49c4dfe436fd99e47f4777fa270c557f6190054
-  HydraAsync: 8d589bd725b0224f899afafc9a396327405f8063
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
   record_ios: 980fd386a97a35987d0fce3dfda4b26a38c90f4c
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  tencent_cloud_chat_sdk: 1a59df6cd6b2dd75e161581d8582c9345c9094ef
-  Tim2ToxFFI: bbdad01d3ee32e4551144d54a2d205ae8ee2b093
+  tencent_cloud_chat_sdk: 0d334ca8a74f7d8aa38ecd742f0a6ebd48afc34c
+  Tim2ToxFFI: c317b26e85e1a25a366040f8fe2eb8faaf32296d
   torch_light: d093d579a221a59ef8a6b8c0eca20d52f7178087
-  TXIMSDK_Plus_iOS_XCFramework: 35a3e6b6558ab83a83898e2d1f9ef2f461edef00
   vibration: ca8104a8875b9c493e15b21b04e456befd0ff6eb
 
 PODFILE CHECKSUM: 7e55795a60a4b33af187cdd38b39b9e631474df2

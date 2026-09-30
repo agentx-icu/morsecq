@@ -59,6 +59,14 @@ These match the paths Tim2Tox's Dart loader (`Tim2ToxFfi.open()`) and the
 patched Tencent SDK `NativeLibraryManager` (`setNativeLibraryName('tim2tox_ffi')`)
 probe. All staged artifacts are gitignored.
 
+`libtim2tox_ffi` is the **only** native chat library in the bundles: since
+2026-09-30 `bootstrap_deps` overlays the vendored `tencent_cloud_chat_sdk`
+plugin with no-op platform stubs (`third_party/overlays/tencent_cloud_chat_sdk/`),
+so no `TXIMSDK_Plus_*` pod, `imsdk-plus` AAR, `libdart_native_imsdk.so` or
+`ImSDK.dll` is linked or shipped. Run the bootstrap before `pod install` /
+`flutter build`; a stale `Podfile.lock` still listing `TXIMSDK_Plus_*` means
+the overlay was not applied.
+
 ## Minimum OS versions
 
 macOS **10.15**, Windows **10**, Android **API 21**, iOS **14.0** (`file_picker_darwin` needs 14; raised from 13.0 on 2026-09-30) (enforced via

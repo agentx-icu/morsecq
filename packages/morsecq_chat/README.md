@@ -163,6 +163,17 @@ dart run tool/bootstrap_deps.dart --offline-check-only   # CI: prove the tree ma
    SHA-256 verified) into `third_party/tencent_cloud_chat_sdk/`.
 3. Applies tim2tox's 22-patch series with tim2tox's own `apply_sdk_patches.dart`
    (patch 0001 adds `setNativeLibraryName`).
+3b. Applies morsecq's own overlay `third_party/overlays/tencent_cloud_chat_sdk/`
+   (`tool/vendor_overlay.dart`): the plugin's *platform* halves are replaced
+   by no-op plugin classes and every Tencent binary is removed — the
+   `TXIMSDK_Plus_iOS_XCFramework` / `TXIMSDK_Plus_Mac` / `HydraAsync` pods, the
+   `com.tencent.imsdk:imsdk-plus` AAR and `libdart_native_imsdk.so`, and
+   `ImSDK.dll` / `dart_native_imsdk.dll`. morsecq only uses the plugin's Dart
+   bindings (pointed at `libtim2tox_ffi`), so nothing the app calls is lost;
+   the generated plugin registrants still find their classes. The overlay's
+   hash is recorded as `overlay_sha256` in the vendor state (checked by
+   `--offline-check-only`); toxee keeps the full plugin because its hybrid
+   runtime needs it.
 4. Writes the **root** `pubspec_overrides.yaml` (`tim2tox_dart`,
    `tencent_cloud_chat_sdk`, `tencent_cloud_chat_common` → paths) — a pub
    workspace reads overrides at the root only. State for `--offline-check-only`

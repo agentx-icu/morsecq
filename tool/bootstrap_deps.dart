@@ -15,12 +15,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'vendor_overlay.dart';
+
 const _submodulePath = 'third_party/tim2tox';
 const _submoduleUrl = 'https://github.com/agentx-icu/tim2tox';
 const _sdkDirRel = 'third_party/tencent_cloud_chat_sdk';
 const _lockRel = '$_submodulePath/tool/tencent_cloud_chat_sdk.lock.json';
 const _stateRel = 'third_party/.vendor_state.json';
 const _commonStubRel = 'third_party/stubs/tencent_cloud_chat_common';
+// morsecq's platform overlay (no Tencent native SDK), see its README.
+const _overlayRel = 'third_party/overlays/tencent_cloud_chat_sdk';
 
 Future<void> main(List<String> args) async {
   final repoRoot = _repoRoot();
@@ -99,7 +103,11 @@ Future<void> main(List<String> args) async {
     newState['patches_applied'] = true;
     newState['patches_sha256'] = patches.sha256;
   }
-  if (needVendor || mustPatch) {
+
+  // (3b) morsecq's overlay: no-op platform stubs, no Tencent native SDK.
+  final mustOverlay = VendorOverlay(Directory('$repoRoot/$_overlayRel'))
+      .applyIfNeeded(sdkDir, newState, force: needVendor || mustPatch);
+  if (needVendor || mustPatch || mustOverlay) {
     newState.remove('partial');
     newState.remove('reason');
     _writeStateAtomic(stateFile, newState);
@@ -425,6 +433,15 @@ int _offlineCheck(String repoRoot) {
         '(re-run `dart run tool/bootstrap_deps.dart`)',
       );
     }
+  }
+  final overlay = VendorOverlay(Directory('$repoRoot/$_overlayRel'));
+  final overlayProblem = overlay.verifyApplied(Directory('$repoRoot/$_sdkDirRel'));
+  if (overlayProblem != null ||
+      state['overlay_sha256']?.toString() != overlay.sha256) {
+    return fail(
+      '${overlayProblem ?? 'overlay_sha256 in vendor_state does not match $_overlayRel'} '
+      '(re-run `dart run tool/bootstrap_deps.dart`)',
+    );
   }
   if (!File('$repoRoot/pubspec_overrides.yaml').existsSync()) {
     return fail('pubspec_overrides.yaml missing (re-run the tool)');

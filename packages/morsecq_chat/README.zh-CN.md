@@ -141,6 +141,13 @@ dart run tool/bootstrap_deps.dart --offline-check-only   # CI: prove the tree ma
    （8.9.7540+3，SHA-256 校验）到 `third_party/tencent_cloud_chat_sdk/`。
 3. 用 tim2tox 自己的 `apply_sdk_patches.dart` 应用 tim2tox 的 22 个补丁系列
    （补丁 0001 添加 `setNativeLibraryName`）。
+3b. 叠加 morsecq 自己的 overlay `third_party/overlays/tencent_cloud_chat_sdk/`
+   （`tool/vendor_overlay.dart`）：把插件的*平台*半边换成空操作的插件类，并删掉所有腾讯二进制——
+   `TXIMSDK_Plus_iOS_XCFramework` / `TXIMSDK_Plus_Mac` / `HydraAsync` 三个 pod、
+   `com.tencent.imsdk:imsdk-plus` AAR 与 `libdart_native_imsdk.so`、`ImSDK.dll` /
+   `dart_native_imsdk.dll`。morsecq 只用插件的 Dart 绑定（指向 `libtim2tox_ffi`），应用调用的
+   东西一样不少；生成的插件注册器仍能找到各自的类。overlay 的哈希记为 vendor state 里的
+   `overlay_sha256`（`--offline-check-only` 会校验）；toxee 保留完整插件，因为混合运行时需要它。
 4. 写入**根目录**的 `pubspec_overrides.yaml`（`tim2tox_dart`、`tencent_cloud_chat_sdk`、
    `tencent_cloud_chat_common` → 路径）——pub 工作区只在根目录读取 overrides。
    `--offline-check-only` 的状态保存在 `third_party/.vendor_state.json`。

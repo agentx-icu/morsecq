@@ -14,7 +14,6 @@ PODS:
   - flutter_soloud (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - HydraAsync (2.0.6)
   - mobile_scanner (7.0.0):
     - Flutter
     - FlutterMacOS
@@ -29,11 +28,9 @@ PODS:
     - FlutterMacOS
   - tencent_cloud_chat_sdk (8.0.0):
     - FlutterMacOS
-    - HydraAsync
-    - TXIMSDK_Plus_Mac (= 8.9.7540)
+  - Tim2ToxFFI (0.1.0)
   - tray_manager (0.0.1):
     - FlutterMacOS
-  - TXIMSDK_Plus_Mac (8.9.7540)
   - window_manager (0.5.0):
     - FlutterMacOS
 
@@ -51,13 +48,9 @@ DEPENDENCIES:
   - share_plus (from `Flutter/ephemeral/.symlinks/plugins/share_plus/macos`)
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - tencent_cloud_chat_sdk (from `Flutter/ephemeral/.symlinks/plugins/tencent_cloud_chat_sdk/macos`)
+  - Tim2ToxFFI (from `Frameworks`)
   - tray_manager (from `Flutter/ephemeral/.symlinks/plugins/tray_manager/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
-
-SPEC REPOS:
-  trunk:
-    - HydraAsync
-    - TXIMSDK_Plus_Mac
 
 EXTERNAL SOURCES:
   app_badge_plus:
@@ -86,6 +79,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
   tencent_cloud_chat_sdk:
     :path: Flutter/ephemeral/.symlinks/plugins/tencent_cloud_chat_sdk/macos
+  Tim2ToxFFI:
+    :path: Frameworks
   tray_manager:
     :path: Flutter/ephemeral/.symlinks/plugins/tray_manager/macos
   window_manager:
@@ -99,15 +94,14 @@ SPEC CHECKSUMS:
   flutter_secure_storage_darwin: 46e401699982ee74142909676535e0f6a7321e58
   flutter_soloud: 4322a497664da9906d95dc91d7588751659d9dbf
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
-  HydraAsync: 8d589bd725b0224f899afafc9a396327405f8063
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
   record_macos: 5d55909f9650314be6424ffd6b123ac75a08c3c1
   screen_retriever_macos: c5508cc3c66ff0d4db650480cf0ab691e220d933
   share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
-  tencent_cloud_chat_sdk: 49d3d43191694a49eac60af26e2ae4f6285d9576
+  tencent_cloud_chat_sdk: ab0b7ab7513131d059b9e9c0dda68c057a8c78f0
+  Tim2ToxFFI: 3fb099786288ddac8435b04f66b3b8c5e5aaa894
   tray_manager: 19c369010e59c073f13b82354d78a35f7972d609
-  TXIMSDK_Plus_Mac: ccaafbe51cb825c311eceb98790729268cc47264
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 
 PODFILE CHECKSUM: f64a42f0cc3cfc3b1442ab95c6d7a844e1d5afef

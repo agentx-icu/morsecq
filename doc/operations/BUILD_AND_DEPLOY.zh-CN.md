@@ -123,6 +123,12 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
   `tim2tox_ffi.dll`，iOS 同上绝对路径，macOS 裸名 `libtim2tox_ffi.dylib`（命中进程内已由
   `Tim2ToxFfi` 加载的同名镜像）。
 
+`libtim2tox_ffi` 是包里**唯一**的原生聊天库：自 2026-09-30 起 `bootstrap_deps` 会给 vendored 的
+`tencent_cloud_chat_sdk` 插件叠加空操作的平台桩（`third_party/overlays/tencent_cloud_chat_sdk/`），
+因此不再链接或打包任何 `TXIMSDK_Plus_*` pod、`imsdk-plus` AAR、`libdart_native_imsdk.so` 或
+`ImSDK.dll`。`pod install` / `flutter build` 之前先跑 bootstrap；如果 `Podfile.lock` 里还列着
+`TXIMSDK_Plus_*`，说明 overlay 没有生效。
+
 因此每端的落点如下（全部被 `.gitignore` 忽略，**不要提交**）：
 
 | 平台 | `build_tim2tox.sh` 产物 | 进入应用工程 | 最终在包里 |
