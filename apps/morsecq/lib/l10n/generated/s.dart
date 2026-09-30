@@ -3280,6 +3280,30 @@ abstract class S {
   /// In en, this message translates to:
   /// **'{label}: {value} {unit}'**
   String chatSliderValue(String label, int value, String unit);
+
+  /// Translator: the four-digit Chinese telegraph code groups of the typed Chinese characters (sent in Morse as digits)
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese telegraph code: {codes}'**
+  String referenceTelegraphCodes(String codes);
+
+  /// Translator: codebook choice, the mainland China (1983) telegraph codebook
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland 1983'**
+  String get referenceTelegraphMainland;
+
+  /// Translator: codebook choice, the Taiwan / Hong Kong telegraph codebook
+  ///
+  /// In en, this message translates to:
+  /// **'Taiwan / HK'**
+  String get referenceTelegraphTaiwan;
+
+  /// Translator: shown in place of the code groups when the typed Chinese characters exist only in the other codebook
+  ///
+  /// In en, this message translates to:
+  /// **'not in this codebook'**
+  String get referenceTelegraphNone;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

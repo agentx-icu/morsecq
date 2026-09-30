@@ -1915,4 +1915,18 @@ class SEn extends S {
   String chatSliderValue(String label, int value, String unit) {
     return '$label: $value $unit';
   }
+
+  @override
+  String referenceTelegraphCodes(String codes) {
+    return 'Chinese telegraph code: $codes';
+  }
+
+  @override
+  String get referenceTelegraphMainland => 'Mainland 1983';
+
+  @override
+  String get referenceTelegraphTaiwan => 'Taiwan / HK';
+
+  @override
+  String get referenceTelegraphNone => 'not in this codebook';
 }

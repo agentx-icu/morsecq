@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart' as pkgffi;
 import 'package:morsecq_chat/morsecq_chat.dart';
+import 'package:morsecq_chat/src/adapters/prefs_adapter.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:tim2tox_dart/ffi/tim2tox_ffi.dart';
 import 'package:tim2tox_dart/service/ffi_chat_service.dart';
@@ -16,7 +17,10 @@ const String kSelfKey =
 const String kSelfToxId = '${kSelfKey}00000000AAAA';
 const String kPeerKey =
     '2222222222222222222222222222222222222222222222222222222222222222';
-const String kPeerToxId = '${kPeerKey}00000000BBBB';
+// Tox address = key + nospam + checksum (XOR of the 36 bytes in two lanes);
+// for 0x22 x 32 + zero nospam both lanes cancel out, so the checksum is 0000.
+// A wrong checksum is refused by tox_friend_add (TOX_ERR_FRIEND_ADD_BAD_CHECKSUM).
+const String kPeerToxId = '${kPeerKey}000000000000';
 
 /// Deterministic `Tim2ToxFfi` binding fake, the way tim2tox's own tests do it
 /// (`Tim2ToxFfi.forTesting` + override each `late final` binding as a getter).
@@ -88,6 +92,23 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
   @override
   int Function(int, ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<ffi.Int8>, int)
       get getGroupChatIdNative => (_, _, _, _) => 0;
+
+  /// Addresses handed to `tim2tox_ffi_add_friend`; the sync dispatch
+  /// "succeeds" and the async `friendAddResult` is left to the test.
+  final List<String> addedFriends = [];
+
+  @override
+  int Function(ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<pkgffi.Utf8>)
+      get addFriend => (address, _) {
+            addedFriends.add(address.toDartString());
+            return 1;
+          };
+
+  /// Session epoch per instance, for the notification ownership check.
+  int sessionEpoch = 1;
+
+  @override
+  int Function(int) get getSessionEpoch => (_) => sessionEpoch;
 
   /// Public keys handed to `tim2tox_ffi_delete_friend`; always "succeeds".
   final List<String> deletedFriends = [];
@@ -283,4 +304,26 @@ class FakeProfileCrypto implements ProfileCrypto {
     }
     return text.substring(_profileMagic.length, _profileMagic.length + 64);
   }
+}
+
+/// A headless `FfiChatService` over [ffi], the way toxee's tests build one.
+Future<FfiChatService> newEngineService(
+  FakeTim2ToxFfi ffi,
+  KeyValueStore store,
+  Directory root,
+  String dirName,
+) async {
+  final paths = IdentityPaths('${root.path}/$dirName');
+  await paths.ensureDirectories();
+  return FfiChatService(
+    ffiForTesting: ffi,
+    preferencesService:
+        Tim2ToxPreferencesAdapter(store, accountPrefix: '1111111111111111'),
+    historyDirectory: paths.historyDirectory,
+    queueFilePath: paths.offlineQueueFile,
+    fileRecvPath: paths.fileRecvDirectory,
+    avatarsPath: paths.avatarsDirectory,
+  )
+    ..debugBeginSessionForTest()
+    ..debugNativePendingInvitesOverride = () => const [];
 }

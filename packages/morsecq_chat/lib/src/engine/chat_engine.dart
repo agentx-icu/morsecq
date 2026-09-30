@@ -11,6 +11,7 @@ import '../identity/identity_paths.dart';
 import '../logging/chat_logger.dart';
 import '../native/native_library.dart';
 import '../util/value_stream.dart';
+import 'native_callbacks.dart';
 
 /// Everything a Tim2Tox session needs to know about the identity it serves.
 class EngineSessionConfig {
@@ -99,6 +100,9 @@ class Tim2ToxEngine extends ChatEngine {
   final String? _libraryPathOverride;
   final bool _isMobile;
 
+  /// morsecq's owner of the SDK's process-global custom-callback hook.
+  late final NativeCustomCallbacks _callbacks = NativeCustomCallbacks(_logger);
+
   FfiChatService? _service;
   StreamSubscription<bool>? _connSub;
   IdentityScratchFileService? _scratch;
@@ -172,6 +176,11 @@ class Tim2ToxEngine extends ChatEngine {
     await _stopping;
     await config.paths.ensureDirectories();
     final svc = _build(config.paths, config.accountPrefix);
+    // Before init: the native session posts friendAddResult and the group
+    // notifications through the SDK port from its first tick on.
+    _callbacks
+      ..install()
+      ..target = svc;
     try {
       await svc.init(profileDirectory: config.paths.profileDirectory);
       await svc.login(userId: loginAlias, userSig: 'dummy_sig');
@@ -181,6 +190,7 @@ class Tim2ToxEngine extends ChatEngine {
       );
     } catch (e, st) {
       _logger.error('[Tim2ToxEngine] start failed', e, st);
+      _callbacks.target = null;
       await svc.dispose();
       rethrow;
     }
@@ -204,20 +214,40 @@ class Tim2ToxEngine extends ChatEngine {
     final svc = _service;
     if (svc == null) return _stopping ?? Future<void>.value();
     _service = null;
+    // Synchronous part first so consumers see the detach at once; the
+    // cancel future is the root-zone one (never resumes under FakeAsync)
+    // and is awaited last.
+    final cancelled = _connSub?.cancel();
+    _connSub = null;
+    _connected.add(false);
+    _sessions.force(null);
     return _stopping = () async {
-      await _connSub?.cancel();
-      _connSub = null;
-      _connected.add(false);
-      _sessions.force(null);
+      // Native teardown first; the callback target stays on this session
+      // until it is gone so a friendAddResult that lands during teardown
+      // still resolves its completer instead of waiting out the 30 s
+      // timeout (start() awaits _stopping before binding a new target).
+      // Every step runs even if an earlier one throws: the session must be
+      // disposed and the target released no matter what.
       try {
         svc.saveToxProfileNow();
         await svc.flushPendingHistory();
+      } catch (e, st) {
+        _logger.error('[Tim2ToxEngine] stop: save/flush failed', e, st);
+      }
+      try {
         await svc.dispose();
       } catch (e, st) {
-        _logger.error('[Tim2ToxEngine] stop failed', e, st);
+        _logger.error('[Tim2ToxEngine] stop: dispose failed', e, st);
+      } finally {
+        _callbacks.target = null;
       }
-      await _scratch?.clear();
+      try {
+        await _scratch?.clear();
+      } catch (e, st) {
+        _logger.error('[Tim2ToxEngine] stop: scratch clear failed', e, st);
+      }
       _scratch = null;
+      await cancelled;
     }();
   }
 
@@ -236,8 +266,14 @@ class Tim2ToxEngine extends ChatEngine {
 
   @override
   Future<void> dispose() async {
-    await stop();
-    await _sessions.close();
-    await _connected.close();
+    final stopped = stop();
+    // stop() published its last events synchronously; the streams can close
+    // now. The hook stays installed until the native teardown is over so a
+    // result that lands meanwhile still reaches its completer.
+    try {
+      await Future.wait([stopped, _sessions.close(), _connected.close()]);
+    } finally {
+      _callbacks.uninstall();
+    }
   }
 }

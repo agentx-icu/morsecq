@@ -510,4 +510,29 @@ void main() {
       expect(h.api.shown, hasLength(1));
     });
   });
+
+  group('refreshStrings', () {
+    test('forwards a language change to the plugin once ready', () async {
+      final Harness h = Harness();
+      await h.start();
+      await h.center.refreshStrings();
+      expect(h.api.refreshStringsCalls, 1);
+    });
+
+    test(
+        'forwarded before start (the API defers it), not after dispose or '
+        'on a platform without OS notifications', () async {
+      final Harness h = Harness();
+      await h.center.refreshStrings();
+      expect(h.api.refreshStringsCalls, 1);
+      await h.center.dispose();
+      await h.center.refreshStrings();
+      expect(h.api.refreshStringsCalls, 1);
+
+      final Harness none = Harness(platform: NotificationPlatform.unsupported);
+      await none.start();
+      await none.center.refreshStrings();
+      expect(none.api.refreshStringsCalls, 0);
+    });
+  });
 }

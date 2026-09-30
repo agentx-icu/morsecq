@@ -41,6 +41,10 @@ top (today that is the Chinese original of the plan document and the English
 
 ## Operations and build
 
+- [rfcs/2026-09-30-tim2tox-message-annotation.md](rfcs/2026-09-30-tim2tox-message-annotation.md) /
+  [zh-CN](rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md) — Draft
+  proposal for Tim2Tox (track D): a per-message annotation that travels with
+  the text, the prerequisite of v2 recorded keying. Not yet filed upstream.
 - [operations/BUILD_AND_DEPLOY.md](operations/BUILD_AND_DEPLOY.md) /
   [zh-CN](operations/BUILD_AND_DEPLOY.zh-CN.md) — Building the
   `libtim2tox_ffi` native library (`--no-toxav` by default) on Linux, macOS,

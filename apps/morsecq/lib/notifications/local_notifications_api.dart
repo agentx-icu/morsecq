@@ -73,4 +73,10 @@ abstract interface class LocalNotificationsApi {
   Future<void> cancel(int id);
 
   Future<void> cancelAll();
+
+  /// Re-applies language-dependent OS metadata after a language change:
+  /// on Android the channel names/descriptions shown in Settings (Android
+  /// freezes importance and sound at creation but takes a new name on
+  /// re-creation of the same id). No-op before [initialize] and elsewhere.
+  Future<void> refreshStrings();
 }

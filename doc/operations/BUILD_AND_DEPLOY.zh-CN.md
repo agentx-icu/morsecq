@@ -144,7 +144,7 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
 | macOS | **10.15** | `-mmacosx-version-min=10.15` / `CMAKE_OSX_DEPLOYMENT_TARGET`；`macos/Podfile` `platform :osx, '10.15'`；Runner.xcodeproj `MACOSX_DEPLOYMENT_TARGET = 10.15` |
 | Windows | **10** | MSVC 默认目标 |
 | Android | **API 21**（Android 5.0） | `ANDROID_PLATFORM=android-21`，libsodium 以 API 21 clang 编译；`minSdk = flutter.minSdkVersion`（Flutter 3.41 默认 ≥ 21） |
-| iOS | **13.0** | `-target arm64-apple-ios13.0[-simulator]`、framework `MinimumOSVersion=13.0`；`ios/Podfile` `platform :ios, '13.0'`；Runner.xcodeproj `IPHONEOS_DEPLOYMENT_TARGET = 13.0` |
+| iOS | **14.0**（`file_picker_darwin` 要求 14；2026-09-30 从 13.0 提高） | `-target arm64-apple-ios14.0[-simulator]`、framework `MinimumOSVersion=14.0`；`ios/Podfile` `platform :ios, '14.0'`；Runner.xcodeproj `IPHONEOS_DEPLOYMENT_TARGET = 14.0` |
 
 ## 6. GitHub Actions：native.yml
 

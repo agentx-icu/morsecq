@@ -47,12 +47,9 @@ void main(List<String> args) {
     tiles.add(tile);
   }
 
-  // A multi-frame Image encodes as a multi-entry .ico.
-  final ico = tiles.first;
-  for (final frame in tiles.skip(1)) {
-    ico.addFrame(frame);
-  }
-  _write('${dir.path}/tray_icon.ico', img.encodeIco(ico));
+  // Each size is an independent .ico entry (addFrame would nest the other
+  // sizes as an animated PNG inside the 16 px entry).
+  _write('${dir.path}/tray_icon.ico', img.IcoEncoder().encodeImages(tiles));
   stdout.writeln(
     '[gen_tray_icons] wrote ${_sizes.length * 2 + 1} files to '
     '${dir.path}',

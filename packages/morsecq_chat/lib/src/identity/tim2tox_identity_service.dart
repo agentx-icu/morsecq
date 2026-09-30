@@ -430,9 +430,9 @@ class Tim2ToxIdentityService implements IdentityService {
   }
 
   Future<void> dispose() async {
-    await _connSub?.cancel();
-    await _identity.close();
-    await _status.close();
+    final cancelled = _connSub?.cancel();
+    _connSub = null;
+    await Future.wait([?cancelled, _identity.close(), _status.close()]);
   }
 
   // ---- helpers ----------------------------------------------------------------

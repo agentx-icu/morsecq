@@ -39,11 +39,18 @@ apps/morsecq ──► morsecq_chat_api (contract) ◄── morsecq_chat
 Everything flows `FfiChatService` → `Tim2ToxFfi` → `libtim2tox_ffi`, and the
 service listens to `FfiChatService.messages` / polls `getFriendList`,
 `getFriendApplications`, `knownGroups`, `getPendingGroupInvites` every
-`pollInterval` (3 s). Because no `Tim2ToxSdkPlatform` is installed, the three
-callbacks toxee documents as "silently dropped" (`clearHistoryMessage`,
-`groupQuitNotification`, `groupChatIdStored`) are compensated by the pull-side
-`syncGroupIdentitiesFromNative()`, which `Tim2ToxEngine.start` awaits after
-`startPolling`.
+`pollInterval` (3 s). The patched SDK's process-global custom-callback hook
+(`NativeLibraryManager.customCallbackHandler`, which toxee's
+`Tim2ToxSdkPlatform` owns) is owned here by `engine/native_callbacks.dart`
+(`NativeCustomCallbacks`): it routes `friendAddResult` to the pending
+`addFriend` completer and the `DartNotifyGroup*` notifications
+(`groupQuitNotification`, `groupJoinNotification`, `groupJoinFailedNotification`,
+`groupInviteNotification`) to the live session, session-scoped exactly like
+toxee; `groupChatIdStored` / `groupTypeStored` trigger the pull-side
+`syncGroupIdentitiesFromNative()` instead of a preferences write, and
+`clearHistoryMessage` is ignored. Without this hook the SDK drops every custom
+callback and `addFriend` only returns after its 30 s timeout (found by the
+native smoke test on macOS, 2026-09-30).
 
 ### Identity lifecycle
 
@@ -215,10 +222,14 @@ disconnect. It skips itself when the library cannot be opened; in CI exclude it
 explicitly with `flutter test --exclude-tags=needs-native`. On a dev machine:
 
 ```bash
-tool/ci/build_tim2tox.sh --no-toxav                       # in toxee (or tim2tox build.sh)
-TIM2TOX_FFI_LIB=/abs/path/to/libtim2tox_ffi.so \
-  flutter test packages/morsecq_chat/test/native_smoke_test.dart
+bash tool/ci/build_tim2tox.sh --target macos-arm64 --mode release   # or linux-x86_64 …
+cd packages/morsecq_chat && TIM2TOX_FFI_LIB=$PWD/../../build/native/macos-arm64/libtim2tox_ffi.dylib \
+  flutter test --tags needs-native test/native_smoke_test.dart
 ```
+
+Passes in about 10 s on a Mac (2026-09-30): identity → DHT → friend request
+(resolved by the routed `friendAddResult`) → queued send → group create /
+members / leave → disconnect.
 
 A two-peer exchange needs two processes (Tim2Tox's default singleton instance
 model — multi-instance exists only for its own auto_tests): run the smoke

@@ -2617,5 +2617,26 @@
         "type": "String"
       }
     }
+  },
+  "referenceTelegraphCodes": "Chinese telegraph code: {codes}",
+  "@referenceTelegraphCodes": {
+    "description": "Translator: the four-digit Chinese telegraph code groups of the typed Chinese characters (sent in Morse as digits)",
+    "placeholders": {
+      "codes": {
+        "type": "String"
+      }
+    }
+  },
+  "referenceTelegraphMainland": "Mainland 1983",
+  "@referenceTelegraphMainland": {
+    "description": "Translator: codebook choice, the mainland China (1983) telegraph codebook"
+  },
+  "referenceTelegraphTaiwan": "Taiwan / HK",
+  "@referenceTelegraphTaiwan": {
+    "description": "Translator: codebook choice, the Taiwan / Hong Kong telegraph codebook"
+  },
+  "referenceTelegraphNone": "not in this codebook",
+  "@referenceTelegraphNone": {
+    "description": "Translator: shown in place of the code groups when the typed Chinese characters exist only in the other codebook"
   }
 }

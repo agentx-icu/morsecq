@@ -1,7 +1,7 @@
 # Uncomment this line to define a global platform for your project
-# morsecq: iOS 13.0 is the runtime floor (tim2tox_ffi is built with
-# -miphoneos-version-min=13.0; see doc/operations/BUILD_AND_DEPLOY.md).
-platform :ios, '13.0'
+# morsecq: iOS 14.0 is the runtime floor (tim2tox_ffi is built with
+# -miphoneos-version-min=14.0; see doc/operations/BUILD_AND_DEPLOY.md).
+platform :ios, '14.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

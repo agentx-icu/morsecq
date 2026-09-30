@@ -76,7 +76,7 @@ doc/                       文档（英文默认 + zh-CN）
 这些都写进了规划文档变更记录，这里按「不知道就会出错」排序：
 
 1. **`cloudCustomData` 不上线路。** Tim2Tox 的 `sendTextWithResult(..., cloudCustomData)` 只存本地，群消息接口根本没有这个参数。所以 v1 莫斯消息就是纯文本，接收端按听者自选速度播放。要传发送方键控实录需要上游 Tim2Tox 加「消息附注」（规划 §5.2 第二层，D 线）。
-2. **B 变体运行模式。** 不装 `Tim2ToxSdkPlatform`、不启 FakeUIKit，但**必须调用 `setNativeLibraryName('tim2tox_ffi')`**（`NativeLibrarySetup.ensure()` 在 `MorsecqChatBackend.create` 里做），因为 `quitGroup`、`DartGetGroupMemberList`、`DartInviteUserToGroup` 仍走腾讯绑定。`TIMManager.initSDK` 绝不能调用（会装上第二条入站路径）。三个被静默丢弃的回调靠 `syncGroupIdentitiesFromNative()` 拉取兜底。
+2. **B 变体运行模式。** 不装 `Tim2ToxSdkPlatform`、不启 FakeUIKit，但**必须调用 `setNativeLibraryName('tim2tox_ffi')`**（`NativeLibrarySetup.ensure()` 在 `MorsecqChatBackend.create` 里做），因为 `quitGroup`、`DartGetGroupMemberList`、`DartInviteUserToGroup` 仍走腾讯绑定。`TIMManager.initSDK` 绝不能调用（会装上第二条入站路径）。SDK 的进程级自定义回调钩子由 `engine/native_callbacks.dart`（`NativeCustomCallbacks`）接管：把 `friendAddResult`（没有它 `addFriend` 要等 30 s 超时才返回）和 `DartNotifyGroup*` 通知路由到当前 session；`groupChatIdStored`/`groupTypeStored` 退回拉取 `syncGroupIdentitiesFromNative()`。
 3. **离线群邀请重放**由 `morsecq_chat` 自己的 `ConversationMetaStore` 维护，不用 Tim2Tox 的（它依赖 initSDK）。
 4. **Tim2Tox 轮询路径分不出 `failed` 与 `sent`**，`MessageStatus.failed` 目前不会出现（上游问题）。
 5. **腾讯 SDK 是隐性编译依赖。** `tim2tox_dart` 声明 `tencent_cloud_chat_sdk: any`，靠 `tool/bootstrap_deps.dart` 生成的 `pubspec_overrides.yaml` pin 到 8.9.7540+3 并打 22 个补丁；`tencent_cloud_chat_common` 用 `third_party/stubs` 空桩满足。`flutter_secure_storage` 必须 `^11`（9.x 的 `win32 ^5` 与 `share_plus` 冲突）。
@@ -85,7 +85,7 @@ doc/                       文档（英文默认 + zh-CN）
 8. **插件版本 pin 的原因**：`flutter_soloud ^4.1.7`（5.x 需要 Flutter 3.41.9 没有的 `meta`）、`record ^6.2.1`（7.x 需 Dart 3.12）、`tray_manager ^0.5.3`（0.6+ 是无平台声明的 FFI 重写）、`torch_light ^1.1.0`、`flutter_local_notifications ^22.3.1`（Windows 原生 toast）。
 9. **一个身份一个 `TrainingController`**：`TrainingControllerHost` 在 `AppScope` 里；Learn 页和 Me 页的训练设置路由共用同一实例，`LearnScope` 只 dispose 自己创建的控制器。两个实例会互相覆盖 `progress.json`。
 10. **参考手册的 SoLoud 播放器懒创建**（首次播放/键控时），否则外壳 `IndexedStack` 一构建就碰音频引擎，测试与无声卡环境会崩。
-11. **多语言**：`LocaleController.active` 由 `AppScope` 设置，`currentS()` 供无 `BuildContext` 代码使用；`AppServices.dispose()` 必须在任何 `await` 之前同步释放 `StringsResolver`（`AppScope` 随后就 dispose 控制器）。Android 通知渠道名在首次创建后不随语言变化（已文档化）。
+11. **多语言**：`LocaleController.active` 由 `AppScope` 设置，`currentS()` 供无 `BuildContext` 代码使用；`AppServices.dispose()` 必须在任何 `await` 之前同步释放 `StringsResolver`（`AppScope` 随后就 dispose 控制器）。Android 通知渠道名会跟随语言切换（`LocalNotificationsApi.refreshStrings`，经 `AppServices` → `NotificationCenter` 接线，2026-09-30）；重要性与提示音仍按 Android 规则在首次创建时冻结。
 12. **应用级偏好**（语言、窗口位置）存 `<application support>/settings.json`；**按身份的数据**（训练进度、聊天历史）在 `IdentityService.dataDirectory()` 下，随身份备份（`MCQB` 容器）一起迁移。
 13. 许可证：Tim2Tox 与 morsecq 均 GPL-3.0，**与 App Store 条款存在已知冲突**，尚未拍板（规划 §3.4 / §9）。iOS 上架不能作为任何时间盒的验收门。
 
@@ -94,12 +94,12 @@ doc/                       文档（英文默认 + zh-CN）
 | 区域 | 状态 | 备注 |
 |---|---|---|
 | 引擎包 core / trainer / io / dsp | 代码完成；core 71、trainer 91、io 55、dsp 49 个测试通过 | dsp 阈值首跑即通过 |
-| 聊天契约与 Tim2Tox 实现 | 代码完成；33 个测试通过过 + 1 个 needs-native | 见 §5 第 1–5 条 |
+| 聊天契约与 Tim2Tox 实现 | 代码完成；45 个单元测试 + `needs-native` smoke 测试通过（smoke 测试 2026-09-30 在 macOS 上真实跑过） | 见 §5 第 1–5 条 |
 | 应用：身份/启动门/Me、聊天/好友/群组、训练/统计、参考手册/翻译器、收听、通知、桌面壳 | 代码完成，全部接线，analyzer 零问题；404 个应用测试通过 | |
 | 多语言 en + zh | 完成；531 键零 TODO；全部界面走 `S` | 新增语言只需新 ARB |
 | 文档 | 英文默认 + zh-CN 成对 | |
 | CI | `analyze.yml`、`native.yml` 自 `8ddc265`（2026-09-30）起在 GitHub Actions 上全绿 | 8/8 原生目标与 Linux / macOS / Windows 应用打包全部通过；首轮全红（Tests 步骤、macOS sysroot、arm64 无 Flutter 包、Linux apt 依赖）——均已修复 |
-| 原生库 | Linux x86_64（容器）与 macOS arm64（真实 Mac，`build/native/macos-arm64/libtim2tox_ffi.dylib`）真实构建成功；Android / iOS / Windows x64 在 CI runner 上构建过 | Windows arm64 / Linux aarch64 只验证到工具链安装 |
+| 原生库 | Linux x86_64（容器）、macOS arm64 与 iOS 设备 + 模拟器 XCFramework 均在真实 Mac 上构建成功（`build/native/`、`ios/Frameworks/tim2tox_ffi.xcframework`）；Android / Windows x64 在 CI runner 上构建过 | Windows arm64 / Linux aarch64 只验证到工具链安装 |
 
 ## 7. 接手后的待办（按优先级）
 
@@ -107,8 +107,8 @@ doc/                       文档（英文默认 + zh-CN）
 2. **每次推送后继续看 GitHub Actions**；arm64 原生行仍是 `continue-on-error`。
 3. **真机验证清单**：侧音延迟 < 30 ms 与爆音、iOS 静音开关下播放（可能需要 `audio_session` 设类别）、Android 触觉精度、托盘图标三平台、通知点击路由、相机扫码、麦克风解码、备份文件保存/分享、身份重装恢复后训练进度完整。
 4. **许可证决策**（GPL-3.0 与 App Store）。
-5. 上游 D 线（Tim2Tox）：消息附注上线路、Dart 侧自定义包 API、lossy 包 API、`failed` 状态区分。v2 的键控实录与实时键控依赖它。
-6. 小修：剩余的串行 `await x.cancel(); await y.dispose();` 销毁链（`packages/morsecq_chat` 的 identity/chat/engine/backend dispose、`fake_identity_service.dart`、`learn_playback.dart`、`reference_player.dart`）生产上只是分阶段释放，但在 widget 测试的 FakeAsync 下会卡住——顺手改成「先同步释放、后 await」；`packages/morse_trainer` 里 `SendIssue.describe()` 仍是英文（UI 已不用）；Android 通知渠道语言；`Podfile.lock` 需在 macOS 上 `pod install` 生成；应用图标与商店素材；中文电码（P4）。
+5. 上游 D 线（Tim2Tox）：消息附注上线路、Dart 侧自定义包 API、lossy 包 API、`failed` 状态区分。v2 的键控实录与实时键控依赖它。 消息注解 RFC 已起草于 `doc/rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md`（2026-09-30）；下一步是到 `agentx-icu/tim2tox` 提 issue/PR。
+6. 小修：`MorsecqChatBackend.dispose`、`learn_playback.dart`、`reference_player.dart` 仍是有意的顺序 await（chat → identity → engine；player 先于其 sink），其余销毁链已于 2026-09-30 改为先同步释放；~~`SendIssue.describe()`~~（已标注为仅日志用）、~~Android 通知渠道语言~~、~~`Podfile.lock`~~（iOS + macOS，2026-09-30）已完成；~~应用图标~~（`tool/gen_app_icons.dart` 用莫斯码 "CQ" 渲染 iOS / macOS / Android 传统图标 / Windows 图标及 1024 商店母图 `apps/morsecq/icon/app_icon_1024.png`；Android 自适应图标图层与商店截图仍待做）；~~中文电码（P4）~~（`morse_core` 的 `ChineseTelegraphCode`，表由 `tool/gen_telegraph_table.dart` 从 Unihan 生成，已接入翻译器：汉字按四位数字组键发，可切换大陆 / 台湾电码本；手册页与聊天侧解码未做）；**Apple 包链接了腾讯原生 IM SDK**（`TXIMSDK_Plus_*`，由 vendored 插件的 podspec 拉入、其 Swift 源码 import，morsecq 从不调用）——去掉它要在 tim2tox 补丁系列里改插件的 Swift 侧，App Store 提交前值得做（体积、许可）。
 7. codex 审核：第一个会话明确跳过；第二个会话对自己的 diff 跑了 `codex-mac`（见方案变更日志 v0.3.6）。此后每个变更都应过审。
 
 ## 8. 这些代码是怎么写出来的（如果你要继续用多代理）

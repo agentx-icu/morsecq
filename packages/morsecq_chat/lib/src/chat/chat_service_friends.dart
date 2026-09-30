@@ -157,8 +157,6 @@ class _FriendsPart {
     _owner._conversationsPart.rebuild(svc);
   }
 
-  Future<void> close() async {
-    await friends.close();
-    await requests.close();
-  }
+  Future<void> close() =>
+      Future.wait([friends.close(), requests.close()]);
 }

@@ -83,12 +83,14 @@ final class AppServices {
     banner.start();
     final center = notifications;
     if (center != null) unawaited(center.start());
+    // Language changes reach the tray (desktop) and the Android channel
+    // names; both are re-applied from the current strings.
+    strings.addListener(_onStringsChanged);
     final shell = desktopShell;
     if (shell != null) {
       // The shell was built in main() before the LocaleController existed:
       // apply the persisted language now, then follow changes.
       shell.updateStrings(strings.s);
-      strings.addListener(_onStringsChanged);
       shell.setUnreadCount(_totalUnread(_chat.conversations));
       _unreadSub = _chat.conversationChanges.listen(
         (list) => shell.setUnreadCount(_totalUnread(list)),
@@ -96,7 +98,11 @@ final class AppServices {
     }
   }
 
-  void _onStringsChanged() => desktopShell?.updateStrings(strings.s);
+  void _onStringsChanged() {
+    desktopShell?.updateStrings(strings.s);
+    final center = notifications;
+    if (center != null) unawaited(center.refreshStrings());
+  }
 
   static int _totalUnread(List<Conversation> list) =>
       list.fold<int>(0, (sum, c) => sum + c.unreadCount);

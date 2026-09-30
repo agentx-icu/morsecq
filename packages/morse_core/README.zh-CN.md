@@ -15,6 +15,7 @@ morsecq 的纯 Dart 摩尔斯电码引擎：字母表、PARIS / Farnsworth 计�
 | `MorseElement` / `MorseElementKind` | 时间线中的一个通/断段：`dit`、`dah`、`intraGap`、`charGap`、`wordGap`。 |
 | `MorseEncoder` | `toPattern("SOS")` → `"... --- ..."`，`encode(text, timing)` → `List<MorseElement>`，`totalDuration`。 |
 | `MorseDecoder` / `DecoderConfig` / `DecodeEvent` | 流式译码器：`keyDown(at)` / `keyUp(at)` / `tick(now)` / `flush()`；`text`、`pendingPattern`、`estimatedDit`、`events`。 |
+| `ChineseTelegraphCode` / `TelegraphCodebook` / `TelegraphUnit` | 中文电码：`codeOf('中')` → `'0022'`、`charsOf('0948')`、`encode(text)`、`transliterate('CQ 中文')` → `'CQ 0022 2429'`（实际键发的内容）、`decode('0022 2429')`。大陆（1983）与台湾 / 香港两套电码本；表由 `tool/gen_telegraph_table.dart` 从 Unicode Unihan（`kMainlandTelegraph` / `kTaiwanTelegraph`）生成到 `src/telegraph/telegraph_table.g.dart`（Unicode License v3，声明见 `THIRD_PARTY_NOTICES.md`）。 |
 
 规程符号（prosign）在文本中用尖括号书写（`CQ <AR>`），译码时也还原为同样的形式。
 点划模式字符串中的单词之间用 ` / ` 分隔。

@@ -153,6 +153,28 @@ center.setActiveConversation(null);               // dispose
 // lifecycle.dispose(); then the services.
 ```
 
+## 语言
+
+所有用户可见文本（标题、「来自 {name} 的好友请求」、「邀请加入 {group}」、「N 条新消息」的
+收件箱摘要、Android 频道名与描述、Linux 的「打开」动作）都来自生成的 `S` 类
+（`lib/l10n/app_*.arb` 里的 `notification*` 键），不再有英文常量类。这里没有
+`BuildContext`，文本通过 `S Function()` 解析：
+
+- `NotificationCenter` / `NotificationComposer` / `FlutterLocalNotificationsApi`
+  接受 `strings:`，默认 `currentS()`（`lib/i18n/current_strings.dart`），跟随应用的
+  `LocaleController`。`AppServices` 从其 `StringsResolver` 传 `() => strings.s`，测试传
+  `() => lookupS(const Locale('zh'))`。
+- 该函数在**发送时**调用，所以切换语言后从下一条通知起生效。已在通知栏 / 操作中心里的横幅
+  保持发出时的语言；同一会话的下一条消息会以相同 id 替换它。
+- **Android 频道名跟随语言**（2026-09-30）：`initialize` 创建三个频道，之后每次语言切换
+  `LocalNotificationsApi.refreshStrings()` 都用当前文本重新创建它们（`AppServices` 监听
+  `StringsResolver`，经 `NotificationCenter.refreshStrings()` 转发；频道仍在写入期间到达的
+  切换会在 `initialize` 结束时补跑一次）。以相同 id 重新创建只更新名称/描述：重要性与提示音
+  保持首次创建时的值（Android 规则）。
+- Windows 向 toast 平台注册的是 `windowsAppName`（`Morsecq`，产品名）；产品名从不翻译。
+- `AppLifecycleCoordinator` / `LifecycleHint` 与 `ConnectionBannerPolicy` 只暴露枚举和布尔值；
+  它们的文本在外壳 widget 里。
+
 ## 需要真机验证的内容
 
 - Android 13+：权限对话框只出现一次；拒绝后不再发送；收件箱分组正确渲染；三星 / 小米启动器上的

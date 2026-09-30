@@ -46,7 +46,7 @@ LIBSODIUM_URL="https://github.com/jedisct1/libsodium/releases/download/${LIBSODI
 
 # Minimum OS versions (doc/operations/BUILD_AND_DEPLOY.md, same as toxee).
 MACOS_MIN="${MORSECQ_MACOS_MIN:-10.15}"
-IOS_MIN="${MORSECQ_IOS_MIN:-13.0}"
+IOS_MIN="${MORSECQ_IOS_MIN:-14.0}"
 ANDROID_API="${MORSECQ_ANDROID_API:-21}"
 
 TARGET=""

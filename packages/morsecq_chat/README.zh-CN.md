@@ -34,10 +34,15 @@ apps/morsecq ──► morsecq_chat_api (contract) ◄── morsecq_chat
 **单一数据路径。** 与 toxee 的混合运行时不同，morsecq 既不安装 `Tim2ToxSdkPlatform` 也不安装
 UIKit，并且从不调用 `TIMManager.initSDK`。一切都沿 `FfiChatService` → `Tim2ToxFfi` →
 `libtim2tox_ffi` 流动；服务监听 `FfiChatService.messages`，并每隔 `pollInterval`（3 s）轮询
-`getFriendList`、`getFriendApplications`、`knownGroups`、`getPendingGroupInvites`。由于没有安装
-`Tim2ToxSdkPlatform`，toxee 文档中记为"静默丢弃"的三个回调（`clearHistoryMessage`、
-`groupQuitNotification`、`groupChatIdStored`）由拉取侧的 `syncGroupIdentitiesFromNative()` 补偿，
-`Tim2ToxEngine.start` 会在 `startPolling` 之后等待它完成。
+`getFriendList`、`getFriendApplications`、`knownGroups`、`getPendingGroupInvites`。补丁版 SDK 的
+进程级自定义回调钩子（`NativeLibraryManager.customCallbackHandler`，toxee 里由
+`Tim2ToxSdkPlatform` 持有）在这里由 `engine/native_callbacks.dart`（`NativeCustomCallbacks`）接管：
+把 `friendAddResult` 路由到等待中的 `addFriend` completer，把 `DartNotifyGroup*` 通知
+（`groupQuitNotification`、`groupJoinNotification`、`groupJoinFailedNotification`、
+`groupInviteNotification`）路由到当前 session，并和 toxee 一样按 session 归属过滤；
+`groupChatIdStored` / `groupTypeStored` 触发拉取式的 `syncGroupIdentitiesFromNative()` 而不是写
+偏好；`clearHistoryMessage` 忽略。没有这个钩子，SDK 会丢掉所有自定义回调，`addFriend` 要等 30 s
+超时才返回（2026-09-30 在 macOS 上由原生 smoke 测试发现）。
 
 ### 身份生命周期
 
@@ -189,10 +194,13 @@ tool/ci/build_tim2tox.sh --no-toxav          # Linux x86_64 / Windows x64 / macO
 `flutter test --exclude-tags=needs-native` 显式排除。在开发机上：
 
 ```bash
-tool/ci/build_tim2tox.sh --no-toxav                       # in toxee (or tim2tox build.sh)
-TIM2TOX_FFI_LIB=/abs/path/to/libtim2tox_ffi.so \
-  flutter test packages/morsecq_chat/test/native_smoke_test.dart
+bash tool/ci/build_tim2tox.sh --target macos-arm64 --mode release   # 或 linux-x86_64 …
+cd packages/morsecq_chat && TIM2TOX_FFI_LIB=$PWD/../../build/native/macos-arm64/libtim2tox_ffi.dylib \
+  flutter test --tags needs-native test/native_smoke_test.dart
 ```
+
+在 Mac 上约 10 s 通过（2026-09-30）：身份 → DHT → 好友请求（由路由过来的 `friendAddResult`
+即时返回）→ 离线发送入队 → 建群 / 列成员 / 退群 → 断开。
 
 双对端互发需要两个进程（Tim2Tox 默认的单例实例模型——多实例只为其自身的 auto_tests 存在）：
 用不同的 `IdentityPaths` 根目录运行冒烟测试两次并互加 Tox ID，或者对着一个 toxee 实例驱动；

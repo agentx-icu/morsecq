@@ -210,8 +210,5 @@ class _GroupsPart {
     _owner._conversationsPart.rebuild(svc);
   }
 
-  Future<void> close() async {
-    await groups.close();
-    await invites.close();
-  }
+  Future<void> close() => Future.wait([groups.close(), invites.close()]);
 }

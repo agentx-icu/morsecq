@@ -9,4 +9,5 @@ export 'src/alphabet.dart';
 export 'src/decoder.dart';
 export 'src/element.dart';
 export 'src/encoder.dart';
+export 'src/telegraph/chinese_telegraph_code.dart';
 export 'src/timing.dart';

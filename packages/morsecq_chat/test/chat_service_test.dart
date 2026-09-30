@@ -368,28 +368,6 @@ void main() {
   });
 }
 
-/// A headless `FfiChatService` over [ffi], the way toxee's tests build one.
-Future<FfiChatService> newEngineService(
-  FakeTim2ToxFfi ffi,
-  KeyValueStore store,
-  Directory root,
-  String dirName,
-) async {
-  final paths = IdentityPaths('${root.path}/$dirName');
-  await paths.ensureDirectories();
-  return FfiChatService(
-    ffiForTesting: ffi,
-    preferencesService:
-        Tim2ToxPreferencesAdapter(store, accountPrefix: '1111111111111111'),
-    historyDirectory: paths.historyDirectory,
-    queueFilePath: paths.offlineQueueFile,
-    fileRecvPath: paths.fileRecvDirectory,
-    avatarsPath: paths.avatarsDirectory,
-  )
-    ..debugBeginSessionForTest()
-    ..debugNativePendingInvitesOverride = () => const [];
-}
-
 /// Reads the queued-invite slot the way `ConversationMetaStore` writes it.
 class ConversationMetaStoreProbe {
   ConversationMetaStoreProbe(this._store, this._prefix);

@@ -1895,4 +1895,18 @@ class SZh extends S {
   String chatSliderValue(String label, int value, String unit) {
     return '$label：$value $unit';
   }
+
+  @override
+  String referenceTelegraphCodes(String codes) {
+    return '中文电码：$codes';
+  }
+
+  @override
+  String get referenceTelegraphMainland => '大陆（1983）';
+
+  @override
+  String get referenceTelegraphTaiwan => '台湾 / 香港';
+
+  @override
+  String get referenceTelegraphNone => '本电码本无此字';
 }

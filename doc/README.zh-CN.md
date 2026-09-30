@@ -34,6 +34,9 @@
 
 ## 操作与构建
 
+- [rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md](rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md) /
+  [English](rfcs/2026-09-30-tim2tox-message-annotation.md) —— 给 Tim2Tox 的提案草案
+  （D 线）：随文本一起传输的按消息注解，是 v2 录制键控的前提。尚未提交上游。
 - [operations/BUILD_AND_DEPLOY.zh-CN.md](operations/BUILD_AND_DEPLOY.zh-CN.md) /
   [English](operations/BUILD_AND_DEPLOY.md) —— 在 Linux、macOS、Windows、Android、
   iOS 上构建 `libtim2tox_ffi` 原生库（默认 `--no-toxav`）；库在各平台包中的落点；

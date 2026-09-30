@@ -21,6 +21,8 @@ class TextToMorseView extends StatefulWidget {
   static const Key inputKey = Key('translator-text-input');
   static const Key playKey = Key('translator-text-play');
   static const Key copyKey = Key('translator-text-copy');
+  static const Key telegraphKey = Key('translator-text-telegraph');
+  static const Key codebookKey = Key('translator-text-codebook');
 
   @override
   State<TextToMorseView> createState() => _TextToMorseViewState();
@@ -33,6 +35,19 @@ class _TextToMorseViewState extends State<TextToMorseView> {
       TextEditingController(text: widget.initialText ?? '');
   String _pattern = '';
   String _skipped = '';
+
+  /// What is actually keyed: [_text] with Chinese characters replaced by
+  /// their four-digit telegraph codes (`中文` → `0022 2429`).
+  String _source = '';
+
+  /// The telegraph codes of the input, space separated, or empty.
+  String _telegraph = '';
+
+  /// Whether either codebook knows a character of the input: the codebook
+  /// switch is offered then, even if the current book has no code for it
+  /// (`國` is Taiwan-only, `国` mainland-only).
+  bool _anyCoded = false;
+  TelegraphCodebook _codebook = TelegraphCodebook.mainland;
 
   @override
   void initState() {
@@ -49,8 +64,30 @@ class _TextToMorseViewState extends State<TextToMorseView> {
   void _onChanged(String value) => setState(() => _recompute(value));
 
   void _recompute(String text) {
-    _pattern = MorseEncoder.toPattern(text);
-    _skipped = _unsupportedChars(text);
+    _source = ChineseTelegraphCode.transliterate(text, codebook: _codebook);
+    _pattern = MorseEncoder.toPattern(_source);
+    _skipped = _unsupportedChars(_source);
+    _telegraph = ChineseTelegraphCode.encode(text, codebook: _codebook)
+        .where((TelegraphUnit u) => u.hasCode)
+        .map((TelegraphUnit u) => u.code!)
+        .join(' ');
+    _anyCoded = TelegraphCodebook.values.any(
+      (TelegraphCodebook b) =>
+          ChineseTelegraphCode.containsCodedChars(text, codebook: b),
+    );
+  }
+
+  void _setCodebook(TelegraphCodebook book) {
+    if (book == _codebook) return;
+    // The pattern changes under the player: stop rather than let the old
+    // audio run on beside the new display.
+    final ReferencePlaybackController controller =
+        context.read<ReferencePlaybackController>();
+    if (controller.isPlayingId(TextToMorseView.playId)) controller.stop();
+    setState(() {
+      _codebook = book;
+      _recompute(_text.text);
+    });
   }
 
   /// Distinct characters of [text] that have no Morse code, in order of first
@@ -132,7 +169,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
               FilledButton.tonalIcon(
                 key: TextToMorseView.playKey,
                 onPressed: hasPattern
-                    ? () => controller.toggle(TextToMorseView.playId, _text.text)
+                    ? () => controller.toggle(TextToMorseView.playId, _source)
                     : null,
                 icon: Icon(playing ? Icons.stop : Icons.play_arrow),
                 label: Text(playing ? s.referenceStop : s.referencePlay),
@@ -149,6 +186,38 @@ class _TextToMorseViewState extends State<TextToMorseView> {
               ),
             ),
           ),
+          if (_anyCoded) ...<Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                s.referenceTelegraphCodes(
+                  _telegraph.isEmpty ? s.referenceTelegraphNone : _telegraph,
+                ),
+                key: TextToMorseView.telegraphKey,
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: SegmentedButton<TelegraphCodebook>(
+                key: TextToMorseView.codebookKey,
+                showSelectedIcon: false,
+                segments: <ButtonSegment<TelegraphCodebook>>[
+                  ButtonSegment<TelegraphCodebook>(
+                    value: TelegraphCodebook.mainland,
+                    label: Text(s.referenceTelegraphMainland),
+                  ),
+                  ButtonSegment<TelegraphCodebook>(
+                    value: TelegraphCodebook.taiwan,
+                    label: Text(s.referenceTelegraphTaiwan),
+                  ),
+                ],
+                selected: <TelegraphCodebook>{_codebook},
+                onSelectionChanged: (Set<TelegraphCodebook> v) =>
+                    _setCodebook(v.first),
+              ),
+            ),
+          ],
           if (_skipped.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 8),

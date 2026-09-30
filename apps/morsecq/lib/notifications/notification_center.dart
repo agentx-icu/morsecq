@@ -119,6 +119,14 @@ class NotificationCenter {
     }
   }
 
+  /// Language changed: let the OS-facing metadata follow (Android channel
+  /// names). Forwarded whenever this platform has OS notifications, ready or
+  /// not: the API remembers a change that arrives while it initialises.
+  Future<void> refreshStrings() async {
+    if (_disposed || !_platform.supportsOsNotifications) return;
+    await _notifications.refreshStrings();
+  }
+
   Future<void> start() async {
     if (_started || _disposed) return;
     _started = true;

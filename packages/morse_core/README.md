@@ -16,6 +16,7 @@ and in plain `dart test`.
 | `MorseElement` / `MorseElementKind` | One on/off segment of a timeline: `dit`, `dah`, `intraGap`, `charGap`, `wordGap`. |
 | `MorseEncoder` | `toPattern("SOS")` → `"... --- ..."`, `encode(text, timing)` → `List<MorseElement>`, `totalDuration`. |
 | `MorseDecoder` / `DecoderConfig` / `DecodeEvent` | Streaming decoder: `keyDown(at)` / `keyUp(at)` / `tick(now)` / `flush()`; `text`, `pendingPattern`, `estimatedDit`, `events`. |
+| `ChineseTelegraphCode` / `TelegraphCodebook` / `TelegraphUnit` | Chinese telegraph code (中文电码): `codeOf('中')` → `'0022'`, `charsOf('0948')`, `encode(text)`, `transliterate('CQ 中文')` → `'CQ 0022 2429'` (what goes on the key), `decode('0022 2429')`. Mainland (1983) and Taiwan / HK codebooks; tables generated from Unicode Unihan (`kMainlandTelegraph` / `kTaiwanTelegraph`) by `tool/gen_telegraph_table.dart` into `src/telegraph/telegraph_table.g.dart` (Unicode License v3, notice in `THIRD_PARTY_NOTICES.md`). |
 
 Prosigns are written in angle brackets in text (`CQ <AR>`) and decode back to
 the same form. Words in a pattern string are separated by ` / `.

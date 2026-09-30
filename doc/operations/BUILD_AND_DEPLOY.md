@@ -61,8 +61,8 @@ probe. All staged artifacts are gitignored.
 
 ## Minimum OS versions
 
-macOS **10.15**, Windows **10**, Android **API 21**, iOS **13.0** (enforced via
-`-mmacosx-version-min`, `ANDROID_PLATFORM=android-21`, `-target *-apple-ios13.0`,
+macOS **10.15**, Windows **10**, Android **API 21**, iOS **14.0** (`file_picker_darwin` needs 14; raised from 13.0 on 2026-09-30) (enforced via
+`-mmacosx-version-min`, `ANDROID_PLATFORM=android-21`, `-target *-apple-ios14.0`,
 the Podfiles and the Xcode deployment targets).
 
 ## CI: `.github/workflows/native.yml`

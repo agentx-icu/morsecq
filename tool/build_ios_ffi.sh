@@ -12,7 +12,7 @@
 # <app>/Frameworks/tim2tox_ffi.framework/tim2tox_ffi.
 #
 # Usage: tool/build_ios_ffi.sh [--device-only | --simulator-only] [build_tim2tox.sh options]
-# Env:   MORSECQ_IOS_SIM_ARCHS (default "arm64 x86_64"), MORSECQ_IOS_MIN (13.0)
+# Env:   MORSECQ_IOS_SIM_ARCHS (default "arm64 x86_64"), MORSECQ_IOS_MIN (14.0)
 #        MORSECQ_IOS_XCFRAMEWORK_DIR (default apps/morsecq/ios/Frameworks)
 set -euo pipefail
 

@@ -62,6 +62,7 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   final String androidIcon;
   final S Function() _strings;
   bool _initialized = false;
+  bool _refreshPending = false;
 
   @override
   Future<bool> initialize({required ValueChanged<String> onTap}) async {
@@ -97,7 +98,13 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
       );
       if (ok == false) return false;
       if (_platform == NotificationPlatform.android) {
-        await _createAndroidChannels();
+        // A language change that arrives while the channels are being
+        // written sets _refreshPending; loop until a pass ran with the
+        // latest strings.
+        do {
+          _refreshPending = false;
+          await _createAndroidChannels();
+        } while (_refreshPending);
       }
       _initialized = true;
       return true;
@@ -244,6 +251,21 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
     );
   }
 
+  @override
+  Future<void> refreshStrings() async {
+    if (_platform != NotificationPlatform.android) return;
+    if (!_initialized) {
+      // Remembered and applied at the end of initialize().
+      _refreshPending = true;
+      return;
+    }
+    try {
+      await _createAndroidChannels();
+    } catch (error, stack) {
+      _report('refreshStrings', error, stack);
+    }
+  }
+
   Future<void> _createAndroidChannels() async {
     final AndroidFlutterLocalNotificationsPlugin? impl = _plugin
         .resolvePlatformSpecificImplementation<
@@ -254,8 +276,8 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
     for (final NotificationChannelKind kind in NotificationChannelKind.values) {
       // Re-creating an existing channel only updates name/description;
       // importance and sound are frozen by Android once the channel exists.
-      // Names are therefore in the language of the first launch; a later
-      // language switch is reflected on the next channel re-creation only.
+      // [refreshStrings] re-runs this on a language change so Settings shows
+      // the current language, not the one of the first launch.
       await impl.createNotificationChannel(
         AndroidNotificationChannel(
           kind.androidId,

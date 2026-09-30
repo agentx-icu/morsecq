@@ -25,6 +25,7 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
   final List<NotificationRequest> shown = <NotificationRequest>[];
   final List<int> cancelled = <int>[];
   int cancelAllCalls = 0;
+  int refreshStringsCalls = 0;
   int permissionRequests = 0;
   bool initialized = false;
 
@@ -72,6 +73,11 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
   Future<void> cancel(int id) async {
     cancelled.add(id);
     _active.remove(id);
+  }
+
+  @override
+  Future<void> refreshStrings() async {
+    refreshStringsCalls++;
   }
 
   @override

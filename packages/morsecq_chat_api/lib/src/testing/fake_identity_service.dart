@@ -295,8 +295,10 @@ final class FakeIdentityService implements IdentityService {
   Future<void> dispose() async {
     _disposed = true;
     _connectTimer?.cancel();
-    await _identityController.close();
-    await _connectionController.close();
+    await Future.wait([
+      _identityController.close(),
+      _connectionController.close(),
+    ]);
   }
 
   // ---- Internals -----------------------------------------------------------

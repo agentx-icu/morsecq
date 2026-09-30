@@ -190,12 +190,14 @@ through an `S Function()`:
   next notification. Banners already in the shade / Action Center keep the
   language they were posted in; they are replaced (same id) by the next
   message for that conversation anyway.
-- **Android channels are created once** (`initialize`, `createIfNotExists`):
-  the channel name/description shown in Android Settings stays in the
-  language of the first launch. Every `show()` still passes the current-language
-  name, but Android ignores it for an existing channel. If this matters
-  later, post with `channelAction: AndroidNotificationChannelAction.update`
-  or re-run `_createAndroidChannels` from the `StringsResolver` listener.
+- **Android channel names follow the language** (2026-09-30): `initialize`
+  creates the three channels, and `LocalNotificationsApi.refreshStrings()`
+  re-creates them with the current strings on every language change
+  (`AppServices` listens to the `StringsResolver` and forwards through
+  `NotificationCenter.refreshStrings()`; a change that lands while the
+  channels are still being written is replayed once `initialize` finishes).
+  Re-creating a channel with the same id updates its name/description only:
+  importance and sound stay what the first creation set (Android rule).
 - Windows registers `windowsAppName` (`Morsecq`, the product name) with the
   toast platform; product names are never translated.
 - `AppLifecycleCoordinator` / `LifecycleHint` and `ConnectionBannerPolicy`

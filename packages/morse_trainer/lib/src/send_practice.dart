@@ -79,6 +79,10 @@ final class SendIssue {
   /// [SendIssueKind.speedUnsteady] this is the coefficient of variation).
   final double meanRatio;
 
+  /// English diagnostic text for logs and [toString] only. The app never
+  /// shows it: the localised wording lives in
+  /// `apps/morsecq/lib/ui/learn/send/send_tips.dart` (pure-Dart packages
+  /// carry no ARBs).
   String describe() {
     final r = meanRatio.toStringAsFixed(2);
     return switch (kind) {

@@ -635,5 +635,9 @@
   "chatMembersTitleCount": "成员 · {count}",
   "chatInvitedByName": "邀请人：{name}",
   "chatMemberSelf": "{name}（你）",
-  "chatSliderValue": "{label}：{value} {unit}"
+  "chatSliderValue": "{label}：{value} {unit}",
+  "referenceTelegraphCodes": "中文电码：{codes}",
+  "referenceTelegraphMainland": "大陆（1983）",
+  "referenceTelegraphTaiwan": "台湾 / 香港",
+  "referenceTelegraphNone": "本电码本无此字"
 }

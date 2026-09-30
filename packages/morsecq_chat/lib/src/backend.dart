@@ -55,6 +55,15 @@ class MorsecqChatBackend {
     Duration pollInterval = const Duration(seconds: 3),
   }) async {
     NativeLibrarySetup.ensure(libraryPathOverride: nativeLibraryPathOverride);
+    // Fail here, not at the first native call: RealBackendFactory.prepare()
+    // turns this into the fake-backend fallback (dev build without the
+    // library, unsupported ABI). An injected engine needs no library.
+    if (engine == null && !NativeLibrarySetup.isNativeLibraryLoadable) {
+      throw const ChatException(
+        'native_library_missing',
+        'libtim2tox_ffi cannot be loaded in this process',
+      );
+    }
     final resolvedPaths = paths ?? await IdentityPaths.forApplicationSupport();
     final kv = store ?? await SharedPreferencesStore.open();
     final eng = engine ??

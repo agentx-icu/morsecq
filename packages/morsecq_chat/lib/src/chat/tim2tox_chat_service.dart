@@ -398,11 +398,17 @@ class Tim2ToxChatService implements ChatService {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
-    await _sessionSub?.cancel();
+    // Synchronous releases first; the awaited futures are only the closes'
+    // done-futures and the root-zone cancel future.
+    final cancelled = _sessionSub?.cancel();
+    _sessionSub = null;
     _unbindSession();
-    await _messageEvents.close();
-    await _friendsPart.close();
-    await _groupsPart.close();
-    await _conversationsPart.close();
+    await Future.wait([
+      ?cancelled,
+      _messageEvents.close(),
+      _friendsPart.close(),
+      _groupsPart.close(),
+      _conversationsPart.close(),
+    ]);
   }
 }

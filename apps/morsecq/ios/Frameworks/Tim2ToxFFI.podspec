@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'GPL-3.0', :text => 'See third_party/tim2tox/LICENSE' }
   s.author           = { 'morsecq' => 'noreply@agentx.icu' }
   s.source           = { :path => '.' }
-  s.platform         = :ios, '13.0'
-  s.ios.deployment_target = '13.0'
+  s.platform         = :ios, '14.0'
+  s.ios.deployment_target = '14.0'
   s.vendored_frameworks = 'tim2tox_ffi.xcframework'
   s.requires_arc     = false
   # The framework has no Swift and no module map; nothing to compile.
