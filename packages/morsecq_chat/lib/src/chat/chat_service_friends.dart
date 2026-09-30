@@ -29,6 +29,7 @@ class _FriendsPart {
 
   Future<void> refresh(FfiChatService svc) async {
     final raw = await svc.getFriendList();
+    if (!_owner._isCurrent(svc)) return;
     final cameOnline = <String>[];
     final next = <Friend>[];
     final onlineNow = <String>{};
@@ -57,6 +58,7 @@ class _FriendsPart {
     });
     if (!listEqualsBy(friends.value, next, _sameFriend)) friends.force(next);
     for (final key in cameOnline) {
+      if (!_owner._isCurrent(svc)) return;
       await _owner._groupsPart.flushQueuedInvites(svc, key);
     }
   }
@@ -69,6 +71,7 @@ class _FriendsPart {
 
   Future<void> refreshRequests(FfiChatService svc) async {
     final apps = await svc.getFriendApplications();
+    if (!_owner._isCurrent(svc)) return;
     final next = <FriendRequest>[];
     final live = <String>{};
     for (final a in apps) {
@@ -113,7 +116,9 @@ class _FriendsPart {
         result.resultInfo.isEmpty ? 'Friend request failed ($code)' : result.resultInfo,
       );
     }
+    _owner._ensureCurrent(svc);
     await refresh(svc);
+    _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
   }
 
@@ -124,15 +129,18 @@ class _FriendsPart {
     } on StateError catch (e) {
       throw ChatException('accept_failed', e.message);
     }
+    _owner._ensureCurrent(svc);
     _requestSeen.remove(key);
     await refreshRequests(svc);
     await refresh(svc);
+    _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
   }
 
   Future<void> reject(FfiChatService svc, String publicKey) async {
     final key = ConversationIds.normalizeKey(publicKey);
     await svc.refuseFriendApplication(key);
+    _owner._ensureCurrent(svc);
     _requestSeen.remove(key);
     await refreshRequests(svc);
   }
@@ -140,10 +148,12 @@ class _FriendsPart {
   Future<void> remove(FfiChatService svc, String publicKey) async {
     final key = ConversationIds.normalizeKey(publicKey);
     await svc.removeFriend(key);
+    _owner._ensureCurrent(svc);
     _names.remove(key);
     _online.remove(key);
-    await _owner._meta.forget(ConversationIds.c2c(key));
+    await _owner._forgetMeta(svc, ConversationIds.c2c(key));
     await refresh(svc);
+    _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
   }
 

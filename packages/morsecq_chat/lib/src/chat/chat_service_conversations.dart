@@ -91,19 +91,23 @@ class _ConversationsPart {
 
   Future<void> markRead(FfiChatService svc, String conversationId) async {
     await svc.markConversationRead(ConversationIds.peerOf(conversationId));
+    _owner._ensureCurrent(svc);
     rebuild(svc);
   }
 
+  // Pin and draft work offline too (metadata only), so no session is
+  // required; but only the session that was bound when the write started
+  // may be republished - a rebind during the await gets its own tick.
   Future<void> setPinned(String conversationId, bool pinned) async {
-    await _owner._meta.setPinned(conversationId, pinned);
     final svc = _owner._service;
-    if (svc != null) rebuild(svc);
+    await _owner._meta.setPinned(conversationId, pinned);
+    if (svc != null && _owner._isCurrent(svc)) rebuild(svc);
   }
 
   Future<void> setDraft(String conversationId, String draft) async {
-    await _owner._meta.setDraft(conversationId, draft);
     final svc = _owner._service;
-    if (svc != null) rebuild(svc);
+    await _owner._meta.setDraft(conversationId, draft);
+    if (svc != null && _owner._isCurrent(svc)) rebuild(svc);
   }
 
   /// Clears the history and hides the conversation until the next message
@@ -115,9 +119,13 @@ class _ConversationsPart {
     } else {
       await svc.clearC2CHistory(peer);
     }
+    _owner._ensureCurrent(svc);
     await _owner._meta.setPinned(conversationId, false);
+    _owner._ensureCurrent(svc);
     await _owner._meta.setDraft(conversationId, '');
+    _owner._ensureCurrent(svc);
     await _owner._meta.hide(conversationId);
+    _owner._ensureCurrent(svc);
     rebuild(svc);
   }
 

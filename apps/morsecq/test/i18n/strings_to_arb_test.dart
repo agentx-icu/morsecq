@@ -9,9 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   late Directory scratch;
   late String toolPath;
+  late String dartExe;
 
   setUpAll(() {
     toolPath = _locateTool();
+    dartExe = _locateDart();
   });
 
   setUp(() {
@@ -30,7 +32,7 @@ void main() {
   File zhFile() => File('${scratch.path}/app/lib/l10n/app_zh.arb');
 
   Future<ProcessResult> run([List<String> extra = const []]) => Process.run(
-    Platform.resolvedExecutable,
+    dartExe,
     [toolPath, '--app-dir', '${scratch.path}/app', ...extra],
     workingDirectory: scratch.path,
   );
@@ -170,4 +172,36 @@ String _locateTool() {
     dir = dir.parent;
   }
   fail('tool/strings_to_arb.dart not found above ${Directory.current.path}');
+}
+
+/// Returns a Dart CLI able to run the tool as a subprocess.
+///
+/// Under `flutter test` [Platform.resolvedExecutable] is `flutter_tester`
+/// (the engine test harness, not a Dart CLI): handing it a script hangs
+/// until the test times out. So prefer the `dart` shipped inside the Flutter
+/// SDK the harness came from, and fall back to the executable itself only
+/// when it already is `dart` (plain `dart test`).
+String _locateDart() {
+  final exeName = Platform.isWindows ? 'dart.exe' : 'dart';
+  final self = File(Platform.resolvedExecutable);
+  final selfName = self.uri.pathSegments.last;
+  if (selfName == exeName || selfName == 'dart') return self.path;
+
+  final candidates = <String>[];
+  final flutterRoot = Platform.environment['FLUTTER_ROOT'];
+  if (flutterRoot != null && flutterRoot.isNotEmpty) {
+    candidates.add('$flutterRoot/bin/cache/dart-sdk/bin/$exeName');
+  }
+  // flutter_tester lives at <flutter>/bin/cache/artifacts/engine/<os>/; the
+  // Dart SDK the same Flutter uses is <flutter>/bin/cache/dart-sdk/.
+  var dir = self.parent;
+  for (var i = 0; i < 6; i++) {
+    candidates.add('${dir.path}/dart-sdk/bin/$exeName');
+    dir = dir.parent;
+  }
+  for (final c in candidates) {
+    if (File(c).existsSync()) return c;
+  }
+  // Last resort: whatever `dart` is on PATH.
+  return exeName;
 }

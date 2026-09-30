@@ -151,13 +151,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(source.isStreaming, isTrue);
 
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    // Walk the legal transition chain (AppLifecycleListener asserts on a
+    // direct resumed -> paused or paused -> resumed jump).
+    for (final state in <AppLifecycleState>[
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
     await tester.pumpAndSettle();
     expect(source.isStreaming, isFalse);
     expect(source.stopCalls, 1);
 
     // Frames are not scheduled while paused; check the UI once visible again.
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    for (final state in <AppLifecycleState>[
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
     await tester.pumpAndSettle();
     expect(find.text(en.listenStoppedInBackground), findsOneWidget);
     expect(find.text(en.listenStart), findsOneWidget);

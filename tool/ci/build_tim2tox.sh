@@ -175,10 +175,40 @@ OUTPUT_DIR="${MORSECQ_NATIVE_ARTIFACTS_DIR:-$NATIVE_ROOT}/$TARGET"
 
 # Tim2Tox's ffi/CMakeLists.txt compiles dart_api_dl.c from the Dart SDK inside
 # the Flutter checkout. Without it, Dart_PostCObject_DL is missing and every
-# native->Dart callback is dead. Resolve FLUTTER_ROOT from PATH when unset.
-if [[ -z "${FLUTTER_ROOT:-}" ]] && command -v flutter >/dev/null 2>&1; then
+# native->Dart callback is dead. Precedence: an explicit FLUTTER_ROOT, then an
+# explicit MORSECQ_DART_SDK_DIR (see below), then `flutter` on PATH, then
+# `dart` on PATH.
+if [[ -z "${FLUTTER_ROOT:-}" && -z "${MORSECQ_DART_SDK_DIR:-}" ]] && command -v flutter >/dev/null 2>&1; then
   FLUTTER_ROOT="$(cd "$(dirname "$(command -v flutter)")/.." && pwd)"
   export FLUTTER_ROOT
+fi
+# No Flutter checkout (Flutter publishes no Linux/Windows arm64 SDK archive,
+# so those CI runners only get a standalone Dart SDK — the same Dart version
+# Flutter bundles): the headers are all the native build needs, so stage
+# <dart-sdk>/include under a shim FLUTTER_ROOT with the layout tim2tox's
+# ffi/CMakeLists.txt probes (<root>/bin/cache/dart-sdk/include). An explicit
+# MORSECQ_DART_SDK_DIR must point at a real SDK (hard error otherwise);
+# without it the SDK owning `dart` on PATH is used.
+if [[ -z "${FLUTTER_ROOT:-}" ]]; then
+  dart_sdk_dir="${MORSECQ_DART_SDK_DIR:-}"
+  if [[ -n "$dart_sdk_dir" ]]; then
+    [[ -f "$dart_sdk_dir/include/dart_api_dl.h" && -f "$dart_sdk_dir/include/dart_api_dl.c" ]] || \
+      ci_die "MORSECQ_DART_SDK_DIR=$dart_sdk_dir has no include/dart_api_dl.h + dart_api_dl.c (not a Dart SDK root?)"
+  elif command -v dart >/dev/null 2>&1; then
+    dart_sdk_dir="$(cd "$(dirname "$(command -v dart)")/.." && pwd)"
+  fi
+  if [[ -n "$dart_sdk_dir" && -f "$dart_sdk_dir/include/dart_api_dl.h" && -f "$dart_sdk_dir/include/dart_api_dl.c" ]]; then
+    dart_shim="$NATIVE_ROOT/.dart-sdk-shim"
+    rm -rf "$dart_shim/bin/cache/dart-sdk/include"
+    mkdir -p "$dart_shim/bin/cache/dart-sdk"
+    cp -R "$dart_sdk_dir/include" "$dart_shim/bin/cache/dart-sdk/include"
+    FLUTTER_ROOT="$dart_shim"
+    export FLUTTER_ROOT
+    ci_log "No Flutter checkout; using Dart SDK headers from $dart_sdk_dir (version: $(cat "$dart_sdk_dir/version" 2>/dev/null || echo unknown)) via $dart_shim"
+  elif [[ -n "$dart_sdk_dir" ]]; then
+    ci_warn "dart on PATH resolved to $dart_sdk_dir but it has no include/dart_api_dl.h + dart_api_dl.c"
+  fi
+  unset dart_sdk_dir dart_shim
 fi
 if [[ -n "${FLUTTER_ROOT:-}" ]]; then
   [[ -f "$FLUTTER_ROOT/bin/cache/dart-sdk/include/dart_api_dl.h" ]] || \
@@ -241,6 +271,15 @@ verify_sha256() {
   ci_log "$label: sha256 verified"
 }
 
+# Paths that end up inside CFLAGS/LDFLAGS (-isysroot …) are re-split on
+# whitespace by autoconf, so they cannot be quoted through; refuse them early
+# with a clear message instead of a baffling "cannot create executables".
+ci_require_no_whitespace() {
+  local value="$1" what="$2"
+  [[ "$value" != *[[:space:]]* ]] || \
+    ci_die "$what contains whitespace ('$value'); it is passed through CFLAGS/LDFLAGS and cannot be escaped. Move/select an SDK at a whitespace-free path (xcode-select -s …)."
+}
+
 # Extract the pinned libsodium tarball into $1/libsodium-<ver>; prints that dir.
 fetch_libsodium_source() {
   local src_root="$1"
@@ -272,6 +311,14 @@ build_static_libsodium() {
     ./configure --prefix="$prefix" --enable-static --disable-shared --with-pic "$@" \
       >"$prefix/libsodium-configure.log" 2>&1 || {
         tail -30 "$prefix/libsodium-configure.log" >&2
+        # configure's stdout only says "cannot create executables"; the actual
+        # compiler/linker error lives in config.log. Surface it, so a CI run
+        # (which does not upload the source tree) is diagnosable from its log.
+        if [[ -f config.log ]]; then
+          printf '[ci] ---- %s/config.log (compiler probe) ----\n' "$src_dir" >&2
+          grep -n -B2 -A12 -E 'cannot create executables|error:' config.log | head -60 >&2 || true
+          printf '[ci] CC=%s\n[ci] CFLAGS=%s\n[ci] LDFLAGS=%s\n' "${CC:-}" "${CFLAGS:-}" "${LDFLAGS:-}" >&2
+        fi
         ci_die "[$label] libsodium configure failed (log: $prefix/libsodium-configure.log)"
       }
     make -j"$(ci_cpu_count)" >"$prefix/libsodium-make.log" 2>&1 || {
@@ -507,13 +554,17 @@ build_macos() {
   local build_dir="$WORK_ROOT/$TARGET"
   local prefix="$DEPS_ROOT/$TARGET"
   local -a dep_args=()
-  local built_lib host_triple
+  local built_lib host_triple macos_sysroot
 
   [[ "$HOST_OS" == "macos" ]] || ci_die "$TARGET must be built on a macOS host (got $HOST_OS)"
   ci_require_cmd cmake
   ci_require_cmd xcrun
   ci_require_cmd install_name_tool
   bootstrap_tim2tox_submodules
+  macos_sysroot="$(xcrun --sdk macosx --show-sdk-path)"
+  [[ -d "$macos_sysroot" ]] || ci_die "[$TARGET] xcrun --sdk macosx --show-sdk-path returned no SDK (is Xcode / the Command Line Tools selected?)"
+  ci_require_no_whitespace "$macos_sysroot" "[$TARGET] macOS SDK path"
+  ci_log "[$TARGET] macOS SDK: $macos_sysroot"
 
   if [[ "$SYSTEM_LIBSODIUM" -eq 1 ]]; then
     ci_log "[$TARGET] using Homebrew/system libsodium (Tim2Tox CMake probes /opt/homebrew and /usr/local)"
@@ -527,10 +578,18 @@ build_macos() {
       *) ci_die "Unsupported macOS arch: $arch" ;;
     esac
     (
-      export CC CFLAGS LDFLAGS
+      # `xcrun -f clang` yields the raw toolchain binary
+      # (…/XcodeDefault.xctoolchain/usr/bin/clang), which — unlike the
+      # /usr/bin/clang shim — does NOT infer the SDK. Without -isysroot it
+      # cannot find <stdio.h> and autoconf reports "C compiler cannot create
+      # executables" (GitHub macos-15 runners: no SDKROOT in the environment;
+      # reproduced on a dev Mac with `env -i`). Pin the macOS SDK explicitly,
+      # exactly as build_ios_slice() does.
+      export CC CFLAGS LDFLAGS SDKROOT
       CC="$(xcrun -f clang)"
-      CFLAGS="-arch $arch -mmacosx-version-min=$MACOS_MIN -O2"
-      LDFLAGS="-arch $arch -mmacosx-version-min=$MACOS_MIN"
+      SDKROOT="$macos_sysroot"
+      CFLAGS="-arch $arch -mmacosx-version-min=$MACOS_MIN -isysroot $macos_sysroot -O2"
+      LDFLAGS="-arch $arch -mmacosx-version-min=$MACOS_MIN -isysroot $macos_sysroot"
       build_static_libsodium "$prefix" "$TARGET" --host="$host_triple"
     )
     export PKG_CONFIG_PATH="$prefix/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
@@ -543,6 +602,7 @@ build_macos() {
   configure_and_build "$build_dir" "$TARGET" \
     "${gen[@]}" \
     -DCMAKE_BUILD_TYPE="$NATIVE_BUILD_TYPE" \
+    -DCMAKE_OSX_SYSROOT="$macos_sysroot" \
     -DCMAKE_OSX_ARCHITECTURES="$arch" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="$MACOS_MIN" \
     -DCMAKE_CXX_FLAGS="-Wno-error=deprecated-copy -Wno-error=format" \
@@ -842,6 +902,7 @@ build_ios_slice() {
   local sdk sysroot triple tflags prefix build_dir clang built_lib host_triple
   sdk="$(ios_sdk_name "$variant")"
   sysroot="$(xcrun --sdk "$sdk" --show-sdk-path)"
+  ci_require_no_whitespace "$sysroot" "[ios-$variant-$arch] $sdk SDK path"
   clang="$(xcrun --sdk "$sdk" -f clang)"
   triple="$(ios_triple "$arch" "$variant")"
   tflags="-target $triple -isysroot $sysroot"

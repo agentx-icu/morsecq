@@ -48,7 +48,11 @@ class _StatsScreenState extends State<StatsScreen> {
 
   Future<void> _reload() {
     final next = widget.loadProgress();
-    setState(() => _future = next);
+    // Block body: an arrow closure would return the assigned Future, which
+    // trips setState's "callback returned a Future" assertion in debug.
+    setState(() {
+      _future = next;
+    });
     return next.then<void>((_) {}, onError: (Object _) {});
   }
 

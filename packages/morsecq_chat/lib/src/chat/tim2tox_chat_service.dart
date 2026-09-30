@@ -68,7 +68,12 @@ class Tim2ToxChatService implements ChatService {
   StreamSubscription<FfiChatService?>? _sessionSub;
   final List<StreamSubscription<Object?>> _serviceSubs = [];
   Timer? _poll;
-  bool _polling = false;
+
+  /// The session whose refresh round is in flight, or null. Keyed on the
+  /// session (not a bool) so a rebind is never starved by the previous
+  /// session's unfinished tick: the new session's initial refresh runs at
+  /// once, and the old tick's `finally` cannot clear the new session's slot.
+  FfiChatService? _ticking;
   bool _disposed = false;
 
   final StreamController<ChatMessage> _messageEvents =
@@ -98,6 +103,38 @@ class Tim2ToxChatService implements ChatService {
         selfName: _identity.current?.displayName ?? '',
         nameOf: _friendsPart.nameOf,
       );
+
+  /// Whether [svc] is still the bound session. Every refresh that awaited
+  /// something checks this before publishing: a tick or callback started on
+  /// a session that has since been detached must not repopulate the lists
+  /// that [_bindSession] just emptied (or write into a newer session's view).
+  bool _isCurrent(FfiChatService svc) => identical(_service, svc) && !_disposed;
+
+  /// Mutation-side counterpart of [_isCurrent]: a mutation that awaited the
+  /// old session must neither publish nor touch this identity's metadata,
+  /// so it fails the same way a call made while detached does
+  /// ([_requireService]: `not_connected`). Callers place it after every
+  /// await; the native side effect already happened and is not undone.
+  void _ensureCurrent(FfiChatService svc) {
+    if (_isCurrent(svc)) return;
+    throw const ChatException(
+      'not_connected',
+      'Chat session was detached while the operation was in flight',
+    );
+  }
+
+  /// [ConversationMetaStore.forget] with the session re-checked between
+  /// its writes: [_meta] follows the bound identity, so a detach or rebind
+  /// during the first write must not let the next ones land in another
+  /// identity's keys.
+  Future<void> _forgetMeta(FfiChatService svc, String conversationId) async {
+    await _meta.setPinned(conversationId, false);
+    _ensureCurrent(svc);
+    await _meta.setDraft(conversationId, '');
+    _ensureCurrent(svc);
+    await _meta.unhide(conversationId);
+    _ensureCurrent(svc);
+  }
 
   FfiChatService _requireService() {
     final svc = _service;
@@ -143,18 +180,22 @@ class Tim2ToxChatService implements ChatService {
   /// Serialised: a slow FFI round never overlaps the next.
   Future<void> _tick() async {
     final svc = _service;
-    if (svc == null || _polling || _disposed) return;
-    _polling = true;
+    if (svc == null || _disposed || identical(_ticking, svc)) return;
+    _ticking = svc;
     try {
       await _friendsPart.refresh(svc);
+      if (!_isCurrent(svc)) return;
       await _friendsPart.refreshRequests(svc);
+      if (!_isCurrent(svc)) return;
       await _groupsPart.refresh(svc);
+      if (!_isCurrent(svc)) return;
       await _groupsPart.refreshInvites(svc);
+      if (!_isCurrent(svc)) return;
       _conversationsPart.rebuild(svc);
     } catch (e, st) {
       _logger.error('[Chat] refresh tick failed', e, st);
     } finally {
-      _polling = false;
+      if (identical(_ticking, svc)) _ticking = null;
     }
   }
 
@@ -250,6 +291,7 @@ class Tim2ToxChatService implements ChatService {
     final rows = List<t2t.ChatMessage>.of(svc.getHistory(peer));
     if (rows.length < limit + 1 && await svc.hasArchivedHistory(peer)) {
       final archived = await svc.getArchivedHistory(peer);
+      _ensureCurrent(svc);
       final seen = rows.map((r) => r.msgID).toSet();
       rows.addAll(archived.where((r) => !seen.contains(r.msgID)));
     }
@@ -286,8 +328,10 @@ class Tim2ToxChatService implements ChatService {
     } on StateError catch (e) {
       throw ChatException('send_failed', e.message);
     }
+    _ensureCurrent(svc);
     if (_meta.hidden.contains(conversationId)) {
       await _meta.unhide(conversationId);
+      _ensureCurrent(svc);
     }
     _conversationsPart.rebuild(svc);
     return _mapper.map(row, conversationId: conversationId);
@@ -302,6 +346,7 @@ class Tim2ToxChatService implements ChatService {
     } else {
       await svc.clearC2CHistory(peer);
     }
+    _ensureCurrent(svc);
     _conversationsPart.rebuild(svc);
   }
 

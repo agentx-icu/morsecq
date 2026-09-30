@@ -7,6 +7,7 @@ import 'package:morsecq/ui/account/delete_identity_dialog.dart';
 import 'package:morsecq/ui/account/edit_profile_page.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/account/welcome_page.dart';
+import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
 import 'package:morsecq_chat_api/testing.dart';
 
@@ -114,7 +115,10 @@ void main() {
     await _scrollTo(tester, find.text(en.accountTrainingDefaults));
     await tester.tap(find.text(en.accountTrainingDefaults));
     await settle(tester);
-    expect(find.text(en.accountTrainingDefaultsPlaceholder), findsOneWidget);
+    // The route resolves the identity's shared TrainingController through
+    // TrainingControllerHost and lands on the real settings screen.
+    expect(find.byType(TrainingSettingsScreen), findsOneWidget);
+    expect(find.text(en.learnEffectiveSpeed), findsOneWidget);
   });
 
   testWidgets('delete requires typing DELETE; cancel keeps the identity', (

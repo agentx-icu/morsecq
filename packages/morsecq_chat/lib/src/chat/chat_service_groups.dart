@@ -45,6 +45,7 @@ class _GroupsPart {
   Future<void> refresh(FfiChatService svc) async {
     final ids = svc.knownGroups.toList()..sort();
     final next = <Group>[for (final id in ids) await _describe(svc, id)];
+    if (!_owner._isCurrent(svc)) return;
     if (!listEqualsBy(groups.value, next, _sameGroup)) groups.force(next);
   }
 
@@ -92,9 +93,13 @@ class _GroupsPart {
     if (id == null || id.isEmpty) {
       throw const ChatException('create_group_failed', 'Tox refused the group');
     }
+    _owner._ensureCurrent(svc);
     await _owner._prefs.setGroupName(id, trimmed);
+    _owner._ensureCurrent(svc);
     await _owner._prefs.setGroupType(id, kind.name);
+    _owner._ensureCurrent(svc);
     await refresh(svc);
+    _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
     return groups.value.firstWhere(
       (g) => g.id == id,
@@ -117,6 +122,7 @@ class _GroupsPart {
     } on StateError catch (e) {
       throw ChatException('join_failed', e.message);
     }
+    _owner._ensureCurrent(svc);
     await refresh(svc);
   }
 
@@ -139,12 +145,18 @@ class _GroupsPart {
 
   Future<void> flushQueuedInvites(FfiChatService svc, String friendKey) async {
     for (final groupId in _owner._meta.queuedGroupsFor(friendKey)) {
+      // Re-checked every iteration: after a detach the loop must neither
+      // keep inviting through the native bindings nor edit the queue, which
+      // by then may belong to a newly selected identity.
+      if (!_owner._isCurrent(svc)) return;
       if (!svc.knownGroups.contains(groupId)) {
         await _owner._meta.dequeueInvite(groupId, friendKey);
         continue;
       }
       try {
-        if (await GroupBindings.invite(groupId, friendKey)) {
+        final invited = await GroupBindings.invite(groupId, friendKey);
+        if (!_owner._isCurrent(svc)) return;
+        if (invited) {
           await _owner._meta.dequeueInvite(groupId, friendKey);
         }
       } catch (e, st) {
@@ -159,6 +171,7 @@ class _GroupsPart {
     } on StateError catch (e) {
       throw ChatException('accept_failed', e.message);
     }
+    _owner._ensureCurrent(svc);
     await refreshInvites(svc);
     await refresh(svc);
   }
@@ -177,6 +190,7 @@ class _GroupsPart {
       selfKey: _owner._selfKey,
       nameOf: _owner._friendsPart.nameOf,
     );
+    _owner._ensureCurrent(svc);
     _memberCounts[groupId] = list.length;
     return list;
   }
@@ -188,9 +202,11 @@ class _GroupsPart {
     } catch (e) {
       throw ChatException('leave_failed', 'Could not leave the group: $e');
     }
+    _owner._ensureCurrent(svc);
     _memberCounts.remove(groupId);
-    await _owner._meta.forget(ConversationIds.group(groupId));
+    await _owner._forgetMeta(svc, ConversationIds.group(groupId));
     await refresh(svc);
+    _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
   }
 

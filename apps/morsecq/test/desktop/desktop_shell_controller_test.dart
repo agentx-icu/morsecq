@@ -225,7 +225,11 @@ void main() {
       await _drain();
 
       expect(h.window.destroyed, isTrue);
-      expect(h.window.visible, isTrue, reason: 'never hidden without a tray');
+      expect(
+        h.window.calls,
+        isNot(contains('hide')),
+        reason: 'never hidden without a tray',
+      );
     });
 
     test('persisted closeToTray=false overrides the config default', () async {

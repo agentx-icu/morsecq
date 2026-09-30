@@ -54,11 +54,18 @@ class ConnectionBannerPolicy {
     });
   }
 
+  /// Releases the timer and the listener SYNCHRONOUSLY, before the first
+  /// `await`. The owning scope's `dispose()` cannot wait for us, and the
+  /// future a cancelled broadcast subscription returns may complete in the
+  /// root zone (under FakeAsync it never runs before the test ends), so
+  /// anything after the `await` would leave the threshold timer alive past
+  /// [_visible]'s disposal.
   Future<void> dispose() async {
-    await _sub?.cancel();
-    _sub = null;
     _timer?.cancel();
     _timer = null;
+    final cancelled = _sub?.cancel();
+    _sub = null;
     _visible.dispose();
+    await cancelled;
   }
 }

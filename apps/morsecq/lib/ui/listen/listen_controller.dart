@@ -61,6 +61,7 @@ final class ListenController extends ChangeNotifier {
   late AudioMorseDecoder _decoder;
   StreamSubscription<DecodeEvent>? _eventSub;
   StreamSubscription<Uint8List>? _pcmSub;
+  Future<void>? _stopping;
   ListenStatus _status = ListenStatus.idle;
   String? _errorMessage;
   String _history = '';
@@ -132,10 +133,21 @@ final class ListenController extends ChangeNotifier {
   }
 
   /// Stops capture and commits a half-received character.
-  Future<void> stop({bool fromBackground = false}) async {
+  ///
+  /// Re-entrant: the framework delivers `hidden` and `paused` back to back
+  /// (and a user can double-tap Stop), so a call made while a stop is in
+  /// flight joins it instead of asking the platform to stop twice.
+  Future<void> stop({bool fromBackground = false}) =>
+      _stopping ??= _stop(fromBackground).whenComplete(() => _stopping = null);
+
+  Future<void> _stop(bool fromBackground) async {
     final sub = _pcmSub;
     _pcmSub = null;
-    await sub?.cancel();
+    // Not awaited: cancelling is synchronous as far as delivery goes (no
+    // chunk arrives after this line), and the future it returns is Dart's
+    // root-zone `_nullFuture`, which never resumes inside a FakeAsync widget
+    // test. Waiting on it would only delay releasing the microphone.
+    unawaited(sub?.cancel());
     try {
       await _source.stop();
     } catch (_) {

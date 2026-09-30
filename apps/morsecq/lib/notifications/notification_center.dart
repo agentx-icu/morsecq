@@ -152,16 +152,28 @@ class NotificationCenter {
     return _permissionRequest ??= _requestPermission();
   }
 
+  /// Every release happens SYNCHRONOUSLY before the first `await`: the
+  /// owning scope's `dispose()` cannot wait, and a cancelled broadcast
+  /// subscription may hand back a root-zone completed future that FakeAsync
+  /// never resumes, which would leave the later subscriptions and the
+  /// controllers open. The futures are only awaited afterwards.
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
     if (_started) _isForeground.removeListener(_onForegroundChanged);
-    await _messageSub?.cancel();
-    await _friendRequestSub?.cancel();
-    await _inviteSub?.cancel();
-    await _conversationSub?.cancel();
-    await _openRequests.close();
-    await _taps.close();
+    final pending = <Future<void>>[
+      ?_messageSub?.cancel(),
+      ?_friendRequestSub?.cancel(),
+      ?_inviteSub?.cancel(),
+      ?_conversationSub?.cancel(),
+      _openRequests.close(),
+      _taps.close(),
+    ];
+    _messageSub = null;
+    _friendRequestSub = null;
+    _inviteSub = null;
+    _conversationSub = null;
+    await Future.wait(pending);
   }
 
   // ---- Inbound events --------------------------------------------------------

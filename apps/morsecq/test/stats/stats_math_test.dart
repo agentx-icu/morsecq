@@ -1,7 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:morsecq/ui/stats/stats_math.dart';
 
 void main() {
+  // In the app flutter_localizations loads the date symbols for the active
+  // locale; a bare `dart test` has only intl's en_US fallback, and asking
+  // DateFormat for 'en' throws LocaleDataException without this.
+  setUpAll(() => initializeDateFormatting('en'));
+
   group('bucketFor', () {
     test('zero attempts is none regardless of accuracy', () {
       expect(bucketFor(0, attempts: 0), AccuracyBucket.none);

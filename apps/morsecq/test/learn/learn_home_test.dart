@@ -205,14 +205,16 @@ void main() {
         tester.widget<LearnHome>(find.byType(LearnHome)).controller,
         same(t.controller),
       );
-      // The scope owns the controller it was handed and disposes it with
-      // the page; drop the tree first so the tear-down order is explicit.
+      // A controller obtained from a factory stays owned by whoever backs
+      // the factory (the app-wide TrainingControllerHost shares one instance
+      // with the settings route), so dropping the page must NOT dispose it.
       await tester.pumpWidget(const SizedBox());
       expect(
         () => t.controller.addListener(() {}),
-        throwsFlutterError,
-        reason: 'disposed with the scope',
+        returnsNormally,
+        reason: 'factory-provided controllers are not disposed by the scope',
       );
+      t.controller.dispose();
     });
   });
 

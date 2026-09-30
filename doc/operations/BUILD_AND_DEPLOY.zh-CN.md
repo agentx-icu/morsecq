@@ -57,12 +57,16 @@ libsodium），以及 GitHub Actions 中对应的流水线。UI 与纯 Dart 的�
 通用：**Flutter 3.41.9**（与 `.github/workflows/analyze.yml` 一致；原生构建也需要它——
 `tim2tox/ffi/CMakeLists.txt` 会编译 Flutter 自带 Dart SDK 里的 `dart_api_dl.c`，
 缺了它所有原生→Dart 回调都是死的）、Git（子模块）、CMake ≥ 3.16、网络（首次会下载
-libsodium tarball ~1.9 MB 并校验 SHA-256）。
+libsodium tarball ~1.9 MB 并校验 SHA-256）。**只构建原生库**时，一份与 Flutter 自带
+版本相同的独立 Dart SDK（3.41.9 对应 3.11.5）就够了：PATH 上没有 `flutter` 但有 `dart`
+（或设置 `MORSECQ_DART_SDK_DIR`）时，`build_tim2tox.sh` 会把它的 `include/` 摆成 tim2tox
+CMake 探测的 `<FLUTTER_ROOT>/bin/cache/dart-sdk/include` 布局（`build/native/.dart-sdk-shim`）。
+CI 的 Linux aarch64 / Windows arm64 job 就是这样跑的——Flutter 不发布这两个平台的 arm64 归档。
 
 | 平台 | 需要 |
 |---|---|
 | **Linux**（x86_64 / aarch64，本机架构构建） | `build-essential cmake ninja-build pkg-config`；打 Flutter 包还需 `libgtk-3-dev`、`patchelf`（推荐）。**不需要** `libsodium-dev`（默认静态编译；`--system-libsodium` 时需要）。 |
-| **macOS**（x86_64 / arm64，任一 Mac 可交叉构建另一架构） | Xcode Command Line Tools、`cmake`（`brew install cmake ninja pkg-config`）、CocoaPods。**不需要** Homebrew libsodium。 |
+| **macOS**（x86_64 / arm64，任一 Mac 可交叉构建另一架构） | Xcode Command Line Tools、`cmake`（`brew install cmake ninja pkg-config`）、CocoaPods。**不需要** Homebrew libsodium。脚本用 `xcrun --sdk macosx --show-sdk-path` 显式钉住 SDK（`-isysroot` / `SDKROOT` / `CMAKE_OSX_SYSROOT`）：`xcrun -f clang` 给出的是 toolchain 里的原始 clang，它不会自己推断 SDK，缺了这一步 libsodium 的 configure 会报 "C compiler cannot create executables"（GitHub `macos-15` 首轮就是这样挂的）。 |
 | **Windows**（x64 / arm64） | Visual Studio 2022 或 18 的 C++ 工具集、CMake、Git Bash、`vcpkg`：`vcpkg install libsodium:<triplet> pthreads:<triplet> pkgconf:<triplet>`，设置 `VCPKG_ROOT`；在 vcvars 环境里从 Git Bash 运行脚本。 |
 | **Android** | Android SDK + **NDK**（`ANDROID_NDK_HOME` / `ANDROID_NDK_ROOT` / `$ANDROID_HOME/ndk/<ver>`），Java 17。 |
 | **iOS** | Xcode（iphoneos + iphonesimulator SDK）、CocoaPods。分发 IPA 另需证书与 provisioning profile（不在本流水线内）。 |
@@ -152,16 +156,18 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
 | target | runner | 备注 |
 |---|---|---|
 | `linux-x86_64` | ubuntu-24.04 | |
-| `linux-aarch64` | ubuntu-24.04-arm | **experimental**（`continue-on-error`），同 toxee |
+| `linux-aarch64` | ubuntu-24.04-arm | **experimental**（`continue-on-error`），同 toxee；不装 Flutter（无 arm64 归档），用 `dart-lang/setup-dart` 装独立 Dart SDK `DART_VERSION` |
 | `windows-x64` | windows-2022 | vcpkg libsodium/pthreads/pkgconf；`ilammy/msvc-dev-cmd` |
-| `windows-arm64` | windows-11-arm | **experimental** |
+| `windows-arm64` | windows-11-arm | **experimental**；同上，只装独立 Dart SDK |
 | `macos-x86_64` | macos-15-intel | |
 | `macos-arm64` | macos-15 | |
 | `android` | ubuntu-24.04 | arm64-v8a + armeabi-v7a + x86_64 |
 | `ios` | macos-15 | 真机 + 模拟器切片 + xcframework |
 
-每个 job：checkout（含子模块）→ Flutter 3.41.9（`subosito/flutter-action@v2`，缓存）→
-按 `tim2tox` 子模块 SHA + 脚本哈希缓存整个 `build/native/<target>/`（命中即跳过编译；libsodium
+每个 job：checkout（含子模块）→ Dart 头文件来源（x64 / macOS / Android / iOS 行装 Flutter 3.41.9，
+`subosito/flutter-action@v2` 带缓存；`linux-aarch64` / `windows-arm64` 两行改装独立 Dart SDK
+`DART_VERSION`，`dart-lang/setup-dart@v1`）→ 按 `tim2tox` 子模块 SHA + Flutter/Dart 版本 +
+脚本哈希缓存整个 `build/native/<target>/`（命中即跳过编译；libsodium
 前缀另行缓存）→ 构建（`--no-stage-app`）→ `assert_no_test_hooks.sh` 校验**上传的字节**→
 上传 artifact `tim2tox-ffi-<target>`。
 
@@ -212,7 +218,11 @@ Android SDK、Xcode、MSVC）里完成了如下真实验证：
   `--dart-define=MORSECQ_FAKE_BACKEND=true`。
 - **Windows 启动时 `error 126`**：`libsodium.dll` / `pthreadVC3.dll` 不在 exe 旁。确认
   `build/native/windows-<arch>/` 里有它们（脚本从 `$VCPKG_ROOT/installed/<triplet>/bin` 捕获）。
-- **`dart_api_dl.h not found`**：`flutter --version` 一次让 Flutter 下载 Dart SDK，或设置 `FLUTTER_ROOT`。
+- **`dart_api_dl.h not found`**：`flutter --version` 一次让 Flutter 下载 Dart SDK，或设置 `FLUTTER_ROOT`；
+  没有 Flutter 的机器把同版本独立 Dart SDK 的 `bin` 放上 PATH（或设 `MORSECQ_DART_SDK_DIR`）即可。
+- **libsodium `configure: error: C compiler cannot create executables`（macOS）**：失败时脚本会把
+  `config.log` 里真正的编译错误和 `CC/CFLAGS/LDFLAGS` 打到日志；常见原因是 SDK 没被选中
+  （`xcrun --sdk macosx --show-sdk-path` 为空 → `xcode-select --install` 或 `sudo xcode-select -s /Applications/Xcode.app`）。
 - **`FORBIDDEN test hook ... found`**：该二进制以 `TIM2TOX_ENABLE_TEST_HOOKS=ON` 编出（Tim2Tox 自带的
   `build_ffi.sh` 默认如此）。删掉产物，用本仓库脚本重建。
 - **`exports tim2tox_ffi_av_backend_toxav`**：混入了 toxee 的 ToxAV 版库。删除 `build/native/<target>` 重建。

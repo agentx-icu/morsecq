@@ -112,8 +112,10 @@ AxisScale niceAxis(
     hi += step;
   }
   final step = niceStep(hi - lo, targetTicks: targetTicks);
-  var min = (lo / step).floor() * step;
-  var max = (hi / step).ceil() * step;
+  // Snap the bounds exactly like the ticks: `floor * step` drifts in binary
+  // (3 * 0.2 = 0.6000000000000001) and the painter compares them to ticks.
+  var min = _snap((lo / step).floor() * step, step);
+  var max = _snap((hi / step).ceil() * step, step);
   if (hardMin != null) {
     min = math.max(min, hardMin);
   }
@@ -123,9 +125,9 @@ AxisScale niceAxis(
   if (max - min < 1e-9) {
     // Both clamps collapsed the range (e.g. every value is exactly 1.0).
     if (hardMin != null && min - step >= hardMin - 1e-9) {
-      min -= step;
+      min = _snap(min - step, step);
     } else {
-      max += step;
+      max = _snap(max + step, step);
     }
   }
   final ticks = <double>[];

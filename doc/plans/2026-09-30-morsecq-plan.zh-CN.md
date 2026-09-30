@@ -101,7 +101,7 @@ v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（�
 ### 3.3 目标架构（方案 B 变体）
 
 ```
-┌──────────────────────── apps/morsee (Flutter) ────────────────────────┐
+┌──────────────────────── apps/morsecq (Flutter) ───────────────────────┐
 │  ui/learn        ui/chat (c2c + group)       ui/account   ui/settings  │
 │  ─────────────── 状态层：provider（与 toxee 一致）─────────────────────  │
 ├──────────────┬──────────────────┬──────────────────┬──────────────────┤
@@ -246,7 +246,7 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 
 ## 10. 下一步（拍板后立刻执行）
 
-1. 建仓 `agentx-icu/morsecq`，初始化 `apps/morsee`（两个入口）+ 四个包骨架 + `third_party/tim2tox` 子模块（pin 与 toxee 一致）。
+1. 建仓 `agentx-icu/morsecq`，初始化 `apps/morsecq`（两个入口）+ 四个包骨架 + `third_party/tim2tox` 子模块（pin 与 toxee 一致）。
 2. 搬运 toxee 的 `tool/bootstrap_deps.dart`、`pubspec_overrides` pin、`tool/check_complexity.dart`、`tool/ci/build_tim2tox.sh`（默认 `--no-toxav`）、`analysis_options.yaml`、`tool/install_git_hooks.sh`。
 3. 落地 `morse_core` 编解码与黄金测试（不依赖任何 Tim2Tox 结论，可与 spike 并行）。
 4. 跑 M0b 四项 spike，把结论写回本文 §3.2，并决定 B 变体或方案 A。
@@ -290,3 +290,4 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 - **2026-09-30 v0.3.3** 波次 2/3 全部集成完毕并推送 `master`。新增 `TrainingControllerHost`：每个身份只有一个 `TrainingController`，Learn 页与 Me 页的训练设置路由共用同一实例（避免两处写同一 `progress.json`）；`LearnScope` 只 dispose 自己创建的控制器。参考手册的 SoLoud 播放器改为首次播放时懒创建（外壳 `IndexedStack` 里构建时不再触碰音频引擎）。CI 新增 `strings_to_arb --check`。全仓 analyzer、复杂度、import guard、ARB 同步检查均通过；按用户指示本轮未执行测试与构建（测试文件已落盘：core 71、trainer 91、io 55、chat 33、chat_api 36、app 约 300 个用例待运行）。
 - **2026-09-30 v0.3.4** 仅文档：按与 toxee 共用的双语惯例（`X.md` + `X.zh-CN.md`）新增英文译本 `2026-09-30-morsecq-plan.md`（链接默认指向的文件），两文件第一行加语言链接。本文为原稿，两版不一致时以中文为准。规划内容本身无改动。
 - **2026-09-30 v0.3.5** UI 多语言按 toxee 方案完成：gen-l10n + 每语言一个 ARB（`S` 类）、系统语言解析带脚本/地区判断且以 ARB 集合为数据源、语言目录表驱动选择列表、无 `BuildContext` 代码用 `currentS()`/`StringsResolver`；全部界面（含通知、托盘）已迁到 `S`，`*_strings.dart` 常量文件全部删除；参考手册内容（Q 简语、CW 缩写、口诀）以按语言字段的数据表承载。文档双语化（英文默认 + zh-CN），新增 `doc/i18n/ADDING_A_LANGUAGE`。后续新增语言 = 新增 ARB（+ 可选目录条目、plist 声明）。
+- **2026-09-30 v0.3.6** 首次全量测试（第二个会话，编排者 + 按目录归属拆分的 7 个 agent）。基线：7 个包/应用共 739 个测试，32 个红（`morsecq_chat` 1、应用 31）；修完全绿，门禁不变。测试暴露并在根因处修掉的产品 bug：① `Tim2ToxChatService` 的过期 session 竞态——解绑后仍在飞行的刷新把 `_bindSession(null)` 刚清空的列表重新填回（friends/groups 各部分与 tick 在每个 await 之后加 `_isCurrent` 守卫）；② 围绕 `await StreamSubscription.cancel()` 的销毁顺序：它返回的根 zone future 在 `flutter_test` 的 FakeAsync 里永不恢复，其后的代码（`ConnectionBannerPolicy` 取消定时器、`TrainingControllerHost` 释放控制器、`ListenController` 释放麦克风）在 widget 测试中根本不执行、生产环境也会被推迟——现在定时器与同步销毁都放在第一个 await 之前，`AppServices.dispose()` 并行启动所有子对象的销毁；③ `ListenController.stop()` 可重入（框架连续投递 `hidden`、`paused`，此前会让麦克风源停两次）；④ `niceAxis` 的边界与刻度用同一种吸附（二进制漂移 `3 × 0.2`）；⑤ `StatsScreen._reload` 的箭头式 `setState` 返回 Future 触发调试断言（手机下拉刷新同样会撞）；⑥ `strings_to_arb.findKeyCollision` 对同一 key 在两个文件里重复声明不报错。测试侧修正：finder 限定到图表 painter / `ReferenceEntryTile`，生命周期按 `inactive → hidden → paused` 走，`learn_home` 改为编码 v0.3.3 的共享控制器规则，`me_page` 断言真实的训练设置页，`strings_to_arb_test` 解析 SDK 的 `dart` 而非 `Platform.resolvedExecutable`（`flutter test` 下是 `flutter_tester`，即 4 × 30 s 超时的来源），纯 Dart 测试里给 `DateFormat` 加 `initializeDateFormatting`。CI：GitHub Actions 首轮全红——`analyze.yml` 只红在 Tests 步骤（同一批失败）；`native.yml` 8 个目标过 4 个，macOS 死在 libsodium configure，原因是 `build_macos()` 导出了裸的 `xcrun -f clang` 却没给 `SDKROOT`/`-isysroot`（已修，并加了 configure 失败诊断），linux-aarch64 / windows-arm64 失败是 Flutter 3.41.9 没有这两个系统的 arm64 包（这两行改为经 `setup-dart` 只装 Dart 3.11.5，脚本把其头文件摆成 `FLUTTER_ROOT` 形状的 shim）。首次在真实 Mac 上构建出 macOS arm64 `libtim2tox_ffi.dylib`（4.1 MB，静态 libsodium，只链接 libc++/libSystem）。§3.3 架构图与 §10 改为 `apps/morsecq`。codex 审核（`codex-mac`，gpt-6-sol xhigh）覆盖全部 diff：第一轮 NEEDS-CHANGES（测试修复部分 5 major + 1 minor，native CI 部分 1 major + 4 minor），全部采纳——bool `_polling` 改为按 session 的进行中标记（此前重绑后的首次刷新会被饿死）、聊天变更操作每个 await 之后加 `_ensureCurrent`、排队邀请冲刷逐次校验 session、竞态回归测试、`NotificationCenter`/`AppServices`/fake backend 在第一个 await 之前释放全部资源、`TrainingControllerHost` 加代际令牌（dispose 或切换身份后才完成的加载会销毁控制器而非缓存，+5 测试）、native 缓存 key 带上 Flutter/Dart 版本、`MORSECQ_DART_SDK_DIR` 覆盖优先、同时校验 `.h`+`.c` 头文件、Apple sysroot 空白检查。第二轮又发现 `forget()` 的三次写入之间仍无守卫、`setPinned`/`setDraft` 在 await 之后重新发布（已修：`_forgetMeta` 在每次写入之间校验、捕获发起时的 session；回归测试把 pinned 写入停在半路），以及一条靠定时的竞态测试（改为等待 hold 信号）。最终 750 个测试全绿；第三轮 APPROVE（`morsecq_chat` 中不再有 await 之后未经守卫的元数据写入或发布）。

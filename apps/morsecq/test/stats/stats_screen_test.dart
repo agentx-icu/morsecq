@@ -144,11 +144,12 @@ void main() {
         load: () async => buildProgress(days: 3),
       );
       expect(find.text(en.statsTrendHint), findsOneWidget);
-      final chart = find.descendant(
-        of: find.byType(AccuracyTrendChart),
-        matching: find.byType(CustomPaint),
+      // Not `find.byType(CustomPaint).first`: the enclosing Card's ink
+      // layer is a CustomPaint too and sits outside the chart's tap target.
+      final chart = find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.painter is TrendPainter,
       );
-      final rect = tester.getRect(chart.first);
+      final rect = tester.getRect(chart);
       // The newest session sits at the right edge of the plot.
       await tester.tapAt(
         Offset(rect.right - TrendGeometry.kRightInset, rect.center.dy),
@@ -227,11 +228,10 @@ void main() {
         load: () async => buildProgress(days: 3),
       );
       expect(find.text(en.statsHeatmapEmpty), findsNothing);
-      final paint = find.descendant(
-        of: find.byType(ConfusionHeatmap),
-        matching: find.byType(CustomPaint),
+      final paint = find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.painter is HeatmapPainter,
       );
-      final rect = tester.getRect(paint.first);
+      final rect = tester.getRect(paint);
       const cell = ConfusionHeatmap.kCell;
       await tester.tapAt(rect.topLeft + const Offset(cell * 1.5, cell * 1.5));
       await tester.pumpAndSettle();

@@ -8,7 +8,7 @@
 
 - **morsecq** 是一款跨平台（Android / iOS / macOS / Windows / Linux）Flutter 应用：学莫斯电码（Koch 法训练）+ 用莫斯电码聊天（单聊、群聊），聊天走 **Tox P2P** 网络，无服务器、无手机号，首启创建一个 Tox 身份，训练进度也按身份保存。
 - 通信栈复用姊妹项目 **toxee**（`agentx-icu/toxee`）打磨过的 **Tim2Tox**（`third_party/tim2tox` 子模块，GPL-3.0）。morsecq 只用 Tim2Tox 的 `FfiChatService`，不装腾讯 UIKit 界面；消息在线路上是纯文本，因此与 toxee 用户互通。
-- 全部功能代码已写完并推送，**analyzer / 复杂度 / 分层 / ARB 门禁全绿；但自第一波之后没有再运行过测试，也没有做过真机构建**（用户当时要求「只编码、不构建不测试」）。接手后第一件事就是把测试跑起来。
+- 全部功能代码已写完并推送，**analyzer / 复杂度 / 分层 / ARB 门禁全绿。2026-09-30（第二个会话）：首次跑了全量测试——7 个包/应用共 750 个测试，修掉 32 个失败（9 个产品 bug，其余是过期的测试；见方案变更日志 v0.3.6）后全绿。仍未做真机构建**；macOS arm64 原生库已在真实 Mac 上构建成功，其它平台只在 CI runner 上构建过。
 
 ## 2. 先读什么
 
@@ -93,23 +93,23 @@ doc/                       文档（英文默认 + zh-CN）
 
 | 区域 | 状态 | 备注 |
 |---|---|---|
-| 引擎包 core / trainer / io / dsp | 代码完成；core 71、trainer 91、io 55 个测试在第一波跑过并通过；dsp 测试未运行 | dsp 的信噪比阈值可能需要微调 |
+| 引擎包 core / trainer / io / dsp | 代码完成；core 71、trainer 91、io 55、dsp 49 个测试通过 | dsp 阈值首跑即通过 |
 | 聊天契约与 Tim2Tox 实现 | 代码完成；33 个测试通过过 + 1 个 needs-native | 见 §5 第 1–5 条 |
-| 应用：身份/启动门/Me、聊天/好友/群组、训练/统计、参考手册/翻译器、收听、通知、桌面壳 | 代码完成，全部接线，analyzer 零问题 | 应用测试自迁移到 `S` 后**未运行** |
+| 应用：身份/启动门/Me、聊天/好友/群组、训练/统计、参考手册/翻译器、收听、通知、桌面壳 | 代码完成，全部接线，analyzer 零问题；404 个应用测试通过 | |
 | 多语言 en + zh | 完成；531 键零 TODO；全部界面走 `S` | 新增语言只需新 ARB |
 | 文档 | 英文默认 + zh-CN 成对 | |
-| CI | `analyze.yml`、`native.yml` 已写 | **从未在 GitHub Actions 上跑过**（第一次推送后应去看结果） |
-| 原生库 | 仅 Linux x86_64 在容器内真实构建成功 | 其它四端未验证 |
+| CI | `analyze.yml`、`native.yml` 已在 GitHub Actions 上跑过 | analyze.yml 只有 Tests 步骤红（已在本地修复）；native.yml 首轮 8 个目标过 4 个，macOS sysroot 与 arm64 仅装 Dart 的修复已落本地——**下次推送后务必看结果** |
+| 原生库 | Linux x86_64（容器）与 macOS arm64（真实 Mac，`build/native/macos-arm64/libtim2tox_ffi.dylib`）真实构建成功；Android / iOS / Windows x64 在 CI runner 上构建过 | Windows arm64 / Linux aarch64 只验证到工具链安装 |
 
 ## 7. 接手后的待办（按优先级）
 
-1. **跑全量测试并修红。** `flutter test --exclude-tags=needs-native` 逐包；预计问题集中在：dsp 阈值、迁移到 `S` 后的 widget 测试、`pumpAndSettle` 与真实文件 IO（`test/account/test_app.dart` 里有 `settle()` 变通）。
-2. **看 GitHub Actions 首轮结果**（analyze.yml 需要 bootstrap 能在 runner 上下载腾讯 SDK；native.yml 八个目标）。
+1. ~~跑全量测试并修红。~~ 2026-09-30（第二个会话）已完成；此后每次推送前逐包跑 `flutter test --exclude-tags=needs-native`。
+2. **看下次推送后的 GitHub Actions 结果**（analyze.yml 应转绿；native.yml 的 macOS 与两个 arm64 目标带着未经 CI 验证的修复，其后续步骤仍是 `continue-on-error`）。
 3. **真机验证清单**：侧音延迟 < 30 ms 与爆音、iOS 静音开关下播放（可能需要 `audio_session` 设类别）、Android 触觉精度、托盘图标三平台、通知点击路由、相机扫码、麦克风解码、备份文件保存/分享、身份重装恢复后训练进度完整。
 4. **许可证决策**（GPL-3.0 与 App Store）。
 5. 上游 D 线（Tim2Tox）：消息附注上线路、Dart 侧自定义包 API、lossy 包 API、`failed` 状态区分。v2 的键控实录与实时键控依赖它。
-6. 小修：`packages/morse_trainer` 里 `SendIssue.describe()` 仍是英文（UI 已不用）；Android 通知渠道语言；`Podfile.lock` 需在 macOS 上 `pod install` 生成；应用图标与商店素材；中文电码（P4）。
-7. codex 审核：用户在上一会话明确不做；工作约定里它仍是「每个变更都要」的默认要求，规划变更记录里记了欠账。
+6. 小修：剩余的串行 `await x.cancel(); await y.dispose();` 销毁链（`packages/morsecq_chat` 的 identity/chat/engine/backend dispose、`fake_identity_service.dart`、`learn_playback.dart`、`reference_player.dart`）生产上只是分阶段释放，但在 widget 测试的 FakeAsync 下会卡住——顺手改成「先同步释放、后 await」；`packages/morse_trainer` 里 `SendIssue.describe()` 仍是英文（UI 已不用）；Android 通知渠道语言；`Podfile.lock` 需在 macOS 上 `pod install` 生成；应用图标与商店素材；中文电码（P4）。
+7. codex 审核：第一个会话明确跳过；第二个会话对自己的 diff 跑了 `codex-mac`（见方案变更日志 v0.3.6）。此后每个变更都应过审。
 
 ## 8. 这些代码是怎么写出来的（如果你要继续用多代理）
 
@@ -126,4 +126,3 @@ doc/                       文档（英文默认 + zh-CN）
 - Linux 托盘需要 `libayatana-appindicator3-dev`，AppIndicator 无左键与 tooltip。
 - Windows 通知的 `cancel()` 与冷启动载荷只在 MSIX 打包时可用。
 - Tim2Tox `auto_tests` 依赖 `TIMManager.initSDK`，不能直接复用；`morsecq_chat/test/native_smoke_test.dart` 是自建的 headless 冒烟，需要原生库。
-- 规划文档 §3.3 架构图与 §10 仍保留历史目录名 `apps/morsee`，实际为 `apps/morsecq`。

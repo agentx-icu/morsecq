@@ -101,16 +101,25 @@ final class AppServices {
   static int _totalUnread(List<Conversation> list) =>
       list.fold<int>(0, (sum, c) => sum + c.unreadCount);
 
+  /// Tears everything down. Every child's `dispose()` is STARTED before the
+  /// first `await`: `AppScope.dispose()` (a synchronous Flutter `dispose`)
+  /// cannot wait for us, so the synchronous prefix of each child - stream
+  /// cancellation, timer cancellation - must run right now. A serial
+  /// `await a(); await b();` would leave `b`'s timers ticking for as many
+  /// microtask hops as `a` takes, and the widget tree would already be gone
+  /// (`flutter test` flags exactly that as a pending timer).
   Future<void> dispose() async {
-    // Synchronously, before any await: the scope disposes its
-    // LocaleController right after calling us and the resolver must have
-    // let go of it by then.
+    // The scope disposes its LocaleController right after calling us and
+    // the resolver must have let go of it by then.
     strings.removeListener(_onStringsChanged);
     strings.dispose();
-    await _unreadSub?.cancel();
-    await notifications?.dispose();
-    await banner.dispose();
-    await lifecycle.dispose();
+    final pending = <Future<void>>[
+      ?_unreadSub?.cancel(),
+      ?notifications?.dispose(),
+      banner.dispose(),
+      lifecycle.dispose(),
+    ];
     notificationPrefs.dispose();
+    await Future.wait(pending);
   }
 }

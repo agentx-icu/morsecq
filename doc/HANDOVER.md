@@ -8,7 +8,7 @@
 
 - **morsecq** is a cross-platform (Android / iOS / macOS / Windows / Linux) Flutter app: learn Morse code (Koch-method training) and chat in Morse (C2C and groups) over the **Tox P2P** network — no server, no phone number. The first launch creates a Tox identity; training progress is stored per identity too.
 - The chat stack reuses **Tim2Tox** (`third_party/tim2tox` submodule, GPL-3.0), hardened by the sibling project **toxee** (`agentx-icu/toxee`). morsecq uses only Tim2Tox's `FfiChatService`, not the Tencent UIKit widgets; messages are plain text on the wire, so they interoperate with toxee users.
-- All feature code is written and pushed and **every gate is green (analyzer, complexity, layering, ARB); but no test run has happened since wave 1 and no device build has been done** (the user asked for "code only, no builds or tests"). Running the tests is job one.
+- All feature code is written and pushed and **every gate is green (analyzer, complexity, layering, ARB). 2026-09-30 (second session): the full test suite was run for the first time — 750 tests across the 7 packages/app, all green after fixing 32 failures (9 product bugs, the rest stale tests; see plan change log v0.3.6). Still no device build**; the macOS arm64 native library was built on a real Mac, the other platforms only on CI runners.
 
 ## 2. Read this first
 
@@ -93,23 +93,23 @@ All recorded in the plan's change log; ordered by "you will break something if y
 
 | Area | State | Notes |
 |---|---|---|
-| Engine packages core / trainer / io / dsp | Code complete; core 71, trainer 91, io 55 tests passed in wave 1; dsp tests never run | dsp SNR thresholds may need tuning |
+| Engine packages core / trainer / io / dsp | Code complete; core 71, trainer 91, io 55, dsp 49 tests pass | dsp thresholds held on the first run |
 | Chat contract and Tim2Tox implementation | Code complete; 33 tests passed once + 1 needs-native | see §5 items 1–5 |
-| App: identity/startup/Me, chat/contacts/groups, learn/stats, reference/translator, listen, notifications, desktop shell | Code complete, fully wired, analyzer clean | app tests **not run** since the migration to `S` |
+| App: identity/startup/Me, chat/contacts/groups, learn/stats, reference/translator, listen, notifications, desktop shell | Code complete, fully wired, analyzer clean; 404 app tests pass | |
 | Localisation en + zh | Done; 531 keys, zero TODO; every surface reads `S` | a new language = a new ARB |
 | Documentation | English default + zh-CN pairs | |
-| CI | `analyze.yml`, `native.yml` written | **never executed on GitHub Actions** (check the first run) |
-| Native library | Only Linux x86_64 built for real, inside the container | other four platforms unverified |
+| CI | `analyze.yml`, `native.yml` executed on GitHub Actions | analyze.yml was red only on the Tests step (fixed locally); native.yml: 4/8 targets green on the first run, macOS sysroot and arm64 Dart-only setup fixed locally — **check the run after the next push** |
+| Native library | Linux x86_64 (container) and macOS arm64 (real Mac, `build/native/macos-arm64/libtim2tox_ffi.dylib`) built for real; Android / iOS / Windows x64 built on CI runners | Windows arm64 / Linux aarch64 unverified past the toolchain setup |
 
 ## 7. Backlog for the next owner (priority order)
 
-1. **Run the whole test suite and fix red.** `flutter test --exclude-tags=needs-native` per package; expect issues in dsp thresholds, widget tests after the `S` migration, and `pumpAndSettle` vs real file IO (see the `settle()` workaround in `test/account/test_app.dart`).
-2. **Watch the first GitHub Actions runs** (analyze.yml needs the bootstrap to download the Tencent SDK on the runner; native.yml has eight targets).
+1. ~~Run the whole test suite and fix red.~~ Done 2026-09-30 (second session); keep running `flutter test --exclude-tags=needs-native` per package before every push.
+2. **Watch the GitHub Actions runs after the next push** (analyze.yml should go green; native.yml: macOS and the two arm64 targets carry untested fixes, their later steps stay `continue-on-error`).
 3. **Device checklist**: sidetone latency < 30 ms and click-free, iOS playback with the silent switch on (may need `audio_session`), Android haptic precision, tray icons on three desktops, notification tap routing, QR scanning, microphone decoding, backup save/share, training progress intact after restore.
 4. **License decision** (GPL-3.0 vs App Store).
 5. Upstream D line (Tim2Tox): message annotation on the wire, Dart-side custom packet API, lossy packet API, `failed` status. v2 keyed-timing transport and live keying depend on it.
-6. Small items: `SendIssue.describe()` in `packages/morse_trainer` is still English (UI no longer uses it); Android channel language; `Podfile.lock` via `pod install` on macOS; app icons and store assets; Chinese telegraph code (P4).
-7. Codex review: the user waived it for the previous session; the working agreement still expects it on every change and the plan change log records the debt.
+6. Small items: the remaining serial `await x.cancel(); await y.dispose();` teardown chains (`packages/morsecq_chat` identity/chat/engine/backend dispose, `fake_identity_service.dart`, `learn_playback.dart`, `reference_player.dart`) only stage the release in production but stall under widget-test FakeAsync — convert to "synchronous release first, await afterwards" when touched; `SendIssue.describe()` in `packages/morse_trainer` is still English (UI no longer uses it); Android channel language; `Podfile.lock` via `pod install` on macOS; app icons and store assets; Chinese telegraph code (P4).
+7. Codex review: waived in the first session; the second session ran `codex-mac` on its own diff (see plan change log v0.3.6). Every later change is expected to be reviewed.
 
 ## 8. How this code was produced (if you continue with multiple agents)
 
@@ -126,4 +126,3 @@ All recorded in the plan's change log; ordered by "you will break something if y
 - Linux tray needs `libayatana-appindicator3-dev`; AppIndicator has no left-click or tooltip.
 - Windows notification `cancel()` and cold-start payloads only work when MSIX-packaged.
 - Tim2Tox `auto_tests` depend on `TIMManager.initSDK` and cannot be reused; `morsecq_chat/test/native_smoke_test.dart` is the self-built headless smoke and needs the native library.
-- Plan §3.3 diagram and §10 still say `apps/morsee`; the directory is `apps/morsecq`.

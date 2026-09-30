@@ -280,7 +280,7 @@ void main() {
       expect(h.api.shown.single.body, zh.notificationNewMessage);
       expect(h.api.shown.single.body, '新消息');
 
-      h.chat.receiveFriendRequest(kBob);
+      h.chat.receiveFriendRequest(kBob, message: '');
       await pumpEventQueue();
       final NotificationRequest fr = h.api.shown.last;
       expect(fr.title, zh.notificationFriendRequestTitle);
@@ -398,7 +398,7 @@ void main() {
 
     test('a friend request without a message names the requester', () async {
       final Harness h = await harness();
-      h.chat.receiveFriendRequest(kBob);
+      h.chat.receiveFriendRequest(kBob, message: '');
       await pumpEventQueue();
       expect(
         h.api.shown.single.body,
@@ -455,6 +455,27 @@ void main() {
       h.center.openConversationRequests.listen(opened.add);
       await h.start();
       expect(opened, <String>[kAnnConv]);
+    });
+  });
+
+  group('dispose', () {
+    test('releases every subscription and stream before its first await', () async {
+      final Harness h = await harness();
+      await h.receive('CQ');
+      expect(h.api.shown, hasLength(1));
+
+      // Deliberately NOT awaited yet: AppScope.dispose() cannot wait either,
+      // and a cancelled broadcast subscription may resume in the root zone.
+      final Future<void> done = h.center.dispose();
+
+      // Subscriptions were cancelled synchronously: nothing else is posted.
+      await h.receive('CQ DE BOB');
+      expect(h.api.shown, hasLength(1));
+      // Both outbound controllers were closed synchronously.
+      expect(await h.center.tapTargets.isEmpty, isTrue);
+      expect(await h.center.openConversationRequests.isEmpty, isTrue);
+      await done;
+      await h.center.dispose(); // idempotent
     });
   });
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -20,7 +21,7 @@ void main() {
 
   late Directory tempRoot;
   late FakeTim2ToxFfi ffi;
-  late MemoryKeyValueStore store;
+  late HoldingKeyValueStore store;
   late FfiChatService engineService;
   late FakeChatEngine engine;
   late FakeIdentityService identity;
@@ -33,19 +34,8 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(pathProvider, (_) async => tempRoot.path);
     ffi = FakeTim2ToxFfi();
-    store = MemoryKeyValueStore();
-    final paths = IdentityPaths('${tempRoot.path}/identity');
-    await paths.ensureDirectories();
-    engineService = FfiChatService(
-      ffiForTesting: ffi,
-      preferencesService: Tim2ToxPreferencesAdapter(store, accountPrefix: prefix),
-      historyDirectory: paths.historyDirectory,
-      queueFilePath: paths.offlineQueueFile,
-      fileRecvPath: paths.fileRecvDirectory,
-      avatarsPath: paths.avatarsDirectory,
-    )
-      ..debugBeginSessionForTest()
-      ..debugNativePendingInvitesOverride = () => const [];
+    store = HoldingKeyValueStore();
+    engineService = await newEngineService(ffi, store, tempRoot, 'identity');
     engine = FakeChatEngine();
     identity = FakeIdentityService.withProfile(
       identity: const Identity(toxId: kSelfToxId, displayName: 'me'),
@@ -257,6 +247,147 @@ void main() {
     expect(chat.conversations, isEmpty);
     expect(() => chat.sendText('c2c_$kPeerKey', 'x'), throwsCode('not_connected'));
   });
+
+  // The next four tests park a real `await` (Tim2Tox's nickname cache write
+  // inside getFriendList, or our own meta-store writes) with
+  // HoldingKeyValueStore, detach or rebind underneath it, then release it.
+
+  test('a refresh still in flight at detach publishes nothing', () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    store.holdSetString = Completer<void>();
+    engine.bind(engineService);
+    await pumpEventQueue();
+    expect(chat.friends, isEmpty, reason: 'tick is parked inside getFriendList');
+    engine.bind(null);
+    await pumpEventQueue();
+    store.holdSetString!.complete();
+    store.holdSetString = null;
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(chat.friends, isEmpty);
+    expect(chat.conversations, isEmpty);
+    expect(await chat.friendChanges.first, isEmpty);
+  });
+
+  test('a rebind refreshes at once while the old session tick is parked',
+      () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    store.holdSetString = Completer<void>();
+    engine.bind(engineService);
+    await pumpEventQueue();
+    expect(chat.friends, isEmpty, reason: 'old tick is parked');
+
+    final ffi2 = FakeTim2ToxFfi()
+      ..friends.add((userId: '3' * 64, nick: 'K1AA', online: false));
+    final service2 = await newEngineService(
+        ffi2, MemoryKeyValueStore(), tempRoot, 'identity2');
+    engine.bind(service2);
+    await pumpEventQueue();
+    expect(chat.friends.map((f) => f.displayName), ['K1AA'],
+        reason: 'the new session must not wait for the old tick');
+
+    store.holdSetString!.complete();
+    store.holdSetString = null;
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(chat.friends.map((f) => f.displayName), ['K1AA'],
+        reason: 'the old session result is discarded');
+    expect(chat.conversations.map((c) => c.title), ['K1AA']);
+    engine.bind(null);
+    await pumpEventQueue();
+    await service2.dispose();
+  });
+
+  test('a mutation that outlives the session throws not_connected and stops',
+      () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    await bind();
+    store.holdSetStringList = Completer<void>();
+    // clearC2CHistory (file IO) runs, then setPinned parks on the hold.
+    final pending = expectLater(
+      chat.deleteConversation('c2c_$kPeerKey'),
+      throwsCode('not_connected'),
+    );
+    await store.heldStringList.future;
+    engine.bind(null);
+    await pumpEventQueue();
+    store.holdSetStringList!.complete();
+    store.holdSetStringList = null;
+    await pending;
+    final meta = ConversationMetaStoreProbe(store, prefix);
+    expect(meta.hidden, isEmpty, reason: 'hide() must not run after detach');
+    expect(store.stringListWrites, lessThanOrEqualTo(1));
+  });
+
+  test('queued-invite flush stops at detach instead of editing the queue',
+      () async {
+    await store.setStringList(
+      'morsecq_queued_group_invites_$prefix',
+      ['tox_x\t$kPeerKey', 'tox_y\t$kPeerKey'],
+    );
+    // Neither group is known, so each iteration only dequeues (no native
+    // invite); the first dequeue parks on the hold.
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: true));
+    store.holdSetStringList = Completer<void>();
+    engine.bind(engineService);
+    await store.heldStringList.future;
+    engine.bind(null);
+    await pumpEventQueue();
+    store.holdSetStringList!.complete();
+    store.holdSetStringList = null;
+    await pumpEventQueue();
+    final meta = ConversationMetaStoreProbe(store, prefix);
+    expect(meta.queuedGroupsFor(kPeerKey), ['tox_y'],
+        reason: 'the loop must re-check the session before the next entry');
+  });
+
+  test('forgetting a removed friend stops between its writes at detach',
+      () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    await bind();
+    final id = 'c2c_$kPeerKey';
+    await store.setStringList('morsecq_hidden_conversations_$prefix', [id]);
+    await store.setString('morsecq_draft_${id}_$prefix', 'CQ');
+    // Tim2Tox's own local-friends write goes through; forget()'s first
+    // write (the pinned set) parks on the hold.
+    store.holdOnlyKeyContaining = 'morsecq_pinned';
+    store.holdSetStringList = Completer<void>();
+    final pending = expectLater(
+      chat.removeFriend(kPeerKey),
+      throwsCode('not_connected'),
+    );
+    await store.heldStringList.future;
+    engine.bind(null);
+    await pumpEventQueue();
+    store.holdSetStringList!.complete();
+    store.holdSetStringList = null;
+    await pending;
+    expect(ffi.deletedFriends, [kPeerKey]);
+    final meta = ConversationMetaStoreProbe(store, prefix);
+    expect(meta.pinned, isEmpty);
+    expect(meta.draft(id), 'CQ', reason: 'draft write must not follow');
+    expect(meta.hidden, [id], reason: 'unhide must not follow the detach');
+  });
+}
+
+/// A headless `FfiChatService` over [ffi], the way toxee's tests build one.
+Future<FfiChatService> newEngineService(
+  FakeTim2ToxFfi ffi,
+  KeyValueStore store,
+  Directory root,
+  String dirName,
+) async {
+  final paths = IdentityPaths('${root.path}/$dirName');
+  await paths.ensureDirectories();
+  return FfiChatService(
+    ffiForTesting: ffi,
+    preferencesService:
+        Tim2ToxPreferencesAdapter(store, accountPrefix: '1111111111111111'),
+    historyDirectory: paths.historyDirectory,
+    queueFilePath: paths.offlineQueueFile,
+    fileRecvPath: paths.fileRecvDirectory,
+    avatarsPath: paths.avatarsDirectory,
+  )
+    ..debugBeginSessionForTest()
+    ..debugNativePendingInvitesOverride = () => const [];
 }
 
 /// Reads the queued-invite slot the way `ConversationMetaStore` writes it.
@@ -264,6 +395,15 @@ class ConversationMetaStoreProbe {
   ConversationMetaStoreProbe(this._store, this._prefix);
   final KeyValueStore _store;
   final String _prefix;
+
+  List<String> get hidden =>
+      _store.getStringList('morsecq_hidden_conversations_$_prefix') ?? [];
+
+  List<String> get pinned =>
+      _store.getStringList('morsecq_pinned_conversations_$_prefix') ?? [];
+
+  String? draft(String conversationId) =>
+      _store.getString('morsecq_draft_${conversationId}_$_prefix');
 
   List<String> queuedGroupsFor(String friendKey) => [
         for (final e

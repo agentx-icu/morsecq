@@ -70,7 +70,15 @@ void main() {
       await tester.enterText(find.byKey(ReferenceScreen.searchFieldKey), 'QRL');
       await tester.pumpAndSettle();
       expect(find.byType(TabBar), findsNothing);
-      expect(find.text('QRL'), findsOneWidget);
+      // find.text also matches the search field's EditableText, so scope
+      // the hit to the result rows.
+      expect(
+        find.descendant(
+          of: find.byType(ReferenceEntryTile),
+          matching: find.text('QRL'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('QRM'), findsNothing);
       expect(find.text(en.referenceSectionQCodes), findsOneWidget);
       expect(_card('A'), findsNothing);
@@ -111,9 +119,12 @@ void main() {
   group('playback', () {
     testWidgets('tapping a card plays it through the injected player', (tester) async {
       final fake = await _pump(tester);
-      expect(fake.players, hasLength(1));
+      // The player is created lazily on first use, not when the screen is
+      // built (the shell's IndexedStack must not touch the audio engine).
+      expect(fake.players, isEmpty);
       await tester.tap(_card('K'));
       await tester.pump();
+      expect(fake.players, hasLength(1));
       // K = -.- : the sink keys on immediately.
       expect(fake.sink.isOn, isTrue);
       expect(fake.onCount, 1);

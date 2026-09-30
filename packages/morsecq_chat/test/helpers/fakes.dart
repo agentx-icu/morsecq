@@ -88,6 +88,15 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
   @override
   int Function(int, ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<ffi.Int8>, int)
       get getGroupChatIdNative => (_, _, _, _) => 0;
+
+  /// Public keys handed to `tim2tox_ffi_delete_friend`; always "succeeds".
+  final List<String> deletedFriends = [];
+
+  @override
+  int Function(ffi.Pointer<pkgffi.Utf8>) get deleteFriend => (key) {
+        deletedFriends.add(key.toDartString());
+        return 1;
+      };
 }
 
 /// `ChatEngine` stand-in: never touches the native library. Tests hand it the
@@ -178,6 +187,59 @@ class FakeChatEngine extends ChatEngine {
   Future<void> dispose() async {
     await _sessions.close();
     await _conn.close();
+  }
+}
+
+/// In-memory store whose writes can be parked on a completer. Lets a test
+/// freeze a refresh or a mutation at a real `await` (Tim2Tox's nickname
+/// cache write, our queued-invite / hidden-set write), detach the session
+/// underneath it, then release it and check that nothing stale is published.
+class HoldingKeyValueStore extends MemoryKeyValueStore {
+  /// While set, every [setString] waits for it before writing.
+  Completer<void>? holdSetString;
+
+  /// While set, every [setStringList] waits for it before writing.
+  Completer<void>? holdSetStringList;
+
+  int stringListWrites = 0;
+
+  /// When set, only writes whose key contains this text are held; the rest
+  /// stay synchronous (lets a test park our meta-store write and not the
+  /// Tim2Tox prefs write that precedes it).
+  String? holdOnlyKeyContaining;
+
+  bool _holds(String key) {
+    final only = holdOnlyKeyContaining;
+    return only == null || key.contains(only);
+  }
+
+  /// Completes when a write first reaches [holdSetString]; a test awaits it
+  /// instead of guessing a delay before detaching.
+  Completer<void> heldString = Completer<void>();
+
+  /// Same for [holdSetStringList].
+  Completer<void> heldStringList = Completer<void>();
+
+  // Unheld writes stay synchronous like the base class (and like
+  // SharedPreferences' in-memory cache): a read right after the call sees
+  // the value. Only a held write is deferred.
+  @override
+  Future<void> setString(String key, String value) {
+    final hold = holdSetString;
+    if (hold == null || !_holds(key)) return super.setString(key, value);
+    if (!heldString.isCompleted) heldString.complete();
+    return hold.future.then((_) => super.setString(key, value));
+  }
+
+  @override
+  Future<void> setStringList(String key, List<String> value) {
+    stringListWrites++;
+    final hold = holdSetStringList;
+    if (hold == null || !_holds(key)) {
+      return super.setStringList(key, value);
+    }
+    if (!heldStringList.isCompleted) heldStringList.complete();
+    return hold.future.then((_) => super.setStringList(key, value));
   }
 }
 

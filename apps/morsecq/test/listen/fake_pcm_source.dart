@@ -45,7 +45,10 @@ final class FakePcmSource implements PcmSource {
   @override
   Future<void> stop() async {
     stopCalls++;
-    await _controller?.close();
+    // The controller is synchronous, so close() is immediate; its future is
+    // the root-zone `_nullFuture` once the listener cancelled, which never
+    // resumes under FakeAsync, so it must not be awaited.
+    unawaited(_controller?.close());
     _controller = null;
   }
 
@@ -66,7 +69,7 @@ final class FakePcmSource implements PcmSource {
 
   /// Ends the stream as the OS would when the device disappears.
   Future<void> endStream() async {
-    await _controller?.close();
+    unawaited(_controller?.close());
     _controller = null;
   }
 }

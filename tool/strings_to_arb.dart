@@ -182,13 +182,14 @@ List<ExtractedString> extractStrings(String source, {required String sourcePath}
   return results;
 }
 
-/// Human-readable description of the first duplicate key, or null.
+/// First key claimed by two declarations (one value would silently win).
 String? findKeyCollision(List<ExtractedString> extracted) {
   final seen = <String, ExtractedString>{};
   for (final e in extracted) {
     final other = seen[e.key];
-    if (other != null && other.member != e.member) {
-      return 'key ${e.key} produced by both ${other.member} and ${e.member}';
+    if (other != null) {
+      return 'key ${e.key} produced by both ${other.member} '
+          '(${other.sourcePath}) and ${e.member} (${e.sourcePath})';
     }
     seen[e.key] = e;
   }

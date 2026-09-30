@@ -38,7 +38,13 @@ final class FakeBackendFactory extends BackendFactory {
     required IdentityService identity,
     required ChatService chat,
   }) async {
-    await chat.dispose();
-    if (identity is FakeIdentityService) await identity.dispose();
+    // Start both teardowns before awaiting either: the identity fake owns a
+    // connect timer that must be cancelled synchronously (AppScope.dispose
+    // cannot wait for us), and a broadcast close may hand back a root-zone
+    // future that FakeAsync never resumes.
+    await Future.wait(<Future<void>>[
+      chat.dispose(),
+      if (identity is FakeIdentityService) identity.dispose(),
+    ]);
   }
 }

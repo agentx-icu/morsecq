@@ -68,6 +68,7 @@ void main() {
     c.didChangeAppLifecycleState(AppLifecycleState.hidden);
     c.didChangeAppLifecycleState(AppLifecycleState.paused); // no double hint
     clock.advance(const Duration(seconds: 60));
+    await pumpEventQueue();
     expect(c.mayBeDisconnected.value, isTrue);
     expect(hints, <LifecycleHint>[
       LifecycleHint.background,

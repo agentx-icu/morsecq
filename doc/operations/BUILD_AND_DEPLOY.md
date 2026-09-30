@@ -12,11 +12,17 @@ toxee's pipeline; see the zh-CN doc §1.2 for the exact differences.
 Common: Flutter **3.41.9** (also needed by the *native* build — Tim2Tox
 compiles `dart_api_dl.c` from the Flutter-bundled Dart SDK), Git, CMake ≥ 3.16,
 network on first run (libsodium 1.0.20 tarball, SHA-256 verified; same pin as toxee).
+For the *native library alone* a standalone Dart SDK of the same version Flutter
+bundles (3.11.5 for 3.41.9) is enough: when `flutter` is not on PATH but `dart`
+is (or `MORSECQ_DART_SDK_DIR` points at an SDK), `build_tim2tox.sh` stages its
+`include/` under a shim `FLUTTER_ROOT` (`build/native/.dart-sdk-shim`). That is
+how the Linux aarch64 / Windows arm64 CI jobs run — Flutter ships no arm64
+archive for either.
 
 | Platform | Needs |
 |---|---|
 | Linux (x86_64 / aarch64, native host build) | `build-essential cmake ninja-build pkg-config`; `libgtk-3-dev` + `patchelf` for the Flutter bundle. No `libsodium-dev` (static pinned build; `--system-libsodium` opts back in). |
-| macOS (x86_64 / arm64, cross-buildable) | Xcode CLT, `cmake` (`brew install cmake ninja pkg-config`), CocoaPods. No Homebrew libsodium needed. |
+| macOS (x86_64 / arm64, cross-buildable) | Xcode CLT, `cmake` (`brew install cmake ninja pkg-config`), CocoaPods. No Homebrew libsodium needed. The script pins the SDK from `xcrun --sdk macosx --show-sdk-path` (`-isysroot` / `SDKROOT` / `CMAKE_OSX_SYSROOT`): the raw toolchain clang that `xcrun -f clang` returns does not infer one, and without it libsodium's configure dies with "C compiler cannot create executables" (first GitHub `macos-15` runs). |
 | Windows (x64 / arm64) | VS 2022/18 C++ tools, CMake, Git Bash, vcpkg with `libsodium pthreads pkgconf` for the triplet, `VCPKG_ROOT`; run from Git Bash inside vcvars. |
 | Android | Android SDK + NDK (`ANDROID_NDK_HOME` or `$ANDROID_HOME/ndk/*`), Java 17. |
 | iOS | Xcode (iphoneos + iphonesimulator SDKs), CocoaPods. |
@@ -63,7 +69,9 @@ the Podfiles and the Xcode deployment targets).
 
 Matrix job `native` builds the 8 targets on ubuntu-24.04 / ubuntu-24.04-arm
 (experimental) / windows-2022 / windows-11-arm (experimental) / macos-15-intel /
-macos-15, caches `build/native/<target>` by tim2tox submodule SHA + script hash,
+macos-15 (the two arm64 runners install the standalone Dart SDK `DART_VERSION`
+via `dart-lang/setup-dart` instead of Flutter, see Prerequisites), caches
+`build/native/<target>` by tim2tox submodule SHA + Flutter/Dart pins + script hash,
 gates the uploaded bytes with `assert_no_test_hooks.sh`, and uploads
 `tim2tox-ffi-<target>`. Jobs `app-linux`, `app-windows`, `app-macos` consume the
 artifact, run `flutter build <platform> --release --dart-define=MORSECQ_FAKE_BACKEND=false`
