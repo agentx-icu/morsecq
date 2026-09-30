@@ -22,7 +22,7 @@ void main() {
       await controller.setLocale(const Locale('zh'));
 
       expect(controller.locale, const Locale('zh'));
-      expect(store.getString(LocaleController.storageKey), 'zh_CN');
+      expect(store.getString(LocaleController.storageKey), 'zh');
       expect(notifications, 1);
     });
 
@@ -73,7 +73,13 @@ void main() {
     });
 
     test('localeName / parseLocaleName round-trip and tolerate variants', () {
-      expect(LocaleController.localeName(const Locale('zh')), 'zh_CN');
+      expect(LocaleController.localeName(const Locale('zh')), 'zh');
+      expect(
+        LocaleController.localeName(
+          const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+        ),
+        'zh_Hant',
+      );
       expect(LocaleController.localeName(const Locale('en')), 'en');
       for (final name in ['zh', 'zh_CN', 'zh-Hans', 'zh_Hans_CN', 'ZH']) {
         expect(

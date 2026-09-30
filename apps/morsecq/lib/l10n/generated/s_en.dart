@@ -111,12 +111,6 @@ class SEn extends S {
   String get languageSystemDefault => 'System default';
 
   @override
-  String get languageEnglish => 'English';
-
-  @override
-  String get languageChinese => '简体中文';
-
-  @override
   String learnLessonOf(int lesson, int total) {
     return 'Lesson $lesson of $total';
   }

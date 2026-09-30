@@ -3,27 +3,39 @@ import 'package:flutter/widgets.dart' show Locale;
 
 import '../l10n/generated/s.dart';
 import 'key_value_store.dart';
+import 'language_catalog.dart';
+import 'locale_resolution.dart';
 
 /// The user's language choice: follow the system, or force one of the
-/// locales the app ships (see [supportedLocales]).
+/// locales the app ships (`S.supportedLocales`, i.e. the ARB files).
 ///
-/// Wire it above `MaterialApp` and pass [locale] to `MaterialApp.locale`
-/// (null means "follow the system", which Flutter resolves against
-/// `supportedLocales` itself). Persistence goes through the injected
-/// [KeyValueStore] under [storageKey].
+/// Wire it above `MaterialApp`, pass [locale] to `MaterialApp.locale` (null
+/// = follow the system) and [resolve] to `localeResolutionCallback` so the
+/// framework, this controller and [effectiveLocale] agree on the same rules
+/// (toxee's scheme: script/region aware, English fallback). Persistence goes
+/// through the injected [KeyValueStore] under [storageKey] as a
+/// `language[_Script]` tag, so a future `app_zh_Hant.arb` needs no migration.
 class LocaleController extends ChangeNotifier {
   /// Restores the saved choice synchronously from [store]; an unknown or
   /// unsupported saved value falls back to "follow the system".
-  LocaleController(this._store)
-    : _override = parseLocaleName(_store.getString(storageKey));
+  LocaleController(this._store, {Locale Function()? systemLocale})
+      : _systemLocale =
+            systemLocale ?? (() => PlatformDispatcher.instance.locale),
+        _override = _restore(_store.getString(storageKey));
 
   final KeyValueStore _store;
+  final Locale Function() _systemLocale;
 
   /// Key under which the chosen locale is persisted (as a [localeName]).
   static const String storageKey = 'i18n.locale';
 
   /// Locales with an ARB file; the generated `S` class is the source of truth.
   static List<Locale> get supportedLocales => S.supportedLocales;
+
+  /// The controller `AppScope` created for this app run, for code without a
+  /// `BuildContext` (notifications, tray, background). Null in unit tests
+  /// that never build the scope; `currentS()` then follows the platform.
+  static LocaleController? active;
 
   Locale? _override;
 
@@ -32,11 +44,22 @@ class LocaleController extends ChangeNotifier {
 
   bool get followsSystem => _override == null;
 
+  /// What the UI actually renders in right now: the override, or the system
+  /// locale resolved against the shipped set.
+  Locale get effectiveLocale =>
+      _override ?? resolveSystemLocale(_systemLocale(), supportedLocales);
+
+  /// `MaterialApp.localeResolutionCallback`. Uses the shipped list the
+  /// framework passes in, so it stays correct if a test provides fewer.
+  static Locale resolve(Locale? device, Iterable<Locale> supported) =>
+      resolveSystemLocale(device ?? const Locale('en'), supported);
+
   /// Sets (and persists) the locale; null returns to the system default.
-  /// A locale outside [supportedLocales] is mapped to the supported locale
-  /// with the same language code, or ignored when there is none.
+  /// A locale outside [supportedLocales] is mapped to the shipped locale for
+  /// that language (script/region aware), or ignored when there is none.
   Future<void> setLocale(Locale? value) async {
-    final resolved = value == null ? null : supportedLocaleFor(value);
+    final resolved =
+        value == null ? null : supportedLocaleFor(value, supportedLocales);
     if (value != null && resolved == null) return;
     if (resolved == _override) return;
     _override = resolved;
@@ -48,34 +71,23 @@ class LocaleController extends ChangeNotifier {
     }
   }
 
-  /// The supported locale matching [candidate]'s language, or null.
-  static Locale? supportedLocaleFor(Locale candidate) {
-    for (final supported in supportedLocales) {
-      if (supported.languageCode == candidate.languageCode) return supported;
-    }
-    return null;
-  }
+  /// Canonical, persisted name of a locale: `en`, `zh`, `zh_Hant`.
+  static String localeName(Locale locale) => localeTag(locale);
 
-  /// Canonical, persisted name of a supported locale: `en`, `zh_CN`.
-  static String localeName(Locale locale) => switch (locale.languageCode) {
-    'zh' => 'zh_CN',
-    final code => code,
-  };
-
-  /// Inverse of [localeName]; tolerant of `zh`, `zh-Hans`, `zh_Hans_CN`,
-  /// `en_US`… Returns null for null/empty/unsupported input.
+  /// Inverse of [localeName], mapped onto the shipped set; tolerant of
+  /// `zh-Hans-CN`, `en_US`, legacy `zh_CN`… Null for empty/unsupported input.
   static Locale? parseLocaleName(String? name) {
-    if (name == null || name.isEmpty) return null;
-    final language = name.split(RegExp('[-_]')).first.toLowerCase();
-    return supportedLocaleFor(Locale(language));
+    final parsed = parseLocaleTag(name);
+    if (parsed == null) return null;
+    return supportedLocaleFor(parsed, supportedLocales);
   }
+
+  static Locale? _restore(String? saved) => parseLocaleName(saved);
 }
 
-/// Human-readable, localized label for a language choice (null = system).
+/// Label for a language choice: the ARB string for "follow the system", the
+/// language's own native name otherwise (never translated).
 String localeDisplayName(S s, Locale? locale) {
   if (locale == null) return s.languageSystemDefault;
-  return switch (locale.languageCode) {
-    'zh' => s.languageChinese,
-    _ => s.languageEnglish,
-  };
+  return LanguageCatalog.nativeName(locale);
 }

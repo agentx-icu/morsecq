@@ -5,9 +5,10 @@ import 'l10n_extension.dart';
 import 'locale_controller.dart';
 
 /// "Language" row for the Me page: shows the current choice and opens a
-/// dialog with System default / English / 简体中文. Works the same on phone
-/// and desktop (plain dialog, no platform pickers). Needs a
-/// [LocaleController] provided above it.
+/// dialog listing "System default" plus every shipped locale by its native
+/// name (`LanguageCatalog`), so a new ARB file appears here automatically.
+/// Works the same on phone and desktop (plain dialog, no platform pickers).
+/// Needs a [LocaleController] provided above it.
 class LanguageSettingsTile extends StatelessWidget {
   const LanguageSettingsTile({super.key});
 

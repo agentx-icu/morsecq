@@ -94,14 +94,6 @@
   "@languageSystemDefault": {
     "description": "Follow the OS language"
   },
-  "languageEnglish": "English",
-  "@languageEnglish": {
-    "description": "Native name of the English locale; identical in every ARB"
-  },
-  "languageChinese": "简体中文",
-  "@languageChinese": {
-    "description": "Native name of the Simplified Chinese locale; identical in every ARB"
-  },
   "learnLessonOf": "Lesson {lesson} of {total}",
   "@learnLessonOf": {
     "description": "From LearnStrings.lessonOf (Koch lesson progress)",

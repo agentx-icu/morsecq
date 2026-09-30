@@ -85,11 +85,15 @@ class _AppScopeState extends State<AppScope> {
   @override
   void initState() {
     super.initState();
+    // Context-free code (notifications, tray) reads strings through
+    // currentS(), which follows this controller.
+    LocaleController.active = _locale;
     _services.start();
   }
 
   @override
   void dispose() {
+    if (LocaleController.active == _locale) LocaleController.active = null;
     _training.dispose().ignore();
     _services.dispose().ignore();
     _playback.dispose();

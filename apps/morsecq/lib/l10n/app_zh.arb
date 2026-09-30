@@ -34,8 +34,6 @@
   "errorUnknown": "出了点问题",
   "languageTitle": "语言",
   "languageSystemDefault": "跟随系统",
-  "languageEnglish": "English",
-  "languageChinese": "简体中文",
   "learnLessonOf": "第 {lesson} 课 / 共 {total} 课",
   "learnCharsLearned": "{count, plural, other{已学 {count} 个字符}}",
   "learnDailyGoalProgress": "{done} / {goal} 字符",

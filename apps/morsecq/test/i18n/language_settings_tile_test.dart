@@ -56,7 +56,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(controller.locale, const Locale('zh'));
-    expect(store.getString(LocaleController.storageKey), 'zh_CN');
+    expect(store.getString(LocaleController.storageKey), 'zh');
     expect(find.byType(SimpleDialog), findsNothing, reason: 'dialog closed');
     // The tile itself re-rendered in Chinese.
     expect(find.text('语言'), findsOneWidget);

@@ -299,18 +299,6 @@ abstract class S {
   /// **'System default'**
   String get languageSystemDefault;
 
-  /// Native name of the English locale; identical in every ARB
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
-
-  /// Native name of the Simplified Chinese locale; identical in every ARB
-  ///
-  /// In en, this message translates to:
-  /// **'简体中文'**
-  String get languageChinese;
-
   /// From LearnStrings.lessonOf (Koch lesson progress)
   ///
   /// In en, this message translates to:
