@@ -18,6 +18,8 @@ top (today that is the Chinese original of the plan document and the English
 
 ## Recommended reading path
 
+- **Taking over the project** — [HANDOVER.md](HANDOVER.md): state as of the
+  last session, traps, backlog, how the multi-agent work was run.
 - **Just want to run it** — [Main README](../README.md) "Build prerequisites"
   → [operations/BUILD_AND_DEPLOY.md](operations/BUILD_AND_DEPLOY.md) for the
   native library on your platform.
