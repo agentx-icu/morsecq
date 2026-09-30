@@ -1,0 +1,76 @@
+import 'package:flutter/foundation.dart';
+
+/// Android notification channel (also used as the Darwin category / Linux
+/// hint bucket) a request belongs to. One channel per social event so the
+/// user can mute friend requests without losing group invites.
+enum NotificationChannelKind { messages, friendRequests, groupInvites }
+
+/// Platform-neutral description of one OS notification.
+///
+/// [id] is stable per logical target (see `stableNotificationId`), so posting
+/// again with the same id replaces the previous banner instead of stacking a
+/// new one. [lines] carries the per-conversation inbox history for Android's
+/// `InboxStyleInformation`; Darwin stacks by [groupKey] on its own.
+@immutable
+final class NotificationRequest {
+  const NotificationRequest({
+    required this.id,
+    required this.channel,
+    required this.title,
+    required this.body,
+    required this.payload,
+    this.groupKey,
+    this.lines = const <String>[],
+    this.summary,
+    this.sound = true,
+  });
+
+  final int id;
+  final NotificationChannelKind channel;
+  final String title;
+  final String body;
+
+  /// Round-trips through the OS; see `NotificationTapTarget`.
+  final String payload;
+
+  /// Android `groupKey` / Darwin `threadIdentifier`; null = no grouping.
+  final String? groupKey;
+
+  /// Inbox lines (oldest first) when more than one message is pending for
+  /// the same target; empty for a single notification.
+  final List<String> lines;
+
+  /// Collapsed-state summary shown with [lines], e.g. "3 new messages".
+  final String? summary;
+
+  final bool sound;
+}
+
+/// The only surface through which the app touches the local-notifications
+/// plugin. `FlutterLocalNotificationsApi` is the production implementation;
+/// `testing/fake_local_notifications_api.dart` records calls for tests.
+///
+/// Every method is best-effort: implementations swallow platform-channel
+/// failures (missing plugin in unit tests, denied permission, unsupported
+/// backend) and report them through `debugPrint` rather than throwing.
+abstract interface class LocalNotificationsApi {
+  /// Initialises the plugin. [onTap] receives the payload of a notification
+  /// the user selected while the app was running. Returns false when the
+  /// platform has no backend or initialisation failed; callers then skip
+  /// [show] entirely.
+  Future<bool> initialize({required ValueChanged<String> onTap});
+
+  /// Payload of the notification that launched the app (cold start), or null.
+  /// Consumed once.
+  Future<String?> takeLaunchPayload();
+
+  /// Requests the OS permission where one exists (Android 13+, iOS, macOS).
+  /// Returns true where no permission concept exists (Linux, Windows).
+  Future<bool> requestPermission();
+
+  Future<void> show(NotificationRequest request);
+
+  Future<void> cancel(int id);
+
+  Future<void> cancelAll();
+}

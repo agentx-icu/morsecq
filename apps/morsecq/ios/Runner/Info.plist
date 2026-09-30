@@ -49,6 +49,22 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Background modes (see lib/notifications/README.md). `audio` only:
+	     morsecq has no ToxAV, so `voip` cannot be declared honestly; `audio`
+	     is justified by Morse playback continuing when the user switches apps
+	     and, as a side effect, keeps the Tox loop alive while a message is
+	     playing. It does NOT extend the background window otherwise: without
+	     active playback iOS suspends the app after ~30 s
+	     (AppLifecycleCoordinator's iOS budget). `fetch` is intentionally not
+	     declared until a BGAppRefreshTask handler exists in AppDelegate. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>morsecq uses the camera only to scan a friend's Tox ID QR code.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>morsecq uses the microphone only to decode Morse code you play or key nearby.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

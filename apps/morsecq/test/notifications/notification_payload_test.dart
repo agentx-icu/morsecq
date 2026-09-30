@@ -1,0 +1,70 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/notifications/notification_payload.dart';
+
+void main() {
+  group('NotificationTapTarget', () {
+    test('round-trips every kind', () {
+      const List<NotificationTapTarget> targets = <NotificationTapTarget>[
+        OpenConversationTarget('c2c_ABC'),
+        OpenConversationTarget('group_tox_1'),
+        FriendRequestTarget('ABC'),
+        GroupInviteTarget('inv_1'),
+      ];
+      for (final NotificationTapTarget t in targets) {
+        expect(NotificationTapTarget.parse(t.encode()), t);
+      }
+    });
+
+    test('conversation ids are carried verbatim', () {
+      expect(
+        const OpenConversationTarget('c2c_ABC').encode(),
+        'conv:c2c_ABC',
+      );
+      expect(
+        NotificationTapTarget.parse(' conv:group_tox_9 '),
+        const OpenConversationTarget('group_tox_9'),
+      );
+    });
+
+    test('rejects empty and unknown payloads', () {
+      expect(NotificationTapTarget.parse(''), isNull);
+      expect(NotificationTapTarget.parse('conv:'), isNull);
+      expect(NotificationTapTarget.parse('friend_req:'), isNull);
+      expect(NotificationTapTarget.parse('c2c_ABC'), isNull);
+      expect(NotificationTapTarget.parse('missed_call:x'), isNull);
+    });
+
+    test('equality is by kind and id', () {
+      expect(const FriendRequestTarget('X'), isNot(const GroupInviteTarget('X')));
+      expect(
+        const OpenConversationTarget('a').hashCode,
+        const OpenConversationTarget('a').hashCode,
+      );
+    });
+  });
+
+  group('stableNotificationId', () {
+    test('is deterministic, non-negative and fits an Android int', () {
+      final int a = stableNotificationId('conv:c2c_ABC');
+      expect(a, stableNotificationId('conv:c2c_ABC'));
+      expect(a, greaterThanOrEqualTo(0));
+      expect(a, lessThanOrEqualTo(0x7FFFFFFF));
+    });
+
+    test('differs across targets', () {
+      expect(
+        stableNotificationId('conv:c2c_ABC'),
+        isNot(stableNotificationId('conv:c2c_ABD')),
+      );
+      expect(
+        stableNotificationId('friend_req:ABC'),
+        isNot(stableNotificationId('conv:ABC')),
+      );
+    });
+
+    test('matches the FNV-1a reference for a known input', () {
+      // FNV-1a 32-bit of "a" is 0xE40C292C; masked to 31 bits.
+      expect(stableNotificationId('a'), 0xE40C292C & 0x7FFFFFFF);
+    });
+  });
+}

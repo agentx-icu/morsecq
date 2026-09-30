@@ -1,4 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Notifications (lib/notifications/). flutter_local_notifications >= 16
+         merges POST_NOTIFICATIONS and VIBRATE from its own manifest; they are
+         repeated here so the Android 13+ runtime permission the app requests
+         (NotificationCenter.ensurePermission) is visible in this file. No
+         scheduled-notification / boot receivers and no ActionBroadcastReceiver:
+         morsecq only posts live notifications from the Tox poll loop, never
+         schedules them and has no notification actions. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Tox P2P networking. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- Camera: scanning a friend's Tox ID QR code (ui/contacts, mobile_scanner). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <!-- Microphone: decoding Morse from audio (ui/listen, record). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:label="morsecq"
         android:name="${applicationName}"

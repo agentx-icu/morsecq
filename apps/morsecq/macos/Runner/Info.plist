@@ -28,5 +28,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCameraUsageDescription</key>
+	<string>morsecq uses the camera only to scan a friend's Tox ID QR code.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>morsecq uses the microphone only to decode Morse code you play or key nearby.</string>
 </dict>
 </plist>
