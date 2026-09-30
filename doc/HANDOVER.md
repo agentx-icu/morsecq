@@ -98,13 +98,13 @@ All recorded in the plan's change log; ordered by "you will break something if y
 | App: identity/startup/Me, chat/contacts/groups, learn/stats, reference/translator, listen, notifications, desktop shell | Code complete, fully wired, analyzer clean; 404 app tests pass | |
 | Localisation en + zh | Done; 531 keys, zero TODO; every surface reads `S` | a new language = a new ARB |
 | Documentation | English default + zh-CN pairs | |
-| CI | `analyze.yml`, `native.yml` executed on GitHub Actions | analyze.yml was red only on the Tests step (fixed locally); native.yml: 4/8 targets green on the first run, macOS sysroot and arm64 Dart-only setup fixed locally — **check the run after the next push** |
+| CI | `analyze.yml`, `native.yml` green on GitHub Actions since `8ddc265` (2026-09-30) | 8/8 native targets and the Linux / macOS / Windows app builds pass; first runs were red (Tests step; macOS sysroot; arm64 Flutter archives; Linux apt packages) — all fixed |
 | Native library | Linux x86_64 (container) and macOS arm64 (real Mac, `build/native/macos-arm64/libtim2tox_ffi.dylib`) built for real; Android / iOS / Windows x64 built on CI runners | Windows arm64 / Linux aarch64 unverified past the toolchain setup |
 
 ## 7. Backlog for the next owner (priority order)
 
 1. ~~Run the whole test suite and fix red.~~ Done 2026-09-30 (second session); keep running `flutter test --exclude-tags=needs-native` per package before every push.
-2. **Watch the GitHub Actions runs after the next push** (analyze.yml should go green; native.yml: macOS and the two arm64 targets carry untested fixes, their later steps stay `continue-on-error`).
+2. **Keep watching GitHub Actions on every push**; the arm64 native rows stay `continue-on-error`.
 3. **Device checklist**: sidetone latency < 30 ms and click-free, iOS playback with the silent switch on (may need `audio_session`), Android haptic precision, tray icons on three desktops, notification tap routing, QR scanning, microphone decoding, backup save/share, training progress intact after restore.
 4. **License decision** (GPL-3.0 vs App Store).
 5. Upstream D line (Tim2Tox): message annotation on the wire, Dart-side custom packet API, lossy packet API, `failed` status. v2 keyed-timing transport and live keying depend on it.

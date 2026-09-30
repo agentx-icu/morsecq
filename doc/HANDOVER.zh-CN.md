@@ -98,13 +98,13 @@ doc/                       文档（英文默认 + zh-CN）
 | 应用：身份/启动门/Me、聊天/好友/群组、训练/统计、参考手册/翻译器、收听、通知、桌面壳 | 代码完成，全部接线，analyzer 零问题；404 个应用测试通过 | |
 | 多语言 en + zh | 完成；531 键零 TODO；全部界面走 `S` | 新增语言只需新 ARB |
 | 文档 | 英文默认 + zh-CN 成对 | |
-| CI | `analyze.yml`、`native.yml` 已在 GitHub Actions 上跑过 | analyze.yml 只有 Tests 步骤红（已在本地修复）；native.yml 首轮 8 个目标过 4 个，macOS sysroot 与 arm64 仅装 Dart 的修复已落本地——**下次推送后务必看结果** |
+| CI | `analyze.yml`、`native.yml` 自 `8ddc265`（2026-09-30）起在 GitHub Actions 上全绿 | 8/8 原生目标与 Linux / macOS / Windows 应用打包全部通过；首轮全红（Tests 步骤、macOS sysroot、arm64 无 Flutter 包、Linux apt 依赖）——均已修复 |
 | 原生库 | Linux x86_64（容器）与 macOS arm64（真实 Mac，`build/native/macos-arm64/libtim2tox_ffi.dylib`）真实构建成功；Android / iOS / Windows x64 在 CI runner 上构建过 | Windows arm64 / Linux aarch64 只验证到工具链安装 |
 
 ## 7. 接手后的待办（按优先级）
 
 1. ~~跑全量测试并修红。~~ 2026-09-30（第二个会话）已完成；此后每次推送前逐包跑 `flutter test --exclude-tags=needs-native`。
-2. **看下次推送后的 GitHub Actions 结果**（analyze.yml 应转绿；native.yml 的 macOS 与两个 arm64 目标带着未经 CI 验证的修复，其后续步骤仍是 `continue-on-error`）。
+2. **每次推送后继续看 GitHub Actions**；arm64 原生行仍是 `continue-on-error`。
 3. **真机验证清单**：侧音延迟 < 30 ms 与爆音、iOS 静音开关下播放（可能需要 `audio_session` 设类别）、Android 触觉精度、托盘图标三平台、通知点击路由、相机扫码、麦克风解码、备份文件保存/分享、身份重装恢复后训练进度完整。
 4. **许可证决策**（GPL-3.0 与 App Store）。
 5. 上游 D 线（Tim2Tox）：消息附注上线路、Dart 侧自定义包 API、lossy 包 API、`failed` 状态区分。v2 的键控实录与实时键控依赖它。
