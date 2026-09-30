@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../listen/listen_screen.dart';
+import '../listen/listen_strings.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_catalog.dart';
 import 'reference_layout.dart';
@@ -96,6 +98,14 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   AppBar _appBar(BuildContext context) => AppBar(
     title: const Text(ReferenceStrings.referenceTitle),
     actions: <Widget>[
+      IconButton(
+        tooltip: ListenStrings.title,
+        icon: const Icon(Icons.mic_none),
+        onPressed: () {
+          _controller.stop();
+          Navigator.of(context).push(ListenScreen.route());
+        },
+      ),
       IconButton(
         tooltip: ReferenceStrings.translatorTitle,
         icon: const Icon(Icons.swap_horiz),

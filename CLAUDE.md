@@ -21,7 +21,8 @@ Read it before changing scope; keep it in sync when scope changes.
 | `packages/morse_io` | Flutter I/O: audio sidetone, haptics, keying input (touch + keyboard) | Flutter allowed |
 | `packages/morsecq_chat_api` | **Pure Dart** contract between UI and backend: `IdentityService`, `ChatService`, models, plus in-memory fakes in `testing.dart` | the UI depends only on this |
 | `packages/morsecq_chat` | Tox transport implementing the contract on Tim2Tox (`Tim2ToxIdentityService`, `Tim2ToxChatService`). **The ONLY package allowed to import Tim2Tox / Tencent SDK.** | everything else talks to the contract |
-| `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Me), startup gate (identity is required before training too) | depends on packages, never on Tim2Tox |
+| `packages/morse_dsp` | **Pure Dart** audio decoding: Goertzel tone detection, auto-tune, envelope gate, `AudioMorseDecoder` | never imports Flutter |
+| `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity is required before training too). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen}`, `lib/training` (per-identity progress store), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
 | `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — to be added with `morsecq_chat` | never edit in place |
 | `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart` | scanned by the complexity gate too |
 | `doc/plans/` | 方案 / plan documents | every edit appends to the doc's change-log section |
