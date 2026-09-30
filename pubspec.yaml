@@ -1,0 +1,11 @@
+name: morsecq_workspace
+description: Pub workspace root for morsecq (Morse code trainer + Tox P2P chat). Not published.
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+# Every package under packages/ and apps/ joins this workspace with
+# `resolution: workspace` in its own pubspec. Run `dart pub get` once here.
+workspace:
+  - packages/morse_core
