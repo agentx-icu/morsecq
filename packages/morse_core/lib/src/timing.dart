@@ -26,20 +26,54 @@ final class MorseTiming {
   bool get isFarnsworth => farnsworthWpm != null && farnsworthWpm! < wpm;
 
   /// One dit in milliseconds (fractional; callers round when they need ints).
-  double get ditMs => throw UnimplementedError();
+  double get ditMs => 1200 / wpm;
 
-  Duration get dit => throw UnimplementedError();
-  Duration get dah => throw UnimplementedError();
-  Duration get intraGap => throw UnimplementedError();
+  Duration get dit => _fromMs(ditMs);
+  Duration get dah => _fromMs(3 * ditMs);
+  Duration get intraGap => _fromMs(ditMs);
 
   /// Character gap after Farnsworth stretching (3 dit when not stretched).
-  Duration get charGap => throw UnimplementedError();
+  Duration get charGap =>
+      isFarnsworth ? _fromSeconds(3 * _farnsworthGapSeconds / 19) : _fromMs(3 * ditMs);
 
   /// Word gap after Farnsworth stretching (7 dit when not stretched).
-  Duration get wordGap => throw UnimplementedError();
+  Duration get wordGap =>
+      isFarnsworth ? _fromSeconds(7 * _farnsworthGapSeconds / 19) : _fromMs(7 * ditMs);
 
-  MorseTiming copyWith({double? wpm, double? farnsworthWpm}) =>
-      throw UnimplementedError();
+  /// ARRL Farnsworth formula: total time (seconds) available for the 19 gap
+  /// units of the word PARIS (4 character gaps x 3 + 1 word gap x 7) when
+  /// characters are sent at `c = wpm` and the overall speed is
+  /// `s = farnsworthWpm`:
+  ///
+  /// `ta = (60c - 37.2s) / (s * c)`
+  ///
+  /// With c == s this collapses to `22.8 / c`, i.e. exactly 19 dits.
+  double get _farnsworthGapSeconds {
+    final double c = wpm;
+    final double s = farnsworthWpm!;
+    return (60 * c - 37.2 * s) / (s * c);
+  }
+
+  MorseTiming copyWith({double? wpm, double? farnsworthWpm}) => MorseTiming(
+        wpm: wpm ?? this.wpm,
+        farnsworthWpm: farnsworthWpm ?? this.farnsworthWpm,
+      );
+
+  /// Round a millisecond value to the nearest microsecond.
+  static Duration _fromMs(double ms) =>
+      Duration(microseconds: (ms * Duration.microsecondsPerMillisecond).round());
+
+  static Duration _fromSeconds(double s) =>
+      Duration(microseconds: (s * Duration.microsecondsPerSecond).round());
+
+  @override
+  bool operator ==(Object other) =>
+      other is MorseTiming &&
+      other.wpm == wpm &&
+      other.farnsworthWpm == farnsworthWpm;
+
+  @override
+  int get hashCode => Object.hash(wpm, farnsworthWpm);
 
   @override
   String toString() => 'MorseTiming(wpm: $wpm, farnsworthWpm: $farnsworthWpm)';

@@ -1,0 +1,21 @@
+name: morse_io
+description: Renders Morse timelines to sound / haptics / light and turns on-screen or keyboard keying into decoder events. Flutter, all five platforms.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  morse_core: ^0.1.0
+  flutter_soloud: ^4.1.7
+  vibration: ^3.2.1
+  torch_light: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

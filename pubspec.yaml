@@ -8,4 +8,8 @@ environment:
 # Every package under packages/ and apps/ joins this workspace with
 # `resolution: workspace` in its own pubspec. Run `dart pub get` once here.
 workspace:
+  - packages/morsecq_chat_api
   - packages/morse_core
+  - packages/morse_io
+  - packages/morse_trainer
+  - apps/morsecq

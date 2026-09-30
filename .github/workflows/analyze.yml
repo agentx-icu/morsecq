@@ -1,0 +1,63 @@
+name: Analyze
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Supersede an in-flight run when a PR is pushed again. Scoped to
+  # pull_request so a push-to-main run is never aborted midway.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: 'stable'
+          # Caches the Flutter SDK download/extract (~2.5 min/job).
+          cache: true
+
+      # Pub workspace: one resolution at the root covers every package/app.
+      - name: Install dependencies
+        run: dart pub get
+
+      # Hard gate: zero issues. The root analysis_options.yaml applies to every
+      # package (none carries its own), so this is one lint set, not N.
+      - name: Flutter analyze (hard gate)
+        run: |
+          set -euo pipefail
+          for dir in packages/* apps/*; do
+            [ -f "$dir/pubspec.yaml" ] || continue
+            echo "::group::flutter analyze $dir"
+            flutter analyze "$dir"
+            echo "::endgroup::"
+          done
+
+      - name: Complexity guard (500 LOC, baseline ratchet)
+        run: dart run tool/check_complexity.dart
+
+      - name: Import guard (layering)
+        run: dart run tool/import_guard.dart
+
+      # Native-library jobs (libtim2tox_ffi) arrive with packages/morsecq_chat.
+      - name: Tests
+        run: |
+          set -euo pipefail
+          for dir in packages/* apps/*; do
+            [ -f "$dir/pubspec.yaml" ] && [ -d "$dir/test" ] || continue
+            echo "::group::flutter test $dir"
+            (cd "$dir" && flutter test)
+            echo "::endgroup::"
+          done

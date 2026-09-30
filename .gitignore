@@ -1,7 +1,93 @@
+# Dart / Pub / Flutter tooling
 .dart_tool/
 pubspec.lock
 build/
+coverage/
+.flutter-plugins
 .flutter-plugins-dependencies
+.pub-cache/
+.pub/
+**/doc/api/
+
+# IDE
 *.iml
+*.ipr
+*.iws
 .idea/
 .vscode/
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.log
+.history
+
+# Symbolication / obfuscation output
+app.*.symbols
+app.*.map.json
+
+# ---- Flutter platform folders (apps/*/<platform>/) ----
+# flutter create also writes a .gitignore inside each platform folder; those
+# are kept. The rules below are the workspace-level safety net so a stray
+# `flutter create` or plugin regeneration elsewhere cannot leak build state.
+
+# Android
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+**/android/**/*.keystore
+**/android/**/*.jks
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle-wrapper.jar
+**/android/**/GeneratedPluginRegistrant.java
+**/android/.cxx/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/app/src/main/jniLibs/
+
+# iOS
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/ServiceDefinitions.json
+
+# macOS
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Xcode (iOS + macOS)
+**/xcuserdata/
+**/DerivedData/
+**/dgph
+*.mode1v3
+*.mode2v3
+*.pbxuser
+*.perspectivev3
+
+# Linux
+**/linux/flutter/ephemeral/
+
+# Windows
+**/windows/flutter/ephemeral/
+**/windows/x64/
+**/windows/x86/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ---- Local agent / tooling state (never committed) ----
+.claude/
+.cache/
+.worktrees/
