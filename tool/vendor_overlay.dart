@@ -7,14 +7,12 @@
 // its REMOVE.txt were deleted. `sha256` covers the overlay's file names and
 // contents so the vendor state can record what was applied.
 //
-// `package:crypto` comes from the workspace resolution (a dependency of
-// packages/morsecq_chat); tool scripts run from the repository root.
-// ignore_for_file: depend_on_referenced_packages
+// No package imports: bootstrap runs BEFORE `dart pub get` (it writes the
+// overrides pub needs), so only `dart:` libraries and the system hash tool
+// are available. Hashing goes through [sha256FileSync] like the patch series.
 
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:crypto/crypto.dart' as crypto;
 
 class VendorOverlay {
   VendorOverlay(this.dir);
@@ -53,18 +51,24 @@ class VendorOverlay {
     ];
   }
 
-  /// Hash of the removal list plus every file's path and bytes.
+  /// Hash of the removal list plus every file's path and bytes (system
+  /// SHA-256 over a concatenation written to a temp file).
   String get sha256 {
-    final out = _DigestSink();
-    final conv = crypto.sha256.startChunkedConversion(out);
-    conv.add(utf8.encode('REMOVE\n${removals.join('\n')}\n'));
-    for (final rel in files) {
-      conv.add(utf8.encode('FILE $rel\n'));
-      conv.add(File('${dir.path}/$rel').readAsBytesSync());
-      conv.add(const [0]);
+    final tmp = Directory.systemTemp.createTempSync('morsecq_overlay_');
+    try {
+      final concat = File('${tmp.path}/overlay.bin');
+      final sink = concat.openSync(mode: FileMode.write);
+      sink.writeFromSync(utf8.encode('REMOVE\n${removals.join('\n')}\n'));
+      for (final rel in files) {
+        sink.writeFromSync(utf8.encode('FILE $rel\n'));
+        sink.writeFromSync(File('${dir.path}/$rel').readAsBytesSync());
+        sink.writeFromSync(const [0]);
+      }
+      sink.closeSync();
+      return sha256FileSync(concat.path);
+    } finally {
+      tmp.deleteSync(recursive: true);
     }
-    conv.close();
-    return out.digest!.toString();
   }
 
   /// Applies the overlay to [target] when [force] is set, the recorded
@@ -168,12 +172,27 @@ class VendorOverlay {
   }
 }
 
-class _DigestSink implements Sink<crypto.Digest> {
-  crypto.Digest? digest;
-
-  @override
-  void add(crypto.Digest data) => digest = data;
-
-  @override
-  void close() {}
+/// SHA-256 of a file via the platform tool (certutil / sha256sum / shasum);
+/// shared with tool/bootstrap_deps.dart, which cannot use pub packages.
+String sha256FileSync(String path) {
+  if (Platform.isWindows) {
+    final r = Process.runSync('certutil', ['-hashfile', path, 'SHA256']);
+    if (r.exitCode != 0) throw Exception('certutil failed: ${r.stderr}');
+    final hex = RegExp(r'^[A-Fa-f0-9 ]+$');
+    final line = (r.stdout as String)
+        .split(RegExp(r'\r?\n'))
+        .map((l) => l.trim())
+        .firstWhere((l) => l.isNotEmpty && hex.hasMatch(l), orElse: () => '');
+    if (line.isEmpty) throw Exception('certutil printed no SHA-256 hash');
+    return line.replaceAll(' ', '').toLowerCase();
+  }
+  try {
+    final r = Process.runSync('sha256sum', [path]);
+    if (r.exitCode == 0) return (r.stdout as String).split(' ').first.trim();
+  } on ProcessException {
+    // macOS has no sha256sum; fall through to shasum.
+  }
+  final r = Process.runSync('shasum', ['-a', '256', path]);
+  if (r.exitCode != 0) throw Exception('sha256 tool failed: ${r.stderr}');
+  return (r.stdout as String).split(' ').first.trim();
 }

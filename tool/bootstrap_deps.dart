@@ -475,25 +475,4 @@ Future<int> _run(String cwd, String executable, List<String> args) async {
 
 Future<String> _sha256File(String path) async => _sha256FileSync(path);
 
-String _sha256FileSync(String path) {
-  if (Platform.isWindows) {
-    final r = Process.runSync('certutil', ['-hashfile', path, 'SHA256']);
-    if (r.exitCode != 0) throw Exception('certutil failed: ${r.stderr}');
-    final hex = RegExp(r'^[A-Fa-f0-9 ]+$');
-    final line = (r.stdout as String)
-        .split(RegExp(r'\r?\n'))
-        .map((l) => l.trim())
-        .firstWhere((l) => l.isNotEmpty && hex.hasMatch(l), orElse: () => '');
-    if (line.isEmpty) throw Exception('certutil printed no SHA-256 hash');
-    return line.replaceAll(' ', '').toLowerCase();
-  }
-  try {
-    final r = Process.runSync('sha256sum', [path]);
-    if (r.exitCode == 0) return (r.stdout as String).split(' ').first.trim();
-  } on ProcessException {
-    // macOS has no sha256sum; fall through to shasum.
-  }
-  final r = Process.runSync('shasum', ['-a', '256', path]);
-  if (r.exitCode != 0) throw Exception('sha256 tool failed: ${r.stderr}');
-  return (r.stdout as String).split(' ').first.trim();
-}
+String _sha256FileSync(String path) => sha256FileSync(path);
