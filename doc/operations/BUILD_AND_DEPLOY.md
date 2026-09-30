@@ -21,7 +21,7 @@ archive for either.
 
 | Platform | Needs |
 |---|---|
-| Linux (x86_64 / aarch64, native host build) | `build-essential cmake ninja-build pkg-config`; `libgtk-3-dev` + `patchelf` for the Flutter bundle, plus `libsecret-1-dev` (`flutter_secure_storage`, a hard CMake error without it) and `libayatana-appindicator3-dev` (`tray_manager`; optional at build time but the tray silently degrades without it). No `libsodium-dev` (static pinned build; `--system-libsodium` opts back in). |
+| Linux (x86_64 / aarch64, native host build) | `build-essential cmake ninja-build pkg-config`; `libgtk-3-dev` + `patchelf` for the Flutter bundle, plus `libsecret-1-dev` (`flutter_secure_storage`, a hard CMake error without it) , `libayatana-appindicator3-dev` (`tray_manager`; optional at build time but the tray silently degrades without it) and `libasound2-dev` (`flutter_soloud` compiles its ALSA backend; PulseAudio/JACK are dlopen-ed at runtime, no headers needed). No `libsodium-dev` (static pinned build; `--system-libsodium` opts back in). |
 | macOS (x86_64 / arm64, cross-buildable) | Xcode CLT, `cmake` (`brew install cmake ninja pkg-config`), CocoaPods. No Homebrew libsodium needed. The script pins the SDK from `xcrun --sdk macosx --show-sdk-path` (`-isysroot` / `SDKROOT` / `CMAKE_OSX_SYSROOT`): the raw toolchain clang that `xcrun -f clang` returns does not infer one, and without it libsodium's configure dies with "C compiler cannot create executables" (first GitHub `macos-15` runs). |
 | Windows (x64 / arm64) | VS 2022/18 C++ tools, CMake, Git Bash, vcpkg with `libsodium pthreads pkgconf` for the triplet, `VCPKG_ROOT`; run from Git Bash inside vcvars. |
 | Android | Android SDK + NDK (`ANDROID_NDK_HOME` or `$ANDROID_HOME/ndk/*`), Java 17. |

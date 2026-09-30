@@ -65,7 +65,7 @@ CI 的 Linux aarch64 / Windows arm64 job 就是这样跑的——Flutter 不发�
 
 | 平台 | 需要 |
 |---|---|
-| **Linux**（x86_64 / aarch64，本机架构构建） | `build-essential cmake ninja-build pkg-config`；打 Flutter 包还需 `libgtk-3-dev`、`patchelf`（推荐），以及 `libsecret-1-dev`（`flutter_secure_storage`，缺了 CMake 直接报错）和 `libayatana-appindicator3-dev`（`tray_manager`；构建时可选，但缺了托盘会静默降级）。**不需要** `libsodium-dev`（默认静态编译；`--system-libsodium` 时需要）。 |
+| **Linux**（x86_64 / aarch64，本机架构构建） | `build-essential cmake ninja-build pkg-config`；打 Flutter 包还需 `libgtk-3-dev`、`patchelf`（推荐），以及 `libsecret-1-dev`（`flutter_secure_storage`，缺了 CMake 直接报错）、`libayatana-appindicator3-dev`（`tray_manager`；构建时可选，但缺了托盘会静默降级）和 `libasound2-dev`（`flutter_soloud` 编译其 ALSA 后端；PulseAudio/JACK 在运行时 dlopen，不需要头文件）。**不需要** `libsodium-dev`（默认静态编译；`--system-libsodium` 时需要）。 |
 | **macOS**（x86_64 / arm64，任一 Mac 可交叉构建另一架构） | Xcode Command Line Tools、`cmake`（`brew install cmake ninja pkg-config`）、CocoaPods。**不需要** Homebrew libsodium。脚本用 `xcrun --sdk macosx --show-sdk-path` 显式钉住 SDK（`-isysroot` / `SDKROOT` / `CMAKE_OSX_SYSROOT`）：`xcrun -f clang` 给出的是 toolchain 里的原始 clang，它不会自己推断 SDK，缺了这一步 libsodium 的 configure 会报 "C compiler cannot create executables"（GitHub `macos-15` 首轮就是这样挂的）。 |
 | **Windows**（x64 / arm64） | Visual Studio 2022 或 18 的 C++ 工具集、CMake、Git Bash、`vcpkg`：`vcpkg install libsodium:<triplet> pthreads:<triplet> pkgconf:<triplet>`，设置 `VCPKG_ROOT`；在 vcvars 环境里从 Git Bash 运行脚本。 |
 | **Android** | Android SDK + **NDK**（`ANDROID_NDK_HOME` / `ANDROID_NDK_ROOT` / `$ANDROID_HOME/ndk/<ver>`），Java 17。 |
