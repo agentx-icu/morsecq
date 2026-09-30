@@ -4,6 +4,7 @@ import '../pages/chat_page.dart';
 import '../pages/groups_page.dart';
 import '../pages/learn_page.dart';
 import '../pages/me_page.dart';
+import '../pages/reference_page.dart';
 import '../responsive.dart';
 
 /// One top-level destination. Kept as data so the bar and the rail render the
@@ -42,6 +43,12 @@ const List<ShellDestination> kShellDestinations = [
     page: GroupsPage(),
   ),
   ShellDestination(
+    label: ReferencePage.title,
+    icon: Icons.menu_book_outlined,
+    selectedIcon: Icons.menu_book,
+    page: ReferencePage(),
+  ),
+  ShellDestination(
     label: MePage.title,
     icon: Icons.person_outline,
     selectedIcon: Icons.person,
@@ -52,10 +59,9 @@ const List<ShellDestination> kShellDestinations = [
 /// Responsive root: bottom [NavigationBar] on compact widths, side
 /// [NavigationRail] otherwise. See `responsive.dart` for the breakpoint.
 ///
-/// TODO(startup-gate): accounts are required before training as well as
-/// chat (product decision, see doc/plans/2026-09-30-morsecq-plan.zh-CN.md).
-/// A startup gate (restore account -> login -> shell, else onboarding) will
-/// wrap this widget; it does not exist yet.
+/// Rendered only behind `StartupGate`: an identity is required before
+/// training as well as chat (product decision, see
+/// doc/plans/2026-09-30-morsecq-plan.zh-CN.md).
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 

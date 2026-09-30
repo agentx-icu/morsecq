@@ -9,6 +9,7 @@ import 'reference_playback_settings.dart';
 import 'reference_player.dart';
 import 'reference_section_view.dart';
 import 'reference_strings.dart';
+import 'translator_screen.dart';
 
 /// Browsable Morse reference: alphabet, punctuation, prosigns, Q-codes, CW
 /// abbreviations and the Koch order, each row playable, with one search box
@@ -96,12 +97,31 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
     title: const Text(ReferenceStrings.referenceTitle),
     actions: <Widget>[
       IconButton(
+        tooltip: ReferenceStrings.translatorTitle,
+        icon: const Icon(Icons.swap_horiz),
+        onPressed: () => _openTranslator(context),
+      ),
+      IconButton(
         tooltip: ReferenceStrings.playbackSettings,
         icon: const Icon(Icons.tune),
         onPressed: () => showReferencePlaybackSettings(context, _settings),
       ),
     ],
   );
+
+  /// Pushed as a route (not a tab) so only one sidetone engine is alive at a
+  /// time; the settings object is shared so speed/tone follow the user.
+  void _openTranslator(BuildContext context) {
+    _controller.stop();
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => TranslatorScreen(
+          playerFactory: widget.playerFactory,
+          settings: _settings,
+        ),
+      ),
+    );
+  }
 
   Widget _searchField() => Padding(
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

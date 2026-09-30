@@ -3,6 +3,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../../di/app_settings.dart';
+import '../../i18n/language_settings_tile.dart';
 import '../../startup/startup_controller.dart';
 import '../account/account_strings.dart';
 import '../account/account_widgets.dart';
@@ -104,6 +105,7 @@ class _MeBody extends StatelessWidget {
             context,
           ).pushNamed(AccountStrings.trainingSettingsRoute),
         ),
+        const LanguageSettingsTile(),
         _SectionHeader(AccountStrings.sectionAbout),
         const ListTile(
           leading: Icon(Icons.gavel_outlined),

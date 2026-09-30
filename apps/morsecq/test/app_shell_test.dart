@@ -8,6 +8,8 @@ import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq/ui/pages/reference_page.dart';
+import 'package:morsecq/ui/reference/reference_screen.dart';
 import 'package:morsecq/ui/responsive.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
@@ -18,6 +20,7 @@ const _labels = [
   LearnPage.title,
   ChatPage.title,
   GroupsPage.title,
+  ReferencePage.title,
   MePage.title,
 ];
 
@@ -28,6 +31,7 @@ final Map<String, Finder> _pageMarkers = {
   LearnPage.title: find.text(LearnPage.description),
   ChatPage.title: find.text(ChatPage.description),
   GroupsPage.title: find.text(GroupsPage.description),
+  ReferencePage.title: find.byType(ReferenceScreen),
   MePage.title: find.byType(IdentityCard),
 };
 
@@ -66,7 +70,7 @@ void _expectSelected(String label) {
 
 void main() {
   group('AppShell at phone width', () {
-    testWidgets('renders a bottom NavigationBar with four destinations', (
+    testWidgets('renders a bottom NavigationBar with five destinations', (
       tester,
     ) async {
       await _pumpAt(tester, kPhoneSize);
@@ -100,7 +104,7 @@ void main() {
   });
 
   group('AppShell at desktop width', () {
-    testWidgets('renders a NavigationRail with four destinations', (
+    testWidgets('renders a NavigationRail with five destinations', (
       tester,
     ) async {
       await _pumpAt(tester, kDesktopSize);

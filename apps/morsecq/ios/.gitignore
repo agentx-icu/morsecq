@@ -32,3 +32,9 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# morsecq: bundle libtim2tox_ffi — prebuilt native artifact staged by tool/build_ios_ffi.sh
+Frameworks/tim2tox_ffi.xcframework/
+
+# morsecq: bundle libtim2tox_ffi — prebuilt native artifact staged by tool/build_ios_ffi.sh
+Frameworks/tim2tox_ffi.xcframework/

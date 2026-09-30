@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'di/app_scope.dart';
 import 'di/app_settings.dart';
 import 'di/backend_factory.dart';
+import 'i18n/l10n_extension.dart';
+import 'i18n/locale_controller.dart';
 import 'startup/startup_gate.dart';
 import 'ui/account/account_strings.dart';
 import 'ui/account/backup_file_gateway.dart';
@@ -38,8 +40,13 @@ class MorsecqApp extends StatelessWidget {
           final themeMode = context.select<AppSettings, ThemeMode>(
             (s) => s.themeMode,
           );
+          final locale = context.watch<LocaleController>().locale;
           return MaterialApp(
             title: AccountStrings.appName,
+            onGenerateTitle: (context) => S.of(context).appName,
+            localizationsDelegates: S.localizationsDelegates,
+            supportedLocales: S.supportedLocales,
+            locale: locale,
             debugShowCheckedModeBanner: false,
             theme: MorsecqTheme.light(),
             darkTheme: MorsecqTheme.dark(),

@@ -1,0 +1,401 @@
+name: Native (libtim2tox_ffi)
+
+# Builds the Tim2Tox FFI shim (c-toxcore + pinned static libsodium, NO ToxAV)
+# for every morsecq target, uploads each as a workflow artifact, then proves the
+# three desktop apps still build in release mode against it with the real Tox
+# backend compiled in (--dart-define=MORSECQ_FAKE_BACKEND=false).
+#
+# Modelled on toxee's build-packages.yml / analyze.yml (same pinned actions,
+# same runner images, same libtim2tox_ffi cache keyed on the tim2tox submodule
+# SHA + the build script). Linux aarch64 and Windows arm64 are experimental
+# (continue-on-error), as in toxee.
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+    paths:
+      - ".github/workflows/native.yml"
+      - "tool/ci/**"
+      - "tool/build_android_ffi.sh"
+      - "tool/build_ios_ffi.sh"
+      - "build_all.sh"
+      - "third_party/tim2tox"
+      - ".gitmodules"
+      - "apps/morsecq/android/**"
+      - "apps/morsecq/ios/**"
+      - "apps/morsecq/linux/**"
+      - "apps/morsecq/macos/**"
+      - "apps/morsecq/windows/**"
+      - "packages/morsecq_chat/**"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - ".github/workflows/native.yml"
+      - "tool/ci/**"
+      - "tool/build_android_ffi.sh"
+      - "tool/build_ios_ffi.sh"
+      - "build_all.sh"
+      - "third_party/tim2tox"
+      - ".gitmodules"
+      - "apps/morsecq/android/**"
+      - "apps/morsecq/ios/**"
+      - "apps/morsecq/linux/**"
+      - "apps/morsecq/macos/**"
+      - "apps/morsecq/windows/**"
+      - "packages/morsecq_chat/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FLUTTER_VERSION: "3.41.9"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Native library per target
+  # ---------------------------------------------------------------------------
+  native:
+    name: native ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.timeout }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x86_64
+            runner: ubuntu-24.04
+            experimental: false
+            timeout: 45
+          - target: linux-aarch64
+            runner: ubuntu-24.04-arm
+            experimental: true
+            timeout: 60
+          - target: windows-x64
+            runner: windows-2022
+            experimental: false
+            timeout: 75
+            vcpkg_triplet: x64-windows
+            msvc_arch: amd64
+          - target: windows-arm64
+            runner: windows-11-arm
+            experimental: true
+            timeout: 90
+            vcpkg_triplet: arm64-windows
+            msvc_arch: arm64
+          - target: macos-x86_64
+            runner: macos-15-intel
+            experimental: false
+            timeout: 45
+          - target: macos-arm64
+            runner: macos-15
+            experimental: false
+            timeout: 45
+          - target: android
+            runner: ubuntu-24.04
+            experimental: false
+            timeout: 75
+          - target: ios
+            runner: macos-15
+            experimental: false
+            timeout: 75
+
+    steps:
+      - name: Configure Git line endings (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      # Flutter is needed by the NATIVE build too: tim2tox/ffi/CMakeLists.txt
+      # compiles dart_api_dl.c from the Flutter-bundled Dart SDK.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Precache Dart SDK headers
+        run: flutter --version
+
+      - name: Resolve tim2tox revision (cache key)
+        id: t2t_rev
+        run: echo "sha=$(git rev-parse HEAD:third_party/tim2tox)" >> "$GITHUB_OUTPUT"
+
+      # libtim2tox_ffi is a pure function of (tim2tox SHA, target, build
+      # script, toolchain image); cache the finished artifact directory and skip
+      # the build on a hit. The dependency prefix (static libsodium) is cached
+      # separately so a tim2tox bump does not rebuild libsodium.
+      - name: Cache built libtim2tox_ffi
+        id: cache_native
+        uses: actions/cache@v4
+        with:
+          path: build/native/${{ matrix.target }}
+          key: tim2tox-ffi-${{ matrix.target }}-notoxav-nosqlite-${{ steps.t2t_rev.outputs.sha }}-${{ hashFiles('tool/ci/build_tim2tox.sh', 'tool/ci/common.sh', 'tool/build_ios_ffi.sh') }}
+
+      - name: Cache libsodium prefix
+        if: steps.cache_native.outputs.cache-hit != 'true' && !startsWith(matrix.target, 'windows')
+        uses: actions/cache@v4
+        with:
+          path: build/native/.deps
+          key: libsodium-1.0.20-${{ matrix.target }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tool/ci/build_tim2tox.sh') }}
+
+      # ---- per-OS prerequisites --------------------------------------------
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux' && steps.cache_native.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          for attempt in 1 2 3; do
+            if sudo apt-get update && sudo apt-get install -y build-essential cmake ninja-build pkg-config patchelf; then
+              exit 0
+            fi
+            echo "apt-get attempt $attempt failed; retrying" >&2
+            sleep $((attempt * 15))
+          done
+          exit 1
+
+      - name: Install macOS build dependencies
+        if: runner.os == 'macOS' && steps.cache_native.outputs.cache-hit != 'true'
+        run: brew install cmake ninja pkg-config
+
+      - name: Set up Java (Android)
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # vcpkg provides libsodium (dynamic) + pthreads-win32 + pkgconf; both DLLs
+      # are captured next to tim2tox_ffi.dll by the build script.
+      - name: Install vcpkg and native dependencies (Windows)
+        if: runner.os == 'Windows' && steps.cache_native.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $vcpkgRoot = Join-Path $env:RUNNER_TEMP "vcpkg"
+          git clone --depth 1 https://github.com/microsoft/vcpkg $vcpkgRoot
+          & "$vcpkgRoot\bootstrap-vcpkg.bat" -disableMetrics
+          & "$vcpkgRoot\vcpkg.exe" install `
+            libsodium:${{ matrix.vcpkg_triplet }} `
+            pthreads:${{ matrix.vcpkg_triplet }} `
+            pkgconf:${{ matrix.vcpkg_triplet }}
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      # vcvars so cmake's project() finds MSVC for the requested arch.
+      - name: Set up MSVC developer environment (Windows)
+        if: runner.os == 'Windows' && steps.cache_native.outputs.cache-hit != 'true'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+
+      # ---- build ------------------------------------------------------------
+      - name: Build libtim2tox_ffi (desktop)
+        if: steps.cache_native.outputs.cache-hit != 'true' && matrix.target != 'android' && matrix.target != 'ios'
+        env:
+          # msvc-dev-cmd leaks VS's bundled vcpkg into VCPKG_ROOT; re-pin ours.
+          VCPKG_ROOT: ${{ runner.os == 'Windows' && format('{0}/vcpkg', runner.temp) || '' }}
+        run: bash tool/ci/build_tim2tox.sh --target "${{ matrix.target }}" --mode release --no-stage-app
+
+      # The ubuntu image exports ANDROID_NDK_LATEST_HOME / ANDROID_HOME as
+      # process env (not in the `env` context), so resolve the NDK in the shell.
+      # find_android_ndk() also scans $ANDROID_HOME/ndk/* as a fallback.
+      - name: Build libtim2tox_ffi (Android, all ABIs)
+        if: steps.cache_native.outputs.cache-hit != 'true' && matrix.target == 'android'
+        run: |
+          export ANDROID_NDK_HOME="${ANDROID_NDK_HOME:-${ANDROID_NDK_LATEST_HOME:-}}"
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME ANDROID_HOME=${ANDROID_HOME:-}"
+          bash tool/ci/build_tim2tox.sh --target android --android-abis arm64-v8a,armeabi-v7a,x86_64 --mode release --no-stage-app
+
+      # ios = device slice + universal simulator slice + the XCFramework the
+      # Podfile vendors. The artifact directory carries all three.
+      - name: Build libtim2tox_ffi (iOS device + simulator, XCFramework)
+        if: steps.cache_native.outputs.cache-hit != 'true' && matrix.target == 'ios'
+        env:
+          MORSECQ_IOS_XCFRAMEWORK_DIR: ${{ github.workspace }}/build/native/ios
+        run: |
+          bash tool/build_ios_ffi.sh --mode release
+          cp -R build/native/ios-device build/native/ios/ios-device
+          cp -R build/native/ios-simulator build/native/ios/ios-simulator
+
+      # Gate the BYTES that will be uploaded (a cache hit never ran CMake).
+      - name: Assert artifact carries no Tim2Tox test hooks
+        run: bash tool/ci/assert_no_test_hooks.sh "build/native/${{ matrix.target }}"
+
+      - name: List artifact
+        run: find "build/native/${{ matrix.target }}" -maxdepth 3 | sort
+
+      - name: Upload libtim2tox_ffi
+        uses: actions/upload-artifact@v4
+        with:
+          name: tim2tox-ffi-${{ matrix.target }}
+          path: build/native/${{ matrix.target }}
+          if-no-files-found: error
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # 2. Desktop app builds consuming the artifact (release, real backend)
+  # ---------------------------------------------------------------------------
+  app-linux:
+    name: flutter build linux (x86_64, release)
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Install Linux desktop dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev patchelf
+      - name: Download libtim2tox_ffi
+        uses: actions/download-artifact@v5
+        with:
+          name: tim2tox-ffi-linux-x86_64
+          path: build/native/linux-x86_64
+      - name: Bootstrap dependencies
+        run: dart run tool/bootstrap_deps.dart
+      - name: Resolve workspace
+        run: dart pub get
+      - name: Build Linux app (release, real Tox backend)
+        run: |
+          flutter config --enable-linux-desktop
+          cd apps/morsecq
+          flutter build linux --release --dart-define=MORSECQ_FAKE_BACKEND=false
+      - name: Verify the bundle ships libtim2tox_ffi.so
+        run: |
+          set -euo pipefail
+          so="$(find apps/morsecq/build/linux -path '*/release/bundle/lib/libtim2tox_ffi.so' -print -quit)"
+          [[ -n "$so" ]] || { echo "::error::libtim2tox_ffi.so missing from the Linux bundle"; exit 1; }
+          echo "bundled: $so"
+          readelf -d "$so" | grep -E 'RUNPATH|RPATH' || true
+          bash tool/ci/assert_no_test_hooks.sh "$so"
+      - name: Upload Linux bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: morsecq-linux-x86_64-release
+          path: apps/morsecq/build/linux/x64/release/bundle
+          if-no-files-found: error
+          retention-days: 14
+
+  app-windows:
+    name: flutter build windows (x64, release)
+    needs: native
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - name: Configure Git line endings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Download tim2tox_ffi.dll (+ libsodium.dll, pthreadVC3.dll)
+        uses: actions/download-artifact@v5
+        with:
+          name: tim2tox-ffi-windows-x64
+          path: build/native/windows-x64
+      - name: Bootstrap dependencies
+        run: dart run tool/bootstrap_deps.dart
+      - name: Resolve workspace
+        run: dart pub get
+      - name: Build Windows app (release, real Tox backend)
+        run: |
+          flutter config --enable-windows-desktop
+          cd apps/morsecq
+          flutter build windows --release --dart-define=MORSECQ_FAKE_BACKEND=false
+      - name: Verify the runner ships tim2tox_ffi.dll and its runtime DLLs
+        run: |
+          set -euo pipefail
+          dir="apps/morsecq/build/windows/x64/runner/Release"
+          for f in tim2tox_ffi.dll libsodium.dll; do
+            [[ -f "$dir/$f" ]] || { echo "::error::$f missing from $dir"; exit 1; }
+            echo "bundled: $dir/$f"
+          done
+          [[ -f "$dir/pthreadVC3.dll" ]] && echo "bundled: $dir/pthreadVC3.dll" || echo "note: pthreadVC3.dll not bundled (only needed if tim2tox_ffi.dll imports it)"
+          bash tool/ci/assert_no_test_hooks.sh "$dir/tim2tox_ffi.dll"
+      - name: Upload Windows runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: morsecq-windows-x64-release
+          path: apps/morsecq/build/windows/x64/runner/Release
+          if-no-files-found: error
+          retention-days: 14
+
+  app-macos:
+    name: flutter build macos (arm64, release)
+    needs: native
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Download libtim2tox_ffi.dylib
+        uses: actions/download-artifact@v5
+        with:
+          name: tim2tox-ffi-macos-arm64
+          path: build/native/macos-arm64
+      - name: Bootstrap dependencies
+        run: dart run tool/bootstrap_deps.dart
+      - name: Resolve workspace
+        run: dart pub get
+      # Copies the dylib into apps/morsecq/macos/Frameworks/ (the Podfile
+      # vendors it from there) and touches the Podfile so pod install re-runs.
+      - name: Stage libtim2tox_ffi.dylib into the app
+        run: bash tool/ci/build_tim2tox.sh --target macos-arm64 --stage-only
+      - name: Build macOS app (release, real Tox backend)
+        run: |
+          flutter config --enable-macos-desktop
+          cd apps/morsecq
+          flutter build macos --release --dart-define=MORSECQ_FAKE_BACKEND=false
+      - name: Verify the app bundle embeds libtim2tox_ffi.dylib
+        run: |
+          set -euo pipefail
+          app="$(find apps/morsecq/build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
+          [[ -n "$app" ]] || { echo "::error::no .app produced"; exit 1; }
+          dylib="$app/Contents/Frameworks/libtim2tox_ffi.dylib"
+          [[ -f "$dylib" ]] || { echo "::error::libtim2tox_ffi.dylib missing from $app/Contents/Frameworks"; ls -R "$app/Contents/Frameworks" || true; exit 1; }
+          echo "embedded: $dylib"
+          otool -L "$dylib" | head -20
+          codesign --verify --strict "$dylib"
+          bash tool/ci/assert_no_test_hooks.sh "$dylib"
+      - name: Upload macOS app
+        uses: actions/upload-artifact@v4
+        with:
+          name: morsecq-macos-arm64-release
+          path: apps/morsecq/build/macos/Build/Products/Release/*.app
+          if-no-files-found: error
+          retention-days: 14
