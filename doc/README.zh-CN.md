@@ -16,7 +16,9 @@
 
 ## 推荐阅读路径
 
-- **接手项目** —— [HANDOVER.zh-CN.md](HANDOVER.zh-CN.md)：上一会话结束时的状态、坑、待办、多代理开发方式。
+- **接手项目** —— [HANDOVER-2026-09-30-screenshots-test-pyramid.zh-CN.md](HANDOVER-2026-09-30-screenshots-test-pyramid.zh-CN.md)
+  是截图流水线 / 测试金字塔分支的专项交接（未修的评审发现、剩余平台）；
+  [HANDOVER.zh-CN.md](HANDOVER.zh-CN.md)：上一会话结束时的状态、坑、待办、多代理开发方式。
 - **只想跑起来** —— [主 README](../README.zh-CN.md)「构建前提」→
   [operations/BUILD_AND_DEPLOY.zh-CN.md](operations/BUILD_AND_DEPLOY.zh-CN.md)
   了解本平台的原生库构建。
