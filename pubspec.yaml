@@ -13,3 +13,4 @@ workspace:
   - packages/morse_io
   - packages/morse_trainer
   - apps/morsecq
+  - packages/morsecq_chat

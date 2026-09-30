@@ -21,6 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # third_party/tim2tox (Dart side only; nested c-toxcore is not needed
+          # for analysis and tests without the native library).
+          submodules: true
 
       - uses: subosito/flutter-action@v2
         with:
@@ -28,6 +32,12 @@ jobs:
           channel: 'stable'
           # Caches the Flutter SDK download/extract (~2.5 min/job).
           cache: true
+
+      # Vendors the Tencent Cloud Chat SDK that tim2tox_dart depends on, applies
+      # tim2tox's patch series and writes the root pubspec_overrides.yaml.
+      # Must run BEFORE pub get (same rule as toxee).
+      - name: Bootstrap vendored dependencies
+        run: dart run tool/bootstrap_deps.dart
 
       # Pub workspace: one resolution at the root covers every package/app.
       - name: Install dependencies
@@ -51,13 +61,14 @@ jobs:
       - name: Import guard (layering)
         run: dart run tool/import_guard.dart
 
-      # Native-library jobs (libtim2tox_ffi) arrive with packages/morsecq_chat.
+      # Tests tagged `needs-native` require libtim2tox_ffi and run from the
+      # native workflow instead.
       - name: Tests
         run: |
           set -euo pipefail
           for dir in packages/* apps/*; do
             [ -f "$dir/pubspec.yaml" ] && [ -d "$dir/test" ] || continue
             echo "::group::flutter test $dir"
-            (cd "$dir" && flutter test)
+            (cd "$dir" && flutter test --exclude-tags=needs-native)
             echo "::endgroup::"
           done

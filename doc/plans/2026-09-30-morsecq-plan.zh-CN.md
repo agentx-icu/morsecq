@@ -266,7 +266,15 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 | 2 | learn-ui | `apps/morsecq/lib/ui/learn`：课程/听抄/发报页面，接 trainer + io | 波次 1 |
 | 2 | account-ui | 启动门、身份创建/解锁/备份页面、Me 页、Provider 装配（`lib/di`），对着契约 + `FakeIdentityService` 开发 | 契约包 |
 | 2 | chat-ui | 会话列表、单聊、好友、群组页面，莫斯气泡与三模式输入，`FakeChatService` | 契约包；播放/键控等 morse_io 就绪 |
-| 3 | native-ci | 五端 `libtim2tox_ffi --no-toxav` 构建作业 | 需要有工具链的 runner；本容器无法验证 |
+| 3 | native-ci | `tool/ci/build_tim2tox.sh`（默认 `--no-toxav`）、五端打包脚本、`.github/workflows/native.yml`、平台捆绑、`doc/operations/BUILD_AND_DEPLOY` | 需要有工具链的 runner；本容器无法验证 |
+| 3 | reference-ui | `ui/reference`：字母表/标点/prosign/Q 简语/CW 缩写手册、双向翻译器、`MorsePatternText` | core、io |
+| 3 | stats-ui | `ui/stats`：课程/准确率/连续天数概览、趋势图、字符格、混淆热图、练习日历（CustomPainter，无图表库） | trainer |
+| 3 | dsp + listen-ui | `packages/morse_dsp`（Goertzel、自动调谐、包络门限、`AudioMorseDecoder`，纯 Dart）+ `ui/listen`（`record` 麦克风流） | core |
+| 3 | desktop-shell | `lib/desktop`：窗口尺寸持久化、关闭到托盘、托盘菜单、快捷键 intent（移动端全 no-op） | — |
+| 3 | notifications | `lib/notifications` + `lib/lifecycle`：本地通知（含莫斯图样）、角标、前后台协调、无 `voip` 的 iOS 后台策略 | 契约包 |
+| 3 | l10n | `l10n.yaml`、`app_en.arb` / `app_zh.arb`、`LocaleController`、`tool/strings_to_arb.dart` 迁移工具 | 读各 `*_strings.dart` |
+
+波次 3 起按用户指示「只编码、不构建不测试」：代理只跑 analyzer 做静态检查，测试以文件形式落盘，留待后续统一执行。
 
 每一波结束由编排者执行：`dart pub get`、`flutter analyze` 全包、`dart run tool/check_complexity.dart`、`dart run tool/import_guard.dart`、`flutter test` 全包，然后提交推送到 `master`（仓库默认分支）。
 
@@ -275,3 +283,4 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 - **2026-09-30 v0.1** 初稿。代码事实来自对 toxee 主干（`5a1cebe`）与 tim2tox 子模块 pin `9d4245a` 的勘查（子模块在本容器未初始化，tim2tox 文件通过其 GitHub raw 内容读取）。**codex 评审未执行**：本容器没有 codex 可执行文件，按工作约定显式跳过并记欠账。
 - **2026-09-30 v0.2** 应用独立 reviewer 代理的 15 条发现（替代 codex 的自校，codex 评审仍欠）。阻塞级两条：`cloudCustomData` 不上线路、群消息不接受该参数 → 重写 §2.3/§5.2 为「v1 纯文本 + v2 上游消息附注」两层设计。主要级：`flutter_pcm_sound` 仅三端 → 侧音首选 `flutter_soloud`；headless 有两处硬走腾讯绑定且无现成测试 → 决策改为「B 变体为基线」并自建 headless 测试；toxee 可搬运层缩减为约 1.1k 行；Platform 自定义消息实为 `__custom__:` 文本、包 ID 仅「已提交」注册；自定义包无分片、载荷 ≤ 1.2 KB；解码阈值改为中点值 + 两簇 dit 估计 + Farnsworth 自适应；GPL-3.0 与 App Store 冲突升级为拍板项并从验收门移除；`morsecq_chat` 收纳账号/启动层、增加 learn 构建目标、M0 拆为 M0a/M0b、补人力日换算。次要级：`build.sh` 可出共享库、`--no-toxav` 已存在、iOS 后台窗口因无 `voip` 模式更短、实时键控大概率需要 lossy 接口、`loadHistory` 命名、构造函数实际所需接口、`tencent_cloud_chat_sdk: any` 未 pin、`morsecq_chat` 测试需 Flutter binding。
 - **2026-09-30 v0.3** 定名 morsecq（仓库 `agentx-icu/morsecq`）；产品决定「训练也需要身份」→ 去掉 learn 构建目标，M1 改为「身份 + 训练」，训练进度按身份持久化；新增 §11 多代理并行开发编排。文档从 toxee 仓库迁至本仓库。本会话按用户指示不做 codex 审核。
+- **2026-09-30 v0.3.1** 波次 2 chat 代理实现结论回写：§3.1 第 8 条需补充——Tim2Tox 的离线群邀请重放走 `TIMGroupManager.inviteUserToGroup`，它要求 `TIMManager.initSDK`（会装上第二条入站路径），morsecq 不调用；改为在 `morsecq_chat` 自己的 `ConversationMetaStore` 维护离线邀请队列，好友在线时直接调 `DartInviteUserToGroup`。另：`tim2tox_dart` 包级依赖的 `tencent_cloud_chat_common` 以空 stub（`third_party/stubs/`）满足 pub，不引入 UIKit 组件；Tim2Tox 轮询路径无法区分 `failed` 与 `sent`（`MessageStatus.failed` 目前不会出现）→ 列入 D 线；`flutter_secure_storage` 需 `^11`（9.x 的 `win32 ^5` 与 `share_plus` 冲突）。

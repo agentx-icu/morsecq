@@ -1,0 +1,243 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:tim2tox_dart/service/ffi_chat_service.dart';
+
+import '../adapters/bootstrap_adapter.dart';
+import '../adapters/key_value_store.dart';
+import '../adapters/prefs_adapter.dart';
+import '../adapters/scratch_file_adapter.dart';
+import '../identity/identity_paths.dart';
+import '../logging/chat_logger.dart';
+import '../native/native_library.dart';
+import '../util/value_stream.dart';
+
+/// Everything a Tim2Tox session needs to know about the identity it serves.
+class EngineSessionConfig {
+  const EngineSessionConfig({
+    required this.paths,
+    required this.toxId,
+    required this.displayName,
+    required this.statusMessage,
+  });
+
+  final IdentityPaths paths;
+  final String toxId;
+  final String displayName;
+  final String statusMessage;
+
+  /// First 16 hex chars of the Tox ID: the preferences scope (toxee's
+  /// convention).
+  String get accountPrefix =>
+      toxId.length >= 16 ? toxId.substring(0, 16).toUpperCase() : toxId;
+}
+
+/// The running Tim2Tox node, or the absence of one.
+///
+/// `IdentityService.connect()` starts it, `disconnect()` stops it, and the
+/// chat service follows [sessionChanges] to bind to whichever
+/// `FfiChatService` is live. The interface exists so the identity state
+/// machine can be tested with a fake that never touches the native library.
+abstract class ChatEngine {
+  /// The live service, or null while stopped.
+  FfiChatService? get service;
+
+  /// Emits the new service on start and null on stop; replays the current one.
+  Stream<FfiChatService?> get sessionChanges;
+
+  /// Tox DHT connectivity of the live service (false while stopped).
+  bool get isConnected;
+  Stream<bool> get connectionChanges;
+
+  /// Generates a fresh Tox profile in `paths.profileDirectory`, applies the
+  /// name/status, saves it, and returns the 76-hex Tox ID. Leaves no running
+  /// instance behind (the same "bootstrap instance" trick toxee's
+  /// `registerNewAccount` uses).
+  Future<String> createProfile({
+    required IdentityPaths paths,
+    required String displayName,
+    required String statusMessage,
+  });
+
+  /// init → login → self profile → startPolling → group identity sync.
+  Future<void> start(EngineSessionConfig config);
+
+  /// Flush + uninit. Safe when already stopped.
+  Future<void> stop();
+
+  /// Re-applies the name/status to the running instance, if any.
+  Future<void> updateSelfProfile(String displayName, String statusMessage);
+
+  /// Forces Tox savedata to disk now (before an export, before backgrounding).
+  void saveProfileNow();
+
+  Future<void> dispose();
+}
+
+/// The real thing: one `FfiChatService` per started session.
+///
+/// A fresh service object per session (rather than re-initialising one
+/// object) keeps every stream controller fresh: `FfiChatService.dispose`
+/// closes its object-lifetime controllers and does not recreate them.
+class Tim2ToxEngine extends ChatEngine {
+  Tim2ToxEngine({
+    required KeyValueStore store,
+    required ChatLogger logger,
+    String? libraryPathOverride,
+    bool? isMobile,
+  })  : _store = store,
+        _logger = logger,
+        _libraryPathOverride = libraryPathOverride,
+        _isMobile = isMobile ?? (Platform.isAndroid || Platform.isIOS);
+
+  /// V2TIM login alias Tim2Tox stamps on our own rows (`fromUserId`,
+  /// `isSelf`). Never leaves the device; the wire identity is the Tox key.
+  static const String loginAlias = 'morsecq';
+
+  final KeyValueStore _store;
+  final ChatLogger _logger;
+  final String? _libraryPathOverride;
+  final bool _isMobile;
+
+  FfiChatService? _service;
+  StreamSubscription<bool>? _connSub;
+  IdentityScratchFileService? _scratch;
+  final ValueStream<FfiChatService?> _sessions = ValueStream(null);
+  final ValueStream<bool> _connected = ValueStream(false);
+  Future<void>? _stopping;
+
+  @override
+  FfiChatService? get service => _service;
+
+  @override
+  Stream<FfiChatService?> get sessionChanges => _sessions.stream;
+
+  @override
+  bool get isConnected => _connected.value;
+
+  @override
+  Stream<bool> get connectionChanges => _connected.stream;
+
+  FfiChatService _build(IdentityPaths paths, String accountPrefix) {
+    NativeLibrarySetup.ensure(libraryPathOverride: _libraryPathOverride);
+    final scratch = IdentityScratchFileService(paths.scratchDirectory);
+    _scratch = scratch;
+    return FfiChatService(
+      preferencesService: Tim2ToxPreferencesAdapter(
+        _store,
+        accountPrefix: accountPrefix,
+        isMobile: _isMobile,
+      ),
+      loggerService: Tim2ToxLoggerAdapter(_logger),
+      bootstrapService: Tim2ToxBootstrapAdapter(_store),
+      historyDirectory: paths.historyDirectory,
+      queueFilePath: paths.offlineQueueFile,
+      fileRecvPath: paths.fileRecvDirectory,
+      avatarsPath: paths.avatarsDirectory,
+      scratchFileService: scratch,
+    );
+  }
+
+  @override
+  Future<String> createProfile({
+    required IdentityPaths paths,
+    required String displayName,
+    required String statusMessage,
+  }) async {
+    await paths.ensureDirectories();
+    // No Tox ID yet, so no scope: this instance persists nothing but the
+    // savedata and is torn down before the real session opens.
+    final svc = _build(paths, '');
+    try {
+      await svc.init(profileDirectory: paths.profileDirectory);
+      await svc.login(userId: loginAlias, userSig: 'dummy_sig');
+      final toxId = svc.getSelfToxId();
+      if (toxId == null || toxId.isEmpty) {
+        throw StateError('Tox did not report an address for the new profile');
+      }
+      await svc.updateSelfProfile(
+        nickname: displayName,
+        statusMessage: statusMessage,
+      );
+      svc.saveToxProfileNow();
+      return toxId.toUpperCase();
+    } finally {
+      await svc.dispose();
+    }
+  }
+
+  @override
+  Future<void> start(EngineSessionConfig config) async {
+    if (_service != null) return;
+    await _stopping;
+    await config.paths.ensureDirectories();
+    final svc = _build(config.paths, config.accountPrefix);
+    try {
+      await svc.init(profileDirectory: config.paths.profileDirectory);
+      await svc.login(userId: loginAlias, userSig: 'dummy_sig');
+      await svc.updateSelfProfile(
+        nickname: config.displayName,
+        statusMessage: config.statusMessage,
+      );
+    } catch (e, st) {
+      _logger.error('[Tim2ToxEngine] start failed', e, st);
+      await svc.dispose();
+      rethrow;
+    }
+    _service = svc;
+    _connected.add(svc.isConnected);
+    _connSub = svc.connectionStatusStream.listen(_connected.add);
+    // Polling is what pumps friend presence, inbound messages, file requests
+    // and the offline-queue drains; nothing moves before this call.
+    await svc.startPolling();
+    // startPolling schedules this un-awaited; do it once more explicitly so
+    // callers can rely on persisted group identities right after connect().
+    // It is also the pull-side fallback for the group callbacks that are
+    // dropped when Tim2ToxSdkPlatform is not installed (toxee
+    // HYBRID_ARCHITECTURE.md §4.3).
+    await svc.syncGroupIdentitiesFromNative();
+    _sessions.force(svc);
+  }
+
+  @override
+  Future<void> stop() {
+    final svc = _service;
+    if (svc == null) return _stopping ?? Future<void>.value();
+    _service = null;
+    return _stopping = () async {
+      await _connSub?.cancel();
+      _connSub = null;
+      _connected.add(false);
+      _sessions.force(null);
+      try {
+        svc.saveToxProfileNow();
+        await svc.flushPendingHistory();
+        await svc.dispose();
+      } catch (e, st) {
+        _logger.error('[Tim2ToxEngine] stop failed', e, st);
+      }
+      await _scratch?.clear();
+      _scratch = null;
+    }();
+  }
+
+  @override
+  Future<void> updateSelfProfile(String displayName, String statusMessage) {
+    final svc = _service;
+    if (svc == null) return Future<void>.value();
+    return svc.updateSelfProfile(
+      nickname: displayName,
+      statusMessage: statusMessage,
+    );
+  }
+
+  @override
+  void saveProfileNow() => _service?.saveToxProfileNow();
+
+  @override
+  Future<void> dispose() async {
+    await stop();
+    await _sessions.close();
+    await _connected.close();
+  }
+}

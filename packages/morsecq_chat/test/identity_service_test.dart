@@ -1,0 +1,249 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq_chat/morsecq_chat.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:path/path.dart' as p;
+
+import 'helpers/fakes.dart';
+
+void main() {
+  late Directory tempRoot;
+  late IdentityPaths paths;
+  late MemorySecureStore secure;
+  late FakeChatEngine engine;
+  final crypto = FakeProfileCrypto();
+
+  Tim2ToxIdentityService newService() => Tim2ToxIdentityService(
+        paths: paths,
+        engine: engine,
+        crypto: crypto,
+        verifier: PasswordVerifier(secure, iterations: 10),
+      );
+
+  setUp(() async {
+    tempRoot = await Directory.systemTemp.createTemp('morsecq_identity_');
+    paths = IdentityPaths(p.join(tempRoot.path, 'identity'));
+    secure = MemorySecureStore();
+    engine = FakeChatEngine();
+  });
+
+  tearDown(() async {
+    await engine.dispose();
+    if (tempRoot.existsSync()) await tempRoot.delete(recursive: true);
+  });
+
+  Matcher throwsCode(String code) =>
+      throwsA(isA<ChatException>().having((e) => e.code, 'code', code));
+
+  group('first run', () {
+    test('inspect → none, create → ready, connect starts the engine', () async {
+      final svc = newService();
+      expect(await svc.inspect(), IdentityState.none);
+      expect(svc.current, isNull);
+      expect(() => svc.open(), throwsCode('no_identity'));
+
+      final id = await svc.create(displayName: 'W1AW');
+      expect(id.toxId, kSelfToxId);
+      expect(id.displayName, 'W1AW');
+      expect(id.hasPassword, isFalse);
+      expect(id.publicKey, kSelfKey);
+      expect(svc.current, isNotNull);
+      expect(await svc.inspect(), IdentityState.ready);
+      expect(File(paths.identityFile).existsSync(), isTrue);
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse);
+
+      expect(svc.connectionStatus, ConnectionStatus.offline);
+      await svc.connect();
+      expect(engine.startCalls, hasLength(1));
+      expect(engine.startCalls.single.toxId, kSelfToxId);
+      expect(engine.startCalls.single.displayName, 'W1AW');
+      expect(engine.startCalls.single.accountPrefix, kSelfToxId.substring(0, 16));
+      await svc.connect(); // idempotent
+      expect(engine.startCalls, hasLength(1));
+      expect(svc.connectionStatus, ConnectionStatus.connecting);
+      engine.setConnected(true);
+      await pumpEventQueue();
+      expect(svc.connectionStatus, ConnectionStatus.online);
+
+      await svc.disconnect();
+      expect(engine.stopCalls, 1);
+      expect(svc.connectionStatus, ConnectionStatus.offline);
+      expect(await svc.dataDirectory(), paths.trainingDirectory);
+      await svc.dispose();
+    });
+
+    test('create refuses to overwrite an existing identity', () async {
+      final svc = newService();
+      await svc.create(displayName: 'A');
+      expect(() => svc.create(displayName: 'B'), throwsCode('identity_exists'));
+      await svc.dispose();
+    });
+  });
+
+  group('password-protected identity', () {
+    test('locked → wrong_password → unlock → ready; profile is encrypted at rest',
+        () async {
+      final first = newService();
+      await first.create(displayName: 'K1ABC', password: 'pw');
+      expect(first.current!.hasPassword, isTrue);
+      final atRest = File(paths.profileFile).readAsBytesSync();
+      expect(crypto.isEncrypted(atRest), isTrue,
+          reason: 'engine stopped + password set ⇒ encrypted on disk');
+      await first.dispose();
+
+      // A fresh process.
+      final second = newService();
+      expect(await second.inspect(), IdentityState.locked);
+      expect(() => second.open(), throwsCode('locked'));
+      expect(() => second.unlock('nope'), throwsCode('wrong_password'));
+      expect(() => second.unlock(''), throwsCode('wrong_password'));
+      expect(second.current, isNull);
+
+      final id = await second.unlock('pw');
+      expect(id.displayName, 'K1ABC');
+      expect(await second.inspect(), IdentityState.ready);
+
+      await second.connect();
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse,
+          reason: 'decrypted right before init');
+      await second.disconnect();
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isTrue,
+          reason: 're-encrypted right after uninit');
+      await second.dispose();
+    });
+
+    test('verifier is authoritative when the file was left plaintext', () async {
+      final first = newService();
+      await first.create(displayName: 'N0CALL', password: 'pw');
+      await first.connect(); // plaintext while running
+      await first.dispose(); // simulate a crash: no disconnect, no re-encrypt
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse);
+
+      final second = newService();
+      expect(await second.inspect(), IdentityState.locked);
+      expect(() => second.unlock('bad'), throwsCode('wrong_password'));
+      await second.unlock('pw');
+      expect(await second.inspect(), IdentityState.ready);
+      await second.dispose();
+    });
+
+    test('changePassword: add, change, remove', () async {
+      final svc = newService();
+      await svc.create(displayName: 'A');
+      await svc.changePassword(newPassword: 'one');
+      expect(svc.current!.hasPassword, isTrue);
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isTrue);
+
+      expect(
+        () => svc.changePassword(oldPassword: 'wrong', newPassword: 'two'),
+        throwsCode('wrong_password'),
+      );
+      await svc.changePassword(oldPassword: 'one', newPassword: 'two');
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'two'),
+          isNotEmpty);
+
+      await svc.changePassword(oldPassword: 'two');
+      expect(svc.current!.hasPassword, isFalse);
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse);
+      expect(await svc.inspect(), IdentityState.ready);
+      await svc.dispose();
+    });
+  });
+
+  group('backup', () {
+    test('export/import round trip restores identity and training data', () async {
+      final svc = newService();
+      await svc.create(displayName: 'DL1ABC', password: 'pw');
+      await svc.updateProfile(statusMessage: '73');
+      final training = await svc.dataDirectory();
+      File(p.join(training, 'progress.json')).writeAsStringSync('{"wpm":18}');
+      Directory(p.join(training, 'nested')).createSync();
+      File(p.join(training, 'nested', 'x.bin')).writeAsBytesSync([1, 2, 3]);
+
+      final bytes = await svc.exportBackup();
+      final container = BackupContainer.decode(bytes);
+      expect(container.profileEncrypted, isTrue);
+      expect(container.entries.keys, containsAll([
+        'identity.json',
+        'tox_profile.tox',
+        'training/progress.json',
+        'training/nested/x.bin',
+      ]));
+      await svc.dispose();
+
+      // Restore into a different root, as on a new device.
+      final otherRoot = IdentityPaths(p.join(tempRoot.path, 'other'));
+      final otherSecure = MemorySecureStore();
+      final restored = Tim2ToxIdentityService(
+        paths: otherRoot,
+        engine: engine,
+        crypto: crypto,
+        verifier: PasswordVerifier(otherSecure, iterations: 10),
+      );
+      expect(() => restored.importBackup(bytes), throwsCode('wrong_password'));
+      expect(() => restored.importBackup(bytes, password: 'no'),
+          throwsCode('wrong_password'));
+      final id = await restored.importBackup(bytes, password: 'pw');
+      expect(id.toxId, kSelfToxId);
+      expect(id.displayName, 'DL1ABC');
+      expect(id.statusMessage, '73');
+      expect(id.hasPassword, isTrue);
+      expect(
+        File(p.join(otherRoot.trainingDirectory, 'progress.json')).readAsStringSync(),
+        '{"wpm":18}',
+      );
+      expect(
+        File(p.join(otherRoot.trainingDirectory, 'nested', 'x.bin')).readAsBytesSync(),
+        [1, 2, 3],
+      );
+      // Password carried over: the restored identity unlocks and connects.
+      await restored.connect();
+      expect(engine.startCalls.last.toxId, kSelfToxId);
+      await restored.disconnect();
+      expect(await PasswordVerifier(otherSecure, iterations: 10).verify(kSelfToxId, 'pw'),
+          isTrue);
+      await restored.dispose();
+    });
+
+    test('an unencrypted backup imports without a password', () async {
+      final svc = newService();
+      await svc.create(displayName: 'plain');
+      final bytes = await svc.exportBackup();
+      expect(BackupContainer.decode(bytes).profileEncrypted, isFalse);
+      await svc.deleteIdentity();
+      expect(await svc.inspect(), IdentityState.none);
+      final id = await svc.importBackup(bytes);
+      expect(id.displayName, 'plain');
+      expect(id.hasPassword, isFalse);
+      expect(await svc.inspect(), IdentityState.ready);
+      await svc.dispose();
+    });
+
+    test('garbage is rejected as invalid_backup', () async {
+      final svc = newService();
+      expect(
+        () => svc.importBackup(
+              Uint8List.fromList(utf8.encode('not a backup at all')),
+            ),
+        throwsCode('invalid_backup'),
+      );
+      await svc.dispose();
+    });
+  });
+
+  test('deleteIdentity wipes disk, verifier and current', () async {
+    final svc = newService();
+    await svc.create(displayName: 'gone', password: 'pw');
+    await svc.connect();
+    await svc.deleteIdentity();
+    expect(engine.stopCalls, 1);
+    expect(Directory(paths.root).existsSync(), isFalse);
+    expect(secure.values, isEmpty);
+    expect(svc.current, isNull);
+    expect(await svc.inspect(), IdentityState.none);
+    await svc.dispose();
+  });
+}

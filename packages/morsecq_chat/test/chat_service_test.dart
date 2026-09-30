@@ -1,0 +1,273 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq_chat/morsecq_chat.dart';
+import 'package:morsecq_chat/src/adapters/prefs_adapter.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:morsecq_chat_api/testing.dart';
+import 'package:tim2tox_dart/service/ffi_chat_service.dart';
+
+import 'helpers/fakes.dart';
+
+/// Drives the real `FfiChatService` (Tim2Tox's Dart layer: history, offline
+/// queue, unread barrier) over a binding fake, the way toxee's
+/// `ffi_chat_service_*_test.dart` files do. Nothing here needs the native
+/// library.
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const pathProvider = MethodChannel('plugins.flutter.io/path_provider');
+
+  late Directory tempRoot;
+  late FakeTim2ToxFfi ffi;
+  late MemoryKeyValueStore store;
+  late FfiChatService engineService;
+  late FakeChatEngine engine;
+  late FakeIdentityService identity;
+  late Tim2ToxChatService chat;
+
+  const prefix = '1111111111111111';
+
+  setUp(() async {
+    tempRoot = await Directory.systemTemp.createTemp('morsecq_chat_');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProvider, (_) async => tempRoot.path);
+    ffi = FakeTim2ToxFfi();
+    store = MemoryKeyValueStore();
+    final paths = IdentityPaths('${tempRoot.path}/identity');
+    await paths.ensureDirectories();
+    engineService = FfiChatService(
+      ffiForTesting: ffi,
+      preferencesService: Tim2ToxPreferencesAdapter(store, accountPrefix: prefix),
+      historyDirectory: paths.historyDirectory,
+      queueFilePath: paths.offlineQueueFile,
+      fileRecvPath: paths.fileRecvDirectory,
+      avatarsPath: paths.avatarsDirectory,
+    )
+      ..debugBeginSessionForTest()
+      ..debugNativePendingInvitesOverride = () => const [];
+    engine = FakeChatEngine();
+    identity = FakeIdentityService.withProfile(
+      identity: const Identity(toxId: kSelfToxId, displayName: 'me'),
+      connectDelay: Duration.zero,
+    );
+    await identity.open();
+    chat = Tim2ToxChatService(
+      engine: engine,
+      identity: identity,
+      store: store,
+      pollInterval: const Duration(milliseconds: 50),
+    );
+  });
+
+  tearDown(() async {
+    await chat.dispose();
+    await engine.dispose();
+    await identity.dispose();
+    await engineService.dispose();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(pathProvider, null);
+    if (tempRoot.existsSync()) await tempRoot.delete(recursive: true);
+  });
+
+  Future<void> bind() async {
+    engine.bind(engineService);
+    await pumpEventQueue();
+    // Let the first refresh tick run.
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+  }
+
+  Matcher throwsCode(String code) =>
+      throwsA(isA<ChatException>().having((e) => e.code, 'code', code));
+
+  test('before connect: reads are empty, mutations throw not_connected', () async {
+    expect(chat.friends, isEmpty);
+    expect(chat.conversations, isEmpty);
+    expect(chat.groups, isEmpty);
+    expect(chat.maxMessageBytes, 1322);
+    expect(() => chat.sendText('c2c_$kPeerKey', 'hi'), throwsCode('not_connected'));
+    expect(() => chat.addFriend(kPeerToxId), throwsCode('not_connected'));
+    expect(() => chat.loadHistory('c2c_$kPeerKey'), throwsCode('not_connected'));
+    // Streams replay the current (empty) value to late listeners.
+    expect(await chat.friendChanges.first, isEmpty);
+  });
+
+  test('friends and requests are derived from the engine on each tick', () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    ffi.applications.add((userId: 'a' * 64, wording: 'CQ?'));
+    await bind();
+    expect(chat.friends, hasLength(1));
+    expect(chat.friends.single.publicKey, kPeerKey);
+    expect(chat.friends.single.displayName, 'W1AW');
+    expect(chat.friends.single.online, isFalse);
+    expect(chat.friendRequests.single.publicKey, 'A' * 64);
+    expect(chat.friendRequests.single.message, 'CQ?');
+    // A friend with no history still yields a conversation.
+    expect(chat.conversations.map((c) => c.id), ['c2c_$kPeerKey']);
+    expect(chat.conversations.single.title, 'W1AW');
+    expect(chat.conversations.single.lastMessage, isNull);
+  });
+
+  test('sendText to an offline friend queues a pending row and updates the list',
+      () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    await bind();
+    final events = <ChatMessage>[];
+    final sub = chat.messageEvents.listen(events.add);
+
+    final row = await chat.sendText('c2c_$kPeerKey', 'CQ CQ DE ME');
+    expect(row.status, MessageStatus.pending);
+    expect(row.isMine, isTrue);
+    expect(row.conversationId, 'c2c_$kPeerKey');
+    expect(row.senderId, kSelfKey);
+    expect(row.senderName, 'me');
+    expect(row.text, 'CQ CQ DE ME');
+    await pumpEventQueue();
+    expect(events.map((e) => e.id), contains(row.id));
+    expect(events.single.status, MessageStatus.pending);
+
+    final conv = chat.conversations.single;
+    expect(conv.lastMessage?.id, row.id);
+    expect(conv.lastMessage?.status, MessageStatus.pending);
+    expect(conv.unreadCount, 0);
+
+    final history = await chat.loadHistory('c2c_$kPeerKey');
+    expect(history.map((m) => m.id), [row.id]);
+    await sub.cancel();
+  });
+
+  test('sendText enforces the Tox byte budget and rejects empty text', () async {
+    await bind();
+    expect(
+      () => chat.sendText('c2c_$kPeerKey', 'ä' * 700), // 1400 bytes
+      throwsCode('message_too_long'),
+    );
+    expect(() => chat.sendText('c2c_$kPeerKey', '   '), throwsCode('empty_message'));
+    // 1322 bytes exactly is allowed.
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    final row = await chat.sendText('c2c_$kPeerKey', 'x' * 1322);
+    expect(row.status, MessageStatus.pending);
+  });
+
+  test('inbound messages surface as received rows with unread counts', () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: true));
+    await bind();
+    final events = <ChatMessage>[];
+    final sub = chat.messageEvents.listen(events.add);
+    engineService.ingestC2cText(peer: kPeerKey, text: 'QRZ?', isSelf: false);
+    await pumpEventQueue();
+    expect(events, hasLength(1));
+    expect(events.single.status, MessageStatus.received);
+    expect(events.single.isMine, isFalse);
+    expect(events.single.senderId, kPeerKey);
+    expect(events.single.senderName, 'W1AW');
+    expect(events.single.conversationId, 'c2c_$kPeerKey');
+    expect(chat.conversations.single.unreadCount, 1);
+
+    await chat.markRead('c2c_$kPeerKey');
+    expect(chat.conversations.single.unreadCount, 0);
+    await sub.cancel();
+  });
+
+  test('pinned, draft, delete and hidden-until-next-message', () async {
+    ffi.friends
+      ..add((userId: kPeerKey, nick: 'W1AW', online: false))
+      ..add((userId: 'b' * 64, nick: 'Bob', online: false));
+    await bind();
+    engineService.ingestC2cText(peer: kPeerKey, text: 'newest', isSelf: false);
+    await pumpEventQueue();
+    expect(chat.conversations.first.id, 'c2c_$kPeerKey', reason: 'newest first');
+
+    await chat.setPinned('c2c_${'B' * 64}', true);
+    expect(chat.conversations.first.id, 'c2c_${'B' * 64}', reason: 'pinned first');
+    expect(chat.conversations.first.pinned, isTrue);
+    await chat.setDraft('c2c_${'B' * 64}', 'de me k');
+    expect(chat.conversations.first.draft, 'de me k');
+
+    await chat.deleteConversation('c2c_$kPeerKey');
+    expect(chat.conversations.map((c) => c.id), ['c2c_${'B' * 64}']);
+    expect(await chat.loadHistory('c2c_$kPeerKey'), isEmpty);
+    // A new message brings the conversation back.
+    engineService.ingestC2cText(peer: kPeerKey, text: 'again', isSelf: false);
+    await pumpEventQueue();
+    expect(chat.conversations.map((c) => c.id), contains('c2c_$kPeerKey'));
+
+    // Metadata survives a new service instance over the same store.
+    final again = Tim2ToxChatService(engine: engine, identity: identity, store: store);
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    expect(again.conversations.firstWhere((c) => c.id == 'c2c_${'B' * 64}').pinned, isTrue);
+    await again.dispose();
+  });
+
+  test('groups map from Tim2Tox known groups + local name/kind records', () async {
+    final prefs = Tim2ToxPreferencesAdapter(store, accountPrefix: prefix);
+    await prefs.setGroupName('tox_1', 'Net 40m');
+    await prefs.setGroupType('tox_1', 'conference');
+    await prefs.setGroupName('tox_2', 'NGC room');
+    engineService
+      ..debugAddKnownGroupForTest('tox_1')
+      ..debugAddKnownGroupForTest('tox_2');
+    await bind();
+    expect(chat.groups.map((g) => g.id), ['tox_1', 'tox_2']);
+    final conf = chat.groups.first;
+    expect(conf.name, 'Net 40m');
+    expect(conf.kind, GroupKind.conference);
+    expect(conf.chatId, isNull);
+    final ngc = chat.groups.last;
+    expect(ngc.kind, GroupKind.group, reason: 'default kind is NGC');
+    expect(ngc.name, 'NGC room');
+    expect(
+      chat.conversations.map((c) => c.id).toSet(),
+      {'group_tox_1', 'group_tox_2'},
+    );
+    expect(chat.conversations.firstWhere((c) => c.id == 'group_tox_1').kind,
+        ConversationKind.group);
+    expect(chat.conversations.firstWhere((c) => c.id == 'group_tox_1').title,
+        'Net 40m');
+    expect(chat.groupInvites, isEmpty);
+    expect(() => chat.groupMembers('tox_404'), throwsCode('group_not_found'));
+    expect(() => chat.inviteToGroup('tox_404', kPeerKey), throwsCode('group_not_found'));
+  });
+
+  test('inviting an offline friend is queued locally, not sent', () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    engineService.debugAddKnownGroupForTest('tox_1');
+    await bind();
+    await chat.inviteToGroup('tox_1', kPeerToxId);
+    final meta = ConversationMetaStoreProbe(store, prefix);
+    expect(meta.queuedGroupsFor(kPeerKey), ['tox_1']);
+  });
+
+  test('addFriend validates before touching Tox', () async {
+    await bind();
+    expect(() => chat.addFriend('nope'), throwsCode('invalid_tox_id'));
+    expect(() => chat.addFriend(kSelfToxId), throwsCode('own_id'));
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    expect(() => chat.addFriend(kPeerToxId), throwsCode('already_friend'));
+  });
+
+  test('detaching the session empties the lists and blocks mutations', () async {
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: false));
+    await bind();
+    expect(chat.friends, isNotEmpty);
+    engine.bind(null);
+    await pumpEventQueue();
+    expect(chat.friends, isEmpty);
+    expect(chat.conversations, isEmpty);
+    expect(() => chat.sendText('c2c_$kPeerKey', 'x'), throwsCode('not_connected'));
+  });
+}
+
+/// Reads the queued-invite slot the way `ConversationMetaStore` writes it.
+class ConversationMetaStoreProbe {
+  ConversationMetaStoreProbe(this._store, this._prefix);
+  final KeyValueStore _store;
+  final String _prefix;
+
+  List<String> queuedGroupsFor(String friendKey) => [
+        for (final e
+            in _store.getStringList('morsecq_queued_group_invites_$_prefix') ?? [])
+          if (e.endsWith('\t$friendKey')) e.substring(0, e.indexOf('\t')),
+      ];
+}
