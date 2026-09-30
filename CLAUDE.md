@@ -24,9 +24,11 @@ Read it before changing scope; keep it in sync when scope changes.
 | `packages/morse_dsp` | **Pure Dart** audio decoding: Goertzel tone detection, auto-tune, envelope gate, `AudioMorseDecoder` | never imports Flutter |
 | `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity is required before training too). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen}`, `lib/training` (per-identity progress store), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
 | `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — to be added with `morsecq_chat` | never edit in place |
-| `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart` | scanned by the complexity gate too |
+| `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`; `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too |
+| `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
+| `doc/screenshots/` | committed frames per platform × locale, published only by `tool/screenshots/capture.sh` | never edit PNGs by hand; regenerate after UI changes |
 | `doc/plans/` | 方案 / plan documents | every edit appends to the doc's change-log section |
-| `.github/workflows/` | CI (`analyze.yml`) | mirrors the local commands below exactly |
+| `.github/workflows/` | CI (`analyze.yml`; `e2e.yml` opt-in via `workflow_dispatch` or the `ci:e2e` label) | mirrors the local commands below exactly |
 
 ## Common commands
 
@@ -47,6 +49,14 @@ for d in packages/* apps/*; do flutter analyze "$d"; done
 (cd packages/morse_core && dart test)
 (cd apps/morsecq && flutter test)
 (cd apps/morsecq && flutter test test/app_shell_test.dart)
+
+# Test pyramid — gates, unit, widget, then e2e on a real device (doc/testing/TEST_PYRAMID.md)
+tool/test_pyramid.sh                           # all tiers; host desktop is the e2e device
+tool/test_pyramid.sh --level e2e --device macos
+(cd apps/morsecq && flutter test integration_test -d macos --dart-define=MORSECQ_FAKE_BACKEND=true)
+
+# Product screenshots (tool/screenshots/README.md) -> doc/screenshots/<platform>/<locale>/
+tool/screenshots/capture.sh --platforms macos            # ios, ipad, android, linux, windows too
 
 # Repo gates (both HARD: exit 1 on violation)
 dart run tool/check_complexity.dart            # .dart files > 500 LOC vs tool/.complexity_baseline.txt

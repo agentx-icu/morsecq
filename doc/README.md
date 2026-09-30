@@ -51,6 +51,17 @@ top (today that is the Chinese original of the plan document and the English
   Windows, Android and iOS; where the library lands in each bundle; minimum OS
   versions; the `native.yml` CI workflow and what it cannot verify.
 
+## Testing and screenshots
+
+- [testing/TEST_PYRAMID.md](testing/TEST_PYRAMID.md) /
+  [zh-CN](testing/TEST_PYRAMID.zh-CN.md) — The four tiers (gates, unit,
+  widget, e2e on a real device), what each proves, `tool/test_pyramid.sh`,
+  and the bugs only the top tier found.
+- [screenshots/README.md](screenshots/README.md) /
+  [zh-CN](screenshots/README.zh-CN.md) — Gallery of the committed product
+  screenshots per platform and locale; produced by
+  [tool/screenshots](../tool/screenshots/README.md).
+
 ## Packages (`packages/*`)
 
 Each package carries its own README (English default; the `.zh-CN.md`

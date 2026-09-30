@@ -105,6 +105,10 @@ Every document exists in English (`X.md`, the default that links and CI point
 to) and Simplified Chinese (`X.zh-CN.md`). The index is
 [doc/README.md](doc/README.md).
 
+Screenshots of every screen, per platform and language, are in
+[doc/screenshots/README.md](doc/screenshots/README.md); the test tiers and how
+to run them are in [doc/testing/TEST_PYRAMID.md](doc/testing/TEST_PYRAMID.md).
+
 Conventions, gates and the working agreement are in [CLAUDE.md](CLAUDE.md).
 The product and architecture plan is
 [doc/plans/2026-09-30-morsecq-plan.md](doc/plans/2026-09-30-morsecq-plan.md)

@@ -42,6 +42,15 @@
   iOS 上构建 `libtim2tox_ffi` 原生库（默认 `--no-toxav`）；库在各平台包中的落点；
   最低系统版本；`native.yml` CI 流程及其无法验证的部分。
 
+## 测试与截图
+
+- [testing/TEST_PYRAMID.zh-CN.md](testing/TEST_PYRAMID.zh-CN.md) /
+  [English](testing/TEST_PYRAMID.md) —— 四层（门禁、单元、控件、真实设备端到端）
+  各自证明什么、`tool/test_pyramid.sh`、以及只有顶层才发现的 bug。
+- [screenshots/README.zh-CN.md](screenshots/README.zh-CN.md) /
+  [English](screenshots/README.md) —— 按平台与语言提交的产品截图画廊；由
+  [tool/screenshots](../tool/screenshots/README.zh-CN.md) 生成。
+
 ## 包（`packages/*`）
 
 每个包都有自己的 README（英文为默认；`.zh-CN.md` 对应版本在同一目录）。
