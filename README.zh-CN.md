@@ -9,9 +9,10 @@
 
 ## 状态
 
-**Pre-alpha。** v1 规划的全部模块已接入 App 外壳，并通过仓库门禁（analyzer、复杂度、
-import guard、ARB 同步），但测试套件尚未端到端跑过，也没有可用的发布版本。任何地方都
-可能发生破坏性变更。
+**Pre-alpha。** v1 规划的全部模块已接入 App 外壳，通过仓库门禁（analyzer、复杂度、
+import guard、ARB 同步）和完整的测试金字塔（单元、控件，以及 macOS、iOS 模拟器、Android
+模拟器上的真实 UI 启动测试；见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)）。
+尚无可用的发布版本，任何地方都可能发生破坏性变更。
 
 ## 功能
 

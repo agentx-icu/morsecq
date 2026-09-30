@@ -19,8 +19,10 @@ tool/test_pyramid.sh --level e2e --device macos
 | **进程内集成** | 按 `main()` 的方式接线的服务：`AppScope` → `AppServices` → 假实现；有 `libtim2tox_ffi` 时的无头 Tox smoke（`needs-native`，`native.yml`） | `apps/morsecq/test/di`、`packages/morsecq_chat/test/native_smoke_test.dart` | 随控件层；原生工作流 | 计入上面 |
 | **端到端（真实 UI）** | 在真实平台上运行应用自己的 `main()`，按新用户的点击路径驱动：引导 → 每个页签 → 一次练习 → 加好友并发一句 → 翻译器 → 我；外加 17 场景 × 2 语言的截图走查 | `apps/morsecq/integration_test` | 发布前在 macOS；`e2e.yml` 按需；已在 macOS、iOS 模拟器、Android 模拟器验证（2026-09-30） | 3 个测试，每平台 34 帧 |
 
-端到端层永远带 `--dart-define=MORSECQ_FAKE_BACKEND=true`：内存后端不落盘，每次启动
-都从引导页开始，设备上不会留下任何东西。
+端到端层永远带 `--dart-define=MORSECQ_FAKE_BACKEND=true`：内存后端不创建 Tox 身份、
+不保存资料，每次启动都从引导页开始。会碰到设备的只有：启动测试跑的是真实 `main()`，
+所以应用正常的 `settings.json`（语言、窗口位置）会写到 application-support 目录；截图走查
+把灌入的进度和假资料写在一个临时目录里，测试结束时删除。
 
 ## 每层的职责
 

@@ -245,16 +245,22 @@ List<int> labelledIndices(int count, {int maxLabels = 6}) {
   if (count <= 0) {
     return const <int>[];
   }
-  if (count <= maxLabels) {
+  // Both ends are always labelled, so the budget is at least two.
+  final budget = math.max(2, maxLabels);
+  if (count <= budget) {
     return List<int>.generate(count, (i) => i);
   }
   final last = count - 1;
-  final stride = (last / (maxLabels - 1)).ceil();
-  final out = <int>[];
-  for (var i = 0; i < last; i += stride) {
-    out.add(i);
+  // ceil(last / (budget - 1)) in integer arithmetic: no double rounding.
+  final stride = (last + budget - 2) ~/ (budget - 1);
+  final out = <int>[0];
+  // Advance by subtraction from `last` so a huge count cannot overflow.
+  while (last - out.last > stride) {
+    out.add(out.last + stride);
   }
-  if (last - out.last < stride / 2) {
+  // The stride label just before the end is dropped when it would sit
+  // closer to the end than half a stride.
+  if (out.length > 1 && 2 * (last - out.last) < stride) {
     out.removeLast();
   }
   out.add(last);

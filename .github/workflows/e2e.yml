@@ -51,12 +51,18 @@ jobs:
           flutter test integration_test -d macos \
             --dart-define=MORSECQ_FAKE_BACKEND=true
 
+      # Staging inside the workspace so a failed run's frames are still
+      # uploaded (the default staging is a temp dir the runner discards).
       - name: Screenshots
+        env:
+          MORSECQ_SHOT_STAGING: build/shot_staging
         run: tool/screenshots/capture.sh --platforms macos --out build/screenshots
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: screenshots-macos
-          path: build/screenshots
+          path: |
+            build/screenshots
+            build/shot_staging
           if-no-files-found: warn

@@ -11,9 +11,10 @@ Tim2Tox wire protocol as its sibling project **toxee**, so the two interoperate.
 ## Status
 
 **Pre-alpha.** All planned v1 modules are wired into the app shell and pass the
-repository gates (analyzer, complexity, import guard, ARB sync), but the test
-suites have not yet been run end-to-end and there is no usable release. Expect
-breaking changes everywhere.
+repository gates (analyzer, complexity, import guard, ARB sync) and the full
+test pyramid (unit, widget, and real-UI launch tests on macOS, iOS simulator
+and Android emulator; see [doc/testing/TEST_PYRAMID.md](doc/testing/TEST_PYRAMID.md)).
+There is no usable release yet. Expect breaking changes everywhere.
 
 ## Features
 

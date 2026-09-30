@@ -11,7 +11,7 @@ tool/screenshots/capture.sh                          # macOS (default), en + zh
 tool/screenshots/capture.sh --platforms macos,ios,ipad,android
 tool/screenshots/capture.sh --platforms android --device emulator-5554
 tool/screenshots/capture.sh --locales zh --keep      # one language, keep staging
-MORSECQ_SHOT_THEME=dark tool/screenshots/capture.sh  # (define; see knobs)
+MORSECQ_SHOT_THEME=dark tool/screenshots/capture.sh  # env → --dart-define (see knobs)
 ```
 
 Platforms: `macos`, `linux`, `windows` (the host desktop), `ios` (an iPhone
@@ -56,8 +56,13 @@ The pipeline is a normal `integration_test`:
   abbreviations, which is what is keyed on the air).
 - **Publish gate**: a platform is copied into `doc/screenshots/` only when its
   `flutter drive` exited 0, every scene of every locale exists, is at least
-  8 KiB, and no two frames are byte-identical. A failed platform leaves the
-  committed frames untouched and prints the staging directory.
+  8 KiB, and no two frames are byte-identical (`cmp`, not just a checksum).
+  The replacement set is assembled next to the target and swapped in whole;
+  a failed platform leaves the committed frames untouched. Staging
+  (`MORSECQ_SHOT_STAGING`, else a temp dir) is kept on any failure. A
+  `--locales` subset is verified but not published into the gallery, which
+  must always hold every locale; use `--out` for a partial set. `--device`
+  ids are checked against the requested platform.
 
 `flutter test integration_test/screenshots_test.dart -d <device>` runs the
 same walk as a plain UI test (every scene must render without an overflow or a

@@ -123,8 +123,11 @@ class _AddFriendFormState extends State<AddFriendForm> {
     final ThemeData theme = Theme.of(context);
     final S s = context.s;
     final String? serverError = _serverError(s);
+    // Scrollable: the ID field autofocuses, so on a short phone the keyboard
+    // inset plus the scan row could otherwise push the send button off the
+    // sheet.
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         child: Form(
           key: _form,
@@ -147,12 +150,14 @@ class _AddFriendFormState extends State<AddFriendForm> {
                   labelText: s.chatToxIdLabel,
                   border: const OutlineInputBorder(),
                   errorText: serverError,
-                  // No suffixIcon on purpose: a Tooltip inside the suffix
-                  // slot produced an invisible SemanticsNode (framework
-                  // assertion) on every platform while the sheet slid away,
-                  // because the shrinking sheet lays the field out with a
-                  // negative height (integration_test/app_launch_test.dart on
-                  // macOS and iOS). The scan action lives below the field.
+                  // No suffixIcon on purpose. With a Tooltip in this slot the
+                  // framework asserted "Invisible SemanticsNodes should not
+                  // be added to the tree" while the sheet was dismissed after
+                  // a send, on macOS and iOS alike (the tooltip's button node
+                  // ended up with an inverted rect under the suffixIcon tag;
+                  // integration_test/app_launch_test.dart). Without the
+                  // tooltip the node is gone; the scan action lives below the
+                  // field instead.
                 ),
                 validator: (v) =>
                     validateToxIdInput(s, v, ownToxId: widget.ownToxId),

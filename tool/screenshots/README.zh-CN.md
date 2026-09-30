@@ -46,8 +46,11 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
 - **语言**：每种语言单独一遍，用各自的一份演示文案（中文帧里是中文名字和中文群名；
   电码正文保持 CW 缩写，那才是空中实际拍发的内容）。
 - **发布门禁**：只有当该平台的 `flutter drive` 退出码为 0、每种语言的每个场景都存在、
-  不小于 8 KiB、且没有两帧字节相同时，才复制进 `doc/screenshots/`；失败的平台不动
-  仓库里的帧，并打印暂存目录。
+  不小于 8 KiB、且没有两帧字节相同（用 `cmp` 确认，不只看校验和）时，才复制进
+  `doc/screenshots/`。替换集先在目标旁边整套装好再整体换入；失败的平台不动仓库里的帧。
+  暂存目录（`MORSECQ_SHOT_STAGING`，否则是临时目录）在任何失败时都保留。`--locales`
+  只给子集时只校验不发布（画廊必须始终包含所有语言），要发布局部集合用 `--out`。
+  `--device` 给的 id 会核对是否属于所请求的平台。
 
 `flutter test integration_test/screenshots_test.dart -d <device>` 会把同一套走查当作
 普通 UI 测试跑（每个场景都必须渲染成功，无溢出、无缺失控件），帧被丢弃；
