@@ -2638,5 +2638,22 @@
   "referenceTelegraphNone": "not in this codebook",
   "@referenceTelegraphNone": {
     "description": "Translator: shown in place of the code groups when the typed Chinese characters exist only in the other codebook"
-  }
+  },
+  "appearanceTitle": "Appearance",
+  "appearanceStyles": "Interface style",
+  "appearanceChoose": "Choose a style, preview, then apply",
+  "appearanceMode": "Brightness",
+  "appearancePreview": "Preview",
+  "appearanceApply": "Apply style",
+  "appearanceRestore": "Restore defaults",
+  "appearanceApplied": "Appearance saved",
+  "appearanceSaveFailed": "Could not save appearance. Try again.",
+  "appearanceClassic": "Classic Brass",
+  "appearanceModern": "Modern Calm",
+  "appearanceRadio": "Night Radio",
+  "appearancePaper": "Paper Handbook",
+  "appearanceCartoon": "Fresh Cartoon",
+  "appearanceLight": "Light",
+  "appearanceDark": "Dark",
+  "appearanceSubtitle": "Five styles with light and dark modes"
 }

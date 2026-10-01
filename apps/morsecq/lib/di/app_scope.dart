@@ -63,6 +63,7 @@ class _AppScopeState extends State<AppScope> {
   late final ChatService _chat = widget.factory.createChatService(_identity);
   late final AppSettings _settings = AppSettings(
     backendLabel: widget.factory.label,
+    store: widget.localeStore,
   );
   late final StartupController _startup = StartupController(_identity);
   late final BackupFileGateway _backupFiles =

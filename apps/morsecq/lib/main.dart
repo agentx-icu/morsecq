@@ -115,9 +115,7 @@ class MorsecqApp extends StatelessWidget {
       notificationApis: notifications,
       child: Builder(
         builder: (context) {
-          final themeMode = context.select<AppSettings, ThemeMode>(
-            (s) => s.themeMode,
-          );
+          final appearance = context.watch<AppSettings>();
           final locale = context.watch<LocaleController>().locale;
           return MaterialApp(
             // onGenerateTitle supersedes `title`; the window/task title is
@@ -130,9 +128,10 @@ class MorsecqApp extends StatelessWidget {
             // (zh-TW/HK/MO -> Traditional when shipped, unknown -> English).
             localeResolutionCallback: LocaleController.resolve,
             debugShowCheckedModeBanner: false,
-            theme: MorsecqTheme.light(),
-            darkTheme: MorsecqTheme.dark(),
-            themeMode: themeMode,
+            theme: MorsecqTheme.light(style: appearance.style),
+            darkTheme: MorsecqTheme.dark(style: appearance.style),
+            themeMode: appearance.themeMode,
+            themeAnimationDuration: Duration.zero,
             home: const StartupGate(child: AppShell()),
             routes: {
               kTrainingSettingsRoute: (_) => const TrainingSettingsEntry(),

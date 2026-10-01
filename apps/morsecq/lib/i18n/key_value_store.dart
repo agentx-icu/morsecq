@@ -70,26 +70,37 @@ final class JsonFileKeyValueStore implements KeyValueStore {
 
   final File file;
   final Map<String, String> _values;
+  Future<void> _writes = Future<void>.value();
 
   @override
   String? getString(String key) => _values[key];
 
   @override
-  Future<void> setString(String key, String value) {
-    _values[key] = value;
-    return _flush();
-  }
+  Future<void> setString(String key, String value) => _update(key, value);
 
   @override
-  Future<void> remove(String key) {
-    if (_values.remove(key) == null) return Future<void>.value();
-    return _flush();
-  }
+  Future<void> remove(String key) => _update(key, null);
 
-  Future<void> _flush() async {
-    await file.parent.create(recursive: true);
-    final tmp = File('${file.path}.tmp');
-    await tmp.writeAsString(jsonEncode(_values), flush: true);
-    await tmp.rename(file.path);
+  Future<void> _update(String key, String? value) {
+    final write = _writes.then((_) async {
+      if (value == null && !_values.containsKey(key)) return;
+      // Clone the last committed map inside the queue. A failed write must
+      // never leak into a later successful save of an unrelated preference.
+      final next = {..._values};
+      if (value == null) {
+        next.remove(key);
+      } else {
+        next[key] = value;
+      }
+      await file.parent.create(recursive: true);
+      final tmp = File('${file.path}.tmp');
+      await tmp.writeAsString(jsonEncode(next), flush: true);
+      await tmp.rename(file.path);
+      _values
+        ..clear()
+        ..addAll(next);
+    });
+    _writes = write.catchError((Object error) {});
+    return write;
   }
 }

@@ -50,8 +50,26 @@ Based on the actual interfaces in `doc/screenshots/`, retain the five destinatio
 
 The user approved Modern Calm, Night Radio, Paper Handbook, and Fresh Cartoon, and requested a design-artifact commit followed by development in a new worktree. Keep Classic Brass as the default; select the additional styles from Appearance. This proposal does not replace the existing product plan.
 
+## Rendered implementation previews
+
+These frames render the actual Flutter widgets with the existing Chinese demo data at 1280 × 800 and 430 × 932 logical pixels. They use real local fonts and Material icons. Night Radio is shown dark; the other styles are shown light. They validate widget layout and visual hierarchy, rather than native device behavior.
+
+| Style | Desktop | Phone |
+| --- | --- | --- |
+| Classic Brass | [Open](./implementation-previews/classic-desktop.png) | [Open](./implementation-previews/classic-phone.png) |
+| Modern Calm | [Open](./implementation-previews/modern-desktop.png) | [Open](./implementation-previews/modern-phone.png) |
+| Night Radio | [Open](./implementation-previews/radio-desktop.png) | [Open](./implementation-previews/radio-phone.png) |
+| Paper Handbook | [Open](./implementation-previews/paper-desktop.png) | [Open](./implementation-previews/paper-phone.png) |
+| Fresh Cartoon | [Open](./implementation-previews/cartoon-desktop.png) | [Open](./implementation-previews/cartoon-phone.png) |
+| Appearance chooser | [Open](./implementation-previews/appearance-desktop.png) | [Open](./implementation-previews/appearance-phone.png) |
+
+![Fresh Cartoon implemented on phone](./implementation-previews/cartoon-phone.png)
+
+Recreate the frames from `apps/morsecq` with the opt-in `test/appearance/style_render_test.dart` test. Pass `MORSECQ_RENDER_STYLES=true`, an absolute `MORSECQ_STYLE_RENDER_DIR`, and `MORSECQ_PREVIEW_FONT` pointing to a Chinese font file through `--dart-define`. The test uses optional macOS monospace/serif fonts when present; regular test runs skip this export.
+
 ## Revision log
 
 - 2026-10-01: Designed three additional styles and appearance settings from existing screenshots.
 - 2026-10-01: Added Fresh Cartoon at the user's request and expanded the chooser to five styles.
 - 2026-10-01: The user approved all four styles and requested development in an isolated worktree.
+- 2026-10-01: Added actual desktop/phone Flutter previews for the five implemented styles and appearance chooser.

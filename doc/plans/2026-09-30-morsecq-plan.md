@@ -153,6 +153,13 @@ Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be 
 - Flash: screen flash on all platforms; optional torch (`torch_light`) on mobile.
 - Audio session: iOS needs the `AVAudioSession` playback category so the sidetone sounds even with the mute switch on; Android uses the `USAGE_GAME` low-latency attribute.
 
+### 4.4 Appearance styles (approved 2026-10-01)
+
+- Retain Classic Brass as the default and add Modern Calm, Night Radio, Paper Handbook, and Fresh Cartoon. [Approved visual concepts](../designs/ui-styles-2026-10-01/README.md) and the [implementation plan](./2026-10-01-ui-styles-implementation.md) record the scope.
+- Me → Appearance and the Learn header shortcut open one chooser: local previews, independent System / Light / Dark mode, explicit Apply, and staged Restore Defaults. Persist one device-level record alongside language and window settings.
+- Shared themes cover the shell, training, chat, groups, reference, and account screens. New styles adjust the learning hierarchy and control geometry; changing appearance preserves navigation, drafts, training state, audio timing, and keyboard/touch keying.
+- Validate both phone and desktop layouts, large text, contrast, persistence failures, and simultaneous settings writes. This session uses independent Codex review; the user disabled Claude review.
+
 ## 5. Communication module design
 
 ### 5.1 Account and friends
@@ -285,6 +292,8 @@ From wave 3 on, per the user's instruction "code only, no build, no test": agent
 At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze` on all packages, `dart run tool/check_complexity.dart`, `dart run tool/import_guard.dart`, `flutter test` on all packages, then commits and pushes to `master` (the repository's default branch).
 
 ## Change log
+
+- **2026-10-01** — Added §4.4 after the user approved all four new styles, requested the design-artifact commit, and authorized development in a new worktree. Classic Brass remains the default; appearance and brightness are independent device settings.
 
 - **2026-09-30 v0.1** Initial draft. Code facts come from a survey of toxee mainline (`5a1cebe`) and the tim2tox submodule pin `9d4245a` (the submodule was not initialised in this container; tim2tox files were read via their GitHub raw content). **codex review not performed**: this container has no codex executable; per the working agreement the skip is declared explicitly and recorded as debt.
 - **2026-09-30 v0.2** Applied the 15 findings of an independent reviewer agent (self-check in place of codex; codex review still owed). Two blocking-level findings: `cloudCustomData` does not go on the wire, and group messages do not accept the parameter → §2.3/§5.2 rewritten as the two-layer "v1 plain text + v2 upstream message annotation" design. Major-level: `flutter_pcm_sound` covers only three platforms → sidetone first choice becomes `flutter_soloud`; headless has two places going hard through Tencent bindings and no existing tests → decision changed to "variant B as baseline" with in-house headless tests; toxee's portable layer shrinks to about 1.1k lines; Platform custom messages are really `__custom__:` text, the packet ID is only "submitted" for registration; custom packets have no fragmentation, payload ≤ 1.2 KB; decode thresholds changed to midpoint values + two-cluster dit estimate + Farnsworth adaptation; GPL-3.0 vs App Store conflict escalated to a decision item and removed from acceptance gates; `morsecq_chat` absorbs the account/startup layer, a learn build target is added, M0 is split into M0a/M0b, person-day conversion added. Minor-level: `build.sh` can produce the shared library, `--no-toxav` already exists, the iOS background window is shorter without `voip`, real-time keying very likely needs a lossy API, `loadHistory` naming, the interfaces the constructor actually needs, `tencent_cloud_chat_sdk: any` unpinned, `morsecq_chat` tests need the Flutter binding.

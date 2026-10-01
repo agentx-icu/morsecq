@@ -81,6 +81,10 @@ launch and is required for training as well as chat.
   keyboard shortcuts on macOS / Windows / Linux; all no-ops on mobile.
 - **Bilingual UI** — English and Simplified Chinese via Flutter gen-l10n
   (`lib/l10n/app_en.arb` / `app_zh.arb`).
+- **Appearance** — Classic Brass, Modern Calm, Night Radio, Paper Handbook
+  and Fresh Cartoon, with independent System / Light / Dark mode. Choose
+  Me → Appearance to preview and apply; preferences survive restart.
+  [Approved designs and rendered previews](doc/designs/ui-styles-2026-10-01/README.md).
 - **Sound, haptics and light** — `flutter_soloud` sidetone on all five
   platforms, haptics on mobile, screen flash everywhere.
 

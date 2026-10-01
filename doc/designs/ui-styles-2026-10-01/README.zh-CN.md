@@ -50,8 +50,26 @@
 
 用户确认清爽现代、夜航电台、纸感手册、清新卡通四套全部保留，并要求先提交设计图，再新建 worktree 开发。保留经典黄铜作为默认外观，新增风格通过外观页选择。本稿不替代现有产品方案。
 
+## 实际界面预览
+
+以下图片由真实 Flutter 控件和现有中文演示数据渲染，分别使用 1280 × 800、430 × 932 逻辑像素，加载真实本地字体和 Material 图标。夜航电台展示深色，其余展示浅色。这些图片用于核对控件布局和视觉层级，原生设备行为仍需设备验证。
+
+| 风格 | 桌面 | 手机 |
+| --- | --- | --- |
+| 经典黄铜 | [查看](./implementation-previews/classic-desktop.png) | [查看](./implementation-previews/classic-phone.png) |
+| 清爽现代 | [查看](./implementation-previews/modern-desktop.png) | [查看](./implementation-previews/modern-phone.png) |
+| 夜航电台 | [查看](./implementation-previews/radio-desktop.png) | [查看](./implementation-previews/radio-phone.png) |
+| 纸感手册 | [查看](./implementation-previews/paper-desktop.png) | [查看](./implementation-previews/paper-phone.png) |
+| 清新卡通 | [查看](./implementation-previews/cartoon-desktop.png) | [查看](./implementation-previews/cartoon-phone.png) |
+| 外观选择 | [查看](./implementation-previews/appearance-desktop.png) | [查看](./implementation-previews/appearance-phone.png) |
+
+![已实现的清新卡通手机界面](./implementation-previews/cartoon-phone.png)
+
+在 `apps/morsecq` 下运行可选的 `test/appearance/style_render_test.dart` 测试即可重新生成。通过 `--dart-define` 传入 `MORSECQ_RENDER_STYLES=true`、绝对路径 `MORSECQ_STYLE_RENDER_DIR`，以及指向中文字体文件的 `MORSECQ_PREVIEW_FONT`。本地有 macOS 等宽 / 衬线字体时会额外加载；常规测试跳过图片导出。
+
 ## 修订记录
 
 - 2026-10-01：基于现有截图设计三种新增风格及切换页。
 - 2026-10-01：根据用户补充加入清新卡通，外观选择更新为五种。
 - 2026-10-01：用户确认四套全部保留，进入隔离 worktree 开发。
+- 2026-10-01：补充已实现的五套风格与外观选择页的桌面 / 手机 Flutter 预览图。
