@@ -97,11 +97,13 @@ jobs:
           cache: true
 
       # Same package set as the native workflow's Linux app build, plus a
-      # virtual X server for the real window.
+      # virtual X server for the real window and a CJK font: the runner image
+      # has none, so the zh frames would render every Chinese glyph as tofu
+      # (a Chinese-locale desktop ships one; Flutter uses the system fonts).
       - name: Install Linux desktop dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev libayatana-appindicator3-dev libasound2-dev xvfb
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev libayatana-appindicator3-dev libasound2-dev xvfb fonts-noto-cjk
 
       - name: Bootstrap vendored dependencies
         run: dart run tool/bootstrap_deps.dart
