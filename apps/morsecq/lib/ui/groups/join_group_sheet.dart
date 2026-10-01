@@ -17,9 +17,12 @@ Future<bool> showJoinGroupSheet(
   final bool? joined = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     showDragHandle: true,
-    builder: (_) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    builder: (sheetContext) => Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
+      ),
       child: JoinGroupForm(service: service),
     ),
   );
@@ -74,7 +77,8 @@ class _JoinGroupFormState extends State<JoinGroupForm> {
     final S s = context.s;
     final Object? error = _error;
     return SafeArea(
-      child: Padding(
+      top: false,
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         child: Form(
           key: _form,

@@ -11,6 +11,7 @@ import 'chat_layout.dart';
 import 'chat_scope.dart';
 import 'keying_input.dart';
 import 'input_mode.dart';
+import 'local_message_sends.dart';
 import 'morse_pattern_text.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
@@ -19,6 +20,88 @@ import 'morse_playback_settings.dart';
 /// iambic paddles. Hand-keyed characters land in the same draft field, so
 /// the operator can mix modes and fix typos before sending.
 export 'input_mode.dart';
+
+// Share write ordering across editors for the same service and conversation.
+// A pending dispose flush must finish before a reopened editor's newer draft.
+final _draftWriters = Expando<Map<String, _DraftWriter>>();
+
+_DraftWriter _writerFor(ChatService service, String id) {
+  final writers = _draftWriters[service] ??= {};
+  return writers.putIfAbsent(
+    id,
+    () => _DraftWriter((writer) {
+      if (identical(writers[id], writer)) writers.remove(id);
+    }),
+  );
+}
+
+class _DraftWriter {
+  _DraftWriter(this._invalidate);
+  final void Function(_DraftWriter) _invalidate;
+  Future<void> _tail = Future<void>.value();
+  Future<void> get settled => _tail;
+  int pending = 0;
+  String latest = '';
+  String savedDraft = '';
+  Object? error;
+  bool valid = true;
+  TextEditingController? _controller;
+  int _editors = 0;
+  StreamSubscription<Identity?>? _identitySub;
+
+  TextEditingController acquire(
+    String initialDraft,
+    IdentityService? identity,
+  ) {
+    if (_editors == 0 && pending == 0 && error == null) {
+      savedDraft = latest = initialDraft;
+    }
+    _editors++;
+    if (_identitySub == null && identity != null) {
+      final key = identity.current?.publicKey;
+      _identitySub = identity.identityChanges.listen((value) {
+        if (value == null || value.publicKey != key) {
+          valid = false;
+          _invalidate(this);
+          unawaited(_identitySub?.cancel());
+          _identitySub = null;
+        }
+      });
+    }
+    return _controller ??= TextEditingController(
+      text: pending > 0 || error != null ? latest : initialDraft,
+    );
+  }
+
+  void _releaseIdleObserver() {
+    if (_editors == 0 && pending == 0 && error == null) {
+      _invalidate(this);
+      unawaited(_identitySub?.cancel());
+      _identitySub = null;
+    }
+  }
+
+  void release() {
+    if (--_editors == 0) {
+      _controller?.dispose();
+      _controller = null;
+      _releaseIdleObserver();
+    }
+  }
+
+  Future<void> save(String draft, Future<void> Function() write) {
+    latest = draft;
+    pending++;
+    return _tail = _tail.then((_) async {
+      try {
+        await write();
+      } finally {
+        pending--;
+        _releaseIdleObserver();
+      }
+    });
+  }
+}
 
 /// The compose area: mode selector, optional keying pad, draft field with
 /// live Morse preview and remaining-byte counter, send button. Drafts are
@@ -48,30 +131,34 @@ class _MessageInputState extends State<MessageInput>
     implements IdentityDataStore {
   static const Duration _draftDebounce = Duration(milliseconds: 400);
 
-  late final TextEditingController _text = TextEditingController(
-    text: widget.initialDraft,
+  late final _DraftWriter _writer = _writerFor(
+    widget.service,
+    widget.conversationId,
+  );
+  // Multiple routes can open the same conversation. Share their text so each
+  // editor observes every edit revision, and an older send cannot clear it.
+  late final TextEditingController _text = _writer.acquire(
+    widget.initialDraft,
+    _identity,
   );
   final FocusNode _focus = FocusNode();
   InputMode _mode = InputMode.keyboard;
   Timer? _draftTimer;
-  String _savedDraft = '';
+  late String _lastDraft;
+  int _editRevision = 0;
   bool _sending = false;
   IdentityService? _identity;
   String? _identityKey;
   bool _acceptDrafts = true;
-  Future<void> _draftSave = Future<void>.value();
-  String _queuedDraft = '';
-  Object? _draftError;
   StreamSubscription<Identity?>? _identitySub;
   bool _identityInvalidated = false;
 
   @override
   void initState() {
     super.initState();
-    _savedDraft = widget.initialDraft;
-    _queuedDraft = widget.initialDraft;
     _mode = MorsePlaybackSettings.of(context, listen: false).inputMode;
     _identity = maybeIdentityService(context);
+    _lastDraft = _text.text;
     _identityKey = _identity?.current?.publicKey;
     _identitySub = _identity?.identityChanges.listen((identity) {
       if (identity == null || identity.publicKey != _identityKey) {
@@ -99,41 +186,47 @@ class _MessageInputState extends State<MessageInput>
       identity.unregisterDataStore(this);
     }
     _draftTimer?.cancel();
-    if (_text.text != _savedDraft) {
-      unawaited(_persistDraft());
-    }
+    unawaited(_persistDraft());
     _text.removeListener(_onChanged);
-    _text.dispose();
+    _writer.release();
     _focus.dispose();
     super.dispose();
   }
 
   void _onChanged() {
+    // Selection/focus changes do not create a new draft revision.
+    if (_text.text == _lastDraft) return;
+    _lastDraft = _text.text;
+    _editRevision++;
     setState(() {});
     _draftTimer?.cancel();
     _draftTimer = Timer(_draftDebounce, () => unawaited(_persistDraft()));
   }
 
   Future<void> _persistDraft() {
-    final String draft = _text.text;
-    if (!_acceptDrafts || draft == _queuedDraft) return _draftSave;
-    _queuedDraft = draft;
+    final String draft = _lastDraft;
+    if (!_acceptDrafts || !_writer.valid) return _writer.settled;
+    if (_writer.pending > 0 && draft == _writer.latest) return _writer.settled;
+    if (_writer.pending == 0 &&
+        draft == _writer.savedDraft &&
+        _writer.error == null) {
+      return _writer.settled;
+    }
     final service = widget.service;
     final conversationId = widget.conversationId;
-    return _draftSave = _draftSave.then((_) async {
+    return _writer.save(draft, () async {
       if (!_acceptDrafts ||
+          !_writer.valid ||
           (_identity != null &&
               _identity?.current?.publicKey != _identityKey)) {
-        if (_queuedDraft == draft) _queuedDraft = _savedDraft;
         return;
       }
       try {
         await service.setDraft(conversationId, draft);
-        _savedDraft = draft;
-        _draftError = null;
+        _writer.savedDraft = draft;
+        _writer.error = null;
       } on Object catch (error) {
-        _draftError = error;
-        if (_queuedDraft == draft) _queuedDraft = _savedDraft;
+        _writer.error = error;
         debugPrint('[MessageInput] draft save failed: $error');
       }
     });
@@ -143,8 +236,8 @@ class _MessageInputState extends State<MessageInput>
   Future<void> flush() async {
     _draftTimer?.cancel();
     await _persistDraft();
-    if (_draftError != null && _acceptDrafts) {
-      throw StateError('Could not save compose draft: $_draftError');
+    if (_writer.error != null && _acceptDrafts && _writer.valid) {
+      throw StateError('Could not save compose draft: ${_writer.error}');
     }
   }
 
@@ -152,7 +245,7 @@ class _MessageInputState extends State<MessageInput>
   Future<void> prepareForReplacement() {
     _acceptDrafts = false;
     _draftTimer?.cancel();
-    return _draftSave;
+    return _writer.settled;
   }
 
   @override
@@ -178,6 +271,7 @@ class _MessageInputState extends State<MessageInput>
   Future<void> _send() async {
     if (!_canSend) return;
     final String text = _text.text.trim();
+    final int revision = _editRevision;
     final S s = context.s;
     setState(() => _sending = true);
     try {
@@ -185,8 +279,10 @@ class _MessageInputState extends State<MessageInput>
         widget.conversationId,
         text,
       );
+      LocalMessageSends.forService(widget.service).publish(sent);
+      if (!mounted) return;
       _draftTimer?.cancel();
-      _text.clear();
+      if (_editRevision == revision) _text.clear();
       unawaited(_persistDraft());
       widget.onSent?.call(sent);
     } on Object catch (e) {

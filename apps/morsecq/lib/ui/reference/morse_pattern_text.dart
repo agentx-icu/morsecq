@@ -25,6 +25,21 @@ String displayMorsePattern(String pattern) {
   return out.toString();
 }
 
+/// The display font and spacing, shared by rendering and layout measurement.
+TextStyle morsePatternTextStyle(
+  BuildContext context, {
+  TextStyle? style,
+  Color? color,
+}) {
+  final ThemeData theme = Theme.of(context);
+  return (style ?? theme.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+    fontFamily: 'monospace',
+    fontFamilyFallback: const <String>['Menlo', 'Consolas', 'Courier New'],
+    letterSpacing: 2,
+    color: color ?? theme.colorScheme.onSurfaceVariant,
+  );
+}
+
 /// Renders a Morse pattern in monospace using [displayMorsePattern].
 ///
 /// When [activeMark] is set (0-based index among the marks of the pattern),
@@ -60,13 +75,11 @@ class MorsePatternText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final TextStyle base =
-        (style ?? theme.textTheme.bodyLarge ?? const TextStyle()).copyWith(
-          fontFamily: 'monospace',
-          fontFamilyFallback: const <String>['Menlo', 'Consolas', 'Courier New'],
-          letterSpacing: 2,
-          color: color ?? theme.colorScheme.onSurfaceVariant,
-        );
+    final TextStyle base = morsePatternTextStyle(
+      context,
+      style: style,
+      color: color,
+    );
     final String display = displayMorsePattern(pattern);
     final int? active = activeMark;
     if (active == null || active < 0) {

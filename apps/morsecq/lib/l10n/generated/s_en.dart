@@ -1980,4 +1980,29 @@ class SEn extends S {
 
   @override
   String get appearanceSubtitle => 'Five styles with light and dark modes';
+
+  @override
+  String get chatClearHistoryBody => 'Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.';
+
+  @override
+  String get chatLoadEarlier => 'Load earlier messages';
+
+  @override
+  String get chatHistoryLoadFailed => 'Could not load earlier messages. Tap to retry.';
+
+  @override
+  String get chatRetryHistory => 'Retry';
+
+  @override
+  String chatNewMessages(int count) {
+    return '$count new messages';
+  }
+
+  @override
+  String learnShowAllChars(int count) {
+    return 'Show all $count characters';
+  }
+
+  @override
+  String get learnShowFewerChars => 'Show fewer characters';
 }

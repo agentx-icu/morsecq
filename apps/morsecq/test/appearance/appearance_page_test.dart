@@ -41,13 +41,53 @@ Future<void> pumpAppearance(
   await tester.pumpAndSettle();
 }
 
+Future<void> _chooseStyle(WidgetTester tester, UiStyle style) async {
+  final choice = find.byKey(ValueKey('style-${style.name}'));
+  await tester.ensureVisible(choice);
+  await tester.pumpAndSettle();
+  await tester.tap(choice);
+  await tester.pumpAndSettle();
+}
+
 void main() {
+  for (final size in [
+    const Size(320, 640),
+    const Size(390, 844),
+    const Size(900, 800),
+  ]) {
+    for (final scale in [1.0, 1.8]) {
+      testWidgets(
+        'complete preview is visible before choices at $size/$scale',
+        (tester) async {
+          final settings = AppSettings(backendLabel: 'test');
+          addTearDown(settings.dispose);
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+          await pumpAppearance(tester, settings, size: size);
+          final preview = tester.getRect(
+            find.byKey(const ValueKey('appearance-preview')),
+          );
+          final firstChoice = tester.getRect(
+            find.byKey(const ValueKey('style-classic')),
+          );
+          final apply = tester.getRect(
+            find.byKey(const ValueKey('appearance-apply')),
+          );
+          expect(preview.top, greaterThanOrEqualTo(56));
+          expect(preview.bottom, lessThan(firstChoice.top));
+          expect(preview.bottom, lessThanOrEqualTo(apply.top));
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+
   testWidgets('preview and brightness are staged until Apply', (tester) async {
     final store = InMemoryKeyValueStore();
     final settings = AppSettings(backendLabel: 'test', store: store);
     addTearDown(settings.dispose);
     await pumpAppearance(tester, settings);
-    await tester.tap(find.byKey(const ValueKey('style-radio')));
+    await _chooseStyle(tester, UiStyle.radio);
     await tester.ensureVisible(find.byKey(const ValueKey('mode-dark')));
     await tester.tap(find.byKey(const ValueKey('mode-dark')));
     await tester.pumpAndSettle();
@@ -73,7 +113,7 @@ void main() {
     final settings = AppSettings(backendLabel: 'test', store: FailingStore());
     addTearDown(settings.dispose);
     await pumpAppearance(tester, settings);
-    await tester.tap(find.byKey(const ValueKey('style-cartoon')));
+    await _chooseStyle(tester, UiStyle.cartoon);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Restore defaults'));
     await tester.pumpAndSettle();
@@ -85,7 +125,7 @@ void main() {
           .style,
       UiStyle.modern,
     );
-    await tester.tap(find.byKey(const ValueKey('style-radio')));
+    await _chooseStyle(tester, UiStyle.radio);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('appearance-apply')));
     await tester.pumpAndSettle();
@@ -130,14 +170,14 @@ void main() {
       await tester.enterText(find.byType(TextField), 'CQ CQ unfinished draft');
       await tester.tap(find.text('Open appearance'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('style-cartoon')));
+      await _chooseStyle(tester, UiStyle.cartoon);
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(settings.style, UiStyle.modern);
       expect(find.text('CQ CQ unfinished draft'), findsOneWidget);
       await tester.tap(find.text('Open appearance'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('style-paper')));
+      await _chooseStyle(tester, UiStyle.paper);
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('appearance-apply')));
       await tester.pumpAndSettle();

@@ -2655,5 +2655,26 @@
   "appearanceCartoon": "Fresh Cartoon",
   "appearanceLight": "Light",
   "appearanceDark": "Dark",
-  "appearanceSubtitle": "Five styles with light and dark modes"
+  "appearanceSubtitle": "Five styles with light and dark modes",
+  "chatClearHistoryBody": "Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.",
+  "chatLoadEarlier": "Load earlier messages",
+  "chatHistoryLoadFailed": "Could not load earlier messages. Tap to retry.",
+  "chatRetryHistory": "Retry",
+  "chatNewMessages": "{count} new messages",
+  "@chatNewMessages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnShowAllChars": "Show all {count} characters",
+  "@learnShowAllChars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnShowFewerChars": "Show fewer characters"
 }

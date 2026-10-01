@@ -8,15 +8,53 @@ import '../../training/training_controller.dart';
 import '../appearance/radio_mascot.dart';
 import '../appearance/style_tokens.dart';
 import '../appearance/ui_style.dart';
+import 'goal_ring.dart';
 import 'styled_goal_card.dart';
+
+export 'goal_ring.dart' show GoalRing;
 
 /// Koch position: lesson n / total, the learned set with the newest symbol
 /// highlighted.
-class LessonCard extends StatelessWidget {
+class LessonCard extends StatefulWidget {
   const LessonCard({super.key, required this.controller, this.onContinue});
 
   final TrainingController controller;
   final VoidCallback? onContinue;
+
+  @override
+  State<LessonCard> createState() => _LessonCardState();
+}
+
+class _LessonCardState extends State<LessonCard> {
+  bool _expanded = false;
+
+  TrainingController get controller => widget.controller;
+  VoidCallback? get onContinue => widget.onContinue;
+
+  double _labelWidth(BuildContext context, String char) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: char,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    final width = painter.width + 20;
+    painter.dispose();
+    return width;
+  }
+
+  Widget _continueButton(BuildContext context) => SizedBox(
+    width: double.infinity,
+    child: FilledButton.icon(
+      onPressed: onContinue,
+      icon: const Icon(Icons.play_arrow),
+      label: Text(context.s.learnContinueLesson),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +62,15 @@ class LessonCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final s = context.s;
     final learned = controller.learnedChars;
+    final classic =
+        StyleTokens.of(context)?.style == UiStyle.classic ||
+        StyleTokens.of(context) == null;
+    final collapsible = classic && learned.length > 10;
+    // Keep the newest symbol visible first in the compact set. Expanding
+    // restores the complete teaching order.
+    final visible = collapsible && !_expanded
+        ? learned.sublist(learned.length - 10).reversed.toList()
+        : learned;
     final newest = controller.newestChar;
     return Card(
       child: Padding(
@@ -59,34 +106,49 @@ class LessonCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
             ),
             const SizedBox(height: 12),
+            if (classic && onContinue != null) ...[
+              _continueButton(context),
+              const SizedBox(height: 8),
+            ],
             Text(
               s.learnCharsLearned(learned.length),
               style: theme.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: classic ? 4 : 8),
             LayoutBuilder(
               builder: (context, constraints) => Wrap(
                 spacing: 6,
                 runSpacing: 6,
                 children: <Widget>[
-                  for (final c in learned)
+                  for (final c in visible)
                     LearnedCharChip(
                       char: c,
                       isNewest: c == newest,
                       accuracy: controller.accuracyOf(c),
                       width: math.max(
-                        ((constraints.maxWidth - 24) / 5).clamp(36.0, 52.0),
-                        // Large accessibility text can wrap to more rows;
-                        // reserve enough space for a glyph and its padding.
-                        MediaQuery.textScalerOf(context).scale(
-                              theme.textTheme.titleMedium?.fontSize ?? 16,
-                            ) +
-                            20,
+                        math.max(
+                          ((constraints.maxWidth - 24) / 5).clamp(36.0, 52.0),
+                          MediaQuery.textScalerOf(context).scale(
+                                theme.textTheme.titleMedium?.fontSize ?? 16,
+                              ) +
+                              20,
+                        ),
+                        _labelWidth(context, c),
                       ),
                     ),
                 ],
               ),
             ),
+            if (collapsible)
+              TextButton(
+                key: const ValueKey('learned-chars-toggle'),
+                onPressed: () => setState(() => _expanded = !_expanded),
+                child: Text(
+                  _expanded
+                      ? s.learnShowFewerChars
+                      : s.learnShowAllChars(learned.length),
+                ),
+              ),
             const SizedBox(height: 8),
             Text(
               controller.isCourseComplete
@@ -96,16 +158,9 @@ class LessonCard extends StatelessWidget {
                 color: scheme.onSurfaceVariant,
               ),
             ),
-            if (onContinue != null) ...[
+            if (!classic && onContinue != null) ...[
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: onContinue,
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(s.learnContinueLesson),
-                ),
-              ),
+              _continueButton(context),
             ],
           ],
         ),
@@ -151,7 +206,7 @@ class LearnedCharChip extends StatelessWidget {
     return Semantics(
       label: isNewest ? context.s.learnCharNewSemantics(char) : char,
       child: Container(
-        width: styled ? width : null,
+        width: width,
         constraints: BoxConstraints(minWidth: 36, minHeight: styled ? 68 : 36),
         padding: const EdgeInsets.symmetric(horizontal: 8),
         alignment: Alignment.center,
@@ -277,86 +332,6 @@ class DailyGoalCard extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A circular progress ring with a centred child.
-class GoalRing extends StatelessWidget {
-  const GoalRing({
-    super.key,
-    required this.fraction,
-    this.size = 80,
-    this.strokeWidth = 8,
-    this.child,
-  });
-
-  final double fraction;
-  final double size;
-  final double strokeWidth;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: _RingPainter(
-          fraction: fraction.clamp(0.0, 1.0),
-          strokeWidth: strokeWidth,
-          track: scheme.surfaceContainerHighest,
-          fill: fraction >= 1 ? scheme.tertiary : scheme.primary,
-        ),
-        child: Center(child: child),
-      ),
-    );
-  }
-}
-
-class _RingPainter extends CustomPainter {
-  const _RingPainter({
-    required this.fraction,
-    required this.strokeWidth,
-    required this.track,
-    required this.fill,
-  });
-
-  final double fraction;
-  final double strokeWidth;
-  final Color track;
-  final Color fill;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final inset = rect.deflate(strokeWidth / 2);
-    final trackPaint = Paint()
-      ..color = track
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-    final fillPaint = Paint()
-      ..color = fill
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(inset, 0, 2 * math.pi, false, trackPaint);
-    if (fraction > 0) {
-      canvas.drawArc(
-        inset,
-        -math.pi / 2,
-        2 * math.pi * fraction,
-        false,
-        fillPaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.fraction != fraction ||
-      old.strokeWidth != strokeWidth ||
-      old.track != track ||
-      old.fill != fill;
 }
 
 /// The four entry points into practice.

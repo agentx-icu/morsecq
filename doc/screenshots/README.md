@@ -19,8 +19,8 @@ not edit the PNGs by hand.
 | Linux | captured 2026-10-01 (CI, ubuntu-24.04 + Xvfb) | 1280×800 @1x |
 | Windows | captured 2026-10-01 (CI, windows-2022) | 1280×800 @1x |
 
-Linux and Windows frames come from the successful [E2E run 36829215051](https://github.com/agentx-icu/morsecq/actions/runs/36829215051)
-at UI revision `8f0c6e01857971d71d6ee8aaa2c77ee249ca5b8c`, imported through
+Linux and Windows frames come from the successful [E2E run 36839181762](https://github.com/agentx-icu/morsecq/actions/runs/36839181762)
+at UI revision `0a83b325f8d9533340b851cf40672d129d4991fd`, imported through
 `capture.sh --from` with the same publish checks. The four other targets were
 captured locally from that UI revision.
 

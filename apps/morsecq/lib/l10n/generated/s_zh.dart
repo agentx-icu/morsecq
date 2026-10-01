@@ -1960,4 +1960,29 @@ class SZh extends S {
 
   @override
   String get appearanceSubtitle => '五种风格，支持浅色与深色';
+
+  @override
+  String get chatClearHistoryBody => '删除当前会话在本机保存的历史记录？其他设备上的副本不受影响。此操作无法撤销。';
+
+  @override
+  String get chatLoadEarlier => '加载更早消息';
+
+  @override
+  String get chatHistoryLoadFailed => '更早消息加载失败，点击重试。';
+
+  @override
+  String get chatRetryHistory => '重试';
+
+  @override
+  String chatNewMessages(int count) {
+    return '$count 条新消息';
+  }
+
+  @override
+  String learnShowAllChars(int count) {
+    return '显示全部 $count 个字符';
+  }
+
+  @override
+  String get learnShowFewerChars => '收起字符';
 }

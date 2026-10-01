@@ -656,5 +656,26 @@
   "appearanceCartoon": "清新卡通",
   "appearanceLight": "浅色",
   "appearanceDark": "深色",
-  "appearanceSubtitle": "五种风格，支持浅色与深色"
+  "appearanceSubtitle": "五种风格，支持浅色与深色",
+  "chatClearHistoryBody": "删除当前会话在本机保存的历史记录？其他设备上的副本不受影响。此操作无法撤销。",
+  "chatLoadEarlier": "加载更早消息",
+  "chatHistoryLoadFailed": "更早消息加载失败，点击重试。",
+  "chatRetryHistory": "重试",
+  "chatNewMessages": "{count} 条新消息",
+  "@chatNewMessages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnShowAllChars": "显示全部 {count} 个字符",
+  "@learnShowAllChars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnShowFewerChars": "收起字符"
 }

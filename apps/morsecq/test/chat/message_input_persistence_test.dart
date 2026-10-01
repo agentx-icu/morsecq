@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/ui/chat/message_input.dart';
@@ -74,6 +76,91 @@ void main() {
     await tester.enterText(find.byType(TextField), 'STALE CQ');
     await participant.flush();
     expect(store.saved, isEmpty);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('same-key restore gives a new route a fresh shared editor', (
+    tester,
+  ) async {
+    final participant = await mount(tester);
+    store.fail = false;
+    await tester.enterText(find.byType(TextField), 'OLD CQ');
+    await participant.flush();
+    final backup = await identity.exportBackup();
+    await participant.prepareForReplacement();
+    await identity.deleteIdentity();
+    await identity.importBackup(backup);
+    await tester.pump();
+    final nav = tester.state<NavigatorState>(find.byType(Navigator));
+    unawaited(
+      nav.push(
+        MaterialPageRoute<void>(
+          builder: (_) => Provider<IdentityService>.value(
+            value: identity,
+            child: Scaffold(
+              body: MessageInput(
+                service: store,
+                conversationId: 'c2c_$kPeerKey',
+                playback: harness.playback,
+                initialDraft: 'RESTORED CQ',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'RESTORED CQ',
+    );
+    await tester.enterText(find.byType(TextField), 'NEW CQ');
+    final restored =
+        tester.state(find.byType(MessageInput)) as IdentityDataStore;
+    await restored.flush();
+    expect(store.saved, 'NEW CQ');
+    nav.pop();
+    await tester.pumpAndSettle();
+    await participant.flush();
+    expect(store.saved, 'NEW CQ');
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('disposed failed drafts cannot cross a same-key restore', (
+    tester,
+  ) async {
+    final participant = await mount(tester);
+    final backup = await identity.exportBackup();
+    await tester.enterText(find.byType(TextField), 'FAILED OLD CQ');
+    await expectLater(participant.flush(), throwsStateError);
+    await tester.pumpWidget(harness.wrap(const SizedBox()));
+    await tester.pump();
+    await identity.deleteIdentity();
+    await identity.importBackup(backup);
+    await tester.pump();
+    store.fail = false;
+    store.saved = 'RESTORED CQ';
+    await tester.pumpWidget(
+      harness.wrap(
+        Provider<IdentityService>.value(
+          value: identity,
+          child: MessageInput(
+            service: store,
+            conversationId: 'c2c_$kPeerKey',
+            playback: harness.playback,
+            initialDraft: store.saved,
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'RESTORED CQ',
+    );
+    final restored =
+        tester.state(find.byType(MessageInput)) as IdentityDataStore;
+    await restored.flush();
+    expect(store.saved, 'RESTORED CQ');
     await tester.pumpWidget(const SizedBox());
   });
 

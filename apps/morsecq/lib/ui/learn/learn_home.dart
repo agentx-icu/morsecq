@@ -204,15 +204,19 @@ class LearnHome extends StatelessWidget {
     );
   }
 
-  Widget _status() => Column(
+  Widget _status(BuildContext context) => Column(
     children: <Widget>[
-      LessonCard(controller: controller),
+      LessonCard(
+        controller: controller,
+        onContinue: () => _continueLesson(context),
+      ),
       const SizedBox(height: 12),
       DailyGoalCard(controller: controller),
     ],
   );
 
   Widget _actions(BuildContext context) => QuickActions(
+    showContinue: false,
     dueCount: controller.dueChars.length,
     onContinueLesson: () => _continueLesson(context),
     onReceivePractice: () => _receivePractice(context),
@@ -224,7 +228,7 @@ class LearnHome extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: <Widget>[
       _header(context),
-      _status(),
+      _status(context),
       const SizedBox(height: 16),
       _actions(context),
     ],
@@ -237,7 +241,7 @@ class LearnHome extends StatelessWidget {
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Expanded(flex: 3, child: _status()),
+          Expanded(flex: 3, child: _status(context)),
           const SizedBox(width: 16),
           Expanded(flex: 2, child: _actions(context)),
         ],
