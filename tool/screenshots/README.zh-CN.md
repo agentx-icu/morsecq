@@ -5,6 +5,8 @@
 一条命令在真实设备 / 桌面窗口里启动真实的应用，灌入演示数据，按中英文两种语言走完
 所有产品场景，并把帧发布到仓库里的 `doc/screenshots/<platform>/<locale>/`。
 
+截图固定使用清爽现代风格，与中英文 README 产品设计图一致。明暗模式默认浅色，可通过 `MORSECQ_SHOT_THEME` 调整，不跟随设备保存的风格。
+
 ```bash
 tool/screenshots/capture.sh                          # 默认 macOS，en + zh
 tool/screenshots/capture.sh --platforms macos,ios,ipad,android

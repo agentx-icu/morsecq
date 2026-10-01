@@ -6,12 +6,12 @@ import 'appearance/ui_style.dart';
 /// Telegraph-brass amber: the colour of a polished straight key.
 const Color kMorsecqSeedColor = Color(0xFFB8860B);
 
-/// App-wide Material 3 themes derived from [kMorsecqSeedColor].
+/// App-wide Material 3 themes; Modern Calm is the default appearance.
 abstract final class MorsecqTheme {
-  static ThemeData light({UiStyle style = UiStyle.classic}) =>
+  static ThemeData light({UiStyle style = kDefaultUiStyle}) =>
       _build(Brightness.light, style);
 
-  static ThemeData dark({UiStyle style = UiStyle.classic}) =>
+  static ThemeData dark({UiStyle style = kDefaultUiStyle}) =>
       _build(Brightness.dark, style);
 
   static ThemeData _build(Brightness brightness, UiStyle style) {

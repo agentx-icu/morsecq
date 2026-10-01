@@ -4,7 +4,7 @@
 
 由 `tool/screenshots/capture.sh`（见
 [tool/screenshots/README.zh-CN.md](../../tool/screenshots/README.zh-CN.md)）从真实
-应用截取：灌入演示数据、浅色主题、英文与简体中文。只有整个平台一次跑通才会发布，
+应用截取：灌入演示数据、清爽现代风格、浅色主题、英文与简体中文。只有整个平台一次跑通才会发布，
 所以这里的帧永远是完整、一致的一套。UI 改动后重新生成，不要手工修改 PNG。
 
 | 平台 | 状态 | 尺寸 |

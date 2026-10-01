@@ -56,7 +56,7 @@ void main() {
     );
     expect(preview.style, UiStyle.radio);
     expect(preview.brightness, Brightness.dark);
-    expect(settings.style, UiStyle.classic);
+    expect(settings.style, UiStyle.modern);
     expect(settings.themeMode, ThemeMode.system);
     expect(store.getString(AppSettings.storageKey), isNull);
     await tester.tap(find.byKey(const ValueKey('appearance-apply')));
@@ -83,15 +83,42 @@ void main() {
             find.byKey(const ValueKey('appearance-preview')),
           )
           .style,
-      UiStyle.classic,
+      UiStyle.modern,
     );
     await tester.tap(find.byKey(const ValueKey('style-radio')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('appearance-apply')));
     await tester.pumpAndSettle();
-    expect(settings.style, UiStyle.classic);
+    expect(settings.style, UiStyle.modern);
     expect(find.text('Could not save appearance. Try again.'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('restore stages Modern Calm then persists it on Apply', (
+    tester,
+  ) async {
+    final store = InMemoryKeyValueStore();
+    final settings = AppSettings(backendLabel: 'test', store: store);
+    addTearDown(settings.dispose);
+    await settings.applyAppearance(
+      style: UiStyle.classic,
+      themeMode: ThemeMode.dark,
+    );
+    await pumpAppearance(tester, settings);
+    await tester.tap(find.text('Restore defaults'));
+    await tester.pumpAndSettle();
+    final preview = tester.widget<StylePreview>(
+      find.byKey(const ValueKey('appearance-preview')),
+    );
+    expect(preview.style, UiStyle.modern);
+    expect(settings.style, UiStyle.classic);
+    expect(settings.themeMode, ThemeMode.dark);
+    await tester.tap(find.byKey(const ValueKey('appearance-apply')));
+    await tester.pumpAndSettle();
+    final reopened = AppSettings(backendLabel: 'test', store: store);
+    addTearDown(reopened.dispose);
+    expect(reopened.style, UiStyle.modern);
+    expect(reopened.themeMode, ThemeMode.system);
   });
 
   testWidgets(
@@ -103,10 +130,10 @@ void main() {
       await tester.enterText(find.byType(TextField), 'CQ CQ unfinished draft');
       await tester.tap(find.text('Open appearance'));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('style-modern')));
+      await tester.tap(find.byKey(const ValueKey('style-cartoon')));
       await tester.pageBack();
       await tester.pumpAndSettle();
-      expect(settings.style, UiStyle.classic);
+      expect(settings.style, UiStyle.modern);
       expect(find.text('CQ CQ unfinished draft'), findsOneWidget);
       await tester.tap(find.text('Open appearance'));
       await tester.pumpAndSettle();

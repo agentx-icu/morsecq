@@ -155,7 +155,7 @@ Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be 
 
 ### 4.4 Appearance styles (approved 2026-10-01)
 
-- Retain Classic Brass as the default and add Modern Calm, Night Radio, Paper Handbook, and Fresh Cartoon. [Approved visual concepts](../designs/ui-styles-2026-10-01/README.md) and the [implementation plan](./2026-10-01-ui-styles-implementation.md) record the scope.
+- Modern Calm is the default and Restore Defaults style; retain Classic Brass, Night Radio, Paper Handbook, and Fresh Cartoon as alternatives, preserving saved choices. English and Chinese README concepts match their language and the Modern Calm product screenshots. [Approved visual concepts](../designs/ui-styles-2026-10-01/README.md) and the [implementation plan](./2026-10-01-ui-styles-implementation.md) record the scope.
 - Me → Appearance and the Learn header shortcut open one chooser: local previews, independent System / Light / Dark mode, explicit Apply, and staged Restore Defaults. Persist one device-level record alongside language and window settings.
 - Shared themes cover the shell, training, chat, groups, reference, and account screens. New styles adjust the learning hierarchy and control geometry; changing appearance preserves navigation, drafts, training state, audio timing, and keyboard/touch keying.
 - Validate both phone and desktop layouts, large text, contrast, persistence failures, and simultaneous settings writes. This session uses independent Codex review; the user disabled Claude review.
@@ -292,6 +292,8 @@ From wave 3 on, per the user's instruction "code only, no build, no test": agent
 At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze` on all packages, `dart run tool/check_complexity.dart`, `dart run tool/import_guard.dart`, `flutter test` on all packages, then commits and pushes to `master` (the repository's default branch).
 
 ## Change log
+
+- **2026-10-01** — At the user's request, changed the default and Restore Defaults appearance to Modern Calm, preserved explicit saved choices, localized the English README product concept, and unified product screenshots in Modern Calm.
 
 - **2026-10-01** — Added §4.4 after the user approved all four new styles, requested the design-artifact commit, and authorized development in a new worktree. Classic Brass remains the default; appearance and brightness are independent device settings.
 

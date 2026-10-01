@@ -52,8 +52,9 @@ The pipeline is a normal `integration_test`:
   run.
 - **Pixel ratio**: 1.0 on desktop, `min(dpr, 2)` on mobile, override with
   `MORSECQ_SHOT_PIXEL_RATIO`.
-- **Theme**: pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
-  frames do not follow the host's appearance.
+- **Appearance**: pinned to Modern Calm, matching both README product concepts.
+  Brightness is pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
+  frames do not follow the host's appearance or saved style preferences.
 - **Knob validation**: a malformed or out-of-range knob fails the run instead
   of falling back to the default — window edges in (0, 8192], pixel ratio in
   [0.25, 4], theme one of the three names.

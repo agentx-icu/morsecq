@@ -18,7 +18,7 @@ class AppSettings extends ChangeNotifier {
       if (decoded is! Map<String, dynamic>) return;
       _style = UiStyle.values.firstWhere(
         (value) => value.name == decoded['style'],
-        orElse: () => UiStyle.classic,
+        orElse: () => kDefaultUiStyle,
       );
       _themeMode = ThemeMode.values.firstWhere(
         (value) => value.name == decoded['mode'],
@@ -33,7 +33,7 @@ class AppSettings extends ChangeNotifier {
   final KeyValueStore _store;
   Future<void> _pending = Future<void>.value();
   bool _disposed = false;
-  UiStyle _style = UiStyle.classic;
+  UiStyle _style = kDefaultUiStyle;
   UiStyle get style => _style;
 
   /// Which [BackendFactory] built this session's services (About section).

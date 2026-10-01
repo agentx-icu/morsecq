@@ -4,7 +4,7 @@
 
 Captured by `tool/screenshots/capture.sh` (see
 [tool/screenshots/README.md](../../tool/screenshots/README.md)) from the real
-app with seeded demo data, light theme, English and Simplified Chinese. Frames
+app with seeded demo data, Modern Calm style, light theme, English and Simplified Chinese. Frames
 are published only when a whole platform run succeeds, so what is committed
 here is always a complete, consistent set. Regenerate after a UI change; do
 not edit the PNGs by hand.

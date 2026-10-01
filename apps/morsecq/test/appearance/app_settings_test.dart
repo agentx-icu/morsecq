@@ -7,7 +7,7 @@ import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 
 void main() {
-  test('new and corrupt preferences retain Classic Brass and system mode', () {
+  test('new and corrupt preferences use Modern Calm and system mode', () {
     for (final saved in [
       null,
       'broken',
@@ -21,7 +21,7 @@ void main() {
         ),
       );
       addTearDown(settings.dispose);
-      expect(settings.style, UiStyle.classic);
+      expect(settings.style, UiStyle.modern);
       expect(settings.themeMode, ThemeMode.system);
     }
   });
@@ -56,7 +56,7 @@ void main() {
       settings.applyAppearance(style: UiStyle.radio, themeMode: ThemeMode.dark),
       throwsA(isA<FileSystemException>()),
     );
-    expect(settings.style, UiStyle.classic);
+    expect(settings.style, UiStyle.modern);
     expect(settings.themeMode, ThemeMode.system);
     expect(notifications, 0);
   });

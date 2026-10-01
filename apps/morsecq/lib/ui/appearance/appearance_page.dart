@@ -229,7 +229,7 @@ class _AppearancePageState extends State<AppearancePage> {
                 onPressed: _saving
                     ? null
                     : () => setState(() {
-                        _style = UiStyle.classic;
+                        _style = kDefaultUiStyle;
                         _mode = ThemeMode.system;
                       }),
                 child: Text(context.s.appearanceRestore),

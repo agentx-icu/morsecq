@@ -17,7 +17,7 @@
 
 ## 2. Build five shared themes and the chooser
 
-- Add style definition and ThemeExtension tokens under `lib/ui/appearance/`; extend `lib/ui/theme.dart`, preserving the original Classic Brass defaults.
+- Add style definition and ThemeExtension tokens under `lib/ui/appearance/`; extend `lib/ui/theme.dart`, retaining Classic Brass as an option. Modern Calm is the current default and Restore Defaults appearance; preserve explicit saved styles.
 - Cover all five styles in both brightness modes. Use distinct shapes, contrast, display typography, and semantic pastel surfaces; keep Morse monospace.
 - Add localized style names and appearance labels to both ARB files and regenerate `S`.
 - Implement `AppearancePage`, selection thumbnails, independent System/Light/Dark selection, local preview, Apply, and staged Restore Defaults. Disable input during a save and show localized persistence failures.
@@ -51,3 +51,4 @@
 - 2026-10-01: Created after the user approved all four visual concepts and requested a new development worktree.
 - 2026-10-01: Implemented all five palettes, staged previews, independent brightness, serialized persistence, shared geometry and styled learning layouts; added actual desktop/phone frames and independent Codex review. Fixed failed-write contamination and contrast on the real pastel backgrounds. Large-text tiles reserve glyph space and wrap when needed.
 - 2026-10-01: Completed final full-suite verification and recorded independent review, rendered previews, and delivery branch.
+- 2026-10-01: At the user's request, changed the default and Restore Defaults style to Modern Calm without migrating saved choices. README concepts use the corresponding language and product screenshots are pinned to Modern Calm; delivery follows the user's subsequent PR/CI/merge instruction.

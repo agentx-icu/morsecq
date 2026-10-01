@@ -24,6 +24,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:morsecq/di/app_settings.dart';
+import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -132,7 +133,10 @@ ThemeMode parseShotTheme(String define) {
 /// assert the scene's content afterwards, so a timeout never hides a page
 /// that failed to appear. The fixed pumps in front give plain futures a
 /// chance to run.
-Future<void> settle(WidgetTester tester, {Duration extra = Duration.zero}) async {
+Future<void> settle(
+  WidgetTester tester, {
+  Duration extra = Duration.zero,
+}) async {
   for (var i = 0; i < 3; i++) {
     await tester.pump(const Duration(milliseconds: 60));
   }
@@ -201,8 +205,10 @@ class ShotHarness {
         '${size.width}x${size.height}',
       );
     }
-    debugPrint('[shot] window clamped to ${got.width}x${got.height}, '
-        'wanted ${size.width}x${size.height}');
+    debugPrint(
+      '[shot] window clamped to ${got.width}x${got.height}, '
+      'wanted ${size.width}x${size.height}',
+    );
   }
 
   static Size _viewSize(WidgetTester tester) =>
@@ -221,13 +227,13 @@ class ShotHarness {
     return false;
   }
 
-  /// Pins the theme so the frames do not follow the host's appearance.
+  /// Pins Modern Calm and brightness for consistent product screenshots.
   Future<void> applyTheme(WidgetTester tester) async {
     final mode = parseShotTheme(_themeDefine);
     final settings = tester
         .element(find.byType(MaterialApp))
         .read<AppSettings>();
-    await settings.applyAppearance(style: settings.style, themeMode: mode);
+    await settings.applyAppearance(style: UiStyle.modern, themeMode: mode);
     await settle(tester);
   }
 
@@ -273,7 +279,10 @@ class ShotHarness {
     final int height = image.height;
     image.dispose();
     if (data == null) throw StateError('PNG encoding failed for $scene');
-    final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    final bytes = data.buffer.asUint8List(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
     final name = '$platform/$locale/$scene';
     final Map<String, dynamic> report = binding.reportData ??=
         <String, dynamic>{};
