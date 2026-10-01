@@ -16,8 +16,8 @@
 | Linux | 2026-10-01 已截（CI，ubuntu-24.04 + Xvfb） | 1280×800 @1x |
 | Windows | 2026-10-01 已截（CI，windows-2022） | 1280×800 @1x |
 
-Linux、Windows 截图来自成功的 [E2E 运行 36829215051](https://github.com/agentx-icu/morsecq/actions/runs/36829215051)，
-UI 版本为 `8f0c6e01857971d71d6ee8aaa2c77ee249ca5b8c`，通过 `capture.sh --from`
+Linux、Windows 截图来自成功的 [E2E 运行 36836332406](https://github.com/agentx-icu/morsecq/actions/runs/36836332406)，
+UI 版本为 `1a4b9db471827b067abd267c50aa6a8b9b1c2bd6`，通过 `capture.sh --from`
 执行相同发布校验后导入；其他四种目标设备在本机使用该 UI 版本生成。
 
 ## macOS
