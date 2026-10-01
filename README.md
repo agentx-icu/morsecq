@@ -8,6 +8,10 @@ code with structured lessons and keying drills, then key it to real people —
 one-to-one or in group nets — with no server in the middle. It speaks the same
 Tim2Tox wire protocol as its sibling project **toxee**, so the two interoperate.
 
+![Fresh Cartoon style: desktop and mobile interface concept](doc/designs/ui-styles-2026-10-01/d-cartoon.png)
+
+*Fresh Cartoon interface concept for desktop and mobile. [Explore all styles](doc/designs/ui-styles-2026-10-01/README.md).*
+
 ## Status
 
 **Pre-alpha.** All planned v1 modules are wired into the app shell and pass the
