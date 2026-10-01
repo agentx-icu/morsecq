@@ -88,6 +88,8 @@ doc/                       文档（英文默认 + zh-CN）
 11. **多语言**：`LocaleController.active` 由 `AppScope` 设置，`currentS()` 供无 `BuildContext` 代码使用；`AppServices.dispose()` 必须在任何 `await` 之前同步释放 `StringsResolver`（`AppScope` 随后就 dispose 控制器）。Android 通知渠道名会跟随语言切换（`LocalNotificationsApi.refreshStrings`，经 `AppServices` → `NotificationCenter` 接线，2026-09-30）；重要性与提示音仍按 Android 规则在首次创建时冻结。
 12. **应用级偏好**（语言、窗口位置）存 `<application support>/settings.json`；**按身份的数据**（训练进度、聊天历史）在 `IdentityService.dataDirectory()` 下，随身份备份（`MCQB` 容器）一起迁移。
 13. 许可证：Tim2Tox 与 morsecq 均 GPL-3.0，**与 App Store 条款存在已知冲突**，尚未拍板（规划 §3.4 / §9）。iOS 上架不能作为任何时间盒的验收门。
+14. **SoLoud 引擎是进程级单例，按租约共享。** 每个 `SidetoneSink` 经 `FlutterSoloudApi` 持一份 `EngineLeases` 租约，只有最后一份释放才关闭由我们启动的引擎；引擎在首次 `init()` 时才解析（原生库加载失败会落在 `prepare()` 里，Learn 页回落为闪屏）。不要在别处直接 `SoLoud.instance.init/deinit`。Linux / Windows 的 CMake 设了 `NO_XIPH_LIBS`（flutter_soloud 自带的 libopus 需要 glibc 2.43，Ubuntu 24.04 上加载失败；morsecq 只放正弦波）。
+15. **集成测试 / 截图的坑**：两次 `pumpWidget` 根类型相同会被原地更新，每个 `MorsecqApp` 要有不同 `key`；SnackBar 会盖住发送按钮，点击一律走 `tapHittable`；桌面上一次 `flutter test` 只跑一个集成测试文件（多文件时第二次启动连不上调试器）；`window_manager.setSize` 设的是外框，harness 会补回标题栏；CI 的 Windows runner 需先把分辨率调到 1920×1080，Linux runner 需装 `fonts-noto-cjk`；flutter_soloud 在 pub cache 里用 CMake 构建 macOS 库，换 Xcode 后要删掉缓存里的 `cmake_build`。worktree 里跑 iOS/macOS 前要从主 checkout 复制被 gitignore 的 `ios/Frameworks/tim2tox_ffi.xcframework` 与 `macos/Frameworks/libtim2tox_ffi.dylib`；Android UI-only 构建需 `ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true`。截图用法见 `tool/screenshots/README.zh-CN.md`。
 
 ## 6. 现状：做完了什么
 

@@ -42,7 +42,7 @@ import guard、ARB 同步）和完整的测试金字塔（单元、控件，以�
   </tr>
 </table>
 
-macOS、iPhone、iPad、Android 上中英文的全部界面见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)。截图由 `tool/screenshots/capture.sh` 用演示数据自动生成，未经手工修改。
+macOS、Linux、Windows、iPhone、iPad、Android 上中英文的全部界面见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)。截图由 `tool/screenshots/capture.sh` 用演示数据自动生成，未经手工修改。
 
 ## 功能
 

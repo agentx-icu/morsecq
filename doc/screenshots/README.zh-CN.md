@@ -13,8 +13,8 @@
 | iOS（iPhone） | 2026-10-01 已截 | 430×932 @2x |
 | iPad | 2026-10-01 已截 | 834×1210 @2x |
 | Android | 2026-10-01 已截 | 412×915 @2x |
-| Linux | 尚未截取 | |
-| Windows | 尚未截取 | |
+| Linux | 2026-10-01 已截（CI，ubuntu-24.04 + Xvfb） | 1280×800 @1x |
+| Windows | 2026-10-01 已截（CI，windows-2022） | 1280×800 @1x |
 
 ## macOS
 
@@ -103,3 +103,47 @@
 | 翻译器 | ![](android/en/translator.png) | ![](android/zh/translator.png) |
 | 收听 | ![](android/en/listen.png) | ![](android/zh/listen.png) |
 | 我 | ![](android/en/me.png) | ![](android/zh/me.png) |
+
+## Linux（CI：ubuntu-24.04，Xvfb）
+
+| 场景 | English | 简体中文 |
+|---|---|---|
+| 欢迎（首次启动） | ![](linux/en/welcome.png) | ![](linux/zh/welcome.png) |
+| 创建身份 | ![](linux/en/create_identity.png) | ![](linux/zh/create_identity.png) |
+| 备份向导 | ![](linux/en/backup_wizard.png) | ![](linux/zh/backup_wizard.png) |
+| 学习首页 | ![](linux/en/learn_home.png) | ![](linux/zh/learn_home.png) |
+| 统计 | ![](linux/en/stats.png) | ![](linux/zh/stats.png) |
+| 训练设置 | ![](linux/en/training_settings.png) | ![](linux/zh/training_settings.png) |
+| 听抄练习 | ![](linux/en/receive_drill.png) | ![](linux/zh/receive_drill.png) |
+| 发报练习 | ![](linux/en/send_practice.png) | ![](linux/zh/send_practice.png) |
+| 会话列表 | ![](linux/en/chat_list.png) | ![](linux/zh/chat_list.png) |
+| 会话 | ![](linux/en/conversation.png) | ![](linux/zh/conversation.png) |
+| 联系人 | ![](linux/en/contacts.png) | ![](linux/zh/contacts.png) |
+| 群组 | ![](linux/en/groups.png) | ![](linux/zh/groups.png) |
+| 群会话 | ![](linux/en/group_conversation.png) | ![](linux/zh/group_conversation.png) |
+| 手册 | ![](linux/en/reference.png) | ![](linux/zh/reference.png) |
+| 翻译器 | ![](linux/en/translator.png) | ![](linux/zh/translator.png) |
+| 收听 | ![](linux/en/listen.png) | ![](linux/zh/listen.png) |
+| 我 | ![](linux/en/me.png) | ![](linux/zh/me.png) |
+
+## Windows（CI：windows-2022）
+
+| 场景 | English | 简体中文 |
+|---|---|---|
+| 欢迎（首次启动） | ![](windows/en/welcome.png) | ![](windows/zh/welcome.png) |
+| 创建身份 | ![](windows/en/create_identity.png) | ![](windows/zh/create_identity.png) |
+| 备份向导 | ![](windows/en/backup_wizard.png) | ![](windows/zh/backup_wizard.png) |
+| 学习首页 | ![](windows/en/learn_home.png) | ![](windows/zh/learn_home.png) |
+| 统计 | ![](windows/en/stats.png) | ![](windows/zh/stats.png) |
+| 训练设置 | ![](windows/en/training_settings.png) | ![](windows/zh/training_settings.png) |
+| 听抄练习 | ![](windows/en/receive_drill.png) | ![](windows/zh/receive_drill.png) |
+| 发报练习 | ![](windows/en/send_practice.png) | ![](windows/zh/send_practice.png) |
+| 会话列表 | ![](windows/en/chat_list.png) | ![](windows/zh/chat_list.png) |
+| 会话 | ![](windows/en/conversation.png) | ![](windows/zh/conversation.png) |
+| 联系人 | ![](windows/en/contacts.png) | ![](windows/zh/contacts.png) |
+| 群组 | ![](windows/en/groups.png) | ![](windows/zh/groups.png) |
+| 群会话 | ![](windows/en/group_conversation.png) | ![](windows/zh/group_conversation.png) |
+| 手册 | ![](windows/en/reference.png) | ![](windows/zh/reference.png) |
+| 翻译器 | ![](windows/en/translator.png) | ![](windows/zh/translator.png) |
+| 收听 | ![](windows/en/listen.png) | ![](windows/zh/listen.png) |
+| 我 | ![](windows/en/me.png) | ![](windows/zh/me.png) |
