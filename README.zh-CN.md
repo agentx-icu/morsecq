@@ -14,6 +14,36 @@ import guard、ARB 同步）和完整的测试金字塔（单元、控件，以�
 模拟器上的真实 UI 启动测试；见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)）。
 尚无可用的发布版本，任何地方都可能发生破坏性变更。
 
+## 截图
+
+<table>
+  <tr>
+    <td><img src="doc/screenshots/macos/zh/learn_home.png" alt="学习（macOS）"></td>
+    <td><img src="doc/screenshots/macos/zh/conversation.png" alt="一次 CW 通联（macOS）"></td>
+  </tr>
+  <tr>
+    <td align="center">学习（macOS）</td>
+    <td align="center">一次 CW 通联（macOS）</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="doc/screenshots/ios/zh/receive_drill.png" width="200" alt="抄收练习"></td>
+    <td><img src="doc/screenshots/ios/zh/send_practice.png" width="200" alt="发报练习"></td>
+    <td><img src="doc/screenshots/ios/zh/group_conversation.png" width="200" alt="群通联"></td>
+    <td><img src="doc/screenshots/ios/zh/translator.png" width="200" alt="翻译器"></td>
+  </tr>
+  <tr>
+    <td align="center">抄收练习</td>
+    <td align="center">发报练习</td>
+    <td align="center">群通联</td>
+    <td align="center">翻译器</td>
+  </tr>
+</table>
+
+macOS、iPhone、iPad、Android 上中英文的全部界面见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)。截图由 `tool/screenshots/capture.sh` 用演示数据自动生成，未经手工修改。
+
 ## 功能
 
 App 有五个目的地——**Learn（学习）/ Chat（聊天）/ Groups（群组）/ Reference（手册）/
