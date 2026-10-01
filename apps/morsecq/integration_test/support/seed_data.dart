@@ -127,11 +127,38 @@ class SeededBackend {
   String get firstFriendKey => seedKey(1);
   String get qsoConversationId =>
       FakeChatService.c2cConversationId(firstFriendKey);
+  String get unreadConversationId =>
+      FakeChatService.c2cConversationId(seedKey(2));
   String get groupConversationId =>
       FakeChatService.groupConversationId(groupId);
 }
 
-Future<SeededBackend> buildSeed(SeedCopy copy, {required String dataDir}) async {
+/// How long the seeded timeline runs forward from [seedAnchor]; every
+/// seeded timestamp lies within it.
+const Duration kSeedSpan = Duration(minutes: 45);
+
+/// The single moment every seeded timestamp derives from. Today at 09:12
+/// whenever the whole timeline ([kSeedSpan]) after it is already past, so
+/// frames captured on different days show the same clock times. In an
+/// earlier run: three hours ago, pulled forward to today's midnight so the
+/// lists still show today's times -- unless even that would end after [now]
+/// (a run just after midnight), then three hours back. Nothing is ever in
+/// the future.
+DateTime seedAnchor(DateTime now) {
+  final morning = DateTime(now.year, now.month, now.day, 9, 12);
+  if (!morning.add(kSeedSpan).isAfter(now)) return morning;
+  final back = now.subtract(const Duration(hours: 3));
+  final midnight = DateTime(now.year, now.month, now.day);
+  if (!back.isBefore(midnight)) return back;
+  return midnight.add(kSeedSpan).isAfter(now) ? back : midnight;
+}
+
+Future<SeededBackend> buildSeed(
+  SeedCopy copy, {
+  required String dataDir,
+  DateTime? now,
+}) async {
+  final anchor = seedAnchor(now ?? DateTime.now());
   final identity = FakeIdentityService.withProfile(
     identity: Identity(
       toxId: FakeIdentityService.toxIdForSeed(42),
@@ -145,16 +172,18 @@ Future<SeededBackend> buildSeed(SeedCopy copy, {required String dataDir}) async 
   // progress file) can be seeded; the startup gate opens it again, which is
   // idempotent on the fake.
   await identity.open();
-  await seedTrainingProgress(await identity.dataDirectory());
+  await seedTrainingProgress(await identity.dataDirectory(), anchor: anchor);
 
-  // Today at 09:12 so the list shows daytime clock times, not a date.
-  final today = DateTime.now();
-  var now = DateTime(today.year, today.month, today.day, 9, 12);
-  DateTime tick(int minutes) => now = now.add(Duration(minutes: minutes));
+  var clock = anchor;
+  DateTime tick(int minutes) {
+    clock = clock.add(Duration(minutes: minutes));
+    assert(!clock.isAfter(anchor.add(kSeedSpan)), 'seed outgrew kSeedSpan');
+    return clock;
+  }
 
   final chat = FakeChatService(
     selfPublicKey: identity.current!.publicKey,
-    clock: () => now,
+    clock: () => clock,
   );
   for (var i = 0; i < copy.friends.length; i++) {
     final f = copy.friends[i];
@@ -227,10 +256,14 @@ Future<SeededBackend> buildSeed(SeedCopy copy, {required String dataDir}) async 
 }
 
 /// A week of Koch practice (lesson 4, K M R S U) with a few S/U slips, so
-/// the Learn home, the statistics page and the calendar have content.
-Future<void> seedTrainingProgress(String dataDir) async {
+/// the Learn home, the statistics page and the calendar have content. The
+/// last receive session is at [anchor] and the send session just after it,
+/// so "today" always has practice (see [seedAnchor]).
+Future<void> seedTrainingProgress(
+  String dataDir, {
+  required DateTime anchor,
+}) async {
   var progress = TrainerProgress(currentLesson: 4, dailyGoalChars: 30);
-  final today = DateTime.now();
   const target = 'KMRSU SUKMR RSUMK KMRSU';
   const answers = <String>[
     'KMRSU SUKMR RSUMK KMRSU',
@@ -241,7 +274,7 @@ Future<void> seedTrainingProgress(String dataDir) async {
     'KMRSU SUKMR RSSMK KMRSU',
   ];
   for (var i = answers.length - 1; i >= 0; i--) {
-    final at = today.subtract(Duration(days: i, hours: 1));
+    final at = anchor.subtract(Duration(days: i));
     final score = SessionScore.evaluate(
       target,
       answers[i],
@@ -252,17 +285,18 @@ Future<void> seedTrainingProgress(String dataDir) async {
     );
     progress = progress.recordSession(score, now: at, lesson: 4);
   }
+  final sendAt = anchor.add(const Duration(minutes: 40));
   final send = SessionScore.evaluate(
     'KMRS SUK',
     'KMRS SUK',
-    at: today.subtract(const Duration(minutes: 30)),
+    at: sendAt,
     elapsed: const Duration(minutes: 1),
     lesson: 4,
     drillKind: 'send',
   );
   progress = progress.recordSession(
     send,
-    now: today.subtract(const Duration(minutes: 30)),
+    now: sendAt,
     lesson: 4,
     updateSrs: false,
   );

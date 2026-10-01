@@ -39,10 +39,17 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
   装进 `binding.reportData`，由 `flutter drive` 宿主写成
   `<platform>/<locale>/<scene>.png`。
 - **桌面窗口**：harness 通过 `window_manager` 把真实窗口调整到
-  `MORSECQ_SHOT_WINDOW`（默认 `1280x800`）并居中，然后回读实际尺寸——macOS 会把
-  窗口钳制到可见区域（14 寸 MacBook Pro 得到 1280×768），按实际尺寸截。
+  `MORSECQ_SHOT_WINDOW`（默认 `1280x800`）并居中。它设置的是含标题栏和边框的外框，
+  所以 harness 会量出装饰尺寸再调整一次，直到 Flutter 视图本身就是请求的尺寸。macOS
+  可能把超出可见区域的窗口钳小，此时接受较小尺寸并打日志；Linux 与 Windows 上尺寸
+  不符即失败。
 - **像素比**：桌面 1.0，移动端 `min(dpr, 2)`，可用 `MORSECQ_SHOT_PIXEL_RATIO` 覆盖。
 - **主题**：钉死为浅色（`MORSECQ_SHOT_THEME=light|dark|system`），不跟随宿主外观。
+- **参数校验**：参数格式错误或越界直接失败，不再静默退回默认值——窗口边长
+  (0, 8192]、像素比 [0.25, 4]、主题只能是上述三个名字之一。
+- **每帧都有断言**：截帧前走查会断言场景页面及其灌入内容（消息气泡、好友、翻译器
+  输出），只点击可命中的目标。`pumpAndSettle` 超时（无尽动画）可以容忍，其它任何
+  错误都让运行失败。
 - **语言**：每种语言单独一遍，用各自的一份演示文案（中文帧里是中文名字和中文群名；
   电码正文保持 CW 缩写，那才是空中实际拍发的内容）。
 - **发布门禁**：只有当该平台的 `flutter drive` 退出码为 0、每种语言的每个场景都存在、

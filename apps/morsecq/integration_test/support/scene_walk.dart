@@ -6,11 +6,31 @@
 // a user taps, found by localized text/tooltip or by the app's stable keys.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_core/morse_core.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/startup/startup_controller.dart';
 import 'package:morsecq/startup/startup_gate.dart';
+import 'package:morsecq/ui/account/backup_wizard_page.dart';
+import 'package:morsecq/ui/account/create_identity_page.dart';
+import 'package:morsecq/ui/account/welcome_page.dart';
+import 'package:morsecq/ui/chat/conversation_list.dart';
+import 'package:morsecq/ui/chat/conversation_screen.dart';
+import 'package:morsecq/ui/chat/message_bubble.dart';
+import 'package:morsecq/ui/contacts/contacts_page.dart';
+import 'package:morsecq/ui/groups/group_list.dart';
+import 'package:morsecq/ui/learn/learn_home.dart';
+import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
+import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
+import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
+import 'package:morsecq/ui/listen/listen_screen.dart';
+import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq/ui/pages/reference_page.dart';
+import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/text_to_morse_view.dart';
+import 'package:morsecq/ui/reference/translator_screen.dart';
 import 'package:morsecq/ui/shell/app_shell.dart';
+import 'package:morsecq/ui/stats/stats_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'seed_data.dart';
@@ -56,9 +76,40 @@ Future<void> selectTab(WidgetTester tester, ShellTab tab) async {
       matching: find.byIcon(d.selectedIcon),
     );
   }
-  expect(finder, findsOneWidget, reason: 'destination ${tab.name}');
+  await tapHittable(tester, finder, 'destination ${tab.name}');
+}
+
+/// Taps [finder] after asserting it resolves to exactly one widget that a
+/// pointer can actually reach (not covered by a SnackBar, a sheet or an
+/// offstage route), then settles. `tester.tap` alone only warns on a miss.
+Future<void> tapHittable(
+  WidgetTester tester,
+  Finder finder,
+  String what,
+) async {
+  expect(finder, findsOneWidget, reason: what);
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  expect(finder.hitTestable(), findsOneWidget, reason: '$what is hittable');
   await tester.tap(finder);
   await settle(tester);
+}
+
+/// Asserts the screen a scene is about to capture is on stage.
+void expectScreen(Type screen) {
+  expect(find.byType(screen), findsOneWidget, reason: '$screen on screen');
+}
+
+/// Asserts a chat bubble carrying [text] is on screen (by message, so it
+/// holds in training mode where the text itself is hidden). Only lines in
+/// the viewport are built, so check the newest line: the conversation opens
+/// scrolled to the bottom.
+void expectBubble(String text) {
+  expect(
+    find.byWidgetPredicate((w) => w is MessageBubble && w.message.text == text),
+    findsOneWidget,
+    reason: 'bubble "$text"',
+  );
 }
 
 /// Pops the top route of the root navigator when there is one (a pushed
@@ -87,21 +138,11 @@ Future<void> dumpStartupState(WidgetTester tester) async {
   debugPrint('[shot] visible text: ${texts.join(' | ')}');
 }
 
-Future<void> tapTooltip(WidgetTester tester, String tooltip) async {
-  final finder = find.byTooltip(tooltip);
-  expect(finder, findsOneWidget, reason: 'tooltip "$tooltip"');
-  await tester.tap(finder);
-  await settle(tester);
-}
+Future<void> tapTooltip(WidgetTester tester, String tooltip) =>
+    tapHittable(tester, find.byTooltip(tooltip), 'tooltip "$tooltip"');
 
-Future<void> tapText(WidgetTester tester, String text) async {
-  final finder = find.text(text);
-  expect(finder, findsOneWidget, reason: 'text "$text"');
-  await tester.ensureVisible(finder);
-  await tester.pump();
-  await tester.tap(finder);
-  await settle(tester);
-}
+Future<void> tapText(WidgetTester tester, String text) =>
+    tapHittable(tester, find.text(text), 'text "$text"');
 
 /// Welcome → create identity (name typed) → mandatory backup wizard.
 Future<void> walkOnboarding(
@@ -112,15 +153,19 @@ Future<void> walkOnboarding(
 ) async {
   await settle(tester, extra: const Duration(milliseconds: 300));
   await shots.applyTheme(tester);
+  expectScreen(WelcomePage);
   expect(find.text(s.accountCreateIdentity), findsOneWidget);
   await shots.capture(tester, copy.locale, 'welcome');
 
   await tapText(tester, s.accountCreateIdentity);
+  expectScreen(CreateIdentityPage);
   await tester.enterText(find.byType(TextField).first, copy.heroName);
   await settle(tester);
+  expect(find.text(copy.heroName), findsOneWidget);
   await shots.capture(tester, copy.locale, 'create_identity');
 
   await tapText(tester, s.accountCreateButton);
+  expectScreen(BackupWizardPage);
   expect(find.text(s.accountBackupContinue), findsOneWidget);
   await shots.capture(tester, copy.locale, 'backup_wizard');
 }
@@ -140,64 +185,106 @@ Future<void> walkShell(
   }
   expect(find.byType(AppShell), findsOneWidget);
 
+  final copy = seed.copy;
+
   // Learn
+  expectScreen(LearnHome);
   expect(find.text(s.learnContinueLesson), findsOneWidget);
   await shots.capture(tester, locale, 'learn_home');
   await tapTooltip(tester, s.learnStatistics);
   await settle(tester, extra: const Duration(milliseconds: 300));
+  expectScreen(StatsScreen);
   await shots.capture(tester, locale, 'stats');
   await popIfCan(tester);
   await tapTooltip(tester, s.learnSettings);
+  expectScreen(TrainingSettingsScreen);
   await shots.capture(tester, locale, 'training_settings');
   await popIfCan(tester);
   await tapText(tester, s.learnContinueLesson);
   await settle(tester, extra: const Duration(milliseconds: 1200));
-  await shots.capture(tester, locale, 'receive_drill');
+  expectScreen(ReceiveDrillScreen);
+  // Without an audio device (CI runners) the drill falls back to the
+  // full-screen flash; capture between flashes.
+  await shots.capture(tester, locale, 'receive_drill', until: () {
+    return tester
+        .widgetList<FlashOverlay>(find.byType(FlashOverlay))
+        .every((w) => !w.isOn.value);
+  });
   await popIfCan(tester);
   await tapText(tester, s.learnSendPractice);
   await settle(tester, extra: const Duration(milliseconds: 400));
+  expectScreen(SendPracticeScreen);
   await shots.capture(tester, locale, 'send_practice');
   await popIfCan(tester);
 
   // Chat
   await selectTab(tester, ShellTab.chat);
-  await shots.capture(tester, locale, 'chat_list');
+  expectScreen(ConversationList);
   final qso = find.byKey(ValueKey<String>(seed.qsoConversationId));
-  expect(qso, findsOneWidget);
-  await tester.tap(qso);
+  expect(qso, findsOneWidget, reason: 'seeded QSO in the list');
+  expect(
+    find.byKey(ValueKey<String>(seed.unreadConversationId)),
+    findsOneWidget,
+    reason: 'seeded unread conversation in the list',
+  );
+  await shots.capture(tester, locale, 'chat_list');
+  await tapHittable(tester, qso, 'QSO conversation tile');
   await settle(tester, extra: const Duration(milliseconds: 300));
+  expectScreen(ConversationScreen);
+  expectBubble(copy.qso.last.text);
   await shots.capture(tester, locale, 'conversation');
   await popIfCan(tester);
   await tapTooltip(tester, s.chatContacts);
+  expectScreen(ContactsPage);
+  for (var i = 0; i < copy.friends.length; i++) {
+    expect(
+      find.byKey(ValueKey<String>('friend_${seedKey(i + 1)}')),
+      findsOneWidget,
+      reason: 'friend ${copy.friends[i].name}',
+    );
+  }
+  expect(find.text(copy.requestMessage), findsOneWidget);
   await shots.capture(tester, locale, 'contacts');
   await popIfCan(tester);
 
   // Groups
   await selectTab(tester, ShellTab.groups);
-  await shots.capture(tester, locale, 'groups');
+  expectScreen(GroupList);
   final group = find.byKey(ValueKey<String>('group_${seed.groupId}'));
-  expect(group, findsOneWidget);
-  await tester.tap(group);
+  expect(group, findsOneWidget, reason: 'seeded group in the list');
+  await shots.capture(tester, locale, 'groups');
+  await tapHittable(tester, group, 'group tile');
   await settle(tester, extra: const Duration(milliseconds: 300));
+  expectScreen(ConversationScreen);
+  expectBubble(copy.net.last.text);
   await shots.capture(tester, locale, 'group_conversation');
   await popIfCan(tester);
 
   // Reference
   await selectTab(tester, ShellTab.reference);
+  expectScreen(ReferencePage);
   await shots.capture(tester, locale, 'reference');
   await tapTooltip(tester, s.referenceTranslatorTitle);
-  await tester.enterText(
-    find.byKey(TextToMorseView.inputKey),
-    'CQ CQ DE MORSECQ K',
-  );
+  expectScreen(TranslatorScreen);
+  const plain = 'CQ CQ DE MORSECQ K';
+  await tester.enterText(find.byKey(TextToMorseView.inputKey), plain);
   await settle(tester);
+  final pattern = MorseEncoder.toPattern(plain);
+  expect(
+    find.byWidgetPredicate((w) => w is MorsePatternText && w.pattern == pattern),
+    findsOneWidget,
+    reason: 'translator output for "$plain"',
+  );
   await shots.capture(tester, locale, 'translator');
   await popIfCan(tester);
   await tapTooltip(tester, s.listenTitle);
+  expectScreen(ListenScreen);
   await shots.capture(tester, locale, 'listen');
   await popIfCan(tester);
 
   // Me
   await selectTab(tester, ShellTab.me);
+  expectScreen(MePage);
+  expect(find.text(copy.heroName), findsWidgets);
   await shots.capture(tester, locale, 'me');
 }

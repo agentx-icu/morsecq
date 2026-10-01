@@ -84,6 +84,9 @@ final class DevicePlaybackFactory implements LearnPlaybackFactory {
     } on Object {
       if (sidetone != null) {
         sinks.remove(sidetone);
+        // Idempotent after a failed prepare; makes sure the sink never keeps
+        // the shared audio engine alive.
+        await sidetone.dispose();
         sidetone = null;
         if (sinks.isEmpty) {
           flash = FlashSink();
