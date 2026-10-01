@@ -25,8 +25,8 @@ class PaddleButtons extends StatefulWidget {
     this.autofocus = false,
     this.ditLabel = 'DIT',
     this.dahLabel = 'DAH',
-  })  : clock = clock ?? SystemClock.shared,
-        binding = keyboard ? (binding ?? KeyboardKeyBinding.defaults) : null;
+  }) : clock = clock ?? SystemClock.shared,
+       binding = keyboard ? (binding ?? KeyboardKeyBinding.defaults) : null;
 
   static const double minTouchTarget = 48;
 
@@ -98,22 +98,22 @@ class _PaddleButtonsState extends State<PaddleButtons> {
   }
 
   Widget _paddle(_PaddleState state, bool isDit) => Expanded(
-        child: _Paddle(
-          label: isDit ? widget.ditLabel : widget.dahLabel,
-          down: state.isDown,
-          height: widget.height < PaddleButtons.minTouchTarget
-              ? PaddleButtons.minTouchTarget
-              : widget.height,
-          onPointerDown: (event) {
-            state.pointers.add(event.pointer);
-            _sync(state, isDit);
-          },
-          onPointerUp: (event) {
-            state.pointers.remove(event.pointer);
-            _sync(state, isDit);
-          },
-        ),
-      );
+    child: _Paddle(
+      label: isDit ? widget.ditLabel : widget.dahLabel,
+      down: state.isDown,
+      height: widget.height < PaddleButtons.minTouchTarget
+          ? PaddleButtons.minTouchTarget
+          : widget.height,
+      onPointerDown: (event) {
+        state.pointers.add(event.pointer);
+        _sync(state, isDit);
+      },
+      onPointerUp: (event) {
+        state.pointers.remove(event.pointer);
+        _sync(state, isDit);
+      },
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -171,9 +171,13 @@ class _Paddle extends StatelessWidget {
         child: SizedBox(
           height: height,
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: ShapeDecoration(
               color: down ? scheme.primary : scheme.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
+              shape:
+                  theme.outlinedButtonTheme.style?.shape?.resolve({}) ??
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
             ),
             child: Center(
               child: Text(

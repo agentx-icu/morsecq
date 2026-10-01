@@ -6,6 +6,7 @@ import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
 import 'message_status_icon.dart';
 import 'morse_pattern_text.dart';
+import '../appearance/style_tokens.dart';
 
 /// A chat bubble with the three layers from plan §5.3: Morse pattern, plain
 /// text (hidden in training mode until revealed) and a play button.
@@ -39,6 +40,7 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
+    final radius = StyleTokens.of(context)?.bubbleRadius ?? 16;
     final S s = context.s;
     final bool mine = message.isMine;
     final Color background = mine
@@ -58,10 +60,10 @@ class MessageBubble extends StatelessWidget {
           child: Material(
             color: background,
             borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(16),
-              topRight: const Radius.circular(16),
-              bottomLeft: Radius.circular(mine ? 16 : 4),
-              bottomRight: Radius.circular(mine ? 4 : 16),
+              topLeft: Radius.circular(radius),
+              topRight: Radius.circular(radius),
+              bottomLeft: Radius.circular(mine ? radius : radius.clamp(0, 4)),
+              bottomRight: Radius.circular(mine ? radius.clamp(0, 4) : radius),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 8, 6),

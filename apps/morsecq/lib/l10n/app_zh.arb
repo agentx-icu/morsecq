@@ -639,5 +639,22 @@
   "referenceTelegraphCodes": "中文电码：{codes}",
   "referenceTelegraphMainland": "大陆（1983）",
   "referenceTelegraphTaiwan": "台湾 / 香港",
-  "referenceTelegraphNone": "本电码本无此字"
+  "referenceTelegraphNone": "本电码本无此字",
+  "appearanceTitle": "外观",
+  "appearanceStyles": "界面风格",
+  "appearanceChoose": "选择风格，预览后应用",
+  "appearanceMode": "明暗模式",
+  "appearancePreview": "效果预览",
+  "appearanceApply": "应用风格",
+  "appearanceRestore": "恢复默认",
+  "appearanceApplied": "外观已保存",
+  "appearanceSaveFailed": "无法保存外观，请重试。",
+  "appearanceClassic": "经典黄铜",
+  "appearanceModern": "清爽现代",
+  "appearanceRadio": "夜航电台",
+  "appearancePaper": "纸感手册",
+  "appearanceCartoon": "清新卡通",
+  "appearanceLight": "浅色",
+  "appearanceDark": "深色",
+  "appearanceSubtitle": "五种风格，支持浅色与深色"
 }

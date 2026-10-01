@@ -3304,6 +3304,108 @@ abstract class S {
   /// In en, this message translates to:
   /// **'not in this codebook'**
   String get referenceTelegraphNone;
+
+  /// No description provided for @appearanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearanceTitle;
+
+  /// No description provided for @appearanceStyles.
+  ///
+  /// In en, this message translates to:
+  /// **'Interface style'**
+  String get appearanceStyles;
+
+  /// No description provided for @appearanceChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a style, preview, then apply'**
+  String get appearanceChoose;
+
+  /// No description provided for @appearanceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness'**
+  String get appearanceMode;
+
+  /// No description provided for @appearancePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get appearancePreview;
+
+  /// No description provided for @appearanceApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply style'**
+  String get appearanceApply;
+
+  /// No description provided for @appearanceRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore defaults'**
+  String get appearanceRestore;
+
+  /// No description provided for @appearanceApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance saved'**
+  String get appearanceApplied;
+
+  /// No description provided for @appearanceSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save appearance. Try again.'**
+  String get appearanceSaveFailed;
+
+  /// No description provided for @appearanceClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Brass'**
+  String get appearanceClassic;
+
+  /// No description provided for @appearanceModern.
+  ///
+  /// In en, this message translates to:
+  /// **'Modern Calm'**
+  String get appearanceModern;
+
+  /// No description provided for @appearanceRadio.
+  ///
+  /// In en, this message translates to:
+  /// **'Night Radio'**
+  String get appearanceRadio;
+
+  /// No description provided for @appearancePaper.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper Handbook'**
+  String get appearancePaper;
+
+  /// No description provided for @appearanceCartoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh Cartoon'**
+  String get appearanceCartoon;
+
+  /// No description provided for @appearanceLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get appearanceLight;
+
+  /// No description provided for @appearanceDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get appearanceDark;
+
+  /// No description provided for @appearanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Five styles with light and dark modes'**
+  String get appearanceSubtitle;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/send_session.dart';
 import 'send_tips.dart';
+import '../../appearance/style_tokens.dart';
+import '../../appearance/ui_style.dart';
 
 /// Live send-practice readout: the target (or a "hidden" placeholder), the
 /// decoded text so far, the pattern of the character being keyed and the
@@ -39,9 +41,12 @@ class _Body extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final s = context.s;
+    final tokens = StyleTokens.of(context);
+    final styled = tokens != null && tokens.style != UiStyle.classic;
     final mono = theme.textTheme.headlineSmall?.copyWith(
       fontFamily: 'monospace',
       letterSpacing: 2,
+      fontSize: styled ? 32 : null,
     );
     final decoded = session.decodedText;
     final pending = session.pendingPattern;
@@ -78,7 +83,10 @@ class _Body extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: scheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(
+              styled ? tokens.controlRadius : 10,
+            ),
+            border: styled ? Border.all(color: scheme.outlineVariant) : null,
           ),
           child: Row(
             children: <Widget>[
@@ -95,10 +103,7 @@ class _Body extends StatelessWidget {
                 ),
               ),
               if (pending.isNotEmpty)
-                Text(
-                  pending,
-                  style: mono?.copyWith(color: scheme.primary),
-                ),
+                Text(pending, style: mono?.copyWith(color: scheme.primary)),
             ],
           ),
         ),
@@ -116,10 +121,7 @@ class _Body extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              formatWpm(s, wpm),
-              style: theme.textTheme.labelLarge,
-            ),
+            Text(formatWpm(s, wpm), style: theme.textTheme.labelLarge),
           ],
         ),
       ],

@@ -224,8 +224,10 @@ class ShotHarness {
   /// Pins the theme so the frames do not follow the host's appearance.
   Future<void> applyTheme(WidgetTester tester) async {
     final mode = parseShotTheme(_themeDefine);
-    tester.element(find.byType(MaterialApp)).read<AppSettings>().themeMode =
-        mode;
+    final settings = tester
+        .element(find.byType(MaterialApp))
+        .read<AppSettings>();
+    await settings.applyAppearance(style: settings.style, themeMode: mode);
     await settle(tester);
   }
 

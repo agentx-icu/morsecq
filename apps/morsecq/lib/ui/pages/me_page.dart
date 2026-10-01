@@ -14,6 +14,8 @@ import '../account/change_password_page.dart';
 import '../account/delete_identity_dialog.dart';
 import '../account/edit_profile_page.dart';
 import '../account/identity_card.dart';
+import '../appearance/appearance_page.dart';
+import '../appearance/style_labels.dart';
 
 /// Profile, account, progress and settings.
 class MePage extends StatelessWidget {
@@ -63,9 +65,7 @@ class _MeBody extends StatelessWidget {
     try {
       await controller.deleteIdentity();
     } on Object catch (e) {
-      messenger?.showSnackBar(
-        SnackBar(content: Text(describeChatError(s, e))),
-      );
+      messenger?.showSnackBar(SnackBar(content: Text(describeChatError(s, e))));
     }
   }
 
@@ -108,10 +108,16 @@ class _MeBody extends StatelessWidget {
           leading: const Icon(Icons.tune),
           title: Text(s.accountTrainingDefaults),
           subtitle: Text(s.accountTrainingDefaultsSubtitle),
-          onTap: () =>
-              Navigator.of(context).pushNamed(kTrainingSettingsRoute),
+          onTap: () => Navigator.of(context).pushNamed(kTrainingSettingsRoute),
         ),
         const LanguageSettingsTile(),
+        ListTile(
+          leading: const Icon(Icons.palette_outlined),
+          title: Text(s.appearanceTitle),
+          subtitle: Text(styleLabel(s, context.watch<AppSettings>().style)),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => AppearancePage.open(context),
+        ),
         _SectionHeader(s.accountSectionAbout),
         ListTile(
           leading: const Icon(Icons.gavel_outlined),
