@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_soloud/flutter_soloud.dart';
 
 import 'engine_leases.dart';
@@ -51,12 +53,28 @@ abstract interface class SoloudApi {
 final class FlutterSoloudApi implements SoloudApi {
   FlutterSoloudApi({
     SoLoud? engine,
+    SoLoud Function()? resolveEngine,
     this.sampleRate = 48000,
     this.bufferSize = 512,
     this.channels = Channels.mono,
-  }) : _engine = engine ?? SoLoud.instance;
+  }) : _injected = engine,
+       _resolveEngine = resolveEngine ?? _sharedEngine;
 
-  final SoLoud _engine;
+  static SoLoud _sharedEngine() => SoLoud.instance;
+
+  final SoLoud? _injected;
+
+  /// How [_engine] is found when no `engine` was injected; tests pass one
+  /// that throws to stand in for a native library that cannot be loaded.
+  final SoLoud Function() _resolveEngine;
+
+  /// Resolved on first use, not in the constructor: `SoLoud.instance` loads
+  /// the native plugin library and throws when it cannot (missing or
+  /// incompatible `.so`/`.dll`, no plugin in a unit test). Deferred, that
+  /// failure surfaces from [init] -- inside the caller's `prepare` -- where
+  /// it is handled (the Learn screens fall back to the screen flash), instead
+  /// of from a constructor nobody guards.
+  SoLoud get _engine => _injected ?? _resolveEngine();
   final int sampleRate;
   final int bufferSize;
   final Channels channels;
@@ -76,8 +94,15 @@ final class FlutterSoloudApi implements SoloudApi {
     deinit: _engine.deinit,
   );
 
+  /// False as well when the native library cannot be loaded at all.
   @override
-  bool get isInitialized => _engine.isInitialized;
+  bool get isInitialized {
+    try {
+      return _engine.isInitialized;
+    } on Object catch (_) {
+      return false;
+    }
+  }
 
   /// Takes this adapter's lease on the shared engine, starting it when no
   /// one runs it yet. An engine somebody else started (e.g. a music player
@@ -87,7 +112,18 @@ final class FlutterSoloudApi implements SoloudApi {
     if (_holdsLease) {
       return Future<void>.value();
     }
-    return _acquiring ??= _acquire();
+    final pending = _acquiring;
+    if (pending != null) {
+      return pending;
+    }
+    // Published before _acquire runs: it can fail synchronously (an engine
+    // whose library cannot load), and its `finally` must then clear the
+    // future it belongs to, or every later init() would replay that failure
+    // instead of retrying.
+    final done = Completer<void>();
+    _acquiring = done.future;
+    unawaited(_acquire().then(done.complete, onError: done.completeError));
+    return done.future;
   }
 
   Future<void> _acquire() async {

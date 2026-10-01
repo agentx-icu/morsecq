@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 
@@ -246,6 +247,36 @@ void main() {
     api.stopError = StateError('engine gone');
     await expectLater(sink.dispose(), throwsStateError);
     expect(api.calls, <String>['stop(101)', 'disposeSource(1)', 'deinit']);
+  });
+
+  test('an engine whose native library cannot load fails in prepare, not '
+      'in a constructor', () async {
+    // SoLoud.instance loads the native plugin and throws when it cannot
+    // (seen on Ubuntu 24.04: a bundled libopus needing glibc 2.43). That
+    // must surface from prepare(), which callers guard, never from the
+    // constructors they call unguarded.
+    var resolved = 0;
+    SoLoud unloadable() {
+      resolved++;
+      throw ArgumentError('Failed to load dynamic library');
+    }
+
+    late FlutterSoloudApi api;
+    expect(
+      () => api = FlutterSoloudApi(resolveEngine: unloadable),
+      returnsNormally,
+    );
+    final broken = SidetoneSink(api: api);
+    expect(resolved, 0);
+    expect(api.isInitialized, isFalse);
+    await expectLater(broken.prepare(), throwsArgumentError);
+    expect(broken.isPrepared, isFalse);
+    // A later prepare tries the engine again rather than replaying the
+    // first failure.
+    final attempts = resolved;
+    await expectLater(broken.prepare(), throwsArgumentError);
+    expect(resolved, attempts + 1);
+    await broken.dispose();
   });
 
   test('custom ramp is honoured', () async {

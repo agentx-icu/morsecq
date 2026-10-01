@@ -53,6 +53,13 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 add_subdirectory("runner")
 
 
+# morsecq only plays a generated sine wave through flutter_soloud and never
+# decodes Opus/Ogg/Vorbis/FLAC. Without this the plugin links and bundles its
+# prebuilt Xiph libraries -- on Linux a libopus.so.0 that needs glibc 2.43, so
+# the plugin fails to load on Ubuntu 24.04 (glibc 2.39). The plugin's
+# CMakeLists reads this from the environment of the configure run.
+set(ENV{NO_XIPH_LIBS} 1)
+
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
