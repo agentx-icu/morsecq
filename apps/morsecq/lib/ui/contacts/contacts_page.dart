@@ -10,9 +10,10 @@ import '../chat/conversation_target.dart';
 import 'add_friend_sheet.dart';
 import 'friend_request_inbox.dart';
 import 'my_tox_id_sheet.dart';
+import 'self_contact_tile.dart';
 
-/// Friends (with online dots), the request inbox, "add friend" and "my Tox
-/// ID". Tapping a friend hands a [ConversationTarget] to [onOpenConversation]
+/// The note-to-self entry, friends (with online dots), the request inbox,
+/// "add friend" and "my Tox ID". Tapping a friend hands a [ConversationTarget] to [onOpenConversation]
 /// so the chat page decides between push and master-detail selection.
 class ContactsPage extends StatelessWidget {
   const ContactsPage({
@@ -105,6 +106,11 @@ class ContactsPage extends StatelessWidget {
               });
           return ListView(
             children: [
+              SelfContactTile(
+                service: service,
+                identity: identity,
+                onOpen: onOpenConversation,
+              ),
               FriendRequestInbox(service: service),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),

@@ -26,6 +26,15 @@ abstract interface class ChatService {
 
   // ---- Conversations -------------------------------------------------------
 
+  /// The note-to-self conversation (`c2c_<own public key>`) of the open
+  /// identity, or null when none is open. Shown as "me" with the own display
+  /// name: a drafts box, a practice partner, a place to keep notes. It is in
+  /// [conversations] (with [Conversation.isSelf]) whenever the other
+  /// conversations are, i.e. while chat is connected. [sendText] to it is
+  /// local only — stored, never sent — and returns [MessageStatus.sent] at
+  /// once; [deleteConversation] clears its history but keeps the row.
+  String? get selfConversationId;
+
   List<Conversation> get conversations;
   Stream<List<Conversation>> get conversationChanges;
 

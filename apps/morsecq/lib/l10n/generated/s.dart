@@ -3443,6 +3443,24 @@ abstract class S {
   /// **'Show all {count} characters'**
   String learnShowAllChars(int count);
 
+  /// Badge on the note-to-self conversation (contacts, conversation list), and its title while the profile has no display name
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get chatSelfMe;
+
+  /// Subtitle of the note-to-self conversation header: its messages are stored locally and never sent
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this device only'**
+  String get chatSelfLocalOnly;
+
+  /// Subtitle of the note-to-self entry at the top of Contacts
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts, practice and notes · never sent'**
+  String get chatSelfContactSubtitle;
+
   /// No description provided for @learnShowFewerChars.
   ///
   /// In en, this message translates to:

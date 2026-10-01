@@ -140,6 +140,44 @@ extension FakeChatServiceTestHooks on FakeChatService {
   }
 }
 
+/// Group bookkeeping shared by the service and the hooks above.
+extension _FakeGroups on FakeChatService {
+  GroupMember _selfMember() =>
+      GroupMember(publicKey: selfPublicKey, displayName: 'Me', isSelf: true);
+
+  Group _installGroup(Group group) {
+    _groups[group.id] = group;
+    _members[group.id] = <GroupMember>[_selfMember()];
+    _groupChanges.add(groups);
+    final String cid = FakeChatService.groupConversationId(group.id);
+    _conversations[cid] = Conversation(
+      id: cid,
+      kind: ConversationKind.group,
+      title: group.name,
+    );
+    _publishConversations();
+    return group;
+  }
+
+  Group _requireGroup(String groupId) {
+    final Group? group = _groups[groupId];
+    if (group == null) {
+      throw ChatException('group_not_found', 'No group $groupId');
+    }
+    return group;
+  }
+
+  GroupInvite _takeInvite(String inviteId) {
+    final int index = _groupInvites.indexWhere((i) => i.inviteId == inviteId);
+    if (index < 0) {
+      throw const ChatException('invite_not_found', 'No such group invite');
+    }
+    final GroupInvite invite = _groupInvites.removeAt(index);
+    _groupInviteChanges.add(groupInvites);
+    return invite;
+  }
+}
+
 String _shortKey(String publicKey) =>
     publicKey.length > 8 ? publicKey.substring(0, 8) : publicKey;
 
@@ -158,6 +196,7 @@ Conversation _copyConversation(
   unreadCount: unreadCount ?? c.unreadCount,
   pinned: pinned ?? c.pinned,
   draft: draft ?? c.draft,
+  isSelf: c.isSelf,
 );
 
 String _fakeChatIdFor(String groupId) {

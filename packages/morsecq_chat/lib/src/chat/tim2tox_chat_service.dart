@@ -58,6 +58,11 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
           _bindSession(live);
         }
       }
+      // The own display name is the self conversation's title.
+      final svc = _service;
+      if (value != null && svc != null && _isCurrent(svc)) {
+        _conversationsPart.rebuild(svc);
+      }
     });
     if (identity is PersistentIdentityService) identity.registerDataStore(this);
   }
@@ -274,6 +279,15 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
       _friendsPart.remove(_requireService(), publicKey);
 
   // ---- Conversations (delegated) -------------------------------------------
+
+  /// Derived from the identity, not the session, so the UI can show the
+  /// entry while disconnected. Tim2Tox keeps everything sent to it local.
+  @override
+  String? get selfConversationId {
+    final current = _identity.current;
+    if (current == null || _replacing) return null;
+    return ConversationIds.c2c(current.publicKey);
+  }
 
   @override
   List<Conversation> get conversations =>

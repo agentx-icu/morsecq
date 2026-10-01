@@ -5,6 +5,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
 import 'morse_pattern_text.dart';
+import 'self_badge.dart';
 
 /// Actions a tile can ask its owner to perform.
 enum ConversationAction { togglePin, markRead, delete }
@@ -85,19 +86,21 @@ class ConversationTile extends StatelessWidget {
         selected: selected,
         selectedTileColor: scheme.secondaryContainer.withValues(alpha: 0.5),
         onTap: onTap,
-        leading: CircleAvatar(
-          backgroundColor: conversation.kind == ConversationKind.group
-              ? scheme.tertiaryContainer
-              : scheme.primaryContainer,
-          child: Icon(
-            conversation.kind == ConversationKind.group
-                ? Icons.groups
-                : Icons.person,
-            color: conversation.kind == ConversationKind.group
-                ? scheme.onTertiaryContainer
-                : scheme.onPrimaryContainer,
-          ),
-        ),
+        leading: conversation.isSelf
+            ? const SelfAvatar()
+            : CircleAvatar(
+                backgroundColor: conversation.kind == ConversationKind.group
+                    ? scheme.tertiaryContainer
+                    : scheme.primaryContainer,
+                child: Icon(
+                  conversation.kind == ConversationKind.group
+                      ? Icons.groups
+                      : Icons.person,
+                  color: conversation.kind == ConversationKind.group
+                      ? scheme.onTertiaryContainer
+                      : scheme.onPrimaryContainer,
+                ),
+              ),
         title: Row(
           children: [
             if (conversation.pinned)
@@ -107,7 +110,9 @@ class ConversationTile extends StatelessWidget {
               ),
             Expanded(
               child: Text(
-                conversation.title,
+                conversation.isSelf && conversation.title.isEmpty
+                    ? context.s.chatSelfMe
+                    : conversation.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -115,6 +120,7 @@ class ConversationTile extends StatelessWidget {
                 ),
               ),
             ),
+            if (conversation.isSelf) const SelfBadge(),
             if (last != null)
               Text(
                 formatMessageTime(context, last.timestamp),
@@ -180,10 +186,7 @@ class ConversationTile extends StatelessWidget {
         value: ConversationAction.markRead,
         child: Text(s.chatMarkRead),
       ),
-    PopupMenuItem(
-      value: ConversationAction.delete,
-      child: Text(s.chatDelete),
-    ),
+    PopupMenuItem(value: ConversationAction.delete, child: Text(s.chatDelete)),
   ];
 
   Future<void> _showMenu(BuildContext context, Offset globalPosition) async {

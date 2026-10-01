@@ -5,6 +5,7 @@ import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
+import 'package:morsecq/ui/chat/conversation_list.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
@@ -29,11 +30,12 @@ final List<String> _labels = [
 ];
 
 /// One widget that only the selected destination's page renders. The
-/// placeholder pages show their description; the Me page shows the identity
-/// card.
+/// placeholder pages show their description; Chat shows its conversation list
+/// (never empty once an identity exists: the note to self is always there);
+/// the Me page shows the identity card.
 final Map<String, Finder> _pageMarkers = {
   LearnPage.title(en): find.text(LearnPage.description(en)),
-  ChatPage.title(en): find.text(ChatPage.description(en)),
+  ChatPage.title(en): find.byType(ConversationList),
   GroupsPage.title(en): find.text(GroupsPage.description(en)),
   ReferencePage.title(en): find.byType(ReferenceScreen),
   MePage.title(en): find.byType(IdentityCard),

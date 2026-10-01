@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../chat_service.dart';
+import '../identity_service.dart';
 import '../models.dart';
 import 'replay_stream.dart';
 
 part 'fake_chat_service_hooks.dart';
+part 'fake_chat_service_self.dart';
 
 /// In-memory [ChatService] for widget tests and UI development without a
 /// Tox node. Mirrors the Tox transport where the UI can tell: deterministic
@@ -13,18 +15,30 @@ part 'fake_chat_service_hooks.dart';
 /// [MessageStatus.pending] until `setFriendOnline` flips it to `sent` (Tox has
 /// no server); [addFriend] adds the friend immediately, offline, like
 /// `tox_friend_add`; a `c2c_<pk>` / `group_<id>` conversation not yet in
-/// [conversations] is created on first send / draft. Test hooks live in the
-/// [FakeChatServiceTestHooks] extension (`fake_chat_service_hooks.dart`).
+/// [conversations] is created on first send / draft. Given an [identity],
+/// the note-to-self conversation follows it (`fake_chat_service_self.dart`).
+/// Test hooks live in [FakeChatServiceTestHooks] (`fake_chat_service_hooks.dart`).
 final class FakeChatService implements ChatService {
   FakeChatService({
     String? selfPublicKey,
+    IdentityService? identity,
     DateTime Function()? clock,
     this.maxMessageBytes = 1322,
-  }) : selfPublicKey = selfPublicKey ?? 'F' * 64,
-       _clock = clock ?? DateTime.now;
+  }) : _selfKey = selfPublicKey ?? identity?.current?.publicKey ?? 'F' * 64,
+       _clock = clock ?? DateTime.now {
+    if (identity != null) _followIdentity(identity);
+  }
 
   /// Our own 64-hex public key; `addFriend(<own id>)` throws `own_id`.
-  final String selfPublicKey;
+  String get selfPublicKey => _selfKey;
+  String _selfKey;
+  String _selfName = '';
+  bool _selfBound = false;
+  StreamSubscription<Identity?>? _identitySub;
+
+  @override
+  String? get selfConversationId =>
+      _selfBound ? c2cConversationId(_selfKey) : null;
 
   @override
   final int maxMessageBytes;
@@ -184,6 +198,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> deleteConversation(String conversationId) async {
+    if (_isSelfConversation(conversationId)) return _clearSelfConversation();
     _messages.remove(conversationId);
     if (_conversations.remove(conversationId) != null) {
       _publishConversations();
@@ -206,6 +221,7 @@ final class FakeChatService implements ChatService {
   /// yet (first message, first draft). Returns null for unknown peers.
   Conversation? _materialize(String id) {
     final String peer = id.substring(id.indexOf('_') + 1);
+    if (_isSelfConversation(id)) return _selfConversation();
     if (id.startsWith('c2c_')) {
       final Friend? friend = _friends[peer];
       if (friend == null) return null;
@@ -265,7 +281,8 @@ final class FakeChatService implements ChatService {
         'No conversation $conversationId',
       );
     }
-    final bool peerOnline =
+    final bool delivered =
+        conversation.isSelf || // local only: stored, never sent
         conversation.kind == ConversationKind.group ||
         (_friends[conversation.peerId]?.online ?? false);
     final ChatMessage message = ChatMessage(
@@ -274,7 +291,7 @@ final class FakeChatService implements ChatService {
       senderId: selfPublicKey,
       text: text,
       timestamp: _clock(),
-      status: peerOnline ? MessageStatus.sent : MessageStatus.pending,
+      status: delivered ? MessageStatus.sent : MessageStatus.pending,
       isMine: true,
     );
     _append(conversation, message, unreadDelta: 0);
@@ -292,6 +309,7 @@ final class FakeChatService implements ChatService {
         title: existing.title,
         pinned: existing.pinned,
         draft: existing.draft,
+        isSelf: existing.isSelf,
       );
       _publishConversations();
     }
@@ -437,46 +455,13 @@ final class FakeChatService implements ChatService {
     await deleteConversation(groupConversationId(groupId));
   }
 
-  GroupMember _selfMember() =>
-      GroupMember(publicKey: selfPublicKey, displayName: 'Me', isSelf: true);
-
-  Group _installGroup(Group group) {
-    _groups[group.id] = group;
-    _members[group.id] = <GroupMember>[_selfMember()];
-    _groupChanges.add(groups);
-    final String cid = groupConversationId(group.id);
-    _conversations[cid] = Conversation(
-      id: cid,
-      kind: ConversationKind.group,
-      title: group.name,
-    );
-    _publishConversations();
-    return group;
-  }
-
-  Group _requireGroup(String groupId) {
-    final Group? group = _groups[groupId];
-    if (group == null) {
-      throw ChatException('group_not_found', 'No group $groupId');
-    }
-    return group;
-  }
-
-  GroupInvite _takeInvite(String inviteId) {
-    final int index = _groupInvites.indexWhere((i) => i.inviteId == inviteId);
-    if (index < 0) {
-      throw const ChatException('invite_not_found', 'No such group invite');
-    }
-    final GroupInvite invite = _groupInvites.removeAt(index);
-    _groupInviteChanges.add(groupInvites);
-    return invite;
-  }
-
   @override
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    final Future<void>? identityCancelled = _identitySub?.cancel();
     await Future.wait(<Future<void>>[
+      ?identityCancelled,
       for (final ReplaySubject<Object> s in _subjects) s.close(),
       _messageEvents.close(),
     ]);

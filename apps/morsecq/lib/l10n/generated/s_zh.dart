@@ -1984,5 +1984,14 @@ class SZh extends S {
   }
 
   @override
+  String get chatSelfMe => '我';
+
+  @override
+  String get chatSelfLocalOnly => '仅保存在本机';
+
+  @override
+  String get chatSelfContactSubtitle => '草稿、练习与备忘 · 不会发送';
+
+  @override
   String get learnShowFewerChars => '收起字符';
 }

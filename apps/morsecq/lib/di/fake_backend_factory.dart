@@ -29,9 +29,9 @@ final class FakeBackendFactory extends BackendFactory {
   @override
   ChatService createChatService(IdentityService identity) =>
       _chatService?.call(identity) ??
-      // On a first run there is no identity yet; the fake falls back to its
-      // own placeholder key, which only affects the `own_id` check.
-      FakeChatService(selfPublicKey: identity.current?.publicKey);
+      // Follows the identity (first-run creation included) for the own key
+      // and the note-to-self conversation.
+      FakeChatService(identity: identity);
 
   @override
   Future<void> disposeServices({
