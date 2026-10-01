@@ -587,7 +587,10 @@ jobs:
   app-ios:
     name: flutter build ios (release, unsigned)
     needs: native
-    runs-on: macos-15
+    # Xcode 26 / iOS 26 SDK: device_info_plus 13.2 calls
+    # NSProcessInfo.isiOSAppOnVision, which the Xcode 16 SDK on macos-15 lacks
+    # (and the App Store requires the iOS 26 SDK anyway).
+    runs-on: macos-26
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
