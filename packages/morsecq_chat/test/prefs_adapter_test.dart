@@ -35,15 +35,61 @@ void main() {
     expect(await Tim2ToxBootstrapAdapter(store).getBootstrapHost(), 'node.tox');
   });
 
-  test('clear() removes only this account, never the global settings', () async {
-    await a.setGroups({'tox_1'});
-    await b.setGroups({'tox_2'});
-    await a.setCurrentBootstrapNode('node.tox', 33445, 'PK');
+  test('Tim2Tox legacy friend dismissal key is account scoped', () async {
+    await a.setStringList('dismissed_friend_applications', ['PEER|CQ']);
+    expect(await a.getStringList('dismissed_friend_applications'), ['PEER|CQ']);
+    expect(await b.getStringList('dismissed_friend_applications'), isNull);
     await a.clear();
-    expect(await a.getGroups(), isEmpty);
-    expect(await b.getGroups(), {'tox_2'});
-    expect((await a.getCurrentBootstrapNode())?.host, 'node.tox');
+    expect(await a.getStringList('dismissed_friend_applications'), isNull);
   });
+
+  test(
+    'existing global refusal records migrate once to the current identity',
+    () async {
+      await store.setStringList('dismissed_friend_applications', ['PEER|CQ']);
+      expect(await a.getStringList('dismissed_friend_applications'), [
+        'PEER|CQ',
+      ]);
+      expect(store.keys(), {'dismissed_friend_applications_AAAAAAAAAAAAAAAA'});
+      expect(await b.getStringList('dismissed_friend_applications'), isNull);
+    },
+  );
+
+  test(
+    'clear removes legacy refusals before a replacement can inherit them',
+    () async {
+      await store.setStringList('dismissed_friend_applications', ['PEER|CQ']);
+      await a.clear();
+      expect(await b.getStringList('dismissed_friend_applications'), isNull);
+      expect(store.keys(), isEmpty);
+    },
+  );
+
+  test(
+    'clear collects full-address read receipt queues for this identity',
+    () async {
+      final self = 'A' * 76;
+      final peer = 'B' * 76;
+      await a.setStringList('pending_read_receipts_${self}_PEER', ['message']);
+      await a.setStringList('pending_group_read_receipts_$self', ['message']);
+      await b.setStringList('pending_read_receipts_${peer}_PEER', ['other']);
+      await a.clear();
+      expect(store.keys(), {'pending_read_receipts_${peer}_PEER'});
+    },
+  );
+
+  test(
+    'clear() removes only this account, never the global settings',
+    () async {
+      await a.setGroups({'tox_1'});
+      await b.setGroups({'tox_2'});
+      await a.setCurrentBootstrapNode('node.tox', 33445, 'PK');
+      await a.clear();
+      expect(await a.getGroups(), isEmpty);
+      expect(await b.getGroups(), {'tox_2'});
+      expect((await a.getCurrentBootstrapNode())?.host, 'node.tox');
+    },
+  );
 
   test('quit-group helpers and group identity removal', () async {
     await a.addQuitGroup('tox_9');
@@ -65,7 +111,10 @@ void main() {
     expect(await a.getC2CReceiveMessageOpt('peer'), 2);
     expect(await b.getC2CReceiveMessageOpt('peer'), 0);
     // An explicit full Tox ID wins over the adapter's own prefix.
-    expect(await b.getC2CReceiveMessageOpt('peer', 'AAAAAAAAAAAAAAAA${'0' * 60}'), 2);
+    expect(
+      await b.getC2CReceiveMessageOpt('peer', 'AAAAAAAAAAAAAAAA${'0' * 60}'),
+      2,
+    );
   });
 
   test('drafts round-trip and empty text removes', () async {
@@ -85,16 +134,26 @@ void main() {
     expect(d?.timestamp, 42);
     await a.saveConversationDraft(
       accountToxId: 'A' * 76,
-      draft: const ConversationDraft(conversationID: 'c2c_x', text: '', timestamp: 0),
+      draft: const ConversationDraft(
+        conversationID: 'c2c_x',
+        text: '',
+        timestamp: 0,
+      ),
     );
     expect(
-      await a.loadConversationDraft(accountToxId: 'A' * 76, conversationID: 'c2c_x'),
+      await a.loadConversationDraft(
+        accountToxId: 'A' * 76,
+        conversationID: 'c2c_x',
+      ),
       isNull,
     );
   });
 
   test('conversation meta store shares the scope and the clear', () async {
-    final meta = ConversationMetaStore(store, accountPrefix: 'AAAAAAAAAAAAAAAA');
+    final meta = ConversationMetaStore(
+      store,
+      accountPrefix: 'AAAAAAAAAAAAAAAA',
+    );
     await meta.setPinned('c2c_p', true);
     await meta.setDraft('c2c_p', 'draft');
     await meta.hide('group_g');

@@ -60,8 +60,12 @@ final class TrainingController extends ChangeNotifier {
 
   TrainerProgress _progress = TrainerProgress();
   TrainingSettings _settings = TrainingSettings.defaults;
+  TrainingSettings _savedSettings = TrainingSettings.defaults;
   bool _loaded = false;
+  bool _disposed = false;
   Object? _loadError;
+  Future<void> _writes = Future<void>.value();
+  final Map<Object, (Object, StackTrace)> _writeErrors = {};
 
   bool get isLoaded => _loaded;
 
@@ -79,13 +83,17 @@ final class TrainingController extends ChangeNotifier {
   // Lifecycle
 
   Future<void> load() async {
+    _ensureActive();
     try {
       final progress = await _progressStore.load();
       final settings = await _settingsStore.load();
+      if (_disposed) return;
       _progress = _clampLesson(progress ?? TrainerProgress());
       _settings = settings ?? TrainingSettings.defaults;
+      _savedSettings = _settings;
       _loadError = null;
     } on Object catch (error) {
+      if (_disposed) return;
       _loadError = error;
       _progress = TrainerProgress();
       _settings = TrainingSettings.defaults;
@@ -95,12 +103,25 @@ final class TrainingController extends ChangeNotifier {
   }
 
   Future<void> updateSettings(TrainingSettings settings) async {
+    _ensureActive();
     if (settings == _settings) {
       return;
     }
     _settings = settings;
+    final save = _persist(_settingsStore, () async {
+      await _settingsStore.save(settings);
+      _savedSettings = settings;
+    });
     notifyListeners();
-    await _settingsStore.save(settings);
+    try {
+      await save;
+    } on Object {
+      if (!_disposed && identical(_settings, settings)) {
+        _settings = _savedSettings;
+        notifyListeners();
+      }
+      rethrow;
+    }
   }
 
   Future<void> setDailyGoal(int chars) =>
@@ -111,9 +132,27 @@ final class TrainingController extends ChangeNotifier {
       _commit(_progress.withLesson(course.clampLesson(lesson)));
 
   Future<void> resetProgress() async {
+    _ensureActive();
     _progress = TrainerProgress();
+    final clear = _persist(_progressStore, _progressStore.clear);
     notifyListeners();
-    await _progressStore.clear();
+    await clear;
+  }
+
+  /// Durability barrier used before backgrounding, backup or replacement.
+  Future<void> flush() async {
+    await _writes;
+    if (_writeErrors.isNotEmpty) {
+      final (error, stack) = _writeErrors.values.first;
+      Error.throwWithStackTrace(error, stack);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    super.dispose();
   }
 
   // ---------------------------------------------------------------------------
@@ -295,7 +334,10 @@ final class TrainingController extends ChangeNotifier {
       case ReceiveDrillKind.review:
         return groups;
       case ReceiveDrillKind.words:
-        final words = WordDrill.commonWords(allowedChars: allowed, wordCount: 2);
+        final words = WordDrill.commonWords(
+          allowedChars: allowed,
+          wordCount: 2,
+        );
         return words.hasCandidates ? words : groups;
       case ReceiveDrillKind.callsigns:
         final calls = CallsignDrill(count: 1, allowedChars: allowed);
@@ -332,8 +374,29 @@ final class TrainingController extends ChangeNotifier {
   }
 
   Future<void> _commit(TrainerProgress next) async {
+    _ensureActive();
     _progress = next;
+    // Enqueue before notification: a listener can reset or record another
+    // session synchronously, and that later operation must stay later.
+    final save = _persist(_progressStore, () => _progressStore.save(next));
     notifyListeners();
-    await _progressStore.save(next);
+    await save;
+  }
+
+  void _ensureActive() {
+    if (_disposed) throw StateError('training controller disposed');
+  }
+
+  Future<void> _persist(Object store, Future<void> Function() operation) {
+    final result = _writes.then((_) => operation());
+    _writes = result.then<void>(
+      (_) {
+        _writeErrors.remove(store);
+      },
+      onError: (Object error, StackTrace stack) {
+        _writeErrors[store] = (error, stack);
+      },
+    );
+    return result;
   }
 }

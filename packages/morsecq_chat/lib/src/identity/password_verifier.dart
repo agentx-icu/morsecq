@@ -45,6 +45,31 @@ class PasswordVerifier {
 
   Future<void> removePassword(String toxId) => _store.delete(_key(toxId));
 
+  /// Rolls the verifier back if the corresponding profile/record write fails.
+  Future<T> replacePassword<T>(
+    String toxId,
+    String? password,
+    Future<T> Function() commit,
+  ) async {
+    final key = _key(toxId);
+    final previous = await _store.read(key);
+    try {
+      if (password == null || password.isEmpty) {
+        await removePassword(toxId);
+      } else {
+        await setPassword(toxId, password);
+      }
+      return await commit();
+    } catch (_) {
+      if (previous == null) {
+        await _store.delete(key);
+      } else {
+        await _store.write(key, previous);
+      }
+      rethrow;
+    }
+  }
+
   /// False when no password is set or the password does not match.
   Future<bool> verify(String toxId, String password) async {
     final stored = await _store.read(_key(toxId));

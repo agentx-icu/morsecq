@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
+
+import '../training/atomic_json_file.dart';
 
 /// Minimal string key/value persistence that [LocaleController] is written
 /// against, so the language choice can be stored without the app committing
@@ -42,65 +43,52 @@ final class InMemoryKeyValueStore implements KeyValueStore {
 /// Store persisted as one small JSON object (`{"key": "value"}`) in [file].
 ///
 /// The whole file is read once in [open] and rewritten on every change via a
-/// temporary file + rename, so a crash mid-write cannot leave a truncated
-/// file behind. Malformed content is treated as empty rather than fatal: the
-/// language preference is a convenience, never worth blocking startup for.
+/// temporary file + rename and a previous-save backup. Operations share the
+/// file's queue, so rapid preference changes cannot overwrite its staging file.
+/// Malformed content falls back to the backup, then an empty store.
 final class JsonFileKeyValueStore implements KeyValueStore {
-  JsonFileKeyValueStore._(this.file, this._values);
+  JsonFileKeyValueStore._(this.file, this._values)
+    : _json = AtomicJsonFile(file);
 
   /// Reads [file] (if it exists) and returns a ready store.
   static Future<JsonFileKeyValueStore> open(File file) async {
     final values = <String, String>{};
-    if (await file.exists()) {
-      try {
-        final decoded = jsonDecode(await file.readAsString());
-        if (decoded is Map) {
-          for (final entry in decoded.entries) {
-            final key = entry.key;
-            final value = entry.value;
-            if (key is String && value is String) values[key] = value;
-          }
-        }
-      } on FormatException {
-        // Corrupt preferences file: start over, do not crash.
+    final decoded = await AtomicJsonFile(file).read();
+    if (decoded != null) {
+      for (final entry in decoded.entries) {
+        final value = entry.value;
+        if (value is String) values[entry.key] = value;
       }
     }
     return JsonFileKeyValueStore._(file, values);
   }
 
   final File file;
+  final AtomicJsonFile _json;
   final Map<String, String> _values;
-  Future<void> _writes = Future<void>.value();
+  Future<void> _pending = Future<void>.value();
 
   @override
   String? getString(String key) => _values[key];
 
   @override
-  Future<void> setString(String key, String value) => _update(key, value);
+  Future<void> setString(String key, String value) =>
+      _mutate((values) => values[key] = value);
 
   @override
-  Future<void> remove(String key) => _update(key, null);
+  Future<void> remove(String key) => _mutate((values) => values.remove(key));
 
-  Future<void> _update(String key, String? value) {
-    final write = _writes.then((_) async {
-      if (value == null && !_values.containsKey(key)) return;
-      // Clone the last committed map inside the queue. A failed write must
-      // never leak into a later successful save of an unrelated preference.
-      final next = {..._values};
-      if (value == null) {
-        next.remove(key);
-      } else {
-        next[key] = value;
-      }
-      await file.parent.create(recursive: true);
-      final tmp = File('${file.path}.tmp');
-      await tmp.writeAsString(jsonEncode(next), flush: true);
-      await tmp.rename(file.path);
+  Future<void> _mutate(void Function(Map<String, String> values) change) {
+    final result = _pending.then((_) async {
+      final next = Map<String, String>.of(_values);
+      change(next);
+      await _json.write(next);
+      // A failed mutation must not be included in another key's later save.
       _values
         ..clear()
         ..addAll(next);
     });
-    _writes = write.catchError((Object error) {});
-    return write;
+    _pending = result.then<void>((_) {}, onError: (Object error) {});
+    return result;
   }
 }

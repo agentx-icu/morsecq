@@ -40,12 +40,19 @@ final class AppServices {
     required LocaleController locale,
     NotificationApis? notificationApis,
     NotificationPrefs? notificationPrefs,
+    Future<void> Function()? onBackground,
     this.desktopShell,
-  })  : lifecycle = AppLifecycleCoordinator(identity: identity),
-        banner = ConnectionBannerPolicy(identity: identity),
-        notificationPrefs = notificationPrefs ?? NotificationPrefs(),
-        strings = StringsResolver(locale),
-        _chat = chat {
+  }) : lifecycle = AppLifecycleCoordinator(
+         identity: identity,
+         onBackground: () => _flushDurable(identity, onBackground),
+       ),
+       banner = ConnectionBannerPolicy(identity: identity),
+       notificationPrefs = notificationPrefs ?? NotificationPrefs(),
+       _ownsNotificationPrefs = notificationPrefs == null,
+       strings = StringsResolver(locale),
+       _chat = chat,
+       _identity = identity,
+       _onBackground = onBackground {
     final apis = notificationApis;
     notifications = apis == null
         ? null
@@ -60,9 +67,12 @@ final class AppServices {
   }
 
   final ChatService _chat;
+  final IdentityService _identity;
+  final Future<void> Function()? _onBackground;
   final AppLifecycleCoordinator lifecycle;
   final ConnectionBannerPolicy banner;
   final NotificationPrefs notificationPrefs;
+  final bool _ownsNotificationPrefs;
   final DesktopShellController? desktopShell;
 
   /// Current-language strings for code without a `BuildContext`; fires on a
@@ -88,6 +98,7 @@ final class AppServices {
     strings.addListener(_onStringsChanged);
     final shell = desktopShell;
     if (shell != null) {
+      shell.addBeforeQuitListener(_beforeQuit);
       // The shell was built in main() before the LocaleController existed:
       // apply the persisted language now, then follow changes.
       shell.updateStrings(strings.s);
@@ -96,6 +107,23 @@ final class AppServices {
         (list) => shell.setUnreadCount(_totalUnread(list)),
       );
     }
+  }
+
+  Future<void> _beforeQuit() async {
+    final identity = _identity;
+    await _flushDurable(identity, _onBackground);
+    await identity.disconnect();
+  }
+
+  static Future<void> _flushDurable(
+    IdentityService identity,
+    Future<void> Function()? settings,
+  ) async {
+    await Future.wait<void>([
+      if (identity is PersistentIdentityService)
+        Future<void>.sync(identity.persist),
+      if (settings != null) Future<void>.sync(settings),
+    ]);
   }
 
   void _onStringsChanged() {
@@ -119,13 +147,14 @@ final class AppServices {
     // the resolver must have let go of it by then.
     strings.removeListener(_onStringsChanged);
     strings.dispose();
+    desktopShell?.removeBeforeQuitListener(_beforeQuit);
     final pending = <Future<void>>[
       ?_unreadSub?.cancel(),
       ?notifications?.dispose(),
       banner.dispose(),
       lifecycle.dispose(),
     ];
-    notificationPrefs.dispose();
+    if (_ownsNotificationPrefs) notificationPrefs.dispose();
     await Future.wait(pending);
   }
 }

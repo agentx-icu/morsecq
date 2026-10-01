@@ -4,13 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_dsp/testing.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
+import 'package:morsecq/ui/listen/listen_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'fake_pcm_source.dart';
 
 /// Strings of the locale the harness pins.
 final S en = lookupS(const Locale('en'));
 
-Future<void> _pump(WidgetTester tester, FakePcmSource source) async {
+Future<void> _pump(
+  WidgetTester tester,
+  FakePcmSource source, {
+  ListenPreferences? preferences,
+}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
@@ -20,17 +26,21 @@ Future<void> _pump(WidgetTester tester, FakePcmSource source) async {
       localizationsDelegates: S.localizationsDelegates,
       supportedLocales: S.supportedLocales,
       locale: const Locale('en'),
-      home: ListenScreen(source: source),
+      home: preferences == null
+          ? ListenScreen(source: source)
+          : ChangeNotifierProvider<ListenPreferences>.value(
+              value: preferences,
+              child: ListenScreen(source: source),
+            ),
     ),
   );
   await tester.pumpAndSettle();
 }
 
-String _decodedText(WidgetTester tester) =>
-    tester
-        .widget<SelectableText>(find.byKey(ListenScreen.decodedTextKey))
-        .data!
-        .trim();
+String _decodedText(WidgetTester tester) => tester
+    .widget<SelectableText>(find.byKey(ListenScreen.decodedTextKey))
+    .data!
+    .trim();
 
 void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
   final pcm = SyntheticMorse(snrDb: 20).renderText(text, wpm: wpm);
@@ -40,6 +50,23 @@ void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
 }
 
 void main() {
+  testWidgets('manual tuning and retune update the persisted preferences', (
+    tester,
+  ) async {
+    final preferences = ListenPreferences();
+    addTearDown(preferences.dispose);
+    await _pump(tester, FakePcmSource(), preferences: preferences);
+    final slider = find.byType(Slider).first;
+    final rect = tester.getRect(slider);
+    await tester.tapAt(Offset(rect.left + rect.width * 0.9, rect.center.dy));
+    await tester.pumpAndSettle();
+    expect(preferences.settings.autoTune, isFalse);
+    expect(preferences.settings.manualHz, greaterThan(800));
+    await tester.tap(find.text(en.listenRetune));
+    await tester.pumpAndSettle();
+    expect(preferences.settings.autoTune, isTrue);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('decodes synthetic PCM from the source into the text panel', (
     tester,
   ) async {
@@ -64,7 +91,10 @@ void main() {
     // Interpolated tune sits within a couple of Hz of 700 on a noisy tone
     // and the speed estimate carries ~1 ms of gate edge bias, so allow a
     // small band rather than the exact label.
-    expect(find.textContaining(RegExp(r'^(69[5-9]|70[0-5]) Hz$')), findsOneWidget);
+    expect(
+      find.textContaining(RegExp(r'^(69[5-9]|70[0-5]) Hz$')),
+      findsOneWidget,
+    );
     expect(find.textContaining(RegExp(r'^(19|20|21) WPM$')), findsOneWidget);
 
     await tester.tap(find.text(en.listenStop));
@@ -117,8 +147,10 @@ void main() {
       },
     );
     addTearDown(
-      () => tester.binding.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, null),
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
     );
     await _pump(tester, source);
     await tester.tap(find.text(en.listenStart));

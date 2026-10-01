@@ -11,6 +11,11 @@ import '../ui/appearance/ui_style.dart';
 class AppSettings extends ChangeNotifier {
   AppSettings({required this.backendLabel, KeyValueStore? store})
     : _store = store ?? InMemoryKeyValueStore() {
+    // Preserve the theme used before style and mode shared one record.
+    _themeMode = ThemeMode.values.firstWhere(
+      (value) => value.name == _store.getString('app.theme'),
+      orElse: () => ThemeMode.system,
+    );
     final saved = _store.getString(storageKey);
     if (saved == null) return;
     try {
@@ -22,7 +27,7 @@ class AppSettings extends ChangeNotifier {
       );
       _themeMode = ThemeMode.values.firstWhere(
         (value) => value.name == decoded['mode'],
-        orElse: () => ThemeMode.system,
+        orElse: () => _themeMode,
       );
     } on FormatException {
       // An optional preference never blocks startup.
@@ -61,6 +66,17 @@ class AppSettings extends ChangeNotifier {
     // Callers still receive errors; a failed save must not poison the queue.
     _pending = operation.catchError((Object error) {});
     return operation;
+  }
+
+  /// Background and quit barriers wait for all accepted appearance requests.
+  /// Failed requests already leave the visible and stored appearance unchanged
+  /// and are reported through [applyAppearance] to the caller.
+  Future<void> flush() async {
+    Future<void> pending;
+    do {
+      pending = _pending;
+      await pending;
+    } while (!identical(pending, _pending));
   }
 
   @override

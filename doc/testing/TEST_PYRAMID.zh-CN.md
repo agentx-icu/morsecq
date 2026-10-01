@@ -11,18 +11,22 @@ tool/test_pyramid.sh --level unit
 tool/test_pyramid.sh --level e2e --device macos
 ```
 
-| 层级 | 内容 | 位置 | 何时跑 | 数量（2026-09-30） |
+| 层级 | 内容 | 位置 | 何时跑 | 数量（2026-10-01） |
 |---|---|---|---|---|
 | **门禁** | 分析器（零问题）、500 行复杂度、导入守卫、ARB 同步 | `tool/*.dart` | 每次推送，CI `analyze.yml` | — |
-| **单元** | 纯 Dart 引擎（`morse_core`、`morse_trainer`、`morse_dsp`）、聊天契约及内存假实现（`morsecq_chat_api`）、Tim2Tox 传输层（`morsecq_chat`，排除 `needs-native` smoke）、Flutter I/O 的 sink 与键控器（`morse_io`） | `packages/*/test` | 每次推送，CI `analyze.yml` | 347 |
-| **控件** | 每个界面配假后端，在手机与桌面两种尺寸下：启动门、引导、聊天、学习、统计、手册、收听、通知、桌面外壳、多语言 | `apps/morsecq/test` | 每次推送，CI `analyze.yml` | 405 |
-| **进程内集成** | 按 `main()` 的方式接线的服务：`AppScope` → `AppServices` → 假实现；有 `libtim2tox_ffi` 时的无头 Tox smoke（`needs-native`，`native.yml`） | `apps/morsecq/test/di`、`packages/morsecq_chat/test/native_smoke_test.dart` | 随控件层；原生工作流 | 计入上面 |
-| **端到端（真实 UI）** | 在真实平台上运行应用自己的 `main()`，按新用户的点击路径驱动：引导 → 每个页签 → 一次练习 → 加好友并发一句 → 翻译器 → 我；外加 17 场景 × 2 语言的截图走查 | `apps/morsecq/integration_test` | 发布前在 macOS；`e2e.yml` 按需；已在 macOS、iOS 模拟器、Android 模拟器验证（2026-09-30） | 3 个测试，每平台 34 帧 |
+| **单元** | 纯 Dart 引擎（`morse_core`、`morse_trainer`、`morse_dsp`）、聊天契约及内存假实现（`morsecq_chat_api`）、Tim2Tox 传输层（`morsecq_chat`，排除 `needs-native` smoke）、Flutter I/O 的 sink 与键控器（`morse_io`） | `packages/*/test` | 每次推送，CI `analyze.yml` | 401 |
+| **控件** | 每个界面配假后端，在手机与桌面两种尺寸下：启动门、引导、聊天、学习、统计、手册、收听、通知、桌面外壳、多语言 | `apps/morsecq/test` | 每次推送，CI `analyze.yml` | 477 |
+| **进程内集成** | 按 `main()` 的方式接线的服务：`AppScope` → `AppServices` → 假实现；有 `libtim2tox_ffi` 时的无头 Tox smoke（`needs-native`，`native.yml`） | `apps/morsecq/test/di`、`packages/morsecq_chat/test/native*_test.dart` | 随控件层；原生工作流 | 计入上面 |
+| **端到端（真实 UI）** | 在真实平台上运行应用自己的 `main()`，按新用户的点击路径驱动：引导 → 每个页签 → 一次练习 → 加好友并发一句 → 翻译器 → 我；外加 17 场景 × 2 语言的截图走查 | `apps/morsecq/integration_test` | 发布前在 macOS；`e2e.yml` 按需；已在 macOS、iOS 模拟器、Android 模拟器验证（2026-09-30） | 7 个测试，每平台 34 帧 |
+
+端到端层还运行 `integration_test/persistence_test.dart`：用临时文件和独立键验证真实应用支持目录存储、Keychain/Keystore，以及不使用缓存的原生偏好重新读取。每个发布平台都应运行；文件存储单测无法验证原生插件权限。
 
 端到端层永远带 `--dart-define=MORSECQ_FAKE_BACKEND=true`：内存后端不创建 Tox 身份、
 不保存资料，每次启动都从引导页开始。会碰到设备的只有：启动测试跑的是真实 `main()`，
 所以应用正常的 `settings.json`（语言、窗口位置）会写到 application-support 目录；截图走查
 把灌入的进度和假资料写在一个临时目录里，测试结束时删除。
+
+存储范围、问题清单与各平台验证边界见[持久化审计](./PERSISTENCE_AUDIT.zh-CN.md)。
 
 ## 每层的职责
 

@@ -81,6 +81,45 @@ void main() {
     expect(await store().load(), isNull);
   });
 
+  test('invalid progress structure falls back to a valid backup', () async {
+    final s = store();
+    await s.save(TrainerProgress(currentLesson: 4));
+    await s.save(TrainerProgress(currentLesson: 5));
+    await s.file.writeAsString('{"currentLesson":"invalid"}');
+
+    expect((await store().load())?.currentLesson, 4);
+    expect(await File('${s.file.path}.corrupt').exists(), isTrue);
+    expect((await store().load())?.currentLesson, 4);
+  });
+
+  test('recovered backup survives repeated loads and the next save', () async {
+    final s = store();
+    await s.save(TrainerProgress(currentLesson: 4));
+    await s.save(TrainerProgress(currentLesson: 5));
+    await s.file.writeAsString('not json');
+    expect((await store().load())?.currentLesson, 4);
+    expect((await store().load())?.currentLesson, 4);
+
+    await store().save(TrainerProgress(currentLesson: 6));
+    await s.file.writeAsString('not json again');
+    expect((await store().load())?.currentLesson, 4);
+  });
+
+  test(
+    'saving over invalid progress preserves the last valid backup',
+    () async {
+      final s = store();
+      await s.save(TrainerProgress(currentLesson: 4));
+      await s.save(TrainerProgress(currentLesson: 5));
+      await s.file.writeAsString('{"currentLesson":"invalid"}');
+
+      await store().save(TrainerProgress(currentLesson: 6));
+      await s.file.writeAsString('corrupt after the new save');
+
+      expect((await store().load())?.currentLesson, 4);
+    },
+  );
+
   test(
     'missing primary but present .bak (crash mid-rename) loads .bak',
     () async {

@@ -82,6 +82,7 @@ level_e2e() {
   [[ -z "$device" ]] && device="$(host_device)"
   [[ -z "$device" ]] && { echo "e2e: no device (use --device)" >&2; return 1; }
   run_step "e2e launch [$device]" bash -c "cd apps/morsecq && flutter test integration_test/app_launch_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
+  run_step "e2e persistence [$device]" bash -c "cd apps/morsecq && flutter test integration_test/persistence_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
   run_step "e2e scenes [$device]" bash -c "cd apps/morsecq && flutter test integration_test/screenshots_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
 }
 

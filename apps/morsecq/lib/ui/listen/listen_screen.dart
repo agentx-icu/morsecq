@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import 'listen_controller.dart';
+import 'listen_preferences.dart';
 import 'listen_settings.dart';
 import 'listen_widgets.dart';
 import 'pcm_source.dart';
@@ -24,9 +26,9 @@ class ListenScreen extends StatefulWidget {
   static const Key decodedTextKey = Key('listen.decodedText');
 
   static Route<void> route({PcmSource? source}) => MaterialPageRoute<void>(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => ListenScreen(source: source),
-      );
+    settings: const RouteSettings(name: routeName),
+    builder: (_) => ListenScreen(source: source),
+  );
 
   final PcmSource? source;
   final int sampleRate;
@@ -40,15 +42,22 @@ class _ListenScreenState extends State<ListenScreen>
   late final ListenController _controller;
   final ScrollController _scroll = ScrollController();
   int _shownTextLength = 0;
+  ListenPreferences? _preferences;
 
   @override
   void initState() {
     super.initState();
+    try {
+      _preferences = context.read<ListenPreferences>();
+    } on ProviderNotFoundException {
+      // Isolated screens/tests use the decoder defaults.
+    }
     final source = widget.source;
     _controller = ListenController(
       source: source ?? RecordPcmSource(),
       ownsSource: source == null,
       sampleRate: widget.sampleRate,
+      settings: _preferences?.settings ?? const ListenSettings(),
     );
     _controller.addListener(_onControllerChanged);
     WidgetsBinding.instance.addObserver(this);
@@ -78,6 +87,7 @@ class _ListenScreenState extends State<ListenScreen>
 
   void _onControllerChanged() {
     if (!mounted) return;
+    _preferences?.update(_controller.settings);
     setState(() {});
     final length = _controller.text.length;
     if (length != _shownTextLength) {
@@ -108,15 +118,18 @@ class _ListenScreenState extends State<ListenScreen>
   }
 
   Future<void> _openSettings() => showModalBottomSheet<void>(
-        context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        builder: (_) => ListenSettingsSheet(
-          settings: _controller.settings,
-          sampleRate: _controller.sampleRate,
-          onChanged: _controller.updateSettings,
-        ),
-      );
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (_) => ListenSettingsSheet(
+      settings: _controller.settings,
+      sampleRate: _controller.sampleRate,
+      onChanged: (settings) {
+        _controller.updateSettings(settings);
+        _preferences?.update(settings);
+      },
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

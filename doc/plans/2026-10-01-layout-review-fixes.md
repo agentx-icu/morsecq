@@ -2,7 +2,7 @@
 
 **Goal:** Resolve all eight findings from the 2026-10-01 layout audit while retaining the five styles and Modern Calm default.
 
-**Architecture:** Keep changes in the shared Flutter UI, with a reference-counted editor shared per service/conversation. Draft clearing follows the sent editing revision; history expands the existing local-history window and merges live events by message ID. A centered two-sliver timeline grows older records above its stable origin and new records below it, preserving reading position without estimating bubble heights.
+**Architecture:** Keep changes in the shared Flutter UI, with a reference-counted editor shared per service/conversation and the current master's identity flush/replacement barriers. Draft clearing follows the sent editing revision; history expands the existing local-history window and merges live events by message ID. A centered two-sliver timeline grows older records above its stable origin and new records below it, preserving reading position without estimating bubble heights.
 
 **Stack:** Flutter, existing ChatService contract/fake backend, widget tests, ARB localization and the native screenshot pipeline.
 
@@ -50,3 +50,9 @@ Expected: Each new regression fails against the audited implementation, then pas
 - 2026-10-01: Confirmed-clear IDs suppress late send completions that would recreate deleted rows, while post-clear creations remain visible. Added the gated row-creation/clear/completion regression.
 
 - 2026-10-01: Final independent diff review passed, including a clear operation that finishes after its route is disposed. At UI revision `1a4b9db471827b067abd267c50aa6a8b9b1c2bd6`, Analyze CI passed with 533 app tests and one existing conditional skip; macOS/Linux/Windows E2E run [36836332406](https://github.com/agentx-icu/morsecq/actions/runs/36836332406) passed. Regenerated all 204 Modern Calm frames: four local targets and two CI artifact imports through the official capture pipeline. PR #6 awaits final-head CI after the asset/documentation commit.
+
+- 2026-10-01: Integrate master persistence changes (`fdee8e1`) after it advances during delivery. Resolve the compose conflict by combining shared draft ordering/edit revisions with background durability, retry and identity replacement guards. A same-key restore creates a fresh shared editor even while an old route remains mounted; the regression fails without writer invalidation and passes with it. The 40 combined chat regressions, analyzer and gates pass; independently review the integration, rerun all app tests and refresh gallery provenance at the resulting UI revision before final CI/merge.
+
+- 2026-10-01: Merge review reproduced premature flush completion and hidden write failures when reopening an unchanged pending draft. Move durable snapshot/error state into the shared writer, await its complete queue, retain failed drafts for retry and observe identity boundaries while pending/failed. Remove idle clean writers and invalidate old writers on replacement. Added waiting, failed retry, disposed-failure recovery/isolation and saved-text reversal regressions.
+
+- 2026-10-01: Integrated-source verification passed: 594 app tests with one existing skip, zero analyzer issues, complexity/import/ARB gates, and independent merge review. The two pending-reopen durability regressions first failed, then passed; five further integration edge cases are covered in the complete suite. Refresh the gallery from this integrated UI and await final-head CI before merging PR #6.

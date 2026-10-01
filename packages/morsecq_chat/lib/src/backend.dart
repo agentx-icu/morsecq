@@ -31,8 +31,8 @@ class MorsecqChatBackend {
     required this.chat,
     required ChatEngine engine,
     required Tim2ToxIdentityService identityImpl,
-  })  : _engine = engine,
-        _identityImpl = identityImpl;
+  }) : _engine = engine,
+       _identityImpl = identityImpl;
 
   final IdentityService identity;
   final ChatService chat;
@@ -66,7 +66,8 @@ class MorsecqChatBackend {
     }
     final resolvedPaths = paths ?? await IdentityPaths.forApplicationSupport();
     final kv = store ?? await SharedPreferencesStore.open();
-    final eng = engine ??
+    final eng =
+        engine ??
         Tim2ToxEngine(
           store: kv,
           logger: logger,
@@ -77,6 +78,7 @@ class MorsecqChatBackend {
       engine: eng,
       crypto: crypto ?? Tim2ToxProfileCrypto(),
       verifier: PasswordVerifier(secureStore ?? FlutterSecureStore()),
+      store: kv,
       logger: logger,
     );
     final chat = Tim2ToxChatService(

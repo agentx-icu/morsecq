@@ -13,6 +13,9 @@ import '../startup/startup_controller.dart';
 import '../training/training_controller_host.dart';
 import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
+import '../ui/listen/listen_preferences.dart';
+import '../ui/reference/reference_playback_settings.dart';
+import 'app_preferences.dart';
 import 'app_services.dart';
 import 'app_settings.dart';
 import 'backend_factory.dart';
@@ -61,28 +64,36 @@ class AppScope extends StatefulWidget {
 class _AppScopeState extends State<AppScope> {
   late final IdentityService _identity = widget.factory.createIdentityService();
   late final ChatService _chat = widget.factory.createChatService(_identity);
-  late final AppSettings _settings = AppSettings(
+  late final KeyValueStore _store =
+      widget.localeStore ?? InMemoryKeyValueStore();
+  late final AppPreferences _preferences = AppPreferences(
+    _store,
     backendLabel: widget.factory.label,
-    store: widget.localeStore,
+    identity: _identity,
   );
+  AppSettings get _settings => _preferences.settings;
   late final StartupController _startup = StartupController(_identity);
   late final BackupFileGateway _backupFiles =
       widget.backupFiles ?? const PlatformBackupFileGateway();
-  late final LocaleController _locale = LocaleController(
-    widget.localeStore ?? InMemoryKeyValueStore(),
-  );
-  final MorsePlaybackSettings _playback = MorsePlaybackSettings();
+  late final LocaleController _locale = LocaleController(_store);
+  MorsePlaybackSettings get _playback => _preferences.playback;
   late final AppServices _services = AppServices(
     identity: _identity,
     chat: _chat,
     locale: _locale,
     notificationApis: widget.notificationApis,
+    notificationPrefs: _preferences.notifications,
+    onBackground: _flushSettings,
     desktopShell: widget.desktopShell,
   );
 
   late final TrainingControllerHost _training = TrainingControllerHost(
     _identity,
   );
+
+  Future<void> _flushSettings() async {
+    await Future.wait([_preferences.flush(), _locale.flush()]);
+  }
 
   @override
   void initState() {
@@ -100,10 +111,9 @@ class _AppScopeState extends State<AppScope> {
     if (LocaleController.active == _locale) LocaleController.active = null;
     _training.dispose().ignore();
     _services.dispose().ignore();
-    _playback.dispose();
+    _preferences.dispose();
     _locale.dispose();
     _startup.dispose();
-    _settings.dispose();
     // Fire-and-forget: the scope is going away and there is nobody left to
     // report to; the fake and the real backend both log internally.
     widget.factory.disposeServices(identity: _identity, chat: _chat).ignore();
@@ -117,10 +127,17 @@ class _AppScopeState extends State<AppScope> {
         Provider<IdentityService>.value(value: _identity),
         Provider<ChatService>.value(value: _chat),
         Provider<BackupFileGateway>.value(value: _backupFiles),
+        Provider<AppPreferences>.value(value: _preferences),
         ChangeNotifierProvider<AppSettings>.value(value: _settings),
         ChangeNotifierProvider<StartupController>.value(value: _startup),
         ChangeNotifierProvider<LocaleController>.value(value: _locale),
         ChangeNotifierProvider<MorsePlaybackSettings>.value(value: _playback),
+        ChangeNotifierProvider<ReferencePlaybackSettings>.value(
+          value: _preferences.reference,
+        ),
+        ChangeNotifierProvider<ListenPreferences>.value(
+          value: _preferences.listen,
+        ),
         Provider<AppLifecycleCoordinator>.value(value: _services.lifecycle),
         Provider<ConnectionBannerPolicy>.value(value: _services.banner),
         ChangeNotifierProvider<NotificationPrefs>.value(

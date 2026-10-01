@@ -40,6 +40,7 @@ class MessageMapper {
     required this.selfKey,
     required this.selfName,
     required this.nameOf,
+    this.isQueued,
   });
 
   /// Our 64-hex public key (upper-case). Empty before login.
@@ -48,6 +49,9 @@ class MessageMapper {
 
   /// Display name for a peer key, or null when unknown.
   final String? Function(String publicKey) nameOf;
+
+  /// Checks the durable outbox when history's transient pending flag was lost.
+  final bool Function(t2t.ChatMessage message, String conversationId)? isQueued;
 
   /// [conversationId] is required for our own C2C rows: Tim2Tox stamps them
   /// with the login alias and no peer, so the caller must know the target.
@@ -66,7 +70,9 @@ class MessageMapper {
       senderName: isMine ? selfName : nameOf(sender),
       text: text,
       timestamp: m.timestamp,
-      status: statusOf(m),
+      status: isMine && (isQueued?.call(m, conversationId) ?? false)
+          ? api.MessageStatus.pending
+          : statusOf(m),
       isMine: isMine,
     );
   }

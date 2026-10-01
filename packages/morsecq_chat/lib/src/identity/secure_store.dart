@@ -16,7 +16,14 @@ abstract interface class SecureStore {
 /// EncryptedSharedPreferences on Android — the plugin's 10.x+ default).
 class FlutterSecureStore implements SecureStore {
   FlutterSecureStore([FlutterSecureStorage? storage])
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            // The app ships outside the Mac App Store without a provisioning
+            // profile. The legacy Keychain supports that distribution; the data
+            // protection Keychain would require Keychain Sharing/provisioning.
+            mOptions: MacOsOptions(usesDataProtectionKeychain: false),
+          );
 
   final FlutterSecureStorage _storage;
 

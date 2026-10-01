@@ -14,6 +14,7 @@ class _DelayedService implements ChatService {
   final List<String> writes = [];
   final List<Completer<void>> writeGates = [];
   bool delayWrites = false;
+  bool failDraftWrites = false;
 
   @override
   int get maxMessageBytes => delegate.maxMessageBytes;
@@ -32,6 +33,7 @@ class _DelayedService implements ChatService {
       writeGates.add(gate);
       await gate.future;
     }
+    if (failDraftWrites) throw StateError('disk unavailable');
     await delegate.setDraft(id, text);
   }
 
@@ -201,6 +203,120 @@ void main() {
       expect(draft(h, id), 'REOPENED');
     },
   );
+
+  Future<IdentityDataStore> reopen(
+    WidgetTester t,
+    ChatHarness h,
+    _DelayedService service,
+    String id,
+  ) async {
+    await t.pumpWidget(
+      h.wrap(
+        Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: MessageInput(
+              service: service,
+              conversationId: id,
+              playback: h.playback,
+              initialDraft: draft(h, id),
+            ),
+          ),
+        ),
+      ),
+    );
+    return t.state(find.byType(MessageInput)) as IdentityDataStore;
+  }
+
+  testWidgets('reopened pending draft flush waits without another edit', (
+    t,
+  ) async {
+    final (h, service, id) = await setup(t);
+    service.delayWrites = true;
+    await t.enterText(find.byType(TextField), 'PENDING CQ');
+    await t.pump(const Duration(milliseconds: 450));
+    await t.pumpWidget(h.wrap(const SizedBox()));
+    final participant = await reopen(t, h, service, id);
+    var flushed = false;
+    final saving = participant.flush().then((_) => flushed = true);
+    await t.pump();
+    try {
+      expect(flushed, isFalse);
+    } finally {
+      service.writeGates.first.complete();
+      await t.pump();
+      await saving;
+    }
+    expect(draft(h, id), 'PENDING CQ');
+    await t.pumpWidget(h.wrap(const SizedBox()));
+  });
+
+  testWidgets('reopened pending draft shares failures and retries unchanged', (
+    t,
+  ) async {
+    final (h, service, id) = await setup(t);
+    service.delayWrites = true;
+    await t.enterText(find.byType(TextField), 'FIRST');
+    await t.pump(const Duration(milliseconds: 450));
+    await t.enterText(find.byType(TextField), 'SECOND');
+    await t.pumpWidget(h.wrap(const SizedBox()));
+    final participant = await reopen(t, h, service, id);
+    service.writeGates.first.complete();
+    await t.pump();
+    service.failDraftWrites = true;
+    service.writeGates.last.complete();
+    await t.pump();
+    expect(draft(h, id), 'FIRST');
+    expect(
+      t.widget<TextField>(find.byType(TextField)).controller!.text,
+      'SECOND',
+    );
+    service.delayWrites = false;
+    await expectLater(participant.flush(), throwsStateError);
+    service.failDraftWrites = false;
+    await participant.flush();
+    expect(draft(h, id), 'SECOND');
+    await t.pumpWidget(h.wrap(const SizedBox()));
+  });
+
+  testWidgets(
+    'editing back to saved text supersedes a pending different draft',
+    (t) async {
+      final (h, service, id) = await setup(t);
+      await t.enterText(find.byType(TextField), 'FIRST');
+      await t.pump(const Duration(milliseconds: 450));
+      service.delayWrites = true;
+      await t.enterText(find.byType(TextField), 'SECOND');
+      await t.pump(const Duration(milliseconds: 450));
+      await t.enterText(find.byType(TextField), 'FIRST');
+      await t.pump(const Duration(milliseconds: 450));
+      service.writeGates.first.complete();
+      await t.pump();
+      service.writeGates.last.complete();
+      await t.pump();
+      expect(service.writes, ['FIRST', 'SECOND', 'FIRST']);
+      expect(draft(h, id), 'FIRST');
+      await t.pumpWidget(h.wrap(const SizedBox()));
+    },
+  );
+
+  testWidgets('a failed disposed draft stays recoverable for retry', (t) async {
+    final (h, service, id) = await setup(t);
+    service.failDraftWrites = true;
+    await t.enterText(find.byType(TextField), 'FAILED CQ');
+    await t.pump(const Duration(milliseconds: 450));
+    await t.pumpWidget(h.wrap(const SizedBox()));
+    await t.pump();
+    service.failDraftWrites = false;
+    final participant = await reopen(t, h, service, id);
+    expect(
+      t.widget<TextField>(find.byType(TextField)).controller!.text,
+      'FAILED CQ',
+    );
+    await participant.flush();
+    expect(draft(h, id), 'FAILED CQ');
+    await t.pumpWidget(h.wrap(const SizedBox()));
+  });
 
   testWidgets('a mounted older editor cannot clear another route’s new draft', (
     t,

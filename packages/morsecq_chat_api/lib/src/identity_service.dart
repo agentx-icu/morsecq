@@ -58,3 +58,22 @@ abstract interface class IdentityService {
   /// morse_trainer progress. Available once the identity is ready.
   Future<String> dataDirectory();
 }
+
+/// Optional durability capability used by the app lifecycle and by modules
+/// that keep data alongside an identity. In-memory hosts need not implement it.
+abstract interface class PersistentIdentityService implements IdentityService {
+  /// Flush native state and registered module data before background/export.
+  Future<void> persist();
+
+  void registerDataStore(IdentityDataStore store);
+  void unregisterDataStore(IdentityDataStore store);
+}
+
+/// A module's barrier around identity export, restore and deletion.
+abstract interface class IdentityDataStore {
+  Future<void> flush();
+
+  /// Stop accepting old-session changes and drain existing operations before
+  /// the identity directory is removed or replaced.
+  Future<void> prepareForReplacement();
+}

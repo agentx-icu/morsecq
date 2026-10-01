@@ -3,8 +3,8 @@ import 'package:morse_core/morse_core.dart';
 
 /// Speed and tone used when the reference or translator plays a pattern.
 ///
-/// Local to these screens and deliberately not persisted; the trainer keeps
-/// its own settings. Defaults: 15 WPM, Farnsworth off, 700 Hz.
+/// The app shares and persists these independently of training defaults.
+/// Isolated screens can own a default instance: 15 WPM, Farnsworth off, 700 Hz.
 class ReferencePlaybackSettings extends ChangeNotifier {
   ReferencePlaybackSettings({
     double wpm = 15,

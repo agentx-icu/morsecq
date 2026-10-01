@@ -87,14 +87,14 @@ class _LearnScopeState extends State<LearnScope> {
     // with the settings route); only self-created controllers are disposed.
     final owns = factory == null;
     try {
+      final identity = _identityService();
+      if (identity != null) _watchIdentity(identity);
       if (factory != null) {
         controller = await factory(context);
       } else {
-        final identity = _identityService();
         if (identity == null) {
           controller = null;
         } else {
-          _watchIdentity(identity);
           controller = await LearnScope.controllerForIdentity(identity);
         }
       }

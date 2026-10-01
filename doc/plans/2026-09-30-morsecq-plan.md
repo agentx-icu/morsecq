@@ -315,3 +315,9 @@ At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze`
 - **2026-10-01** — Implemented the eight layout-audit fixes: draft ownership and write order, older history and reading continuity, clear confirmation, keyboard-safe group forms, scaled reference cards, compact Classic lessons, and visible stacked appearance previews. See the bilingual layout-review implementation plan.
 
 - **2026-10-01** — Layout-fix validation completed at UI revision `1a4b9db471827b067abd267c50aa6a8b9b1c2bd6`: independent diff review, Analyze CI (533 app tests passed, one conditional skip), and all three desktop E2E jobs passed. Refreshed the six-platform bilingual Modern Calm gallery through the official pipeline; Linux/Windows provenance is E2E run 36836332406.
+
+- **2026-10-01** — Integrate the advancing master persistence implementation into the layout-fix branch. Keep both draft concurrency protection and identity/background durability; add the overlapping-route same-key restore regression and revalidate the merged UI before delivery.
+
+- **2026-10-01** — Compose durability now shares committed/error state across reopened editors. Background and identity flushes wait for queued writes; failed drafts remain retryable without another edit, while replacement invalidates their cache. Regression coverage includes restoring with a disposed failed editor and reverting to previously saved text behind a pending write.
+
+- **2026-10-01** — Integrated layout/persistence verification passed all 594 app tests (one existing skip), analyzer and project gates; independent merge review found no remaining blockers.

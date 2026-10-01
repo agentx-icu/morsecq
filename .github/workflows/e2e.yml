@@ -103,7 +103,7 @@ jobs:
       - name: Install Linux desktop dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev libayatana-appindicator3-dev libasound2-dev xvfb fonts-noto-cjk
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev libsecret-1-dev gnome-keyring dbus-x11 libayatana-appindicator3-dev libasound2-dev xvfb fonts-noto-cjk
 
       - name: Bootstrap vendored dependencies
         run: dart run tool/bootstrap_deps.dart
@@ -119,10 +119,23 @@ jobs:
           set -euo pipefail
           flutter config --enable-linux-desktop
           cd apps/morsecq
+          # The persistence test uses the real Secret Service. Keep its keyring
+          # and support files separate from any existing runner user session.
+          morsecq_keyring_root="$(mktemp -d)"
+          trap 'rm -rf "$morsecq_keyring_root"' EXIT
+          export XDG_DATA_HOME="$morsecq_keyring_root/data"
+          export XDG_RUNTIME_DIR="$morsecq_keyring_root/runtime"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          dbus-run-session -- bash -euo pipefail <<'MORSECQ_LINUX_E2E'
+          printf '%s' 'morsecq-ci-keyring' | \
+            gnome-keyring-daemon --unlock --daemonize --components=secrets \
+              --control-directory "$XDG_RUNTIME_DIR/keyring"
           for f in integration_test/*_test.dart; do
             xvfb-run -a -s '-screen 0 1920x1080x24' \
               flutter test "$f" -d linux --dart-define=MORSECQ_FAKE_BACKEND=true
           done
+          MORSECQ_LINUX_E2E
 
       - name: Screenshots
         env:

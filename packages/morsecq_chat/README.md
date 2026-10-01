@@ -67,7 +67,14 @@ before `init`, `disconnect()` re-encrypts right after `uninit`. The PBKDF2-
 HMAC-SHA256 verifier (`flutter_secure_storage`: Keychain / Keystore /
 libsecret / DPAPI) is the authority on "has a password" — the file's
 encryption state cannot be, since a crash mid-session leaves it plaintext.
-`tox_pass_decrypt` is the second factor and the fallback for imported profiles.
+For an encrypted profile, successful `tox_pass_decrypt` proves the password
+and repairs a stale verifier after an interrupted password change or restore.
+
+`PersistentIdentityService.persist()` awaits savedata, debounced history,
+outbox mutations and registered `IdentityDataStore` writes before suspension
+or export. Replacement prepares those stores before removing their files;
+the identity stream publishes `null` only after replacement succeeds, then
+publishes the restored identity even when its public key is unchanged.
 
 On disk (`IdentityPaths`, under the platform application-support directory):
 
@@ -91,7 +98,11 @@ entry*: pathLen u16 | path (UTF-8, '/'-separated) | size u64 | bytes
 Entries: `identity.json`, `tox_profile.tox` (encrypted with the identity
 password when one is set), `training/<relative path>` for every file under
 `dataDirectory()`. Paths are validated on decode (no `..`, no absolute paths,
-no backslashes). `importBackup` replaces the current identity; an encrypted
+no backslashes or Windows drive prefixes). Export flushes registered data
+stores first. Import stages every archive entry before replacing the current
+tree and rolls back a failed directory swap. The archive contains identity,
+Tox savedata and training files; chat history, queue and preferences remain
+outside this format. `importBackup` replaces the current identity; an encrypted
 profile requires the password (`wrong_password` otherwise) and carries it
 over into the verifier so the restored identity unlocks with the same one.
 
@@ -102,7 +113,9 @@ over into the verifier so the restored identity unlocks with the same one.
   `message_too_long`: Tim2Tox would fragment them into separate messages.
 - Tim2Tox queues sends to an offline friend / not-yet-connected group and
   returns a `pending` row; the row is re-emitted on `messageEvents` as `sent`
-  when the drain succeeds. Tim2Tox does not carry a distinct failure flag on
+  when the drain succeeds. The durable queue preserves `pending` across
+  restart even though upstream history reload clears its transient flag.
+  Tim2Tox does not carry a distinct failure flag on
   this path (`_markPendingItemFailed` also flips `isPending: false`), so
   `failed` is not produced today — tracked for the upstream `tim2tox_core` split.
 - `cloudCustomData` is **local only** in Tim2Tox (never sent over Tox); morsecq
@@ -110,6 +123,9 @@ over into the verifier so the restored identity unlocks with the same one.
 - Conversations are derived: history ids ∪ friends ∪ groups, minus hidden
   (deleted) ones; unread from Tim2Tox's read barrier; pinned/draft/hidden from
   `ConversationMetaStore` (account-scoped keys in `shared_preferences`).
+- Pending friend requests retain wording and arrival time in an account-scoped
+  cache until acceptance or rejection. Dismissed requests are scoped too;
+  the existing single-identity unscoped dismissal list is adopted once.
 
 ### What still goes through the Tencent bindings, and why
 
@@ -223,6 +239,10 @@ because its Windows plugin depends on `win32 ^6`, the major the app's
   queueing, validation errors, session detach.
 - `backup_container_test.dart`, `prefs_adapter_test.dart`,
   `password_verifier_test.dart` (RFC 7914 PBKDF2 vectors).
+- `identity_persistence_test.dart`, `transport_persistence_test.dart`,
+  `key_value_store_test.dart`, `message_mapper_test.dart` — interrupted writes,
+  replacement barriers, registered-store flushing, persisted group unread and
+  invites, preference errors and queued message status after restart.
 
 ### Native smoke test (`@Tags(['needs-native'])`)
 
@@ -241,6 +261,16 @@ cd packages/morsecq_chat && TIM2TOX_FFI_LIB=$PWD/../../build/native/macos-arm64/
 Passes in about 10 s on a Mac (2026-09-30): identity → DHT → friend request
 (resolved by the routed `friendAddResult`) → queued send → group create /
 members / leave → disconnect.
+
+`test/native_persistence_test.dart` creates a password-protected identity,
+updates its profile, adds an offline friend, creates an NGC, queues text and
+saves a draft/pin. A fresh backend on the same paths must restore each value
+and decrypt the savedata. It does not wait for DHT connectivity:
+
+```bash
+TIM2TOX_FFI_LIB=/absolute/path/to/libtim2tox_ffi.dylib \
+  flutter test --no-pub test/native_persistence_test.dart
+```
 
 A two-peer exchange needs two processes (Tim2Tox's default singleton instance
 model — multi-instance exists only for its own auto_tests): run the smoke

@@ -64,6 +64,16 @@ _harness({
 Future<void> _drain() => Future<void>.delayed(Duration.zero);
 
 void main() {
+  test('tray sound choice survives controller recreation', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    await h.controller.setSoundEnabled(false);
+    final again = _harness(stored: h.store.values);
+    await again.controller.initialize();
+    expect(again.controller.soundEnabled, isFalse);
+    h.controller.dispose();
+    again.controller.dispose();
+  });
   group('startup and bounds restore', () {
     test(
       'first launch: centred default size, minimum 360×640, shown',

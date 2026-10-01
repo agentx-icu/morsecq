@@ -21,11 +21,23 @@ class ReferencePage extends StatefulWidget {
 }
 
 class _ReferencePageState extends State<ReferencePage> {
-  final ReferencePlaybackSettings _settings = ReferencePlaybackSettings();
+  late final ReferencePlaybackSettings _settings;
+  bool _ownsSettings = false;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      _settings = context.read<ReferencePlaybackSettings>();
+    } on ProviderNotFoundException {
+      _settings = ReferencePlaybackSettings();
+      _ownsSettings = true;
+    }
+  }
 
   @override
   void dispose() {
-    _settings.dispose();
+    if (_ownsSettings) _settings.dispose();
     super.dispose();
   }
 

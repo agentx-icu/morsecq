@@ -19,9 +19,11 @@ class LocaleController extends ChangeNotifier {
   /// Restores the saved choice synchronously from [store]; an unknown or
   /// unsupported saved value falls back to "follow the system".
   LocaleController(this._store, {Locale Function()? systemLocale})
-      : _systemLocale =
-            systemLocale ?? (() => PlatformDispatcher.instance.locale),
-        _override = _restore(_store.getString(storageKey));
+    : _systemLocale =
+          systemLocale ?? (() => PlatformDispatcher.instance.locale),
+      _override = _restore(_store.getString(storageKey)) {
+    _savedOverride = _override;
+  }
 
   final KeyValueStore _store;
   final Locale Function() _systemLocale;
@@ -38,6 +40,12 @@ class LocaleController extends ChangeNotifier {
   static LocaleController? active;
 
   Locale? _override;
+  Locale? _savedOverride;
+  int _revision = 0;
+  bool _disposed = false;
+  Future<void> _pending = Future<void>.value();
+  Object? _saveError;
+  StackTrace? _saveStack;
 
   /// The forced locale, or null to follow the system.
   Locale? get locale => _override;
@@ -58,17 +66,56 @@ class LocaleController extends ChangeNotifier {
   /// A locale outside [supportedLocales] is mapped to the shipped locale for
   /// that language (script/region aware), or ignored when there is none.
   Future<void> setLocale(Locale? value) async {
-    final resolved =
-        value == null ? null : supportedLocaleFor(value, supportedLocales);
+    if (_disposed) throw StateError('locale controller disposed');
+    final resolved = value == null
+        ? null
+        : supportedLocaleFor(value, supportedLocales);
     if (value != null && resolved == null) return;
     if (resolved == _override) return;
+    final revision = ++_revision;
     _override = resolved;
+    // Enqueue before notifying: a listener can select another language.
+    final save = _pending.then((_) async {
+      if (resolved == null) {
+        await _store.remove(storageKey);
+      } else {
+        await _store.setString(storageKey, localeName(resolved));
+      }
+      _savedOverride = resolved;
+    });
+    _pending = save.then<void>(
+      (_) {
+        _saveError = null;
+        _saveStack = null;
+      },
+      onError: (Object error, StackTrace stack) {
+        _saveError = error;
+        _saveStack = stack;
+      },
+    );
     notifyListeners();
-    if (resolved == null) {
-      await _store.remove(storageKey);
-    } else {
-      await _store.setString(storageKey, localeName(resolved));
+    try {
+      await save;
+    } on Object {
+      if (!_disposed && revision == _revision) {
+        _override = _savedOverride;
+        notifyListeners();
+      }
+      rethrow;
     }
+  }
+
+  /// Waits for the language choice before backgrounding or quitting.
+  Future<void> flush() async {
+    await _pending;
+    final error = _saveError;
+    if (error != null) Error.throwWithStackTrace(error, _saveStack!);
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 
   /// Canonical, persisted name of a locale: `en`, `zh`, `zh_Hant`.

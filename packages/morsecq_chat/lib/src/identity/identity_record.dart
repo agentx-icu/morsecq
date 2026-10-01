@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../util/atomic_file.dart';
+
 /// `identity.json`: the identity's durable profile fields.
 ///
 /// Tox savedata also stores the name and status, but reading them requires an
@@ -28,48 +30,52 @@ class IdentityRecord {
   final bool hasPassword;
 
   Identity toIdentity() => Identity(
-        toxId: toxId,
-        displayName: displayName,
-        statusMessage: statusMessage,
-        hasPassword: hasPassword,
-      );
+    toxId: toxId,
+    displayName: displayName,
+    statusMessage: statusMessage,
+    hasPassword: hasPassword,
+  );
 
   IdentityRecord copyWith({
     String? toxId,
     String? displayName,
     String? statusMessage,
     bool? hasPassword,
-  }) =>
-      IdentityRecord(
-        toxId: toxId ?? this.toxId,
-        displayName: displayName ?? this.displayName,
-        statusMessage: statusMessage ?? this.statusMessage,
-        hasPassword: hasPassword ?? this.hasPassword,
-      );
+  }) => IdentityRecord(
+    toxId: toxId ?? this.toxId,
+    displayName: displayName ?? this.displayName,
+    statusMessage: statusMessage ?? this.statusMessage,
+    hasPassword: hasPassword ?? this.hasPassword,
+  );
 
   Map<String, Object?> toJson() => {
-        'version': 1,
-        'toxId': toxId,
-        'displayName': displayName,
-        'statusMessage': statusMessage,
-        'hasPassword': hasPassword,
-      };
+    'version': 1,
+    'toxId': toxId,
+    'displayName': displayName,
+    'statusMessage': statusMessage,
+    'hasPassword': hasPassword,
+  };
 
   static IdentityRecord? fromJson(Object? json) {
     if (json is! Map) return null;
     final toxId = json['toxId'];
     final name = json['displayName'];
     if (toxId is! String || toxId.isEmpty || name is! String) return null;
+    final status = json['statusMessage'];
+    final protected = json['hasPassword'];
+    if (status != null && status is! String ||
+        protected != null && protected is! bool) {
+      return null;
+    }
     return IdentityRecord(
       toxId: toxId.toUpperCase(),
       displayName: name,
-      statusMessage: json['statusMessage'] as String? ?? '',
-      hasPassword: json['hasPassword'] as bool? ?? false,
+      statusMessage: status as String? ?? '',
+      hasPassword: protected as bool? ?? false,
     );
   }
 
-  Uint8List encode() =>
-      Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
+  Uint8List encode() => Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
 
   static IdentityRecord? decode(Uint8List bytes) {
     try {
@@ -85,12 +91,6 @@ class IdentityRecord {
     return decode(await file.readAsBytes());
   }
 
-  /// Atomic write: stage to `<path>.new`, fsync, rename over the original.
-  Future<void> write(String path) async {
-    final target = File(path);
-    await target.parent.create(recursive: true);
-    final stage = File('$path.new');
-    await stage.writeAsBytes(encode(), flush: true);
-    await stage.rename(target.path);
-  }
+  /// Flushed staging write followed by an atomic replacement.
+  Future<void> write(String path) => writeBytesAtomic(File(path), encode());
 }

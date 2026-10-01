@@ -21,6 +21,38 @@ Future<void> _send(WidgetTester tester, String text) async {
 }
 
 void main() {
+  testWidgets('input mode survives closing and reopening a conversation',
+      (tester) async {
+    final h = await pumpChat(tester, (h) {
+      h.addAnn(withMessage: false);
+      return ConversationScreen(target: _ann());
+    });
+    await tester.tap(find.byTooltip(s.chatModePaddles));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(h.wrap(const SizedBox()));
+    await tester.pumpWidget(h.wrap(ConversationScreen(target: _ann())));
+    await tester.pumpAndSettle();
+    expect(find.text('DIT'), findsOneWidget);
+    expect(find.text('DAH'), findsOneWidget);
+  });
+  testWidgets('background flushes a draft before the debounce expires', (
+    tester,
+  ) async {
+    final h = await pumpChat(tester, (h) {
+      h.addAnn(withMessage: false);
+      return ConversationScreen(target: _ann());
+    });
+    await tester.enterText(find.byType(TextField), 'UNSENT CQ');
+    await tester.pump();
+    expect(h.service.conversations.single.draft, isEmpty);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    await tester.pump();
+    expect(h.service.conversations.single.draft, 'UNSENT CQ');
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('sending to an offline peer appends a pending bubble', (
     tester,
   ) async {
