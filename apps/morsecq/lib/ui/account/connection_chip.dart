@@ -5,6 +5,71 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../startup/startup_controller.dart';
 
+/// [child] (the shell) below a strip that holds the [ConnectionChip] while
+/// the node is not online.
+///
+/// The chip used to float over the shell's top-right corner — exactly where
+/// every page puts its app-bar actions — and swallowed their taps for as long
+/// as the node was connecting or offline (the Chat page's Contacts button on a
+/// phone, the detail pane's menu on desktop). In its own strip it covers
+/// nothing. The strip takes the top safe-area inset and removes it from
+/// [child], so nothing is padded twice; the tree keeps the same shape in both
+/// states, so the shell is never remounted when the status flips.
+class ConnectionStrip extends StatelessWidget {
+  const ConnectionStrip({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final identity = context.read<IdentityService>();
+    return StreamBuilder<ConnectionStatus>(
+      stream: identity.connectionChanges,
+      initialData: identity.connectionStatus,
+      builder: (context, snapshot) {
+        final bool visible = snapshot.data != ConnectionStatus.online;
+        final MediaQueryData media = MediaQuery.of(context);
+        return Column(
+          children: [
+            if (visible) const _Strip() else const SizedBox.shrink(),
+            Expanded(
+              child: MediaQuery(
+                data: visible
+                    ? media
+                          .removePadding(removeTop: true)
+                          .removeViewPadding(removeTop: true)
+                    : media,
+                child: child,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _Strip extends StatelessWidget {
+  const _Strip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      child: const SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: ConnectionChip(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Small status chip: visible while connecting or offline, gone once online.
 /// Tapping an offline chip retries `connect()`.
 class ConnectionChip extends StatelessWidget {
@@ -58,7 +123,7 @@ class _StatusChip extends StatelessWidget {
       ),
     };
     final offline = status == ConnectionStatus.offline;
-    // The gate overlays this chip outside any Scaffold, so bring our own
+    // The gate's strip shows this chip outside any Scaffold, so bring our own
     // Material ancestor; inside a card it is transparent and harmless.
     return Material(
       type: MaterialType.transparency,
