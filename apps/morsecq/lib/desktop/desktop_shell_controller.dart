@@ -52,6 +52,7 @@ class DesktopShellController extends ChangeNotifier
 
   static const String boundsKey = 'desktop.windowBounds';
   static const String closeToTrayKey = 'desktop.closeToTray';
+  static const String soundEnabledKey = 'desktop.soundEnabled';
 
   final DesktopShellConfig config;
   final WindowApi _window;
@@ -70,6 +71,13 @@ class DesktopShellController extends ChangeNotifier
   Timer? _persistTimer;
   Future<void> _trayQueue = Future<void>.value();
   bool _trayGapWarned = false;
+  final Set<Future<void> Function()> _beforeQuit = {};
+
+  void addBeforeQuitListener(Future<void> Function() listener) =>
+      _beforeQuit.add(listener);
+
+  void removeBeforeQuitListener(Future<void> Function() listener) =>
+      _beforeQuit.remove(listener);
 
   /// True once [initialize] ran on a desktop platform.
   bool get isActive => _active;
@@ -146,6 +154,12 @@ class DesktopShellController extends ChangeNotifier
     if (!config.isDesktop) return;
 
     _closeToTray = await _readCloseToTray();
+    final sound = await _read(soundEnabledKey);
+    _soundEnabled = sound == 'false'
+        ? false
+        : sound == 'true'
+        ? true
+        : config.soundEnabled;
     await _window.ensureInitialized();
     final areas = await _workAreas();
     final primary = areas.isEmpty ? null : areas.first;
@@ -289,14 +303,22 @@ class DesktopShellController extends ChangeNotifier
     }
   }
 
-  Future<void> setCloseToTray(bool value) async {
+  Future<void> setCloseToTray(bool value) =>
+      _trackPreference(_setCloseToTray(value));
+
+  Future<void> _setCloseToTray(bool value) async {
     if (_closeToTray == value) return;
+    final previous = _closeToTray;
     _closeToTray = value;
     notifyListeners();
     if (!config.isDesktop) return;
     try {
       await config.store.set(closeToTrayKey, value.toString());
     } catch (e) {
+      if (_closeToTray == value) {
+        _closeToTray = previous;
+        notifyListeners();
+      }
       config.logger('[DesktopShell] could not persist closeToTray: $e');
     }
   }
@@ -312,10 +334,26 @@ class DesktopShellController extends ChangeNotifier
 
   /// Placeholder for the sidetone owner: flips the tray checkbox and calls
   /// [DesktopShellConfig.onToggleSound].
-  Future<void> setSoundEnabled(bool enabled) async {
+  Future<void> setSoundEnabled(bool enabled) =>
+      _trackPreference(_setSoundEnabled(enabled));
+
+  Future<void> _setSoundEnabled(bool enabled) async {
     if (_soundEnabled == enabled) return;
+    final previous = _soundEnabled;
     _soundEnabled = enabled;
     notifyListeners();
+    try {
+      if (config.isDesktop) {
+        await config.store.set(soundEnabledKey, enabled.toString());
+      }
+    } catch (e) {
+      if (_soundEnabled == enabled) {
+        _soundEnabled = previous;
+        notifyListeners();
+      }
+      config.logger('[DesktopShell] could not persist sound: $e');
+      return;
+    }
     try {
       await config.onToggleSound?.call(enabled);
     } catch (e) {
@@ -330,7 +368,17 @@ class DesktopShellController extends ChangeNotifier
     if (!_active || _closing) return;
     _closing = true;
     _persistTimer?.cancel();
+    await _pendingPreferences;
     await persistWindowState();
+    try {
+      for (final listener in _beforeQuit.toList()) {
+        await listener();
+      }
+    } catch (e) {
+      _closing = false;
+      config.logger('[DesktopShell] could not save session before quit: $e');
+      return;
+    }
     try {
       await config.onBeforeQuit?.call();
     } catch (e) {
@@ -396,6 +444,16 @@ class DesktopShellController extends ChangeNotifier
   }
 
   // --------------------------------------------------------------- helpers
+
+  Future<void> _pendingPreferences = Future<void>.value();
+
+  Future<void> _trackPreference(Future<void> write) {
+    _pendingPreferences = Future.wait<void>([
+      _pendingPreferences,
+      write,
+    ]).then<void>((_) {});
+    return write;
+  }
 
   Future<String?> _read(String key) async {
     try {

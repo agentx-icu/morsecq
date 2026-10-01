@@ -30,10 +30,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 /// absolute paths, no backslashes) so a hostile archive cannot escape the
 /// identity root on restore.
 class BackupContainer {
-  BackupContainer({
-    required this.entries,
-    required this.profileEncrypted,
-  });
+  BackupContainer({required this.entries, required this.profileEncrypted});
 
   static const int version = 1;
   static const List<int> magic = [0x4D, 0x43, 0x51, 0x42]; // "MCQB"
@@ -109,7 +106,10 @@ class BackupContainer {
 
   /// Relative, '/'-separated, no empty / `.` / `..` segments, no backslashes.
   static bool isSafeArchivePath(String path) {
-    if (path.isEmpty || path.startsWith('/') || path.contains('\\')) {
+    if (path.isEmpty ||
+        path.startsWith('/') ||
+        path.contains('\\') ||
+        path.contains(':')) {
       return false;
     }
     if (path.contains('\u0000')) return false;

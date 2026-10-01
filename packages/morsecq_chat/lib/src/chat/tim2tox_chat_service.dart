@@ -11,8 +11,10 @@ import '../engine/chat_engine.dart';
 import '../logging/chat_logger.dart';
 import '../util/value_stream.dart';
 import 'conversation_meta_store.dart';
+import 'friend_request_store.dart';
 import 'group_bindings.dart';
 import 'message_mapper.dart';
+import 'pending_message_status.dart';
 
 part 'chat_service_conversations.dart';
 part 'chat_service_friends.dart';
@@ -31,22 +33,33 @@ part 'chat_service_groups.dart';
 /// throws [ChatException] `not_connected`. Once connected, a send to a friend
 /// who is offline on the Tox network is queued by Tim2Tox and surfaces as a
 /// `pending` row; it drains when the friend comes back.
-class Tim2ToxChatService implements ChatService {
+class Tim2ToxChatService implements ChatService, IdentityDataStore {
   Tim2ToxChatService({
     required ChatEngine engine,
     required IdentityService identity,
     required KeyValueStore store,
     ChatLogger logger = const SilentChatLogger(),
     Duration pollInterval = const Duration(seconds: 3),
-  })  : _engine = engine,
-        _identity = identity,
-        _store = store,
-        _logger = logger,
-        _pollInterval = pollInterval {
+  }) : _engine = engine,
+       _identity = identity,
+       _store = PendingKeyValueStore(store),
+       _logger = logger,
+       _pollInterval = pollInterval {
     _friendsPart = _FriendsPart(this);
     _groupsPart = _GroupsPart(this);
     _conversationsPart = _ConversationsPart(this);
     _sessionSub = _engine.sessionChanges.listen(_bindSession);
+    _identitySub = identity.identityChanges.listen((value) {
+      if (value != null && !identical(value, _replacementIdentity)) {
+        final restoring = _replacing;
+        _replacing = false;
+        final live = _engine.service;
+        if (restoring && _service == null && live != null && !_disposed) {
+          _bindSession(live);
+        }
+      }
+    });
+    if (identity is PersistentIdentityService) identity.registerDataStore(this);
   }
 
   /// Tox single-message budget after Tim2Tox's fragment header. Longer texts
@@ -56,7 +69,7 @@ class Tim2ToxChatService implements ChatService {
 
   final ChatEngine _engine;
   final IdentityService _identity;
-  final KeyValueStore _store;
+  final PendingKeyValueStore _store;
   final ChatLogger _logger;
   final Duration _pollInterval;
 
@@ -66,6 +79,7 @@ class Tim2ToxChatService implements ChatService {
 
   FfiChatService? _service;
   StreamSubscription<FfiChatService?>? _sessionSub;
+  StreamSubscription<Identity?>? _identitySub;
   final List<StreamSubscription<Object?>> _serviceSubs = [];
   Timer? _poll;
 
@@ -75,6 +89,8 @@ class Tim2ToxChatService implements ChatService {
   /// once, and the old tick's `finally` cannot clear the new session's slot.
   FfiChatService? _ticking;
   bool _disposed = false;
+  bool _replacing = false;
+  Identity? _replacementIdentity;
 
   final StreamController<ChatMessage> _messageEvents =
       StreamController<ChatMessage>.broadcast();
@@ -92,6 +108,9 @@ class Tim2ToxChatService implements ChatService {
   Tim2ToxPreferencesAdapter get _prefs =>
       Tim2ToxPreferencesAdapter(_store, accountPrefix: _accountPrefix);
 
+  FriendRequestStore get _requestStore =>
+      FriendRequestStore(_store, accountPrefix: _accountPrefix);
+
   String get _selfKey {
     final svc = _service;
     final full = svc?.getSelfToxId() ?? _identity.current?.toxId ?? '';
@@ -99,10 +118,15 @@ class Tim2ToxChatService implements ChatService {
   }
 
   MessageMapper get _mapper => MessageMapper(
-        selfKey: _selfKey,
-        selfName: _identity.current?.displayName ?? '',
-        nameOf: _friendsPart.nameOf,
-      );
+    selfKey: _selfKey,
+    selfName: _identity.current?.displayName ?? '',
+    nameOf: _friendsPart.nameOf,
+    isQueued: _service == null
+        ? null
+        : PendingMessageStatus(
+            _service!.offlineMessageQueuePersistence,
+          ).isQueued,
+  );
 
   /// Whether [svc] is still the bound session. Every refresh that awaited
   /// something checks this before publishing: a tick or callback started on
@@ -159,7 +183,9 @@ class Tim2ToxChatService implements ChatService {
     _serviceSubs.addAll([
       svc.messages.listen(_onEngineMessage),
       svc.nicknameUpdated.listen((_) => _friendsPart.refresh(svc)),
-      svc.pendingGroupInvitesChanged.listen((_) => _groupsPart.refreshInvites(svc)),
+      svc.pendingGroupInvitesChanged.listen(
+        (_) => _groupsPart.refreshInvites(svc),
+      ),
       svc.groupJoinFailures.listen(_groupsPart.onJoinFailure),
     ]);
     _poll = Timer.periodic(_pollInterval, (_) => _tick());
@@ -250,7 +276,8 @@ class Tim2ToxChatService implements ChatService {
   // ---- Conversations (delegated) -------------------------------------------
 
   @override
-  List<Conversation> get conversations => _conversationsPart.conversations.value;
+  List<Conversation> get conversations =>
+      _conversationsPart.conversations.value;
 
   @override
   Stream<List<Conversation>> get conversationChanges =>
@@ -301,7 +328,9 @@ class Tim2ToxChatService implements ChatService {
         : rows.where((r) => r.timestamp.isBefore(before)).toList();
     if (page.length > limit) page = page.sublist(page.length - limit);
     final mapper = _mapper;
-    return [for (final r in page) mapper.map(r, conversationId: conversationId)];
+    return [
+      for (final r in page) mapper.map(r, conversationId: conversationId),
+    ];
   }
 
   @override
@@ -362,7 +391,8 @@ class Tim2ToxChatService implements ChatService {
   List<GroupInvite> get groupInvites => _groupsPart.invites.value;
 
   @override
-  Stream<List<GroupInvite>> get groupInviteChanges => _groupsPart.invites.stream;
+  Stream<List<GroupInvite>> get groupInviteChanges =>
+      _groupsPart.invites.stream;
 
   @override
   Future<Group> createGroup(String name, {GroupKind kind = GroupKind.group}) =>
@@ -395,16 +425,45 @@ class Tim2ToxChatService implements ChatService {
   // ---- lifecycle --------------------------------------------------------------
 
   @override
+  Future<void> flush() async {
+    final svc = _service;
+    try {
+      if (svc != null) await _friendsPart.refreshRequests(svc);
+    } finally {
+      await _store.flush();
+    }
+  }
+
+  @override
+  Future<void> prepareForReplacement() async {
+    _replacing = true;
+    _replacementIdentity = _identity.current;
+    try {
+      await flush();
+    } finally {
+      _bindSession(null);
+    }
+  }
+
+  @override
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    final identity = _identity;
+    if (identity is PersistentIdentityService) {
+      identity.unregisterDataStore(this);
+    }
     // Synchronous releases first; the awaited futures are only the closes'
     // done-futures and the root-zone cancel future.
     final cancelled = _sessionSub?.cancel();
+    final identityCancelled = _identitySub?.cancel();
     _sessionSub = null;
+    _identitySub = null;
     _unbindSession();
     await Future.wait([
       ?cancelled,
+      ?identityCancelled,
+      _store.flush(),
       _messageEvents.close(),
       _friendsPart.close(),
       _groupsPart.close(),

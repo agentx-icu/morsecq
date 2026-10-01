@@ -32,20 +32,33 @@ void main() {
   test('rejects foreign bytes and truncated archives', () {
     expect(
       () => BackupContainer.decode(_b('PK\x03\x04 definitely a zip')),
-      throwsA(isA<ChatException>().having((e) => e.code, 'code', 'invalid_backup')),
+      throwsA(
+        isA<ChatException>().having((e) => e.code, 'code', 'invalid_backup'),
+      ),
     );
     final good = BackupContainer(
       entries: {BackupContainer.profileEntry: Uint8List(40)},
       profileEncrypted: false,
     ).encode();
     expect(
-      () => BackupContainer.decode(Uint8List.sublistView(good, 0, good.length - 5)),
+      () => BackupContainer.decode(
+        Uint8List.sublistView(good, 0, good.length - 5),
+      ),
       throwsA(isA<ChatException>()),
     );
   });
 
   test('rejects entry paths that could escape the identity root', () {
-    for (final bad in ['../x', '/abs', 'a/../b', r'a\b', '', 'a//b']) {
+    for (final bad in [
+      '../x',
+      '/abs',
+      'a/../b',
+      r'a\b',
+      '',
+      'a//b',
+      'C:/escape',
+      'training/C:escape',
+    ]) {
       expect(BackupContainer.isSafeArchivePath(bad), isFalse, reason: bad);
     }
     expect(BackupContainer.isSafeArchivePath('training/a/b.json'), isTrue);
@@ -59,8 +72,13 @@ void main() {
     bytes[4] = 9;
     expect(
       () => BackupContainer.decode(bytes),
-      throwsA(isA<ChatException>()
-          .having((e) => e.code, 'code', 'unsupported_backup_version')),
+      throwsA(
+        isA<ChatException>().having(
+          (e) => e.code,
+          'code',
+          'unsupported_backup_version',
+        ),
+      ),
     );
   });
 }

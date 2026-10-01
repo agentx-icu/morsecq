@@ -20,9 +20,8 @@ import 'lifecycle_hint.dart';
 /// - On resume after any background period, `IdentityService.connect()` is
 ///   called (the contract guarantees idempotency) so a suspended node
 ///   re-bootstraps without the user tapping the connection chip.
-/// - The contract has no `persist` hook (nothing to flush: Tim2Tox saves the
-///   Tox state itself), so [onBackground] is an optional app-level hook the
-///   orchestrator may use for drafts or settings.
+/// - [onBackground] lets the app orchestrator flush the optional durable
+///   identity capability, compose drafts, learning data and app settings.
 ///
 /// `inactive` is ignored on purpose: it fires for transient overlays
 /// (control centre, an incoming call banner, a permission dialog) and for a
@@ -67,7 +66,8 @@ class AppLifecycleCoordinator with WidgetsBindingObserver {
 
   /// The countdown used on background; null when this platform is never
   /// suspended (desktop) and no override was given.
-  Duration? get backgroundBudget => _budgetOverride ?? _platform.backgroundBudget;
+  Duration? get backgroundBudget =>
+      _budgetOverride ?? _platform.backgroundBudget;
 
   /// Registers with [WidgetsBinding] and seeds the state from the binding's
   /// current lifecycle. Idempotent.

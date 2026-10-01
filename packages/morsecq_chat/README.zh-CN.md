@@ -56,7 +56,12 @@ UIKit，并且从不调用 `TIMManager.initSDK`。一切都沿 `FfiChatService` 
 **运行**期间是明文（Tox 运行时会不断重写 savedata）。`connect()` 在 `init` 之前解密，
 `disconnect()` 在 `uninit` 之后立即重新加密。PBKDF2-HMAC-SHA256 校验器（`flutter_secure_storage`：
 Keychain / Keystore / libsecret / DPAPI）是"是否设有密码"的权威——文件的加密状态不可能是，
-因为会话中途崩溃会让它停留在明文。`tox_pass_decrypt` 是第二因素，也是导入档案的回退手段。
+因为会话中途崩溃会让它停留在明文。对于加密档案，成功的 `tox_pass_decrypt` 证明密码正确，
+并在密码修改或恢复中断后修复过期的校验器。
+
+`PersistentIdentityService.persist()` 在挂起或导出前等待 savedata、延迟写入的历史、待发送队列和
+已注册 `IdentityDataStore` 的写入。替换前先让这些存储停止旧身份的写入；身份流仅在替换成功后
+发布 `null`，再发布恢复后的身份，即使公钥相同也会重新发布。
 
 磁盘布局（`IdentityPaths`，位于平台的 application-support 目录下）：
 
@@ -78,7 +83,9 @@ entry*: pathLen u16 | path (UTF-8, '/'-separated) | size u64 | bytes
 ```
 
 条目：`identity.json`、`tox_profile.tox`（设有身份密码时用该密码加密）、`dataDirectory()` 下
-每个文件对应的 `training/<relative path>`。解码时校验路径（不允许 `..`、绝对路径和反斜杠）。
+每个文件对应的 `training/<relative path>`。解码时校验路径（不允许 `..`、绝对路径、反斜杠和
+Windows 盘符）。导出先冲刷已注册的存储；导入先完成所有归档文件的暂存，目录替换失败时回滚。
+归档包括身份、Tox savedata 和学习文件；聊天历史、待发送队列与偏好不在此格式范围内。
 `importBackup` 替换当前身份；加密的档案需要密码（否则 `wrong_password`），并把密码带入校验器，
 这样恢复后的身份可以用同一密码解锁。
 
@@ -87,7 +94,8 @@ entry*: pathLen u16 | path (UTF-8, '/'-separated) | size u64 | bytes
 - `sendText` → `sendTextWithResult`（C2C）/ `sendGroupTextWithResult`（群组）。超过
   `maxMessageBytes`（**1322**，`TOX_MAX_MESSAGE_LENGTH − 50`）的文本抛出 `message_too_long`：
   Tim2Tox 会把它们拆成多条独立消息。
-- Tim2Tox 把发给离线好友 / 尚未连接的群组的消息排队，并返回一条 `pending` 行；冲刷成功后该行以
+- Tim2Tox 把发给离线好友 / 尚未连接的群组的消息排队，并返回一条 `pending` 行；持久队列让它在
+  重启后仍显示待发送，即使上游加载历史时清除了临时标志。冲刷成功后该行以
   `sent` 状态在 `messageEvents` 上重新发出。Tim2Tox 在这条路径上没有独立的失败标记
   （`_markPendingItemFailed` 同样把 `isPending` 置为 false），因此目前不会产生 `failed`——
   已在上游 `tim2tox_core` 拆分中跟踪。
@@ -95,6 +103,8 @@ entry*: pathLen u16 | path (UTF-8, '/'-separated) | size u64 | bytes
   （方案 §5.2 第 1 层是明文）。
 - 会话是派生出来的：历史 id ∪ 好友 ∪ 群组，再减去隐藏（已删除）的；未读数来自 Tim2Tox 的已读屏障；
   置顶/草稿/隐藏来自 `ConversationMetaStore`（`shared_preferences` 中按账号划分的键）。
+- 待处理好友请求在账号专属缓存中保留附言和到达时间，直到接受或拒绝。已拒绝请求也按账号隔离；
+  已有的单身份全局拒绝列表会被当前账号迁移一次。
 
 ### 仍走腾讯绑定的部分及原因
 
@@ -192,6 +202,9 @@ tool/ci/build_tim2tox.sh --no-toxav          # Linux x86_64 / Windows x64 / macO
   会话分离。
 - `backup_container_test.dart`、`prefs_adapter_test.dart`、`password_verifier_test.dart`
   （RFC 7914 PBKDF2 测试向量）。
+- `identity_persistence_test.dart`、`transport_persistence_test.dart`、`key_value_store_test.dart`、
+  `message_mapper_test.dart`——写入中断、身份替换屏障、注册存储冲刷、群组未读与邀请恢复、偏好写入
+  错误，以及重启后待发送状态恢复。
 
 ### 原生冒烟测试（`@Tags(['needs-native'])`）
 
@@ -208,6 +221,14 @@ cd packages/morsecq_chat && TIM2TOX_FFI_LIB=$PWD/../../build/native/macos-arm64/
 
 在 Mac 上约 10 s 通过（2026-09-30）：身份 → DHT → 好友请求（由路由过来的 `friendAddResult`
 即时返回）→ 离线发送入队 → 建群 / 列成员 / 退群 → 断开。
+
+`test/native_persistence_test.dart` 创建带密码的身份、更新档案、添加离线好友、建立 NGC、排队文本，
+保存草稿与置顶，再让相同路径上的全新后端恢复所有值并解密 savedata。测试无需等待 DHT 连接：
+
+```bash
+TIM2TOX_FFI_LIB=/absolute/path/to/libtim2tox_ffi.dylib \
+  flutter test --no-pub test/native_persistence_test.dart
+```
 
 双对端互发需要两个进程（Tim2Tox 默认的单例实例模型——多实例只为其自身的 auto_tests 存在）：
 用不同的 `IdentityPaths` 根目录运行冒烟测试两次并互加 Tox ID，或者对着一个 toxee 实例驱动；

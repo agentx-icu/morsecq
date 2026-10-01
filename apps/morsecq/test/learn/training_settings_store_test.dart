@@ -93,5 +93,20 @@ void main() {
       final loaded = await store.load();
       expect(loaded, const TrainingSettings(soundEnabled: false));
     });
+
+    test(
+      'invalid settings structure falls back to the previous save',
+      () async {
+        final store = FileTrainingSettingsStore.inDataDirectory(tmp.path);
+        await store.save(const TrainingSettings(soundEnabled: false));
+        await store.save(const TrainingSettings(flashEnabled: true));
+        await store.file.writeAsString('{"soundEnabled":"invalid"}');
+
+        expect(
+          await FileTrainingSettingsStore.inDataDirectory(tmp.path).load(),
+          const TrainingSettings(soundEnabled: false),
+        );
+      },
+    );
   });
 }

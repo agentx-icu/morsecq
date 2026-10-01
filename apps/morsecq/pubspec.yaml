@@ -54,6 +54,8 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # Native persistence tests force an uncached read of backend preferences.
+  shared_preferences: ^2.2.2
   # Used only by tool/gen_tray_icons.dart to render assets/tray/*.png|ico.
   image: ^4.10.1
 

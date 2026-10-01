@@ -30,8 +30,8 @@ import 'ui/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // One small settings file for app-wide, pre-identity preferences (language,
-  // window bounds). Per-identity data lives under IdentityService.dataDirectory.
+  // One settings file for app-wide choices (language, theme, playback,
+  // notifications and window bounds). Learning data lives per identity.
   final KeyValueStore settingsStore = await _openSettingsStore();
 
   // Desktop only: window bounds, close-to-tray, tray menu. No-op elsewhere.
@@ -96,7 +96,7 @@ class MorsecqApp extends StatelessWidget {
   /// Test hook: replaces the native save/pick dialogs.
   final BackupFileGateway? backupFiles;
 
-  /// Persistence for the language choice; memory when null.
+  /// Persistence for app preferences; memory when null.
   final KeyValueStore? localeStore;
 
   /// Initialised desktop shell (window + tray); null on mobile and in tests.

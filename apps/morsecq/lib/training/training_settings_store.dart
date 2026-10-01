@@ -33,21 +33,29 @@ final class FileTrainingSettingsStore implements TrainingSettingsStore {
   final AtomicJsonFile _json;
 
   @override
-  Future<TrainingSettings?> load() async {
-    final json = await _json.read();
-    if (json == null) {
-      return null;
+  Future<TrainingSettings?> load() => _json.readDecoded(_decode);
+
+  static TrainingSettings _decode(Map<String, Object?> json) {
+    final settings = TrainingSettings.fromJson(json);
+    final trainer = settings.trainer;
+    final parameters = <double?>[
+      trainer.characterWpm,
+      trainer.farnsworthWpm,
+      trainer.toneHz,
+    ];
+    if (parameters.any((v) => v != null && (!v.isFinite || v <= 0)) ||
+        trainer.sessionLengthChars <= 0 ||
+        (trainer.sessionLengthSeconds != null &&
+            trainer.sessionLengthSeconds! <= 0) ||
+        trainer.groupSize <= 0) {
+      throw const FormatException('Invalid training settings');
     }
-    try {
-      return TrainingSettings.fromJson(json);
-    } on Object {
-      return null;
-    }
+    return settings;
   }
 
   @override
   Future<void> save(TrainingSettings settings) =>
-      _json.write(settings.toJson());
+      _json.write(settings.toJson(), validate: _decode);
 
   @override
   Future<void> clear() => _json.delete();
@@ -69,9 +77,7 @@ final class InMemoryTrainingSettingsStore implements TrainingSettingsStore {
     if (json == null) {
       return null;
     }
-    return TrainingSettings.fromJson(
-      jsonDecode(json) as Map<String, Object?>,
-    );
+    return TrainingSettings.fromJson(jsonDecode(json) as Map<String, Object?>);
   }
 
   @override

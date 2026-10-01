@@ -27,34 +27,51 @@ class SharedPreferencesStore implements KeyValueStore {
   static Future<SharedPreferencesStore> open() async =>
       SharedPreferencesStore(await SharedPreferences.getInstance());
 
+  Future<void> _persist(Future<bool> operation) async {
+    try {
+      if (!await operation) throw StateError('Could not persist preferences');
+    } catch (_) {
+      // The plugin updates its cache before the platform write completes.
+      // Reload so a failed write cannot masquerade as durable application data.
+      try {
+        await _prefs.reload();
+      } catch (_) {
+        // Preserve the write error when the platform also refuses the reload.
+      }
+      rethrow;
+    }
+  }
+
   @override
   String? getString(String key) => _prefs.getString(key);
 
   @override
   Future<void> setString(String key, String value) =>
-      _prefs.setString(key, value);
+      _persist(_prefs.setString(key, value));
 
   @override
   bool? getBool(String key) => _prefs.getBool(key);
 
   @override
-  Future<void> setBool(String key, bool value) => _prefs.setBool(key, value);
+  Future<void> setBool(String key, bool value) =>
+      _persist(_prefs.setBool(key, value));
 
   @override
   int? getInt(String key) => _prefs.getInt(key);
 
   @override
-  Future<void> setInt(String key, int value) => _prefs.setInt(key, value);
+  Future<void> setInt(String key, int value) =>
+      _persist(_prefs.setInt(key, value));
 
   @override
   List<String>? getStringList(String key) => _prefs.getStringList(key);
 
   @override
   Future<void> setStringList(String key, List<String> value) =>
-      _prefs.setStringList(key, value);
+      _persist(_prefs.setStringList(key, value));
 
   @override
-  Future<void> remove(String key) => _prefs.remove(key);
+  Future<void> remove(String key) => _persist(_prefs.remove(key));
 
   @override
   Set<String> keys() => _prefs.getKeys();
@@ -95,4 +112,63 @@ class MemoryKeyValueStore implements KeyValueStore {
 
   @override
   Set<String> keys() => _data.keys.toSet();
+}
+
+/// A host write barrier: reads retain the backing store's immediate cache
+/// semantics, while replacement waits for every already-submitted write.
+class PendingKeyValueStore implements KeyValueStore {
+  PendingKeyValueStore(this._store);
+
+  final KeyValueStore _store;
+  final Set<Future<void>> _pending = {};
+
+  Future<void> _track(Future<void> operation) {
+    late final Future<void> settled;
+    settled = operation.then<void>(
+      (_) => _pending.remove(settled),
+      onError: (Object _, StackTrace _) => _pending.remove(settled),
+    );
+    _pending.add(settled);
+    return operation;
+  }
+
+  Future<void> flush() async {
+    while (_pending.isNotEmpty) {
+      await Future.wait(_pending.toList());
+    }
+  }
+
+  @override
+  String? getString(String key) => _store.getString(key);
+
+  @override
+  Future<void> setString(String key, String value) =>
+      _track(_store.setString(key, value));
+
+  @override
+  bool? getBool(String key) => _store.getBool(key);
+
+  @override
+  Future<void> setBool(String key, bool value) =>
+      _track(_store.setBool(key, value));
+
+  @override
+  int? getInt(String key) => _store.getInt(key);
+
+  @override
+  Future<void> setInt(String key, int value) =>
+      _track(_store.setInt(key, value));
+
+  @override
+  List<String>? getStringList(String key) => _store.getStringList(key);
+
+  @override
+  Future<void> setStringList(String key, List<String> value) =>
+      _track(_store.setStringList(key, value));
+
+  @override
+  Future<void> remove(String key) => _track(_store.remove(key));
+
+  @override
+  Set<String> keys() => _store.keys();
 }

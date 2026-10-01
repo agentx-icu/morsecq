@@ -59,6 +59,16 @@ class NotificationPrefs extends ChangeNotifier {
 
   bool isMuted(String conversationId) => _muted.contains(conversationId);
 
+  /// Replaces identity-scoped choices when the active identity changes.
+  void replaceMuted(Iterable<String> conversations) {
+    final next = conversations.toSet();
+    if (setEquals(next, _muted)) return;
+    _muted
+      ..clear()
+      ..addAll(next);
+    notifyListeners();
+  }
+
   void setMuted(String conversationId, bool muted) {
     final bool changed = muted
         ? _muted.add(conversationId)

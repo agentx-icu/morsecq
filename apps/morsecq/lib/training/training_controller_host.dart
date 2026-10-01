@@ -14,12 +14,14 @@ import 'training_controller.dart';
 /// `progress.json` / `settings.json` would silently overwrite each other.
 /// The host caches the controller by identity public key and rebuilds it
 /// when the identity changes (logout / restore / delete).
-class TrainingControllerHost {
+class TrainingControllerHost implements IdentityDataStore {
   TrainingControllerHost(
     this._identity, {
     Future<TrainingController> Function(IdentityService identity)? factory,
   }) : _factory = factory ?? LearnScope.controllerForIdentity {
     _sub = _identity.identityChanges.listen(_onIdentity);
+    final identity = _identity;
+    if (identity is PersistentIdentityService) identity.registerDataStore(this);
   }
 
   final IdentityService _identity;
@@ -27,12 +29,14 @@ class TrainingControllerHost {
   StreamSubscription<Identity?>? _sub;
   String? _key;
   Future<TrainingController>? _pending;
+  Future<TrainingController>? _loading;
   TrainingController? _current;
   // Bumped whenever the cached identity is dropped (switch / dispose). A
   // load that completes for an older generation must not be cached: nobody
   // owns a factory-supplied controller but this host, so it is disposed here.
   int _generation = 0;
   bool _disposed = false;
+  bool _replacing = false;
 
   /// Resolves (and caches) the controller for the current identity. Matches
   /// `LearnPage.controllerFactory`'s signature so it can be handed straight
@@ -42,10 +46,14 @@ class TrainingControllerHost {
 
   Future<TrainingController> controller() {
     final identity = _identity.current;
-    if (identity == null || _disposed) {
+    if (identity == null || _disposed || _replacing) {
       return Future<TrainingController>.error(
         StateError(
-          _disposed ? 'training host disposed' : 'training requires an identity',
+          _disposed
+              ? 'training host disposed'
+              : _replacing
+              ? 'identity data is being replaced'
+              : 'training requires an identity',
         ),
       );
     }
@@ -53,14 +61,22 @@ class TrainingControllerHost {
     _dropCurrent();
     _key = identity.publicKey;
     final generation = _generation;
-    final future = _factory(_identity).then((c) {
-      if (_disposed || generation != _generation) {
-        c.dispose();
-        throw StateError('identity changed while training data loaded');
-      }
-      _current = c;
-      return c;
-    });
+    final loading = _factory(_identity);
+    _loading = loading;
+    final future = loading.then(
+      (c) {
+        if (_disposed || generation != _generation) {
+          c.dispose();
+          throw StateError('identity changed while training data loaded');
+        }
+        _current = c;
+        return c;
+      },
+      onError: (Object error, StackTrace stack) {
+        if (generation == _generation) _dropCurrent();
+        Error.throwWithStackTrace(error, stack);
+      },
+    );
     _pending = future;
     return future;
   }
@@ -75,6 +91,7 @@ class TrainingControllerHost {
 
   void _onIdentity(Identity? identity) {
     if (identity?.publicKey != _key) _dropCurrent();
+    if (identity != null) _replacing = false;
   }
 
   void _dropCurrent() {
@@ -82,15 +99,49 @@ class TrainingControllerHost {
     _current?.dispose();
     _current = null;
     _pending = null;
+    _loading = null;
     _key = null;
   }
 
   Future<void> dispose() async {
+    if (_disposed) return;
     _disposed = true;
+    final identity = _identity;
+    if (identity is PersistentIdentityService) {
+      identity.unregisterDataStore(this);
+    }
     // Cancel is synchronous for delivery; its future is the root-zone
     // `_nullFuture`, which never resumes under FakeAsync, so do not await it
     // or the controller below would never be disposed in widget tests.
     unawaited(_sub?.cancel());
     _dropCurrent();
+  }
+
+  @override
+  Future<void> flush() async {
+    final loading = _loading;
+    final controller = _current;
+    if (controller != null) {
+      await controller.flush();
+    } else if (loading != null) {
+      await (await loading).flush();
+    }
+  }
+
+  @override
+  Future<void> prepareForReplacement() async {
+    final loading = _loading;
+    final controller = _current;
+    // Invalidate synchronously, before awaiting writes. Old screens must
+    // stop issuing mutations while the backend is replacing their files.
+    _replacing = true;
+    _dropCurrent();
+    if (controller != null) {
+      await controller.flush();
+    } else if (loading != null) {
+      final late = await loading;
+      late.dispose();
+      await late.flush();
+    }
   }
 }

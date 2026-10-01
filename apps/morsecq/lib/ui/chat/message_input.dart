@@ -8,7 +8,9 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
+import 'chat_scope.dart';
 import 'keying_input.dart';
+import 'input_mode.dart';
 import 'morse_pattern_text.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
@@ -16,7 +18,7 @@ import 'morse_playback_settings.dart';
 /// Input modes from plan §5.3: typed text (auto-encoded), straight key,
 /// iambic paddles. Hand-keyed characters land in the same draft field, so
 /// the operator can mix modes and fix typos before sending.
-enum InputMode { keyboard, straightKey, paddles }
+export 'input_mode.dart';
 
 /// The compose area: mode selector, optional keying pad, draft field with
 /// live Morse preview and remaining-byte counter, send button. Drafts are
@@ -41,7 +43,9 @@ class MessageInput extends StatefulWidget {
   State<MessageInput> createState() => _MessageInputState();
 }
 
-class _MessageInputState extends State<MessageInput> {
+class _MessageInputState extends State<MessageInput>
+    with WidgetsBindingObserver
+    implements IdentityDataStore {
   static const Duration _draftDebounce = Duration(milliseconds: 400);
 
   late final TextEditingController _text = TextEditingController(
@@ -52,16 +56,48 @@ class _MessageInputState extends State<MessageInput> {
   Timer? _draftTimer;
   String _savedDraft = '';
   bool _sending = false;
+  IdentityService? _identity;
+  String? _identityKey;
+  bool _acceptDrafts = true;
+  Future<void> _draftSave = Future<void>.value();
+  String _queuedDraft = '';
+  Object? _draftError;
+  StreamSubscription<Identity?>? _identitySub;
+  bool _identityInvalidated = false;
 
   @override
   void initState() {
     super.initState();
     _savedDraft = widget.initialDraft;
+    _queuedDraft = widget.initialDraft;
+    _mode = MorsePlaybackSettings.of(context, listen: false).inputMode;
+    _identity = maybeIdentityService(context);
+    _identityKey = _identity?.current?.publicKey;
+    _identitySub = _identity?.identityChanges.listen((identity) {
+      if (identity == null || identity.publicKey != _identityKey) {
+        _identityInvalidated = true;
+        _acceptDrafts = false;
+        _draftTimer?.cancel();
+      } else if (!_identityInvalidated) {
+        // Failed replacement republishes the old identity without a null
+        // boundary. A committed same-key restore must keep this editor stale.
+        _acceptDrafts = true;
+      }
+    });
+    final identity = _identity;
+    if (identity is PersistentIdentityService) identity.registerDataStore(this);
     _text.addListener(_onChanged);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_identitySub?.cancel());
+    final identity = _identity;
+    if (identity is PersistentIdentityService) {
+      identity.unregisterDataStore(this);
+    }
     _draftTimer?.cancel();
     if (_text.text != _savedDraft) {
       unawaited(_persistDraft());
@@ -78,14 +114,57 @@ class _MessageInputState extends State<MessageInput> {
     _draftTimer = Timer(_draftDebounce, () => unawaited(_persistDraft()));
   }
 
-  Future<void> _persistDraft() async {
+  Future<void> _persistDraft() {
     final String draft = _text.text;
-    if (draft == _savedDraft) return;
-    _savedDraft = draft;
-    try {
-      await widget.service.setDraft(widget.conversationId, draft);
-    } on Object {
-      // Drafts are a convenience; never surface a failure to save one.
+    if (!_acceptDrafts || draft == _queuedDraft) return _draftSave;
+    _queuedDraft = draft;
+    final service = widget.service;
+    final conversationId = widget.conversationId;
+    return _draftSave = _draftSave.then((_) async {
+      if (!_acceptDrafts ||
+          (_identity != null &&
+              _identity?.current?.publicKey != _identityKey)) {
+        if (_queuedDraft == draft) _queuedDraft = _savedDraft;
+        return;
+      }
+      try {
+        await service.setDraft(conversationId, draft);
+        _savedDraft = draft;
+        _draftError = null;
+      } on Object catch (error) {
+        _draftError = error;
+        if (_queuedDraft == draft) _queuedDraft = _savedDraft;
+        debugPrint('[MessageInput] draft save failed: $error');
+      }
+    });
+  }
+
+  @override
+  Future<void> flush() async {
+    _draftTimer?.cancel();
+    await _persistDraft();
+    if (_draftError != null && _acceptDrafts) {
+      throw StateError('Could not save compose draft: $_draftError');
+    }
+  }
+
+  @override
+  Future<void> prepareForReplacement() {
+    _acceptDrafts = false;
+    _draftTimer?.cancel();
+    return _draftSave;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      unawaited(
+        flush().catchError((Object error) {
+          debugPrint('[MessageInput] background flush failed: $error');
+        }),
+      );
     }
   }
 
@@ -108,8 +187,7 @@ class _MessageInputState extends State<MessageInput> {
       );
       _draftTimer?.cancel();
       _text.clear();
-      _savedDraft = '';
-      unawaited(widget.service.setDraft(widget.conversationId, ''));
+      unawaited(_persistDraft());
       widget.onSent?.call(sent);
     } on Object catch (e) {
       if (mounted) showSnack(context, describeChatError(s, e));
@@ -163,7 +241,10 @@ class _MessageInputState extends State<MessageInput> {
                   mode: _mode,
                   // Icon-only below ~420 px so all three segments fit a phone.
                   showLabels: constraints.maxWidth >= 420,
-                  onChanged: (m) => setState(() => _mode = m),
+                  onChanged: (m) {
+                    setState(() => _mode = m);
+                    settings.inputMode = m;
+                  },
                 ),
               ),
             ),
@@ -288,7 +369,11 @@ class _ModeSelector extends StatelessWidget {
           Icons.radio_button_checked,
           s.chatModeStraightKey,
         ),
-        _segment(InputMode.paddles, Icons.view_column_outlined, s.chatModePaddles),
+        _segment(
+          InputMode.paddles,
+          Icons.view_column_outlined,
+          s.chatModePaddles,
+        ),
       ],
     );
   }

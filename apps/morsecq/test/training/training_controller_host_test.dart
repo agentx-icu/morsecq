@@ -5,12 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_controller_host.dart';
+import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 /// Just enough [IdentityService] for the host: a switchable current identity
 /// and its change stream. Everything else throws through [noSuchMethod].
-final class _SwitchableIdentity implements IdentityService {
+final class _SwitchableIdentity implements PersistentIdentityService {
   Identity? _current;
   final StreamController<Identity?> _changes =
       StreamController<Identity?>.broadcast(sync: true);
@@ -26,18 +27,52 @@ final class _SwitchableIdentity implements IdentityService {
     _changes.add(identity);
   }
 
+  final Set<IdentityDataStore> stores = {};
+
+  @override
+  void registerDataStore(IdentityDataStore store) => stores.add(store);
+
+  @override
+  void unregisterDataStore(IdentityDataStore store) => stores.remove(store);
+
+  @override
+  Future<void> persist() => Future.wait(stores.map((store) => store.flush()));
+
+  Future<void> replaceWith(Identity identity) async {
+    await Future.wait(stores.map((store) => store.prepareForReplacement()));
+    switchTo(null);
+    switchTo(identity);
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName} is not stubbed');
+}
+
+final class _BlockingSettingsStore implements TrainingSettingsStore {
+  final Completer<void> entered = Completer<void>();
+  final Completer<void> release = Completer<void>();
+
+  @override
+  Future<TrainingSettings?> load() async => null;
+
+  @override
+  Future<void> clear() async {}
+
+  @override
+  Future<void> save(TrainingSettings settings) async {
+    entered.complete();
+    await release.future;
+  }
 }
 
 Identity _identity(String key) =>
     Identity(toxId: key.padRight(76, '0'), displayName: key);
 
 TrainingController _controller() => TrainingController(
-      progressStore: InMemoryTrainerStore(),
-      settingsStore: InMemoryTrainingSettingsStore(),
-    );
+  progressStore: InMemoryTrainerStore(),
+  settingsStore: InMemoryTrainingSettingsStore(),
+);
 
 bool _isDisposed(TrainingController c) {
   try {
@@ -66,6 +101,17 @@ void main() {
     );
   });
 
+  tearDown(() async {
+    await host.dispose();
+    await identity._changes.close();
+  });
+
+  test('registers an identity durability barrier until disposed', () async {
+    expect(identity.stores, hasLength(1));
+    await host.dispose();
+    expect(identity.stores, isEmpty);
+  });
+
   test('caches one controller per identity and shares it', () async {
     identity.switchTo(_identity('A'));
     final f1 = host.controller();
@@ -80,8 +126,7 @@ void main() {
     expect(_isDisposed(c), isTrue, reason: 'the host owns it');
   });
 
-  test('a load that completes after dispose is disposed, not cached',
-      () async {
+  test('a load that completes after dispose is disposed, not cached', () async {
     identity.switchTo(_identity('A'));
     final pending = host.controller();
     await host.dispose();
@@ -115,8 +160,7 @@ void main() {
     expect(_isDisposed(freshB), isTrue);
   });
 
-  test('identity change after caching rebuilds on the next request',
-      () async {
+  test('identity change after caching rebuilds on the next request', () async {
     identity.switchTo(_identity('A'));
     final forA = host.controller();
     final a = _controller();
@@ -138,4 +182,85 @@ void main() {
     expect(loads, isEmpty);
     await host.dispose();
   });
+
+  test(
+    'failed controller loading can be retried for the same identity',
+    () async {
+      identity.switchTo(_identity('A'));
+      final failed = host.controller();
+      loads.single.completeError(StateError('temporary read failure'));
+      await expectLater(failed, throwsStateError);
+
+      final retry = host.controller();
+      expect(loads, hasLength(2));
+      final recovered = _controller();
+      loads.last.complete(recovered);
+      expect(await retry, same(recovered));
+      await host.dispose();
+    },
+  );
+
+  test('restoring the same public key rebuilds training data', () async {
+    identity.switchTo(_identity('A'));
+    final before = host.controller();
+    final stale = _controller();
+    loads.single.complete(stale);
+    await before;
+
+    await identity.replaceWith(_identity('A'));
+    expect(_isDisposed(stale), isTrue);
+    final after = host.controller();
+    expect(loads, hasLength(2));
+    final restored = _controller();
+    loads.last.complete(restored);
+    expect(await after, same(restored));
+  });
+
+  test('replacement stops late writes and waits for earlier writes', () async {
+    identity.switchTo(_identity('A'));
+    final settings = _BlockingSettingsStore();
+    final c = TrainingController(
+      progressStore: InMemoryTrainerStore(),
+      settingsStore: settings,
+    );
+    final loading = host.controller();
+    loads.single.complete(c);
+    await loading;
+    final save = c.updateSettings(const TrainingSettings(flashEnabled: true));
+    await settings.entered.future;
+    var replaced = false;
+    final replacement = identity.replaceWith(_identity('A')).then((_) {
+      replaced = true;
+    });
+
+    expect(_isDisposed(c), isTrue);
+    final whileReplacing = host.controller();
+    expect(loads, hasLength(1), reason: 'do not reload the old identity');
+    await expectLater(whileReplacing, throwsStateError);
+    await expectLater(c.setLesson(8), throwsStateError);
+    expect(replaced, isFalse);
+    settings.release.complete();
+    await Future.wait(<Future<void>>[save, replacement]);
+    expect(replaced, isTrue);
+  });
+
+  test(
+    'replacement drains a late controller load before deleting data',
+    () async {
+      identity.switchTo(_identity('A'));
+      final loading = host.controller();
+      final rejected = expectLater(loading, throwsStateError);
+      var replaced = false;
+      final replacement = identity.replaceWith(_identity('A')).then((_) {
+        replaced = true;
+      });
+      expect(replaced, isFalse);
+      final late = _controller();
+      loads.single.complete(late);
+
+      await Future.wait(<Future<void>>[rejected, replacement]);
+      expect(_isDisposed(late), isTrue);
+      expect(replaced, isTrue);
+    },
+  );
 }

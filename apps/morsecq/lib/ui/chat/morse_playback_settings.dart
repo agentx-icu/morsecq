@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:provider/provider.dart';
 
+import 'input_mode.dart';
+
 /// The listener's own playback preferences (plan §5.2: the sender's speed is
 /// never transmitted; every message is rendered at the receiver's settings).
 ///
@@ -15,10 +17,12 @@ class MorsePlaybackSettings extends ChangeNotifier {
     double farnsworthWpm = 8,
     double toneHz = 700,
     bool trainingMode = false,
+    InputMode inputMode = InputMode.keyboard,
   }) : _wpm = wpm,
        _farnsworthWpm = farnsworthWpm,
        _toneHz = toneHz,
-       _trainingMode = trainingMode;
+       _trainingMode = trainingMode,
+       _inputMode = inputMode;
 
   static const double minWpm = 5;
   static const double maxWpm = 40;
@@ -42,6 +46,13 @@ class MorsePlaybackSettings extends ChangeNotifier {
   double _farnsworthWpm;
   double _toneHz;
   bool _trainingMode;
+  InputMode _inputMode;
+  InputMode get inputMode => _inputMode;
+  set inputMode(InputMode value) {
+    if (value == _inputMode) return;
+    _inputMode = value;
+    notifyListeners();
+  }
 
   double get wpm => _wpm;
   double get farnsworthWpm => _farnsworthWpm;

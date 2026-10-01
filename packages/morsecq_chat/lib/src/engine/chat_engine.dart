@@ -72,6 +72,15 @@ abstract class ChatEngine {
   /// Forces Tox savedata to disk now (before an export, before backgrounding).
   void saveProfileNow();
 
+  /// Await the host's suspension barrier, including debounced history/queue.
+  Future<void> persist() async {
+    saveProfileNow();
+    final current = service;
+    if (current == null) return;
+    await current.messageHistoryPersistence.flushPendingSaves();
+    await current.offlineMessageQueuePersistence.flushPendingMutations();
+  }
+
   Future<void> dispose();
 }
 
@@ -86,10 +95,10 @@ class Tim2ToxEngine extends ChatEngine {
     required ChatLogger logger,
     String? libraryPathOverride,
     bool? isMobile,
-  })  : _store = store,
-        _logger = logger,
-        _libraryPathOverride = libraryPathOverride,
-        _isMobile = isMobile ?? (Platform.isAndroid || Platform.isIOS);
+  }) : _store = store,
+       _logger = logger,
+       _libraryPathOverride = libraryPathOverride,
+       _isMobile = isMobile ?? (Platform.isAndroid || Platform.isIOS);
 
   /// V2TIM login alias Tim2Tox stamps on our own rows (`fromUserId`,
   /// `isSelf`). Never leaves the device; the wire identity is the Tox key.

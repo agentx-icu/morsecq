@@ -19,12 +19,19 @@ class _ConversationsPart {
     final pinned = meta.pinned;
     final quit = svc.quitGroups;
     final groupIds = svc.knownGroups;
-    final friendById = {for (final f in _owner._friendsPart.friends.value) f.publicKey: f};
-    final groupById = {for (final g in _owner._groupsPart.groups.value) g.id: g};
+    final friendById = {
+      for (final f in _owner._friendsPart.friends.value) f.publicKey: f,
+    };
+    final groupById = {
+      for (final g in _owner._groupsPart.groups.value) g.id: g,
+    };
 
     final ids = <String>{
       for (final id in svc.getConversationIds())
-        if (groupIds.contains(id)) ConversationIds.group(id) else if (!quit.contains(id)) ConversationIds.c2c(id),
+        if (groupIds.contains(id))
+          ConversationIds.group(id)
+        else if (!quit.contains(id))
+          ConversationIds.c2c(id),
       for (final f in friendById.keys) ConversationIds.c2c(f),
       for (final g in groupIds) ConversationIds.group(g),
     }..removeAll(hidden);
@@ -41,20 +48,26 @@ class _ConversationsPart {
       final title = isGroup
           ? (groupById[peer]?.name ?? svc.sharedGroupName(peer) ?? peer)
           : (friendById[peer]?.displayName ??
-              _owner._friendsPart.nameOf(peer) ??
-              ConversationIds.shortKey(peer));
-      next.add(Conversation(
-        id: id,
-        kind: isGroup ? ConversationKind.group : ConversationKind.c2c,
-        title: title,
-        lastMessage: last == null ? null : mapper.map(last, conversationId: id),
-        unreadCount: svc.getUnreadOf(peer),
-        pinned: pinned.contains(id),
-        draft: meta.draft(id),
-      ));
+                _owner._friendsPart.nameOf(peer) ??
+                ConversationIds.shortKey(peer));
+      next.add(
+        Conversation(
+          id: id,
+          kind: isGroup ? ConversationKind.group : ConversationKind.c2c,
+          title: title,
+          lastMessage: last == null
+              ? null
+              : mapper.map(last, conversationId: id),
+          unreadCount: svc.getUnreadOf(peer),
+          pinned: pinned.contains(id),
+          draft: meta.draft(id),
+        ),
+      );
     }
     next.sort(_compare);
-    if (!listEqualsBy(conversations.value, next, _same)) conversations.force(next);
+    if (!listEqualsBy(conversations.value, next, _same)) {
+      conversations.force(next);
+    }
   }
 
   static t2t.ChatMessage? _lastMessage(FfiChatService svc, String peer) {
@@ -99,14 +112,22 @@ class _ConversationsPart {
   // required; but only the session that was bound when the write started
   // may be republished - a rebind during the await gets its own tick.
   Future<void> setPinned(String conversationId, bool pinned) async {
+    if (_owner._identity.current == null || _owner._replacing) {
+      throw const ChatException('no_identity', 'No identity is open');
+    }
     final svc = _owner._service;
-    await _owner._meta.setPinned(conversationId, pinned);
+    final meta = _owner._meta;
+    await meta.setPinned(conversationId, pinned);
     if (svc != null && _owner._isCurrent(svc)) rebuild(svc);
   }
 
   Future<void> setDraft(String conversationId, String draft) async {
+    if (_owner._identity.current == null || _owner._replacing) {
+      throw const ChatException('no_identity', 'No identity is open');
+    }
     final svc = _owner._service;
-    await _owner._meta.setDraft(conversationId, draft);
+    final meta = _owner._meta;
+    await meta.setDraft(conversationId, draft);
     if (svc != null && _owner._isCurrent(svc)) rebuild(svc);
   }
 

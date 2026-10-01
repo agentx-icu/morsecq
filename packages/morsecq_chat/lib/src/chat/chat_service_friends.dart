@@ -11,9 +11,7 @@ class _FriendsPart {
   final ValueStream<List<Friend>> friends = ValueStream(const []);
   final ValueStream<List<FriendRequest>> requests = ValueStream(const []);
 
-  /// First time each pending request was observed (Tox does not timestamp
-  /// friend requests).
-  final Map<String, DateTime> _requestSeen = {};
+  Future<void> _requestTail = Future<void>.value();
   final Map<String, String> _names = {};
   final Set<String> _online = {};
 
@@ -23,6 +21,7 @@ class _FriendsPart {
 
   void reset() {
     _online.clear();
+    _names.clear();
     friends.add(const []);
     requests.add(const []);
   }
@@ -36,18 +35,22 @@ class _FriendsPart {
     for (final f in raw) {
       final key = ConversationIds.normalizeKey(f.userId);
       if (key.isEmpty) continue;
-      final name = f.nickName.isNotEmpty ? f.nickName : ConversationIds.shortKey(key);
+      final name = f.nickName.isNotEmpty
+          ? f.nickName
+          : ConversationIds.shortKey(key);
       _names[key] = name;
       if (f.online) {
         onlineNow.add(key);
         if (!_online.contains(key)) cameOnline.add(key);
       }
-      next.add(Friend(
-        publicKey: key,
-        displayName: name,
-        statusMessage: f.status,
-        online: f.online,
-      ));
+      next.add(
+        Friend(
+          publicKey: key,
+          displayName: name,
+          statusMessage: f.status,
+          online: f.online,
+        ),
+      );
     }
     _online
       ..clear()
@@ -69,27 +72,68 @@ class _FriendsPart {
       a.statusMessage == b.statusMessage &&
       a.online == b.online;
 
-  Future<void> refreshRequests(FfiChatService svc) async {
+  Future<void> refreshRequests(FfiChatService svc) =>
+      _serializeRequests(svc, () => _refreshRequests(svc));
+
+  Future<void> _serializeRequests(
+    FfiChatService svc,
+    Future<void> Function() action,
+  ) {
+    final run = _requestTail.then((_) async {
+      if (_owner._isCurrent(svc)) await action();
+    });
+    _requestTail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return run;
+  }
+
+  Future<void> _refreshRequests(FfiChatService svc) async {
     final apps = await svc.getFriendApplications();
     if (!_owner._isCurrent(svc)) return;
-    final next = <FriendRequest>[];
-    final live = <String>{};
+    final store = _owner._requestStore;
+    final nextByKey = {
+      for (final request in store.pending) request.publicKey: request,
+    };
     for (final a in apps) {
       final key = ConversationIds.normalizeKey(a.userId);
-      if (key.isEmpty || live.contains(key)) continue;
-      live.add(key);
-      final seen = _requestSeen.putIfAbsent(key, DateTime.now);
-      next.add(FriendRequest(publicKey: key, message: a.wording, receivedAt: seen));
+      if (!ConversationIds.publicKey.hasMatch(key)) continue;
+      final old = nextByKey[key];
+      nextByKey[key] = FriendRequest(
+        publicKey: key,
+        message: a.wording,
+        receivedAt: old?.message == a.wording
+            ? old!.receivedAt
+            : DateTime.now(),
+      );
     }
-    _requestSeen.removeWhere((k, _) => !live.contains(k));
+    final dismissed =
+        await _owner._prefs.getStringList('dismissed_friend_applications') ??
+        [];
+    if (!_owner._isCurrent(svc)) return;
+    final friendKeys = friends.value.map((friend) => friend.publicKey).toSet();
+    nextByKey.removeWhere(
+      (key, request) =>
+          friendKeys.contains(key) ||
+          dismissed.contains('$key|${request.message}'),
+    );
+    final next = nextByKey.values.toList();
     next.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+    if (!listEqualsBy(store.pending, next, _sameRequest)) {
+      await store.save(next);
+    }
+    if (!_owner._isCurrent(svc)) return;
     if (!listEqualsBy(requests.value, next, _sameRequest)) requests.force(next);
   }
 
   static bool _sameRequest(FriendRequest a, FriendRequest b) =>
-      a.publicKey == b.publicKey && a.message == b.message;
+      a.publicKey == b.publicKey &&
+      a.message == b.message &&
+      a.receivedAt == b.receivedAt;
 
-  Future<void> addFriend(FfiChatService svc, String toxId, String message) async {
+  Future<void> addFriend(
+    FfiChatService svc,
+    String toxId,
+    String message,
+  ) async {
     final id = toxId.trim().toUpperCase();
     if (!ConversationIds.toxAddress.hasMatch(id)) {
       throw const ChatException(
@@ -102,18 +146,26 @@ class _FriendsPart {
       throw const ChatException('own_id', 'That is your own Tox ID');
     }
     if (friends.value.any((f) => f.publicKey == key)) {
-      throw const ChatException('already_friend', 'Already in your friend list');
+      throw const ChatException(
+        'already_friend',
+        'Already in your friend list',
+      );
     }
     final result = await svc.addFriend(id, requestMessage: message);
     if (!result.isSuccess) {
       final code = result.resultCode;
       // V2TIM 30515: the peer is already a friend; 30539: request pending.
       if (code == 30515) {
-        throw const ChatException('already_friend', 'Already in your friend list');
+        throw const ChatException(
+          'already_friend',
+          'Already in your friend list',
+        );
       }
       throw ChatException(
         'add_friend_failed',
-        result.resultInfo.isEmpty ? 'Friend request failed ($code)' : result.resultInfo,
+        result.resultInfo.isEmpty
+            ? 'Friend request failed ($code)'
+            : result.resultInfo,
       );
     }
     _owner._ensureCurrent(svc);
@@ -122,7 +174,10 @@ class _FriendsPart {
     _owner._conversationsPart.rebuild(svc);
   }
 
-  Future<void> accept(FfiChatService svc, String publicKey) async {
+  Future<void> accept(FfiChatService svc, String publicKey) =>
+      _serializeRequests(svc, () => _accept(svc, publicKey));
+
+  Future<void> _accept(FfiChatService svc, String publicKey) async {
     final key = ConversationIds.normalizeKey(publicKey);
     try {
       await svc.acceptFriendRequest(key);
@@ -130,19 +185,39 @@ class _FriendsPart {
       throw ChatException('accept_failed', e.message);
     }
     _owner._ensureCurrent(svc);
-    _requestSeen.remove(key);
-    await refreshRequests(svc);
+    final store = _owner._requestStore;
+    await store.save(store.pending.where((r) => r.publicKey != key).toList());
+    _owner._ensureCurrent(svc);
     await refresh(svc);
+    await _refreshRequests(svc);
     _owner._ensureCurrent(svc);
     _owner._conversationsPart.rebuild(svc);
   }
 
-  Future<void> reject(FfiChatService svc, String publicKey) async {
+  Future<void> reject(FfiChatService svc, String publicKey) =>
+      _serializeRequests(svc, () => _reject(svc, publicKey));
+
+  Future<void> _reject(FfiChatService svc, String publicKey) async {
     final key = ConversationIds.normalizeKey(publicKey);
+    final store = _owner._requestStore;
+    final prefs = _owner._prefs;
+    final dismissed =
+        (await prefs.getStringList('dismissed_friend_applications') ?? [])
+            .toSet();
+    _owner._ensureCurrent(svc);
+    for (final request in store.pending.where((r) => r.publicKey == key)) {
+      dismissed.add('$key|${request.message}');
+    }
+    await prefs.setStringList(
+      'dismissed_friend_applications',
+      dismissed.toList(),
+    );
+    _owner._ensureCurrent(svc);
     await svc.refuseFriendApplication(key);
     _owner._ensureCurrent(svc);
-    _requestSeen.remove(key);
-    await refreshRequests(svc);
+    await store.save(store.pending.where((r) => r.publicKey != key).toList());
+    _owner._ensureCurrent(svc);
+    await _refreshRequests(svc);
   }
 
   Future<void> remove(FfiChatService svc, String publicKey) async {
@@ -157,6 +232,5 @@ class _FriendsPart {
     _owner._conversationsPart.rebuild(svc);
   }
 
-  Future<void> close() =>
-      Future.wait([friends.close(), requests.close()]);
+  Future<void> close() => Future.wait([friends.close(), requests.close()]);
 }

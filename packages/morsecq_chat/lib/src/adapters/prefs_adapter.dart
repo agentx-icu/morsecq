@@ -15,7 +15,8 @@ import 'key_value_store.dart';
 /// familiar slots). Network-level settings (bootstrap node, downloads
 /// directory, auto-download limit) stay global. The generic
 /// `getString`/`setString` family takes keys verbatim — Tim2Tox scopes the
-/// keys it invents itself through [accountScopedKey].
+/// keys it invents itself through [accountScopedKey]. The older friend-request
+/// dismissal family is scoped here because Tim2Tox delegates it to the host.
 class Tim2ToxPreferencesAdapter
     implements
         ExtendedPreferencesService,
@@ -55,10 +56,14 @@ class Tim2ToxPreferencesAdapter
   @override
   String accountScopedKey(String key) => _scoped(key);
 
+  // Tim2Tox leaves this older preference family to the host to scope.
+  String _genericKey(String key) =>
+      key == 'dismissed_friend_applications' ? _scoped(key) : key;
+
   Future<void> _setOrRemove(String scopedKey, String? value) =>
       value == null || value.isEmpty
-          ? _store.remove(scopedKey)
-          : _store.setString(scopedKey, value);
+      ? _store.remove(scopedKey)
+      : _store.setString(scopedKey, value);
 
   Set<String> _scopedSet(String key) =>
       _store.getStringList(_scoped(key))?.toSet() ?? <String>{};
@@ -88,12 +93,25 @@ class Tim2ToxPreferencesAdapter
   Future<void> setInt(String key, int value) => _store.setInt(key, value);
 
   @override
-  Future<List<String>?> getStringList(String key) async =>
-      _store.getStringList(key);
+  Future<List<String>?> getStringList(String key) async {
+    final scoped = _genericKey(key);
+    final existing = _store.getStringList(scoped);
+    if (existing != null || scoped == key) return existing;
+    // morsecq has one stored identity. The formerly global refusal list
+    // belongs to that identity; adopt it once before a new account is created.
+    final legacy = _store.getStringList(key);
+    if (legacy == null) return null;
+    await _store.setStringList(scoped, legacy);
+    await _store.remove(key);
+    return legacy;
+  }
 
   @override
-  Future<void> setStringList(String key, List<String> value) =>
-      _store.setStringList(key, value);
+  Future<void> setStringList(String key, List<String> value) async {
+    final scoped = _genericKey(key);
+    await _store.setStringList(scoped, value);
+    if (scoped != key) await _store.remove(key);
+  }
 
   @override
   Future<void> remove(String key) => _store.remove(key);
@@ -111,8 +129,26 @@ class Tim2ToxPreferencesAdapter
   @override
   Future<void> clear() async {
     if (_accountPrefix.isEmpty) return;
+    // An identity removed before its first connect never ran the migration.
+    // Its old refusal list must not be inherited by the next identity.
+    await _store.remove('dismissed_friend_applications');
     final suffix = '_$_accountPrefix';
-    final doomed = _store.keys().where((k) => k.endsWith(suffix)).toList();
+    final doomed = _store.keys().where((key) {
+      if (key.endsWith(suffix)) return true;
+      for (final family in const [
+        'conversation_draft_',
+        'pending_read_receipts_',
+        'pending_group_read_receipts_',
+      ]) {
+        if (!key.startsWith(family)) continue;
+        final scope = key.substring(family.length).split('_').first;
+        if ((scope.length == 64 || scope.length == 76) &&
+            scope.toUpperCase().startsWith(_accountPrefix.toUpperCase())) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
     for (final k in doomed) {
       await _store.remove(k);
     }
@@ -281,7 +317,7 @@ class Tim2ToxPreferencesAdapter
 
   @override
   Future<({String host, int port, String pubkey})?>
-      getCurrentBootstrapNode() async {
+  getCurrentBootstrapNode() async {
     final host = _store.getString(_kBootstrapHost);
     final pubkey = _store.getString(_kBootstrapPubkey) ?? '';
     if (host == null || host.isEmpty || pubkey.isEmpty) return null;
@@ -388,8 +424,7 @@ class Tim2ToxPreferencesAdapter
     String userID,
     int opt, [
     String? userToxId,
-  ]) =>
-      _setRecvOpt('c2c_recv_opt_$userID', opt, userToxId);
+  ]) => _setRecvOpt('c2c_recv_opt_$userID', opt, userToxId);
 
   @override
   Future<int> getGroupReceiveMessageOpt(String groupID, [String? userToxId]) =>
@@ -400,8 +435,7 @@ class Tim2ToxPreferencesAdapter
     String groupID,
     int opt, [
     String? userToxId,
-  ]) =>
-      _setRecvOpt('group_recv_opt_$groupID', opt, userToxId);
+  ]) => _setRecvOpt('group_recv_opt_$groupID', opt, userToxId);
 
   // ---- DraftPreferencesService ---------------------------------------------
 
