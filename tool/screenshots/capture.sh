@@ -97,6 +97,10 @@ if [[ -n "${MORSECQ_SHOT_STAGING:-}" ]]; then
 else
   STAGING="$(mktemp -d "${TMPDIR:-/tmp}/morsecq_shots.XXXXXX")"
 fi
+# Absolute, because flutter drive runs from $APP_DIR while verify/publish run
+# from here; and in native form on Windows (`pwd -W` gives C:/..., which the
+# Dart driver understands and Git Bash accepts too).
+STAGING="$(cd "$STAGING" && { pwd -W 2>/dev/null || pwd; })"
 on_exit() {
   local rc="$1"
   if [[ "$rc" != "0" || "$KEEP" == "1" ]]; then

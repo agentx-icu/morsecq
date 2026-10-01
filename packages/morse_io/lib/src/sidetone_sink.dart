@@ -32,7 +32,9 @@ final class SidetoneSink implements MorseSink {
   SidetoneSource? _source;
   SidetoneVoice? _voice;
   Future<void>? _preparing;
+  Future<void>? _disposing;
   bool _prepared = false;
+  bool _disposed = false;
   bool _isOn = false;
 
   bool get isPrepared => _prepared;
@@ -62,19 +64,50 @@ final class SidetoneSink implements MorseSink {
 
   @override
   Future<void> prepare() {
+    if (_disposed) {
+      return Future<void>.error(StateError('SidetoneSink used after dispose'));
+    }
     if (_prepared) {
       return Future<void>.value();
     }
     return _preparing ??= _doPrepare();
   }
 
+  /// Bails out after every await once [dispose] has started; [dispose]
+  /// waits for this future and then frees whatever it got as far as
+  /// creating. On failure it frees its partial state and gives the engine
+  /// back itself, so a caller that drops a sink whose prepare threw leaks
+  /// nothing, and a later [prepare] may retry. The future stays published
+  /// until that cleanup is done, so a [prepare] or [dispose] arriving during
+  /// it waits for it instead of overlapping it.
   Future<void> _doPrepare() async {
-    await _api.init();
-    final source = await _api.loadSineWaveform();
-    _source = source;
-    _api.setWaveformFrequency(source, _frequencyHz);
-    _voice = _api.playLooping(source, volume: 0);
-    _prepared = true;
+    try {
+      await _api.init();
+      if (_disposed) {
+        return;
+      }
+      final source = await _api.loadSineWaveform();
+      _source = source;
+      if (_disposed) {
+        return;
+      }
+      _api.setWaveformFrequency(source, _frequencyHz);
+      _voice = _api.playLooping(source, volume: 0);
+      _prepared = true;
+    } on Object {
+      if (!_disposed) {
+        try {
+          await _release();
+        } on Object catch (_) {
+          // The original error below is what prepare() reports.
+        } finally {
+          if (!_disposed) {
+            _preparing = null;
+          }
+        }
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -97,21 +130,48 @@ final class SidetoneSink implements MorseSink {
     _api.fadeVolume(voice, 0, ramp);
   }
 
+  /// Stops the voice, frees the source and returns the engine lease.
+  /// Single-flight: concurrent and repeated calls share one teardown. Waits
+  /// for an in-flight [prepare] first so it cannot create a voice after the
+  /// sink is gone.
   @override
-  Future<void> dispose() async {
+  Future<void> dispose() => _disposing ??= _doDispose();
+
+  Future<void> _doDispose() async {
+    _disposed = true;
     _isOn = false;
     _prepared = false;
+    final preparing = _preparing;
     _preparing = null;
+    if (preparing != null) {
+      try {
+        await preparing;
+      } on Object catch (_) {
+        // Reported to whoever awaited prepare(); teardown continues below.
+      }
+    }
+    await _release();
+  }
+
+  /// Frees the voice and source (if any) and returns the engine lease even
+  /// when freeing them throws.
+  Future<void> _release() async {
     final voice = _voice;
     final source = _source;
     _voice = null;
     _source = null;
-    if (voice != null) {
-      await _api.stop(voice);
+    try {
+      if (voice != null) {
+        await _api.stop(voice);
+      }
+    } finally {
+      try {
+        if (source != null) {
+          await _api.disposeSource(source);
+        }
+      } finally {
+        await _api.deinit();
+      }
     }
-    if (source != null) {
-      await _api.disposeSource(source);
-    }
-    _api.deinit();
   }
 }

@@ -44,13 +44,23 @@ The pipeline is a normal `integration_test`:
   The PNG bytes ride in `binding.reportData` (base64) to the `flutter drive`
   host, which writes `<platform>/<locale>/<scene>.png`.
 - **Desktop window**: the harness resizes and centres the real window to
-  `MORSECQ_SHOT_WINDOW` (default `1280x800`) through `window_manager`, then
-  reads the achieved size back — macOS clamps to the visible frame (a 14"
-  MacBook Pro gives 1280×768) and the frame is captured as-is.
+  `MORSECQ_SHOT_WINDOW` (default `1280x800`) through `window_manager`. That
+  sizes the outer frame, so the harness measures the title bar and borders
+  and resizes once more until the Flutter view itself is the requested size.
+  macOS may clamp a window larger than the visible frame; there a smaller
+  size is accepted and logged. On Linux and Windows any mismatch fails the
+  run.
 - **Pixel ratio**: 1.0 on desktop, `min(dpr, 2)` on mobile, override with
   `MORSECQ_SHOT_PIXEL_RATIO`.
 - **Theme**: pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
   frames do not follow the host's appearance.
+- **Knob validation**: a malformed or out-of-range knob fails the run instead
+  of falling back to the default — window edges in (0, 8192], pixel ratio in
+  [0.25, 4], theme one of the three names.
+- **Every frame is asserted**: before each capture the walk checks the scene's
+  screen and its seeded content (bubbles, friends, translator output) and
+  taps only hit-testable targets. A `pumpAndSettle` timeout (an endless
+  animation) is tolerated; any other error fails the run.
 - **Locales**: each locale is a separate pass with its own seed copy (Chinese
   frames show Chinese names and a Chinese group; the Morse text stays in CW
   abbreviations, which is what is keyed on the air).

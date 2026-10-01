@@ -9,6 +9,8 @@
 //
 //   flutter test integration_test/app_launch_test.dart -d macos \
 //       --dart-define=MORSECQ_FAKE_BACKEND=true
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -17,18 +19,23 @@ import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart' as app;
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/message_bubble.dart';
+import 'package:morsecq/ui/contacts/add_friend_sheet.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/text_to_morse_view.dart';
 import 'package:morsecq/ui/reference/translator_screen.dart';
 import 'package:morsecq/ui/shell/app_shell.dart';
 import 'package:morsecq/ui/stats/stats_screen.dart';
+import 'package:morsecq_chat_api/testing.dart';
 
 import 'support/scene_walk.dart';
 import 'support/shot_harness.dart';
 
 /// A syntactically valid Tox ID that is not the hero's own.
 final String kFriendToxId = '${'AB' * 32}${'0' * 12}';
+
+/// The friend's public key: the first 64 hex digits of [kFriendToxId].
+final String kFriendPublicKey = kFriendToxId.substring(0, 64);
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +48,10 @@ void main() {
       isTrue,
       reason: 'run with --dart-define=MORSECQ_FAKE_BACKEND=true',
     );
+    // The fake's identities are deterministic, so their training data lands
+    // in the same folder every run; start from nothing, like a first launch.
+    final fakeRoot = Directory(FakeIdentityService.defaultDataRoot);
+    if (fakeRoot.existsSync()) fakeRoot.deleteSync(recursive: true);
     await app.main();
     await settle(tester, extra: const Duration(milliseconds: 500));
 
@@ -76,12 +87,15 @@ void main() {
     await tester.enterText(find.byType(TextField).first, kFriendToxId);
     await settle(tester);
     await tapText(tester, s().chatSendRequest);
-    // The fake adds the friend immediately (offline); its row shows the
-    // shortened key. Tap it to open the conversation.
-    final friendRow = find.textContaining('ABAB');
-    expect(friendRow, findsWidgets);
-    await tester.tap(friendRow.first);
-    await settle(tester);
+    // The sheet closes and the fake adds the friend immediately (offline).
+    // Open the conversation from the friend's row by its stable key, so the
+    // typed ID in a still-open sheet can never be what gets tapped.
+    expect(find.byType(AddFriendForm), findsNothing);
+    await tapHittable(
+      tester,
+      find.byKey(ValueKey<String>('friend_$kFriendPublicKey')),
+      'friend row',
+    );
     expect(find.byType(ConversationScreen), findsOneWidget);
     // The "request sent" SnackBar sits over the send button for 4 s; clear
     // it so the tap lands on the button and not on the toast.

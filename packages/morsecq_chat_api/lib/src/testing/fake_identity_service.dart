@@ -42,6 +42,12 @@ final class FakeIdentityService implements IdentityService {
          password,
        );
 
+  /// Where [dataDirectory] puts per-identity folders when no
+  /// `dataDirectoryPath` is given. Tests that boot the app with the default
+  /// fake (e.g. the launch integration test) clear it to start clean.
+  static String get defaultDataRoot =>
+      '${Directory.systemTemp.path}${Platform.pathSeparator}morsecq_fake';
+
   /// Magic prefix of the backup container produced by [exportBackup].
   static const String backupMagic = 'MCQ-FAKE-BACKUP-1';
 
@@ -278,9 +284,7 @@ final class FakeIdentityService implements IdentityService {
   @override
   Future<String> dataDirectory() async {
     final identity = _requireCurrent();
-    final base =
-        _dataDirectoryPath ??
-        '${Directory.systemTemp.path}${Platform.pathSeparator}morsecq_fake';
+    final base = _dataDirectoryPath ?? defaultDataRoot;
     final dir = Directory(
       '$base${Platform.pathSeparator}${identity.publicKey.substring(0, 16)}',
     );

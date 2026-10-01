@@ -1,5 +1,7 @@
 import 'package:flutter_soloud/flutter_soloud.dart';
 
+import 'engine_leases.dart';
+
 /// Opaque id of a loaded waveform source (a `flutter_soloud` `AudioSource`).
 extension type const SidetoneSource(int id) {}
 
@@ -33,8 +35,9 @@ abstract interface class SoloudApi {
 
   Future<void> disposeSource(SidetoneSource source);
 
-  /// Shuts the engine down if this adapter started it.
-  void deinit();
+  /// Releases what [init] took: the engine stops once no adapter needs it.
+  /// Idempotent, and safe to call while [init] is still running.
+  Future<void> deinit();
 }
 
 /// Production [SoloudApi] on top of `flutter_soloud`.
@@ -58,25 +61,48 @@ final class FlutterSoloudApi implements SoloudApi {
   final int bufferSize;
   final Channels channels;
 
+  /// One lease table per engine, shared by every adapter in this isolate
+  /// (the engine is an isolate-wide singleton).
+  static final Expando<EngineLeases> _leasesByEngine = Expando<EngineLeases>(
+    'SoLoud engine leases',
+  );
+
   final Map<int, AudioSource> _sources = <int, AudioSource>{};
-  bool _startedEngine = false;
+  Future<void>? _acquiring;
+  bool _holdsLease = false;
+
+  EngineLeases get _leases => _leasesByEngine[_engine] ??= EngineLeases(
+    isInitialized: () => _engine.isInitialized,
+    deinit: _engine.deinit,
+  );
 
   @override
   bool get isInitialized => _engine.isInitialized;
 
+  /// Takes this adapter's lease on the shared engine, starting it when no
+  /// one runs it yet. An engine somebody else started (e.g. a music player
+  /// elsewhere in the app) is shared and never shut down by us.
   @override
-  Future<void> init() async {
-    if (_engine.isInitialized) {
-      // Somebody else (e.g. a music player elsewhere in the app) owns the
-      // engine; share it and never deinit it.
-      return;
+  Future<void> init() {
+    if (_holdsLease) {
+      return Future<void>.value();
     }
-    await _engine.init(
-      sampleRate: sampleRate,
-      bufferSize: bufferSize,
-      channels: channels,
-    );
-    _startedEngine = true;
+    return _acquiring ??= _acquire();
+  }
+
+  Future<void> _acquire() async {
+    try {
+      await _leases.acquire(
+        () => _engine.init(
+          sampleRate: sampleRate,
+          bufferSize: bufferSize,
+          channels: channels,
+        ),
+      );
+      _holdsLease = true;
+    } finally {
+      _acquiring = null;
+    }
   }
 
   @override
@@ -122,12 +148,21 @@ final class FlutterSoloudApi implements SoloudApi {
   }
 
   @override
-  void deinit() {
-    if (_startedEngine && _engine.isInitialized) {
-      _engine.deinit();
+  Future<void> deinit() async {
+    final acquiring = _acquiring;
+    if (acquiring != null) {
+      try {
+        await acquiring;
+      } on Object catch (_) {
+        // The failed init took no lease; nothing to give back.
+      }
     }
-    _startedEngine = false;
     _sources.clear();
+    if (!_holdsLease) {
+      return;
+    }
+    _holdsLease = false;
+    await _leases.release();
   }
 
   AudioSource _source(SidetoneSource id) {

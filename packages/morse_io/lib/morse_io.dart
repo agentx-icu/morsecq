@@ -6,6 +6,7 @@
 library;
 
 export 'src/clock.dart';
+export 'src/engine_leases.dart';
 export 'src/flash_sink.dart';
 export 'src/haptic_sink.dart';
 export 'src/iambic_keyer.dart';

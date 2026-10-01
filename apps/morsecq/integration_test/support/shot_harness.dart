@@ -67,20 +67,71 @@ List<String> shotLocales() => _localesDefine
     .where((l) => l.isNotEmpty)
     .toList(growable: false);
 
-Size desktopWindowSize() {
-  final parts = _windowDefine.toLowerCase().split('x');
-  if (parts.length == 2) {
-    final w = double.tryParse(parts[0]);
-    final h = double.tryParse(parts[1]);
-    if (w != null && h != null && w > 0 && h > 0) return Size(w, h);
+/// Largest window edge [desktopWindowSize] accepts, in logical pixels.
+const double kMaxWindowEdge = 8192;
+
+/// [MORSECQ_SHOT_PIXEL_RATIO] must fall inside this range.
+const double kMinPixelRatio = 0.25;
+const double kMaxPixelRatio = 4;
+
+const Set<String> kShotThemes = <String>{'light', 'dark', 'system'};
+
+/// The `MORSECQ_SHOT_WINDOW` define as a size. A malformed or out-of-range
+/// value throws instead of silently falling back, so a typo in a capture
+/// command cannot produce frames of the wrong size.
+Size desktopWindowSize() => parseWindowSize(_windowDefine);
+
+Size parseWindowSize(String define) {
+  final parts = define.toLowerCase().split('x');
+  final w = parts.length == 2 ? double.tryParse(parts[0]) : null;
+  final h = parts.length == 2 ? double.tryParse(parts[1]) : null;
+  bool ok(double? v) => v != null && v.isFinite && v > 0 && v <= kMaxWindowEdge;
+  if (!ok(w) || !ok(h)) {
+    throw ArgumentError.value(
+      define,
+      'MORSECQ_SHOT_WINDOW',
+      'expected WxH with both edges in (0, ${kMaxWindowEdge.toInt()}]',
+    );
   }
-  return const Size(1280, 800);
+  return Size(w!, h!);
+}
+
+/// The `MORSECQ_SHOT_PIXEL_RATIO` define, or null when it is not set.
+double? parsePixelRatio(String define) {
+  if (define.isEmpty) return null;
+  final v = double.tryParse(define);
+  if (v == null || !v.isFinite || v < kMinPixelRatio || v > kMaxPixelRatio) {
+    throw ArgumentError.value(
+      define,
+      'MORSECQ_SHOT_PIXEL_RATIO',
+      'expected a number in [$kMinPixelRatio, $kMaxPixelRatio]',
+    );
+  }
+  return v;
+}
+
+ThemeMode parseShotTheme(String define) {
+  if (!kShotThemes.contains(define)) {
+    throw ArgumentError.value(
+      define,
+      'MORSECQ_SHOT_THEME',
+      'expected one of ${kShotThemes.join(', ')}',
+    );
+  }
+  return switch (define) {
+    'dark' => ThemeMode.dark,
+    'system' => ThemeMode.system,
+    _ => ThemeMode.light,
+  };
 }
 
 /// Lets real asynchronous work (file I/O, plugin channels) and animations
 /// finish. `pumpAndSettle` alone throws on an endless animation (a blinking
-/// caret, a spinner), so its timeout is caught and treated as "settled
-/// enough"; the fixed pumps in front give plain futures a chance to run.
+/// caret, a spinner), so its timeout -- and only its timeout -- is caught
+/// and treated as "settled enough"; every other error propagates. Callers
+/// assert the scene's content afterwards, so a timeout never hides a page
+/// that failed to appear. The fixed pumps in front give plain futures a
+/// chance to run.
 Future<void> settle(WidgetTester tester, {Duration extra = Duration.zero}) async {
   for (var i = 0; i < 3; i++) {
     await tester.pump(const Duration(milliseconds: 60));
@@ -91,8 +142,9 @@ Future<void> settle(WidgetTester tester, {Duration extra = Duration.zero}) async
       EnginePhase.sendSemanticsUpdate,
       const Duration(seconds: 5),
     );
-  } on FlutterError {
+  } on FlutterError catch (e) {
     // Something animates forever; the frame is still fine to capture.
+    if (!e.message.startsWith('pumpAndSettle timed out')) rethrow;
   }
   if (extra > Duration.zero) {
     await Future<void>.delayed(extra);
@@ -114,9 +166,12 @@ class ShotHarness {
   Widget wrap(Widget child) => RepaintBoundary(key: boundaryKey, child: child);
 
   /// Desktop: size and centre the real window so every capture has the same
-  /// logical size regardless of what a previous run persisted. macOS clamps
-  /// a window to the visible frame, so the achieved size is read back and
-  /// simply used as-is when it differs.
+  /// logical size (the Flutter view, i.e. the client area) regardless of
+  /// what a previous run persisted. `window_manager` sizes the outer frame,
+  /// so after a first attempt the title bar and borders are measured and
+  /// added back. macOS clamps a window to the visible frame (menu bar,
+  /// Dock), so there a smaller achieved size is accepted and logged;
+  /// anything else that misses the requested size fails the run.
   Future<void> prepareWindow(WidgetTester tester) async {
     if (!isDesktopHost) return;
     final size = desktopWindowSize();
@@ -124,40 +179,86 @@ class ShotHarness {
     await windowManager.setSize(size);
     await windowManager.center();
     await windowManager.show();
+    if (await _viewReaches(tester, size)) return;
+    final outer = await windowManager.getSize();
+    final client = _viewSize(tester);
+    await windowManager.setSize(
+      Size(
+        size.width + outer.width - client.width,
+        size.height + outer.height - client.height,
+      ),
+    );
+    await windowManager.center();
+    if (await _viewReaches(tester, size)) return;
+    final got = _viewSize(tester);
+    final clamped =
+        Platform.isMacOS &&
+        got.width <= size.width + 2 &&
+        got.height <= size.height + 2;
+    if (!clamped) {
+      throw StateError(
+        'window is ${got.width}x${got.height}, wanted '
+        '${size.width}x${size.height}',
+      );
+    }
+    debugPrint('[shot] window clamped to ${got.width}x${got.height}, '
+        'wanted ${size.width}x${size.height}');
+  }
+
+  static Size _viewSize(WidgetTester tester) =>
+      tester.view.physicalSize / tester.view.devicePixelRatio;
+
+  /// Pumps for up to 2 s until the Flutter view is [size] (within 2 px).
+  static Future<bool> _viewReaches(WidgetTester tester, Size size) async {
     for (var i = 0; i < 40; i++) {
       await tester.pump(const Duration(milliseconds: 50));
-      final logical = tester.view.physicalSize / tester.view.devicePixelRatio;
-      if ((logical.width - size.width).abs() < 2 &&
-          (logical.height - size.height).abs() < 2) {
-        return;
+      final got = _viewSize(tester);
+      if ((got.width - size.width).abs() < 2 &&
+          (got.height - size.height).abs() < 2) {
+        return true;
       }
     }
-    final got = tester.view.physicalSize / tester.view.devicePixelRatio;
-    debugPrint('[shot] window is ${got.width}x${got.height}, wanted $size');
+    return false;
   }
 
   /// Pins the theme so the frames do not follow the host's appearance.
   Future<void> applyTheme(WidgetTester tester) async {
-    final mode = switch (_themeDefine) {
-      'dark' => ThemeMode.dark,
-      'system' => ThemeMode.system,
-      _ => ThemeMode.light,
-    };
+    final mode = parseShotTheme(_themeDefine);
     tester.element(find.byType(MaterialApp)).read<AppSettings>().themeMode =
         mode;
     await settle(tester);
   }
 
   double _pixelRatio(WidgetTester tester) {
-    final forced = double.tryParse(_pixelRatioDefine);
-    if (forced != null && forced > 0) return forced;
+    final forced = parsePixelRatio(_pixelRatioDefine);
+    if (forced != null) return forced;
     if (isDesktopHost) return 1.0;
     return math.min(tester.view.devicePixelRatio, 2.0);
   }
 
   /// Captures the current frame as `<platform>/<locale>/<scene>`.
-  Future<void> capture(WidgetTester tester, String locale, String scene) async {
+  ///
+  /// [until], when given, must hold on the frame that is captured: frames
+  /// are pumped (for up to 10 s) until it does, so a scene with live
+  /// playback can wait for a still moment instead of catching, say, a
+  /// screen flash.
+  Future<void> capture(
+    WidgetTester tester,
+    String locale,
+    String scene, {
+    bool Function()? until,
+  }) async {
     await settle(tester);
+    if (until != null) {
+      final deadline = DateTime.now().add(const Duration(seconds: 10));
+      while (true) {
+        await tester.pump(const Duration(milliseconds: 16));
+        if (until()) break;
+        if (DateTime.now().isAfter(deadline)) {
+          throw StateError('$scene: capture condition never held');
+        }
+      }
+    }
     final RenderObject? ro = boundaryKey.currentContext?.findRenderObject();
     if (ro is! RenderRepaintBoundary) {
       throw StateError('screenshot boundary is not mounted');
