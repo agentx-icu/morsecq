@@ -3406,6 +3406,48 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Five styles with light and dark modes'**
   String get appearanceSubtitle;
+
+  /// No description provided for @chatClearHistoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.'**
+  String get chatClearHistoryBody;
+
+  /// No description provided for @chatLoadEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Load earlier messages'**
+  String get chatLoadEarlier;
+
+  /// No description provided for @chatHistoryLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load earlier messages. Tap to retry.'**
+  String get chatHistoryLoadFailed;
+
+  /// No description provided for @chatRetryHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get chatRetryHistory;
+
+  /// No description provided for @chatNewMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new messages'**
+  String chatNewMessages(int count);
+
+  /// No description provided for @learnShowAllChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all {count} characters'**
+  String learnShowAllChars(int count);
+
+  /// No description provided for @learnShowFewerChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Show fewer characters'**
+  String get learnShowFewerChars;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

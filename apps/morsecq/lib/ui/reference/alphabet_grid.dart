@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,37 +25,95 @@ class AlphabetGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return CustomScrollView(
-      slivers: <Widget>[
-        if (hint != null)
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            sliver: SliverToBoxAdapter(
-              child: Text(
-                hint!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+    final Size contentSize = _measureCardContent(context, entries);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double gridWidth = math.max(0, constraints.maxWidth - 24);
+        // Retain the usual density unless scaled text requires wider cards.
+        final int usualColumns = math.max(1, (gridWidth / 128).ceil());
+        final int fittingColumns = math.max(
+          1,
+          ((gridWidth + 8) / (contentSize.width + 12 + 8)).floor(),
+        );
+        final int columns = math.min(usualColumns, fittingColumns);
+        final double cardWidth = (gridWidth - (columns - 1) * 8) / columns;
+        return CustomScrollView(
+          slivers: <Widget>[
+            if (hint != null)
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    hint!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ),
+            SliverPadding(
+              padding: const EdgeInsets.all(12),
+              sliver: SliverGrid.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  mainAxisExtent: math.max(
+                    cardWidth / 1.05,
+                    contentSize.height + 16 + 4,
+                  ),
+                ),
+                itemCount: entries.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    AlphabetCard(entry: entries[index]),
+              ),
             ),
-          ),
-        SliverPadding(
-          padding: const EdgeInsets.all(12),
-          sliver: SliverGrid.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 120,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1.05,
-            ),
-            itemCount: entries.length,
-            itemBuilder: (BuildContext context, int index) =>
-                AlphabetCard(entry: entries[index]),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
+}
+
+/// Measure the exact display styles with the active (possibly nonlinear)
+/// scaler. Bold patterns cover the width of the currently highlighted mark.
+Size _measureCardContent(BuildContext context, List<ReferenceEntry> entries) {
+  final ThemeData theme = Theme.of(context);
+  final TextStyle labelStyle =
+      (theme.textTheme.headlineMedium ?? const TextStyle()).copyWith(
+        fontWeight: FontWeight.bold,
+      );
+  final TextStyle patternStyle = morsePatternTextStyle(
+    context,
+    style: theme.textTheme.bodyMedium,
+  ).copyWith(fontWeight: FontWeight.bold);
+  final TextPainter painter = TextPainter(
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    locale: Localizations.localeOf(context),
+    maxLines: 1,
+  );
+  double width = 36;
+  double labelHeight = 0;
+  double patternHeight = 0;
+  for (final ReferenceEntry entry in entries) {
+    painter.text = TextSpan(text: entry.label, style: labelStyle);
+    painter.layout();
+    width = math.max(width, painter.width);
+    labelHeight = math.max(labelHeight, painter.height);
+    painter.text = TextSpan(
+      text: displayMorsePattern(entry.pattern),
+      style: patternStyle,
+    );
+    painter.layout();
+    width = math.max(width, painter.width);
+    patternHeight = math.max(patternHeight, painter.height);
+  }
+  painter.dispose();
+  return Size(
+    width.ceilToDouble(),
+    (labelHeight + patternHeight).ceilToDouble(),
+  );
 }
 
 /// One character card of the [AlphabetGrid].
@@ -64,8 +124,8 @@ class AlphabetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ReferencePlaybackController controller =
-        context.watch<ReferencePlaybackController>();
+    final ReferencePlaybackController controller = context
+        .watch<ReferencePlaybackController>();
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
     final bool playing = controller.isPlayingId(entry.id);

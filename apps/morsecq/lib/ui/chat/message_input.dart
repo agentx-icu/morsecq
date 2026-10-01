@@ -9,6 +9,7 @@ import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
 import 'keying_input.dart';
+import 'local_message_sends.dart';
 import 'morse_pattern_text.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
@@ -17,6 +18,46 @@ import 'morse_playback_settings.dart';
 /// iambic paddles. Hand-keyed characters land in the same draft field, so
 /// the operator can mix modes and fix typos before sending.
 enum InputMode { keyboard, straightKey, paddles }
+
+// Share write ordering across editors for the same service and conversation.
+// A pending dispose flush must finish before a reopened editor's newer draft.
+final _draftWriters = Expando<Map<String, _DraftWriter>>();
+
+class _DraftWriter {
+  Future<void> _tail = Future<void>.value();
+  int pending = 0;
+  String latest = '';
+  TextEditingController? _controller;
+  int _editors = 0;
+
+  TextEditingController acquire(String initialDraft) {
+    _editors++;
+    return _controller ??= TextEditingController(
+      text: pending > 0 ? latest : initialDraft,
+    );
+  }
+
+  void release() {
+    if (--_editors == 0) {
+      _controller?.dispose();
+      _controller = null;
+    }
+  }
+
+  Future<void> save(ChatService service, String id, String draft) {
+    latest = draft;
+    pending++;
+    return _tail = _tail.then((_) async {
+      try {
+        await service.setDraft(id, draft);
+      } on Object {
+        // Drafts are a convenience; never surface a failure to save one.
+      } finally {
+        pending--;
+      }
+    });
+  }
+}
 
 /// The compose area: mode selector, optional keying pad, draft field with
 /// live Morse preview and remaining-byte counter, send button. Drafts are
@@ -44,19 +85,23 @@ class MessageInput extends StatefulWidget {
 class _MessageInputState extends State<MessageInput> {
   static const Duration _draftDebounce = Duration(milliseconds: 400);
 
-  late final TextEditingController _text = TextEditingController(
-    text: widget.initialDraft,
-  );
+  late final _DraftWriter _writer = (_draftWriters[widget.service] ??= {})
+      .putIfAbsent(widget.conversationId, _DraftWriter.new);
+  // Multiple routes can open the same conversation. Share their text so each
+  // editor observes every edit revision, and an older send cannot clear it.
+  late final TextEditingController _text = _writer.acquire(widget.initialDraft);
   final FocusNode _focus = FocusNode();
   InputMode _mode = InputMode.keyboard;
   Timer? _draftTimer;
   String _savedDraft = '';
+  late String _lastDraft;
+  int _editRevision = 0;
   bool _sending = false;
 
   @override
   void initState() {
     super.initState();
-    _savedDraft = widget.initialDraft;
+    _savedDraft = _lastDraft = _text.text;
     _text.addListener(_onChanged);
   }
 
@@ -67,26 +112,26 @@ class _MessageInputState extends State<MessageInput> {
       unawaited(_persistDraft());
     }
     _text.removeListener(_onChanged);
-    _text.dispose();
+    _writer.release();
     _focus.dispose();
     super.dispose();
   }
 
   void _onChanged() {
+    // Selection/focus changes do not create a new draft revision.
+    if (_text.text == _lastDraft) return;
+    _lastDraft = _text.text;
+    _editRevision++;
     setState(() {});
     _draftTimer?.cancel();
     _draftTimer = Timer(_draftDebounce, () => unawaited(_persistDraft()));
   }
 
-  Future<void> _persistDraft() async {
-    final String draft = _text.text;
-    if (draft == _savedDraft) return;
+  Future<void> _persistDraft() {
+    final String draft = _lastDraft;
+    if (draft == _savedDraft) return Future<void>.value();
     _savedDraft = draft;
-    try {
-      await widget.service.setDraft(widget.conversationId, draft);
-    } on Object {
-      // Drafts are a convenience; never surface a failure to save one.
-    }
+    return _writer.save(widget.service, widget.conversationId, draft);
   }
 
   int get _bytesUsed => utf8.encode(_text.text).length;
@@ -99,6 +144,7 @@ class _MessageInputState extends State<MessageInput> {
   Future<void> _send() async {
     if (!_canSend) return;
     final String text = _text.text.trim();
+    final int revision = _editRevision;
     final S s = context.s;
     setState(() => _sending = true);
     try {
@@ -106,10 +152,11 @@ class _MessageInputState extends State<MessageInput> {
         widget.conversationId,
         text,
       );
+      LocalMessageSends.forService(widget.service).publish(sent);
+      if (!mounted) return;
       _draftTimer?.cancel();
-      _text.clear();
-      _savedDraft = '';
-      unawaited(widget.service.setDraft(widget.conversationId, ''));
+      if (_editRevision == revision) _text.clear();
+      unawaited(_persistDraft());
       widget.onSent?.call(sent);
     } on Object catch (e) {
       if (mounted) showSnack(context, describeChatError(s, e));
@@ -288,7 +335,11 @@ class _ModeSelector extends StatelessWidget {
           Icons.radio_button_checked,
           s.chatModeStraightKey,
         ),
-        _segment(InputMode.paddles, Icons.view_column_outlined, s.chatModePaddles),
+        _segment(
+          InputMode.paddles,
+          Icons.view_column_outlined,
+          s.chatModePaddles,
+        ),
       ],
     );
   }

@@ -199,9 +199,9 @@ class _AppearancePageState extends State<AppearancePage> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _choices(inner.maxWidth),
-                      const SizedBox(height: 24),
                       _preview(),
+                      const SizedBox(height: 24),
+                      _choices(inner.maxWidth),
                     ],
                   );
                 },
