@@ -8,9 +8,9 @@ code with structured lessons and keying drills, then key it to real people —
 one-to-one or in group nets — with no server in the middle. It speaks the same
 Tim2Tox wire protocol as its sibling project **toxee**, so the two interoperate.
 
-![Fresh Cartoon style: desktop and mobile interface concept](doc/designs/ui-styles-2026-10-01/d-cartoon.png)
+![Modern Calm style: English desktop and mobile interface concept](doc/designs/ui-styles-2026-10-01/a-modern-en.png)
 
-*Fresh Cartoon interface concept for desktop and mobile. [Explore all styles](doc/designs/ui-styles-2026-10-01/README.md).*
+*Modern Calm interface concept in English, matching the default style and the screenshots below. [Explore all styles](doc/designs/ui-styles-2026-10-01/README.md).*
 
 ## Status
 
@@ -86,7 +86,8 @@ launch and is required for training as well as chat.
 - **Bilingual UI** — English and Simplified Chinese via Flutter gen-l10n
   (`lib/l10n/app_en.arb` / `app_zh.arb`).
 - **Appearance** — Classic Brass, Modern Calm, Night Radio, Paper Handbook
-  and Fresh Cartoon, with independent System / Light / Dark mode. Choose
+  and Fresh Cartoon, with independent System / Light / Dark mode. Modern Calm
+  is the default; existing saved choices are retained. Choose
   Me → Appearance to preview and apply; preferences survive restart.
   [Approved designs and rendered previews](doc/designs/ui-styles-2026-10-01/README.md).
 - **Sound, haptics and light** — `flutter_soloud` sidetone on all five

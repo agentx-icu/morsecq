@@ -65,6 +65,9 @@ jobs:
       - name: Localisation strings in sync
         run: dart run tool/strings_to_arb.dart --check
 
+      - name: Screenshot import regression tests
+        run: python3 tool/screenshots/capture_import_test.py
+
       # Tests tagged `needs-native` require libtim2tox_ffi and run from the
       # native workflow instead.
       - name: Tests

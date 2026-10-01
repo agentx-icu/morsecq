@@ -8,15 +8,15 @@ Based on the actual interfaces in `doc/screenshots/`, retain the five destinatio
 
 | Option | Visual direction | Intended experience |
 | --- | --- | --- |
-| Classic Brass | Existing warm Material appearance | Default for existing users |
-| A Modern Calm | White, teal, fine borders, distinct card hierarchy | Everyday learning and chat; recommended modern direction |
+| Classic Brass | Existing warm Material appearance | Retained as an optional style |
+| A Modern Calm | White, teal, fine borders, distinct card hierarchy | Default for new users and Restore Defaults; product screenshots |
 | B Night Radio | Navy charcoal, mint cyan, amber accents, instrument panels, monospace Morse | Focused practice and night use |
 | C Paper Handbook | Paper white, terracotta, fine rules, rectangular editorial layout | Quiet reading, review, and reference |
 | D Fresh Cartoon | Mint, cream yellow, pale blue and blush, soft corners, a small friendly radio character | A welcoming and relaxed learning experience |
 
 ## Visual concepts
 
-![A Modern Calm: desktop learning and mobile chat](./a-modern.png)
+![A Modern Calm: English desktop learning and mobile chat](./a-modern-en.png)
 
 ![B Night Radio: desktop learning and mobile keying](./b-radio.png)
 
@@ -32,7 +32,7 @@ Based on the actual interfaces in `doc/screenshots/`, retain the five destinatio
 - Five style cards show miniature interfaces. Selection uses both an outline and a checkmark.
 - Brightness is independent: System, Light, or Dark. Night Radio is illustrated in dark mode and the other concepts in light mode; both modes are planned for every style.
 - Selecting a card updates the preview. Apply Style updates the application and saves the settings. Leaving without applying retains existing settings.
-- Restore Defaults previews Classic Brass with System brightness; Apply Style confirms the reset.
+- Restore Defaults previews Modern Calm with System brightness; Apply Style confirms the reset.
 - Preferences belong to the device and remain independent of training identity. Applying preserves the current destination, chat draft, course progress, playback, and keying state.
 - Mobile uses a full appearance page, with style cards before brightness and preview; the apply action stays easy to reach.
 
@@ -48,7 +48,7 @@ Based on the actual interfaces in `doc/screenshots/`, retain the five destinatio
 
 ## Confirmation
 
-The user approved Modern Calm, Night Radio, Paper Handbook, and Fresh Cartoon, and requested a design-artifact commit followed by development in a new worktree. Keep Classic Brass as the default; select the additional styles from Appearance. This proposal does not replace the existing product plan.
+The user approved Modern Calm, Night Radio, Paper Handbook, and Fresh Cartoon, and requested a design-artifact commit followed by development in a new worktree. Modern Calm is now the default; Classic Brass and the other styles remain selectable, and saved choices are retained. English and Chinese README concepts use their corresponding language and the same Modern Calm style as product screenshots. This proposal does not replace the existing product plan.
 
 ## Rendered implementation previews
 
@@ -73,3 +73,4 @@ Recreate the frames from `apps/morsecq` with the opt-in `test/appearance/style_r
 - 2026-10-01: Added Fresh Cartoon at the user's request and expanded the chooser to five styles.
 - 2026-10-01: The user approved all four styles and requested development in an isolated worktree.
 - 2026-10-01: Added actual desktop/phone Flutter previews for the five implemented styles and appearance chooser.
+- 2026-10-01: Made Modern Calm the default and Restore Defaults style; localized its English README concept and aligned product screenshots with Modern Calm.
