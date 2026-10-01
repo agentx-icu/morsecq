@@ -2,6 +2,8 @@
 .dart_tool/
 pubspec.lock
 build/
+# release packages from tool/ci/package_artifacts.sh
+/dist/
 coverage/
 .flutter-plugins
 .flutter-plugins-dependencies

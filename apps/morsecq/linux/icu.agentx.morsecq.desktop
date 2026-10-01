@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=morsecq
+GenericName=Morse code trainer and chat
+GenericName[zh_CN]=莫尔斯电码训练与聊天
+Comment=Learn Morse code and key it to friends over the Tox P2P network
+Comment[zh_CN]=学习莫尔斯电码，并通过 Tox 点对点网络与好友用电码聊天
+Exec=morsecq
+Icon=morsecq
+Categories=Education;Network;Chat;HamRadio;
+Keywords=morse;cw;ham;radio;tox;chat;
+Terminal=false
+StartupWMClass=icu.agentx.morsecq

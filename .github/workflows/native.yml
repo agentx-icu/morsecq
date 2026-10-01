@@ -8,8 +8,11 @@ name: Native (libtim2tox_ffi)
 # Modelled on toxee's build-packages.yml / analyze.yml (same pinned actions,
 # same runner images, same libtim2tox_ffi cache keyed on the tim2tox submodule
 # SHA + the build script). Linux aarch64 and Windows arm64 are experimental
-# (continue-on-error), as in toxee. On a v* tag the three desktop apps are also
-# packed and attached to that tag's GitHub release (job `release`).
+# (continue-on-error), as in toxee. Every run also builds the Android and iOS
+# apps and turns all five release builds into installable packages
+# (tool/ci/package_artifacts.sh: .deb/.rpm/.tar.gz, .msi/.zip, .pkg/.zip,
+# .apk/.aab, unsigned .ipa); on a v* tag job `release` attaches them to that
+# tag's GitHub release.
 
 on:
   push:
@@ -314,7 +317,7 @@ jobs:
       - name: Install Linux desktop dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev patchelf libsecret-1-dev libayatana-appindicator3-dev libasound2-dev
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config clang libgtk-3-dev liblzma-dev libstdc++-12-dev patchelf libsecret-1-dev libayatana-appindicator3-dev libasound2-dev rpm
       - name: Download libtim2tox_ffi
         uses: actions/download-artifact@v5
         with:
@@ -344,21 +347,17 @@ jobs:
           path: apps/morsecq/build/linux/x64/release/bundle
           if-no-files-found: error
           retention-days: 14
-      # Release archives are packed on the build runner: upload-artifact drops
-      # file modes (and symlinks), so the bare bundle would lose its exec bits.
-      - name: Pack the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir -p dist
-          tar -C apps/morsecq/build/linux/x64/release --transform 's,^bundle,morsecq,' \
-            -czf "dist/morsecq-${GITHUB_REF_NAME}-linux-x86_64.tar.gz" bundle
-      - name: Upload the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
+      # Packed on the build runner: upload-artifact drops file modes (and
+      # symlinks), so only finished packages leave the machine.
+      - name: Package (.deb, .rpm, .tar.gz)
+        run: bash tool/ci/package_artifacts.sh --target linux
+      - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
           name: release-linux
-          path: dist/*
+          path: dist/linux/*
           if-no-files-found: error
+          retention-days: 14
 
   app-windows:
     name: flutter build windows (x64, release)
@@ -409,20 +408,51 @@ jobs:
           path: apps/morsecq/build/windows/x64/runner/Release
           if-no-files-found: error
           retention-days: 14
-      - name: Pack the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
+      # CPack's WIX generator needs WiX v3 (candle/light) on PATH. Same search
+      # as toxee: preinstalled image paths, else Chocolatey, else the release zip.
+      - name: Put WiX v3 on PATH
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force dist, stage | Out-Null
-          Copy-Item -Recurse apps/morsecq/build/windows/x64/runner/Release stage/morsecq
-          Compress-Archive -Path stage/morsecq -DestinationPath "dist/morsecq-$env:GITHUB_REF_NAME-windows-x64.zip"
-      - name: Upload the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
+          function Find-WixBin {
+            $patterns = @(
+              "C:\Program Files (x86)\WiX Toolset v3.*\bin",
+              "C:\ProgramData\chocolatey\lib\wixtoolset\tools\*\bin",
+              "C:\ProgramData\chocolatey\lib\wixtoolset\tools\bin",
+              "$env:RUNNER_TEMP\wix"
+            )
+            foreach ($p in $patterns) {
+              $hit = Get-ChildItem -Path $p -ErrorAction SilentlyContinue |
+                     Where-Object { Test-Path (Join-Path $_.FullName "candle.exe") } |
+                     Select-Object -First 1
+              if ($hit) { return $hit.FullName }
+              if (Test-Path (Join-Path $p "candle.exe")) { return $p }
+            }
+            return $null
+          }
+          $wix = Find-WixBin
+          if (-not $wix) {
+            choco install wixtoolset --yes --no-progress --version 3.14.1 2>&1 | Write-Host
+            $wix = Find-WixBin
+          }
+          if (-not $wix) {
+            $zip = Join-Path $env:RUNNER_TEMP "wix314-binaries.zip"
+            Invoke-WebRequest -UseBasicParsing -OutFile $zip `
+              -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip"
+            Expand-Archive -Path $zip -DestinationPath (Join-Path $env:RUNNER_TEMP "wix") -Force
+            $wix = Find-WixBin
+          }
+          if (-not $wix) { Write-Error "WiX Toolset v3 not found"; exit 1 }
+          Write-Host "WiX: $wix"
+          $wix | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Package (.msi, .zip)
+        run: bash tool/ci/package_artifacts.sh --target windows
+      - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
           name: release-windows
-          path: dist/*
+          path: dist/windows/*
           if-no-files-found: error
+          retention-days: 14
 
   app-macos:
     name: flutter build macos (arm64, release)
@@ -474,30 +504,138 @@ jobs:
           path: apps/morsecq/build/macos/Build/Products/Release/*.app
           if-no-files-found: error
           retention-days: 14
-      # ditto keeps the bundle's symlinks, modes and code signature intact.
-      - name: Pack the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          set -euo pipefail
-          app="$(find apps/morsecq/build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
-          mkdir -p dist
-          ditto -c -k --sequesterRsrc --keepParent "$app" "dist/morsecq-${GITHUB_REF_NAME}-macos-arm64.zip"
-      - name: Upload the release archive
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Package (.pkg, .zip)
+        run: bash tool/ci/package_artifacts.sh --target macos
+      - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
           name: release-macos
-          path: dist/*
+          path: dist/macos/*
           if-no-files-found: error
+          retention-days: 14
 
   # ---------------------------------------------------------------------------
-  # 3. On a v* tag: attach the three desktop archives (+ SHA256SUMS) to the
-  #    GitHub release of that tag, creating a draft when none exists yet.
+  # 3. Mobile app builds consuming the artifact (release, real backend)
+  # ---------------------------------------------------------------------------
+  app-android:
+    name: flutter build apk + appbundle (release)
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Download libtim2tox_ffi (all ABIs)
+        uses: actions/download-artifact@v5
+        with:
+          name: tim2tox-ffi-android
+          path: build/native/android
+      - name: Bootstrap dependencies
+        run: dart run tool/bootstrap_deps.dart
+      - name: Resolve workspace
+        run: dart pub get
+      # Copies build/native/android/jniLibs/<abi>/ into the app's jniLibs; the
+      # Gradle build packages exactly those ABIs and byte-checks them.
+      - name: Stage libtim2tox_ffi.so into the app
+        run: bash tool/ci/build_tim2tox.sh --target android --stage-only
+      # Optional: with all four secrets the release is signed with the project
+      # key (app/build.gradle.kts reads the MORSECQ_ANDROID_* env verbatim);
+      # without them it is signed with the debug key.
+      - name: Prepare release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [[ -n "$ANDROID_KEYSTORE_BASE64" && -n "$ANDROID_KEYSTORE_PASSWORD" && -n "$ANDROID_KEY_ALIAS" && -n "$ANDROID_KEY_PASSWORD" ]]; then
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
+            echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
+            echo "release signing: project key"
+          else
+            echo "::warning::No Android signing secrets; the release APK/AAB are signed with the debug key."
+          fi
+      - name: Build APK and App Bundle (release, real Tox backend)
+        env:
+          MORSECQ_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          MORSECQ_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          MORSECQ_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cd apps/morsecq
+          flutter build apk --release --dart-define=MORSECQ_FAKE_BACKEND=false
+          flutter build appbundle --release --dart-define=MORSECQ_FAKE_BACKEND=false
+      - name: Package (.apk, .aab)
+        run: bash tool/ci/package_artifacts.sh --target android
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: dist/android/*
+          if-no-files-found: error
+          retention-days: 14
+
+  app-ios:
+    name: flutter build ios (release, unsigned)
+    needs: native
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Download libtim2tox_ffi (XCFramework)
+        uses: actions/download-artifact@v5
+        with:
+          name: tim2tox-ffi-ios
+          path: build/native/ios
+      - name: Bootstrap dependencies
+        run: dart run tool/bootstrap_deps.dart
+      - name: Resolve workspace
+        run: dart pub get
+      # Tim2ToxFFI.podspec vendors the XCFramework from apps/morsecq/ios/Frameworks.
+      - name: Stage tim2tox_ffi.xcframework into the app
+        run: |
+          rm -rf apps/morsecq/ios/Frameworks/tim2tox_ffi.xcframework
+          cp -R build/native/ios/tim2tox_ffi.xcframework apps/morsecq/ios/Frameworks/
+      # No signing identity on CI: the .ipa is unsigned (sideload tools or a
+      # re-sign step sign it), as toxee ships without iOS secrets.
+      - name: Build iOS app (release, real Tox backend, no codesign)
+        run: |
+          cd apps/morsecq
+          flutter build ios --release --no-codesign --dart-define=MORSECQ_FAKE_BACKEND=false
+      - name: Package (unsigned .ipa)
+        run: bash tool/ci/package_artifacts.sh --target ios
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-ios
+          path: dist/ios/*
+          if-no-files-found: error
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # 4. On a v* tag: attach every package (+ SHA256SUMS) to the GitHub release
+  #    of that tag, creating a draft when none exists yet.
   # ---------------------------------------------------------------------------
   release:
     name: GitHub release assets
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [app-linux, app-windows, app-macos]
+    needs: [app-linux, app-windows, app-macos, app-android, app-ios]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:

@@ -83,7 +83,33 @@ via `dart-lang/setup-dart` instead of Flutter, see Prerequisites), caches
 gates the uploaded bytes with `assert_no_test_hooks.sh`, and uploads
 `tim2tox-ffi-<target>`. Jobs `app-linux`, `app-windows`, `app-macos` consume the
 artifact, run `flutter build <platform> --release --dart-define=MORSECQ_FAKE_BACKEND=false`
-in `apps/morsecq`, and assert the library is inside the produced bundle.
+in `apps/morsecq`, and assert the library is inside the produced bundle. Jobs
+`app-android` (stages `jniLibs` with `--stage-only`; `flutter build apk` +
+`appbundle`) and `app-ios` (copies the XCFramework into `apps/morsecq/ios/Frameworks`;
+`flutter build ios --no-codesign`) do the same for mobile.
+
+### Release packages
+
+Every app job then runs `tool/ci/package_artifacts.sh --target <platform>`, which
+refuses a build without `libtim2tox_ffi` and writes `dist/<platform>/`:
+
+| platform | packages |
+|---|---|
+| Linux x86_64 | `.deb`, `.rpm` (CPack, `tool/ci/linux-installer`: bundle in `/opt/morsecq`, `/usr/bin/morsecq`, desktop entry, hicolor icons), `.tar.gz` |
+| Windows x64 | `.msi` (CPack + WiX v3, `tool/ci/windows-installer`; Start-menu shortcut, fixed upgrade GUID), `.zip` |
+| macOS arm64 | `.pkg` (pkgbuild into `/Applications`, not relocatable), `.zip` (ditto) |
+| Android | `.apk` (arm64-v8a, armeabi-v7a, x86_64), `.aab` |
+| iOS | unsigned `.ipa` |
+
+They are uploaded as `release-<platform>` on every run, so a PR already proves the
+installers build. On a `v*` tag, job `release` attaches all of them plus `SHA256SUMS`
+to that tag's GitHub release (creating a draft when none exists). Android release
+signing uses the repository secrets `ANDROID_KEYSTORE_BASE64`,
+`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` (handed to
+Gradle as `MORSECQ_ANDROID_*` environment variables; a local build may use the
+gitignored `apps/morsecq/android/key.properties` instead); without them the APK/AAB
+are signed with the debug key. The Android FFI ships with the NDK's `libc++_shared.so`
+(it is built with `ANDROID_STL=c++_shared`). Nothing is code-signed or notarized for macOS/Windows yet.
 
 ## What CI cannot verify here
 
