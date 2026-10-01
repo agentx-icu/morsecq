@@ -38,5 +38,51 @@
       "use_case": "text-localization",
       "prompt": "Use case: text-localization. Asset: English README product concept image for morsecq. Edit target: the provided Chinese Modern Calm UI design board. Preserve the exact desktop-and-phone composition, white/light gray surfaces, teal primary buttons, pale mint outgoing bubbles, thin cool gray borders, modern restrained typography, generous spacing, clean device frames, all icons and UI hierarchy. Localize EVERY Chinese label into clear correct English; no Chinese characters must remain. Title: 'A · Modern Calm'. Subtitle: 'morsecq / Interface style concept'. Desktop labels: 'Learn', 'Koch lessons, keying drills and copy practice', 'Appearance', navigation 'Learn', 'Chat', 'Groups', 'Reference', 'Me'; course card 'Koch course', 'Lesson 4', 'of 42', '5 characters learned', 'Newest character: U', button 'Continue lesson'; goal card 'Daily goal', '27 / 30 characters', '90%', '6-day streak', 'Character review'; cards 'Receive practice', 'Listen to Morse and copy the characters', 'Send practice', 'Practice with keyboard or straight key', 'Review due characters', 'Nothing due'; lower left 'morsecq' and 'Connect people through Morse'. Preserve K M R S U and their Morse patterns exactly. Phone labels: contact 'Alex Chen', status 'Online', play buttons 'Play', modes 'Keyboard', 'Straight key', 'Paddles', input placeholder 'Type a message'. Preserve CQ, QSL, 73 and their Morse patterns and times. Keep all English labels readable within their original bounds, wrapping short descriptions when needed. This is a localized version of the existing concept, not a redesigned interface. Do not add unrelated features, extra art, watermark, logos, extra panels or typography decorations."
     }
+  ],
+  "edits": [
+    {
+      "date": "2026-10-01",
+      "tool": "Built-in image_gen",
+      "purpose": "Remove all editorial text above the desktop and phone product mockups while retaining functional UI and README languages.",
+      "composition": "ImageMagick composites only the generated top margin over the original board, normalizing the generated patch to 1586×992 and blending its lower edge. All pixels at or below preserve_from_y remain identical to the original.",
+      "deliverables": [
+        {
+          "file": "a-modern.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the top centered 'A · 清爽现代' title and 'morsecq / 界面风格提案' subtitle. Keep all Chinese product UI text unchanged. The window and phone start around y=129: do not alter anything inside or below those bounds.",
+          "preserve_from_y": 125,
+          "blend_pixels": 8
+        },
+        {
+          "file": "a-modern-en.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the top centered 'A · Modern Calm' title and 'morsecq / Interface style concept' subtitle. Keep all English product UI text unchanged. The window and phone start around y=129: do not alter anything inside or below those bounds.",
+          "preserve_from_y": 125,
+          "blend_pixels": 8
+        },
+        {
+          "file": "b-radio.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the top 'B · 夜航电台' title, 'morsecq / 界面风格提案' subtitle, top Chinese editorial slogan, and top-right English 'SAME RHYTHM / A BRIGHTER TOMORROW' words. Preserve the radio desk and all desktop and phone app content. The phone begins around y=139. Keep all functional Chinese UI text unchanged.",
+          "preserve_from_y": 136,
+          "blend_pixels": 2
+        },
+        {
+          "file": "c-paper.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the top centered 'C · 纸感手册' title, 'morsecq / 界面风格提案' subtitle and small Chinese slogan at the top right. Preserve the textured paper background and every UI detail. The desktop begins around y=124, so do not alter its top edge or contents. Keep all functional Chinese UI text unchanged.",
+          "preserve_from_y": 120,
+          "blend_pixels": 8
+        },
+        {
+          "file": "d-cartoon.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the top 'D · 清新卡通' title, 'morsecq / 界面风格提案' subtitle, top handwritten Chinese slogan, and top-right 'Good Signals Brighter People' words. Preserve the small top-right cartoon radio mascot itself, and the friendly pastel background. The phone begins around y=148. Keep every functional Chinese product UI label, device and all content below it unchanged.",
+          "preserve_from_y": 144,
+          "blend_pixels": 2
+        },
+        {
+          "file": "appearance-switcher.png",
+          "prompt": "Use case: precise text removal / inpainting. Edit the supplied existing morsecq product design board. Remove ALL editorial text in the presentation margin ABOVE the desktop app window and phone frame. Fill only the removed lettering with the existing continuous background, matching its color, texture and lighting. Preserve the original 1586×992 landscape composition and ALL other pixels as faithfully as possible. The actual desktop and phone UI, including every functional label, character, Morse code, icon, color, device frame, shadows and spacing MUST remain unchanged. Preserve editorial marks below the devices. Do not crop, move or resize the devices. Do not add replacement headings, captions, watermark or new typography. Remove the board's top editorial '界面风格 · 切换设计' heading, '我 → 外观' subtitle, top-right morsecq wordmark and top-right editorial slogans. Do NOT remove '外观' or style names inside the desktop or phone app. Preserve all five style previews, product labels, buttons and device frames. The phone begins around y=123. Keep all functional Chinese UI text unchanged.",
+          "preserve_from_y": 120,
+          "blend_pixels": 4
+        }
+      ]
+    }
   ]
 }

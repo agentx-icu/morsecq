@@ -321,3 +321,5 @@ At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze`
 - **2026-10-01** — Compose durability now shares committed/error state across reopened editors. Background and identity flushes wait for queued writes; failed drafts remain retryable without another edit, while replacement invalidates their cache. Regression coverage includes restoring with a disposed failed editor and reverting to previously saved text behind a pending write.
 
 - **2026-10-01** — Integrated layout/persistence verification passed all 594 app tests (one existing skip), analyzer and project gates; independent merge review found no remaining blockers.
+
+- **2026-10-01** — Revalidated the integrated layout/durability changes: 594 app tests passed with one existing skip; Analyze and three desktop E2E jobs passed at UI revision `0a83b325f8d9533340b851cf40672d129d4991fd`. Refreshed the complete 204-frame Modern Calm gallery, with Linux/Windows imported from run 36839181762. The user requested title-free versions of all six concept boards; English and Chinese README images retain their respective UI language.

@@ -34,7 +34,7 @@ Based on the actual interfaces in `doc/screenshots/`, retain the five destinatio
 - Selecting a card updates the preview. Apply Style updates the application and saves the settings. Leaving without applying retains existing settings.
 - Restore Defaults previews Modern Calm with System brightness; Apply Style confirms the reset.
 - Preferences belong to the device and remain independent of training identity. Applying preserves the current destination, chat draft, course progress, playback, and keying state.
-- Mobile uses a full appearance page, with style cards before brightness and preview; the apply action stays easy to reach.
+- Mobile uses a full appearance page with the complete preview before style cards and brightness; the apply action stays easy to reach.
 
 ## Shared interface constraints
 
@@ -74,3 +74,4 @@ Recreate the frames from `apps/morsecq` with the opt-in `test/appearance/style_r
 - 2026-10-01: The user approved all four styles and requested development in an isolated worktree.
 - 2026-10-01: Added actual desktop/phone Flutter previews for the five implemented styles and appearance chooser.
 - 2026-10-01: Made Modern Calm the default and Restore Defaults style; localized its English README concept and aligned product screenshots with Modern Calm.
+- 2026-10-01: Removed the top editorial titles, subtitles, and slogans from all six concept boards for product presentation. Preserved the product interfaces and corresponding README languages; retained exact edit prompts and constrained composition details in `prompts.json`. Updated the stacked appearance description to match the implemented preview-first layout.
