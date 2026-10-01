@@ -4,7 +4,8 @@
 
 Captured by `tool/screenshots/capture.sh` (see
 [tool/screenshots/README.md](../../tool/screenshots/README.md)) from the real
-app with seeded demo data, Modern Calm style, light theme, English and Simplified Chinese. Frames
+app with seeded demo data, Modern Calm style, light theme, English and
+Simplified Chinese. Frames
 are published only when a whole platform run succeeds, so what is committed
 here is always a complete, consistent set. Regenerate after a UI change; do
 not edit the PNGs by hand.
@@ -12,11 +13,16 @@ not edit the PNGs by hand.
 | platform | status | size |
 |---|---|---|
 | macOS | captured 2026-10-01 | 1280×800 @1x |
-| iOS (iPhone) | captured 2026-10-01 | 430×932 @2x |
+| iOS (iPhone) | captured 2026-10-01 | 402×874 @2x |
 | iPad | captured 2026-10-01 | 834×1210 @2x |
-| Android | captured 2026-10-01 | 412×915 @2x |
+| Android | captured 2026-10-01 | ≈412×915 @2x (823×1829 px) |
 | Linux | captured 2026-10-01 (CI, ubuntu-24.04 + Xvfb) | 1280×800 @1x |
 | Windows | captured 2026-10-01 (CI, windows-2022) | 1280×800 @1x |
+
+Linux and Windows frames come from the successful [E2E run 36829215051](https://github.com/agentx-icu/morsecq/actions/runs/36829215051)
+at UI revision `8f0c6e01857971d71d6ee8aaa2c77ee249ca5b8c`, imported through
+`capture.sh --from` with the same publish checks. The four other targets were
+captured locally from that UI revision.
 
 ## macOS
 
@@ -40,7 +46,7 @@ not edit the PNGs by hand.
 | Listen | ![](macos/en/listen.png) | ![](macos/zh/listen.png) |
 | Me | ![](macos/en/me.png) | ![](macos/zh/me.png) |
 
-## iOS (iPhone 16 Plus simulator)
+## iOS (iPhone 16 Pro simulator)
 
 | scene | English | 简体中文 |
 |---|---|---|

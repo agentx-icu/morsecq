@@ -10,11 +10,15 @@
 | 平台 | 状态 | 尺寸 |
 |---|---|---|
 | macOS | 2026-10-01 已截 | 1280×800 @1x |
-| iOS（iPhone） | 2026-10-01 已截 | 430×932 @2x |
+| iOS（iPhone） | 2026-10-01 已截 | 402×874 @2x |
 | iPad | 2026-10-01 已截 | 834×1210 @2x |
-| Android | 2026-10-01 已截 | 412×915 @2x |
+| Android | 2026-10-01 已截 | ≈412×915 @2x（823×1829 px） |
 | Linux | 2026-10-01 已截（CI，ubuntu-24.04 + Xvfb） | 1280×800 @1x |
 | Windows | 2026-10-01 已截（CI，windows-2022） | 1280×800 @1x |
+
+Linux、Windows 截图来自成功的 [E2E 运行 36829215051](https://github.com/agentx-icu/morsecq/actions/runs/36829215051)，
+UI 版本为 `8f0c6e01857971d71d6ee8aaa2c77ee249ca5b8c`，通过 `capture.sh --from`
+执行相同发布校验后导入；其他四种目标设备在本机使用该 UI 版本生成。
 
 ## macOS
 
@@ -38,7 +42,7 @@
 | 收听 | ![](macos/en/listen.png) | ![](macos/zh/listen.png) |
 | 我 | ![](macos/en/me.png) | ![](macos/zh/me.png) |
 
-## iOS（iPhone 16 Plus 模拟器）
+## iOS（iPhone 16 Pro 模拟器）
 
 | 场景 | English | 简体中文 |
 |---|---|---|

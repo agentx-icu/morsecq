@@ -18,6 +18,18 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
 （iPad 模拟器）、`android`（模拟器或真机）。设备按平台从 `flutter devices` 里自动
 选择，也可用 `--device` 指定；移动端模拟器需事先启动。
 
+发布其他主机的截图时，先下载同一 UI 版本成功 CI 的截图产物，再把产物中的
+`screenshots` 目录传给 `--from`。该模式保留源目录，使用相同的完整性、大小和重复帧
+校验后再发布，不会启动本机设备。
+源目录和输出目录必须独立、互不嵌套；所选来源目录及 PNG 不允许使用符号链接。
+
+```bash
+tool/screenshots/capture.sh --platforms linux --from /path/to/artifact/screenshots
+```
+
+导入回归检查已接入 Analyze CI；本地运行
+`python3 tool/screenshots/capture_import_test.py`，测试只操作临时图库副本。
+
 ## 工作原理
 
 整条流水线就是一个普通的 `integration_test`：
@@ -36,7 +48,7 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
   `receiveMessage`、`addFakeGroupMember` 等）在进程内灌数据，并用 `FileTrainerStore`
   写一份 `progress.json`，让学习首页和统计页有内容。
 - **截帧**：应用包在一个 `RepaintBoundary` 里，每个场景从 Flutter 层 `toImage`。
-  五个平台做法完全一样，不需要系统权限，也不会截到别的窗口（Flutter 3.41.9 的
+  六种目标设备做法完全一样，不需要系统权限，也不会截到别的窗口（Flutter 3.41.9 的
   `integration_test` 只在 Android / iOS 有原生 `takeScreenshot`）。PNG 以 base64
   装进 `binding.reportData`，由 `flutter drive` 宿主写成
   `<platform>/<locale>/<scene>.png`。
@@ -54,7 +66,7 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
   错误都让运行失败。
 - **语言**：每种语言单独一遍，用各自的一份演示文案（中文帧里是中文名字和中文群名；
   电码正文保持 CW 缩写，那才是空中实际拍发的内容）。
-- **发布门禁**：只有当该平台的 `flutter drive` 退出码为 0、每种语言的每个场景都存在、
+- **发布门禁**：只有当该平台本机 `flutter drive` 或来源 CI 截图成功、每种语言的每个场景都存在、
   不小于 8 KiB、且没有两帧字节相同（用 `cmp` 确认，不只看校验和）时，才复制进
   `doc/screenshots/`。替换集先在目标旁边整套装好再整体换入；失败的平台不动仓库里的帧。
   暂存目录（`MORSECQ_SHOT_STAGING`，否则是临时目录）在任何失败时都保留。`--locales`

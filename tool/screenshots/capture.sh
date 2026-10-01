@@ -4,6 +4,7 @@
 #   tool/screenshots/capture.sh [--platforms macos,ios,ipad,android,linux,windows]
 #                               [--locales en,zh] [--device <flutter device id>]
 #                               [--out <dir>] [--keep] [--help]
+#                               [--from <completed CI screenshot root>]
 #
 # For each platform it runs apps/morsecq/integration_test/screenshots_test.dart
 # through `flutter drive` on a real device/simulator/desktop window with the
@@ -23,6 +24,8 @@
 #   --device     use this Flutter device id instead of auto-picking one
 #                (single platform only; the id must belong to that platform)
 #   --out        publish root (default: doc/screenshots)
+#   --from       verify and publish an already completed CI capture instead
+#                of driving a local device; preserves the source directory
 #   --keep       keep the staging directory even on success
 #
 # Env: MORSECQ_SHOT_STAGING (staging dir; default a fresh temp dir, always
@@ -42,6 +45,7 @@ DEVICE=""
 OUT="$REPO_ROOT/doc/screenshots"
 OUT_SET=0
 KEEP=0
+FROM=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --platforms) PLATFORMS="${2:-}"; shift 2 ;;
@@ -53,7 +57,9 @@ while [[ $# -gt 0 ]]; do
     --out) OUT="${2:-}"; OUT_SET=1; shift 2 ;;
     --out=*) OUT="${1#*=}"; OUT_SET=1; shift ;;
     --keep) KEEP=1; shift ;;
-    --help|-h) sed -n '2,34p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --from) FROM="${2:-}"; [[ -n "$FROM" ]] || { echo '--from requires a directory' >&2; exit 64; }; shift 2 ;;
+    --from=*) FROM="${1#*=}"; [[ -n "$FROM" ]] || { echo '--from requires a directory' >&2; exit 64; }; shift ;;
+    --help|-h) sed -n '2,/^set -euo pipefail/{/^set -euo pipefail/d;p;}' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown flag: $1" >&2; exit 64 ;;
   esac
 done
@@ -84,6 +90,7 @@ for l in "${SELECTED_LOCALES[@]}"; do
   case "$l" in en|zh) ;; *) err "unknown locale: '$l' (en|zh)"; exit 64 ;; esac
 done
 [[ -n "$DEVICE" && ${#SELECTED[@]} -gt 1 ]] && { err "--device applies to a single platform"; exit 64; }
+[[ -n "$FROM" && -n "$DEVICE" ]] && { err "--from cannot be combined with --device"; exit 64; }
 PARTIAL_LOCALES=0
 [[ "$LOCALES" != "$ALL_LOCALES" ]] && PARTIAL_LOCALES=1
 if [[ "$PARTIAL_LOCALES" == "1" && "$OUT_SET" == "0" ]]; then
@@ -92,7 +99,10 @@ fi
 
 # ── staging: a fresh temp dir unless MORSECQ_SHOT_STAGING names one; kept on
 # any unsuccessful exit (Ctrl-C included) so the frames can be inspected ──
-if [[ -n "${MORSECQ_SHOT_STAGING:-}" ]]; then
+if [[ -n "$FROM" ]]; then
+  [[ -d "$FROM" ]] || { err "--from directory does not exist: $FROM"; exit 64; }
+  STAGING="$FROM"; KEEP=1
+elif [[ -n "${MORSECQ_SHOT_STAGING:-}" ]]; then
   STAGING="$MORSECQ_SHOT_STAGING"; mkdir -p "$STAGING"
 else
   STAGING="$(mktemp -d "${TMPDIR:-/tmp}/morsecq_shots.XXXXXX")"
@@ -101,6 +111,47 @@ fi
 # from here; and in native form on Windows (`pwd -W` gives C:/..., which the
 # Dart driver understands and Git Bash accepts too).
 STAGING="$(cd "$STAGING" && { pwd -W 2>/dev/null || pwd; })"
+if [[ -n "$FROM" ]]; then
+  command -v python3 >/dev/null 2>&1 || { err "python3 is required to check import paths"; exit 64; }
+  IMPORT_OUT="$OUT"
+  # Python on Windows needs native paths rather than Git Bash /c/... paths.
+  if command -v cygpath >/dev/null 2>&1; then IMPORT_OUT="$(cygpath -m "$OUT")"; fi
+  python3 - "$STAGING" "$IMPORT_OUT" "$PLATFORMS" "$LOCALES" "${SCENES[@]}" <<'PY' || exit 64
+import os, sys
+
+def canonical(path):
+    path = os.path.normcase(os.path.realpath(path))
+    # Conservatively reject case aliases on macOS's usual insensitive volumes.
+    return path.casefold() if sys.platform == "darwin" else path
+
+source, output = map(canonical, sys.argv[1:3])
+platforms = sys.argv[3].replace(" ", "").split(",")
+locales = sys.argv[4].replace(" ", "").split(",")
+# CI zip captures are regular directories/files. Reject nested source links
+# so a destination swap cannot remove a later locale's aliased source.
+for platform in platforms:
+    paths = [os.path.join(sys.argv[1], platform)]
+    for locale in locales:
+        folder = os.path.join(sys.argv[1], platform, locale)
+        paths.append(folder)
+        paths.extend(os.path.join(folder, scene + ".png") for scene in sys.argv[5:])
+    if any(os.path.islink(path) for path in paths):
+        print("--from selected directories and PNGs must not be symlinks", file=sys.stderr)
+        sys.exit(64)
+targets = [output]
+for platform in platforms:
+    for locale in locales:
+        targets.append(canonical(os.path.join(sys.argv[2], platform, locale)))
+for target in targets:
+    try:
+        overlap = os.path.commonpath([source, target]) in (source, target)
+    except ValueError:  # Different Windows drives cannot overlap.
+        overlap = False
+    if overlap:
+        print("--from and --out must be separate, non-overlapping directories", file=sys.stderr)
+        sys.exit(64)
+PY
+fi
 on_exit() {
   local rc="$1"
   if [[ "$rc" != "0" || "$KEEP" == "1" ]]; then
@@ -201,15 +252,16 @@ export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
 
 capture_platform() {  # <platform>
   local platform="$1" device rc=0
-  device="$(pick_device "$platform" "$DEVICE")" || rc=$?
-  if [[ $rc -eq 2 ]]; then return 1; fi
-  if [[ $rc -ne 0 || -z "$device" ]]; then
-    if [[ -n "$DEVICE" ]]; then err "$platform: device '$DEVICE' is not a $platform device (see: flutter devices)"
-    else err "$platform: no matching device (see: flutter devices, or pass --device)"; fi
-    return 1
-  fi
-  step "$platform on device $device"
-  (cd "$APP_DIR" && MORSECQ_SHOT_OUT="$STAGING" flutter drive \
+  if [[ -z "$FROM" ]]; then
+    device="$(pick_device "$platform" "$DEVICE")" || rc=$?
+    if [[ $rc -eq 2 ]]; then return 1; fi
+    if [[ $rc -ne 0 || -z "$device" ]]; then
+      if [[ -n "$DEVICE" ]]; then err "$platform: device '$DEVICE' is not a $platform device (see: flutter devices)"
+      else err "$platform: no matching device (see: flutter devices, or pass --device)"; fi
+      return 1
+    fi
+    step "$platform on device $device"
+    (cd "$APP_DIR" && MORSECQ_SHOT_OUT="$STAGING" flutter drive \
       --driver=test_driver/integration_test.dart \
       --target=integration_test/screenshots_test.dart \
       -d "$device" \
@@ -219,7 +271,10 @@ capture_platform() {  # <platform>
       ${MORSECQ_SHOT_WINDOW:+--dart-define=MORSECQ_SHOT_WINDOW="$MORSECQ_SHOT_WINDOW"} \
       ${MORSECQ_SHOT_PIXEL_RATIO:+--dart-define=MORSECQ_SHOT_PIXEL_RATIO="$MORSECQ_SHOT_PIXEL_RATIO"} \
       ${MORSECQ_SHOT_THEME:+--dart-define=MORSECQ_SHOT_THEME="$MORSECQ_SHOT_THEME"}) \
-    || { err "$platform: flutter drive failed"; return 1; }
+      || { err "$platform: flutter drive failed"; return 1; }
+  else
+    step "$platform from completed CI capture $STAGING"
+  fi
   verify "$platform" || return 1
   if [[ "$PARTIAL_LOCALES" == "1" && "$OUT_SET" == "0" ]]; then
     info "$platform: verified $LOCALES; not published (partial locale set) — frames in $STAGING/$platform"
