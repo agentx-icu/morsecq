@@ -1,7 +1,7 @@
 name: morsecq
 description: "Morse code trainer + serverless Tox P2P Morse chat."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.1+2
 resolution: workspace
 
 environment:
