@@ -2004,5 +2004,14 @@ class SEn extends S {
   }
 
   @override
+  String get chatSelfMe => 'Me';
+
+  @override
+  String get chatSelfLocalOnly => 'Saved on this device only';
+
+  @override
+  String get chatSelfContactSubtitle => 'Drafts, practice and notes · never sent';
+
+  @override
   String get learnShowFewerChars => 'Show fewer characters';
 }

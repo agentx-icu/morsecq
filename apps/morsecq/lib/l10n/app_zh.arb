@@ -677,5 +677,8 @@
       }
     }
   },
+  "chatSelfMe": "我",
+  "chatSelfLocalOnly": "仅保存在本机",
+  "chatSelfContactSubtitle": "草稿、练习与备忘 · 不会发送",
   "learnShowFewerChars": "收起字符"
 }

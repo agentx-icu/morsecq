@@ -110,6 +110,35 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
   @override
   int Function(int) get getSessionEpoch => (_) => sessionEpoch;
 
+  /// Peers handed to the native C2C text sends (plain, `_ex`, action);
+  /// each "succeeds". A note to self must never appear here.
+  final List<String> sentTextPeers = [];
+
+  int _recordSend(ffi.Pointer<pkgffi.Utf8> peer) {
+    sentTextPeers.add(peer.toDartString());
+    return 1;
+  }
+
+  @override
+  int Function(ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<pkgffi.Utf8>)
+      get sendText => (peer, _) => _recordSend(peer);
+
+  @override
+  int Function(ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<pkgffi.Utf8>,
+          ffi.Pointer<ffi.Int8>, int)
+      get sendTextEx => (peer, _, out, _) {
+            out[0] = 0; // no native message id
+            return _recordSend(peer);
+          };
+
+  @override
+  int Function(ffi.Pointer<pkgffi.Utf8>, ffi.Pointer<pkgffi.Utf8>,
+          ffi.Pointer<ffi.Int8>, int)
+      get sendC2CActionEx => (peer, _, out, _) {
+            out[0] = 0; // no native message id
+            return _recordSend(peer);
+          };
+
   /// Public keys handed to `tim2tox_ffi_delete_friend`; always "succeeds".
   final List<String> deletedFriends = [];
 

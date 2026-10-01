@@ -113,9 +113,9 @@ void main() {
       expect(chat.friendRequests.single.publicKey, 'A' * 64);
       expect(chat.friendRequests.single.message, 'CQ?');
       // A friend with no history still yields a conversation.
-      expect(chat.conversations.map((c) => c.id), ['c2c_$kPeerKey']);
-      expect(chat.conversations.single.title, 'W1AW');
-      expect(chat.conversations.single.lastMessage, isNull);
+      expect(_peers(chat).map((c) => c.id), ['c2c_$kPeerKey']);
+      expect(_peers(chat).single.title, 'W1AW');
+      expect(_peers(chat).single.lastMessage, isNull);
     },
   );
 
@@ -211,7 +211,7 @@ void main() {
       expect(events.map((e) => e.id), contains(row.id));
       expect(events.single.status, MessageStatus.pending);
 
-      final conv = chat.conversations.single;
+      final conv = _peers(chat).single;
       expect(conv.lastMessage?.id, row.id);
       expect(conv.lastMessage?.status, MessageStatus.pending);
       expect(conv.unreadCount, 0);
@@ -256,10 +256,10 @@ void main() {
       expect(events.single.senderId, kPeerKey);
       expect(events.single.senderName, 'W1AW');
       expect(events.single.conversationId, 'c2c_$kPeerKey');
-      expect(chat.conversations.single.unreadCount, 1);
+      expect(_peers(chat).single.unreadCount, 1);
 
       await chat.markRead('c2c_$kPeerKey');
-      expect(chat.conversations.single.unreadCount, 0);
+      expect(_peers(chat).single.unreadCount, 0);
       await sub.cancel();
     },
   );
@@ -271,29 +271,21 @@ void main() {
     await bind();
     engineService.ingestC2cText(peer: kPeerKey, text: 'newest', isSelf: false);
     await pumpEventQueue();
-    expect(
-      chat.conversations.first.id,
-      'c2c_$kPeerKey',
-      reason: 'newest first',
-    );
+    expect(_peers(chat).first.id, 'c2c_$kPeerKey', reason: 'newest first');
 
     await chat.setPinned('c2c_${'B' * 64}', true);
-    expect(
-      chat.conversations.first.id,
-      'c2c_${'B' * 64}',
-      reason: 'pinned first',
-    );
-    expect(chat.conversations.first.pinned, isTrue);
+    expect(_peers(chat).first.id, 'c2c_${'B' * 64}', reason: 'pinned first');
+    expect(_peers(chat).first.pinned, isTrue);
     await chat.setDraft('c2c_${'B' * 64}', 'de me k');
-    expect(chat.conversations.first.draft, 'de me k');
+    expect(_peers(chat).first.draft, 'de me k');
 
     await chat.deleteConversation('c2c_$kPeerKey');
-    expect(chat.conversations.map((c) => c.id), ['c2c_${'B' * 64}']);
+    expect(_peers(chat).map((c) => c.id), ['c2c_${'B' * 64}']);
     expect(await chat.loadHistory('c2c_$kPeerKey'), isEmpty);
     // A new message brings the conversation back.
     engineService.ingestC2cText(peer: kPeerKey, text: 'again', isSelf: false);
     await pumpEventQueue();
-    expect(chat.conversations.map((c) => c.id), contains('c2c_$kPeerKey'));
+    expect(_peers(chat).map((c) => c.id), contains('c2c_$kPeerKey'));
 
     // Metadata survives a new service instance over the same store.
     final again = Tim2ToxChatService(
@@ -328,7 +320,7 @@ void main() {
       final ngc = chat.groups.last;
       expect(ngc.kind, GroupKind.group, reason: 'default kind is NGC');
       expect(ngc.name, 'NGC room');
-      expect(chat.conversations.map((c) => c.id).toSet(), {
+      expect(_peers(chat).map((c) => c.id).toSet(), {
         'group_tox_1',
         'group_tox_2',
       });
@@ -441,7 +433,7 @@ void main() {
         ['K1AA'],
         reason: 'the old session result is discarded',
       );
-      expect(chat.conversations.map((c) => c.title), ['K1AA']);
+      expect(_peers(chat).map((c) => c.title), ['K1AA']);
       engine.bind(null);
       await pumpEventQueue();
       await service2.dispose();
@@ -550,3 +542,7 @@ class ConversationMetaStoreProbe {
       if (e.endsWith('\t$friendKey')) e.substring(0, e.indexOf('\t')),
   ];
 }
+
+/// Every conversation but the always-present note to self.
+List<Conversation> _peers(ChatService chat) =>
+    chat.conversations.where((c) => !c.isSelf).toList();

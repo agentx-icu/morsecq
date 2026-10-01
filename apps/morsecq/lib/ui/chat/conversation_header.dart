@@ -5,7 +5,7 @@ import '../../i18n/l10n_extension.dart';
 import 'conversation_target.dart';
 
 /// Title plus a live subtitle: online/offline for a friend, member count for
-/// a group.
+/// a group, "saved on this device only" for the note to self.
 class ConversationTitle extends StatelessWidget {
   const ConversationTitle({
     super.key,
@@ -21,7 +21,23 @@ class ConversationTitle extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final S s = context.s;
-    final Widget subtitle = target.kind == ConversationKind.c2c
+    final Widget subtitle = target.isSelf
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.lock_outline, size: 12, color: scheme.outline),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  s.chatSelfLocalOnly,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: text.labelSmall,
+                ),
+              ),
+            ],
+          )
+        : target.kind == ConversationKind.c2c
         ? StreamBuilder<List<Friend>>(
             stream: service.friendChanges,
             initialData: service.friends,
@@ -71,7 +87,11 @@ class ConversationTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(target.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(
+          target.isSelf && target.title.isEmpty ? s.chatSelfMe : target.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         subtitle,
       ],
     );

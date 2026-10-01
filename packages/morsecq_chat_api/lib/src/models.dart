@@ -112,6 +112,7 @@ final class Conversation {
     this.unreadCount = 0,
     this.pinned = false,
     this.draft = '',
+    this.isSelf = false,
   });
 
   /// `c2c_<publicKey>` or `group_<groupId>`.
@@ -122,6 +123,10 @@ final class Conversation {
   final int unreadCount;
   final bool pinned;
   final String draft;
+
+  /// The note-to-self conversation ([ChatService.selfConversationId]): a c2c
+  /// conversation with our own key whose messages never leave the device.
+  final bool isSelf;
 
   /// Peer public key for c2c, group id for groups.
   String get peerId => id.substring(id.indexOf('_') + 1);

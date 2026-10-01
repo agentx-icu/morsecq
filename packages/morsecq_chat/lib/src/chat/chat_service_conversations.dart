@@ -26,6 +26,8 @@ class _ConversationsPart {
       for (final g in _owner._groupsPart.groups.value) g.id: g,
     };
 
+    final selfKey = _owner._selfKey;
+    final selfId = selfKey.isEmpty ? null : ConversationIds.c2c(selfKey);
     final ids = <String>{
       for (final id in svc.getConversationIds())
         if (groupIds.contains(id))
@@ -35,6 +37,8 @@ class _ConversationsPart {
       for (final f in friendById.keys) ConversationIds.c2c(f),
       for (final g in groupIds) ConversationIds.group(g),
     }..removeAll(hidden);
+    // Note to self: always listed, never hidden (deleting only clears it).
+    if (selfId != null) ids.add(selfId);
 
     final mapper = _owner._mapper;
     final next = <Conversation>[];
@@ -45,7 +49,10 @@ class _ConversationsPart {
         continue; // foreign history key (e.g. an IRC channel), not a peer
       }
       final last = _lastMessage(svc, peer);
-      final title = isGroup
+      final isSelf = id == selfId;
+      final title = isSelf
+          ? (_owner._identity.current?.displayName ?? '')
+          : isGroup
           ? (groupById[peer]?.name ?? svc.sharedGroupName(peer) ?? peer)
           : (friendById[peer]?.displayName ??
                 _owner._friendsPart.nameOf(peer) ??
@@ -61,6 +68,7 @@ class _ConversationsPart {
           unreadCount: svc.getUnreadOf(peer),
           pinned: pinned.contains(id),
           draft: meta.draft(id),
+          isSelf: isSelf,
         ),
       );
     }
@@ -94,6 +102,7 @@ class _ConversationsPart {
 
   static bool _same(Conversation a, Conversation b) =>
       a.id == b.id &&
+      a.isSelf == b.isSelf &&
       a.title == b.title &&
       a.unreadCount == b.unreadCount &&
       a.pinned == b.pinned &&
@@ -135,6 +144,16 @@ class _ConversationsPart {
   /// (a friend or group stays; deleting the relationship is a separate call).
   Future<void> delete(FfiChatService svc, String conversationId) async {
     final peer = ConversationIds.peerOf(conversationId);
+    if (!ConversationIds.isGroup(conversationId) &&
+        ConversationIds.normalizeKey(peer) == _owner._selfKey) {
+      // The note to self is emptied, never hidden; its pin survives.
+      await svc.clearC2CHistory(peer);
+      _owner._ensureCurrent(svc);
+      await _owner._meta.setDraft(conversationId, '');
+      _owner._ensureCurrent(svc);
+      rebuild(svc);
+      return;
+    }
     if (ConversationIds.isGroup(conversationId)) {
       await svc.clearGroupHistory(peer);
     } else {

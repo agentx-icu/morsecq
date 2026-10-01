@@ -2676,5 +2676,17 @@
       }
     }
   },
+  "chatSelfMe": "Me",
+  "@chatSelfMe": {
+    "description": "Badge on the note-to-self conversation (contacts, conversation list), and its title while the profile has no display name"
+  },
+  "chatSelfLocalOnly": "Saved on this device only",
+  "@chatSelfLocalOnly": {
+    "description": "Subtitle of the note-to-self conversation header: its messages are stored locally and never sent"
+  },
+  "chatSelfContactSubtitle": "Drafts, practice and notes · never sent",
+  "@chatSelfContactSubtitle": {
+    "description": "Subtitle of the note-to-self entry at the top of Contacts"
+  },
   "learnShowFewerChars": "Show fewer characters"
 }

@@ -80,8 +80,30 @@ void main() {
     expect(find.byType(StatsScreen), findsOneWidget);
     await popIfCan(tester);
 
-    // Chat: add a friend by Tox ID, open the conversation, send a line.
+    // Chat: the default "me" contact is a local notes conversation.
     await selectTab(tester, ShellTab.chat);
+    await tapTooltip(tester, s().chatContacts);
+    await tapHittable(
+      tester,
+      find.byKey(const ValueKey<String>('contacts_self')),
+      'me row',
+    );
+    expect(find.byType(ConversationScreen), findsOneWidget);
+    expect(find.text(s().chatSelfLocalOnly), findsOneWidget);
+    await tester.enterText(find.byType(TextField).last, 'NOTE TO SELF');
+    await settle(tester);
+    await tapTooltip(tester, s().chatSend);
+    expect(
+      find.descendant(
+        of: find.byType(MessageBubble),
+        matching: find.text('NOTE TO SELF'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.schedule), findsNothing); // never queued
+    await popIfCan(tester);
+
+    // Chat: add a friend by Tox ID, open the conversation, send a line.
     await tapTooltip(tester, s().chatContacts);
     await tapTooltip(tester, s().chatAddFriend);
     await tester.enterText(find.byType(TextField).first, kFriendToxId);
