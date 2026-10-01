@@ -8,7 +8,8 @@ name: Native (libtim2tox_ffi)
 # Modelled on toxee's build-packages.yml / analyze.yml (same pinned actions,
 # same runner images, same libtim2tox_ffi cache keyed on the tim2tox submodule
 # SHA + the build script). Linux aarch64 and Windows arm64 are experimental
-# (continue-on-error), as in toxee.
+# (continue-on-error), as in toxee. On a v* tag the three desktop apps are also
+# packed and attached to that tag's GitHub release (job `release`).
 
 on:
   push:
@@ -343,6 +344,21 @@ jobs:
           path: apps/morsecq/build/linux/x64/release/bundle
           if-no-files-found: error
           retention-days: 14
+      # Release archives are packed on the build runner: upload-artifact drops
+      # file modes (and symlinks), so the bare bundle would lose its exec bits.
+      - name: Pack the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          mkdir -p dist
+          tar -C apps/morsecq/build/linux/x64/release --transform 's,^bundle,morsecq,' \
+            -czf "dist/morsecq-${GITHUB_REF_NAME}-linux-x86_64.tar.gz" bundle
+      - name: Upload the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: dist/*
+          if-no-files-found: error
 
   app-windows:
     name: flutter build windows (x64, release)
@@ -393,6 +409,20 @@ jobs:
           path: apps/morsecq/build/windows/x64/runner/Release
           if-no-files-found: error
           retention-days: 14
+      - name: Pack the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist, stage | Out-Null
+          Copy-Item -Recurse apps/morsecq/build/windows/x64/runner/Release stage/morsecq
+          Compress-Archive -Path stage/morsecq -DestinationPath "dist/morsecq-$env:GITHUB_REF_NAME-windows-x64.zip"
+      - name: Upload the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/*
+          if-no-files-found: error
 
   app-macos:
     name: flutter build macos (arm64, release)
@@ -444,3 +474,49 @@ jobs:
           path: apps/morsecq/build/macos/Build/Products/Release/*.app
           if-no-files-found: error
           retention-days: 14
+      # ditto keeps the bundle's symlinks, modes and code signature intact.
+      - name: Pack the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -euo pipefail
+          app="$(find apps/morsecq/build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent "$app" "dist/morsecq-${GITHUB_REF_NAME}-macos-arm64.zip"
+      - name: Upload the release archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: dist/*
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # 3. On a v* tag: attach the three desktop archives (+ SHA256SUMS) to the
+  #    GitHub release of that tag, creating a draft when none exists yet.
+  # ---------------------------------------------------------------------------
+  release:
+    name: GitHub release assets
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [app-linux, app-windows, app-macos]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          (cd dist && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+          if gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/* --clobber -R "$GITHUB_REPOSITORY"
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* --draft --verify-tag \
+              --title "morsecq $GITHUB_REF_NAME" --generate-notes -R "$GITHUB_REPOSITORY"
+          fi
