@@ -163,6 +163,18 @@ jobs:
           channel: 'stable'
           cache: true
 
+      # The runner's display is 1024x768, which squeezes the 1280x800 capture
+      # window (the harness then fails on the size, by design). Give the
+      # session a 1920x1080 display first.
+      - name: Raise the display resolution
+        shell: pwsh
+        run: |
+          Set-DisplayResolution -Width 1920 -Height 1080 -Force
+          Add-Type -AssemblyName System.Windows.Forms
+          $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          Write-Host "primary screen: $($b.Width)x$($b.Height)"
+          if ($b.Width -lt 1300 -or $b.Height -lt 900) { throw "display still $($b.Width)x$($b.Height)" }
+
       # capture.sh reads `flutter devices --machine` with python3; the
       # Windows image only has `python`.
       - name: Provide python3
