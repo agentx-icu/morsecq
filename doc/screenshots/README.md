@@ -11,10 +11,10 @@ not edit the PNGs by hand.
 
 | platform | status | size |
 |---|---|---|
-| macOS | captured 2026-09-30 | 1280×768 @1x |
-| iOS (iPhone) | captured 2026-09-30 | 430×932 @2x |
-| iPad | captured 2026-09-30 | 834×1210 @2x |
-| Android | captured 2026-09-30 | 412×915 @2x |
+| macOS | captured 2026-10-01 | 1280×800 @1x |
+| iOS (iPhone) | captured 2026-10-01 | 430×932 @2x |
+| iPad | captured 2026-10-01 | 834×1210 @2x |
+| Android | captured 2026-10-01 | 412×915 @2x |
 | Linux | not captured yet | |
 | Windows | not captured yet | |
 

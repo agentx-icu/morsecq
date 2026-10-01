@@ -113,3 +113,14 @@ iOS（`-d 42498CC3-9565-4BC8-A6DE-817F480B7887`）与 Android（`-d emulator-555
 - Android 需要 `ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true`（两个脚本都已导出）和
   `JAVA_HOME` 指向 arm64 JDK。
 - Mac 的 sshd 在长构建后可能拒绝连接约 60 秒；等待即可，不要重启隧道。
+
+## 6. 2026-10-01 进度（接手会话）
+
+- 评审 B 的 8 条全部修完（`b8112fd`），连带根因修了共享 SoLoud 引擎被提前关闭的产品缺陷
+  （`morse_io` `EngineLeases`）与 `capture.sh` 相对 staging 路径缺陷；codex（gpt-6-sol xhigh）
+  多轮复核后 APPROVE。macOS 金字塔 ALL PASSED，iOS / Android 启动测试通过。
+- 帧已刷新：macOS 现为真正的 1280×800（旧的 768 是标题栏吃掉的 32 px）；移动端帧与旧帧逐字节
+  一致（灌入数据确定），仅 `android/en/translator.png` 因光标闪烁不同。根 README 中英文各加了
+  截图一节（各用本语言的帧）。
+- `e2e.yml` 已加 Linux / Windows job，**尚未跑过**：剩余第 4 节的 2（推送后触发、取回帧）与 3
+  （推送、提 MR）。第 4 节的 4 已解决：`gpt-6.1-sol` 2026-10-01 起可用，是 wrapper 默认值。

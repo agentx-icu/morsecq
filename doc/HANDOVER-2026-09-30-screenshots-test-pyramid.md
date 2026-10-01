@@ -140,3 +140,16 @@ confirming only the fixed items (global policy §2.5).
   scripts export it) and the arm64 JDK on `JAVA_HOME`.
 - The Mac's sshd may refuse connections for ~60 s after a long build; wait,
   do not restart tunnels.
+
+## 6. Progress on 2026-10-01 (takeover session)
+
+- All 8 findings of review B fixed (`b8112fd`), plus two defects fixed at the cause: the shared
+  SoLoud engine shut down under live sinks (`EngineLeases` in `morse_io`) and the relative staging
+  path in `capture.sh`; codex (gpt-6-sol xhigh) APPROVE after follow-up rounds. macOS pyramid ALL
+  PASSED, iOS / Android launch tests pass.
+- Frames refreshed: macOS is now a true 1280×800 (the old 768 was the title bar's 32 px); mobile
+  frames are byte-identical to the old ones (deterministic seed) except `android/en/translator.png`
+  (caret blink). The root READMEs gained a screenshots section, each with its own language's frames.
+- `e2e.yml` has Linux / Windows jobs, **not run yet**: items 2 (trigger after push, fetch frames)
+  and 3 (push, MR) of section 4 remain. Item 4 is resolved: `gpt-6.1-sol` works since 2026-10-01
+  and is the wrapper default.
