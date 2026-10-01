@@ -20,9 +20,6 @@ top (today that is the Chinese original of the plan document and the English
 
 - **Taking over the project** — [HANDOVER.md](HANDOVER.md): state as of the
   last session, traps, backlog, how the multi-agent work was run.
-  [HANDOVER-2026-09-30-screenshots-test-pyramid.md](HANDOVER-2026-09-30-screenshots-test-pyramid.md)
-  is the branch-specific handover for the screenshot pipeline / test pyramid
-  work (open review findings, remaining platforms).
 - **Just want to run it** — [Main README](../README.md) "Build prerequisites"
   → [operations/BUILD_AND_DEPLOY.md](operations/BUILD_AND_DEPLOY.md) for the
   native library on your platform.

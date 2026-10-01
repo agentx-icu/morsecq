@@ -15,8 +15,8 @@ not edit the PNGs by hand.
 | iOS (iPhone) | captured 2026-10-01 | 430×932 @2x |
 | iPad | captured 2026-10-01 | 834×1210 @2x |
 | Android | captured 2026-10-01 | 412×915 @2x |
-| Linux | not captured yet | |
-| Windows | not captured yet | |
+| Linux | captured 2026-10-01 (CI, ubuntu-24.04 + Xvfb) | 1280×800 @1x |
+| Windows | captured 2026-10-01 (CI, windows-2022) | 1280×800 @1x |
 
 ## macOS
 
@@ -105,3 +105,47 @@ not edit the PNGs by hand.
 | Translator | ![](android/en/translator.png) | ![](android/zh/translator.png) |
 | Listen | ![](android/en/listen.png) | ![](android/zh/listen.png) |
 | Me | ![](android/en/me.png) | ![](android/zh/me.png) |
+
+## Linux (CI: ubuntu-24.04, Xvfb)
+
+| scene | English | 简体中文 |
+|---|---|---|
+| Welcome (first run) | ![](linux/en/welcome.png) | ![](linux/zh/welcome.png) |
+| Create identity | ![](linux/en/create_identity.png) | ![](linux/zh/create_identity.png) |
+| Backup wizard | ![](linux/en/backup_wizard.png) | ![](linux/zh/backup_wizard.png) |
+| Learn home | ![](linux/en/learn_home.png) | ![](linux/zh/learn_home.png) |
+| Statistics | ![](linux/en/stats.png) | ![](linux/zh/stats.png) |
+| Training settings | ![](linux/en/training_settings.png) | ![](linux/zh/training_settings.png) |
+| Receive drill | ![](linux/en/receive_drill.png) | ![](linux/zh/receive_drill.png) |
+| Send practice | ![](linux/en/send_practice.png) | ![](linux/zh/send_practice.png) |
+| Chat list | ![](linux/en/chat_list.png) | ![](linux/zh/chat_list.png) |
+| Conversation | ![](linux/en/conversation.png) | ![](linux/zh/conversation.png) |
+| Contacts | ![](linux/en/contacts.png) | ![](linux/zh/contacts.png) |
+| Groups | ![](linux/en/groups.png) | ![](linux/zh/groups.png) |
+| Group conversation | ![](linux/en/group_conversation.png) | ![](linux/zh/group_conversation.png) |
+| Reference | ![](linux/en/reference.png) | ![](linux/zh/reference.png) |
+| Translator | ![](linux/en/translator.png) | ![](linux/zh/translator.png) |
+| Listen | ![](linux/en/listen.png) | ![](linux/zh/listen.png) |
+| Me | ![](linux/en/me.png) | ![](linux/zh/me.png) |
+
+## Windows (CI: windows-2022)
+
+| scene | English | 简体中文 |
+|---|---|---|
+| Welcome (first run) | ![](windows/en/welcome.png) | ![](windows/zh/welcome.png) |
+| Create identity | ![](windows/en/create_identity.png) | ![](windows/zh/create_identity.png) |
+| Backup wizard | ![](windows/en/backup_wizard.png) | ![](windows/zh/backup_wizard.png) |
+| Learn home | ![](windows/en/learn_home.png) | ![](windows/zh/learn_home.png) |
+| Statistics | ![](windows/en/stats.png) | ![](windows/zh/stats.png) |
+| Training settings | ![](windows/en/training_settings.png) | ![](windows/zh/training_settings.png) |
+| Receive drill | ![](windows/en/receive_drill.png) | ![](windows/zh/receive_drill.png) |
+| Send practice | ![](windows/en/send_practice.png) | ![](windows/zh/send_practice.png) |
+| Chat list | ![](windows/en/chat_list.png) | ![](windows/zh/chat_list.png) |
+| Conversation | ![](windows/en/conversation.png) | ![](windows/zh/conversation.png) |
+| Contacts | ![](windows/en/contacts.png) | ![](windows/zh/contacts.png) |
+| Groups | ![](windows/en/groups.png) | ![](windows/zh/groups.png) |
+| Group conversation | ![](windows/en/group_conversation.png) | ![](windows/zh/group_conversation.png) |
+| Reference | ![](windows/en/reference.png) | ![](windows/zh/reference.png) |
+| Translator | ![](windows/en/translator.png) | ![](windows/zh/translator.png) |
+| Listen | ![](windows/en/listen.png) | ![](windows/zh/listen.png) |
+| Me | ![](windows/en/me.png) | ![](windows/zh/me.png) |
