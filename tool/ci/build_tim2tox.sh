@@ -809,6 +809,17 @@ android_target_for_abi() {
   esac
 }
 
+# Directory of the ABI's runtime libraries under the NDK sysroot (usr/lib/<x>).
+# Not the compiler target: 32-bit ARM compiles as armv7a-… but its libs live in arm-….
+android_sysroot_triple() {
+  case "$1" in
+    arm64-v8a)   printf '%s\n' "aarch64-linux-android" ;;
+    armeabi-v7a) printf '%s\n' "arm-linux-androideabi" ;;
+    x86_64)      printf '%s\n' "x86_64-linux-android" ;;
+    *) ci_die "Unsupported Android ABI: $1 (arm64-v8a, armeabi-v7a, x86_64)" ;;
+  esac
+}
+
 build_android_abi() {
   local abi="$1" ndk_path="$2"
   local target toolchain sysroot prefix build_dir built_lib
@@ -848,7 +859,15 @@ build_android_abi() {
   # Strip debug info; the Android export map keeps only the C ABI in .dynsym,
   # and assert_dart_entrypoints below proves DartInitSDK survived.
   "$toolchain/bin/llvm-strip" --strip-unneeded "$OUTPUT_DIR/jniLibs/$abi/libtim2tox_ffi.so" || true
-  ci_log "[android-$abi] captured $built_lib"
+  # ANDROID_STL=c++_shared: the library NEEDs libc++_shared.so, which neither
+  # Flutter (libflutter.so links libc++ statically) nor any plugin ships, so it
+  # travels in the same jniLibs/<abi>/ (NDK "C++ library support"); without it
+  # DynamicLibrary.open fails on the device.
+  local stl
+  stl="$sysroot/usr/lib/$(android_sysroot_triple "$abi")/libc++_shared.so"
+  [[ -f "$stl" ]] || ci_die "[android-$abi] libc++_shared.so not found at $stl"
+  cp "$stl" "$OUTPUT_DIR/jniLibs/$abi/libc++_shared.so"
+  ci_log "[android-$abi] captured $built_lib (+ libc++_shared.so)"
   verify_artifact "$OUTPUT_DIR/jniLibs/$abi/libtim2tox_ffi.so" "$toolchain/bin/llvm-nm" "android-$abi"
 }
 

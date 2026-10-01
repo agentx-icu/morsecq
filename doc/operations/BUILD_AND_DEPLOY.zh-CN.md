@@ -183,6 +183,28 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
 并**断言包里确实含库**（Linux 查 `bundle/lib/`，Windows 查 `tim2tox_ffi.dll` + `libsodium.dll`，
 macOS 查 `Contents/Frameworks/` 并 `codesign --verify`）。
 
+**Job `app-android` / `app-ios`**（`needs: native`）：Android 用 `--stage-only` 把 `jniLibs`
+放入工程后 `flutter build apk` + `flutter build appbundle`；iOS 把 XCFramework 复制到
+`apps/morsecq/ios/Frameworks/` 后 `flutter build ios --no-codesign`。
+
+**安装包**：每个应用 job 随后运行 `tool/ci/package_artifacts.sh --target <平台>`（不含
+`libtim2tox_ffi` 的构建一律拒绝打包），产物写到 `dist/<平台>/`：
+
+| 平台 | 安装包 |
+|---|---|
+| Linux x86_64 | `.deb`、`.rpm`（CPack，`tool/ci/linux-installer`：程序在 `/opt/morsecq`，`/usr/bin/morsecq`、桌面入口、hicolor 图标），`.tar.gz` |
+| Windows x64 | `.msi`（CPack + WiX v3，`tool/ci/windows-installer`；开始菜单快捷方式，固定升级 GUID），`.zip` |
+| macOS arm64 | `.pkg`（pkgbuild 装到 `/Applications`，不可重定位），`.zip`（ditto） |
+| Android | `.apk`（arm64-v8a、armeabi-v7a、x86_64），`.aab` |
+| iOS | 未签名 `.ipa` |
+
+每次运行都以 `release-<平台>` 上传，所以 PR 就能证明安装包可以构建；推送 `v*` tag 时，
+`release` job 把它们连同 `SHA256SUMS` 挂到该 tag 的 GitHub Release（不存在则建草稿）。
+Android 正式签名读仓库 secrets `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、
+`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`（以 `MORSECQ_ANDROID_*` 环境变量原样交给 Gradle；
+本地构建也可用被 gitignore 的 `apps/morsecq/android/key.properties`），没有时用 debug 密钥签名。
+Android 原生库以 `ANDROID_STL=c++_shared` 构建，随包带上 NDK 的 `libc++_shared.so`。macOS / Windows 目前都未做代码签名或公证。
+
 复用 toxee 的 pinned actions：`actions/checkout@v6`、`subosito/flutter-action@v2`、`actions/cache@v4`、
 `actions/upload-artifact@v4`、`actions/download-artifact@v5`、`ilammy/msvc-dev-cmd@v1`、`actions/setup-java@v5`。
 
