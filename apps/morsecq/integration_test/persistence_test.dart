@@ -18,6 +18,7 @@ import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/training/file_trainer_store.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/training/training_settings_store.dart';
+import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/listen/listen_settings.dart';
 import 'package:morsecq_chat/morsecq_chat.dart'
     show FlutterSecureStore, SharedPreferencesStore;
@@ -115,7 +116,10 @@ void main() {
         final store = await JsonFileKeyValueStore.open(file);
         first = AppPreferences(store, backendLabel: 'test', identity: identity);
         locale = LocaleController(store);
-        first.settings.themeMode = ThemeMode.dark;
+        await first.settings.applyAppearance(
+          style: UiStyle.radio,
+          themeMode: ThemeMode.dark,
+        );
         first.notifications.enabled = false;
         first.notifications.showText = false;
         first.notifications.showPattern = false;
@@ -157,6 +161,7 @@ void main() {
         );
         reopenedLocale = LocaleController(freshStore);
         expect(reopened.settings.themeMode, ThemeMode.dark);
+        expect(reopened.settings.style, UiStyle.radio);
         expect(reopened.notifications.enabled, isFalse);
         expect(reopened.notifications.showText, isFalse);
         expect(reopened.notifications.showPattern, isFalse);

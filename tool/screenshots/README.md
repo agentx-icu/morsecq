@@ -19,6 +19,20 @@ simulator), `ipad` (an iPad simulator), `android` (emulator or device). The
 device is picked from `flutter devices` by platform, or given with `--device`.
 Mobile simulators/emulators must already be running.
 
+To publish captures from another host, download the screenshot artifact from a
+successful CI run of the same UI revision, then pass the artifact's `screenshots`
+directory. This mode preserves the source and applies the same completeness,
+size and distinct-frame checks before publishing; it does not drive a device.
+Source and output must be separate, non-overlapping directories. Selected
+source directories and PNGs must be regular entries, without symlinks.
+
+```bash
+tool/screenshots/capture.sh --platforms linux --from /path/to/artifact/screenshots
+```
+
+Import regression checks run in Analyze CI and locally with
+`python3 tool/screenshots/capture_import_test.py`; they use disposable gallery copies.
+
 ## How it works
 
 The pipeline is a normal `integration_test`:
@@ -38,7 +52,7 @@ The pipeline is a normal `integration_test`:
   `addFakeGroupMember`, …) and a `progress.json` written with
   `FileTrainerStore`, so the Learn home and Statistics have content.
 - **Capture**: the app is wrapped in a `RepaintBoundary` and each scene is
-  `toImage`d from the Flutter layer. This is the same on all five platforms,
+  `toImage`d from the Flutter layer. This is the same on all six targets,
   needs no OS permission and never grabs another window. (Flutter 3.41.9's
   `integration_test` has a native `takeScreenshot` only for Android and iOS.)
   The PNG bytes ride in `binding.reportData` (base64) to the `flutter drive`
@@ -52,8 +66,9 @@ The pipeline is a normal `integration_test`:
   run.
 - **Pixel ratio**: 1.0 on desktop, `min(dpr, 2)` on mobile, override with
   `MORSECQ_SHOT_PIXEL_RATIO`.
-- **Theme**: pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
-  frames do not follow the host's appearance.
+- **Appearance**: pinned to Modern Calm, matching both README product concepts.
+  Brightness is pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
+  frames do not follow the host's appearance or saved style preferences.
 - **Knob validation**: a malformed or out-of-range knob fails the run instead
   of falling back to the default — window edges in (0, 8192], pixel ratio in
   [0.25, 4], theme one of the three names.
@@ -65,7 +80,7 @@ The pipeline is a normal `integration_test`:
   frames show Chinese names and a Chinese group; the Morse text stays in CW
   abbreviations, which is what is keyed on the air).
 - **Publish gate**: a platform is copied into `doc/screenshots/` only when its
-  `flutter drive` exited 0, every scene of every locale exists, is at least
+  local `flutter drive` or the source CI capture succeeded, every scene of every locale exists, is at least
   8 KiB, and no two frames are byte-identical (`cmp`, not just a checksum).
   The replacement set is assembled next to the target and swapped in whole;
   a failed platform leaves the committed frames untouched. Staging

@@ -43,6 +43,7 @@ Run the app and backend test suites, all pure Dart package tests, analyzers, com
 
 ## Change log
 
+- 2026-10-01: Integrate latest GitHub master (2042b63) before the requested remote merge. Preserve its appearance chooser and Modern Calm default alongside the audit's shared atomic settings store and lifecycle barriers. Use the canonical appearance record with legacy `app.theme` fallback, wait for pending appearance writes on flush, and retain failure/retry coverage for other preferences. Opus integration-plan review and the identical retry failed due to session quota; verify the merge locally and review the final actual diff again.
 - 2026-10-01: Initial audit plan based on missing preference wiring, non-serialized staging files and external identity preference cleanup gaps.
 - 2026-10-01: Add verified background flush, training replacement barriers, group unread audit and Apple secure-store configuration requirements.
 - 2026-10-01: Add pending-friend-request cache and scoping for the verified unscoped dismissed-request key. Group unread already restores from persisted history; test that path before changing it. Opus plan review and its identical retry both failed due to the reviewer account session limit; proceed with reproduced tests and independent local review, without claiming external approval.
@@ -51,3 +52,7 @@ Run the app and backend test suites, all pure Dart package tests, analyzers, com
 - 2026-10-01: Final local verification passed: 477 app tests, 401 package tests including the final 71 chat tests, 2 native Tox tests, 4 native storage tests on each of macOS/iOS/Android, zero analyzer issues and all project gates. Final actual-diff Opus review plus identical retry failed on the reviewer session limit; no external approval claimed.
 
 - 2026-10-01: User requested commit and local merge. Reverified 477 app tests serially, 71 chat tests, analyzers and project gates; documented the unchanged account harness's parallel real-timer/I/O timing failures. Integrate all 82 audit files into ci/installers while preserving its existing installer edits.
+
+- 2026-10-01: Remote-master integration verification passed 512 serial app tests (one existing skip), 401 package tests, 12 screenshot-import tests, 2 native Tox tests, 4 macOS storage tests and all analyzers/gates. The appearance file-reopen test now performs real I/O directly instead of crossing the widget fake-clock boundary; production behavior and widget/barrier coverage are retained.
+
+- 2026-10-01: Final integration actual-diff Opus review and identical retry failed on the session quota. Record the limitation with the completed local verification, commit the resolved merge and normally push it to the user-authorized GitHub master branch.

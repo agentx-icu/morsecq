@@ -4,6 +4,9 @@ import '../../training/receive_session.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
 import '../stats/stats_screen.dart';
+import '../appearance/appearance_page.dart';
+import '../appearance/style_tokens.dart';
+import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
@@ -28,10 +31,9 @@ class LearnHome extends StatelessWidget {
   /// Optional one-liner under the title (the shell's page description).
   final String? subtitle;
 
-  Future<void> _push(BuildContext context, Widget screen) =>
-      Navigator.of(context).push(
-        MaterialPageRoute<Object?>(builder: (_) => screen),
-      );
+  Future<void> _push(BuildContext context, Widget screen) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<Object?>(builder: (_) => screen));
 
   void _continueLesson(BuildContext context) => _push(
     context,
@@ -87,10 +89,8 @@ class LearnHome extends StatelessWidget {
     SendPracticeScreen(controller: controller, playback: playback),
   );
 
-  void _review(BuildContext context) => _push(
-    context,
-    ReviewScreen(controller: controller, playback: playback),
-  );
+  void _review(BuildContext context) =>
+      _push(context, ReviewScreen(controller: controller, playback: playback));
 
   void _settings(BuildContext context) => Navigator.of(context).push(
     TrainingSettingsScreen.route(controller: controller, playback: playback),
@@ -119,6 +119,11 @@ class LearnHome extends StatelessWidget {
       appBar: AppBar(
         title: Text(s.navLearn),
         actions: <Widget>[
+          IconButton(
+            tooltip: s.appearanceTitle,
+            icon: const Icon(Icons.palette_outlined),
+            onPressed: () => AppearancePage.open(context),
+          ),
           IconButton(
             tooltip: s.learnStatistics,
             icon: const Icon(Icons.insights_outlined),
@@ -153,7 +158,11 @@ class LearnHome extends StatelessWidget {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 1100),
-                    child: twoColumns
+                    child:
+                        StyleTokens.of(context)?.style != null &&
+                            StyleTokens.of(context)!.style != UiStyle.classic
+                        ? _styledLayout(context, twoColumns)
+                        : twoColumns
                         ? _twoColumn(context)
                         : _oneColumn(context),
                   ),
@@ -235,4 +244,46 @@ class LearnHome extends StatelessWidget {
       ),
     ],
   );
+
+  Widget _styledLayout(BuildContext context, bool twoColumns) {
+    final lesson = LessonCard(
+      controller: controller,
+      onContinue: () => _continueLesson(context),
+    );
+    final actions = QuickActions(
+      showContinue: false,
+      dueCount: controller.dueChars.length,
+      onContinueLesson: () => _continueLesson(context),
+      onReceivePractice: () => _receivePractice(context),
+      onSendPractice: () => _sendPractice(context),
+      onReview: () => _review(context),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _header(context),
+        if (twoColumns)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [lesson, const SizedBox(height: 12), actions],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(flex: 2, child: DailyGoalCard(controller: controller)),
+            ],
+          )
+        else ...[
+          lesson,
+          const SizedBox(height: 8),
+          DailyGoalCard(controller: controller),
+          const SizedBox(height: 12),
+          actions,
+        ],
+      ],
+    );
+  }
 }

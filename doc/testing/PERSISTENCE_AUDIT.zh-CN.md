@@ -23,7 +23,8 @@
 | 会话草稿、置顶、隐藏会话 | 按账号隔离的 `shared_preferences` | 可离线修改；输入草稿在后台/退出前保存，已替换账号的旧编辑器不能写回。 |
 | 课程进度、SRS 卡片、训练统计与历史 | `<identity>/training/training/progress.json` | 保留原有目录布局；新控制器加载已提交数据；无效文档恢复有效的上一次备份。 |
 | 训练默认值、播放/教学参数 | `<identity>/training/training/settings.json` | 按账号隔离、校验、串行保存，包含在学习备份中。 |
-| 语言、主题、通知隐私/声音、聊天速度/音调/训练模式/输入方式、参考播放、麦克风解码设置 | `<support>/settings.json` | 暴露 provider 前恢复；保存失败保留待保存快照，后续 flush 重试；其他键成功不能掩盖失败。 |
+| 外观风格和明暗模式 | `<support>/settings.json` 中的 `appearance.preferences` | 两者一起保存成功后才生效；失败时保留原选择。兼容旧 `app.theme`，后台和退出等待外观写入完成。 |
+| 语言、通知隐私/声音、聊天速度/音调/训练模式/输入方式、参考播放、麦克风解码设置 | `<support>/settings.json` | 暴露 provider 前恢复；保存失败保留待保存快照，后续 flush 重试；其他键成功不能掩盖失败。 |
 | 屏蔽通知的会话 | `settings.json` 中的 `notifications.muted.<完整公钥>` | 按账号隔离，仅在删除/替换成功后清除；恢复失败保留原屏蔽列表。 |
 | 窗口位置/尺寸/最大化、关闭至托盘、托盘声音选择 | `settings.json` 中的桌面键 | 恢复时校验显示器范围；选择保存失败回退模型以允许重试；退出等待在途偏好写入。 |
 | Bootstrap 与下载偏好 | 全局 `shared_preferences` | 删除/恢复账号时保留；可选文件传输、头像宿主数据位于 `<identity>/data/`，不属于 v1 界面功能。 |
@@ -90,3 +91,26 @@ Linux 除 `libsecret` 构建头文件外，还需要运行中、可访问的 Sec
 使用真实定时器。引导页 6 项单独运行通过。并发测试辅助代码问题尚未修复；
 单并发执行给出本次已验证的提交前结果，未改变产品行为。日志与其余审计证据
 一起保留。
+
+
+## GitHub master 整合
+
+将 master `2042b63` 与持久化提交 `e750aeb` 整合，保留五种外观风格、
+Modern Calm 默认样式和更新后的截图。新外观记录优先于旧 `app.theme`；
+记录缺失或损坏时保留旧主题。App/账号生命周期 flush 等待外观写入完成；
+外观写入失败时保留原选择，并可显式重试。
+
+整合后重新验证：**512 项 App 测试**（`--concurrency=1`，另有 1 项原有
+跳过测试）、**401 项包测试**、**12 项截图导入测试**、**2 项原生 Tox 测试**
+和 **4 项 macOS 存储测试**全部通过。七个分析器及复杂度、导入、ARB、
+diff/格式门禁通过。外观文件重启回归直接使用真实异步 I/O；界面覆盖和
+等待未完成外观写入的退出屏障测试仍保留。前文 iOS/Android 证据来自原始
+审计，本次合并未重新执行其原生套件；Windows/Linux 原生覆盖限制仍如前述。
+
+Opus 整合方案评审及相同参数重试因评审账号会话限额失败。整合证据保留在
+`build/persistence-audit/remote-merge-*.log`。原工作区 19 个未提交的安装包
+文件已逐字节核对，内容未改变。
+
+最后的整合实际 diff Opus 评审及相同参数重试也均因 `You've hit your session limit`
+失败（退出码 1），未获得外部评审结果；上述本地验证均已通过。两次尝试记录
+于 `build/persistence-audit/remote-merge-diff-review.log`。

@@ -1929,4 +1929,55 @@ class SEn extends S {
 
   @override
   String get referenceTelegraphNone => 'not in this codebook';
+
+  @override
+  String get appearanceTitle => 'Appearance';
+
+  @override
+  String get appearanceStyles => 'Interface style';
+
+  @override
+  String get appearanceChoose => 'Choose a style, preview, then apply';
+
+  @override
+  String get appearanceMode => 'Brightness';
+
+  @override
+  String get appearancePreview => 'Preview';
+
+  @override
+  String get appearanceApply => 'Apply style';
+
+  @override
+  String get appearanceRestore => 'Restore defaults';
+
+  @override
+  String get appearanceApplied => 'Appearance saved';
+
+  @override
+  String get appearanceSaveFailed => 'Could not save appearance. Try again.';
+
+  @override
+  String get appearanceClassic => 'Classic Brass';
+
+  @override
+  String get appearanceModern => 'Modern Calm';
+
+  @override
+  String get appearanceRadio => 'Night Radio';
+
+  @override
+  String get appearancePaper => 'Paper Handbook';
+
+  @override
+  String get appearanceCartoon => 'Fresh Cartoon';
+
+  @override
+  String get appearanceLight => 'Light';
+
+  @override
+  String get appearanceDark => 'Dark';
+
+  @override
+  String get appearanceSubtitle => 'Five styles with light and dark modes';
 }

@@ -1909,4 +1909,55 @@ class SZh extends S {
 
   @override
   String get referenceTelegraphNone => '本电码本无此字';
+
+  @override
+  String get appearanceTitle => '外观';
+
+  @override
+  String get appearanceStyles => '界面风格';
+
+  @override
+  String get appearanceChoose => '选择风格，预览后应用';
+
+  @override
+  String get appearanceMode => '明暗模式';
+
+  @override
+  String get appearancePreview => '效果预览';
+
+  @override
+  String get appearanceApply => '应用风格';
+
+  @override
+  String get appearanceRestore => '恢复默认';
+
+  @override
+  String get appearanceApplied => '外观已保存';
+
+  @override
+  String get appearanceSaveFailed => '无法保存外观，请重试。';
+
+  @override
+  String get appearanceClassic => '经典黄铜';
+
+  @override
+  String get appearanceModern => '清爽现代';
+
+  @override
+  String get appearanceRadio => '夜航电台';
+
+  @override
+  String get appearancePaper => '纸感手册';
+
+  @override
+  String get appearanceCartoon => '清新卡通';
+
+  @override
+  String get appearanceLight => '浅色';
+
+  @override
+  String get appearanceDark => '深色';
+
+  @override
+  String get appearanceSubtitle => '五种风格，支持浅色与深色';
 }

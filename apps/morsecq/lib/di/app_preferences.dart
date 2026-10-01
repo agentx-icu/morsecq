@@ -22,14 +22,7 @@ final class AppPreferences implements IdentityDataStore {
     required String backendLabel,
     required IdentityService identity,
   }) : _identity = identity {
-    final theme = _store.getString('app.theme');
-    settings = AppSettings(
-      backendLabel: backendLabel,
-      themeMode: ThemeMode.values.firstWhere(
-        (v) => v.name == theme,
-        orElse: () => ThemeMode.system,
-      ),
-    );
+    settings = AppSettings(backendLabel: backendLabel, store: _store);
     final n = _read('notifications');
     notifications = NotificationPrefs(
       enabled: _bool(n, 'enabled', true),
@@ -67,7 +60,6 @@ final class AppPreferences implements IdentityDataStore {
         manualHz: _number(l, 'manualHz', 700).clamp(400.0, 1000.0),
       ),
     );
-    _watch(settings, () => _save('app.theme', settings.themeMode.name));
     _watch(notifications, _saveNotifications);
     _watch(
       playback,
@@ -227,7 +219,7 @@ final class AppPreferences implements IdentityDataStore {
 
   @override
   Future<void> flush() async {
-    await _drain();
+    await Future.wait([settings.flush(), _drain()]);
     // Retry retained snapshots, including removals, once per flush. A save to
     // another key cannot erase a failure or commit its optimistic model value.
     for (final entry in _dirty.entries.toList()) {
@@ -259,6 +251,7 @@ final class AppPreferences implements IdentityDataStore {
       identity.unregisterDataStore(this);
     }
     unawaited(_identitySub?.cancel());
+    settings.dispose();
     for (final entry in _listeners.entries) {
       entry.key.removeListener(entry.value);
       entry.key.dispose();

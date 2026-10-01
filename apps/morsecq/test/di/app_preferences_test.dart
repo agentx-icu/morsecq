@@ -1,22 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/di/app_scope.dart';
 import 'package:morsecq/di/app_preferences.dart';
-import 'package:morsecq/di/app_settings.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/notifications/notification_prefs.dart';
+import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/chat/morse_playback_settings.dart';
 import 'package:morsecq/ui/chat/input_mode.dart';
 import 'package:morsecq/ui/listen/listen_settings.dart';
 import 'package:morsecq_chat_api/testing.dart';
 import 'package:provider/provider.dart';
 
-final class _FailingThemeStore implements KeyValueStore {
+final class _FailingPlaybackStore implements KeyValueStore {
   final _delegate = InMemoryKeyValueStore();
-  bool failTheme = true;
+  bool failPlayback = true;
   bool failRemove = false;
   @override
   String? getString(String key) => _delegate.getString(key);
@@ -26,7 +27,7 @@ final class _FailingThemeStore implements KeyValueStore {
       : _delegate.remove(key);
   @override
   Future<void> setString(String key, String value) =>
-      failTheme && key == 'app.theme'
+      failPlayback && key == 'chat.playback'
       ? Future<void>.error(StateError('disk unavailable'))
       : _delegate.setString(key, value);
 }
@@ -36,13 +37,13 @@ void main() {
     'an unrelated successful save cannot hide a failed preference write',
     () async {
       final identity = FakeIdentityService();
-      final store = _FailingThemeStore();
+      final store = _FailingPlaybackStore();
       final prefs = AppPreferences(
         store,
         backendLabel: 'test',
         identity: identity,
       );
-      prefs.settings.themeMode = ThemeMode.dark;
+      prefs.playback.wpm = 23;
       await pumpEventQueue();
       prefs.notifications.sound = false;
       await pumpEventQueue();
@@ -55,18 +56,18 @@ void main() {
     'flush retries a failed unchanged preference after storage recovers',
     () async {
       final identity = FakeIdentityService();
-      final store = _FailingThemeStore();
+      final store = _FailingPlaybackStore();
       final prefs = AppPreferences(
         store,
         backendLabel: 'test',
         identity: identity,
       );
-      prefs.settings.themeMode = ThemeMode.dark;
+      prefs.playback.wpm = 23;
       await pumpEventQueue();
       await expectLater(prefs.flush(), throwsStateError);
-      store.failTheme = false;
+      store.failPlayback = false;
       await prefs.flush();
-      expect(store.getString('app.theme'), 'dark');
+      expect(jsonDecode(store.getString('chat.playback')!)['wpm'], 23);
       prefs.dispose();
       await identity.dispose();
     },
@@ -77,7 +78,7 @@ void main() {
     () async {
       final identity = FakeIdentityService();
       final first = await identity.create(displayName: 'first');
-      final store = _FailingThemeStore()..failTheme = false;
+      final store = _FailingPlaybackStore()..failPlayback = false;
       final prefs = AppPreferences(
         store,
         backendLabel: 'test',
@@ -108,7 +109,6 @@ void main() {
 
   late Directory dir;
   late File file;
-  late AppSettings settings;
   late NotificationPrefs notifications;
   late MorsePlaybackSettings playback;
   late AppPreferences preferences;
@@ -127,7 +127,6 @@ void main() {
         child: Builder(
           builder: (context) {
             preferences = context.read<AppPreferences>();
-            settings = context.read<AppSettings>();
             notifications = context.read<NotificationPrefs>();
             playback = context.read<MorsePlaybackSettings>();
             return const SizedBox();
@@ -287,15 +286,28 @@ void main() {
     },
   );
 
-  testWidgets('theme choice survives a reopened settings file', (tester) async {
-    final store = await tester.runAsync(() => JsonFileKeyValueStore.open(file));
-    await mount(tester, store!);
-    await tester.runAsync(() async {
-      settings.themeMode = ThemeMode.dark;
-      await pumpEventQueue(times: 30);
-    });
-    await restart(tester);
-    expect(settings.themeMode, ThemeMode.dark);
+  test('appearance survives a reopened settings file', () async {
+    final identity = FakeIdentityService();
+    addTearDown(identity.dispose);
+    final first = AppPreferences(
+      await JsonFileKeyValueStore.open(file),
+      backendLabel: 'test',
+      identity: identity,
+    );
+    await first.settings.applyAppearance(
+      style: UiStyle.radio,
+      themeMode: ThemeMode.dark,
+    );
+    await first.flush();
+    first.dispose();
+    final reopened = AppPreferences(
+      await JsonFileKeyValueStore.open(file),
+      backendLabel: 'test',
+      identity: identity,
+    );
+    addTearDown(reopened.dispose);
+    expect(reopened.settings.themeMode, ThemeMode.dark);
+    expect(reopened.settings.style, UiStyle.radio);
   });
 
   testWidgets('notification privacy and sound choices survive restart', (

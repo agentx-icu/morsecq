@@ -24,7 +24,8 @@ the process working directory or inside the installed application bundle.
 | Conversation drafts, pinned/hidden conversations | Account-scoped `shared_preferences` | The app metadata store supports offline edits. Compose drafts flush before background/quit and reject writes from replaced editors. |
 | Lesson progress, SRS cards, session statistics/history | `<identity>/training/training/progress.json` | Existing directory layout retained; fresh controllers reload committed data. Invalid documents recover a valid previous-save backup. |
 | Training defaults, playback/pedagogy parameters | `<identity>/training/training/settings.json` | Identity-scoped, validated, serialized and included in the training backup bundle. |
-| Language, theme, notification privacy/sound, chat playback/training/input mode, reference playback, microphone decoder settings | `<support>/settings.json` | Restored before providers are exposed. Failed changes remain dirty for a later flush retry; unrelated saves cannot erase their failure. |
+| Appearance style and brightness mode | `appearance.preferences` in `<support>/settings.json` | Saved together before publishing a change. Failed writes retain the previous visible choice. Old `app.theme` records remain a fallback; background/quit waits for pending appearance writes. |
+| Language, notification privacy/sound, chat playback/training/input mode, reference playback, microphone decoder settings | `<support>/settings.json` | Restored before providers are exposed. Failed changes remain dirty for a later flush retry; unrelated saves cannot erase their failure. |
 | Muted conversations | `notifications.muted.<full-public-key>` in `settings.json` | Kept per identity, cleared only after committed deletion/replacement. Failed replacement keeps the original mute list. |
 | Window bounds/maximized, close-to-tray, tray sound choice | Desktop keys in `settings.json` | Bounds are validated against current displays. Choice write failures revert the model to allow retry; exit waits for pending preference writes. |
 | Bootstrap and download preferences | Global `shared_preferences` | Preserved when deleting/importing an identity. Optional file-transfer/avatar host data remains under `<identity>/data/`; it is not a v1 UI feature. |
@@ -108,3 +109,33 @@ where Flutter uses real timers. The six onboarding tests passed independently.
 The concurrent harness issue remains; serial execution provides the verified
 pre-commit result without changing production behavior. Logs are retained with
 the other audit evidence.
+
+
+## GitHub master integration
+
+Integrated master `2042b63` with the persistence commit `e750aeb`, preserving
+all five appearance styles, the Modern Calm default and the refreshed gallery.
+The appearance record takes precedence over legacy `app.theme`; missing or
+damaged records retain the legacy theme. App/identity lifecycle flushes now
+wait for pending appearance writes. Appearance failures retain the previous
+visible choice and remain available for an explicit retry.
+
+Fresh integration checks passed **512 app tests** with `--concurrency=1`
+(one existing skipped test), **401 package tests**, **12 screenshot-import
+tests**, **2 native Tox tests** and **4 macOS storage tests**. All seven
+analyzers and the complexity, import, ARB and diff/format checks passed.
+The file-reopen appearance regression uses real asynchronous I/O directly;
+widget coverage and the pending-appearance shutdown barrier remain in place.
+iOS and Android evidence above belongs to the original audit; those native
+suites were not rerun for this merge. Windows/Linux native coverage remains
+limited as documented above.
+
+The Opus integration-plan review and identical retry failed due to the
+reviewer session quota. Integration evidence is stored in
+`build/persistence-audit/remote-merge-*.log`. The original checkout's 19
+uncommitted installer files were verified byte-for-byte unchanged.
+
+The final integration actual-diff Opus review and identical retry also failed
+with `You've hit your session limit` (exit 1). No external review succeeded;
+all local checks above passed. Both attempts are retained in
+`build/persistence-audit/remote-merge-diff-review.log`.
