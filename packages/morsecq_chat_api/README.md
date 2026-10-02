@@ -2,7 +2,7 @@
 
 # morsecq_chat_api
 
-Pure-Dart contract between the morsecq UI and the chat backend. The UI depends
+Pure-Dart contract between the MorseCQ UI and the chat backend. The UI depends
 only on this package; `packages/morsecq_chat` implements it on Tim2Tox and is
 the only package allowed to import Tim2Tox or the Tencent SDK
 (`tool/import_guard.dart`).

@@ -31,7 +31,7 @@ apps/morsecq ──► morsecq_chat_api (contract) ◄── morsecq_chat
                                 third_party/tim2tox/dart  │  FfiChatService (Dart)  ──ffi──►  libtim2tox_ffi (c-toxcore, --no-toxav)
 ```
 
-**单一数据路径。** 与 toxee 的混合运行时不同，morsecq 既不安装 `Tim2ToxSdkPlatform` 也不安装
+**单一数据路径。** 与 toxee 的混合运行时不同，MorseCQ 既不安装 `Tim2ToxSdkPlatform` 也不安装
 UIKit，并且从不调用 `TIMManager.initSDK`。一切都沿 `FfiChatService` → `Tim2ToxFfi` →
 `libtim2tox_ffi` 流动；服务监听 `FfiChatService.messages`，并每隔 `pollInterval`（3 s）轮询
 `getFriendList`、`getFriendApplications`、`knownGroups`、`getPendingGroupInvites`。补丁版 SDK 的
@@ -99,7 +99,7 @@ Windows 盘符）。导出先冲刷已注册的存储；导入先完成所有归
   `sent` 状态在 `messageEvents` 上重新发出。Tim2Tox 在这条路径上没有独立的失败标记
   （`_markPendingItemFailed` 同样把 `isPending` 置为 false），因此目前不会产生 `failed`——
   已在上游 `tim2tox_core` 拆分中跟踪。
-- `cloudCustomData` 在 Tim2Tox 中**仅限本地**（从不经 Tox 发送）；morsecq 不使用它
+- `cloudCustomData` 在 Tim2Tox 中**仅限本地**（从不经 Tox 发送）；MorseCQ 不使用它
   （方案 §5.2 第 1 层是明文）。
 - 会话是派生出来的：历史 id ∪ 好友 ∪ 群组，再减去隐藏（已删除）的；未读数来自 Tim2Tox 的已读屏障；
   置顶/草稿/隐藏来自 `ConversationMetaStore`（`shared_preferences` 中按账号划分的键）。
@@ -126,7 +126,7 @@ Windows 盘符）。导出先冲刷已注册的存储；导入先完成所有归
 ### `tencent_cloud_chat_common` 桩包
 
 `tim2tox_dart` 的 pubspec 要求 `tencent_cloud_chat_common`（一个 UIKit widget 包，带有庞大的插件树：
-TUICore、hive、audioplayers……）。只有 `Tim2ToxSdkPlatform` 导入它，而 morsecq 编译的任何代码
+TUICore、hive、audioplayers……）。只有 `Tim2ToxSdkPlatform` 导入它，而 MorseCQ 编译的任何代码
 都不会触及那个文件。`third_party/stubs/tencent_cloud_chat_common` 是一个满足 pub 要求的空包；
 根目录的 `pubspec_overrides.yaml` 指向它。如果未来 tim2tox 的改动让 `FfiChatService` 触及
 `Tim2ToxSdkPlatform`，编译会大声失败（缺少导入），而不是悄悄把 UIKit 拉进来。当上游发布不含 UIKit 的
@@ -151,11 +151,11 @@ dart run tool/bootstrap_deps.dart --offline-check-only   # CI: prove the tree ma
    （8.9.7540+3，SHA-256 校验）到 `third_party/tencent_cloud_chat_sdk/`。
 3. 用 tim2tox 自己的 `apply_sdk_patches.dart` 应用 tim2tox 的 22 个补丁系列
    （补丁 0001 添加 `setNativeLibraryName`）。
-3b. 叠加 morsecq 自己的 overlay `third_party/overlays/tencent_cloud_chat_sdk/`
+3b. 叠加 MorseCQ 自己的 overlay `third_party/overlays/tencent_cloud_chat_sdk/`
    （`tool/vendor_overlay.dart`）：把插件的*平台*半边换成空操作的插件类，并删掉所有腾讯二进制——
    `TXIMSDK_Plus_iOS_XCFramework` / `TXIMSDK_Plus_Mac` / `HydraAsync` 三个 pod、
    `com.tencent.imsdk:imsdk-plus` AAR 与 `libdart_native_imsdk.so`、`ImSDK.dll` /
-   `dart_native_imsdk.dll`。morsecq 只用插件的 Dart 绑定（指向 `libtim2tox_ffi`），应用调用的
+   `dart_native_imsdk.dll`。MorseCQ 只用插件的 Dart 绑定（指向 `libtim2tox_ffi`），应用调用的
    东西一样不少；生成的插件注册器仍能找到各自的类。overlay 的哈希记为 vendor state 里的
    `overlay_sha256`（`--offline-check-only` 会校验）；toxee 保留完整插件，因为混合运行时需要它。
 4. 写入**根目录**的 `pubspec_overrides.yaml`（`tim2tox_dart`、`tencent_cloud_chat_sdk`、
@@ -169,7 +169,7 @@ dart run tool/bootstrap_deps.dart --offline-check-only   # CI: prove the tree ma
 ## 原生库前置条件
 
 Dart 包不需要它也能编译，但每条运行时路径都需要**不带 ToxAV** 构建的 `libtim2tox_ffi`
-（morsecq 没有通话功能）：
+（MorseCQ 没有通话功能）：
 
 ```bash
 # from a toxee checkout with tool/ci/build_tim2tox.sh, or tim2tox's own build.sh

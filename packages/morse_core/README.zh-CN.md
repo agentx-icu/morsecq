@@ -2,7 +2,7 @@
 
 # morse_core
 
-morsecq 的纯 Dart 摩尔斯电码引擎：字母表、PARIS / Farnsworth 计时、文本 → 时间线编码器，
+MorseCQ 的纯 Dart 摩尔斯电码引擎：字母表、PARIS / Farnsworth 计时、文本 → 时间线编码器，
 以及面向手动键控输入的流式译码器。不依赖 Flutter，因此可以在 App、`morse_trainer` /
 `morse_io` 以及普通的 `dart test` 中运行。
 

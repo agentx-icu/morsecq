@@ -1,6 +1,6 @@
 [简体中文](./README.zh-CN.md)
 
-# morsecq UI style proposals
+# MorseCQ UI style proposals
 
 Date: 2026-10-01. Status: the user approved all four additional styles. Commit the design artifacts separately and implement the application changes in a new worktree.
 

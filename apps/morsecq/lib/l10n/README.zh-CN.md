@@ -1,6 +1,6 @@
 [English](./README.md)
 
-# morsecq App 的本地化（l10n）
+# MorseCQ App 的本地化（l10n）
 
 通过 Flutter 的 gen-l10n 提供英语（`en`，模板）和简体中文（`zh`）。
 

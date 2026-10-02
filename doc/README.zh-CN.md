@@ -1,6 +1,6 @@
 [English](./README.md)
 
-# morsecq 文档
+# MorseCQ 文档
 
 ## 惯例：双语，英文为默认
 

@@ -34,7 +34,7 @@ apps/morsecq ──► morsecq_chat_api (contract) ◄── morsecq_chat
                                 third_party/tim2tox/dart  │  FfiChatService (Dart)  ──ffi──►  libtim2tox_ffi (c-toxcore, --no-toxav)
 ```
 
-**One data path.** Unlike toxee's hybrid runtime, morsecq installs neither
+**One data path.** Unlike toxee's hybrid runtime, MorseCQ installs neither
 `Tim2ToxSdkPlatform` nor the UIKit and never calls `TIMManager.initSDK`.
 Everything flows `FfiChatService` → `Tim2ToxFfi` → `libtim2tox_ffi`, and the
 service listens to `FfiChatService.messages` / polls `getFriendList`,
@@ -118,7 +118,7 @@ over into the verifier so the restored identity unlocks with the same one.
   Tim2Tox does not carry a distinct failure flag on
   this path (`_markPendingItemFailed` also flips `isPending: false`), so
   `failed` is not produced today — tracked for the upstream `tim2tox_core` split.
-- `cloudCustomData` is **local only** in Tim2Tox (never sent over Tox); morsecq
+- `cloudCustomData` is **local only** in Tim2Tox (never sent over Tox); MorseCQ
   does not use it (plan §5.2 layer 1 is plain text).
 - Conversations are derived: history ids ∪ friends ∪ groups, minus hidden
   (deleted) ones; unread from Tim2Tox's read barrier; pinned/draft/hidden from
@@ -151,7 +151,7 @@ native message listeners — the second inbound path toxee needs
 
 `tim2tox_dart`'s pubspec requires `tencent_cloud_chat_common` (a UIKit widget
 package with a large plugin tree: TUICore, hive, audioplayers, …). Only
-`Tim2ToxSdkPlatform` imports it, and nothing morsecq compiles reaches that
+`Tim2ToxSdkPlatform` imports it, and nothing MorseCQ compiles reaches that
 file. `third_party/stubs/tencent_cloud_chat_common` is an empty package that
 satisfies pub; the root `pubspec_overrides.yaml` points at it. If a future
 tim2tox change makes `FfiChatService` reach `Tim2ToxSdkPlatform`, compilation
@@ -179,12 +179,12 @@ dart run tool/bootstrap_deps.dart --offline-check-only   # CI: prove the tree ma
    SHA-256 verified) into `third_party/tencent_cloud_chat_sdk/`.
 3. Applies tim2tox's 22-patch series with tim2tox's own `apply_sdk_patches.dart`
    (patch 0001 adds `setNativeLibraryName`).
-3b. Applies morsecq's own overlay `third_party/overlays/tencent_cloud_chat_sdk/`
+3b. Applies MorseCQ's own overlay `third_party/overlays/tencent_cloud_chat_sdk/`
    (`tool/vendor_overlay.dart`): the plugin's *platform* halves are replaced
    by no-op plugin classes and every Tencent binary is removed — the
    `TXIMSDK_Plus_iOS_XCFramework` / `TXIMSDK_Plus_Mac` / `HydraAsync` pods, the
    `com.tencent.imsdk:imsdk-plus` AAR and `libdart_native_imsdk.so`, and
-   `ImSDK.dll` / `dart_native_imsdk.dll`. morsecq only uses the plugin's Dart
+   `ImSDK.dll` / `dart_native_imsdk.dll`. MorseCQ only uses the plugin's Dart
    bindings (pointed at `libtim2tox_ffi`), so nothing the app calls is lost;
    the generated plugin registrants still find their classes. The overlay's
    hash is recorded as `overlay_sha256` in the vendor state (checked by
@@ -202,7 +202,7 @@ root `pubspec_overrides.yaml` (add it to the root `.gitignore`).
 ## Native library prerequisites
 
 The Dart package compiles without it, but every runtime path needs
-`libtim2tox_ffi` built **without ToxAV** (morsecq has no calls):
+`libtim2tox_ffi` built **without ToxAV** (MorseCQ has no calls):
 
 ```bash
 # from a toxee checkout with tool/ci/build_tim2tox.sh, or tim2tox's own build.sh

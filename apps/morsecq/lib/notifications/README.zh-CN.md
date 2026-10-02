@@ -65,8 +65,8 @@ App 运行中点击它会打开会话"。`AppBadgePlusApi` 在 Windows 上是空
 
 `flutter_local_notifications` ≥ 16 已经从自己的 manifest 合并了这两项；这里重复声明是为了让 App
 请求的运行时权限在 App 自己的 manifest 中可见。**没有** `ScheduledNotificationReceiver` /
-`ScheduledNotificationBootReceiver`（它们是为*定时*通知准备的；morsecq 只从 Tox 轮询循环发送即时通知），
-也**没有** `ActionBroadcastReceiver`（没有通知操作按钮）。没有前台服务：morsecq 不附带 toxee 的
+`ScheduledNotificationBootReceiver`（它们是为*定时*通知准备的；MorseCQ 只从 Tox 轮询循环发送即时通知），
+也**没有** `ActionBroadcastReceiver`（没有通知操作按钮）。没有前台服务：MorseCQ 不附带 toxee 的
 `ToxPollingService`；如果产品以后想要 Android 后台轮询，那是一个独立的原生服务加上
 `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_DATA_SYNC` 权限。
 
@@ -74,14 +74,14 @@ App 运行中点击它会打开会话"。`AppBadgePlusApi` 在 Windows 上是空
 
 添加了 `UIBackgroundModes = [audio]`。
 
-- **不是 `voip`**：morsecq 没有 ToxAV；没有 VoIP 功能却声明 `voip` 并不诚实，App Review 会拒绝
+- **不是 `voip`**：MorseCQ 没有 ToxAV；没有 VoIP 功能却声明 `voip` 并不诚实，App Review 会拒绝
   （方案 §5.6/§7）。
 - **`audio`**：由摩尔斯播放（消息播放、训练会话）在用户切换 App 后继续进行来证明其正当性。
   副作用：音频实际播放期间 Tox 循环会继续运行。除此之外它**不会**延长后台窗口——没有活跃的音频会话时，
   iOS 在约 30 s 后挂起 App，这正是协调器的 iOS 预算。如果在提交 App Store 之前 `morse_io` 的音频会话
   没有配置为后台播放（`AVAudioSession` 类别 `.playback`），请移除该条目，而不是发布一个未使用的模式。
 - **刻意不声明 `fetch`**：`BGAppRefreshTask` 需要原生处理器和 `BGTaskSchedulerPermittedIdentifiers`；
-  toxee 有，morsecq 还没有。要么两者一起添加，要么都不加。
+  toxee 有，MorseCQ 还没有。要么两者一起添加，要么都不加。
 
 ### macOS
 

@@ -1,22 +1,23 @@
 [English](./2026-09-30-morsecq-plan.md)
 
-# morsecq — 跨平台莫斯电码 App 立项规划
+# MorseCQ — 跨平台莫斯电码 App 立项规划
 
-> 状态：v0.3（2026-09-30）。本文是 morsecq 的立项规划，最初在 toxee 仓库起草（复用其代码事实），现随仓库 `agentx-icu/morsecq` 一起维护。toxee 文档惯例为 EN/zh-CN 成对，本稿先只出中文。
+> 状态：v0.3（2026-09-30）。本文是 MorseCQ 的立项规划，最初在 toxee 仓库起草（复用其代码事实），现随仓库 `agentx-icu/morsecq` 一起维护。toxee 文档惯例为 EN/zh-CN 成对，本稿先只出中文。
 >
 > 评审记录见文末「变更记录」。
 
 ## 0. 一句话
 
-**morsecq**：一款「学莫斯、用莫斯聊天」的跨平台 App。首启创建一个 Tox 身份（无服务器、无手机号），之后训练学习与聊天共用这一身份：训练进度按身份保存，单聊与群聊走 Tox P2P 网络，复用 toxee 已经打磨过的 Tim2Tox 通信栈。消息在线路上就是普通文本，任何 Tim2Tox 客户端（含 toxee）都能读；morsecq 端把它按听者自选速度播成「滴答」。
+**MorseCQ**：一款「学莫斯、用莫斯聊天」的跨平台 App。首启创建一个 Tox 身份（无服务器、无手机号），之后训练学习与聊天共用这一身份：训练进度按身份保存，单聊与群聊走 Tox P2P 网络，复用 toxee 已经打磨过的 Tim2Tox 通信栈。消息在线路上就是普通文本，任何 Tim2Tox 客户端（含 toxee）都能读；MorseCQ 端把它按听者自选速度播成「滴答」。
 
 ## 1. 项目命名
 
-### 1.1 定名：**morsecq**（2026-09-30 拍板）
+### 1.1 定名：**MorseCQ**（2026-09-30 拍板）
 
 - 仓库 `https://github.com/agentx-icu/morsecq`，GPL-3.0。
 - Dart 包前缀 `morse_*`（纯引擎）/ `morsecq_*`（应用侧），Bundle ID `icu.agentx.morsecq`。
-- 商店标题建议「morsecq: Morse Code Chat & Trainer」；中文副名「滴答」。
+- 显示名与标识符（2026-10-01）：所有用户可见的名称统一为 **MorseCQ**（Android 标签、iOS 显示名、macOS `MorseCQ.app`、Linux/Windows 窗口标题与 `.desktop` / 安装包名称、文档）。标识符保持小写 `morsecq`，以免已有身份档案失联：包名、bundle id、Linux/Windows 可执行文件、数据目录、通知渠道 id、Windows `ProductName`（path_provider 用它推导 `%APPDATA%\icu.agentx\morsecq`）。macOS pkg 安装时会把已有的 `/Applications/morsecq.app` 改名为 `MorseCQ.app`。
+- 商店标题建议「MorseCQ: Morse Code Chat & Trainer」；中文副名「滴答」。
 - 首个候选 Morsee 因 Google Play 已有同名 App（`com.wisteriastone.morsecode`）放弃。
 
 ### 1.2 当时的候选记录（2026-09-30 用网页搜索核对商店同名，非商标检索）
@@ -38,7 +39,7 @@
 
 ### 1.3 竞品提示
 
-Morse Chat（digital.dong.morsechat）已做「按速度分房间 + 私聊 + 七种电键」的莫斯聊天，走中心服务器。morsecq 的差异点必须讲清楚：**Tox P2P、无服务器、无手机号/邮箱注册、与 toxee 生态互通、训练与聊天一体**。
+Morse Chat（digital.dong.morsechat）已做「按速度分房间 + 私聊 + 七种电键」的莫斯聊天，走中心服务器。MorseCQ 的差异点必须讲清楚：**Tox P2P、无服务器、无手机号/邮箱注册、与 toxee 生态互通、训练与聊天一体**。
 
 ## 2. 产品定义
 
@@ -60,7 +61,7 @@ Morse Chat（digital.dong.morsechat）已做「按速度分房间 + 私聊 + 七
 
 ### 2.3 与 toxee 的互通
 
-v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（原因见 §3.1 第 5 条：Tim2Tox 的 `cloudCustomData` 只存本地，不上线路）。toxee 用户收到的是可读文本；morsecq 收到后按听者设置的速度重新生成节奏播放。这与莫斯训练界的惯例一致——听者用自己的速度听，本来就是 Farnsworth 练法的一部分。
+v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（原因见 §3.1 第 5 条：Tim2Tox 的 `cloudCustomData` 只存本地，不上线路）。toxee 用户收到的是可读文本；MorseCQ 收到后按听者设置的速度重新生成节奏播放。这与莫斯训练界的惯例一致——听者用自己的速度听，本来就是 Farnsworth 练法的一部分。
 
 「听到对方真实手感（键控实录）」是 v2 特性，依赖 Tim2Tox 上游新增「消息附注」线路承载（§5.2 第二层）。
 
@@ -76,7 +77,7 @@ v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（�
 ### 3.1 关键事实（来自 toxee 主干 `5a1cebe` 与 tim2tox 子模块 pin `9d4245a` 的勘查，2026-09-30）
 
 1. `tim2tox_dart`（`third_party/tim2tox/dart`，GPL-3.0）在包级别依赖 `tencent_cloud_chat_sdk: any`（**未 pin**）与 `tencent_cloud_chat_common ^4.1.0+1`；`FfiChatService` 本身 import 的是 `tencent_cloud_chat_sdk` 的 `native_library_manager`、`tim_message_manager`、`tim_group_manager` 等。不能「只拿 Tim2Tox 不拿腾讯 SDK」，除非上游先做拆分；且必须原样复制 toxee 的 `pubspec_overrides` pin，否则 `any` 会漂。
-2. `FfiChatService`（约 13k 行）已提供 morsecq 需要的通信能力：账号（`init/login`、同步的 `getSelfToxId()`、`updateSelfProfile`）、好友（`addFriend/acceptFriendRequest/getFriendList/removeFriend`）、单聊（`sendTextWithResult(peerId, text, {cloudCustomData, clientMessageID})`、`sendFile`）、群聊（`createGroup(name, {groupType: 'group'|'conference'})`、`joinGroup`、`acceptGroupInvite`、`sendGroupTextWithResult(groupId, text, {clientMessageID})`、`quitGroup`）、历史（`loadHistory/clearC2CHistory/clearGroupHistory`）、连接状态流、`startPolling()`、Dart 侧离线消息队列（对方上线时自动重放，返回 pending 行）。
+2. `FfiChatService`（约 13k 行）已提供 MorseCQ 需要的通信能力：账号（`init/login`、同步的 `getSelfToxId()`、`updateSelfProfile`）、好友（`addFriend/acceptFriendRequest/getFriendList/removeFriend`）、单聊（`sendTextWithResult(peerId, text, {cloudCustomData, clientMessageID})`、`sendFile`）、群聊（`createGroup(name, {groupType: 'group'|'conference'})`、`joinGroup`、`acceptGroupInvite`、`sendGroupTextWithResult(groupId, text, {clientMessageID})`、`quitGroup`）、历史（`loadHistory/clearC2CHistory/clearGroupHistory`）、连接状态流、`startPolling()`、Dart 侧离线消息队列（对方上线时自动重放，返回 pending 行）。
 3. 构造 `FfiChatService` 只需注入 `ExtendedPreferencesService`（含 Draft / GroupIdentity / AccountScoped 变体，合计约 60 个方法）、`LoggerService`、`BootstrapService`、`ScratchFileService`；`EventBusProvider` / `ConversationManagerProvider` 属于 FakeUIKit 侧，方案 B 不需要。接口定义在 `tim2tox/dart/lib/interfaces/`。
 4. toxee 中**真正可搬运**的只有：`lib/models/`、`startup_outcome` / `startup_step` 类型、`logger` / `bootstrap` / `shared_prefs` 三个适配器（约 1.1k 行）。`StartupSessionUseCase`、`LoginUseCase`、`AccountService`、`StartupGate` 都经由 `SessionRuntimeCoordinator` / `FakeUIKit` / 腾讯 provider 耦合，**流程可以照抄，代码不能搬**。
 5. **`cloudCustomData` 不上线路。** `FfiChatService.sendText` 文档明确「NOT sent over Tox — the peer never sees the quote」，它只落在本地 `ChatMessage` 与离线队列行上；`sendGroupTextWithResult` 连这个参数都没有。toxee 用它做回复引用，所以引用也不会传到对端——这是 toxee 自己的既有缺口。
@@ -94,7 +95,7 @@ v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（�
 | A. Fork toxee | 复制整个 toxee（腾讯 UIKit + FakeUIKit + 双路径混合架构），在上面加莫斯功能 | 聊天第一天就能跑 | 继承约 10 万行、patch 流程、`BinaryReplacementHistoryHook` 等双路径不变量；莫斯 UX 被 UIKit 气泡框住；复杂度守卫下很难再瘦身 |
 | **B. Tim2Tox 引擎 + 自绘 UI（推荐，以「B 变体」为基线）** | 依赖 `tim2tox_dart`，只用 `FfiChatService`；**仍调用 `setNativeLibraryName('tim2tox_ffi')`**（第 8 条的两处硬依赖需要它），但不装 `Tim2ToxSdkPlatform`、不启 FakeUIKit、不引 UIKit 组件包；聊天 UI 全部按莫斯场景自绘 | 只有一条数据路径；UI 完全为莫斯设计；无 UIKit patch | 腾讯 SDK 仍是编译依赖（复用 toxee `bootstrap_deps` 与补丁流程）；`quitGroup` 与离线群邀请重放两处要改走 `Tim2ToxFfi` 或上游补 API；被静默丢弃的三个回调要用 `syncGroupIdentitiesFromNative()` 兜底；要自建 headless 双实例测试 |
 | C. 直接绑定 C 层 `tim2tox_ffi.h` | 另写一层薄 Dart 绑定 | 零腾讯依赖 | 重写 13k 行 Dart（离线队列、历史、群重入、文件传输），得不偿失 |
-| D. 上游拆分 `tim2tox_core` | 在 Tim2Tox 仓库把 UIKit 无关的部分拆成独立包，并补「消息附注上线路」「Dart 侧自定义包 API」「lossy 包 API」 | 长期最干净，toxee 也受益（回复引用终于能传到对端） | 是独立的上游工程；其中「消息附注」是 morsecq v2 键控实录的前置，但**不阻塞 v1** |
+| D. 上游拆分 `tim2tox_core` | 在 Tim2Tox 仓库把 UIKit 无关的部分拆成独立包，并补「消息附注上线路」「Dart 侧自定义包 API」「lossy 包 API」 | 长期最干净，toxee 也受益（回复引用终于能传到对端） | 是独立的上游工程；其中「消息附注」是 MorseCQ v2 键控实录的前置，但**不阻塞 v1** |
 
 **决策：B 变体为基线，D 线并行。** v1 聊天只依赖 Tim2Tox 现有能力（纯文本消息 + 现有群/好友/离线队列），因此 D 线的进度不卡 M1–M3；D 线产出（消息附注、Dart 侧自定义包 API、lossy API）落地后再开 v2 的键控实录与实时键控。若 M0 spike 证明 headless 路线连 B 变体也跑不通，退回方案 A。
 
@@ -122,7 +123,7 @@ v1 的莫斯消息在线路上**就是纯文本**，不附带任何元数据（�
 
 ### 3.4 许可证（需要拍板）
 
-Tim2Tox 与 toxee 均为 GPL-3.0，morsecq 只要链接 Tim2Tox 就必须 GPL-3.0 兼容。**GPLv3 与 App Store 条款存在已知冲突**（FSF 立场、VLC 曾因此下架），「关于页放源码链接」并不解决问题。可选路径：① 接受风险照发（业界不少 GPL App 在架但无保障）；② morsecq 自有代码双许可（GPL-3.0 + 允许商店分发的附加许可），但 Tim2Tox 部分仍是 GPL；③ 向 Tim2Tox（同组织）加 App Store 分发例外条款。建议 ③ + ②，在 M0 定下来。iOS 商店上架不能作为任何时间盒里程碑的验收门（见 §6）。
+Tim2Tox 与 toxee 均为 GPL-3.0，MorseCQ 只要链接 Tim2Tox 就必须 GPL-3.0 兼容。**GPLv3 与 App Store 条款存在已知冲突**（FSF 立场、VLC 曾因此下架），「关于页放源码链接」并不解决问题。可选路径：① 接受风险照发（业界不少 GPL App 在架但无保障）；② MorseCQ 自有代码双许可（GPL-3.0 + 允许商店分发的附加许可），但 Tim2Tox 部分仍是 GPL；③ 向 Tim2Tox（同组织）加 App Store 分发例外条款。建议 ③ + ②，在 M0 定下来。iOS 商店上架不能作为任何时间盒里程碑的验收门（见 §6）。
 
 ## 4. 训练学习模块设计
 
@@ -162,8 +163,8 @@ Tim2Tox 与 toxee 均为 GPL-3.0，morsecq 只要链接 Tim2Tox 就必须 GPL-3.
 
 - 在 `morsecq_chat` 内**重写**（流程照抄 toxee 的 `StartupSessionUseCase` / `LoginUseCase` / `AccountService`，代码不搬）：首启生成 Tox 身份 → 可选密码加密 `.tox` → 自动登录 → 等连接。
 - 加好友：手输 Tox ID、扫码（`mobile_scanner`）、展示二维码（`qr_flutter`）。
-- 首启必须提示备份 Tox 身份文件（toxee 的 TODOS 已把「丢身份 = 丧失信任」列为头号风险，morsecq 直接吸取）。
-- **「我」（发给自己，2026-10-01）**：创建账号后联系人顶部默认有一个「我」，显示自己的昵称；发往它的消息只存本机、从不发送，可作草稿箱、练习对象或备忘。保证放在 **tim2tox 的 `FfiChatService`**（toxee 与 morsecq 共用的传输层）：发给自己公钥的文本 / 文件直接成为已送达的本地行，typing、控制信号、表情回应、回执、群邀请队列都对自己短路，旧版本误入离线队列的条目在本地对账。morsecq 契约新增 `ChatService.selfConversationId` 与 `Conversation.isSelf`；删除该会话只清空记录、行保留。toxee 的应用层接入（会话列表与 UIKit 联系人）另行跟进。
+- 首启必须提示备份 Tox 身份文件（toxee 的 TODOS 已把「丢身份 = 丧失信任」列为头号风险，MorseCQ 直接吸取）。
+- **「我」（发给自己，2026-10-01）**：创建账号后联系人顶部默认有一个「我」，显示自己的昵称；发往它的消息只存本机、从不发送，可作草稿箱、练习对象或备忘。保证放在 **tim2tox 的 `FfiChatService`**（toxee 与 MorseCQ 共用的传输层）：发给自己公钥的文本 / 文件直接成为已送达的本地行，typing、控制信号、表情回应、回执、群邀请队列都对自己短路，旧版本误入离线队列的条目在本地对账。MorseCQ 契约新增 `ChatService.selfConversationId` 与 `Conversation.isSelf`；删除该会话只清空记录、行保留。toxee 的应用层接入（会话列表与 UIKit 联系人）另行跟进。
 
 ### 5.2 莫斯消息：两层设计
 
@@ -176,7 +177,7 @@ Tim2Tox 与 toxee 均为 GPL-3.0，morsecq 只要链接 Tim2Tox 就必须 GPL-3.
 **第二层（v2，依赖 D 线「消息附注上线路」）：键控实录。**
 
 - 上游改动：在 Tim2Tox 控制帧（T2TC，ID 184）新增「消息附注」类型，以 `clientMessageID` 关联，接收端把它合并进对应 `ChatMessage.cloudCustomData` 而**不是**渲染成独立气泡。这同时修复 toxee 回复引用不上线路的既有缺口，所以对上游是双赢。
-- morsecq 在附注里放 `{"morsee":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint 时序>"}}`，时序以 dit 单位量化后 varint 编码，总载荷 ≤ 1.2 KB（自定义包没有分片，超限直接报错）。
+- MorseCQ 在附注里放 `{"morsee":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint 时序>"}}`，时序以 dit 单位量化后 varint 编码，总载荷 ≤ 1.2 KB（自定义包没有分片，超限直接报错）。
 - 旧客户端忽略未知附注键；Conference 类型群无法承载自定义包，附注只在 C2C 与 NGC 群可用。
 
 ### 5.3 聊天 UI 的莫斯特性
@@ -200,7 +201,7 @@ Tim2Tox 与 toxee 均为 GPL-3.0，morsecq 只要链接 Tim2Tox 就必须 GPL-3.
 
 ### 5.6 移动端注意事项（移动端兼容为硬性要求）
 
-- 后台：toxee 靠 `voip` + `audio` 后台模式把 iOS 连接保温约几分钟（`MOBILE_BACKGROUND.md`），而 morsecq 不带 ToxAV，**不能诚实地声明 `voip` 后台模式**，iOS 后台窗口会更短；Android 各厂商省电策略不一。沿用前台服务 / 本地通知策略，产品上明确「在线才收」。
+- 后台：toxee 靠 `voip` + `audio` 后台模式把 iOS 连接保温约几分钟（`MOBILE_BACKGROUND.md`），而 MorseCQ 不带 ToxAV，**不能诚实地声明 `voip` 后台模式**，iOS 后台窗口会更短；Android 各厂商省电策略不一。沿用前台服务 / 本地通知策略，产品上明确「在线才收」。
 - 双桨键在触屏上需要 ≥ 48 dp 的大热区与多点触控；桌面端键盘快捷键是另一套输入实现，两端都要有对应测试。
 
 ## 6. 里程碑与工期
@@ -246,7 +247,7 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 
 ## 9. 需要你拍板的事
 
-1. **项目名**：接受 morsecq（中文副名「滴答」）？还是从备选/其他里选。
+1. **项目名**：接受 MorseCQ（中文副名「滴答」）？还是从备选/其他里选。
 2. **许可证与 iOS 上架**（§3.4）：接受风险 / 自有代码双许可 / 向 Tim2Tox 加商店例外。
 3. ~~训练模块是否强制无账号~~ **已拍板（2026-09-30）：训练也需要身份**。影响：去掉 learn 构建目标；M1 前置身份流程；训练进度按身份持久化并随 `.tox` 备份一起迁移。
 4. **v1 是否接受「不传发送方速度」**（§5.2 第一层）。若必须传，v1 就要等 D 线的消息附注，M2 会被上游进度卡住。
@@ -322,3 +323,5 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 - **2026-10-01** — 布局与持久化集成重新验证：应用 594 项通过、1 项既有跳过；UI 版本 `0a83b325f8d9533340b851cf40672d129d4991fd` 的 Analyze 和三个桌面 E2E 全部通过。官方流水线重新采集完整 204 张清爽现代图库，Linux/Windows 从运行 36839181762 导入。用户要求六张概念图均去除顶部说明文字，中英文 README 继续保留对应语言的产品界面。
 
 - **2026-10-01** — 新增「我」（发给自己）会话：联系人顶部默认显示自己的昵称，消息只存本机不发送。按用户要求把「不上线」保证下沉到 tim2tox `FfiChatService`（toxee 同样需要），morsecq 只做契约与界面；方案与代码均经 Codex 审查通过。
+
+- **2026-10-01** — 全平台显示名统一改为 MorseCQ（改了什么、哪些标识符保持小写见 §1.1）；本方案中指代产品的行文改为 MorseCQ（此前的变更记录条目保持原文）。原因：用户要求产品名处处一致；保留标识符可避免已有 Tox 身份与设置失联。

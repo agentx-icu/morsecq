@@ -1,8 +1,8 @@
 [English](./BUILD_AND_DEPLOY.md)
 
-# morsecq 构建与部署（原生库 libtim2tox_ffi）
+# MorseCQ 构建与部署（原生库 libtim2tox_ffi）
 
-本文档说明 morsecq 五端（macOS / Linux / Windows / Android / iOS）如何构建并打包
+本文档说明 MorseCQ 五端（macOS / Linux / Windows / Android / iOS）如何构建并打包
 Tox 聊天后端所依赖的原生库 **libtim2tox_ffi**（Tim2Tox C++ FFI 层 + c-toxcore +
 libsodium），以及 GitHub Actions 中对应的流水线。UI 与纯 Dart 的部分只需
 `dart pub get` + `flutter run`，本文不重复。
@@ -41,16 +41,16 @@ libsodium），以及 GitHub Actions 中对应的流水线。UI 与纯 Dart 的�
 
 ### 1.2 与 toxee 的差异
 
-| 项 | toxee | morsecq | 原因 |
+| 项 | toxee | MorseCQ | 原因 |
 |---|---|---|---|
-| ToxAV | 默认 ON，`--no-toxav` 关闭 | **永远 OFF**；`--toxav` 直接报错 | morsecq 无通话；opus / libvpx 完全不下载、不链接 |
-| sqlite3 | 桌面端链接系统 sqlite3 | 默认 `TIM2TOX_DISABLE_SQLITE=ON`（`--with-sqlite` 恢复） | Tim2Tox 只用它做 Community 持久化，morsecq 不用；桌面库因此零系统依赖 |
+| ToxAV | 默认 ON，`--no-toxav` 关闭 | **永远 OFF**；`--toxav` 直接报错 | MorseCQ 无通话；opus / libvpx 完全不下载、不链接 |
+| sqlite3 | 桌面端链接系统 sqlite3 | 默认 `TIM2TOX_DISABLE_SQLITE=ON`（`--with-sqlite` 恢复） | Tim2Tox 只用它做 Community 持久化，MorseCQ 不用；桌面库因此零系统依赖 |
 | libsodium（Linux / macOS） | apt / Homebrew 动态库，随包捕获 | **从 pinned tarball 静态编译**（版本、SHA-256 与 toxee 完全一致：1.0.20 / `ebb65ef6…0ce19`）；`--system-libsodium` 恢复 toxee 行为 | 每平台只需捆绑一个文件，无需 `install_name_tool -change` / RUNPATH 依赖；本机没有 libsodium-dev 也能构建 |
 | libsodium（Android / iOS / Windows） | 同 toxee | 同 toxee（Android/iOS 静态；Windows vcpkg 动态 + `pthreadVC3.dll`） | — |
 | 目标命名 | `--target linux` 等 | 架构显式：`linux-x86_64`、`windows-arm64`、`macos-arm64`…（`linux`/`macos`/`windows` 别名 = 宿主架构，`ios` = `ios-device`） | CMake 端按 `CMAKE_SYSTEM_PROCESSOR` 选目录 |
 | 产物目录 | `build/native-artifacts/<target>/`，构建树在 `third_party/tim2tox/build/` | `build/native/<target>/`，构建树 `build/native/.work/`，依赖 `build/native/.deps/` | 本仓库禁止写入 `third_party/` |
 | iOS 嵌入 | 手改 `project.pbxproj` 的脚本阶段，按 `PLATFORM_NAME` 选 framework | XCFramework + 本地 podspec | 一个产物同时含真机与模拟器切片，无需改 pbxproj |
-| macOS 嵌入 | `flutter build macos` 不嵌入；由 run 脚本 / 打包脚本拷贝到 `Contents/MacOS` | 本地 podspec `vendored_libraries`，`flutter build macos` 直接嵌入 `Contents/Frameworks` | morsecq 没有 run 脚本 |
+| macOS 嵌入 | `flutter build macos` 不嵌入；由 run 脚本 / 打包脚本拷贝到 `Contents/MacOS` | 本地 podspec `vendored_libraries`，`flutter build macos` 直接嵌入 `Contents/Frameworks` | MorseCQ 没有 run 脚本 |
 
 ## 2. 各平台前置条件
 
@@ -135,7 +135,7 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
 |---|---|---|---|
 | Linux | `build/native/linux-<arch>/libtim2tox_ffi.so`（`--system-libsodium` 时另有 `libsodium.so*`） | 不拷贝；`linux/CMakeLists.txt` 直接从该目录 `install` | `bundle/lib/libtim2tox_ffi.so`（RUNPATH=`$ORIGIN`，需 patchelf） |
 | Windows | `build/native/windows-<x64\|arm64>/tim2tox_ffi.dll` + `libsodium.dll` + `pthreadVC3.dll`（+ `.pdb`） | 不拷贝；`windows/CMakeLists.txt` 直接 `install` | `runner/Release/` 与 `morsecq.exe` 同目录 |
-| macOS | `build/native/macos-<x86_64\|arm64>/libtim2tox_ffi.dylib`（install name `@rpath/libtim2tox_ffi.dylib`，ad-hoc 签名） | 拷到 `apps/morsecq/macos/Frameworks/libtim2tox_ffi.dylib`，并 `touch Podfile` 触发 `pod install` | `morsecq.app/Contents/Frameworks/libtim2tox_ffi.dylib` |
+| macOS | `build/native/macos-<x86_64\|arm64>/libtim2tox_ffi.dylib`（install name `@rpath/libtim2tox_ffi.dylib`，ad-hoc 签名） | 拷到 `apps/morsecq/macos/Frameworks/libtim2tox_ffi.dylib`，并 `touch Podfile` 触发 `pod install` | `MorseCQ.app/Contents/Frameworks/libtim2tox_ffi.dylib` |
 | Android | `build/native/android/jniLibs/<abi>/libtim2tox_ffi.so`（已 strip） | 整目录替换 `apps/morsecq/android/app/src/main/jniLibs/` | APK `lib/<abi>/libtim2tox_ffi.so`；Gradle `abiFilters` = 有 `.so` 的 ABI |
 | iOS | `build/native/ios-device/tim2tox_ffi.framework`、`build/native/ios-simulator/tim2tox_ffi.framework`（+ 各自 `libtim2tox_ffi.dylib`） | `tool/build_ios_ffi.sh` 合成 `apps/morsecq/ios/Frameworks/tim2tox_ffi.xcframework`，并 `touch Podfile` | `Runner.app/Frameworks/tim2tox_ffi.framework` |
 
@@ -226,7 +226,7 @@ Android SDK、Xcode、MSVC）里完成了如下真实验证：
 **未在此环境验证、需要在对应平台首次运行确认**：
 
 1. **macOS / iOS / Windows / Android 的实际编译**（脚本逐行移植自 toxee 已在 CI 跑通的版本，但
-   morsecq 改为静态 libsodium、`CMAKE_OSX_DEPLOYMENT_TARGET`、`-DCMAKE_TRY_COMPILE_TARGET_TYPE` 等
+   MorseCQ 改为静态 libsodium、`CMAKE_OSX_DEPLOYMENT_TARGET`、`-DCMAKE_TRY_COMPILE_TARGET_TYPE` 等
    组合未实跑）。
 2. **CocoaPods 嵌入**：iOS `vendored_frameworks` 的 xcframework、macOS `vendored_libraries` 的 dylib
    是否被 `[CP] Embed Pods Frameworks` 正确复制并签名；`Tim2ToxFfi._openMacOS()` 期望的

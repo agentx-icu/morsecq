@@ -17,7 +17,7 @@ cloudCustomData"）。`sendGroupTextWithResult` 干脆没有这个参数。
 
 - **toxee**：回复引用与转发元数据（`V2TIM` 的 `cloudCustomData`）只在发送方显示，接收方
   静默丢失——混合运行时的已知缺口。
-- **morsecq**：v2「录制键控」（方案 §5.2 第二层）必须把发送方的键控时序（`wpm`、
+- **MorseCQ**：v2「录制键控」（方案 §5.2 第二层）必须把发送方的键控时序（`wpm`、
   Farnsworth、量化后的元素时长）连同明文一起送达，接收方才能回放实际键控。v1 之所以
   只发明文并按接收方速度播放，正是因为缺这一层。
 
@@ -60,7 +60,7 @@ enum class Type : uint8_t {
 `${ms}_${seq}_$from`；线上没有任何两端共享的 id，现有回执正是出于同样原因用文本派生的键
 （`'dup:$text'.hashCode`）关联。摘要是两端都能从真正上线的字节算出来的东西。
 
-示例（morsecq）：
+示例（MorseCQ）：
 
 ```json
 {"v":1,"h":"9a3f0c1e77b2d4a0","n":17,"data":{"morsecq":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint 时序>"}}}
@@ -126,7 +126,7 @@ FFI：新增一对导出，镜像回执路径（`tim2tox_ffi_send_message_annota
 - Headless 双实例测试（tim2tox `auto_tests` 风格）：A 向 B 发文本 + 注解；B 的 `ChatMessage`
   显示 `cloudCustomData`；处理到达顺序颠倒；发给离线 peer 的注解与文本一起重放。
 - toxee：两个构建之间的回复引用往返。
-- morsecq：API 就位后 `morsecq_chat/test/native_smoke_test.dart` 增加一次自注解发送。
+- MorseCQ：API 就位后 `morsecq_chat/test/native_smoke_test.dart` 增加一次自注解发送。
 
 ## 变更记录
 

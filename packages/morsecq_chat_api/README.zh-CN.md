@@ -2,7 +2,7 @@
 
 # morsecq_chat_api
 
-morsecq UI 与聊天后端之间的纯 Dart 契约。UI 只依赖这个包；`packages/morsecq_chat` 在 Tim2Tox 之上
+MorseCQ UI 与聊天后端之间的纯 Dart 契约。UI 只依赖这个包；`packages/morsecq_chat` 在 Tim2Tox 之上
 实现它，并且是唯一允许导入 Tim2Tox 或腾讯 SDK 的包（`tool/import_guard.dart`）。
 
 ## 内容

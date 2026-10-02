@@ -2,7 +2,7 @@
 
 # morse_io
 
-Flutter I/O layer for morsecq: renders `morse_core` timelines to **sound**,
+Flutter I/O layer for MorseCQ: renders `morse_core` timelines to **sound**,
 **haptics** and **light**, and turns on-screen / keyboard **keying** into
 `MorseDecoder` events. Targets Android, iOS, macOS, Windows and Linux.
 

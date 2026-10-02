@@ -1,6 +1,6 @@
-# morsecq (app)
+# MorseCQ (app)
 
-The Flutter application shell for morsecq. Feature logic lives in the
+The Flutter application shell for MorseCQ. Feature logic lives in the
 workspace packages (`packages/morse_core`, `packages/morse_trainer`,
 `packages/morse_io`, `packages/morsecq_chat`); this app wires them into a
 responsive Material 3 UI.

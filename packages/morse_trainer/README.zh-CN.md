@@ -2,7 +2,7 @@
 
 # morse_trainer
 
-morsecq 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程、Farnsworth 设置、练习生成器、
+MorseCQ 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程、Farnsworth 设置、练习生成器、
 基于序列对齐的评分、间隔重复、发报练习诊断以及学习进度。它只依赖 `morse_core` 的类型
 （`MorseTiming`、`MorseAlphabet.kochOrder`）；音频、触觉反馈与持久化属于 `morse_io` 和 App。
 

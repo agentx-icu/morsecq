@@ -2,7 +2,7 @@
 
 # morse_core
 
-Pure-Dart Morse code engine for morsecq: alphabet, PARIS / Farnsworth timing,
+Pure-Dart Morse code engine for MorseCQ: alphabet, PARIS / Farnsworth timing,
 text → timeline encoder and a streaming decoder for hand-keyed input. No
 Flutter dependency, so it runs in the app, in `morse_trainer` / `morse_io`
 and in plain `dart test`.
