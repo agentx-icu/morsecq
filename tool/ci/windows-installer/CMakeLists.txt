@@ -15,14 +15,16 @@ endif()
 
 set(_app_dir "${CMAKE_CURRENT_LIST_DIR}/../../../apps/morsecq")
 
-set(CPACK_PACKAGE_NAME "morsecq")
+# CPACK_PACKAGE_NAME is the WiX product name: what Add/Remove Programs shows.
+# The .msi file name (CPACK_PACKAGE_FILE_NAME) and morsecq.exe stay lowercase.
+set(CPACK_PACKAGE_NAME "MorseCQ")
 set(CPACK_PACKAGE_VENDOR "agentx-icu")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Morse code trainer and serverless Morse chat over Tox")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/agentx-icu/morsecq")
 set(CPACK_PACKAGE_VERSION "${MORSECQ_RELEASE_VERSION}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "morsecq")
-# Start-menu shortcut "morsecq" -> morsecq.exe
-set(CPACK_PACKAGE_EXECUTABLES "morsecq;morsecq")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "MorseCQ")
+# Start-menu shortcut "MorseCQ" -> morsecq.exe
+set(CPACK_PACKAGE_EXECUTABLES "morsecq;MorseCQ")
 set(CPACK_PACKAGE_FILE_NAME "morsecq-${MORSECQ_RELEASE_VERSION}-windows-${MORSECQ_PACKAGE_ARCH}")
 set(CPACK_GENERATOR "WIX")
 # LANGUAGES NONE leaves the pointer size unset, and CPack then builds an x86
@@ -32,7 +34,7 @@ set(CPACK_WIX_ARCHITECTURE x64)
 # Fixed forever: lets a newer .msi upgrade an installed older one in place.
 set(CPACK_WIX_UPGRADE_GUID "D6EFE18F-E131-44A3-B026-E5A5BD9BFECF")
 set(CPACK_WIX_PRODUCT_ICON "${_app_dir}/windows/runner/resources/app_icon.ico")
-set(CPACK_WIX_PROGRAM_MENU_FOLDER "morsecq")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "MorseCQ")
 set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/agentx-icu/morsecq")
 
 # WiX wants the licence as .txt/.rtf.

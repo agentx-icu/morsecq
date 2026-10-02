@@ -36,7 +36,7 @@ target 'Runner' do
   # morsecq: bundle libtim2tox_ffi
   # The Tox backend is vendored as Frameworks/libtim2tox_ffi.dylib (staged by
   # tool/ci/build_tim2tox.sh --target macos; gitignored). CocoaPods links Runner
-  # against it and embeds it into morsecq.app/Contents/Frameworks/, which
+  # against it and embeds it into MorseCQ.app/Contents/Frameworks/, which
   # Tim2Tox's Dart loader probes (<exe dir>/../Frameworks/libtim2tox_ffi.dylib).
   # The dylib's install name is @rpath/libtim2tox_ffi.dylib and Runner's
   # LD_RUNPATH_SEARCH_PATHS contains @executable_path/../Frameworks, so the

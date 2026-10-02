@@ -17,7 +17,7 @@
     <!-- Microphone: decoding Morse from audio (ui/listen, record). -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
-        android:label="morsecq"
+        android:label="MorseCQ"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

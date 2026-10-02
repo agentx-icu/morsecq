@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "morsecq",
+  "appName": "MorseCQ",
   "@appName": {
     "description": "Product name; never translated"
   },
@@ -623,7 +623,7 @@
   "@accountStartupFailedTitle": {
     "description": "From AccountStrings.startupFailedTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountStartupFailedBody": "morsecq could not read your identity. Nothing was changed; you can try again.",
+  "accountStartupFailedBody": "MorseCQ could not read your identity. Nothing was changed; you can try again.",
   "@accountStartupFailedBody": {
     "description": "From AccountStrings.startupFailedBody (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
@@ -635,7 +635,7 @@
   "@accountWelcomeTitle": {
     "description": "From AccountStrings.welcomeTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountWelcomeIntro": "morsecq uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.",
+  "accountWelcomeIntro": "MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.",
   "@accountWelcomeIntro": {
     "description": "From AccountStrings.welcomeIntro (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
@@ -711,7 +711,7 @@
   "@accountBackupAcknowledge": {
     "description": "From AccountStrings.backupAcknowledge (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountBackupContinue": "Continue to morsecq",
+  "accountBackupContinue": "Continue to MorseCQ",
   "@accountBackupContinue": {
     "description": "From AccountStrings.backupContinue (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
@@ -723,7 +723,7 @@
   "@accountRestoreTitle": {
     "description": "From AccountStrings.restoreTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountRestoreBody": "Choose a backup file exported from morsecq. If the identity was protected with a password you will need it here.",
+  "accountRestoreBody": "Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.",
   "@accountRestoreBody": {
     "description": "From AccountStrings.restoreBody (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
@@ -743,7 +743,7 @@
   "@accountRestoring": {
     "description": "From AccountStrings.restoring (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountRestoreInvalidFile": "This file is not a morsecq backup.",
+  "accountRestoreInvalidFile": "This file is not a MorseCQ backup.",
   "@accountRestoreInvalidFile": {
     "description": "From AccountStrings.restoreInvalidFile (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
@@ -1112,7 +1112,7 @@
   "@chatRequestMessage": {
     "description": "From ChatStrings.requestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
   },
-  "chatDefaultRequestMessage": "morsecq CQ",
+  "chatDefaultRequestMessage": "MorseCQ CQ",
   "@chatDefaultRequestMessage": {
     "description": "From ChatStrings.defaultRequestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
   },
@@ -2404,15 +2404,15 @@
   "@accountToxIdQrSemantics": {
     "description": "From AccountStrings.toxIdQrSemantics (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountBackupSaveDialogTitle": "Save morsecq backup",
+  "accountBackupSaveDialogTitle": "Save MorseCQ backup",
   "@accountBackupSaveDialogTitle": {
     "description": "From AccountStrings.backupSaveDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountBackupShareSubject": "morsecq identity backup",
+  "accountBackupShareSubject": "MorseCQ identity backup",
   "@accountBackupShareSubject": {
     "description": "From AccountStrings.backupShareSubject (apps/morsecq/lib/ui/account/account_strings.dart)"
   },
-  "accountBackupChooseDialogTitle": "Choose morsecq backup",
+  "accountBackupChooseDialogTitle": "Choose MorseCQ backup",
   "@accountBackupChooseDialogTitle": {
     "description": "From AccountStrings.backupChooseDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
   },

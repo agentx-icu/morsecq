@@ -44,9 +44,10 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   static const String defaultAndroidIcon = '@mipmap/ic_launcher';
 
   /// Display name Windows registers for the toast platform together with
-  /// [windowsAppUserModelId]. A product name, never translated, and kept
-  /// stable so the registry entry of an unpackaged app is not duplicated.
-  static const String windowsAppName = 'Morsecq';
+  /// [windowsAppUserModelId]. A product name, never translated. The registry
+  /// entry is keyed by the AUMID, so this display value may change (it is
+  /// rewritten on every init) without duplicating or orphaning anything.
+  static const String windowsAppName = 'MorseCQ';
 
   /// Windows registers the app with the toast platform under this
   /// AppUserModelID; unpackaged apps register it in the registry on first

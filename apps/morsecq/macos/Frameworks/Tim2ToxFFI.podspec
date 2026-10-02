@@ -4,7 +4,7 @@
 # tool/ci/build_tim2tox.sh --target macos-<arch> (libtim2tox_ffi.dylib next to
 # this file; gitignored). CocoaPods treats a vendored dynamic library like a
 # framework: it is linked (-ltim2tox_ffi) and copied into
-# morsecq.app/Contents/Frameworks by the "[CP] Embed Pods Frameworks" phase,
+# MorseCQ.app/Contents/Frameworks by the "[CP] Embed Pods Frameworks" phase,
 # then codesigned with the app. Tim2Tox's Dart loader probes
 # `<exe dir>/../Frameworks/libtim2tox_ffi.dylib`, and the patched Tencent SDK's
 # NativeLibraryManager falls back to dlopen('libtim2tox_ffi.dylib'), which
