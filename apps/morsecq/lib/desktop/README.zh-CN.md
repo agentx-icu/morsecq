@@ -109,7 +109,7 @@ Shortcuts(
   因此不能带任何颜色。未读数作为状态栏项的标题显示在图标旁边。关闭最后一个窗口通常会终止 App
   （`applicationShouldTerminateAfterLastWindowClosed`）；runner 的默认值没问题，因为关闭在到达 AppKit
   之前就已被拦截。
-- **Windows**：托盘需要真正的 `.ico`（`tray_icon.ico`，16/22/32 px 帧）。边界以逻辑像素表示；
+- **Windows**：托盘需要真正的 `.ico`（`tray_icon.ico`，16/20/24/32/40/48 px 帧，对应 100–300% DPI 的小图标尺寸）。边界以逻辑像素表示；
   `window_manager` 用设备像素比换算，因此两次会话之间的 DPI 变化由夹取处理，而不是由我们处理。
 
 ## 重新生成图标
