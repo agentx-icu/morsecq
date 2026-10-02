@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/ui/chat/conversation_list.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/conversation_target.dart';
+import 'package:morsecq/ui/chat/conversation_tile.dart';
 import 'package:morsecq/ui/chat/message_bubble.dart';
 import 'package:morsecq/ui/chat/self_badge.dart';
 import 'package:morsecq/ui/contacts/contacts_page.dart';
@@ -24,6 +26,43 @@ ChatHarness _harness() => ChatHarness(
 );
 
 final Finder _selfTile = find.byKey(const ValueKey<String>('contacts_self'));
+
+final String _selfId = 'c2c_$kSelfKey';
+final Finder _selfRow = find.byKey(ValueKey<String>(_selfId));
+final Finder _annRow = find.byKey(ValueKey<String>('c2c_$kPeerKey'));
+
+Finder _overflowOf(Finder row) => find.descendant(
+  of: row,
+  matching: find.byType(PopupMenuButton<ConversationAction>),
+);
+
+/// The conversation list with "me" (holding a note) and Ann; swipe forced on
+/// so the touch gestures are exercised at every width.
+Future<ChatHarness> _pumpList(WidgetTester tester, Size size) async {
+  final ChatHarness h = await pumpChat(
+    tester,
+    (h) {
+      h.addAnn();
+      return Scaffold(
+        body: ConversationList(
+          service: h.service,
+          swipeEnabled: true,
+          onOpen: (_) {},
+        ),
+      );
+    },
+    size: size,
+    harness: _harness(),
+  );
+  await h.service.sendText(_selfId, 'KEEP ME');
+  await tester.pumpAndSettle();
+  return h;
+}
+
+Future<void> _dismissMenu(WidgetTester tester) async {
+  await tester.tapAt(const Offset(2, 2));
+  await tester.pumpAndSettle();
+}
 
 Future<void> _send(WidgetTester tester, String text) async {
   await tester.enterText(find.byType(TextField), text);
@@ -124,6 +163,77 @@ void main() {
         expect(find.byType(SelfBadge), findsOneWidget);
         expect(find.byType(SelfAvatar), findsOneWidget);
         expect(find.text(ChatPage.description(s)), findsNothing);
+      });
+
+      testWidgets('"me" has no Delete in its menu; a friend still has', (
+        tester,
+      ) async {
+        await _pumpList(tester, size);
+
+        await tester.tap(_overflowOf(_selfRow));
+        await tester.pumpAndSettle();
+        expect(find.text(s.chatPin), findsOneWidget);
+        expect(find.text(s.chatDelete), findsNothing);
+        await _dismissMenu(tester);
+
+        // Long press (and right-click) open the same item list.
+        await tester.longPress(
+          find.descendant(of: _selfRow, matching: find.byType(ListTile)),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(s.chatPin), findsOneWidget);
+        expect(find.text(s.chatDelete), findsNothing);
+        await _dismissMenu(tester);
+
+        await tester.tap(_overflowOf(_annRow));
+        await tester.pumpAndSettle();
+        expect(find.text(s.chatDelete), findsOneWidget);
+        await _dismissMenu(tester);
+      });
+
+      testWidgets('"me" does not swipe to delete; it still swipes to pin', (
+        tester,
+      ) async {
+        final ChatHarness h = await _pumpList(tester, size);
+
+        // Swipes travel 70% of the width (past the dismiss threshold).
+        final double travel = size.width * 0.7;
+        final TestGesture gesture = await tester.startGesture(
+          tester.getTopRight(_selfRow) + const Offset(-20, 20),
+        );
+        await gesture.moveBy(Offset(-travel, 0));
+        await tester.pump();
+        expect(
+          find.byIcon(Icons.delete_outline),
+          findsNothing,
+          reason: 'no delete background is offered',
+        );
+        await gesture.up();
+        await tester.pumpAndSettle();
+        expect(find.text(s.chatDeleteConversationTitle), findsNothing);
+        expect(_selfRow, findsOneWidget);
+        expect((await h.service.loadHistory(_selfId)).single.text, 'KEEP ME');
+
+        await tester.dragFrom(
+          tester.getTopLeft(_selfRow) + const Offset(20, 20),
+          Offset(travel, 0),
+        );
+        await tester.pumpAndSettle();
+        final Conversation self = h.service.conversations.singleWhere(
+          (c) => c.isSelf,
+        );
+        expect(self.pinned, isTrue);
+        expect(self.lastMessage?.text, 'KEEP ME');
+
+        // A friend's row still offers delete on the same swipe.
+        await tester.dragFrom(
+          tester.getTopRight(_annRow) + const Offset(-20, 20),
+          Offset(-travel, 0),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(s.chatDeleteConversationTitle), findsOneWidget);
+        await tester.tap(find.text(s.actionCancel));
+        await tester.pumpAndSettle();
       });
     });
   }

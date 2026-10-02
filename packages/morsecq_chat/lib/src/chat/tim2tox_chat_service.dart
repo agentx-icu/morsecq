@@ -309,9 +309,13 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
   Future<void> setDraft(String conversationId, String draft) =>
       _conversationsPart.setDraft(conversationId, draft);
 
+  /// The self guard runs before [_requireService], so deleting the note to
+  /// self is refused with `self_conversation` even while disconnected.
   @override
-  Future<void> deleteConversation(String conversationId) =>
-      _conversationsPart.delete(_requireService(), conversationId);
+  Future<void> deleteConversation(String conversationId) async {
+    _conversationsPart.refuseSelf(conversationId);
+    await _conversationsPart.delete(_requireService(), conversationId);
+  }
 
   // ---- Messages -------------------------------------------------------------
 
