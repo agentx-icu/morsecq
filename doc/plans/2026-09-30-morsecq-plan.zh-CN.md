@@ -163,7 +163,7 @@ Tim2Tox 与 toxee 均为 GPL-3.0，morsecq 只要链接 Tim2Tox 就必须 GPL-3.
 - 在 `morsecq_chat` 内**重写**（流程照抄 toxee 的 `StartupSessionUseCase` / `LoginUseCase` / `AccountService`，代码不搬）：首启生成 Tox 身份 → 可选密码加密 `.tox` → 自动登录 → 等连接。
 - 加好友：手输 Tox ID、扫码（`mobile_scanner`）、展示二维码（`qr_flutter`）。
 - 首启必须提示备份 Tox 身份文件（toxee 的 TODOS 已把「丢身份 = 丧失信任」列为头号风险，morsecq 直接吸取）。
-- **「我」（发给自己，2026-10-01）**：创建账号后联系人顶部默认有一个「我」，显示自己的昵称；发往它的消息只存本机、从不发送，可作草稿箱、练习对象或备忘。保证放在 **tim2tox 的 `FfiChatService`**（toxee 与 morsecq 共用的传输层）：发给自己公钥的文本 / 文件直接成为已送达的本地行，typing、控制信号、表情回应、回执、群邀请队列都对自己短路，旧版本误入离线队列的条目在本地对账。morsecq 契约新增 `ChatService.selfConversationId` 与 `Conversation.isSelf`；删除该会话只清空记录、行保留。toxee 的应用层接入（会话列表与 UIKit 联系人）另行跟进。
+- **「我」（发给自己，2026-10-01）**：创建账号后联系人顶部默认有一个「我」，显示自己的昵称；发往它的消息只存本机、从不发送，可作草稿箱、练习对象或备忘。保证放在 **tim2tox 的 `FfiChatService`**（toxee 与 morsecq 共用的传输层）：发给自己公钥的文本 / 文件直接成为已送达的本地行，typing、控制信号、表情回应、回执、群邀请队列都对自己短路，旧版本误入离线队列的条目在本地对账。morsecq 契约新增 `ChatService.selfConversationId` 与 `Conversation.isSelf`。该会话不可删除（2026-10-02）：`deleteConversation` 对它抛 `ChatException('self_conversation')` 且不做任何改动，会话列表也不提供删除（菜单无删除项、无左滑删除，手机与桌面一致）；只有会话内需确认的「清空记录」才会清空其中的备忘。toxee 的应用层接入（会话列表与 UIKit 联系人）另行跟进。
 
 ### 5.2 莫斯消息：两层设计
 
@@ -322,3 +322,5 @@ v1 合计约 **33–42 CC 日**，按本仓 8–15× 口径约合 **260–630 �
 - **2026-10-01** — 布局与持久化集成重新验证：应用 594 项通过、1 项既有跳过；UI 版本 `0a83b325f8d9533340b851cf40672d129d4991fd` 的 Analyze 和三个桌面 E2E 全部通过。官方流水线重新采集完整 204 张清爽现代图库，Linux/Windows 从运行 36839181762 导入。用户要求六张概念图均去除顶部说明文字，中英文 README 继续保留对应语言的产品界面。
 
 - **2026-10-01** — 新增「我」（发给自己）会话：联系人顶部默认显示自己的昵称，消息只存本机不发送。按用户要求把「不上线」保证下沉到 tim2tox `FfiChatService`（toxee 同样需要），morsecq 只做契约与界面；方案与代码均经 Codex 审查通过。
+
+- **2026-10-02** — 「我」会话不可再删除（用户要求「防止删除会话」）。此前左滑或行菜单的「删除」会清空全部备忘（行保留）；现在契约、Tim2Tox 传输层与假实现在任何改动之前就以 `self_conversation` 拒绝对它的 `deleteConversation`，会话列表在所有平台上都去掉了它的删除菜单项与删除滑动。会话内的「清空记录」仍是清空它的显式途径。不新增界面文案：界面永远走不到这个拒绝。

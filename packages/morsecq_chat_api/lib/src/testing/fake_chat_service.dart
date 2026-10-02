@@ -198,7 +198,12 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> deleteConversation(String conversationId) async {
-    if (_isSelfConversation(conversationId)) return _clearSelfConversation();
+    if (_isSelfConversation(conversationId)) {
+      throw const ChatException(
+        'self_conversation',
+        'The note-to-self conversation cannot be deleted',
+      );
+    }
     _messages.remove(conversationId);
     if (_conversations.remove(conversationId) != null) {
       _publishConversations();

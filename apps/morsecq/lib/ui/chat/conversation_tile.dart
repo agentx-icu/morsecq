@@ -16,6 +16,9 @@ enum ConversationAction { togglePin, markRead, delete }
 /// Touch platforms: swipe right to pin/unpin, swipe left to delete, long
 /// press for the menu. Desktop: right-click (or long press) opens the same
 /// menu; the overflow button is always there for discoverability.
+///
+/// The note to self ([Conversation.isSelf]) cannot be deleted: its menu has
+/// no Delete and it only swipes in the pin direction, on every platform.
 class ConversationTile extends StatelessWidget {
   const ConversationTile({
     super.key,
@@ -40,26 +43,32 @@ class ConversationTile extends StatelessWidget {
     if (!(swipeEnabled ?? isTouchPlatform)) return tile;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final S s = context.s;
+    final bool deletable = !conversation.isSelf;
     return Dismissible(
       key: ValueKey<String>('dismiss_${conversation.id}'),
+      direction: deletable
+          ? DismissDirection.horizontal
+          : DismissDirection.startToEnd,
       background: _SwipeBackground(
         alignment: Alignment.centerLeft,
         color: scheme.primaryContainer,
         icon: conversation.pinned ? Icons.push_pin_outlined : Icons.push_pin,
         label: conversation.pinned ? s.chatUnpin : s.chatPin,
       ),
-      secondaryBackground: _SwipeBackground(
-        alignment: Alignment.centerRight,
-        color: scheme.errorContainer,
-        icon: Icons.delete_outline,
-        label: s.chatDelete,
-      ),
+      secondaryBackground: deletable
+          ? _SwipeBackground(
+              alignment: Alignment.centerRight,
+              color: scheme.errorContainer,
+              icon: Icons.delete_outline,
+              label: s.chatDelete,
+            )
+          : null,
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           onAction(ConversationAction.togglePin);
           return false; // pin never removes the row
         }
-        onAction(ConversationAction.delete);
+        if (deletable) onAction(ConversationAction.delete);
         return false; // the list rebuilds from the stream after deletion
       },
       child: tile,
@@ -186,7 +195,11 @@ class ConversationTile extends StatelessWidget {
         value: ConversationAction.markRead,
         child: Text(s.chatMarkRead),
       ),
-    PopupMenuItem(value: ConversationAction.delete, child: Text(s.chatDelete)),
+    if (!conversation.isSelf)
+      PopupMenuItem(
+        value: ConversationAction.delete,
+        child: Text(s.chatDelete),
+      ),
   ];
 
   Future<void> _showMenu(BuildContext context, Offset globalPosition) async {

@@ -37,7 +37,7 @@ class _ConversationsPart {
       for (final f in friendById.keys) ConversationIds.c2c(f),
       for (final g in groupIds) ConversationIds.group(g),
     }..removeAll(hidden);
-    // Note to self: always listed, never hidden (deleting only clears it).
+    // Note to self: always listed, never hidden (it cannot be deleted).
     if (selfId != null) ids.add(selfId);
 
     final mapper = _owner._mapper;
@@ -140,20 +140,29 @@ class _ConversationsPart {
     if (svc != null && _owner._isCurrent(svc)) rebuild(svc);
   }
 
+  /// Throws `self_conversation` for the note to self, which cannot be
+  /// deleted (only emptied explicitly with `clearHistory`). Needs no session,
+  /// so callers run it before anything else, offline included.
+  void refuseSelf(String conversationId) {
+    if (ConversationIds.isGroup(conversationId)) return;
+    final selfKey = _owner._selfKey;
+    final peer = ConversationIds.normalizeKey(
+      ConversationIds.peerOf(conversationId),
+    );
+    if (selfKey.isNotEmpty && peer == selfKey) {
+      throw const ChatException(
+        'self_conversation',
+        'The note-to-self conversation cannot be deleted',
+      );
+    }
+  }
+
   /// Clears the history and hides the conversation until the next message
   /// (a friend or group stays; deleting the relationship is a separate call).
+  /// The note to self is refused ([refuseSelf]) before anything changes.
   Future<void> delete(FfiChatService svc, String conversationId) async {
+    refuseSelf(conversationId);
     final peer = ConversationIds.peerOf(conversationId);
-    if (!ConversationIds.isGroup(conversationId) &&
-        ConversationIds.normalizeKey(peer) == _owner._selfKey) {
-      // The note to self is emptied, never hidden; its pin survives.
-      await svc.clearC2CHistory(peer);
-      _owner._ensureCurrent(svc);
-      await _owner._meta.setDraft(conversationId, '');
-      _owner._ensureCurrent(svc);
-      rebuild(svc);
-      return;
-    }
     if (ConversationIds.isGroup(conversationId)) {
       await svc.clearGroupHistory(peer);
     } else {

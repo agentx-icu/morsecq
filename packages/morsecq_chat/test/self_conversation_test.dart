@@ -119,18 +119,44 @@ void main() {
     expect(ffi.sentTextPeers, [kPeerKey]);
   });
 
-  test('deleting it empties it; the row stays, never hidden', () async {
+  final Matcher refused = throwsA(
+    isA<ChatException>().having((e) => e.code, 'code', 'self_conversation'),
+  );
+
+  test('deleting it is refused and changes nothing', () async {
     await bind();
     await chat.sendText(selfId, 'note');
     await chat.setPinned(selfId, true);
     await chat.setDraft(selfId, 'half');
 
-    await chat.deleteConversation(selfId);
+    await expectLater(chat.deleteConversation(selfId), refused);
     await Future<void>.delayed(const Duration(milliseconds: 80));
 
     final Conversation row = selfRow()!;
+    expect(row.lastMessage?.text, 'note');
+    expect(row.draft, 'half');
+    expect(row.pinned, isTrue);
+    expect((await chat.loadHistory(selfId)).single.text, 'note');
+  });
+
+  test(
+    'deleting it is refused offline too, before the session check',
+    () async {
+      await expectLater(chat.deleteConversation(selfId), refused);
+    },
+  );
+
+  test('clearHistory still empties it explicitly; the row stays', () async {
+    await bind();
+    await chat.sendText(selfId, 'note');
+    await chat.setPinned(selfId, true);
+
+    await chat.clearHistory(selfId);
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+
+    final Conversation row = selfRow()!;
+    expect(row.isSelf, isTrue);
     expect(row.lastMessage, isNull);
-    expect(row.draft, isEmpty);
     expect(row.pinned, isTrue);
     expect(await chat.loadHistory(selfId), isEmpty);
   });
