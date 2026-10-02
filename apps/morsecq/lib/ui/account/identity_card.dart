@@ -3,6 +3,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
+import 'avatar_initial.dart';
 import 'connection_chip.dart';
 import 'tox_id_qr_dialog.dart';
 
@@ -17,9 +18,7 @@ class IdentityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
-    final initial = identity.displayName.isEmpty
-        ? '?'
-        : identity.displayName.characters.first.toUpperCase();
+    final initial = avatarInitial(identity.displayName);
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
