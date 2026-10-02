@@ -13,8 +13,8 @@ import 'startup_screens.dart';
 /// loaded (product decision: training needs an identity too). Reads the
 /// [StartupController] provided by `AppScope` and kicks it off once.
 ///
-/// While [StartupPhase.ready], [child] is shown with a small connection chip
-/// overlaid top-right whenever the node is not online.
+/// While [StartupPhase.ready], [child] is shown below a [ConnectionStrip]
+/// that carries the connection chip whenever the node is not online.
 class StartupGate extends StatefulWidget {
   const StartupGate({super.key, required this.child});
 
@@ -49,21 +49,7 @@ class _StartupGateState extends State<StartupGate> {
         error: controller.error,
         onRetry: () => controller.retry().ignore(),
       ),
-      StartupPhase.ready => Stack(
-        children: [
-          widget.child,
-          const Positioned(
-            top: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: ConnectionChip(),
-              ),
-            ),
-          ),
-        ],
-      ),
+      StartupPhase.ready => ConnectionStrip(child: widget.child),
     };
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
