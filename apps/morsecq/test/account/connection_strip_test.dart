@@ -122,6 +122,52 @@ void main() {
     expect(tester.getTopLeft(find.byType(AppShell)).dy, 0);
   });
 
+  testWidgets(
+    'a notched phone: the strip takes the top inset, then returns it',
+    (tester) async {
+      const double inset = 47; // status bar / notch, logical px at DPR 1
+      tester.view.padding = const FakeViewPadding(top: inset);
+      tester.view.viewPadding = const FakeViewPadding(top: inset);
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      final identity = seededIdentityService(
+        connectDelay: const Duration(seconds: 2),
+      );
+      await pumpApp(tester, identity: identity);
+      MediaQueryData shellMedia() =>
+          MediaQuery.of(tester.element(find.byType(AppShell)));
+
+      // Connecting: the chip sits below the status bar, and the shell below the
+      // strip sees no top inset (its app bar is not padded a second time).
+      expect(
+        tester.getTopLeft(find.byType(ConnectionChip)).dy,
+        greaterThanOrEqualTo(inset),
+      );
+      expect(shellMedia().padding.top, 0);
+      expect(shellMedia().viewPadding.top, 0);
+      final double appBarTop = tester.getTopLeft(find.byType(AppBar).first).dy;
+      expect(appBarTop, greaterThan(inset));
+      expect(
+        tester.getSize(find.byType(AppBar).first).height,
+        kToolbarHeight,
+        reason:
+            'no status-bar padding inside the app bar while the strip shows',
+      );
+
+      // Online: no strip; the shell owns the inset again.
+      await tester.pump(const Duration(seconds: 3));
+      await settle(tester);
+      expect(find.byType(ConnectionChip), findsNothing);
+      expect(shellMedia().padding.top, inset);
+      expect(shellMedia().viewPadding.top, inset);
+      expect(tester.getTopLeft(find.byType(AppShell)).dy, 0);
+      expect(
+        tester.getSize(find.byType(AppBar).first).height,
+        kToolbarHeight + inset,
+      );
+    },
+  );
+
   testWidgets('the chip strip does not overlap the shell', (tester) async {
     final identity = seededIdentityService(
       connectDelay: const Duration(seconds: 30),
