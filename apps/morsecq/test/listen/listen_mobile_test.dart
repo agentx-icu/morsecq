@@ -51,13 +51,19 @@ final class _FakeRecorder implements AudioRecorder {
   @override
   Future<Stream<Uint8List>> startStream(RecordConfig config) async {
     log.add('start');
-    return const Stream<Uint8List>.empty();
+    // Open until stopped, like the plugin's: a finished stream would read
+    // as the platform ending the capture on its own.
+    return (_pcm = StreamController<Uint8List>()).stream;
   }
+
+  StreamController<Uint8List>? _pcm;
 
   @override
   Future<String?> stop() async {
     log.add('stop');
     await stopGate?.future;
+    unawaited(_pcm?.close());
+    _pcm = null;
     return null;
   }
 
