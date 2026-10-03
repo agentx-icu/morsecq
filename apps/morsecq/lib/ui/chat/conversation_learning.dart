@@ -144,7 +144,7 @@ abstract final class ConversationLearning {
       final key = context.read<IdentityService>().current?.publicKey;
       // No open identity (deleted, being replaced): never restore. An
       // unnamed controller (isolated screens) cannot be told apart.
-      if (key == null) return false;
+      if (key == null || controller.isDisposed) return false;
       return controller.profileKey.isEmpty || key == controller.profileKey;
     } on Object {
       return false;

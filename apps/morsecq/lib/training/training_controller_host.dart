@@ -230,6 +230,8 @@ class TrainingControllerHost implements IdentityDataStore {
     // stop issuing mutations while the backend is replacing their files.
     _replacing = true;
     _dropCurrent();
+    // Disposal stops new mutations at once; writes and document
+    // transactions submitted before it still complete, and flush waits.
     if (controller != null) {
       await controller.flush();
     } else if (loading != null) {

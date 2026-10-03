@@ -64,15 +64,21 @@ extension QsoPractice on TrainingController {
 
   Future<void> discardQsoDraft() => deleteDoc(draftDoc);
 
-  static const String finishedDoc = 'qso_finished';
+  /// Parked finished QSOs, one document each (`qso_finished_<seed>`).
+  static const String finishedPrefix = 'qso_finished_';
+
+  static String _finishedDoc(QsoSession s) =>
+      '$finishedPrefix${s.scenario.name}_${s.seed}'.toLowerCase();
 
   /// Records a finished QSO. It is first parked in its own document (never
-  /// overwritten by a new QSO's draft), then credited, then removed — only
-  /// once the result is on disk, so a crash or a failed write never loses
-  /// it. [recoverFinishedQso] commits a parked QSO again (idempotent by id).
+  /// overwritten by another QSO), then credited, then removed — only once
+  /// the result is on disk, so a crash or a failed write never loses it.
+  /// [recoverFinishedQso] commits parked QSOs again; their ids are never
+  /// evicted from de-duplication, so this cannot credit twice.
   Future<bool> finishQso(QsoSession session, Duration active) async {
+    final doc = _finishedDoc(session);
     try {
-      await writeDoc(finishedDoc, <String, Object?>{
+      await writeDoc(doc, <String, Object?>{
         'session': session.toJson(),
         'activeMs': active.inMilliseconds,
       });
@@ -83,29 +89,36 @@ extension QsoPractice on TrainingController {
     final outcome = await recordQso(session, active);
     if (!outcome.saved) return false;
     try {
-      await deleteDoc(finishedDoc);
+      await deleteDoc(doc);
     } on Object {
-      // Committing it again later is a no-op (same id).
+      // Committing it again later is a no-op (same, protected id).
     }
     return true;
   }
 
-  /// Commits a QSO parked by [finishQso] that was not saved. Runs whenever
-  /// learning data loads, so it never waits behind thousands of later
-  /// exercises.
+  /// Commits every QSO parked by [finishQso] whose save did not complete.
+  /// Runs whenever learning data loads.
   Future<void> recoverFinishedQso() async {
+    List<String> names;
     try {
-      final json = await readDoc(finishedDoc);
-      final raw = json?['session'];
-      if (raw is! Map<String, Object?>) return;
-      final session = QsoSession.fromJson(raw);
-      final active = Duration(
-        milliseconds: (json!['activeMs'] as num?)?.toInt() ?? 0,
-      );
-      final outcome = await recordQso(session, active);
-      if (outcome.saved) await deleteDoc(finishedDoc);
+      names = await docNames();
     } on Object {
-      // Tried again next time.
+      return;
+    }
+    for (final name in names.where((n) => n.startsWith(finishedPrefix))) {
+      try {
+        final json = await readDoc(name);
+        final raw = json?['session'];
+        if (raw is! Map<String, Object?>) continue;
+        final session = QsoSession.fromJson(raw);
+        final active = Duration(
+          milliseconds: (json!['activeMs'] as num?)?.toInt() ?? 0,
+        );
+        final outcome = await recordQso(session, active);
+        if (outcome.saved) await deleteDoc(name);
+      } on Object {
+        // Tried again next time.
+      }
     }
   }
 

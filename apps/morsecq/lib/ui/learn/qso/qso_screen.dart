@@ -118,9 +118,13 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     unawaited(_keyingSub?.cancel());
     _keying = SendSession(target: '', timing: _remoteTiming, now: _c.now);
     _keying.listenToDecoder();
+    var marks = _keying.markCount;
     _keyingSub = _keying.changes.listen((_) {
-      // Keying is practice even after Pause stopped the clock.
-      if (!_active.isRunning && !_session.isDone) _active.start();
+      // Real keying is practice even after Pause stopped the clock; a
+      // decoder committing a pending gap is not.
+      final keyed = _keying.isKeyDown || _keying.markCount != marks;
+      marks = _keying.markCount;
+      if (keyed && !_active.isRunning && !_session.isDone) _active.start();
       if (!_disposed) setState(() {});
     });
   }
@@ -155,6 +159,10 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _saveDraft() async {
+    // Let the decoder commit a pending character / word gap first, so a
+    // restored reply keeps its word boundaries.
+    final playback = _playback;
+    if (playback != null) _keying.tick(playback.clock.now());
     try {
       await _c.saveQsoDraft(
         _session,

@@ -267,14 +267,38 @@ void main() {
     );
     s.submit('3', 'R R TNX ${s.remote.name}');
     s.submit('4', 'TU 73 <SK>');
-    await t.controller.writeDoc(QsoPractice.finishedDoc, {
-      'session': s.toJson(),
+    const doc = '${QsoPractice.finishedPrefix}a';
+    final other = QsoSession.start(
+      scenario: QsoScenario.callCq,
+      seed: 12,
+      local: _me,
+      characterWpm: 20,
+      effectiveWpm: 20,
+    );
+    other.submit('1', 'CQ CQ DE BD1XYZ K');
+    other.submit(
+      '2',
+      '${other.remote.callsign} DE BD1XYZ UR RST 599 NAME LI QTH PARIS K',
+    );
+    other.submit('3', 'R R TNX ${other.remote.name}');
+    other.submit('4', 'TU 73 <SK>');
+    await t.controller.writeDoc('${QsoPractice.finishedPrefix}b', {
+      // A second, different finished QSO (seed 12): both are recovered.
+      'session': other.toJson(),
       'activeMs': 1000,
     });
+    await t.controller.writeDoc(doc, {'session': s.toJson(), 'activeMs': 1000});
     await t.controller.recoverFinishedQso();
-    expect(t.controller.progress.history.single.source, ExerciseSource.qso);
-    expect(await t.controller.readDoc(QsoPractice.finishedDoc), isNull);
+    expect(t.controller.progress.history, hasLength(2));
+    expect(
+      t.controller.progress.history.every(
+        (h) => h.source == ExerciseSource.qso,
+      ),
+      isTrue,
+    );
+    expect(await t.controller.readDoc(doc), isNull);
+    expect(await t.controller.docNames(), isNot(contains(doc)));
     await t.controller.recoverFinishedQso();
-    expect(t.controller.progress.history, hasLength(1));
+    expect(t.controller.progress.history, hasLength(2));
   });
 }

@@ -270,11 +270,18 @@ final class TrainerProgress {
 
   List<String> _withId(String id) {
     final ids = <String>[...committedIds, id];
-    if (ids.length > maxCommittedIds) {
-      ids.removeRange(0, ids.length - maxCommittedIds);
+    // Evict the oldest ordinary ids. Ids of results that can be parked
+    // across launches (prefix `qso_`, one per finished QSO) are never
+    // evicted, so a parked result can never be credited twice.
+    var excess = ids.length - maxCommittedIds;
+    if (excess > 0) {
+      ids.removeWhere((x) => excess-- > 0 && !x.startsWith(protectedIdPrefix));
     }
     return ids;
   }
+
+  /// See [_withId].
+  static const String protectedIdPrefix = 'qso_';
 
   /// Installs [plan] as today's plan; an older plan moves to [previousPlan].
   TrainerProgress withDailyPlan(DailyPlan plan) {

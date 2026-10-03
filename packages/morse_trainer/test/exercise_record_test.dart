@@ -195,6 +195,28 @@ void main() {
     });
   });
 
+  test('parkable QSO ids survive de-duplication eviction', () {
+    final score = SessionScore.evaluate('K', 'K');
+    const credit = ExerciseCredit(
+      activity: true,
+      receiveStats: false,
+      unlock: false,
+      speedSample: false,
+    );
+    SessionSummary r(String id) => record(score, id: id);
+    var p = TrainerProgress().recordExercise(
+      score,
+      r('qso_callCq_1'),
+      credit: credit,
+      now: now,
+    );
+    for (var i = 0; i < TrainerProgress.maxCommittedIds + 5; i++) {
+      p = p.recordExercise(score, r('ex$i'), credit: credit, now: now);
+    }
+    expect(p.hasCommitted('qso_callCq_1'), isTrue);
+    expect(p.hasCommitted('ex0'), isFalse);
+  });
+
   group('SessionSummary exercise metadata', () {
     test('round-trips every field', () {
       final score = SessionScore.evaluate('PARIS', 'PARIIS');

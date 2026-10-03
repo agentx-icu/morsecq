@@ -37,10 +37,25 @@ class _TodayPlanCardState extends State<TodayPlanCard>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _armMidnight();
     // Making the plan commits progress, which notifies the home's builder:
     // never during this build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _c.todayPlan == null) unawaited(_ensure());
+    });
+  }
+
+  Timer? _midnight;
+
+  /// Rebuild at the next local midnight even while the app stays open.
+  void _armMidnight() {
+    _midnight?.cancel();
+    final now = _c.now();
+    final next = DateTime(now.year, now.month, now.day + 1);
+    _midnight = Timer(next.difference(now) + const Duration(seconds: 1), () {
+      if (!mounted) return;
+      setState(() {});
+      _armMidnight();
     });
   }
 
@@ -52,6 +67,7 @@ class _TodayPlanCardState extends State<TodayPlanCard>
 
   @override
   void dispose() {
+    _midnight?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

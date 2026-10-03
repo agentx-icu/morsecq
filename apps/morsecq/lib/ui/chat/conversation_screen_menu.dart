@@ -143,6 +143,18 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
     if (mounted) setState(() {});
   }
 
+  /// The store to write to: a retired one (profile replaced, or a failed
+  /// replacement rolled back) is swapped for the current profile's store.
+  Future<MessageBookmarks?> _liveBookmarks() async {
+    final store = _bookmarkStore;
+    if (store == null || !store.isRetired || !mounted) return store;
+    final fresh = await MessageBookmarks.of(context);
+    if (!mounted) return fresh;
+    store.removeListener(_onBookmarks);
+    setState(() => _bookmarkStore = fresh..addListener(_onBookmarks));
+    return fresh;
+  }
+
   void _showLatest() {
     if (_jumpedAway) {
       // Drop the whole historical window; live arrivals during the reload
@@ -265,18 +277,22 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       _localSends.recordClear(_id, ids);
       if (!mounted) return;
       // Back to the live timeline at once: arrivals during the bookmark
-      // cleanup below must show.
+      // cleanup below must show — and so must rows that arrived (and were
+      // parked) while the clear itself was running.
       _jumpedAway = false;
+      final arrived = _parked.where((m) => !ids.contains(m.id)).toList();
       _parked.clear();
       setState(() {
         _messages.removeWhere((m) => ids.contains(m.id));
+        final known = {for (final m in _messages) m.id};
+        _messages.addAll(arrived.where((m) => known.add(m.id)));
         _older.clear();
         _newMessages = 0;
       });
       // Clearing history invalidates its bookmarks; failures are kept dirty
       // and retried by the store.
       try {
-        await _bookmarkStore?.removeConversation(_id);
+        await (await _liveBookmarks())?.removeConversation(_id);
       } on Object {
         // The store stays dirty and rewrites on its next flush.
       }

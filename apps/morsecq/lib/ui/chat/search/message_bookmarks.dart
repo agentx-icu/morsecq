@@ -84,10 +84,12 @@ class MessageBookmarks extends ChangeNotifier {
     for (final store in stores) {
       store._retired = true;
     }
-    // ...then let writes already in flight land.
+    // ...then let writes already in flight land, and give a snapshot that
+    // failed earlier one last chance (it is the retiring profile's data).
     for (final store in stores) {
       try {
         await store._writes;
+        if (store._dirty) await store._writeSnapshot();
       } on Object {
         // Retiring must not be blocked by a failing disk.
       }
@@ -223,8 +225,14 @@ class MessageBookmarks extends ChangeNotifier {
     return _write();
   }
 
+  /// Whether this store was retired (profile changed or replaced); callers
+  /// holding it should resolve the current one again.
+  bool get isRetired => _retired;
+
   /// Writes the current snapshot (every write is a full snapshot, so a
   /// retry after a failure needs no replay).
+  Future<void> _writeSnapshot() => _write();
+
   Future<void> _write() {
     final file = _file;
     if (file == null) return Future<void>.value();

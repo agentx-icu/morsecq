@@ -155,6 +155,8 @@ class StartupController extends ChangeNotifier {
           // progress like restore / unlock do, never merge it.
           final fromGuest = _cameFromGuest;
           _cameFromGuest = false;
+          // Let a pending guest save land before deciding.
+          if (fromGuest) await _guest?.releaseGuestController();
           _guestChoicePending = fromGuest && await _guestHasProgress();
           _becomeReady();
           unawaited(_resumeInterruptedMigration());
@@ -173,6 +175,7 @@ class StartupController extends ChangeNotifier {
     if (guest == null) return false;
     try {
       final active = await guest.store.isActive();
+      if (active) await guest.store.finishCompletedMigrations();
       guestMode.value = active;
       return active;
     } on Object {
@@ -186,6 +189,7 @@ class StartupController extends ChangeNotifier {
     final guest = _guest;
     if (guest == null) return;
     try {
+      await guest.store.finishCompletedMigrations();
       await guest.store.setActive(true);
     } on Object {
       // Guest mode still works this session; it just won't be remembered.
@@ -323,8 +327,8 @@ class StartupController extends ChangeNotifier {
     _cameFromGuest = false;
     // Freeze learning before the identity exists: its controller must not
     // load (and later save) empty progress before the guest data arrives.
-    if (migrate) await guest.suspendLearning?.call();
     try {
+      if (migrate) await guest.suspendLearning?.call();
       final identity = await _identity.create(
         displayName: displayName,
         password: password,

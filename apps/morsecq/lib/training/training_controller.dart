@@ -67,6 +67,9 @@ final class TrainingController extends ChangeNotifier {
 
   bool get isLoaded => _loaded;
 
+  /// Disposed: its profile was switched or replaced.
+  bool get isDisposed => _disposed;
+
   /// Set when [load] could not read the stores; the controller then runs on
   /// defaults and the next save overwrites whatever was unreadable.
   Object? get loadError => _loadError;
@@ -171,12 +174,12 @@ final class TrainingController extends ChangeNotifier {
   /// Writes a document in order with every other training write, so
   /// [flush] covers it.
   Future<void> writeDoc(String name, Map<String, Object?> json) {
-    _ensureActive();
+    _ensureActiveOrInTxn();
     return _persist(_docs, () => _docs.write(name, json));
   }
 
   Future<void> deleteDoc(String name) {
-    _ensureActive();
+    _ensureActiveOrInTxn();
     return _persist(_docs, () => _docs.delete(name));
   }
 
@@ -186,7 +189,12 @@ final class TrainingController extends ChangeNotifier {
   /// transaction in between (concurrent saves would otherwise both read
   /// the same snapshot and the last write would drop the other change).
   Future<T> docTransaction<T>(Future<T> Function() body) {
-    final result = _docTxn.then((_) => body());
+    _ensureActive();
+    // A transaction accepted before disposal may still finish its writes
+    // (flush waits for it); the zone marks calls made from inside it.
+    final result = _docTxn.then(
+      (_) => runZoned(body, zoneValues: <Object, Object>{_txnKey: this}),
+    );
     _docTxn = result.then<void>((_) {}, onError: (Object _) {});
     return result;
   }
@@ -463,6 +471,13 @@ final class TrainingController extends ChangeNotifier {
     final save = _persist(_progressStore, () => _progressStore.save(next));
     notifyListeners();
     await save;
+  }
+
+  static final Object _txnKey = Object();
+
+  void _ensureActiveOrInTxn() {
+    if (identical(Zone.current[_txnKey], this)) return;
+    _ensureActive();
   }
 
   void _ensureActive() {

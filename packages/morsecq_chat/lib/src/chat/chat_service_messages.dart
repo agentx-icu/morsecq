@@ -52,12 +52,20 @@ mixin _MessageManagement implements ChatService {
     MessageSearchCursor? cursor,
     int limit = 20,
     MessageSearchCancel? cancel,
-  }) async => MessageOrder.page(
-    await _allRows(conversationId, cancel: cancel),
-    query,
-    cursor: cursor,
-    limit: limit,
-  );
+  }) async {
+    final rows = await _allRows(conversationId, cancel: cancel);
+    // Filter in chunks, yielding and honouring cancellation, so a long
+    // history never blocks the UI isolate; only the matches are sorted.
+    final hits = <ChatMessage>[];
+    for (var i = 0; i < rows.length; i += 500) {
+      if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
+      final end = i + 500 < rows.length ? i + 500 : rows.length;
+      hits.addAll(rows.sublist(i, end).where(query.matches));
+      await Future<void>.delayed(Duration.zero);
+    }
+    if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
+    return MessageOrder.page(hits, query, cursor: cursor, limit: limit);
+  }
 
   @override
   Future<List<ChatMessage>> loadAround(
