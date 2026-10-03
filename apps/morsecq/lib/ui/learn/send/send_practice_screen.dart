@@ -263,8 +263,10 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     );
   }
 
-  /// Whether [title] plus the [label] + switch action fit one app bar row:
-  /// back button, title spacing, switch and trailing gap are fixed chrome.
+  /// Whether [title] plus the [label] + switch action fit one app bar row
+  /// inside the horizontal safe area (a landscape notch takes ~47 pt per
+  /// side): back button, title spacing, the 60 px switch and the trailing
+  /// gap are fixed chrome.
   bool _appBarFits(String title, String label) {
     final media = MediaQuery.of(context);
     final theme = Theme.of(context);
@@ -280,7 +282,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       return w;
     }
 
-    const chrome = kToolbarHeight + NavigationToolbar.kMiddleSpacing * 2 + 72;
+    const chrome = kToolbarHeight + NavigationToolbar.kMiddleSpacing * 2 + 68;
     final needed =
         chrome +
         width(
@@ -291,7 +293,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
           label,
           theme.appBarTheme.toolbarTextStyle ?? theme.textTheme.bodyMedium,
         );
-    return needed <= media.size.width;
+    return needed <= media.size.width - media.padding.horizontal;
   }
 
   Widget _buildPractice(BuildContext context) {

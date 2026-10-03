@@ -179,6 +179,10 @@ void main() {
       ('zh', const Size(402, 874), 1, true),
       ('en', const Size(600, 874), 1, true),
       ('de', kSmallPhone, 1.3, false),
+      // Landscape: setPhone adds 47 pt notch insets per side; the label must
+      // fit what is left, not the full width (else the title ellipsizes).
+      ('en', const Size(560, 375), 1, true),
+      ('en', const Size(450, 375), 1, false),
       ('en', kSmallPhone, 2, false),
     ];
     for (final (String lang, Size size, double scale, bool label) in cases) {
