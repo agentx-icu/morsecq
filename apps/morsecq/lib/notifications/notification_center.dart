@@ -7,6 +7,7 @@ import '../l10n/generated/s.dart';
 import 'badge_api.dart';
 import 'badge_writer.dart';
 import 'local_notifications_api.dart';
+import 'message_banner_ledger.dart';
 import 'notification_composer.dart';
 import 'notification_payload.dart';
 import 'notification_platform.dart';
@@ -115,6 +116,7 @@ class NotificationCenter {
   /// Kept raw and formatted on every post, so a privacy change (hiding the
   /// content) also applies to the lines already shown.
   final Map<String, List<ChatMessage>> _inbox = <String, List<ChatMessage>>{};
+  final MessageBannerLedger _ledger = MessageBannerLedger();
   final Set<String> _knownFriendRequests = <String>{};
   final Set<String> _knownInvites = <String>{};
 
@@ -235,6 +237,9 @@ class NotificationCenter {
   /// Requests the OS permission if this platform has one. Safe to call
   /// repeatedly and before [start]; a grant is remembered, a denial is not
   /// (the OS returns a remembered denial instantly without re-prompting).
+  ///
+  /// This may show a system dialog: call it from a user action (a settings
+  /// tile) or in the foreground. Posting never prompts.
   Future<bool> ensurePermission() {
     if (!_platform.needsRuntimePermission) {
       return Future<bool>.value(_platform.supportsOsNotifications);
@@ -279,11 +284,12 @@ class NotificationCenter {
 
     final Conversation? conversation = _conversationFor(id);
     final bool isGroup =
-        (conversation?.kind ?? _kindFromId(id)) == ConversationKind.group;
+        (conversation?.kind ?? NotificationComposer.kindFromId(id)) ==
+        ConversationKind.group;
     final String title =
         conversation?.title ??
         (isGroup
-            ? NotificationComposer.shortKey(_peerFromId(id))
+            ? NotificationComposer.shortKey(NotificationComposer.peerFromId(id))
             : NotificationComposer.senderLabel(message));
 
     final List<ChatMessage> recent = _inbox.putIfAbsent(
@@ -298,6 +304,7 @@ class NotificationCenter {
       for (final ChatMessage m in recent)
         _composer.inboxLine(m, isGroup: isGroup),
     ];
+    final int generation = _ledger.posted(id, message);
     unawaited(
       _post(
         _composer.message(
@@ -306,6 +313,7 @@ class NotificationCenter {
           isGroup: isGroup,
           lines: lines,
         ),
+        stillWanted: () => _ledger.isCurrent(id, generation),
       ),
     );
   }
@@ -319,15 +327,19 @@ class NotificationCenter {
       if (_knownFriendRequests.add(request.publicKey) &&
           fresh &&
           _prefs.enabled) {
-        unawaited(_post(_composer.friendRequest(request)));
+        final String key = request.publicKey;
+        unawaited(
+          _post(
+            _composer.friendRequest(request),
+            stillWanted: () => _knownFriendRequests.contains(key),
+          ),
+        );
       }
     }
     // Answered (or withdrawn) requests: forget them so a repeat notifies
     // again, and take their banner down.
     for (final String gone in _knownFriendRequests.difference(current)) {
-      unawaited(
-        _cancel(FriendRequestTarget(gone, account: _account).encode()),
-      );
+      unawaited(_cancel(FriendRequestTarget(gone, account: _account).encode()));
     }
     _knownFriendRequests
       ..clear()
@@ -339,12 +351,14 @@ class NotificationCenter {
     for (final GroupInvite invite in invites) {
       current.add(invite.inviteId);
       if (_knownInvites.add(invite.inviteId) && _prefs.enabled) {
+        final String inviteId = invite.inviteId;
         unawaited(
           _post(
             _composer.groupInvite(
               invite,
               fromName: _friendName(invite.fromPublicKey),
             ),
+            stillWanted: () => _knownInvites.contains(inviteId),
           ),
         );
       }
@@ -364,16 +378,14 @@ class NotificationCenter {
       live.add(conversation.id);
       total += conversation.unreadCount;
       // Read in-app (markRead) or from another surface: drop the banner.
-      if (conversation.unreadCount == 0 && _inbox.containsKey(conversation.id)) {
+      if (_inbox.containsKey(conversation.id) &&
+          _ledger.showsRead(conversation)) {
         unawaited(_clearConversation(conversation.id));
       }
     }
-    // Deleted conversations: drop their banners. Materialise first —
-    // _clearConversation mutates _inbox synchronously.
-    final List<String> stale = _inbox.keys
-        .where((String k) => !live.contains(k))
-        .toList();
-    for (final String id in stale) {
+    // Deleted conversations: drop their banners (a materialised list:
+    // _clearConversation mutates _inbox synchronously).
+    for (final String id in _ledger.deleted(_inbox.keys, live)) {
       unawaited(_clearConversation(id));
     }
     _updateBadge(total);
@@ -398,11 +410,29 @@ class NotificationCenter {
 
   // ---- Posting -----------------------------------------------------------------
 
-  /// Never prompts: the permission is asked in the foreground (see
-  /// [_askPermissionIfForeground]); without it the post is skipped.
-  Future<void> _post(NotificationRequest request) async {
+  /// Posts [request] when the permission allows it. Never prompts: the
+  /// permission is asked in the foreground (see [_askPermissionIfForeground]);
+  /// a grant from an earlier run or from Settings is picked up silently.
+  /// [stillWanted] is re-checked after that await so a banner the user made
+  /// moot meanwhile (opened, read, answered) is not shown stale.
+  Future<void> _post(
+    NotificationRequest request, {
+    required bool Function() stillWanted,
+  }) async {
     if (!_ready || _disposed) return;
-    if (_platform.needsRuntimePermission && !_permissionGranted) return;
+    final String? account = _account;
+    if (_platform.needsRuntimePermission &&
+        !_permissionGranted &&
+        !await _checkPermission()) {
+      return;
+    }
+    // Let the event's other listeners (the open conversation claiming or
+    // reading it) run first, also when no permission check was awaited: an
+    // async broadcast stream queued their deliveries before this one ran.
+    await Future<void>.microtask(() {});
+    // A post for an identity that was switched away meanwhile is stale
+    // whatever stillWanted says (the new one may reuse a key or invite id).
+    if (_disposed || _account != account || !stillWanted()) return;
     try {
       await _notifications.show(request);
     } catch (error, stack) {
@@ -412,6 +442,7 @@ class NotificationCenter {
 
   Future<void> _clearConversation(String conversationId) async {
     _inbox.remove(conversationId);
+    _ledger.cleared(conversationId);
     await _cancel(
       OpenConversationTarget(conversationId, account: _account).encode(),
     );
@@ -449,14 +480,6 @@ class NotificationCenter {
       }
     }
     return null;
-  }
-
-  static ConversationKind _kindFromId(String id) =>
-      id.startsWith('group_') ? ConversationKind.group : ConversationKind.c2c;
-
-  static String _peerFromId(String id) {
-    final int separator = id.indexOf('_');
-    return separator < 0 ? id : id.substring(separator + 1);
   }
 
   static void _report(String what, Object error, StackTrace stack) {

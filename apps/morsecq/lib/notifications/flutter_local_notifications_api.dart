@@ -188,6 +188,41 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   }
 
   @override
+  Future<bool> isPermissionGranted() async {
+    try {
+      switch (_platform) {
+        case NotificationPlatform.android:
+          final AndroidFlutterLocalNotificationsPlugin? impl = _plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+          // POST_NOTIFICATIONS on 13+, the app-level switch below that.
+          return await impl?.areNotificationsEnabled() ?? false;
+        case NotificationPlatform.ios:
+          final IOSFlutterLocalNotificationsPlugin? impl = _plugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >();
+          return (await impl?.checkPermissions())?.isEnabled ?? false;
+        case NotificationPlatform.macos:
+          final MacOSFlutterLocalNotificationsPlugin? impl = _plugin
+              .resolvePlatformSpecificImplementation<
+                MacOSFlutterLocalNotificationsPlugin
+              >();
+          return (await impl?.checkPermissions())?.isEnabled ?? false;
+        case NotificationPlatform.linux:
+        case NotificationPlatform.windows:
+          return true;
+        case NotificationPlatform.unsupported:
+          return false;
+      }
+    } catch (error, stack) {
+      _report('isPermissionGranted', error, stack);
+      return false;
+    }
+  }
+
+  @override
   Future<void> show(NotificationRequest request) async {
     if (!_initialized) return;
     await _plugin.show(

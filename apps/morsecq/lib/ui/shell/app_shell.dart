@@ -89,6 +89,13 @@ class _AppShellState extends State<AppShell> {
   NotificationCenter? _center;
   StreamSubscription<NotificationTapTarget>? _taps;
 
+  /// Keeps the page stack mounted when the layout class flips. Rotating a
+  /// phone to landscape (or unfolding a foldable) crosses the 600 px
+  /// breakpoint, which moves the body from `Scaffold.body` into the rail's
+  /// `Row`; without a global key every tab's state (open chat pane, scroll
+  /// positions, reference/translator input) was thrown away on rotation.
+  final GlobalKey _bodyKey = GlobalKey(debugLabel: 'shell-body');
+
   static int _tabOf(Type page) =>
       kShellDestinations.indexWhere((d) => d.page.runtimeType == page);
 
@@ -125,9 +132,7 @@ class _AppShellState extends State<AppShell> {
       case OpenConversationTarget(:final conversationId):
         final ConversationTarget target = _targetFor(conversationId);
         _select(
-          _tabOf(
-            target.kind == ConversationKind.group ? GroupsPage : ChatPage,
-          ),
+          _tabOf(target.kind == ConversationKind.group ? GroupsPage : ChatPage),
         );
         _router.openConversation(target);
       case FriendRequestTarget():
@@ -148,7 +153,10 @@ class _AppShellState extends State<AppShell> {
       (route) => route.settings.name != kConversationRouteName,
     );
     final ChatService chat = context.read<ChatService>();
-    final bool covered = !identical(topRoute(navigator), ModalRoute.of(context));
+    final bool covered = !identical(
+      topRoute(navigator),
+      ModalRoute.of(context),
+    );
     if (covered && chat.groupInvites.isNotEmpty) {
       unawaited(navigator.push(GroupInvitesPage.route(chat)));
     }
@@ -161,7 +169,9 @@ class _AppShellState extends State<AppShell> {
         .firstOrNull;
     if (existing != null) return ConversationTarget.fromConversation(existing);
     final bool group = conversationId.startsWith('group_');
-    final String peer = conversationId.substring(conversationId.indexOf('_') + 1);
+    final String peer = conversationId.substring(
+      conversationId.indexOf('_') + 1,
+    );
     return ConversationTarget(
       id: conversationId,
       title: NotificationComposer.shortKey(peer),
@@ -177,9 +187,8 @@ class _AppShellState extends State<AppShell> {
       children: [
         ValueListenableBuilder<bool>(
           valueListenable: policy.offlineBannerVisible,
-          builder: (context, visible, _) => visible
-              ? const _OfflineBanner()
-              : const SizedBox.shrink(),
+          builder: (context, visible, _) =>
+              visible ? const _OfflineBanner() : const SizedBox.shrink(),
         ),
         Expanded(child: body),
       ],
@@ -190,18 +199,21 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final s = context.s;
     final layout = layoutClassOf(context);
-    final body = Provider<ShellRouter>.value(
-      value: _router,
-      child: _withBanner(
-      IndexedStack(
-        index: _selectedIndex,
-        // Hidden tabs keep their state but stop animating; a conversation
-        // left open on another tab reads this to stay silent.
-        children: [
-          for (final (i, d) in kShellDestinations.indexed)
-            TickerMode(enabled: i == _selectedIndex, child: d.page),
-        ],
-      ),
+    final body = KeyedSubtree(
+      key: _bodyKey,
+      child: Provider<ShellRouter>.value(
+        value: _router,
+        child: _withBanner(
+          IndexedStack(
+            index: _selectedIndex,
+            // Hidden tabs keep their state but stop animating; a conversation
+            // left open on another tab reads this to stay silent.
+            children: [
+              for (final (i, d) in kShellDestinations.indexed)
+                TickerMode(enabled: i == _selectedIndex, child: d.page),
+            ],
+          ),
+        ),
       ),
     );
 
@@ -227,6 +239,9 @@ class _AppShellState extends State<AppShell> {
           body: Row(
             children: [
               NavigationRail(
+                // A phone in landscape is ~320-430 px tall: five labelled
+                // destinations overflow there at large text scales.
+                scrollable: true,
                 selectedIndex: _selectedIndex,
                 onDestinationSelected: _select,
                 destinations: [

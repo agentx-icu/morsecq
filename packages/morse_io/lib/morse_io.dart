@@ -5,6 +5,8 @@
 /// `package:morse_io/testing.dart`.
 library;
 
+export 'src/app_foreground.dart';
+export 'src/audio_session_api.dart';
 export 'src/clock.dart';
 export 'src/engine_leases.dart';
 export 'src/flash_sink.dart';
@@ -14,6 +16,7 @@ export 'src/key_event.dart';
 export 'src/keyboard_binding.dart';
 export 'src/keyer_timing.dart';
 export 'src/player.dart';
+export 'src/screen_wake.dart';
 export 'src/sidetone_sink.dart';
 export 'src/sink.dart';
 export 'src/soloud_api.dart';

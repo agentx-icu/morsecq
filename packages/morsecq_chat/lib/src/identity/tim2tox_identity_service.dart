@@ -73,6 +73,8 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
   // Started by [connect], not yet stopped. Tracked here, not inferred from
   // `engine.service`, so encrypt-at-rest never depends on the engine's shape.
   bool _started = false;
+  // Set once [inspect] has excluded the existing identity container.
+  bool _backupExclusionChecked = false;
 
   /// Exposed for the backend / diagnostics.
   IdentityPaths get paths => _paths;
@@ -108,6 +110,12 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
 
   @override
   Future<IdentityState> inspect() async {
+    // Startup runs inspect for every state (none / locked / ready), so this
+    // is where an existing install gets its backup exclusion even if it is
+    // never unlocked. Once per service; no directory is created for it.
+    if (!_backupExclusionChecked) {
+      _backupExclusionChecked = await _paths.excludeExistingFromBackup();
+    }
     if (!_paths.profileExists) return IdentityState.none;
     if (_record != null) return IdentityState.ready;
     final record = await IdentityRecord.read(_paths.identityFile);

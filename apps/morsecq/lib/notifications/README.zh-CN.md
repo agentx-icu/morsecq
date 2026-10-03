@@ -26,10 +26,10 @@ android/ios/macos）。插件 README 在 pub 缓存中。
 | | Android | iOS | macOS | Windows | Linux |
 |---|---|---|---|---|---|
 | 系统通知后端 | NotificationCompat，3 个频道（`morsecq_messages`、`morsecq_friend_requests`、`morsecq_group_invites`） | UNUserNotificationCenter | UNUserNotificationCenter | WinRT toast（`flutter_local_notifications_windows`，AUMID `icu.agentx.morsecq`，固定 CLSID） | 通过 D-Bus 的 `org.freedesktop.Notifications` |
-| 运行时权限 | 13+ 上的 `POST_NOTIFICATIONS`（`ensurePermission()`，就绪后在前台请求一次，若当时在后台则在下次回到前台时请求；发送通知从不触发请求） | 提醒 + 角标 + 声音授权（懒请求，同一调用） | 与 iOS 相同 | 无 | 无 |
+| 运行时权限 | 13+ 上的 `POST_NOTIFICATIONS`：插件就绪后在前台请求一次（若当时在后台，则在下次回到前台时请求）；发送通知从不弹窗，只静默检查（`isPermissionGranted`），未授权时丢弃横幅。`ensurePermission()` 按需请求 | 提醒 + 角标 + 声音授权（同样规则） | 与 iOS 相同 | 无 | 无 |
 | App 在前台时是否显示 | 是（仅对不在屏幕上的会话） | 是——`presentBanner/List` 开启 | 是 | 是 | 是 |
 | 按会话分组 | `groupKey` + `InboxStyle`（最近 5 行，"N 条新消息"摘要） | `threadIdentifier` 堆叠 | `threadIdentifier` 堆叠 | 无（每个会话一条 toast，按 id 替换） | 无（按 id 替换） |
-| 点击 → `takePendingTap()`（由 `tapTargets` 发出信号） | 是，包括冷启动（`getNotificationAppLaunchDetails`） | 是，包括冷启动 | 是 | 运行中可以；**冷启动载荷仅在打包为 MSIX 时可用** | 运行中可以 |
+| 点击 → `takePendingTap()`（由 `tapTargets` 发出信号） | 是，包括冷启动（`getNotificationAppLaunchDetails`；点击会一直挂起，直到外壳取走——启动门、解锁） | 是，包括冷启动 | 是 | 运行中可以；**冷启动载荷仅在打包为 MSIX 时可用** | 运行中可以 |
 | 打开 / 已读时取消 | 是 | 是 | 是 | **除非打包为 MSIX，否则为空操作**（插件限制，见 README） | 是 |
 | 未读角标 | 取决于启动器（三星、小米/HyperOS、华为、OPPO、vivo、索尼、HTC……；原生 Pixel 只显示圆点） | 精确 | 精确（Dock） | 不支持 → 空操作 | 不支持 → 空操作 |
 | 声音 | 频道默认，按偏好设置 `playSound` | 按偏好设置 `presentSound` | 相同 | 默认 toast 声音；关闭时 `WindowsNotificationAudio.silent()` | 关闭时 `suppressSound` |
@@ -72,14 +72,16 @@ App 运行中点击它会打开会话"。`AppBadgePlusApi` 在 Windows 上是空
 
 ### `ios/Runner/Info.plist`
 
-添加了 `UIBackgroundModes = [audio]`。
+**不**声明任何 `UIBackgroundModes`（`audio` 已于 2026-10-02 移除）。
 
 - **不是 `voip`**：MorseCQ 没有 ToxAV；没有 VoIP 功能却声明 `voip` 并不诚实，App Review 会拒绝
   （方案 §5.6/§7）。
-- **`audio`**：由摩尔斯播放（消息播放、训练会话）在用户切换 App 后继续进行来证明其正当性。
-  副作用：音频实际播放期间 Tox 循环会继续运行。除此之外它**不会**延长后台窗口——没有活跃的音频会话时，
-  iOS 在约 30 s 后挂起 App，这正是协调器的 iOS 预算。如果在提交 App Store 之前 `morse_io` 的音频会话
-  没有配置为后台播放（`AVAudioSession` 类别 `.playback`），请移除该条目，而不是发布一个未使用的模式。
+- **不是 `audio`**：App 进入后台时 `SidetoneSink` 会停止发声，后台也没有别的东西在播放，声明它就是
+  一个未使用的模式（App Review 准则 2.5.4）。只有在加入真正需要后台持续播放的功能（例如熄屏继续的训练）时
+  才一并加回，并确保该功能的音频会话是 `.playback`。
+- 约 30 s 的预算来自 `AppLifecycleCoordinator` 从进入后台到回到前台或预算结束期间持有的
+  `beginBackgroundTask`（`lib/lifecycle/background_task_api.dart` ↔ `AppDelegate.swift` 中的
+  `icu.agentx.morsecq/background_task` 通道）。没有它，iOS 约 5 s 后就会冻结 App，持久化刷新会被截断。
 - **刻意不声明 `fetch`**：`BGAppRefreshTask` 需要原生处理器和 `BGTaskSchedulerPermittedIdentifiers`；
   toxee 有，MorseCQ 还没有。要么两者一起添加，要么都不加。
 

@@ -29,10 +29,10 @@ lists android/ios/macos only). Plugin READMEs are in the pub cache.
 | | Android | iOS | macOS | Windows | Linux |
 |---|---|---|---|---|---|
 | OS notification backend | NotificationCompat, 3 channels (`morsecq_messages`, `morsecq_friend_requests`, `morsecq_group_invites`) | UNUserNotificationCenter | UNUserNotificationCenter | WinRT toast (`flutter_local_notifications_windows`, AUMID `icu.agentx.morsecq`, fixed CLSID) | `org.freedesktop.Notifications` over D-Bus |
-| Runtime permission | `POST_NOTIFICATIONS` on 13+ (`ensurePermission()`, asked in the foreground once ready or on the next resume; posting never prompts) | Alert + badge + sound authorization (lazy, same call) | Same as iOS | None | None |
+| Runtime permission | `POST_NOTIFICATIONS` on 13+: asked once, in the foreground, when the plugin is ready (or on the next resume if the app was in the background then); a post never prompts, it checks silently (`isPermissionGranted`) and drops the banner when not granted. `ensurePermission()` asks on demand | Alert + badge + sound authorization (same rules) | Same as iOS | None | None |
 | Shown while app is in the foreground | Yes (only for conversations not on screen) | Yes — `presentBanner/List` on | Yes | Yes | Yes |
 | Grouping per conversation | `groupKey` + `InboxStyle` (last 5 lines, "N new messages" summary) | `threadIdentifier` stack | `threadIdentifier` stack | None (one toast per conversation, replaced by id) | None (replaced by id) |
-| Tap → `takePendingTap()` (signalled on `tapTargets`) | Yes, incl. cold start (`getNotificationAppLaunchDetails`) | Yes, incl. cold start | Yes | Yes while running; **cold-start payload only when packaged as MSIX** | Yes while running |
+| Tap → `takePendingTap()` (signalled on `tapTargets`) | Yes, incl. cold start (`getNotificationAppLaunchDetails`; a tap stays pending until the shell takes it - startup gate, unlock) | Yes, incl. cold start | Yes | Yes while running; **cold-start payload only when packaged as MSIX** | Yes while running |
 | Cancel on open / read | Yes | Yes | Yes | **No-op unless MSIX-packaged** (plugin limitation, README) | Yes |
 | Unread badge | Launcher-dependent (Samsung, Xiaomi/HyperOS, Huawei, OPPO, vivo, Sony, HTC…; stock Pixel shows a dot only) | Exact | Exact (Dock) | Not supported → no-op | Not supported → no-op |
 | Sound | Channel default, `playSound` per prefs | `presentSound` per prefs | Same | Default toast sound; `WindowsNotificationAudio.silent()` when off | `suppressSound` when off |
@@ -84,18 +84,21 @@ Android background polling, that is a separate native service plus
 
 ### `ios/Runner/Info.plist`
 
-Added `UIBackgroundModes = [audio]`.
+Declares **no** `UIBackgroundModes` (removed `audio` on 2026-10-02).
 
 - **Not `voip`**: MorseCQ has no ToxAV; declaring `voip` without a VoIP feature
   is not honest and App Review rejects it (plan §5.6/§7).
-- **`audio`**: justified by Morse playback (message playback, training
-  sessions) continuing when the user switches apps. Side effect: the Tox loop
-  keeps running while audio is actually playing. It does **not** extend the
-  background window otherwise — without an active audio session iOS suspends
-  the app after ~30 s, which is exactly the coordinator's iOS budget. If
-  `morse_io`'s audio session is not configured for background playback
-  (`AVAudioSession` category `.playback`) before App Store submission, remove
-  this entry rather than ship an unused mode.
+- **Not `audio`**: `SidetoneSink` stops its voice whenever the app is
+  backgrounded and nothing else plays there, so the mode would be unused
+  (App Review guideline 2.5.4). Re-add it only together with a feature that
+  really keeps playing in the background (e.g. a training session that
+  continues with the screen off), and make sure that feature's audio session
+  is `.playback`.
+- The ~30 s budget comes from `AppLifecycleCoordinator` holding a
+  `beginBackgroundTask` assertion (`lib/lifecycle/background_task_api.dart`
+  ↔ the `icu.agentx.morsecq/background_task` channel in `AppDelegate.swift`)
+  from background until resume or the end of the budget. Without it iOS
+  freezes the app ~5 s in, cutting the durability flush short.
 - **`fetch` deliberately not declared**: `BGAppRefreshTask` needs a native
   handler and `BGTaskSchedulerPermittedIdentifiers`; toxee has one, MorseCQ
   does not yet. Add both together or neither.

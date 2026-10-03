@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' show Rect;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -14,7 +15,16 @@ import '../../i18n/current_strings.dart';
 abstract interface class BackupFileGateway {
   /// Hands [bytes] to the user. Returns true when the file was saved/shared,
   /// false when the user cancelled. Throws on I/O failure.
-  Future<bool> saveBackup(Uint8List bytes, {required String fileName});
+  ///
+  /// [shareOrigin] is the global rect of the control that triggered the
+  /// export. iPadOS presents the share sheet as a popover anchored to it;
+  /// without one the popover floats in the middle of the screen, detached
+  /// from the button. Ignored by the desktop save dialog.
+  Future<bool> saveBackup(
+    Uint8List bytes, {
+    required String fileName,
+    Rect? shareOrigin,
+  });
 
   /// Lets the user pick a backup file; null when cancelled.
   Future<Uint8List?> pickBackup();
@@ -34,8 +44,12 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
           defaultTargetPlatform == TargetPlatform.iOS);
 
   @override
-  Future<bool> saveBackup(Uint8List bytes, {required String fileName}) async {
-    if (_isMobile) return _shareOnMobile(bytes, fileName);
+  Future<bool> saveBackup(
+    Uint8List bytes, {
+    required String fileName,
+    Rect? shareOrigin,
+  }) async {
+    if (_isMobile) return _shareOnMobile(bytes, fileName, shareOrigin);
     final uri = await FilePicker.saveFile(
       fileName: fileName,
       bytes: bytes,
@@ -47,7 +61,11 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
     return uri != null;
   }
 
-  Future<bool> _shareOnMobile(Uint8List bytes, String fileName) async {
+  Future<bool> _shareOnMobile(
+    Uint8List bytes,
+    String fileName,
+    Rect? shareOrigin,
+  ) async {
     // The share sheet needs a real file; the app's temp dir is private to us
     // and readable by the share extension.
     final dir = await Directory.systemTemp.createTemp('morsecq_backup_');
@@ -58,6 +76,7 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
         ShareParams(
           files: [XFile(file.path, mimeType: _mimeType, name: fileName)],
           subject: currentS().accountBackupShareSubject,
+          sharePositionOrigin: shareOrigin,
         ),
       );
       return result.status != ShareResultStatus.dismissed;
@@ -76,7 +95,10 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
     // A real backup is a profile plus training state, a few hundred KB at
     // most. Refuse anything far larger without reading it into memory: the
     // reported size first, then a bounded read (the size can be unknown).
-    const tooLarge = ChatException('invalid_backup', 'Backup file is too large');
+    const tooLarge = ChatException(
+      'invalid_backup',
+      'Backup file is too large',
+    );
     final int? length = file.lengthSync();
     if (length != null && length > maxBackupBytes) throw tooLarge;
     final BytesBuilder bytes = BytesBuilder(copy: false);
@@ -107,13 +129,19 @@ final class FakeBackupFileGateway implements BackupFileGateway {
   Object? saveError;
   final List<Uint8List> saved = [];
   final List<String> savedNames = [];
+  final List<Rect?> shareOrigins = [];
 
   @override
-  Future<bool> saveBackup(Uint8List bytes, {required String fileName}) async {
+  Future<bool> saveBackup(
+    Uint8List bytes, {
+    required String fileName,
+    Rect? shareOrigin,
+  }) async {
     final error = saveError;
     if (error != null) throw error;
     saved.add(bytes);
     savedNames.add(fileName);
+    shareOrigins.add(shareOrigin);
     return saveResult;
   }
 

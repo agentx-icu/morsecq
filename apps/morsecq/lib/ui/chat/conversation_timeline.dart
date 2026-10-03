@@ -105,3 +105,36 @@ class ConversationTimeline extends StatelessWidget {
     ),
   );
 }
+
+/// What the timeline area shows instead of messages: a history load error
+/// with a retry (when [onRetry] is set) or the "no messages yet" hint.
+class ConversationPlaceholder extends StatelessWidget {
+  const ConversationPlaceholder({super.key, required this.text, this.onRetry});
+
+  final String text;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final VoidCallback? retry = onRetry;
+    if (retry == null) {
+      return Center(
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(text),
+          TextButton(onPressed: retry, child: Text(context.s.chatRetryHistory)),
+        ],
+      ),
+    );
+  }
+}

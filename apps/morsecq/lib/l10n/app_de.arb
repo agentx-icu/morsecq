@@ -669,5 +669,10 @@
   "chatSelfMe": "Ich",
   "chatSelfLocalOnly": "Nur auf diesem Gerät gespeichert",
   "chatSelfContactSubtitle": "Entwürfe, Übungen und Notizen · werden nie gesendet",
-  "learnShowFewerChars": "Weniger Zeichen anzeigen"
+  "learnShowFewerChars": "Weniger Zeichen anzeigen",
+  "learnLeaveDrillTitle": "Diese Übung verlassen?",
+  "learnLeaveDrillBody": "Die Runden dieser Übung werden nicht gespeichert.",
+  "learnLeaveDrillConfirm": "Verlassen",
+  "chatScanQrPermissionDenied": "MorseCQ benötigt Kamerazugriff, um einen QR-Code zu scannen. Erlaube ihn in den Systemeinstellungen.",
+  "chatScanQrCameraUnavailable": "Die Kamera ist auf diesem Gerät nicht verfügbar."
 }

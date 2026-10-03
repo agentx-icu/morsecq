@@ -2345,4 +2345,19 @@ class SEs extends S {
 
   @override
   String get learnShowFewerChars => 'Mostrar menos caracteres';
+
+  @override
+  String get learnLeaveDrillTitle => '¿Salir de esta sesión?';
+
+  @override
+  String get learnLeaveDrillBody => 'Las rondas de esta sesión no se guardarán.';
+
+  @override
+  String get learnLeaveDrillConfirm => 'Salir';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ necesita acceso a la cámara para escanear un código QR. Permítelo en los ajustes del sistema.';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'La cámara no está disponible en este dispositivo.';
 }

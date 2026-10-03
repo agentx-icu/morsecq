@@ -8,6 +8,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import 'keyer_legend.dart';
@@ -17,12 +18,17 @@ import 'send_result_view.dart';
 /// Send practice: a target to key, an on-screen straight key or paddles (also
 /// driven by Space / left Ctrl / right Ctrl when focused), live decode, and
 /// rhythm diagnostics with tips when the operator hits Done.
+///
+/// Leaving with keyed input that was not evaluated yet asks first, and the
+/// screen is kept on ([screenWake]) while practising so a phone's auto-lock
+/// cannot background the app mid-attempt.
 class SendPracticeScreen extends StatefulWidget {
   const SendPracticeScreen({
     super.key,
     required this.controller,
     required this.playback,
     this.session,
+    this.screenWake = const WakelockScreenWake(),
   });
 
   final TrainingController controller;
@@ -31,6 +37,9 @@ class SendPracticeScreen extends StatefulWidget {
   /// Initial session; defaults to `controller.startSendSession()`.
   final SendSession? session;
 
+  /// Held while practising; released on the result view and in background.
+  final ScreenWakeApi screenWake;
+
   /// Decoder tick period on the playback clock.
   static const Duration tickPeriod = Duration(milliseconds: 40);
 
@@ -38,7 +47,8 @@ class SendPracticeScreen extends StatefulWidget {
   State<SendPracticeScreen> createState() => _SendPracticeScreenState();
 }
 
-class _SendPracticeScreenState extends State<SendPracticeScreen> {
+class _SendPracticeScreenState extends State<SendPracticeScreen>
+    with WidgetsBindingObserver {
   late SendSession _session;
   late KeyerMode _mode;
   LearnPlayback? _playback;
@@ -49,14 +59,38 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
   bool _hideTarget = false;
   bool _recording = false;
   bool _disposed = false;
+  late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
+  StreamSubscription<void>? _changesSub;
+
+  /// Mirrors `_session.hasInput` so the leave guard follows key events
+  /// (which do not rebuild this widget) without a rebuild per event.
+  bool _hasInput = false;
 
   @override
   void initState() {
     super.initState();
     _session = widget.session ?? widget.controller.startSendSession();
-    _session.listenToDecoder();
+    _watchSession();
     _mode = widget.controller.settings.keyerMode;
+    WidgetsBinding.instance.addObserver(this);
+    _wake.setActive(true);
     unawaited(_setup());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) =>
+      _wake.onLifecycle(state);
+
+  void _watchSession() {
+    _session.listenToDecoder();
+    unawaited(_changesSub?.cancel());
+    _hasInput = _session.hasInput;
+    _changesSub = _session.changes.listen((_) {
+      if (_disposed || _session.hasInput == _hasInput) {
+        return;
+      }
+      setState(() => _hasInput = _session.hasInput);
+    });
   }
 
   Future<void> _setup() async {
@@ -126,7 +160,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
     if (_recording || _result != null) {
       return;
     }
-    _recording = true;
+    setState(() => _recording = true);
+    _wake.setActive(false);
     final result = _session.finish();
     await widget.controller.recordSendSession(_session);
     if (!mounted) {
@@ -143,9 +178,10 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
   void _another() {
     _session.dispose();
     _session = widget.controller.startSendSession();
-    _session.listenToDecoder();
+    _watchSession();
     _result = null;
     _recording = false;
+    _wake.setActive(true);
     _buildKeyer();
     setState(() {});
   }
@@ -153,6 +189,9 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
   @override
   void dispose() {
     _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
+    _wake.dispose();
+    unawaited(_changesSub?.cancel());
     _tick?.cancel();
     unawaited(_straight?.dispose());
     unawaited(_keyer?.dispose());
@@ -177,21 +216,46 @@ class _SendPracticeScreenState extends State<SendPracticeScreen> {
         ),
       ),
     );
+    return DrillLeaveGuard(
+      guard: _hasInput && _result == null && !_recording,
+      child: _scaffold(s, body),
+    );
+  }
+
+  Widget _scaffold(S s, Widget body) {
     final flash = _playback?.flash;
+    // A 320 px phone (or large text) has no room for the written label next
+    // to the title; fall back to an icon there. The tooltip and merged
+    // semantics keep the switch named for screen readers either way.
+    final media = MediaQuery.of(context);
+    final textScale = media.textScaler.scale(14) / 14;
+    final roomForLabel = media.size.width / textScale >= 420;
     return Scaffold(
       appBar: AppBar(
         title: Text(s.learnSendTitle),
         actions: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(s.learnCopyFromMemory),
-              Switch(
-                value: _hideTarget,
-                onChanged: _result == null
-                    ? (v) => setState(() => _hideTarget = v)
-                    : null,
+          MergeSemantics(
+            child: Tooltip(
+              message: s.learnCopyFromMemory,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (roomForLabel)
+                    Text(s.learnCopyFromMemory, maxLines: 1)
+                  else
+                    Semantics(
+                      label: s.learnCopyFromMemory,
+                      child: const Icon(Icons.visibility_off_outlined),
+                    ),
+                  Switch(
+                    value: _hideTarget,
+                    onChanged: _result == null
+                        ? (v) => setState(() => _hideTarget = v)
+                        : null,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
           const SizedBox(width: 8),
         ],

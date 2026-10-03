@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
@@ -8,11 +9,13 @@ final class _FakeSoloudApi implements SoloudApi {
   final List<String> calls = <String>[];
   bool initialized = false;
   int nextId = 1;
+  int nextVoice = 101;
   Completer<void>? initGate;
   Completer<void>? loadGate;
   Object? loadError;
   Object? playError;
   Object? stopError;
+  Object? resumeError;
   Completer<void>? disposeSourceGate;
   Object? disposeSourceError;
 
@@ -46,7 +49,7 @@ final class _FakeSoloudApi implements SoloudApi {
     calls.add('playLooping(${source.id}, $volume)');
     final error = playError;
     if (error != null) throw error;
-    return SidetoneVoice(100 + source.id);
+    return SidetoneVoice(nextVoice++);
   }
 
   @override
@@ -56,6 +59,13 @@ final class _FakeSoloudApi implements SoloudApi {
   @override
   void fadeVolume(SidetoneVoice voice, double to, Duration over) =>
       calls.add('fade(${voice.id}, $to, ${over.inMilliseconds})');
+
+  @override
+  void resumeVoice(SidetoneVoice voice) {
+    calls.add('resume(${voice.id})');
+    final error = resumeError;
+    if (error != null) throw error;
+  }
 
   @override
   Future<void> stop(SidetoneVoice voice) async {
@@ -78,6 +88,72 @@ final class _FakeSoloudApi implements SoloudApi {
     calls.add('deinit');
     initialized = false;
   }
+}
+
+final class _FakeForeground implements AppForeground {
+  @override
+  bool isForeground = true;
+  void Function(bool)? listener;
+  int cancelled = 0;
+
+  @override
+  VoidCallback listen(void Function(bool foreground) onChange) {
+    listener = onChange;
+    return () => cancelled++;
+  }
+
+  void set(bool foreground) {
+    isForeground = foreground;
+    listener?.call(foreground);
+  }
+}
+
+final class _FakeSession implements AudioSessionApi {
+  _FakeSession(this.log);
+
+  final List<String> log;
+
+  @override
+  Future<void> configureForPlayback() async => log.add('session');
+}
+
+/// Only what [FlutterSoloudApi.init] / [FlutterSoloudApi.resumeVoice] touch.
+final class _FakeSoLoud implements SoLoud {
+  _FakeSoLoud(this.log);
+
+  final List<String> log;
+  bool running = false;
+
+  @override
+  bool get isInitialized => running;
+
+  @override
+  Future<void> init({
+    PlaybackDevice? device,
+    bool automaticCleanup = false,
+    int sampleRate = 44100,
+    int bufferSize = 2048,
+    Channels channels = Channels.stereo,
+    bool lowLatency = true,
+    AndroidAAudioAttributes androidAAudioAttributes =
+        AndroidAAudioAttributes.mediaMusic,
+  }) async {
+    log.add('engine.init');
+    running = true;
+  }
+
+  @override
+  void deinit() {
+    log.add('engine.deinit');
+    running = false;
+  }
+
+  @override
+  void setPause(SoundHandle handle, bool pause) =>
+      log.add('setPause(${handle.id}, $pause)');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
@@ -110,7 +186,11 @@ void main() {
     sink.on(); // ignored
     sink.off();
     sink.off(); // ignored
-    expect(api.calls, <String>['fade(101, 0.5, 5)', 'fade(101, 0.0, 5)']);
+    expect(api.calls, <String>[
+      'resume(101)',
+      'fade(101, 0.5, 5)',
+      'fade(101, 0.0, 5)',
+    ]);
   });
 
   test('on / off before prepare are ignored (no engine access)', () {
@@ -129,6 +209,7 @@ void main() {
     sink.volume = 0.25; // applied immediately while on
     expect(api.calls, <String>[
       'freq(1, 800.0)',
+      'resume(101)',
       'fade(101, 1.0, 5)',
       'setVolume(101, 0.25)',
     ]);
@@ -287,5 +368,123 @@ void main() {
     await custom.prepare();
     custom.on();
     expect(api.calls.last, 'fade(101, 0.8, 12)');
+  });
+
+  group('mobile robustness', () {
+    late _FakeForeground foreground;
+
+    setUp(() {
+      foreground = _FakeForeground();
+      sink = SidetoneSink(api: api, foreground: foreground, volume: 0.5);
+    });
+
+    test('a voice the engine lost is replaced on the next key-down', () async {
+      // An iOS interruption that never reports its end (or an engine that
+      // dropped the handle) used to leave every later on() fading a dead
+      // voice: silence until the screen was rebuilt.
+      await sink.prepare();
+      api.calls.clear();
+      api.resumeError = StateError('device failed to start / handle gone');
+      sink.on();
+      api.resumeError = null;
+      expect(api.calls, <String>[
+        'resume(101)',
+        'stop(101)',
+        'playLooping(1, 0.0)',
+        'fade(102, 0.5, 5)',
+      ]);
+      expect(sink.isOn, isTrue);
+      sink.off();
+      expect(api.calls.last, 'fade(102, 0.0, 5)');
+    });
+
+    test('output refused (call in progress) is retried on the next on()',
+        () async {
+      await sink.prepare();
+      api.resumeError = StateError('session not active');
+      api.playError = StateError('session not active');
+      sink.on();
+      expect(sink.isOn, isFalse);
+      api.resumeError = null;
+      api.playError = null;
+      api.calls.clear();
+      sink.on();
+      expect(sink.isOn, isTrue);
+      expect(api.calls, <String>['playLooping(1, 0.0)', 'fade(102, 0.5, 5)']);
+    });
+
+    test('backgrounding stops the idle voice and mutes keying until the '
+        'app returns', () async {
+      await sink.prepare();
+      sink.on();
+      api.calls.clear();
+      foreground.set(false);
+      expect(sink.isOn, isFalse);
+      await pumpEventQueue();
+      expect(api.calls, <String>['stop(101)']);
+      sink.on();
+      sink.off();
+      expect(api.calls, <String>['stop(101)'], reason: 'muted in background');
+      foreground.set(true);
+      expect(api.calls.last, 'playLooping(1, 0.0)');
+      sink.on();
+      expect(api.calls.last, 'fade(102, 0.5, 5)');
+    });
+
+    test('inactive-style repeats of the same state change nothing', () async {
+      await sink.prepare();
+      api.calls.clear();
+      foreground.set(true);
+      foreground.set(true);
+      expect(api.calls, isEmpty);
+    });
+
+    test('prepared in the background starts no voice until foreground',
+        () async {
+      foreground.isForeground = false;
+      await sink.prepare();
+      expect(api.calls.where((c) => c.startsWith('playLooping')), isEmpty);
+      expect(sink.isPrepared, isTrue);
+      foreground.set(true);
+      expect(api.calls.last, 'playLooping(1, 0.0)');
+    });
+
+    test('dispose stops listening to the lifecycle', () async {
+      await sink.prepare();
+      await sink.dispose();
+      expect(foreground.cancelled, 1);
+      api.calls.clear();
+      foreground.set(false);
+      foreground.set(true);
+      expect(api.calls, isEmpty);
+    });
+  });
+
+  group('FlutterSoloudApi', () {
+    test('configures the audio session before starting the engine, and '
+        'only when it starts it', () async {
+      final log = <String>[];
+      final engine = _FakeSoLoud(log);
+      final first = FlutterSoloudApi(engine: engine, session: _FakeSession(log));
+      final second =
+          FlutterSoloudApi(engine: engine, session: _FakeSession(log));
+      await first.init();
+      await second.init();
+      expect(log, <String>['session', 'engine.init']);
+      await first.deinit();
+      await second.deinit();
+      expect(log.last, 'engine.deinit');
+    });
+
+    test('resumeVoice unpauses the handle, which restarts the device',
+        () async {
+      final log = <String>[];
+      final api = FlutterSoloudApi(
+        engine: _FakeSoLoud(log),
+        session: _FakeSession(log),
+      );
+      api.resumeVoice(const SidetoneVoice(7));
+      expect(log, <String>['setPause(7, false)']);
+    });
   });
 }

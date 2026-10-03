@@ -98,11 +98,14 @@ class _MeBody extends StatelessWidget {
             ChangePasswordPage(hasPassword: identity.hasPassword),
           ),
         ),
-        ListTile(
-          leading: const Icon(Icons.save_alt),
-          title: Text(s.accountExportBackup),
-          subtitle: Text(s.accountExportBackupSubtitle),
-          onTap: () => exportBackupWithFeedback(context),
+        // The tile's own context anchors the iPad share popover.
+        Builder(
+          builder: (tile) => ListTile(
+            leading: const Icon(Icons.save_alt),
+            title: Text(s.accountExportBackup),
+            subtitle: Text(s.accountExportBackupSubtitle),
+            onTap: () => exportBackupWithFeedback(context, anchor: tile),
+          ),
         ),
         _SectionHeader(s.accountSectionTraining),
         ListTile(

@@ -36,6 +36,7 @@ class GroupsPage extends StatefulWidget {
 
 class _GroupsPageState extends State<GroupsPage> {
   ConversationTarget? _selected;
+  final DetailPaneKey _detailKey = DetailPaneKey();
   StreamSubscription<ConversationTarget>? _shellConversations;
 
   @override
@@ -60,7 +61,7 @@ class _GroupsPageState extends State<GroupsPage> {
       setState(() => _selected = target);
       return;
     }
-    unawaited(Navigator.of(context).push(conversationRoute(target)));
+    unawaited(pushConversation(context, target));
   }
 
   /// A notification asked for [target]; see `ChatPage._openFromShell`.
@@ -97,7 +98,15 @@ class _GroupsPageState extends State<GroupsPage> {
       );
     }
     final bool twoPane = isMasterDetail(context);
-    if (!twoPane && _selected != null) _selected = null;
+    // Same as the chat page: rotating to portrait keeps the group open.
+    final bool parked =
+        !twoPane &&
+        _selected != null &&
+        !reopenCollapsedDetail(
+          this,
+          selection: () => _selected,
+          forget: () => setState(() => _selected = null),
+        );
 
     final Widget list = Scaffold(
       appBar: AppBar(
@@ -121,8 +130,7 @@ class _GroupsPageState extends State<GroupsPage> {
         builder: (context, snapshot) {
           final List<Group> groups = snapshot.data ?? const <Group>[];
           final ConversationTarget? selected = _selected;
-          if (selected != null &&
-              !groups.any((g) => g.id == selected.peerId)) {
+          if (selected != null && !groups.any((g) => g.id == selected.peerId)) {
             // Left (or was removed from) the open group: drop the pane.
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted && _selected?.id == selected.id) {
@@ -156,18 +164,18 @@ class _GroupsPageState extends State<GroupsPage> {
       ),
     );
 
-    if (!twoPane) return list;
     final ConversationTarget? selected = _selected;
-    return MasterDetail(
-      master: list,
-      detail: selected == null
-          ? null
-          : ConversationScreen(
-              key: ValueKey<String>('detail_group_${selected.peerId}'),
-              target: selected,
-              embedded: true,
-              onClosed: () => setState(() => _selected = null),
-            ),
-    );
+    final Widget? detail = selected == null
+        ? null
+        : ConversationScreen(
+            key: _detailKey.of(selected.id),
+            target: selected,
+            embedded: true,
+            onClosed: () => setState(() => _selected = null),
+          );
+    if (!twoPane) {
+      return singlePaneLayout(list: list, parkedDetail: parked ? detail : null);
+    }
+    return MasterDetail(master: list, detail: detail);
   }
 }

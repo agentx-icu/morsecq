@@ -36,10 +36,7 @@ void main() {
     });
 
     test('conversation ids are carried verbatim', () {
-      expect(
-        const OpenConversationTarget('c2c_ABC').encode(),
-        'conv:c2c_ABC',
-      );
+      expect(const OpenConversationTarget('c2c_ABC').encode(), 'conv:c2c_ABC');
       expect(
         NotificationTapTarget.parse(' conv:group_tox_9 '),
         const OpenConversationTarget('group_tox_9'),
@@ -55,11 +52,41 @@ void main() {
     });
 
     test('equality is by kind and id', () {
-      expect(const FriendRequestTarget('X'), isNot(const GroupInviteTarget('X')));
+      expect(
+        const FriendRequestTarget('X'),
+        isNot(const GroupInviteTarget('X')),
+      );
       expect(
         const OpenConversationTarget('a').hashCode,
         const OpenConversationTarget('a').hashCode,
       );
+    });
+    test('hashes are per kind and toString names the kind and payload', () {
+      expect(
+        const FriendRequestTarget('X').hashCode,
+        const FriendRequestTarget('X').hashCode,
+      );
+      expect(
+        const GroupInviteTarget('X').hashCode,
+        const GroupInviteTarget('X').hashCode,
+      );
+      expect(
+        const OpenConversationTarget('c2c_A').toString(),
+        'OpenConversationTarget(${const OpenConversationTarget('c2c_A').encode()})',
+      );
+      expect(
+        const FriendRequestTarget('ABC').toString(),
+        'FriendRequestTarget(${const FriendRequestTarget('ABC').encode()})',
+      );
+      expect(
+        const GroupInviteTarget('inv_1').toString(),
+        'GroupInviteTarget(${const GroupInviteTarget('inv_1').encode()})',
+      );
+      expect(<NotificationTapTarget>{
+        const FriendRequestTarget('X'),
+        const GroupInviteTarget('X'),
+        const OpenConversationTarget('X'),
+      }, hasLength(3));
     });
   });
 

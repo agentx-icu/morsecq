@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
+import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
 
 /// Tap to key: a straight key (touch, or Space on a keyboard) feeding a
@@ -108,9 +109,13 @@ class _TapToKeyViewState extends State<TapToKeyView> {
                   style: theme.textTheme.titleSmall,
                 ),
               ),
-              Text(
-                s.referenceEstimatedSpeed('${_estimatedWpm.round()}'),
-                style: theme.textTheme.labelMedium,
+              Flexible(
+                child: Text(
+                  s.referenceEstimatedSpeed('${_estimatedWpm.round()}'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium,
+                ),
               ),
               IconButton(
                 key: TapToKeyView.clearKey,
@@ -171,11 +176,14 @@ class _TapToKeyViewState extends State<TapToKeyView> {
         ],
       );
     }
-    return Column(
-      children: <Widget>[
-        Expanded(child: textPane),
-        keyPane,
-      ],
+    return ReferenceMinHeight(
+      minHeight: 440,
+      child: Column(
+        children: <Widget>[
+          Expanded(child: textPane),
+          keyPane,
+        ],
+      ),
     );
   }
 }

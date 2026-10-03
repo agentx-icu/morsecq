@@ -2391,4 +2391,19 @@ class SRu extends S {
 
   @override
   String get learnShowFewerChars => 'Свернуть символы';
+
+  @override
+  String get learnLeaveDrillTitle => 'Выйти из занятия?';
+
+  @override
+  String get learnLeaveDrillBody => 'Пройденные в этом занятии раунды не сохранятся.';
+
+  @override
+  String get learnLeaveDrillConfirm => 'Выйти';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ нужен доступ к камере для сканирования QR-кода. Разрешите его в настройках системы.';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'Камера на этом устройстве недоступна.';
 }

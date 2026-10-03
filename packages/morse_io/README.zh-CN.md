@@ -73,11 +73,18 @@ MorseCQ 的 Flutter I/O 层：把 `morse_core` 的时间线渲染为**声音**�
   1–4 ms 的抖动是正常的）。
 
 ### iOS
-* **静音开关**：`AVAudioSession` 必须处于 `playback` 类别（若希望侧音与音乐混合则用 `ambient`），
-  否则响铃开关关闭时音调不会播放。检查 `flutter_soloud` 的 miniaudio 后端配置了什么，必要时在
-  `SidetoneSink.prepare()` 之前由 App 设置类别（例如用 `audio_session` 包）。
-* 后台/中断处理：验证循环播放的 voice 在电话或 Siri 中断之后能恢复；若不能，在
-  `AppLifecycleState.resumed` 时 `dispose()` + `prepare()`。
+* **音频会话**：`flutter_soloud` 4.x 以 `sessionCategory = none` 运行 miniaudio，且从不激活会话，
+  会话归 App 管。`FlutterSoloudApi` 在启动引擎前（经 `audio_session`，`PlatformAudioSessionApi`）
+  设为 `playback` + `mixWithOthers`：静音开关打开时侧音照常发声，也不会打断用户的音乐。`record`
+  插件会把会话留在 `playAndRecord`；App 的麦克风源在采集结束后调用 `configureForPlayback()`。
+* **后台**：App 进入后台时（`AppForeground`，仅 Android/iOS）`SidetoneSink` 停掉静音循环 voice，
+  引擎随之让设备空闲，后台不播放任何声音；回到前台时重建 voice。因此 App 不声明 `audio` 后台模式
+  （它不会被用到；App Review 2.5.4）。后台的按键被忽略。
+* **中断**：每次 `on()` 先调用 `resumeVoice`（`setPause(false)`，会重启被系统停掉的设备），并替换
+  丢失的 voice，因此结束通知从未到达的来电 / Siri 中断不会让侧音一直失声。需真机验证：来电后、
+  Siri 后、在别的 App 播放音乐后的侧音。
+* **屏幕**：免手持的会话运行期间持有 `WakelockScreenWake`（Listen 即如此），否则自动锁屏会把
+  App 送入后台。
 * 触觉反馈：`Vibration.vibrate(duration:)` 使用 `CHHapticEngine`（iPhone 8+）；`cancel()` 只对这类
   自定义触觉有效。脉冲起始延迟通常为 20–40 ms，这里无法测量。
 * 闪光灯：`torch_light` 不需要 Info.plist 条目，但相机不能被其他地方占用。

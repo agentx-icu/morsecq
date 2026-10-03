@@ -149,4 +149,14 @@ final class NotificationComposer {
   /// backend and the contacts UI use for nameless peers.
   static String shortKey(String key) =>
       key.length > 8 ? key.substring(0, 8) : key;
+
+  /// Conversation kind from its id alone (no conversation row yet).
+  static ConversationKind kindFromId(String id) =>
+      id.startsWith('group_') ? ConversationKind.group : ConversationKind.c2c;
+
+  /// The peer / group part of a conversation id.
+  static String peerFromId(String id) {
+    final int separator = id.indexOf('_');
+    return separator < 0 ? id : id.substring(separator + 1);
+  }
 }

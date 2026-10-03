@@ -86,14 +86,26 @@ Nothing below can run in CI (no audio device, vibrator, camera or GPU).
   is normal).
 
 ### iOS
-* **Silent switch**: `AVAudioSession` must be in the `playback` category (or
-  `ambient` if the sidetone should mix with music) for the tone to play with
-  the ringer switch off. Check what `flutter_soloud`'s miniaudio backend
-  configures and, if needed, set the category from the app (e.g. the
-  `audio_session` package) before `SidetoneSink.prepare()`.
-* Background/interruption handling: verify the looping voice resumes after a
-  phone call or Siri interruption; if not, `dispose()` + `prepare()` on
-  `AppLifecycleState.resumed`.
+* **Audio session**: `flutter_soloud` 4.x runs miniaudio with
+  `sessionCategory = none` and never activates the session, so the app owns
+  it. `FlutterSoloudApi` sets `playback` + `mixWithOthers` (via
+  `audio_session`, `PlatformAudioSessionApi`) right before it starts the
+  engine: the tone plays with the silent switch on and does not stop the
+  user's music. The `record` plugin leaves the session in `playAndRecord`;
+  the app's microphone source calls `configureForPlayback()` after capture.
+* **Background**: `SidetoneSink` stops its silent looping voice while the app
+  is backgrounded (`AppForeground`, Android/iOS only), so the engine idles
+  its device and nothing plays in the background; a fresh voice starts on
+  return. That is why the app declares no `audio` background mode (it would
+  be unused; App Review 2.5.4). Key-downs in the background are
+  ignored.
+* **Interruptions**: every `on()` first calls `resumeVoice` (`setPause(false)`,
+  which restarts a device the OS stopped) and replaces a lost voice, so a
+  call or Siri interruption whose end is never signalled cannot leave the
+  tone dead. Verify on a device: tone after a phone call, after Siri, after
+  playing music in another app.
+* **Screen**: hands-free sessions hold `WakelockScreenWake` while they run
+  (Listen does), since auto-lock would background the app.
 * Haptics: `Vibration.vibrate(duration:)` uses `CHHapticEngine` (iPhone 8+);
   `cancel()` only works for those custom haptics. Pulse start latency is
   typically 20–40 ms and cannot be measured here.

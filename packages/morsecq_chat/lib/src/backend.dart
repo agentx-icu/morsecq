@@ -64,7 +64,8 @@ class MorsecqChatBackend {
         'libtim2tox_ffi cannot be loaded in this process',
       );
     }
-    final resolvedPaths = paths ?? await IdentityPaths.forApplicationSupport();
+    final resolvedPaths =
+        paths ?? await IdentityPaths.forApplicationSupport(logger: logger);
     final kv = store ?? await SharedPreferencesStore.open();
     final eng =
         engine ??

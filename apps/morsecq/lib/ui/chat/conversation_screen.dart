@@ -373,19 +373,28 @@ class _ConversationScreenState extends State<ConversationScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (conference) const ConferenceNote(),
-          Expanded(child: _buildList(settings)),
-          MessageInput(
-            key: ValueKey<String>('input_$_id'),
-            service: _service,
-            conversationId: _id,
-            playback: _playback,
-            initialDraft: _draft(),
-            onSent: (_) => _showLatest(),
-          ),
-        ],
+      // Landscape phones (~320-430 px tall) and large text make the keyed
+      // composer taller than the body; cap it and let it scroll instead.
+      body: LayoutBuilder(
+        builder: (context, box) => Column(
+          children: [
+            if (conference) const ConferenceNote(),
+            Expanded(child: _buildList(settings)),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: box.maxHeight * 0.75),
+              child: SingleChildScrollView(
+                child: MessageInput(
+                  key: ValueKey<String>('input_$_id'),
+                  service: _service,
+                  conversationId: _id,
+                  playback: _playback,
+                  initialDraft: _draft(),
+                  onSent: (_) => _showLatest(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -400,29 +409,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget _buildList(MorsePlaybackSettings settings) {
     final Object? error = _error;
     if (error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(describeChatError(context.s, error)),
-            TextButton(
-              onPressed: () => unawaited(_load()),
-              child: Text(context.s.chatRetryHistory),
-            ),
-          ],
-        ),
+      return ConversationPlaceholder(
+        text: describeChatError(context.s, error),
+        onRetry: () => unawaited(_load()),
       );
     }
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_messages.isEmpty) {
-      return Center(
-        child: Text(
-          context.s.chatNoMessages,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
+      return ConversationPlaceholder(text: context.s.chatNoMessages);
     }
     return ListenableBuilder(
       listenable: _playback,

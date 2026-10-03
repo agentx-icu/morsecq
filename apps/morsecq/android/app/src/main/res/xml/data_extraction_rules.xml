@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+ (API 31+): nothing of MorseCQ leaves the device through
-     Google cloud backup or device-to-device transfer. The app data holds the
-     Tox identity (profile, history, drafts, pending friend requests); the
-     user moves it deliberately with the in-app backup file instead.
-     Referenced by android:dataExtractionRules in AndroidManifest.xml; the
-     pre-12 equivalent is backup_rules.xml. -->
+<!--
+  Android 12+ (API 31) backup policy for MorseCQ: nothing leaves the device
+  through Google cloud backup or device-to-device transfer. The Tox profile
+  (private key), chat history and training data live in the app's files dir;
+  the encrypted in-app .mcqbackup export is the only supported way to move an
+  identity. See the comment on <application> in AndroidManifest.xml.
+-->
 <data-extraction-rules>
     <cloud-backup>
-        <exclude domain="root" path="." />
-        <exclude domain="file" path="." />
-        <exclude domain="database" path="." />
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="external" path="." />
-        <exclude domain="device_root" path="." />
-        <exclude domain="device_file" path="." />
-        <exclude domain="device_database" path="." />
-        <exclude domain="device_sharedpref" path="." />
+        <exclude domain="root"/>
+        <exclude domain="file"/>
+        <exclude domain="database"/>
+        <exclude domain="sharedpref"/>
+        <exclude domain="external"/>
+        <exclude domain="device_root"/>
+        <exclude domain="device_file"/>
+        <exclude domain="device_database"/>
+        <exclude domain="device_sharedpref"/>
     </cloud-backup>
     <device-transfer>
-        <exclude domain="root" path="." />
-        <exclude domain="file" path="." />
-        <exclude domain="database" path="." />
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="external" path="." />
-        <exclude domain="device_root" path="." />
-        <exclude domain="device_file" path="." />
-        <exclude domain="device_database" path="." />
-        <exclude domain="device_sharedpref" path="." />
+        <exclude domain="root"/>
+        <exclude domain="file"/>
+        <exclude domain="database"/>
+        <exclude domain="sharedpref"/>
+        <exclude domain="external"/>
+        <exclude domain="device_root"/>
+        <exclude domain="device_file"/>
+        <exclude domain="device_database"/>
+        <exclude domain="device_sharedpref"/>
     </device-transfer>
 </data-extraction-rules>

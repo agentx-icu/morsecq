@@ -55,7 +55,11 @@ class IdentityCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const ConnectionChip(alwaysVisible: true),
+                          // Flexible: on a 320 px phone at large text the
+                          // chip is wider than the column; let it ellipsize.
+                          const Flexible(
+                            child: ConnectionChip(alwaysVisible: true),
+                          ),
                           if (identity.hasPassword) ...[
                             const SizedBox(width: 6),
                             Tooltip(

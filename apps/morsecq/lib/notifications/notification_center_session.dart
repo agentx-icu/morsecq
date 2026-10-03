@@ -35,6 +35,7 @@ extension _NotificationSession on NotificationCenter {
     }
     _pendingTap = null;
     _inbox.clear();
+    _ledger.reset();
     _knownFriendRequests.clear();
     _knownInvites.clear();
     _activeConversation = null;
@@ -42,7 +43,8 @@ extension _NotificationSession on NotificationCenter {
     if (_ready && !_disposed) {
       unawaited(
         _notifications.cancelAll().catchError(
-          (Object error, StackTrace stack) => NotificationCenter._report('cancelAll', error, stack),
+          (Object error, StackTrace stack) =>
+              NotificationCenter._report('cancelAll', error, stack),
         ),
       );
     }
@@ -61,10 +63,26 @@ extension _NotificationSession on NotificationCenter {
         if (owner != null && owner != account) await _cancel(payload);
       }
     } catch (error, stack) {
-      NotificationCenter._report('withdraw foreign notifications', error, stack);
+      NotificationCenter._report(
+        'withdraw foreign notifications',
+        error,
+        stack,
+      );
     }
   }
 
+  /// A grant made earlier (another run, the system Settings) without asking:
+  /// no dialog.
+  Future<bool> _checkPermission() async {
+    try {
+      final bool granted = await _notifications.isPermissionGranted();
+      if (granted) _permissionGranted = true;
+      return granted;
+    } catch (error, stack) {
+      NotificationCenter._report('isPermissionGranted', error, stack);
+      return false;
+    }
+  }
 
   Future<bool> _requestPermission() async {
     try {

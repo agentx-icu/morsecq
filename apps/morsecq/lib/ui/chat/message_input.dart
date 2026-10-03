@@ -449,10 +449,16 @@ class _MessageInputState extends State<MessageInput>
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      s.chatBytesLeftCount(left),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: tooLong ? scheme.error : scheme.onSurfaceVariant,
+                    // Flexible: at 2x text the counter must not overflow.
+                    Flexible(
+                      child: Text(
+                        s.chatBytesLeftCount(left),
+                        textAlign: TextAlign.end,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: tooLong
+                              ? scheme.error
+                              : scheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],

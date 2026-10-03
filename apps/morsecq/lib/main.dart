@@ -18,6 +18,7 @@ import 'i18n/current_strings.dart';
 import 'i18n/key_value_store.dart';
 import 'i18n/l10n_extension.dart';
 import 'i18n/locale_controller.dart';
+import 'lifecycle/background_task_api.dart';
 import 'notifications/app_badge_plus_api.dart';
 import 'notifications/flutter_local_notifications_api.dart';
 import 'startup/startup_gate.dart';
@@ -59,6 +60,7 @@ Future<void> main() async {
         notifications: FlutterLocalNotificationsApi(),
         badge: AppBadgePlusApi(),
       ),
+      backgroundTasks: BackgroundTaskApi.forPlatform(),
     ),
   );
 }
@@ -89,6 +91,7 @@ class MorsecqApp extends StatelessWidget {
     this.localeStore,
     this.desktopShell,
     this.notifications,
+    this.backgroundTasks,
   });
 
   final BackendFactory backend;
@@ -105,6 +108,9 @@ class MorsecqApp extends StatelessWidget {
   /// Real notification plugins; null disables OS notifications (tests).
   final NotificationApis? notifications;
 
+  /// OS background-task bridge (iOS); null in tests.
+  final BackgroundTaskApi? backgroundTasks;
+
   @override
   Widget build(BuildContext context) {
     return AppScope(
@@ -113,6 +119,7 @@ class MorsecqApp extends StatelessWidget {
       localeStore: localeStore,
       desktopShell: desktopShell,
       notificationApis: notifications,
+      backgroundTasks: backgroundTasks,
       child: Builder(
         builder: (context) {
           final appearance = context.watch<AppSettings>();

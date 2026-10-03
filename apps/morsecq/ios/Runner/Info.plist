@@ -64,18 +64,16 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<!-- Background modes (see lib/notifications/README.md). `audio` only:
-	     morsecq has no ToxAV, so `voip` cannot be declared honestly; `audio`
-	     is justified by Morse playback continuing when the user switches apps
-	     and, as a side effect, keeps the Tox loop alive while a message is
-	     playing. It does NOT extend the background window otherwise: without
-	     active playback iOS suspends the app after ~30 s
-	     (AppLifecycleCoordinator's iOS budget). `fetch` is intentionally not
-	     declared until a BGAppRefreshTask handler exists in AppDelegate. -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
+	<!-- No UIBackgroundModes (see lib/notifications/README.md). Nothing plays
+	     in the background (SidetoneSink stops its voice there), so `audio`
+	     would be an unused mode (App Review 2.5.4); morsecq has no ToxAV, so
+	     `voip` cannot be declared honestly; `fetch` waits for a
+	     BGAppRefreshTask handler. The ~30 s background window comes from the
+	     beginBackgroundTask assertion AppLifecycleCoordinator holds
+	     (AppDelegate.swift, icu.agentx.morsecq/background_task). -->
+	<!-- Permission prompts: these English values are the fallback; every UI
+	     language is in Runner/<lang>.lproj/InfoPlist.strings (keep both in sync;
+	     test/i18n/platform_locales_test.dart checks every key). -->
 	<key>NSCameraUsageDescription</key>
 	<string>MorseCQ uses the camera only to scan a friend's Tox ID QR code.</string>
 	<key>NSMicrophoneUsageDescription</key>

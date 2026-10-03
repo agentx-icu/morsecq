@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:record/record.dart';
 
 import 'pcm_source.dart';
@@ -18,12 +19,38 @@ import 'pcm_source.dart';
 /// closed by an explicit `stop()`. [start] therefore returns a stream that
 /// merges both: state-stream errors become errors on the PCM stream, and a
 /// platform-side transition to `stop` while capturing ends it.
+///
+/// On iOS the plugin switches the shared audio session to `playAndRecord`
+/// (Bluetooth HFP allowed, not mixable) and leaves it there; [stop] puts the
+/// playback session `morse_io` runs the sidetone in back, so the tone keeps
+/// ignoring the silent switch, mixing with music and using A2DP.
 final class RecordPcmSource implements PcmSource {
-  RecordPcmSource({AudioRecorder? recorder})
-      : _recorder = recorder ?? AudioRecorder();
+  RecordPcmSource({
+    AudioRecorder? recorder,
+    AudioSessionApi audioSession = const PlatformAudioSessionApi(),
+  }) : _recorder = recorder ?? AudioRecorder(),
+       _audioSession = audioSession;
 
   final AudioRecorder _recorder;
+  final AudioSessionApi _audioSession;
   _CaptureSession? _session;
+  bool _capturing = false;
+
+  /// Counts [start]s, so a capture that ends on its own does not stop or
+  /// restore for a newer one.
+  int _captures = 0;
+
+  /// Tail of the start/stop chain. Every [start] and [stop] (recorder stop
+  /// plus session restore) runs to completion before the next begins, so a
+  /// quick restart can neither overtake a pending restore nor have its
+  /// `_capturing` flag cleared by the stop it raced.
+  Future<void> _tail = Future<void>.value();
+
+  Future<T> _serial<T>(Future<T> Function() op) {
+    final Future<T> result = _tail.then((_) => op());
+    _tail = result.then<void>((_) {}, onError: (Object _) {});
+    return result;
+  }
 
   @override
   Future<bool> hasPermission() => _recorder.hasPermission();
@@ -32,9 +59,12 @@ final class RecordPcmSource implements PcmSource {
   Future<Stream<Uint8List>> start({
     required int sampleRate,
     required int channels,
-  }) async {
+  }) => _serial(() async {
     _endSession();
-    final session = _session = _CaptureSession();
+    _capturing = true;
+    final int capture = ++_captures;
+    final session = _session = _CaptureSession()
+      ..onSelfClose = () => unawaited(_endedByPlatform(capture));
     // Watch states before starting so the session sees its own `record`.
     session.watchStates(_recorder.onStateChanged());
     try {
@@ -51,11 +81,13 @@ final class RecordPcmSource implements PcmSource {
       session.forwardPcm(pcm);
     } catch (_) {
       if (identical(_session, session)) _endSession();
-      session.close();
+      session
+        ..onSelfClose = null
+        ..close();
       rethrow;
     }
     return session.stream;
-  }
+  });
 
   /// `record` 6.2 implements `listInputDevices` on every target: Android
   /// (`AudioManager.getDevices(GET_DEVICES_INPUTS)`), iOS
@@ -77,21 +109,42 @@ final class RecordPcmSource implements PcmSource {
   /// Ends the current session first, so the plugin's own `stop` state for
   /// this explicit stop is not mistaken for an unexpected one.
   @override
-  Future<void> stop() async {
+  Future<void> stop() => _serial(() async {
     _endSession();
-    await _recorder.stop();
-  }
+    try {
+      await _recorder.stop();
+    } finally {
+      if (_capturing) {
+        _capturing = false;
+        await _audioSession.configureForPlayback();
+      }
+    }
+  });
 
   @override
-  Future<void> dispose() async {
+  Future<void> dispose() => _serial(() async {
     _endSession();
     await _recorder.dispose();
-  }
+  });
+
+  /// The capture ended without [stop] (the platform stopped, the PCM
+  /// stream finished, or the listener cancelled): put the playback session
+  /// back, as [stop] would, unless a newer capture has started meanwhile.
+  /// Stopping the recorder stays with whoever owns the capture (the plugin
+  /// already has, or [ListenController] calls [stop]); the plugin does not
+  /// touch the audio session on stop, so restoring first is safe.
+  Future<void> _endedByPlatform(int capture) => _serial(() async {
+    if (capture != _captures || !_capturing) return;
+    _capturing = false;
+    await _audioSession.configureForPlayback();
+  });
 
   void _endSession() {
     final session = _session;
     _session = null;
-    session?.close();
+    session
+      ?..onSelfClose = null
+      ..close();
   }
 }
 
@@ -106,6 +159,10 @@ final class _CaptureSession {
   StreamSubscription<RecordState>? _stateSub;
   bool _sawRecording = false;
   bool _closed = false;
+
+  /// Called once when the capture ends by itself rather than through its
+  /// owner (who clears it before closing).
+  void Function()? onSelfClose;
 
   Stream<Uint8List> get stream => _out.stream;
 
@@ -147,6 +204,9 @@ final class _CaptureSession {
   void close() {
     if (_closed) return;
     _closed = true;
+    final onSelf = onSelfClose;
+    onSelfClose = null;
+    onSelf?.call();
     unawaited(_pcmSub?.cancel());
     unawaited(_stateSub?.cancel());
     _pcmSub = null;

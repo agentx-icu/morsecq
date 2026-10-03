@@ -67,6 +67,8 @@ extension _IdentityBackup on Tim2ToxIdentityService {
         );
     final root = Directory(_paths.root);
     await PosixPermissions.createPrivateDirectory(root.parent.path);
+    // The staged tree below must not land in a directory iOS would back up.
+    await _paths.excludeFromBackup();
     final stage = await root.parent.createTemp(IdentityPaths.importStagePrefix);
     final previous = Directory(p.join(stage.path, 'previous'));
     final staged = IdentityPaths(p.join(stage.path, 'identity'));

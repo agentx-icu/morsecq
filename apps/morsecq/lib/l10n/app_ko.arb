@@ -669,5 +669,10 @@
   "chatSelfMe": "나",
   "chatSelfLocalOnly": "이 기기에만 저장",
   "chatSelfContactSubtitle": "초안, 연습과 메모 · 전송되지 않음",
-  "learnShowFewerChars": "문자 접기"
+  "learnShowFewerChars": "문자 접기",
+  "learnLeaveDrillTitle": "이 세션을 나가시겠습니까?",
+  "learnLeaveDrillBody": "이 세션에서 진행한 라운드는 저장되지 않습니다.",
+  "learnLeaveDrillConfirm": "나가기",
+  "chatScanQrPermissionDenied": "QR 코드를 스캔하려면 MorseCQ에 카메라 접근 권한이 필요합니다. 시스템 설정에서 허용하세요.",
+  "chatScanQrCameraUnavailable": "이 기기에서는 카메라를 사용할 수 없습니다."
 }

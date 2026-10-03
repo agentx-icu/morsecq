@@ -6,6 +6,7 @@ import '../desktop/desktop_shell_controller.dart';
 import '../i18n/locale_controller.dart';
 import '../i18n/strings_resolver.dart';
 import '../lifecycle/app_lifecycle_coordinator.dart';
+import '../lifecycle/background_task_api.dart';
 import '../notifications/badge_api.dart';
 import '../notifications/connection_banner_policy.dart';
 import '../notifications/local_notifications_api.dart';
@@ -41,10 +42,13 @@ final class AppServices {
     NotificationApis? notificationApis,
     NotificationPrefs? notificationPrefs,
     Future<void> Function()? onBackground,
+    BackgroundTaskApi? backgroundTasks,
     this.desktopShell,
   }) : lifecycle = AppLifecycleCoordinator(
          identity: identity,
          onBackground: () => _flushDurable(identity, onBackground),
+         // Null in widget tests: no platform channel is touched there.
+         backgroundTasks: backgroundTasks ?? const NoopBackgroundTaskApi(),
        ),
        banner = ConnectionBannerPolicy(identity: identity),
        notificationPrefs = notificationPrefs ?? NotificationPrefs(),
