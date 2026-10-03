@@ -2665,7 +2665,7 @@ class SZh extends S {
   String get messageStatusCancelled => '已取消——未发送';
 
   @override
-  String get chatMessageLearnActions => '用这条消息练习';
+  String get chatMessageLearnActions => '消息操作';
 
   @override
   String get chatPracticeMessage => '练习抄收这条消息';
@@ -2782,6 +2782,74 @@ class SZh extends S {
 
   @override
   String get learnRhythmZoomOut => '缩小';
+
+  @override
+  String get chatSearchMessages => '搜索消息';
+
+  @override
+  String get chatSearchHint => '在此会话中搜索';
+
+  @override
+  String get chatSearchAnyone => '所有人';
+
+  @override
+  String get chatSearchMe => '我';
+
+  @override
+  String get chatSearchThem => '对方';
+
+  @override
+  String get chatSearchAnyDate => '任何日期';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '已收藏';
+
+  @override
+  String get chatSearchNoResults => '没有匹配的消息。';
+
+  @override
+  String get chatSearchMore => '加载更多';
+
+  @override
+  String get chatAddBookmark => '收藏';
+
+  @override
+  String get chatRemoveBookmark => '取消收藏';
+
+  @override
+  String get chatBookmarked => '已收藏';
+
+  @override
+  String get chatBookmarkFailed => '无法保存收藏。';
+
+  @override
+  String get chatRetrySend => '重新发送';
+
+  @override
+  String get chatCancelSend => '取消发送';
+
+  @override
+  String get chatRetryQueued => '已重新排队，联系人上线后发送。';
+
+  @override
+  String get chatSendCancelled => '已取消，消息未发送。';
+
+  @override
+  String get chatRetryNotNeeded => '这条消息已不再是失败状态，无需重试。';
+
+  @override
+  String get chatCancelTooLate => '无法取消：消息已交给网络，可能会送达。';
+
+  @override
+  String get chatSendControlUnavailable => '此消息不支持该操作。';
+
+  @override
+  String get chatSendControlFailed => '操作未完成，消息保持原状态，请重试。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5445,7 +5513,7 @@ class SZhHant extends SZh {
   String get messageStatusCancelled => '已取消——未發送';
 
   @override
-  String get chatMessageLearnActions => '用這則訊息練習';
+  String get chatMessageLearnActions => '訊息操作';
 
   @override
   String get chatPracticeMessage => '練習抄收這則訊息';
@@ -5562,4 +5630,72 @@ class SZhHant extends SZh {
 
   @override
   String get learnRhythmZoomOut => '縮小';
+
+  @override
+  String get chatSearchMessages => '搜尋訊息';
+
+  @override
+  String get chatSearchHint => '在此對話中搜尋';
+
+  @override
+  String get chatSearchAnyone => '所有人';
+
+  @override
+  String get chatSearchMe => '我';
+
+  @override
+  String get chatSearchThem => '對方';
+
+  @override
+  String get chatSearchAnyDate => '任何日期';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '已收藏';
+
+  @override
+  String get chatSearchNoResults => '沒有符合的訊息。';
+
+  @override
+  String get chatSearchMore => '載入更多';
+
+  @override
+  String get chatAddBookmark => '收藏';
+
+  @override
+  String get chatRemoveBookmark => '取消收藏';
+
+  @override
+  String get chatBookmarked => '已收藏';
+
+  @override
+  String get chatBookmarkFailed => '無法儲存收藏。';
+
+  @override
+  String get chatRetrySend => '重新傳送';
+
+  @override
+  String get chatCancelSend => '取消傳送';
+
+  @override
+  String get chatRetryQueued => '已重新排入佇列，聯絡人上線後傳送。';
+
+  @override
+  String get chatSendCancelled => '已取消，訊息未傳送。';
+
+  @override
+  String get chatRetryNotNeeded => '這則訊息已不是失敗狀態，無需重試。';
+
+  @override
+  String get chatCancelTooLate => '無法取消：訊息已交給網路，可能會送達。';
+
+  @override
+  String get chatSendControlUnavailable => '此訊息不支援此操作。';
+
+  @override
+  String get chatSendControlFailed => '操作未完成，訊息保持原狀態，請重試。';
 }

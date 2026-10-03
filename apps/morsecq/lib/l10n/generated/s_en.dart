@@ -2685,7 +2685,7 @@ class SEn extends S {
   String get messageStatusCancelled => 'Cancelled — never sent';
 
   @override
-  String get chatMessageLearnActions => 'Learn from this message';
+  String get chatMessageLearnActions => 'Message actions';
 
   @override
   String get chatPracticeMessage => 'Practice this message';
@@ -2808,4 +2808,72 @@ class SEn extends S {
 
   @override
   String get learnRhythmZoomOut => 'Zoom out';
+
+  @override
+  String get chatSearchMessages => 'Search messages';
+
+  @override
+  String get chatSearchHint => 'Search this conversation';
+
+  @override
+  String get chatSearchAnyone => 'Anyone';
+
+  @override
+  String get chatSearchMe => 'Me';
+
+  @override
+  String get chatSearchThem => 'Them';
+
+  @override
+  String get chatSearchAnyDate => 'Any date';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'Bookmarked';
+
+  @override
+  String get chatSearchNoResults => 'No matching messages.';
+
+  @override
+  String get chatSearchMore => 'Load more';
+
+  @override
+  String get chatAddBookmark => 'Bookmark';
+
+  @override
+  String get chatRemoveBookmark => 'Remove bookmark';
+
+  @override
+  String get chatBookmarked => 'Bookmarked';
+
+  @override
+  String get chatBookmarkFailed => 'Couldn\'t save the bookmark.';
+
+  @override
+  String get chatRetrySend => 'Retry sending';
+
+  @override
+  String get chatCancelSend => 'Cancel sending';
+
+  @override
+  String get chatRetryQueued => 'Queued again. It will be sent when your contact is online.';
+
+  @override
+  String get chatSendCancelled => 'Cancelled. The message was never sent.';
+
+  @override
+  String get chatRetryNotNeeded => 'This message is no longer failed; nothing to retry.';
+
+  @override
+  String get chatCancelTooLate => 'Too late to cancel: the message was already handed to the network and may arrive.';
+
+  @override
+  String get chatSendControlUnavailable => 'Not available for this message.';
+
+  @override
+  String get chatSendControlFailed => 'That didn\'t work. The message keeps its current state; try again.';
 }

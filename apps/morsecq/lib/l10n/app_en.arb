@@ -3764,7 +3764,7 @@
   "@messageStatusCancelled": {
     "description": "Message status tooltip: a queued send the user cancelled before it left the device"
   },
-  "chatMessageLearnActions": "Learn from this message",
+  "chatMessageLearnActions": "Message actions",
   "@chatMessageLearnActions": {
     "description": "Message bubble: menu with learning actions for a received message"
   },
@@ -3957,5 +3957,351 @@
   "learnRhythmZoomOut": "Zoom out",
   "@learnRhythmZoomOut": {
     "description": "Rhythm timeline: zoom out"
+  },
+  "chatSearchMessages": "Search messages",
+  "@chatSearchMessages": {
+    "description": "Conversation app bar: search this conversation's history"
+  },
+  "chatSearchHint": "Search this conversation",
+  "@chatSearchHint": {
+    "description": "Message search field hint"
+  },
+  "chatSearchAnyone": "Anyone",
+  "@chatSearchAnyone": {
+    "description": "Message search sender filter: everyone"
+  },
+  "chatSearchMe": "Me",
+  "@chatSearchMe": {
+    "description": "Message search sender filter / result sender: the local user"
+  },
+  "chatSearchThem": "Them",
+  "@chatSearchThem": {
+    "description": "Message search sender filter: the other person in a one-to-one chat"
+  },
+  "chatSearchAnyDate": "Any date",
+  "@chatSearchAnyDate": {
+    "description": "Message search date filter: no date limit"
+  },
+  "chatSearchDateRange": "{from} – {to}",
+  "@chatSearchDateRange": {
+    "description": "Message search date filter: chosen range",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSearchBookmarked": "Bookmarked",
+  "@chatSearchBookmarked": {
+    "description": "Message search filter: bookmarked messages only"
+  },
+  "chatSearchNoResults": "No matching messages.",
+  "@chatSearchNoResults": {
+    "description": "Message search: nothing found"
+  },
+  "chatSearchMore": "Load more",
+  "@chatSearchMore": {
+    "description": "Message search: load the next page of results"
+  },
+  "chatAddBookmark": "Bookmark",
+  "@chatAddBookmark": {
+    "description": "Message menu: bookmark this message (local only)"
+  },
+  "chatRemoveBookmark": "Remove bookmark",
+  "@chatRemoveBookmark": {
+    "description": "Message menu: remove the local bookmark"
+  },
+  "chatBookmarked": "Bookmarked",
+  "@chatBookmarked": {
+    "description": "Message bubble: semantics of the bookmark mark"
+  },
+  "chatBookmarkFailed": "Couldn't save the bookmark.",
+  "@chatBookmarkFailed": {
+    "description": "Snack bar: bookmark could not be saved"
+  },
+  "chatRetrySend": "Retry sending",
+  "@chatRetrySend": {
+    "description": "Message menu: retry a failed send (same message, no duplicate bubble)"
+  },
+  "chatCancelSend": "Cancel sending",
+  "@chatCancelSend": {
+    "description": "Message menu: cancel a send that is still queued on this device"
+  },
+  "chatRetryQueued": "Queued again. It will be sent when your contact is online.",
+  "@chatRetryQueued": {
+    "description": "Snack bar: failed message queued again"
+  },
+  "chatSendCancelled": "Cancelled. The message was never sent.",
+  "@chatSendCancelled": {
+    "description": "Snack bar: queued message cancelled before it left the device"
+  },
+  "chatRetryNotNeeded": "This message is no longer failed; nothing to retry.",
+  "@chatRetryNotNeeded": {
+    "description": "Snack bar: retry not applied because the message is no longer failed"
+  },
+  "chatCancelTooLate": "Too late to cancel: the message was already handed to the network and may arrive.",
+  "@chatCancelTooLate": {
+    "description": "Snack bar: cancel failed because the transport already took the message"
+  },
+  "chatSendControlUnavailable": "Not available for this message.",
+  "@chatSendControlUnavailable": {
+    "description": "Snack bar: retry/cancel not available for this message"
+  },
+  "chatSendControlFailed": "That didn't work. The message keeps its current state; try again.",
+  "@chatSendControlFailed": {
+    "description": "Snack bar: retry/cancel could not be completed"
+  },
+  "workbenchTitle": "Recording workbench",
+  "@workbenchTitle": {
+    "description": "Recording workbench: screen title"
+  },
+  "workbenchOpen": "Recordings",
+  "@workbenchOpen": {
+    "description": "Listen screen: open the recorded-audio workbench"
+  },
+  "workbenchImport": "Import recording",
+  "@workbenchImport": {
+    "description": "Recording workbench: pick a WAV file"
+  },
+  "workbenchEmpty": "Import a WAV recording to loop, decode and copy it. No microphone needed.",
+  "@workbenchEmpty": {
+    "description": "Recording workbench: empty state"
+  },
+  "workbenchFormats": "WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.",
+  "@workbenchFormats": {
+    "description": "Recording workbench: supported formats and limits"
+  },
+  "workbenchBackupNote": "Recordings stay on this device and are not included in identity backups; saved selections back up only their titles, notes and positions.",
+  "@workbenchBackupNote": {
+    "description": "Recording workbench: recordings are not part of identity backups"
+  },
+  "workbenchInfo": "{rate} kHz · {channels} · {duration}",
+  "@workbenchInfo": {
+    "description": "Recording workbench: recording format line",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "channels": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchMono": "mono",
+  "@workbenchMono": {
+    "description": "Recording workbench: one channel"
+  },
+  "workbenchStereo": "stereo",
+  "@workbenchStereo": {
+    "description": "Recording workbench: two channels"
+  },
+  "workbenchTruncated": "The file ends early; only the audio present is used.",
+  "@workbenchTruncated": {
+    "description": "Recording workbench: data chunk shorter than declared"
+  },
+  "workbenchErrorNotWav": "This is not a WAV file.",
+  "@workbenchErrorNotWav": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorFormat": "Only 16-bit PCM WAV is supported for now (no MP3, AAC or float WAV).",
+  "@workbenchErrorFormat": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorChannels": "Only mono or stereo recordings are supported.",
+  "@workbenchErrorChannels": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorRate": "Sample rate not supported. Use 8, 16, 44.1 or 48 kHz.",
+  "@workbenchErrorRate": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorDamaged": "The file is damaged or incomplete.",
+  "@workbenchErrorDamaged": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorTooLarge": "The file is larger than 50 MB.",
+  "@workbenchErrorTooLarge": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorTooLong": "The recording is longer than 20 minutes.",
+  "@workbenchErrorTooLong": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorIo": "Couldn't read the file.",
+  "@workbenchErrorIo": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorMissing": "The recording file is missing.",
+  "@workbenchErrorMissing": {
+    "description": "Recording workbench: saved recording file not found"
+  },
+  "workbenchStart": "Start (s)",
+  "@workbenchStart": {
+    "description": "Recording workbench: selection start field (seconds)"
+  },
+  "workbenchEnd": "End (s)",
+  "@workbenchEnd": {
+    "description": "Recording workbench: selection end field (seconds)"
+  },
+  "workbenchSelectAll": "Select all",
+  "@workbenchSelectAll": {
+    "description": "Recording workbench: select the whole recording"
+  },
+  "workbenchPlay": "Play selection",
+  "@workbenchPlay": {
+    "description": "Recording workbench: play the selection"
+  },
+  "workbenchStop": "Stop",
+  "@workbenchStop": {
+    "description": "Recording workbench: stop playback"
+  },
+  "workbenchLoop": "Loop",
+  "@workbenchLoop": {
+    "description": "Recording workbench: loop the selection"
+  },
+  "workbenchPlayLimit": "Only the first 5 minutes of a longer selection are played.",
+  "@workbenchPlayLimit": {
+    "description": "Recording workbench: long selections play partly"
+  },
+  "workbenchAutoTune": "Find the tone automatically",
+  "@workbenchAutoTune": {
+    "description": "Recording workbench: automatic tone search"
+  },
+  "workbenchManualTone": "Tone: {hz} Hz",
+  "@workbenchManualTone": {
+    "description": "Recording workbench: manual tone frequency",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchDecode": "Decode selection",
+  "@workbenchDecode": {
+    "description": "Recording workbench: decode the selection"
+  },
+  "workbenchCancel": "Cancel",
+  "@workbenchCancel": {
+    "description": "Recording workbench: cancel decoding"
+  },
+  "workbenchDecoding": "Decoding… {percent}%",
+  "@workbenchDecoding": {
+    "description": "Recording workbench: decoding progress",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchResultStats": "Tone {hz} Hz · about {wpm} WPM",
+  "@workbenchResultStats": {
+    "description": "Recording workbench: decoder tone and speed",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchToneNotLocked": "No steady tone found; try manual tuning.",
+  "@workbenchToneNotLocked": {
+    "description": "Recording workbench: no steady tone"
+  },
+  "workbenchNoText": "Nothing decoded in this selection.",
+  "@workbenchNoText": {
+    "description": "Recording workbench: nothing decoded"
+  },
+  "workbenchUnknown": "Unknown patterns: {patterns}",
+  "@workbenchUnknown": {
+    "description": "Recording workbench: patterns that match no symbol",
+    "placeholders": {
+      "patterns": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchEdgeCut": "A symbol at the edge of the selection is cut off and may be wrong.",
+  "@workbenchEdgeCut": {
+    "description": "Recording workbench: symbol cut by the selection boundary"
+  },
+  "workbenchToneNote": "Tone lock is not a confidence score; check the text by ear.",
+  "@workbenchToneNote": {
+    "description": "Recording workbench: tone lock is not a confidence score"
+  },
+  "workbenchModeDecoder": "Decoder",
+  "@workbenchModeDecoder": {
+    "description": "Recording workbench: show decoder output"
+  },
+  "workbenchModeCopy": "Copy it myself",
+  "@workbenchModeCopy": {
+    "description": "Recording workbench: copy the selection yourself"
+  },
+  "workbenchDecoderHidden": "Decoder text is hidden while you copy.",
+  "@workbenchDecoderHidden": {
+    "description": "Recording workbench: decoder output hidden in copy mode"
+  },
+  "workbenchShowDecoder": "Show decoder text",
+  "@workbenchShowDecoder": {
+    "description": "Recording workbench: reveal decoder output (assisted)"
+  },
+  "workbenchReference": "Reference text (optional)",
+  "@workbenchReference": {
+    "description": "Recording workbench: optional answer text field"
+  },
+  "workbenchReferenceHelp": "Paste the text that was sent; otherwise your copy is compared with the decoder output.",
+  "@workbenchReferenceHelp": {
+    "description": "Recording workbench: reference text help"
+  },
+  "workbenchAgainstDecoder": "Compared with the decoder output, which can itself be wrong.",
+  "@workbenchAgainstDecoder": {
+    "description": "Recording workbench: scored against decoder output"
+  },
+  "workbenchSave": "Save selection",
+  "@workbenchSave": {
+    "description": "Recording workbench: save the selection as an audio material"
+  },
+  "workbenchSaveTitle": "Title",
+  "@workbenchSaveTitle": {
+    "description": "Recording workbench: title field"
+  },
+  "workbenchSaveNote": "Note",
+  "@workbenchSaveNote": {
+    "description": "Recording workbench: note field"
+  },
+  "workbenchSaved": "Selection saved",
+  "@workbenchSaved": {
+    "description": "Recording workbench: selection saved"
+  },
+  "workbenchSaveFailed": "Couldn't save the selection.",
+  "@workbenchSaveFailed": {
+    "description": "Recording workbench: saving failed"
+  },
+  "workbenchLibrary": "Saved selections",
+  "@workbenchLibrary": {
+    "description": "Recording workbench: saved selections list"
+  },
+  "workbenchLibraryEmpty": "No saved selections yet.",
+  "@workbenchLibraryEmpty": {
+    "description": "Recording workbench: no saved selections"
+  },
+  "workbenchMissing": "Recording file missing — choose it again or delete the entry.",
+  "@workbenchMissing": {
+    "description": "Recording workbench: saved selection whose media file is gone"
+  },
+  "workbenchRelink": "Choose the file again",
+  "@workbenchRelink": {
+    "description": "Recording workbench: choose the missing file again"
+  },
+  "workbenchDelete": "Delete",
+  "@workbenchDelete": {
+    "description": "Recording workbench: delete a saved selection"
   }
 }

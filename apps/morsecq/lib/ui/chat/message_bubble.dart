@@ -24,7 +24,27 @@ class MessageBubble extends StatelessWidget {
     this.listenOnly = false,
     this.onPractice,
     this.onSaveMaterial,
+    this.onBookmark,
+    this.bookmarked = false,
+    this.onRetry,
+    this.onCancelSend,
   });
+
+  /// Local bookmark toggle (null hides it).
+  final VoidCallback? onBookmark;
+  final bool bookmarked;
+
+  /// Our failed message: retry under the same id; our queued message:
+  /// cancel before it leaves the device. Null when not applicable.
+  final VoidCallback? onRetry;
+  final VoidCallback? onCancelSend;
+
+  bool get _hasActions =>
+      onPractice != null ||
+      onSaveMaterial != null ||
+      onBookmark != null ||
+      onRetry != null ||
+      onCancelSend != null;
 
   /// Listen-only training: also hide the dots and dashes until revealed.
   final bool listenOnly;
@@ -120,18 +140,38 @@ class MessageBubble extends StatelessWidget {
                           color: scheme.primary,
                         ),
                       ),
-                      if (!mine &&
-                          (onPractice != null || onSaveMaterial != null))
+                      if (_hasActions)
                         PopupMenuButton<_LearnAction>(
                           key: ValueKey<String>('learn-menu-${message.id}'),
                           tooltip: s.chatMessageLearnActions,
-                          icon: const Icon(Icons.school_outlined),
-                          onSelected: (v) =>
-                              (v == _LearnAction.practice
-                                      ? onPractice
-                                      : onSaveMaterial)
-                                  ?.call(),
+                          icon: const Icon(Icons.more_vert),
+                          onSelected: (v) => switch (v) {
+                            _LearnAction.practice => onPractice,
+                            _LearnAction.save => onSaveMaterial,
+                            _LearnAction.bookmark => onBookmark,
+                            _LearnAction.retry => onRetry,
+                            _LearnAction.cancel => onCancelSend,
+                          }?.call(),
                           itemBuilder: (_) => [
+                            if (onRetry != null)
+                              PopupMenuItem(
+                                value: _LearnAction.retry,
+                                child: Text(s.chatRetrySend),
+                              ),
+                            if (onCancelSend != null)
+                              PopupMenuItem(
+                                value: _LearnAction.cancel,
+                                child: Text(s.chatCancelSend),
+                              ),
+                            if (onBookmark != null)
+                              PopupMenuItem(
+                                value: _LearnAction.bookmark,
+                                child: Text(
+                                  bookmarked
+                                      ? s.chatRemoveBookmark
+                                      : s.chatAddBookmark,
+                                ),
+                              ),
                             if (onPractice != null)
                               PopupMenuItem(
                                 value: _LearnAction.practice,
@@ -165,6 +205,15 @@ class MessageBubble extends StatelessWidget {
                           color: foreground.withValues(alpha: 0.7),
                         ),
                       ),
+                      if (bookmarked) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.bookmark,
+                          size: 14,
+                          semanticLabel: s.chatBookmarked,
+                          color: foreground.withValues(alpha: 0.7),
+                        ),
+                      ],
                       if (mine) ...[
                         const SizedBox(width: 4),
                         MessageStatusIcon(message.status),
@@ -185,7 +234,7 @@ class MessageBubble extends StatelessWidget {
 }
 
 /// Distinct from the app bar's `String` menu.
-enum _LearnAction { practice, save }
+enum _LearnAction { practice, save, bookmark, retry, cancel }
 
 class _HiddenText extends StatelessWidget {
   const _HiddenText({required this.onReveal});

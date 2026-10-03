@@ -133,9 +133,7 @@ void main() {
   });
 
   group('keyed composer', () {
-    testWidgets('has no typed-text mode and a read-only draft', (
-      tester,
-    ) async {
+    testWidgets('has no typed-text mode and a read-only draft', (tester) async {
       await _open(tester);
       expect(find.byTooltip(s.chatModeStraightKey), findsOneWidget);
       expect(find.byTooltip(s.chatModePaddles), findsOneWidget);

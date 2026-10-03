@@ -21,8 +21,9 @@ Future<void> _send(WidgetTester tester, String text) async {
 }
 
 void main() {
-  testWidgets('input mode survives closing and reopening a conversation',
-      (tester) async {
+  testWidgets('input mode survives closing and reopening a conversation', (
+    tester,
+  ) async {
     final h = await pumpChat(tester, (h) {
       h.addAnn(withMessage: false);
       return ConversationScreen(target: _ann());

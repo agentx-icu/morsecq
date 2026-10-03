@@ -2687,7 +2687,7 @@ class SFr extends S {
   String get messageStatusCancelled => 'Annulé — jamais envoyé';
 
   @override
-  String get chatMessageLearnActions => 'S\'entraîner avec ce message';
+  String get chatMessageLearnActions => 'Actions du message';
 
   @override
   String get chatPracticeMessage => 'S\'exercer sur ce message';
@@ -2810,4 +2810,72 @@ class SFr extends S {
 
   @override
   String get learnRhythmZoomOut => 'Zoom arrière';
+
+  @override
+  String get chatSearchMessages => 'Rechercher des messages';
+
+  @override
+  String get chatSearchHint => 'Rechercher dans cette conversation';
+
+  @override
+  String get chatSearchAnyone => 'Tout le monde';
+
+  @override
+  String get chatSearchMe => 'Moi';
+
+  @override
+  String get chatSearchThem => 'L\'autre';
+
+  @override
+  String get chatSearchAnyDate => 'N\'importe quelle date';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'Favoris';
+
+  @override
+  String get chatSearchNoResults => 'Aucun message correspondant.';
+
+  @override
+  String get chatSearchMore => 'Charger plus';
+
+  @override
+  String get chatAddBookmark => 'Ajouter aux favoris';
+
+  @override
+  String get chatRemoveBookmark => 'Retirer des favoris';
+
+  @override
+  String get chatBookmarked => 'Dans les favoris';
+
+  @override
+  String get chatBookmarkFailed => 'Impossible d\'enregistrer le favori.';
+
+  @override
+  String get chatRetrySend => 'Réessayer l\'envoi';
+
+  @override
+  String get chatCancelSend => 'Annuler l\'envoi';
+
+  @override
+  String get chatRetryQueued => 'Remis en file d\'attente. Envoi dès que le contact est en ligne.';
+
+  @override
+  String get chatSendCancelled => 'Annulé. Le message n\'a jamais été envoyé.';
+
+  @override
+  String get chatRetryNotNeeded => 'Ce message n\'est plus en échec.';
+
+  @override
+  String get chatCancelTooLate => 'Trop tard : le message est déjà parti et peut arriver.';
+
+  @override
+  String get chatSendControlUnavailable => 'Indisponible pour ce message.';
+
+  @override
+  String get chatSendControlFailed => 'Échec. Le message garde son état ; réessayez.';
 }

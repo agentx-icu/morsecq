@@ -2665,7 +2665,7 @@ class SJa extends S {
   String get messageStatusCancelled => 'キャンセル済み（未送信）';
 
   @override
-  String get chatMessageLearnActions => 'このメッセージで練習';
+  String get chatMessageLearnActions => 'メッセージの操作';
 
   @override
   String get chatPracticeMessage => 'このメッセージを受信練習';
@@ -2782,4 +2782,72 @@ class SJa extends S {
 
   @override
   String get learnRhythmZoomOut => '縮小';
+
+  @override
+  String get chatSearchMessages => 'メッセージを検索';
+
+  @override
+  String get chatSearchHint => 'この会話を検索';
+
+  @override
+  String get chatSearchAnyone => '全員';
+
+  @override
+  String get chatSearchMe => '自分';
+
+  @override
+  String get chatSearchThem => '相手';
+
+  @override
+  String get chatSearchAnyDate => '期間指定なし';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'ブックマーク';
+
+  @override
+  String get chatSearchNoResults => '一致するメッセージはありません。';
+
+  @override
+  String get chatSearchMore => 'さらに読み込む';
+
+  @override
+  String get chatAddBookmark => 'ブックマーク';
+
+  @override
+  String get chatRemoveBookmark => 'ブックマークを解除';
+
+  @override
+  String get chatBookmarked => 'ブックマーク済み';
+
+  @override
+  String get chatBookmarkFailed => 'ブックマークを保存できませんでした。';
+
+  @override
+  String get chatRetrySend => '再送信';
+
+  @override
+  String get chatCancelSend => '送信を取り消す';
+
+  @override
+  String get chatRetryQueued => '再びキューに入れました。相手がオンラインになると送信します。';
+
+  @override
+  String get chatSendCancelled => '取り消しました。メッセージは送信されていません。';
+
+  @override
+  String get chatRetryNotNeeded => 'このメッセージはもう失敗状態ではありません。';
+
+  @override
+  String get chatCancelTooLate => '取り消せません。メッセージはすでにネットワークに渡され、届く可能性があります。';
+
+  @override
+  String get chatSendControlUnavailable => 'このメッセージでは利用できません。';
+
+  @override
+  String get chatSendControlFailed => 'うまくいきませんでした。メッセージの状態は変わっていません。もう一度お試しください。';
 }

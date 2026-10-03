@@ -2686,7 +2686,7 @@ class SDe extends S {
   String get messageStatusCancelled => 'Abgebrochen – nie gesendet';
 
   @override
-  String get chatMessageLearnActions => 'Mit dieser Nachricht üben';
+  String get chatMessageLearnActions => 'Nachrichtenaktionen';
 
   @override
   String get chatPracticeMessage => 'Diese Nachricht mitschreiben';
@@ -2809,4 +2809,72 @@ class SDe extends S {
 
   @override
   String get learnRhythmZoomOut => 'Verkleinern';
+
+  @override
+  String get chatSearchMessages => 'Nachrichten suchen';
+
+  @override
+  String get chatSearchHint => 'Diesen Chat durchsuchen';
+
+  @override
+  String get chatSearchAnyone => 'Alle';
+
+  @override
+  String get chatSearchMe => 'Ich';
+
+  @override
+  String get chatSearchThem => 'Gegenüber';
+
+  @override
+  String get chatSearchAnyDate => 'Beliebiges Datum';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'Gemerkt';
+
+  @override
+  String get chatSearchNoResults => 'Keine passenden Nachrichten.';
+
+  @override
+  String get chatSearchMore => 'Mehr laden';
+
+  @override
+  String get chatAddBookmark => 'Merken';
+
+  @override
+  String get chatRemoveBookmark => 'Nicht mehr merken';
+
+  @override
+  String get chatBookmarked => 'Gemerkt';
+
+  @override
+  String get chatBookmarkFailed => 'Lesezeichen konnte nicht gespeichert werden.';
+
+  @override
+  String get chatRetrySend => 'Erneut senden';
+
+  @override
+  String get chatCancelSend => 'Senden abbrechen';
+
+  @override
+  String get chatRetryQueued => 'Erneut eingereiht. Wird gesendet, sobald der Kontakt online ist.';
+
+  @override
+  String get chatSendCancelled => 'Abgebrochen. Die Nachricht wurde nicht gesendet.';
+
+  @override
+  String get chatRetryNotNeeded => 'Diese Nachricht ist nicht mehr fehlgeschlagen.';
+
+  @override
+  String get chatCancelTooLate => 'Zu spät: Die Nachricht ist bereits unterwegs und kommt eventuell an.';
+
+  @override
+  String get chatSendControlUnavailable => 'Für diese Nachricht nicht verfügbar.';
+
+  @override
+  String get chatSendControlFailed => 'Das hat nicht geklappt. Die Nachricht behält ihren Zustand; versuch es erneut.';
 }

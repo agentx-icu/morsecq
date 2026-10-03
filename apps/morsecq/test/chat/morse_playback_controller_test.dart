@@ -107,31 +107,35 @@ void main() {
     expect(c.queuedIds, isEmpty);
   });
 
-  test('arrivals during the keying hold-off queue behind the cut message',
-      () async {
-    c.enqueue('a', 'TEST', _t);
-    await _settle();
-    clock.advance(_ms * 30);
-    c.keyingSink.on();
-    clock.advance(_ms * 50);
-    c.keyingSink.off();
-    c.enqueue('b', 'E', _t);
-    expect(c.playingId, isNull);
-    expect(c.queuedIds, ['a', 'b']);
-    clock.advance(MorsePlaybackController.keyingHoldoff);
-    expect(c.playingId, 'a');
-  });
+  test(
+    'arrivals during the keying hold-off queue behind the cut message',
+    () async {
+      c.enqueue('a', 'TEST', _t);
+      await _settle();
+      clock.advance(_ms * 30);
+      c.keyingSink.on();
+      clock.advance(_ms * 50);
+      c.keyingSink.off();
+      c.enqueue('b', 'E', _t);
+      expect(c.playingId, isNull);
+      expect(c.queuedIds, ['a', 'b']);
+      clock.advance(MorsePlaybackController.keyingHoldoff);
+      expect(c.playingId, 'a');
+    },
+  );
 
-  test('a message arriving right after keying still waits the hold-off',
-      () async {
-    c.keyingSink.on();
-    clock.advance(_ms * 50);
-    c.keyingSink.off();
-    c.enqueue('a', 'E', _t);
-    expect(c.playingId, isNull);
-    clock.advance(MorsePlaybackController.keyingHoldoff);
-    expect(c.playingId, 'a');
-  });
+  test(
+    'a message arriving right after keying still waits the hold-off',
+    () async {
+      c.keyingSink.on();
+      clock.advance(_ms * 50);
+      c.keyingSink.off();
+      c.enqueue('a', 'E', _t);
+      expect(c.playingId, isNull);
+      clock.advance(MorsePlaybackController.keyingHoldoff);
+      expect(c.playingId, 'a');
+    },
+  );
 
   test('stop also drops a held queue', () async {
     c.enqueue('a', 'TEST', _t);

@@ -4703,7 +4703,7 @@ abstract class S {
   /// Message bubble: menu with learning actions for a received message
   ///
   /// In en, this message translates to:
-  /// **'Learn from this message'**
+  /// **'Message actions'**
   String get chatMessageLearnActions;
 
   /// Message menu: open copy practice
@@ -4897,6 +4897,138 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Zoom out'**
   String get learnRhythmZoomOut;
+
+  /// Conversation app bar: search this conversation's history
+  ///
+  /// In en, this message translates to:
+  /// **'Search messages'**
+  String get chatSearchMessages;
+
+  /// Message search field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search this conversation'**
+  String get chatSearchHint;
+
+  /// Message search sender filter: everyone
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get chatSearchAnyone;
+
+  /// Message search sender filter / result sender: the local user
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get chatSearchMe;
+
+  /// Message search sender filter: the other person in a one-to-one chat
+  ///
+  /// In en, this message translates to:
+  /// **'Them'**
+  String get chatSearchThem;
+
+  /// Message search date filter: no date limit
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get chatSearchAnyDate;
+
+  /// Message search date filter: chosen range
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String chatSearchDateRange(String from, String to);
+
+  /// Message search filter: bookmarked messages only
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get chatSearchBookmarked;
+
+  /// Message search: nothing found
+  ///
+  /// In en, this message translates to:
+  /// **'No matching messages.'**
+  String get chatSearchNoResults;
+
+  /// Message search: load the next page of results
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get chatSearchMore;
+
+  /// Message menu: bookmark this message (local only)
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmark'**
+  String get chatAddBookmark;
+
+  /// Message menu: remove the local bookmark
+  ///
+  /// In en, this message translates to:
+  /// **'Remove bookmark'**
+  String get chatRemoveBookmark;
+
+  /// Message bubble: semantics of the bookmark mark
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get chatBookmarked;
+
+  /// Snack bar: bookmark could not be saved
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the bookmark.'**
+  String get chatBookmarkFailed;
+
+  /// Message menu: retry a failed send (same message, no duplicate bubble)
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sending'**
+  String get chatRetrySend;
+
+  /// Message menu: cancel a send that is still queued on this device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel sending'**
+  String get chatCancelSend;
+
+  /// Snack bar: failed message queued again
+  ///
+  /// In en, this message translates to:
+  /// **'Queued again. It will be sent when your contact is online.'**
+  String get chatRetryQueued;
+
+  /// Snack bar: queued message cancelled before it left the device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled. The message was never sent.'**
+  String get chatSendCancelled;
+
+  /// Snack bar: retry not applied because the message is no longer failed
+  ///
+  /// In en, this message translates to:
+  /// **'This message is no longer failed; nothing to retry.'**
+  String get chatRetryNotNeeded;
+
+  /// Snack bar: cancel failed because the transport already took the message
+  ///
+  /// In en, this message translates to:
+  /// **'Too late to cancel: the message was already handed to the network and may arrive.'**
+  String get chatCancelTooLate;
+
+  /// Snack bar: retry/cancel not available for this message
+  ///
+  /// In en, this message translates to:
+  /// **'Not available for this message.'**
+  String get chatSendControlUnavailable;
+
+  /// Snack bar: retry/cancel could not be completed
+  ///
+  /// In en, this message translates to:
+  /// **'That didn\'t work. The message keeps its current state; try again.'**
+  String get chatSendControlFailed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

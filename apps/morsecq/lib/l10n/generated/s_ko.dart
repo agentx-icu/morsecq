@@ -2665,7 +2665,7 @@ class SKo extends S {
   String get messageStatusCancelled => '취소됨 — 전송되지 않음';
 
   @override
-  String get chatMessageLearnActions => '이 메시지로 연습';
+  String get chatMessageLearnActions => '메시지 작업';
 
   @override
   String get chatPracticeMessage => '이 메시지 수신 연습';
@@ -2782,4 +2782,72 @@ class SKo extends S {
 
   @override
   String get learnRhythmZoomOut => '축소';
+
+  @override
+  String get chatSearchMessages => '메시지 검색';
+
+  @override
+  String get chatSearchHint => '이 대화에서 검색';
+
+  @override
+  String get chatSearchAnyone => '모두';
+
+  @override
+  String get chatSearchMe => '나';
+
+  @override
+  String get chatSearchThem => '상대';
+
+  @override
+  String get chatSearchAnyDate => '모든 날짜';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '북마크';
+
+  @override
+  String get chatSearchNoResults => '일치하는 메시지가 없습니다.';
+
+  @override
+  String get chatSearchMore => '더 보기';
+
+  @override
+  String get chatAddBookmark => '북마크';
+
+  @override
+  String get chatRemoveBookmark => '북마크 해제';
+
+  @override
+  String get chatBookmarked => '북마크됨';
+
+  @override
+  String get chatBookmarkFailed => '북마크를 저장하지 못했습니다.';
+
+  @override
+  String get chatRetrySend => '다시 보내기';
+
+  @override
+  String get chatCancelSend => '전송 취소';
+
+  @override
+  String get chatRetryQueued => '다시 대기열에 넣었습니다. 상대가 온라인이 되면 보냅니다.';
+
+  @override
+  String get chatSendCancelled => '취소했습니다. 메시지는 전송되지 않았습니다.';
+
+  @override
+  String get chatRetryNotNeeded => '이 메시지는 더 이상 실패 상태가 아닙니다.';
+
+  @override
+  String get chatCancelTooLate => '취소하기에 늦었습니다. 메시지가 이미 네트워크로 넘어가 도착할 수 있습니다.';
+
+  @override
+  String get chatSendControlUnavailable => '이 메시지에는 사용할 수 없습니다.';
+
+  @override
+  String get chatSendControlFailed => '실패했습니다. 메시지 상태는 그대로입니다. 다시 시도하세요.';
 }

@@ -12,6 +12,7 @@ import '../notifications/notification_center.dart';
 import '../notifications/notification_prefs.dart';
 import '../startup/startup_controller.dart';
 import '../training/training_controller_host.dart';
+import '../ui/chat/search/message_bookmarks.dart';
 import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
 import '../ui/listen/listen_preferences.dart';
@@ -158,6 +159,10 @@ class _AppScopeState extends State<AppScope> {
           value: widget.desktopShell,
         ),
         Provider<TrainingControllerHost?>.value(value: _training),
+        Provider<BookmarksResolver?>.value(
+          value: () async =>
+              MessageBookmarks.forDirectory(await _identity.dataDirectory()),
+        ),
       ],
       child: widget.child,
     );

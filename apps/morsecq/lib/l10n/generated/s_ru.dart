@@ -2732,7 +2732,7 @@ class SRu extends S {
   String get messageStatusCancelled => 'Отменено — не отправлено';
 
   @override
-  String get chatMessageLearnActions => 'Учиться на этом сообщении';
+  String get chatMessageLearnActions => 'Действия с сообщением';
 
   @override
   String get chatPracticeMessage => 'Потренироваться на этом сообщении';
@@ -2857,4 +2857,72 @@ class SRu extends S {
 
   @override
   String get learnRhythmZoomOut => 'Уменьшить';
+
+  @override
+  String get chatSearchMessages => 'Поиск сообщений';
+
+  @override
+  String get chatSearchHint => 'Искать в этом чате';
+
+  @override
+  String get chatSearchAnyone => 'Все';
+
+  @override
+  String get chatSearchMe => 'Я';
+
+  @override
+  String get chatSearchThem => 'Собеседник';
+
+  @override
+  String get chatSearchAnyDate => 'Любая дата';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'В закладках';
+
+  @override
+  String get chatSearchNoResults => 'Подходящих сообщений нет.';
+
+  @override
+  String get chatSearchMore => 'Загрузить ещё';
+
+  @override
+  String get chatAddBookmark => 'В закладки';
+
+  @override
+  String get chatRemoveBookmark => 'Убрать из закладок';
+
+  @override
+  String get chatBookmarked => 'В закладках';
+
+  @override
+  String get chatBookmarkFailed => 'Не удалось сохранить закладку.';
+
+  @override
+  String get chatRetrySend => 'Отправить снова';
+
+  @override
+  String get chatCancelSend => 'Отменить отправку';
+
+  @override
+  String get chatRetryQueued => 'Снова в очереди. Отправится, когда собеседник будет в сети.';
+
+  @override
+  String get chatSendCancelled => 'Отменено. Сообщение не отправлялось.';
+
+  @override
+  String get chatRetryNotNeeded => 'Это сообщение больше не в ошибке.';
+
+  @override
+  String get chatCancelTooLate => 'Слишком поздно: сообщение уже передано в сеть и может дойти.';
+
+  @override
+  String get chatSendControlUnavailable => 'Недоступно для этого сообщения.';
+
+  @override
+  String get chatSendControlFailed => 'Не получилось. Состояние сообщения не изменилось; повторите.';
 }
