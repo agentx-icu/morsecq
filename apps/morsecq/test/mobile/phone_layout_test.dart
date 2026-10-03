@@ -2,6 +2,8 @@
 // landscape (~375-390 px tall, notch + home-indicator insets), the soft
 // keyboard covering half the screen, and a 2.0 text scale. Each case here
 // overflowed (or lost state) before the fix it guards.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
@@ -9,6 +11,8 @@ import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/training/training_settings.dart';
+import 'package:morsecq/training/training_controller.dart';
+import 'package:morsecq/ui/learn/learn_scope.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
@@ -125,6 +129,37 @@ void main() {
       expect(find.byType(IdentityCard), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+  });
+
+  group('learn placeholder', () {
+    // Regression: the loading / identity-required placeholder was a fixed
+    // Column and overflowed by 181 px on a 320 pt phone at 2x text; CI only
+    // caught it when the controller load was slow enough to paint a frame.
+    for (final bool loading in <bool>[true, false]) {
+      testWidgets('${loading ? 'loading' : 'identity required'} fits a '
+          '320 px phone at 2x text', (tester) async {
+        setPhone(tester, kSmallPhone, textScale: 2);
+        final Completer<TrainingController> never =
+            Completer<TrainingController>();
+        await tester.pumpWidget(
+          l10nApp(
+            home: LearnScope(
+              controllerFactory: loading
+                  ? (_) => never.future
+                  : (_) => Future<TrainingController>.error('no identity'),
+              description: en.learnIdentityRequired,
+              builder: (_, _, _) => const SizedBox(),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+        expect(
+          find.text(en.learnIdentityRequired),
+          loading ? findsOneWidget : findsNWidgets(2),
+        );
+      });
+    }
   });
 
   group('send practice', () {
