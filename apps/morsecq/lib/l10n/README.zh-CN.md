@@ -2,15 +2,17 @@
 
 # MorseCQ App 的本地化（l10n）
 
-通过 Flutter 的 gen-l10n 提供英语（`en`，模板）和简体中文（`zh`）。
+通过 Flutter 的 gen-l10n 提供英语（`en`，模板）、简体中文（`zh`）、繁体中文
+（`zh_Hant`）、日语（`ja`）、韩语（`ko`）、德语（`de`）、法语（`fr`）、
+西班牙语（`es`）、葡萄牙语（`pt`）和俄语（`ru`）。文档只维护英文和简体中文。
 
 | 路径 | 内容 |
 |------|------|
 | `apps/morsecq/l10n.yaml` | gen-l10n 配置：输出类 `S`、非空 getter、输出到 `lib/l10n/generated/` |
 | `lib/l10n/app_en.arb` | **模板。** 每个键都先在这里出现，带 `@key` 元数据（description、placeholders） |
-| `lib/l10n/app_zh.arb` | 简体中文。与模板相同的键集合（由 `test/i18n/arb_consistency_test.dart` 强制） |
+| `lib/l10n/app_<locale>.arb` | 完整译文。每份文件的键集合均与模板相同（由 `test/i18n/arb_consistency_test.dart` 强制） |
 | `lib/l10n/generated/s*.dart` | 生成物；永不手改。通过 `**/l10n/**` 模式免于 500 行门禁 |
-| `lib/i18n/locale_controller.dart` | `LocaleController`（系统 / en / zh），通过 `KeyValueStore` 持久化 |
+| `lib/i18n/locale_controller.dart` | `LocaleController`（系统 / 所有支持的语言），通过 `KeyValueStore` 持久化 |
 | `lib/i18n/key_value_store.dart` | `KeyValueStore` 接口 + `InMemoryKeyValueStore` + `JsonFileKeyValueStore` |
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`；重新导出 `S` |
 | `lib/i18n/language_settings_tile.dart` | "我"页面的 `LanguageSettingsTile`（+ `showLanguageDialog`） |
@@ -27,12 +29,17 @@ MaterialApp(
   localizationsDelegates: S.localizationsDelegates,
   supportedLocales: S.supportedLocales,
   locale: context.watch<LocaleController>().locale, // null = follow system
+  localeResolutionCallback: LocaleController.resolve,
   ...
 )
 ```
 
-`locale: null` 让 Flutter 按 `supportedLocales` 解析设备语言（任何 `zh-*` → 简体中文，
-其他一切 → 英语）。
+`locale: null` 通过共享解析器跟随设备语言。中文显式指定 `Hant` 脚本，或没有
+脚本且地区为 TW/HK/MO 时使用繁体中文；其他中文使用简体中文。其他受支持的
+语言按语言代码匹配，不受支持的语言回退到英文。
+
+参考手册的释义与记忆提示是独立数据表，目前提供英文和简体中文。繁体中文
+使用中文数据表；其余新增界面语言沿用现有的英文回退。
 
 ## 使用字符串
 
@@ -49,13 +56,15 @@ Text(context.s.statsSessions(count))          // ICU plural
 
 ## 添加一个字符串
 
-1. 把键同时加到 `app_en.arb` **和** `app_zh.arb`。按功能区域命名空间（`chatSendHint`、
+1. 把键同时加到 `app_en.arb` **和每份翻译 ARB**。按功能区域命名空间（`chatSendHint`、
    `learnLessonOf`、`statsTitle`、`accountBackupTitle`、`referenceSearchHint`；共享字符串用
    `action*`、`nav*`、`connection*`、`messageStatus*`、`error*`、`language*`）。
 2. 给模板条目一个带 `description`（什么/在哪）的 `@key`，有占位符的话再加一个 `placeholders` 映射
    （`{"count": {"type": "int"}}`）。计数使用 ICU 复数：
    `{count, plural, =1{1 session} other{{count} sessions}}`；中文没有复数形式，
    所以其分支通常就是 `{count, plural, other{{count} 次练习}}`（保留任何 `=0` 特例）。
+   欧洲语言使用 `one` / `other` 等语法类别；俄语使用 `one` / `few` / `many` /
+   `other`，仅保留精确匹配的 `=1` 会遗漏 21 等数字的单数形式。
 3. 在 `apps/morsecq` 下执行 `flutter gen-l10n`（因为 `pubspec.yaml` 有 `generate: true`，
    build/run 时也会自动运行）。提交重新生成的文件。
 4. `flutter analyze apps/morsecq` 和 `flutter test test/i18n` 必须保持通过。
@@ -93,27 +102,21 @@ dart run tool/strings_to_arb.dart --dry-run             # report only
 
 然后执行 `flutter gen-l10n`，并把常量引用替换为 `S` 调用。
 
-## 后续工作：仍待替换为 `S` 调用的常量
+## 界面迁移已完成
 
-2026-09-30 时存在的全部 389 个常量（加上 32 个函数字符串）都已在两个 ARB 文件中并已翻译。
-widget 仍在读取常量类；由各自的负责 agent 逐文件替换（`AccountStrings.x` → `context.s.accountX`，
-`LearnStrings.lessonOf(a, b)` → `context.s.learnLessonOf(a, b)`，……）：
+旧界面字符串常量类已于 2026-09-30 删除。所有界面区域均使用 `context.s`，或显式
+接收 `S` 实例。新增语言会自动覆盖这些相同的调用方：
 
-| 常量类 | ARB 前缀 | 引用它的文件 |
-|-------------|-----------|-------------------------|
-| `AccountStrings`（`ui/account/account_strings.dart`） | `account*` | `main.dart`（标题、占位路由）、`startup/startup_controller.dart`、`startup/startup_screens.dart`、`ui/account/{account_widgets,backup_actions,backup_wizard_page,change_password_page,connection_chip,create_identity_page,delete_identity_dialog,edit_profile_page,identity_card,password_strength,restore_backup_page,tox_id_qr_dialog,unlock_page,welcome_page}.dart`、`ui/pages/me_page.dart` |
-| `ChatStrings`（`ui/chat/chat_strings.dart`） | `chat*` | `ui/chat/{chat_layout,conversation_list,conversation_screen,conversation_tile,keying_input,message_bubble,message_input,message_status_icon,playback_settings_sheet}.dart`、`ui/contacts/{add_friend_sheet,contacts_page,friend_request_inbox,my_tox_id_sheet,qr_scan_page}.dart`、`ui/groups/{create_group_sheet,group_invites_inbox,group_list,group_members_sheet,join_group_sheet}.dart`、`ui/pages/{chat_page,groups_page}.dart` |
-| `LearnStrings`（`ui/learn/learn_strings.dart`） | `learn*` | `ui/learn/{learn_home,learn_home_widgets}.dart`、`ui/learn/receive/{answer_keypad,receive_drill_screen,receive_summary_view,round_result_view}.dart`、`ui/learn/review/review_screen.dart`、`ui/learn/send/{keyer_legend,send_live_view,send_practice_screen,send_result_view,send_tips}.dart`、`ui/learn/settings/training_settings_screen.dart` |
-| `StatsStrings`（`ui/stats/stats_strings.dart`） | `stats*` | `ui/stats/**`（仪表盘、磁贴、趋势图、字符网格、热力图、日历） |
-| `ReferenceStrings`（`ui/reference/reference_strings.dart`） | `reference*` | `ui/reference/**`（参考页、翻译器、键盘） |
-| 硬编码的页面标题 | `nav*` | `ui/pages/learn_page.dart`（`'Learn'`）、`ui/pages/me_page.dart`（`'Me'`）、`ui/shell/app_shell.dart`（`kShellDestinations` 标签——把它们改成 `S` 的函数，或在 `build` 中解析） |
-| 硬编码的页面描述 | —（尚未进入 ARB） | `ui/pages/{learn,chat,groups,me}_page.dart` 的 `description` 常量 |
+| 区域 | ARB 前缀 | 调用方 |
+|------|----------|--------|
+| 账号与启动 | `account*`、`action*`、`connection*`、`error*` | `startup/**`、`ui/account/**`、`ui/pages/me_page.dart`；备份对话框使用 `currentS()` |
+| 聊天、联系人与群组 | `chat*`、`messageStatus*` | `ui/chat/**`、`ui/contacts/**`、`ui/groups/**`；时间戳通过 `MaterialLocalizations` 格式化 |
+| 学习 | `learn*` | `ui/learn/**`；发报反馈辅助函数显式接收 `S` |
+| 统计 | `stats*` | `ui/stats/**`；日期按当前语言格式化 |
+| 手册与翻译器 | `reference*` | `ui/reference/**`；释义与记忆提示仍是独立数据表 |
+| 麦克风译码 | `listen*` | `ui/listen/**`；控制器暴露状态/错误，由界面解析文本 |
+| 导航与外壳 | `nav*`、`shellOfflineBanner` | `ui/pages/**`、`ui/shell/app_shell.dart` |
+| 通知与桌面 | `notification*`、`desktop*` | 服务在事件发生或语言变化时解析字符串 |
 
-替换过程中值得合并的重复项：`accountCancel`/`chatCancel` → `actionCancel`；
-`accountCopy`/`chatCopy` → `actionCopy`；`accountRetry`/`statsRetry` → `actionRetry`；
-`accountConnection*`/`chatOnline`/`chatOffline` → `connection*`；`chatStatus*` → `messageStatus*`；
-`accountWrongPassword` → `errorWrongPassword`；`chatError`/`accountGenericError` → `errorUnknown`；
-`learnLearnTitle`/`chatChatTitle`/`chatGroupsTitle`/`accountMeTitle` → `nav*`。
-一旦某个常量类不再有任何引用，就删除它，ARB 保留这些键（再没有东西依赖那个常量文件了）。
-
-另外仍待处理：本轮运行时 `listen_strings.dart`（音频译码器 UI）尚不存在——它落地后请运行迁移工具。
+没有旧字符串文件时，`dart run tool/strings_to_arb.dart --check` 不执行迁移。
+ARB 一致性测试仍持续约束所有语言的完整性。

@@ -3,8 +3,8 @@
 # (also runs automatically on build/run because pubspec.yaml has
 # `flutter: generate: true`).
 #
-# Sources: lib/l10n/app_en.arb (template) + app_zh.arb.
-# Output:  lib/l10n/generated/s.dart (+ s_en.dart, s_zh.dart), class `S`,
+# Sources: lib/l10n/app_en.arb (template) + every app_<locale>.arb.
+# Output:  lib/l10n/generated/s.dart (+ s_<language>.dart), class `S`,
 #          used as `S.of(context)` or the `context.s` extension
 #          (lib/i18n/l10n_extension.dart).
 #

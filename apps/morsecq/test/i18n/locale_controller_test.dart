@@ -164,7 +164,7 @@ void main() {
     test('an unsupported locale is ignored', () async {
       final store = InMemoryKeyValueStore();
       final controller = LocaleController(store);
-      await controller.setLocale(const Locale('fr'));
+      await controller.setLocale(const Locale('xx'));
       expect(controller.locale, isNull);
       expect(store.getString(LocaleController.storageKey), isNull);
     });

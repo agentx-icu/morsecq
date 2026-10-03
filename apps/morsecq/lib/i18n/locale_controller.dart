@@ -14,7 +14,7 @@ import 'locale_resolution.dart';
 /// framework, this controller and [effectiveLocale] agree on the same rules
 /// (toxee's scheme: script/region aware, English fallback). Persistence goes
 /// through the injected [KeyValueStore] under [storageKey] as a
-/// `language[_Script]` tag, so a future `app_zh_Hant.arb` needs no migration.
+/// `language[_Script]` tag, so additional ARB files need no preference migration.
 class LocaleController extends ChangeNotifier {
   /// Restores the saved choice synchronously from [store]; an unknown or
   /// unsupported saved value falls back to "follow the system".
