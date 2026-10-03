@@ -256,4 +256,25 @@ void main() {
     expect(t.controller.progress.history, hasLength(1));
     expect(await t.controller.loadQsoDraft(), isNull);
   });
+
+  test('a parked finished QSO is committed when learning data loads', () async {
+    final t = await _training();
+    final s = _session(scenario: QsoScenario.callCq);
+    s.submit('1', 'CQ CQ DE BD1XYZ K');
+    s.submit(
+      '2',
+      '${s.remote.callsign} DE BD1XYZ UR RST 599 NAME LI QTH PARIS K',
+    );
+    s.submit('3', 'R R TNX ${s.remote.name}');
+    s.submit('4', 'TU 73 <SK>');
+    await t.controller.writeDoc(QsoPractice.finishedDoc, {
+      'session': s.toJson(),
+      'activeMs': 1000,
+    });
+    await t.controller.recoverFinishedQso();
+    expect(t.controller.progress.history.single.source, ExerciseSource.qso);
+    expect(await t.controller.readDoc(QsoPractice.finishedDoc), isNull);
+    await t.controller.recoverFinishedQso();
+    expect(t.controller.progress.history, hasLength(1));
+  });
 }

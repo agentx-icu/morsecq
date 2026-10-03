@@ -93,10 +93,11 @@ abstract final class ConversationLearning {
         ),
       );
     } finally {
-      settings.removeListener(watch);
       // The practice route is still animating out: wait until the
-      // conversation is uncovered before judging whether it is visible.
+      // conversation is uncovered (still watching for the learner's own
+      // toggles meanwhile) before judging whether it is visible.
       if (context.mounted) await _uncovered(ModalRoute.of(context));
+      settings.removeListener(watch);
       if (wasAuto &&
           !touched &&
           !settings.autoPlay &&
@@ -141,12 +142,12 @@ abstract final class ConversationLearning {
   ) {
     try {
       final key = context.read<IdentityService>().current?.publicKey;
-      // An unnamed controller (isolated screens) cannot be told apart.
-      return controller.profileKey.isEmpty ||
-          key == null ||
-          key == controller.profileKey;
+      // No open identity (deleted, being replaced): never restore. An
+      // unnamed controller (isolated screens) cannot be told apart.
+      if (key == null) return false;
+      return controller.profileKey.isEmpty || key == controller.profileKey;
     } on Object {
-      return true;
+      return false;
     }
   }
 

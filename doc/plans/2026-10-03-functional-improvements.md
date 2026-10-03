@@ -3,7 +3,7 @@
 # MorseCQ Functional Improvements: Specification and AI Implementation Handoff
 
 > Date: 2026-10-03. Inspected code baseline: `bae1d5e`.
-> Status: specification awaiting implementation. This delivery changes documentation only; it does not claim that these features exist or have shipped.
+> Status: **implemented (M0–M8), 2026-10-03**, branch `agentx/functional-improvements`; see §17 Implementation record. The sections below remain the specification.
 > The Chinese document is the original. Both versions must retain the same scope, default parameters, and acceptance criteria.
 > For the implementing AI: deliver by milestone, inspect the current code first, and preserve existing behavior and user data.
 
@@ -582,7 +582,29 @@ Fake-only tests do not establish correct real P2P sending or cancellation.
 - [ARRL Code Practice Files](https://www.arrl.org/code-practice-files) provides recordings and accompanying text as links for user imports. This document does not authorize automatic redistribution.
 - Repository main plan, persistence audit, Learn review, and test pyramid supply the compatibility/delivery constraints.
 
-## 17. Change log
+## 17. Implementation record (2026-10-03)
+
+All eight features shipped in one branch, milestone by milestone. Where the code chose among options the spec left open:
+
+| ID | Where | Notes / decisions |
+|---|---|---|
+| M0 | `morse_trainer` `exercise.dart`, `session_summary.dart`, `trainer_progress.dart`; app `training_controller.dart`, `exercise_outcome.dart` | `SessionSummary` is the exercise record (optional fields, legacy = unknown). `CreditPolicy` is the single credit table. `recordExercise` commits record, plan step and unlock in one write; ids remembered for the last 10 000 commits. Blank answers earn nothing. Training documents (`training/docs/*.json`) go through the same write queue; read-modify-write uses `docTransaction`. |
+| F01 | `daily_plan*.dart`, `speed_recommendation.dart`; `training_plan.dart`; `ui/learn/plan/` | Steps carry their own seed and, once started, frozen speeds. Course steps shorter than 50 symbols are consolidation (5 min) or extended (≥10 min). Speed advice per evidence batch, Apply-only. |
+| F02 | `morse_trainer/qso/`; `qso_practice.dart`; `ui/learn/qso/`, `ui/learn/keying/keyer_panel.dart` | Stages: (call CQ \| confirm calls) → exchange → confirm their info → close. Slot evaluator; AGN/QRS; hints get specific after 3 errors. Drafts keep unsent keyed text; a finished QSO is kept until its result is saved. Activity credit only; excluded from accuracy charts. |
+| F03 | `chat_copy_session.dart`; `ui/learn/chat_copy/`; `ui/chat/conversation_learning.dart` | Separate copy page; listen-only hides text, pattern, list previews and semantics. Saving to materials confirms unsupported characters. |
+| F04 | `send_timeline.dart`; `send_detail_store.dart`; `ui/learn/send/send_timeline_view.dart` | Alignment requires matching mark classes and character boundaries, otherwise "not located". New `dahTooLong`. Details under a 20 MiB index-trimmed budget; favourites kept. |
+| F05 | `guest_profile.dart`, `startup_controller.dart`, `training_controller_host.dart`; `ui/account/guest_widgets.dart`; `placement_assessment.dart`, `ui/learn/placement/` | Guest data in `<support>/morsecq/guest/`. Migration: suspend all learning controllers → stage → validate → journal → commit → marker (per guest generation) → cleanup; resumed at launch. Restore/unlock from guest offers keep/use-guest, never merges. |
+| F06 | `material/*.dart`; `material_store.dart`, `material_practice.dart`; `ui/learn/materials/`; `morse_io` `wav_export.dart` | TXT/JSON import (every JSON import previewed and confirmed), JSON/TXT/WAV export (PCM16 mono 48 kHz, ≤10 min parts). |
+| F07 | `morsecq_chat_api` `message_search.dart`; `morsecq_chat` `chat_service_messages.dart`; `ui/chat/search/`; Tim2Tox PR agentx-icu/tim2tox#27 | Cursor paging by (timestamp, id) with cancellation; jump pages both ways; bookmarks per profile, removed with cleared history. Cancel/retry backed by Tim2Tox send control (drain re-checks queue membership). |
+| F08 | `morse_dsp` `wav_pcm_reader.dart`, `audio_decode_segment.dart`; `morse_io` `clip_player.dart`; `ui/listen/workbench/`; `audio_material_store.dart` | Envelope gate now averages a 50 ms noise warm-up (fixed a false "ISOS" on noise). Recordings live in `<profile>/media/recordings/` and are **not** in identity backups (UI says so); missing media offers relink/delete. |
+
+Validation: package and app test suites, analyzer and the three repo gates pass (counts in the PR). Independent review by Codex in four scopes; findings fixed and re-reviewed.
+
+Not done / unverified: product screenshots were not regenerated (macOS test runs share the installed app's sandbox); no two-node native Tox test of cancel/retry (covered by Tim2Tox's own tests); `SoloudClipPlayer` and real audio output not exercised on devices; including recordings in backups is not offered; selections longer than five minutes play only their first five minutes.
+
+## 18. Change log
 
 - **2026-10-03** — Converted the discussion into eight feature specifications, shared data/credit policies, milestones, tests, and AI handoff instructions. Documentation only; application behavior is unchanged. Purpose: enable another AI to implement a defined scope.
 - **2026-10-03** — Self-check clarified QSO accepted forms, placement coverage, plan lesson-boundary eligibility, and native-test commands; corrected tokenizer ownership and kept both languages synchronized to reduce implementation ambiguity.
+
+- **2026-10-03** — Implemented M0–M8 (all eight features) and added §17 Implementation record; Codex review findings fixed. The status line now reflects shipped scope.

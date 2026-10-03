@@ -127,6 +127,11 @@ void main() {
         eval('CQ DE BD1XYZ K1ABC K', QsoStage.callCq).issues,
         contains(QsoIssue.wrongLocalCall),
       );
+      // A malformed call next to the right one is still wrong.
+      expect(
+        eval('CQ DE BDIXYZ BD1XYZ K', QsoStage.callCq).issues,
+        contains(QsoIssue.wrongLocalCall),
+      );
     });
 
     test('cut numbers only inside the RST slot', () {

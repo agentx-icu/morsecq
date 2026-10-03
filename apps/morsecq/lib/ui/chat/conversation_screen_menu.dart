@@ -33,6 +33,9 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
   bool _jumpedAway = false;
   bool _loadingNewer = false;
 
+  /// Live arrivals while jumped away, merged at the live end.
+  final List<ChatMessage> _parked = <ChatMessage>[];
+
   /// Rows per page when paging around a jumped window.
   static const int _aroundPage = 50;
 
@@ -88,13 +91,15 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       final reachedEnd = later.length < _aroundPage;
       setState(() {
         final known = {for (final m in _messages) m.id};
-        _messages.addAll(later.where((m) => !known.contains(m.id)));
+        _messages.addAll(later.where((m) => known.add(m.id)));
         if (reachedEnd) {
+          // Arrivals during the request are not lost; they stay unread
+          // until the reader actually scrolls to them.
+          _messages.addAll(_parked.where((m) => known.add(m.id)));
+          _parked.clear();
           _jumpedAway = false;
-          _newMessages = 0;
         }
       });
-      if (reachedEnd) _markRead();
     } on Object {
       // Scrolling again retries.
     } finally {
@@ -109,6 +114,29 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
     final store = await MessageBookmarks.of(context);
     if (!mounted) return;
     setState(() => _bookmarkStore = store..addListener(_onBookmarks));
+    unawaited(_reconcileBookmarks(store));
+  }
+
+  /// Drops this conversation's bookmarks whose message no longer exists
+  /// (deleted elsewhere, cleared on another device's restore, ...).
+  Future<void> _reconcileBookmarks(MessageBookmarks store) async {
+    final missing = <String>{};
+    for (final b in store.inConversation(_id)) {
+      try {
+        final rows = await _service.loadAround(
+          _id,
+          b.messageId,
+          before: 0,
+          after: 0,
+        );
+        if (rows.isEmpty) missing.add(b.messageId);
+      } on Object {
+        return; // Not connected: try again next time.
+      }
+    }
+    if (missing.isNotEmpty && mounted) {
+      await store.removeMissing(_id, missing).catchError((Object _) {});
+    }
   }
 
   void _onBookmarks() {
@@ -121,10 +149,14 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       // land in the emptied list and are merged by `_load`.
       _jumpedAway = false;
       _generation++;
+      _parked.clear();
       setState(() {
         _older.clear();
         _messages.clear();
         _newMessages = 0;
+        // Outstanding page loads belong to the dropped window.
+        _loadingOlder = false;
+        _loadingNewer = false;
       });
       unawaited(_load());
       return;
@@ -232,6 +264,15 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       await _service.clearHistory(_id);
       _localSends.recordClear(_id, ids);
       if (!mounted) return;
+      // Back to the live timeline at once: arrivals during the bookmark
+      // cleanup below must show.
+      _jumpedAway = false;
+      _parked.clear();
+      setState(() {
+        _messages.removeWhere((m) => ids.contains(m.id));
+        _older.clear();
+        _newMessages = 0;
+      });
       // Clearing history invalidates its bookmarks; failures are kept dirty
       // and retried by the store.
       try {
@@ -241,14 +282,12 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       }
       if (!mounted) return;
       setState(() {
-        _jumpedAway = false;
         _messages.removeWhere((m) => ids.contains(m.id));
         _older.clear();
         _revealed.clear();
         _pendingStatuses.clear();
         _historyLimit = 50;
         _hasMore = false;
-        _newMessages = 0;
         _error = _olderError = null;
       });
       _scrollToEnd();

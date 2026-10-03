@@ -203,8 +203,7 @@ final class ReceiveSession {
 
   /// Whether any round was answered with at least one Morse symbol. Blank
   /// submissions are not answers: they earn no credit (spec §3.3).
-  bool get hasAnswers =>
-      _rounds.any((r) => MorseText.symbols(r.answer).isNotEmpty);
+  bool get hasAnswers => _rounds.any((r) => MorseSupport.hasSymbols(r.answer));
 
   /// Symbols sent so far (answered rounds only).
   int get charsAnswered =>

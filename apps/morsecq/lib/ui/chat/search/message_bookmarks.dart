@@ -53,13 +53,19 @@ class MessageBookmarks extends ChangeNotifier {
   /// or switched identity retires its instance ([retireAll]): the backend
   /// may reuse the directory, and a stale cache must never be written over
   /// the next profile's file.
-  static MessageBookmarks forProfile(String dataDirectory, String profileKey) =>
-      _instances.putIfAbsent(
-        '$dataDirectory#$profileKey',
-        () => MessageBookmarks._(
-          AtomicJsonFile(File(p.join(dataDirectory, 'chat', 'bookmarks.json'))),
-        ),
-      );
+  static MessageBookmarks forProfile(String dataDirectory, String profileKey) {
+    // While identity data is being replaced nothing may read or write the
+    // old files: hand out a throw-away retired store.
+    if (_blocked) return MessageBookmarks._(null).._retired = true;
+    return _instances.putIfAbsent(
+      '$dataDirectory#$profileKey',
+      () => MessageBookmarks._(
+        AtomicJsonFile(File(p.join(dataDirectory, 'chat', 'bookmarks.json'))),
+      ),
+    );
+  }
+
+  static bool _blocked = false;
 
   /// Durability barrier: every cached store's pending (or failed) writes.
   static Future<void> flushAll() async {
@@ -70,18 +76,26 @@ class MessageBookmarks extends ChangeNotifier {
 
   /// Flushes, then retires every cached store; the next [forProfile]
   /// reloads from disk. Retired stores ignore further changes.
-  static Future<void> retireAll() async {
+  static Future<void> retireAll({bool block = false}) async {
+    if (block) _blocked = true;
     final stores = List.of(_instances.values);
     _instances.clear();
+    // Freeze first: from here on no store accepts a change...
+    for (final store in stores) {
+      store._retired = true;
+    }
+    // ...then let writes already in flight land.
     for (final store in stores) {
       try {
-        await store.flush();
+        await store._writes;
       } on Object {
         // Retiring must not be blocked by a failing disk.
       }
-      store._retired = true;
     }
   }
+
+  /// The replacement finished (a new identity is open): serve stores again.
+  static void unblock() => _blocked = false;
 
   /// In-memory store for tests and stub identities.
   @visibleForTesting
@@ -237,7 +251,14 @@ class MessageBookmarks extends ChangeNotifier {
 /// retired again whenever the open identity changes.
 final class MessageBookmarksBarrier implements IdentityDataStore {
   MessageBookmarksBarrier(this._identity) {
-    _sub = _identity.identityChanges.listen((_) {
+    _key = _identity.current?.publicKey;
+    _sub = _identity.identityChanges.listen((identity) {
+      // Only a different (or no) profile retires the stores; a name or
+      // password change keeps them.
+      final key = identity?.publicKey;
+      if (identity != null) MessageBookmarks.unblock();
+      if (key == _key) return;
+      _key = key;
       MessageBookmarks.retireAll().ignore();
     });
     final identity = _identity;
@@ -246,12 +267,17 @@ final class MessageBookmarksBarrier implements IdentityDataStore {
 
   final IdentityService _identity;
   late final StreamSubscription<Identity?> _sub;
+  String? _key;
 
   @override
   Future<void> flush() => MessageBookmarks.flushAll();
 
   @override
-  Future<void> prepareForReplacement() => MessageBookmarks.retireAll();
+  Future<void> prepareForReplacement() {
+    // A restore may reopen the same key: force the next change to count.
+    _key = null;
+    return MessageBookmarks.retireAll(block: true);
+  }
 
   void dispose() {
     final identity = _identity;

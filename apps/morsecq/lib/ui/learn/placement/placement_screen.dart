@@ -44,6 +44,9 @@ class _PlacementScreenState extends State<PlacementScreen> {
   /// Every round played so far with what was actually typed.
   final List<(String, String)> _copies = <(String, String)>[];
   final Set<int> _assisted = <int>{};
+
+  /// Any replay in any tier (the per-tier set is cleared between tiers).
+  bool _anyAssisted = false;
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _sub;
   _Phase _phase = _Phase.intro;
@@ -80,7 +83,10 @@ class _PlacementScreenState extends State<PlacementScreen> {
   void _play({bool replay = false}) {
     final playback = _playback;
     if (playback == null || _playing) return;
-    if (replay && _heard) _assisted.add(_round);
+    if (replay && _heard) {
+      _assisted.add(_round);
+      _anyAssisted = true;
+    }
     setState(() => _playing = true);
     playback.player.play(
       MorseEncoder.encode(_tier.rounds[_round], _assessment.timingFor(_tier)),
@@ -125,16 +131,19 @@ class _PlacementScreenState extends State<PlacementScreen> {
   /// One activity-only exercise; placement never feeds SRS or speed advice.
   Future<void> _record() async {
     if (_copies.isEmpty) return;
-    final target = _copies.map((c) => c.$1).join(' ');
-    final answer = _copies.map((c) => c.$2).join(' ');
+    // Each round scored on its own (a copy cannot borrow symbols from the
+    // next round); blank runs earn nothing.
+    final score = SessionScore.combine([
+      for (final (target, answer) in _copies)
+        SessionScore.evaluate(target, answer),
+    ], drillKind: 'placement');
     try {
-      // The learner's real copies; blank runs earn nothing.
       await widget.controller.recordExercise(
-        score: SessionScore.evaluate(target, answer, drillKind: 'placement'),
+        score: score,
         id: _id,
         source: ExerciseSource.placement,
-        assistance: <Assistance>{if (_assisted.isNotEmpty) Assistance.replay},
-        answered: MorseText.symbols(answer).isNotEmpty,
+        assistance: <Assistance>{if (_anyAssisted) Assistance.replay},
+        answered: _copies.any((c) => MorseSupport.hasSymbols(c.$2)),
       );
     } on Object {
       // The suggestion still shows; activity credit is not essential.

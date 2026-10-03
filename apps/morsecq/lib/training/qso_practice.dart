@@ -64,15 +64,49 @@ extension QsoPractice on TrainingController {
 
   Future<void> discardQsoDraft() => deleteDoc(draftDoc);
 
-  /// Records a finished QSO, then drops its draft — only once the result is
-  /// saved, so a crash or failed write never loses it; the next open of the
-  /// simulator commits it again (idempotent by id).
+  static const String finishedDoc = 'qso_finished';
+
+  /// Records a finished QSO. It is first parked in its own document (never
+  /// overwritten by a new QSO's draft), then credited, then removed — only
+  /// once the result is on disk, so a crash or a failed write never loses
+  /// it. [recoverFinishedQso] commits a parked QSO again (idempotent by id).
   Future<bool> finishQso(QsoSession session, Duration active) async {
-    await saveQsoDraft(session, active: active);
+    try {
+      await writeDoc(finishedDoc, <String, Object?>{
+        'session': session.toJson(),
+        'activeMs': active.inMilliseconds,
+      });
+      await discardQsoDraft();
+    } on Object {
+      // Recording below still runs; only crash recovery is weaker.
+    }
     final outcome = await recordQso(session, active);
     if (!outcome.saved) return false;
-    await discardQsoDraft();
+    try {
+      await deleteDoc(finishedDoc);
+    } on Object {
+      // Committing it again later is a no-op (same id).
+    }
     return true;
+  }
+
+  /// Commits a QSO parked by [finishQso] that was not saved. Runs whenever
+  /// learning data loads, so it never waits behind thousands of later
+  /// exercises.
+  Future<void> recoverFinishedQso() async {
+    try {
+      final json = await readDoc(finishedDoc);
+      final raw = json?['session'];
+      if (raw is! Map<String, Object?>) return;
+      final session = QsoSession.fromJson(raw);
+      final active = Duration(
+        milliseconds: (json!['activeMs'] as num?)?.toInt() ?? 0,
+      );
+      final outcome = await recordQso(session, active);
+      if (outcome.saved) await deleteDoc(finishedDoc);
+    } on Object {
+      // Tried again next time.
+    }
   }
 
   /// Credits a finished QSO once (its id is derived from the seed, so a

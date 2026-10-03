@@ -3,7 +3,7 @@
 # MorseCQ 功能改进规格与 AI 实施交接文档
 
 > 日期：2026-10-03。代码勘查基线：`bae1d5e`。
-> 状态：待实现的功能规格；本次交付只有文档，不代表下述功能已经实现或发布。
+> 状态：**已实现（M0–M8），2026-10-03**，分支 `agentx/functional-improvements`；见 §17 实现记录。以下各节仍是规格本身。
 > 中文是原稿；英文版应保持同样的范围、默认参数和验收标准。
 > 面向接手的实现 AI：按本文的里程碑交付，先核对当前代码，保留已有行为与用户数据。
 
@@ -578,7 +578,29 @@ F05交付时才调整训练身份要求；此前保持当前启动门。
 - [ARRL Code Practice Files](https://www.arrl.org/code-practice-files)提供音频及配套文本，可作为用户自行导入材料的来源链接；本文不授权自动再分发。
 - 仓库主规划、持久化审计、学习功能评审与测试金字塔是兼容性和交付约束的主要依据。
 
-## 17. 变更记录
+## 17. 实现记录（2026-10-03）
+
+八项功能已在同一分支按里程碑实现。规格留有选择空间之处的实际决定如下：
+
+| ID | 位置 | 说明 / 决定 |
+|---|---|---|
+| M0 | `morse_trainer` 的 `exercise.dart`、`session_summary.dart`、`trainer_progress.dart`；应用 `training_controller.dart`、`exercise_outcome.dart` | `SessionSummary` 即练习记录（新字段可选，旧数据为未知）。`CreditPolicy` 是唯一的计分表。`recordExercise` 在一次写入中提交记录、计划步骤与解锁；记住最近 10 000 次提交的 id。空白作答不计分。训练文档（`training/docs/*.json`）走同一写入队列，读改写使用 `docTransaction`。 |
+| F01 | `daily_plan*.dart`、`speed_recommendation.dart`；`training_plan.dart`；`ui/learn/plan/` | 步骤自带种子，开始后冻结速度。少于 50 个字符的课程步骤为巩固（5 分钟）或延长（≥10 分钟）。速度建议每批证据一次，只在点「应用」后生效。 |
+| F02 | `morse_trainer/qso/`；`qso_practice.dart`；`ui/learn/qso/`、`ui/learn/keying/keyer_panel.dart` | 阶段：（呼叫 CQ \| 确认呼号）→ 交换 → 确认对方信息 → 结束。按字段评估；AGN/QRS；连续 3 次错误后提示更具体。草稿保存尚未发送的拍发内容；完成的 QSO 在成绩保存前一直保留。只计练习量，不计入正确率图表。 |
+| F03 | `chat_copy_session.dart`；`ui/learn/chat_copy/`；`ui/chat/conversation_learning.dart` | 独立抄收页；纯听模式隐藏明文、点划、会话列表预览与无障碍语义。保存为素材前确认不支持的字符。 |
+| F04 | `send_timeline.dart`；`send_detail_store.dart`；`ui/learn/send/send_timeline_view.dart` | 只有点划类型与字符边界都匹配才定位到字符，否则报告「无法定位」。新增 `dahTooLong`。细节受 20 MiB 索引裁剪预算约束，保留收藏。 |
+| F05 | `guest_profile.dart`、`startup_controller.dart`、`training_controller_host.dart`；`ui/account/guest_widgets.dart`；`placement_assessment.dart`、`ui/learn/placement/` | 访客数据位于 `<support>/morsecq/guest/`。迁移：暂停所有学习控制器 → 暂存 → 校验 → 写日志 → 提交 → 按访客批次写完成标记 → 清理；启动时可续完。从访客模式恢复/解锁时提供保留/改用访客进度，绝不合并。 |
+| F06 | `material/*.dart`；`material_store.dart`、`material_practice.dart`；`ui/learn/materials/`；`morse_io` 的 `wav_export.dart` | TXT/JSON 导入（每次 JSON 导入都先预览确认），JSON/TXT/WAV 导出（PCM16 单声道 48 kHz，每段 ≤10 分钟）。 |
+| F07 | `morsecq_chat_api` 的 `message_search.dart`；`morsecq_chat` 的 `chat_service_messages.dart`；`ui/chat/search/`；Tim2Tox PR agentx-icu/tim2tox#27 | 按（时间戳, id）游标分页并可取消；跳转后可双向翻页；收藏按身份隔离，清空历史时一并删除。取消/重试由 Tim2Tox 发送控制支撑（发送队列在发送前复查）。 |
+| F08 | `morse_dsp` 的 `wav_pcm_reader.dart`、`audio_decode_segment.dart`；`morse_io` 的 `clip_player.dart`；`ui/listen/workbench/`；`audio_material_store.dart` | 包络门限改为先平均 50 ms 噪声（修复噪声被误解码为「ISOS」）。录音存于 `<档案>/media/recordings/`，**不**进入身份备份（界面已说明）；媒体缺失时可重新选择或删除。 |
+
+验证：各包与应用测试、分析器与三项仓库门禁均通过（数字见 PR）。由 Codex 分四个范围独立评审，问题已修复并复审。
+
+未完成 / 未验证：未重新生成产品截图（macOS 测试运行与已安装的 App 共用沙盒）；未做双节点原生 Tox 取消/重试测试（由 Tim2Tox 自身测试覆盖）；`SoloudClipPlayer` 与真实音频输出未在设备上验证；暂不提供把录音纳入备份；超过 5 分钟的选段只播放前 5 分钟。
+
+## 18. 变更记录
 
 - **2026-10-03** — 将功能讨论整理为八项详细规格、共用数据与计分政策、实施里程碑、测试和AI交接说明；仅交付文档，尚未改变应用行为。目的：供其他AI按明确范围实现。
 - **2026-10-03** — 文档自检补充QSO允许形式、水平测试符号覆盖、计划跨课解锁边界与原生测试命令；纠正分词所属模块，降低实现歧义并保持双语一致。
+
+- **2026-10-03** — 实现 M0–M8（全部八项功能），新增 §17 实现记录；已修复 Codex 评审问题。状态行改为反映已交付范围。

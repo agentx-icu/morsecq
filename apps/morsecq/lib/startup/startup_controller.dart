@@ -151,6 +151,11 @@ class StartupController extends ChangeNotifier {
         case IdentityState.ready:
           _set(StartupPhase.opening);
           await _identity.open();
+          // Leaving guest mode into a plain identity: offer the guest
+          // progress like restore / unlock do, never merge it.
+          final fromGuest = _cameFromGuest;
+          _cameFromGuest = false;
+          _guestChoicePending = fromGuest && await _guestHasProgress();
           _becomeReady();
           unawaited(_resumeInterruptedMigration());
       }
@@ -207,11 +212,12 @@ class StartupController extends ChangeNotifier {
   Future<void> clearGuestData() async {
     final guest = _guest;
     if (guest == null) return;
-    await guest.suspendLearning?.call();
     try {
+      await guest.suspendLearning?.call();
       await guest.releaseGuestController();
       await guest.store.clear();
     } finally {
+      // Learn must come back even when a flush reported an old failure.
       guest.resumeLearning?.call();
     }
   }
@@ -224,8 +230,8 @@ class StartupController extends ChangeNotifier {
     final identity = _identity.current;
     if (guest == null || identity == null) return;
     guestMode.value = false;
-    if (!suspended) await guest.suspendLearning?.call();
     try {
+      if (!suspended) await guest.suspendLearning?.call();
       await guest.releaseGuestController();
       final guestDir = await guest.store.directory();
       final pending = File(p.join(guestDir, 'pending-${identity.publicKey}'));
@@ -303,6 +309,7 @@ class StartupController extends ChangeNotifier {
     // learner may switch to the guest progress explicitly.
     _guestChoicePending = fromGuest && await _guestHasProgress();
     _becomeReady();
+    unawaited(_resumeInterruptedMigration());
   }
 
   /// Creates the identity and moves to the mandatory backup wizard.

@@ -193,4 +193,18 @@ void main() {
     final ids = refreshed.steps.map((s) => s.seed).toSet();
     expect(ids, hasLength(refreshed.steps.length));
   });
+
+  test('legacy started steps keep the speeds they started with', () {
+    final plan = DailyPlanBuilder.build(
+      inputs(),
+    ).start(DailyPlanBuilder.build(inputs()).steps.first.id);
+    final json = plan.toJson();
+    // A file from before steps carried a snapshot.
+    for (final step in json['steps']! as List<Object?>) {
+      (step! as Map<String, Object?>).remove('settings');
+    }
+    final back = DailyPlan.fromJson(json);
+    expect(back.steps.first.settings, settings);
+    expect(back.steps[1].settings, isNull, reason: 'pending stays open');
+  });
 }

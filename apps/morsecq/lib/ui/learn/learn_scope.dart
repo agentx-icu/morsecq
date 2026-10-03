@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
+import '../../training/qso_practice.dart';
 import '../../training/training_controller_host.dart';
 import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
@@ -70,6 +71,8 @@ class LearnScope extends StatefulWidget {
       docs: FileTrainingDocStore.inDataDirectory(dir),
     );
     await controller.load();
+    // A finished QSO whose save failed last time is committed now.
+    await controller.recoverFinishedQso();
     return controller;
   }
 

@@ -94,7 +94,7 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
   }
 
   /// An empty (or symbol-free) copy is no answer: no submit, no credit.
-  bool get _hasAnswer => MorseText.symbols(_answer.text).isNotEmpty;
+  bool get _hasAnswer => MorseSupport.hasSymbols(_answer.text);
 
   Future<void> _submit() async {
     if (_recording || _session.score != null || !_hasAnswer) return;

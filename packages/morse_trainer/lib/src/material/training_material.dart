@@ -168,4 +168,10 @@ abstract final class MorseSupport {
   static bool isSupported(String token) => token.startsWith('<')
       ? MorseAlphabet.encodeProsign(token) != null
       : MorseAlphabet.encodeChar(token) != null;
+
+  /// Whether [answer] contains at least one Morse symbol. Blank input —
+  /// including non-ASCII whitespace or only unkeyable characters — is not
+  /// an answer.
+  static bool hasSymbols(String answer) =>
+      MorseText.symbols(answer).any(isSupported);
 }

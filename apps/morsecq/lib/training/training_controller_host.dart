@@ -131,40 +131,40 @@ class TrainingControllerHost implements IdentityDataStore {
   /// calls (mode switch, identity event, migration) share one release.
   Future<void> releaseGuest() {
     if (_key == GuestProfile.profileKey) {
-      final loading = _loading;
-      final controller = _current;
-      _dropCurrent();
-      _guestRelease = () async {
-        if (controller != null) {
-          await controller.flush();
-        } else if (loading != null) {
-          final late = await loading;
-          late.dispose();
-          await late.flush();
-        }
-      }();
+      _guestRelease = _flushThenDrop();
     }
     return _guestRelease ?? Future<void>.value();
+  }
+
+  /// Stops serving the cached controller at once, lets its queued writes
+  /// and document transactions finish (they need a live controller), then
+  /// disposes it.
+  Future<void> _flushThenDrop() async {
+    final loading = _loading;
+    final controller = _current;
+    _generation++;
+    _pending = null;
+    _loading = null;
+    _current = null;
+    _key = null;
+    final live = controller ?? (loading == null ? null : await loading);
+    if (live == null) return;
+    try {
+      await live.flush();
+    } finally {
+      live.dispose();
+    }
   }
 
   /// Stops serving learning controllers and flushes the cached one before
   /// learning files are replaced underneath it.
   Future<void> suspendLearning() async {
     _suspended = true;
-    final loading = _loading;
-    final controller = _current;
     if (_key == GuestProfile.profileKey) {
       await releaseGuest();
       return;
     }
-    _dropCurrent();
-    if (controller != null) {
-      await controller.flush();
-    } else if (loading != null) {
-      final late = await loading;
-      late.dispose();
-      await late.flush();
-    }
+    await _flushThenDrop();
   }
 
   /// Serves controllers again; mounted screens reload from disk.

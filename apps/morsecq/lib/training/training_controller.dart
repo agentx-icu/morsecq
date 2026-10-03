@@ -197,6 +197,9 @@ final class TrainingController extends ChangeNotifier {
 
   /// Durability barrier used before backgrounding, backup or replacement.
   Future<void> flush() async {
+    // Document transactions enqueue their writes when they run: wait for
+    // them first, then for every queued write.
+    await _docTxn;
     await _writes;
     if (_writeErrors.isNotEmpty) {
       final (error, stack) = _writeErrors.values.first;
@@ -390,7 +393,11 @@ final class TrainingController extends ChangeNotifier {
       learned: learned ?? learnedChars.toSet(),
       countsTowardLesson: countsTowardLesson,
     );
-    if (outcome.duplicate) return outcome;
+    if (outcome.duplicate) {
+      // Already credited in memory; "saved" only when it is on disk too.
+      final unsaved = _writeErrors.containsKey(_progressStore);
+      return outcome.withSaved(!unsaved || await retryProgressSave());
+    }
     final saved = await _commitKeepingResult(next);
     return outcome.withSaved(saved);
   }

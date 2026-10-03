@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:morsecq_chat_api/morsecq_chat_api.dart' as api;
 import 'package:tim2tox_dart/models/chat_message.dart' as t2t;
 import 'package:tim2tox_dart/utils/conversation_id_utils.dart';
@@ -69,7 +71,7 @@ class MessageMapper {
       // bookmarks and jumps key on it).
       id:
           m.msgID ??
-          '${m.timestamp.microsecondsSinceEpoch}_${sender}_${text.hashCode}',
+          '${m.timestamp.microsecondsSinceEpoch}_${sender}_${_digest(text)}',
       conversationId: conversationId,
       senderId: sender,
       senderName: isMine ? selfName : nameOf(sender),
@@ -105,5 +107,18 @@ class MessageMapper {
     if (gid != null && gid.isNotEmpty) return ConversationIds.group(gid);
     if (m.isSelf) return null;
     return ConversationIds.c2c(m.fromUserId);
+  }
+
+  /// FNV-1a 64 over the UTF-8 body: stable across runs and platforms,
+  /// unlike `String.hashCode`, and wide enough that distinct bodies with
+  /// the same sender and timestamp do not collide in practice.
+  static String _digest(String text) {
+    var hash = BigInt.parse('cbf29ce484222325', radix: 16);
+    final prime = BigInt.parse('100000001b3', radix: 16);
+    final mask = (BigInt.one << 64) - BigInt.one;
+    for (final byte in utf8.encode(text)) {
+      hash = ((hash ^ BigInt.from(byte)) * prime) & mask;
+    }
+    return hash.toRadixString(36);
   }
 }

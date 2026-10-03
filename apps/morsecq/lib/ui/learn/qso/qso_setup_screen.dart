@@ -47,15 +47,12 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     final station =
         await _c.loadQsoStation() ??
         QsoStation.random(Random(_c.random.nextInt(1 << 30)));
-    var draft = await _c.loadQsoDraft();
-    if (draft != null && draft.session.isDone) {
-      // A finished QSO whose result was not saved last time: save it now.
-      try {
-        await _c.finishQso(draft.session, draft.active);
-      } on Object {
-        // Kept for the next attempt.
-      }
-      draft = null;
+    await _c.recoverFinishedQso();
+    final loaded = await _c.loadQsoDraft();
+    // Older drafts may hold a finished QSO: commit it, never resume it.
+    final draft = loaded != null && loaded.session.isDone ? null : loaded;
+    if (loaded != null && loaded.session.isDone) {
+      await _c.finishQso(loaded.session, loaded.active);
     }
     if (!mounted) return;
     setState(() {

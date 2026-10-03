@@ -258,7 +258,9 @@ class _ConversationScreenState extends State<ConversationScreen>
       return;
     }
     if (added && _jumpedAway && !ownSend) {
-      // Live rows are not appended to an older window; offer the latest.
+      // Live rows are not appended to an older window: park them (merged
+      // when paging reaches the live end) and offer the latest.
+      _parked.add(message);
       setState(() => _newMessages++);
       return;
     }

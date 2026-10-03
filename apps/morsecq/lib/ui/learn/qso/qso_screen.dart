@@ -59,10 +59,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   Duration get _activeTotal => _activeBefore + _active.elapsed;
 
-  String get _pendingText => [
-    _carry,
-    _keying.decodedText,
-  ].where((t) => t.trim().isNotEmpty).join(' ').trim();
+  /// Restored and newly keyed text joined as keyed: the decoder decides
+  /// where word gaps are, so a reply resumed mid-word stays one word.
+  String get _pendingText => '$_carry${_keying.decodedText}';
   late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _playerSub;
@@ -120,6 +119,8 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     _keying = SendSession(target: '', timing: _remoteTiming, now: _c.now);
     _keying.listenToDecoder();
     _keyingSub = _keying.changes.listen((_) {
+      // Keying is practice even after Pause stopped the clock.
+      if (!_active.isRunning && !_session.isDone) _active.start();
       if (!_disposed) setState(() {});
     });
   }
@@ -187,10 +188,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     if (result.attempt.marks.length >= 3 && result.measuredWpm > 0) {
       _wpms.add(result.measuredWpm);
     }
-    final text = [
-      _carry,
-      result.attempt.decoded,
-    ].where((t) => t.trim().isNotEmpty).join(' ');
+    final text = '$_carry${result.attempt.decoded}';
     final id = _carryId ?? keying.id;
     _carry = '';
     _carryId = null;
@@ -371,7 +369,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              decoded.isEmpty ? s.learnQsoNothingKeyed : decoded,
+              decoded.trim().isEmpty ? s.learnQsoNothingKeyed : decoded,
               key: const ValueKey('qso-decoded'),
               style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 2),
             ),

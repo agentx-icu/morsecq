@@ -146,11 +146,10 @@ abstract final class QsoEvaluator {
       return;
     }
     if (!w.sublist(0, de).contains('CQ')) out.add(QsoIssue.missingCq);
-    // After DE: the local call (repeated as often as liked) plus courtesy
-    // words; any other callsign-like word is a wrong call.
-    final after = w.sublist(de + 1);
-    final calls = after.where(_looksLikeCall).toList();
-    if (calls.isEmpty || calls.any((x) => x != local.callsign)) {
+    // After DE: the local call (repeated as often as liked) plus listed
+    // courtesy words; any other word is a wrong (or malformed) call.
+    final after = w.sublist(de + 1).where((x) => !_courtesy.contains(x));
+    if (after.isEmpty || after.any((x) => x != local.callsign)) {
       out.add(QsoIssue.wrongLocalCall);
     }
     if (w.last != 'K') out.add(QsoIssue.missingEnding);
@@ -179,11 +178,17 @@ abstract final class QsoEvaluator {
     if (after != local.callsign) out.add(QsoIssue.wrongLocalCall);
   }
 
-  /// Callsign-shaped: letters and digits with at least one of each.
-  static bool _looksLikeCall(String w) =>
-      RegExp(r'^[A-Z0-9/]{3,}$').hasMatch(w) &&
-      w.contains(RegExp(r'[0-9]')) &&
-      w.contains(RegExp(r'[A-Z]'));
+  /// Courtesy words allowed around the callsign slot when calling CQ.
+  static const Set<String> _courtesy = <String>{
+    'PSE',
+    'K',
+    'KN',
+    '<KN>',
+    'AR',
+    '<AR>',
+    '<BT>',
+    '?',
+  };
 
   static void _checkEnding(List<String> w, List<QsoIssue> out) {
     const endings = {'K', 'KN', '<KN>'};

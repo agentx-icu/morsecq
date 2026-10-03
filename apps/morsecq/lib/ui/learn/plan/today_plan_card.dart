@@ -27,7 +27,8 @@ class TodayPlanCard extends StatefulWidget {
   State<TodayPlanCard> createState() => _TodayPlanCardState();
 }
 
-class _TodayPlanCardState extends State<TodayPlanCard> {
+class _TodayPlanCardState extends State<TodayPlanCard>
+    with WidgetsBindingObserver {
   bool _busy = false;
 
   TrainingController get _c => widget.controller;
@@ -35,11 +36,24 @@ class _TodayPlanCardState extends State<TodayPlanCard> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Making the plan commits progress, which notifies the home's builder:
     // never during this build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _c.todayPlan == null) unawaited(_ensure());
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Back from the background, possibly on a new local day.
+    if (state == AppLifecycleState.resumed && mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _ensure() async {
@@ -63,14 +77,20 @@ class _TodayPlanCardState extends State<TodayPlanCard> {
     }
   }
 
-  Future<void> _start(PlanStep step) => _guard(
-    () => openPlanStep(
+  Future<void> _start(PlanStep step) => _guard(() async {
+    // A card still showing yesterday's plan: make today's instead.
+    if (_c.todayPlan?.stepById(step.id) == null) {
+      await _ensure();
+      return;
+    }
+    if (!mounted) return;
+    await openPlanStep(
       context,
       controller: _c,
       playback: widget.playback,
       step: step,
-    ),
-  );
+    );
+  });
 
   bool _ensuring = false;
 

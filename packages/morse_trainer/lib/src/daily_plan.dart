@@ -352,16 +352,31 @@ final class DailyPlan {
     'steps': steps.map((s) => s.toJson()).toList(),
   };
 
-  factory DailyPlan.fromJson(Map<String, Object?> json) => DailyPlan(
-    id: json['id'] as String,
-    date: json['date'] as String,
-    profileKey: json['profileKey'] as String? ?? '',
-    seed: (json['seed'] as num).toInt(),
-    budgetMinutes: (json['budgetMinutes'] as num).toInt(),
-    settings: PlanSettings.fromJson(json['settings']! as Map<String, Object?>),
-    steps: [
-      for (final s in json['steps']! as List<Object?>)
-        PlanStep.fromJson(s! as Map<String, Object?>),
-    ],
-  );
+  factory DailyPlan.fromJson(Map<String, Object?> json) {
+    final settings = PlanSettings.fromJson(
+      json['settings']! as Map<String, Object?>,
+    );
+    return DailyPlan(
+      id: json['id'] as String,
+      date: json['date'] as String,
+      profileKey: json['profileKey'] as String? ?? '',
+      seed: (json['seed'] as num).toInt(),
+      budgetMinutes: (json['budgetMinutes'] as num).toInt(),
+      settings: settings,
+      steps: [
+        for (final raw in json['steps']! as List<Object?>)
+          _withSnapshot(
+            PlanStep.fromJson(raw! as Map<String, Object?>),
+            settings,
+          ),
+      ],
+    );
+  }
+
+  /// Plans saved before steps carried their own speeds: an already started
+  /// step ran at the plan's speeds, which were never refreshed back then.
+  static PlanStep _withSnapshot(PlanStep step, PlanSettings planSettings) =>
+      step.state != PlanStepState.pending && step.settings == null
+      ? step.copyWith(settings: planSettings)
+      : step;
 }
