@@ -54,7 +54,10 @@ void main() {
   ) async {
     await pumpChat(
       tester,
-      (h) => _opener(h, const Group(id: 'tox_404', name: 'Gone', kind: GroupKind.group)),
+      (h) => _opener(
+        h,
+        const Group(id: 'tox_404', name: 'Gone', kind: GroupKind.group),
+      ),
     );
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();

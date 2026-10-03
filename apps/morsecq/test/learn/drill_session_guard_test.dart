@@ -312,6 +312,9 @@ void main() {
       await tester.tap(find.text(en.learnDone));
       await tester.pumpAndSettle();
       expect(wake.calls, <bool>[true, false, true, false]);
+      // The result (with the rhythm timeline) is taller than the phone.
+      await tester.ensureVisible(find.text(en.learnTryAnother));
+      await tester.pumpAndSettle();
       await tester.tap(find.text(en.learnTryAnother));
       await tester.pumpAndSettle();
       expect(wake.calls, <bool>[true, false, true, false, true]);

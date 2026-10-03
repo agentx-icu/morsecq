@@ -40,7 +40,10 @@ abstract interface class IdentityService {
   /// Encrypted (if a password is set) `.tox` profile bytes plus the training
   /// progress bundle, for the first-run backup wizard. Format is owned by the
   /// implementation but must round-trip through [importBackup].
-  Future<Uint8List> exportBackup();
+  ///
+  /// Saved workbench recordings are excluded by default; [includeMedia]
+  /// (the learner opted in) adds them, and [importBackup] restores them.
+  Future<Uint8List> exportBackup({bool includeMedia = false});
 
   /// Restore from [exportBackup] output. Replaces any current identity.
   Future<Identity> importBackup(Uint8List bytes, {String? password});

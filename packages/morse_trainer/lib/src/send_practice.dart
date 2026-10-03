@@ -6,6 +6,9 @@ import 'session_score.dart';
 enum SendIssueKind {
   ditTooLong,
   dahTooShort,
+
+  /// Dahs held far beyond three dits (added with the rhythm timeline).
+  dahTooLong,
   intraGapTooLong,
   charGapTooShort,
   wordGapTooShort,
@@ -23,6 +26,7 @@ final class SendThresholds {
     this.wordGapBoundary = 5.0,
     this.ditTooLongRatio = 1.3,
     this.dahTooShortRatio = 2.6,
+    this.dahTooLongRatio = 4.0,
     this.intraGapTooLongRatio = 1.3,
     this.charGapTooShortRatio = 2.5,
     this.wordGapTooShortRatio = 6.0,
@@ -42,6 +46,7 @@ final class SendThresholds {
 
   final double ditTooLongRatio;
   final double dahTooShortRatio;
+  final double dahTooLongRatio;
   final double intraGapTooLongRatio;
   final double charGapTooShortRatio;
   final double wordGapTooShortRatio;
@@ -90,6 +95,8 @@ final class SendIssue {
         '$offending of $total dits too long (avg ${r}x dit)',
       SendIssueKind.dahTooShort =>
         '$offending of $total dahs too short (avg ${r}x dit)',
+      SendIssueKind.dahTooLong =>
+        '$offending of $total dahs too long (avg ${r}x dit)',
       SendIssueKind.intraGapTooLong =>
         '$offending of $total gaps inside characters too long (avg ${r}x dit)',
       SendIssueKind.charGapTooShort =>
@@ -216,6 +223,7 @@ final class SendDiagnostics {
 
     check(SendIssueKind.ditTooLong, dits, (r) => r > t.ditTooLongRatio);
     check(SendIssueKind.dahTooShort, dahs, (r) => r < t.dahTooShortRatio);
+    check(SendIssueKind.dahTooLong, dahs, (r) => r > t.dahTooLongRatio);
     check(
       SendIssueKind.intraGapTooLong,
       intra,

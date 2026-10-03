@@ -95,11 +95,16 @@ class _MorseToTextViewState extends State<MorseToTextView> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final S s = context.s;
-    final TextStyle mono = (theme.textTheme.titleLarge ?? const TextStyle()).copyWith(
-      fontFamily: 'monospace',
-      fontFamilyFallback: const <String>['Menlo', 'Consolas', 'Courier New'],
-      letterSpacing: 2,
-    );
+    final TextStyle mono = (theme.textTheme.titleLarge ?? const TextStyle())
+        .copyWith(
+          fontFamily: 'monospace',
+          fontFamilyFallback: const <String>[
+            'Menlo',
+            'Consolas',
+            'Courier New',
+          ],
+          letterSpacing: 2,
+        );
 
     final Widget input = Padding(
       padding: const EdgeInsets.all(16),

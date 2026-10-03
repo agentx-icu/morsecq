@@ -19,7 +19,9 @@ class MorsePlaybackSettings extends ChangeNotifier {
     bool trainingMode = false,
     InputMode inputMode = InputMode.straightKey,
     bool autoPlay = false,
-  }) : _wpm = wpm,
+    bool listenOnly = false,
+  }) : _listenOnly = listenOnly,
+       _wpm = wpm,
        _farnsworthWpm = farnsworthWpm,
        _toneHz = toneHz,
        _trainingMode = trainingMode,
@@ -49,6 +51,7 @@ class MorsePlaybackSettings extends ChangeNotifier {
   double _toneHz;
   bool _trainingMode;
   bool _autoPlay;
+  bool _listenOnly;
   InputMode _inputMode;
   InputMode get inputMode => _inputMode;
   set inputMode(InputMode value) {
@@ -66,6 +69,17 @@ class MorsePlaybackSettings extends ChangeNotifier {
 
   /// Play each message received while its conversation is on screen.
   bool get autoPlay => _autoPlay;
+
+  /// Listen-only training (functional spec §6.1): received messages hide
+  /// both the plain text and the dots/dashes until revealed. Independent of
+  /// [trainingMode].
+  bool get listenOnly => _listenOnly;
+
+  set listenOnly(bool value) {
+    if (value == _listenOnly) return;
+    _listenOnly = value;
+    notifyListeners();
+  }
 
   MorseTiming get timing => MorseTiming(
     wpm: _wpm,

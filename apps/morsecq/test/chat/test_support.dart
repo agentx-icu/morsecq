@@ -83,7 +83,8 @@ final class StubIdentityService implements IdentityService {
   }) => throw UnimplementedError();
 
   @override
-  Future<Uint8List> exportBackup() => throw UnimplementedError();
+  Future<Uint8List> exportBackup({bool includeMedia = false}) =>
+      throw UnimplementedError();
 
   @override
   Future<Identity> importBackup(Uint8List bytes, {String? password}) =>
@@ -178,10 +179,12 @@ Future<ChatHarness> pumpChat(
 /// Puts [text] in the composer's draft. The field is read-only (chat is
 /// keyed, not typed), so tests fill it the way decoded keying does.
 Future<void> keyIn(WidgetTester tester, String text) async {
-  tester.widget<TextField>(find.byType(TextField)).controller!.value =
-      TextEditingValue(
-        text: text,
-        selection: TextSelection.collapsed(offset: text.length),
-      );
+  tester
+      .widget<TextField>(find.byType(TextField))
+      .controller!
+      .value = TextEditingValue(
+    text: text,
+    selection: TextSelection.collapsed(offset: text.length),
+  );
   await tester.pump();
 }

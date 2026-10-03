@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
+import '../../training/qso_practice.dart';
+import '../../training/training_controller_host.dart';
+import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_settings_store.dart';
 import 'learn_playback.dart';
@@ -49,14 +53,37 @@ class LearnScope extends StatefulWidget {
   /// Default factory: file stores under `<dataDirectory>/training/`.
   static Future<TrainingController> controllerForIdentity(
     IdentityService identity,
-  ) async {
-    final dir = await identity.dataDirectory();
+  ) async => controllerForDirectory(
+    await identity.dataDirectory(),
+    profileKey: _profileKeyOf(identity),
+  );
+
+  /// File stores under `<dir>/training/` for any learning profile (an
+  /// identity's data directory, or the guest's).
+  static Future<TrainingController> controllerForDirectory(
+    String dir, {
+    required String profileKey,
+  }) async {
     final controller = TrainingController(
       progressStore: FileTrainerStore.inDataDirectory(dir),
       settingsStore: FileTrainingSettingsStore.inDataDirectory(dir),
+      profileKey: profileKey,
+      docs: FileTrainingDocStore.inDataDirectory(dir),
     );
     await controller.load();
+    // A finished QSO whose save failed last time is committed now.
+    await controller.recoverFinishedQso();
     return controller;
+  }
+
+  /// The identity's public key; '' when the service cannot tell (minimal
+  /// test stubs only implement `dataDirectory`).
+  static String _profileKeyOf(IdentityService identity) {
+    try {
+      return identity.current?.publicKey ?? '';
+    } on Object {
+      return '';
+    }
   }
 
   @override
@@ -89,6 +116,7 @@ class _LearnScopeState extends State<LearnScope> {
     try {
       final identity = _identityService();
       if (identity != null) _watchIdentity(identity);
+      _watchReloads();
       if (factory != null) {
         controller = await factory(context);
       } else {
@@ -119,6 +147,24 @@ class _LearnScopeState extends State<LearnScope> {
     if (previousOwned && !identical(previous, controller)) previous?.dispose();
   }
 
+  ValueListenable<int>? _reloads;
+
+  /// The shared host announces when files under its controller were
+  /// replaced (guest migration, cleared guest data): load again.
+  void _watchReloads() {
+    if (_reloads != null) return;
+    try {
+      _reloads = context.read<TrainingControllerHost?>()?.reloads;
+    } on ProviderNotFoundException {
+      _reloads = null;
+    }
+    _reloads?.addListener(_onReload);
+  }
+
+  void _onReload() {
+    if (mounted) unawaited(_load());
+  }
+
   IdentityService? _identityService() {
     try {
       return context.read<IdentityService>();
@@ -140,6 +186,7 @@ class _LearnScopeState extends State<LearnScope> {
 
   @override
   void dispose() {
+    _reloads?.removeListener(_onReload);
     unawaited(_identitySub?.cancel());
     if (_ownsController) _controller?.dispose();
     super.dispose();

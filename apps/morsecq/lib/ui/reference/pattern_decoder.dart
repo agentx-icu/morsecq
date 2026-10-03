@@ -4,7 +4,11 @@ import 'morse_pattern_text.dart';
 
 /// One decoded token of a typed Morse pattern.
 final class DecodedToken {
-  const DecodedToken({required this.pattern, required this.text, required this.known});
+  const DecodedToken({
+    required this.pattern,
+    required this.text,
+    required this.known,
+  });
 
   /// Normalised `.`/`-` pattern as typed.
   final String pattern;
@@ -87,6 +91,7 @@ abstract final class PatternDecoder {
   }
 
   /// True when at least one token of [input] did not decode.
-  static bool hasUnknown(String input) => decodeWords(input)
-      .any((List<DecodedToken> w) => w.any((DecodedToken t) => !t.known));
+  static bool hasUnknown(String input) => decodeWords(
+    input,
+  ).any((List<DecodedToken> w) => w.any((DecodedToken t) => !t.known));
 }

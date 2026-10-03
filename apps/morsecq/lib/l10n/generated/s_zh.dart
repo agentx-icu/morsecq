@@ -2342,6 +2342,1066 @@ class SZh extends S {
 
   @override
   String get chatScanQrCameraUnavailable => '此设备的相机不可用。';
+
+  @override
+  String get learnReplayAssistedNote => '已重播：本次练习计入练习量，但不会解锁课程或更新复习。';
+
+  @override
+  String get learnPlanTitle => '今日计划';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '约 $minutes 分钟 · 已完成 $done/$total 步';
+  }
+
+  @override
+  String get learnPlanBudget => '计划时长';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes 分钟';
+  }
+
+  @override
+  String get learnPlanStart => '开始计划';
+
+  @override
+  String get learnPlanContinue => '继续计划';
+
+  @override
+  String get learnPlanStepReview => '复习到期字符';
+
+  @override
+  String get learnPlanStepFocus => '重点练习';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '第 $lesson 课';
+  }
+
+  @override
+  String get learnPlanStepSend => '发报练习';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '到期复习：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '经常混淆：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正确率低于 90%：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count 个字符：可以解锁下一课';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '已延长到 $count 个字符，以便能解锁下一课';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短练习：巩固本课，不会解锁下一课';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '课程已前进：练习第 $lesson 课，但不会解锁';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '发送 $count 个短目标';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完成 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完成';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '已发送 $done/$total';
+  }
+
+  @override
+  String get learnPlanStale => '课程或速度已更改。要更新尚未开始的步骤吗？';
+
+  @override
+  String get learnPlanUpdate => '更新步骤';
+
+  @override
+  String get learnPlanComplete => '今日计划已完成';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '需要加强：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今天没有薄弱字符。';
+
+  @override
+  String get learnPlanTomorrow => '明天会生成新计划。自由练习随时可用。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '下一步：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '之前的计划停在第 $done/$total 步，不再计入今天。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '可以把有效速度提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '可以提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '当前速度抄收较吃力。可以试试 $wpm WPM 有效速度，或做重点练习。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '依据你最近 $count 次无辅助练习（$percent%）。点“应用”前不会改变任何设置。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '应用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '暂不';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度建议需要在当前速度下完成 3 次、每次 50 个字符以上的无辅助练习。';
+
+  @override
+  String get learnQsoAction => 'QSO 模拟';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '第 $lesson 课起开放';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 模拟';
+
+  @override
+  String get learnQsoRespond => '回应 CQ';
+
+  @override
+  String get learnQsoRespondHint => '一个电台在呼叫 CQ。回应它并交换信号报告。';
+
+  @override
+  String get learnQsoCall => '呼叫 CQ';
+
+  @override
+  String get learnQsoCallHint => '你呼叫 CQ，会有电台回应。';
+
+  @override
+  String get learnQsoYourCall => '你的呼号';
+
+  @override
+  String get learnQsoYourName => '你的名字';
+
+  @override
+  String get learnQsoYourQth => '你的 QTH';
+
+  @override
+  String get learnQsoInvalidCall => '请输入呼号，例如 BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => '一个单词，仅限字母 A–Z';
+
+  @override
+  String get learnQsoOffline => '完全在本机运行，不会向任何人发送内容。';
+
+  @override
+  String get learnQsoStart => '开始 QSO';
+
+  @override
+  String get learnQsoResume => '继续未完成的 QSO';
+
+  @override
+  String get learnQsoStageCallCq => '用你的呼号呼叫 CQ';
+
+  @override
+  String get learnQsoStageCallConfirm => '回应：对方呼号、DE、你的呼号';
+
+  @override
+  String get learnQsoStageExchange => '发送信号报告、名字和 QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => '确认对方的信息';
+
+  @override
+  String get learnQsoStageClosing => '以 73 和 <SK> 结束';
+
+  @override
+  String get learnQsoStageDone => 'QSO 完成';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '对方以 $wpm WPM 有效速度发送';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 发送';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '请凭听觉抄收——文本已隐藏。';
+
+  @override
+  String get learnQsoShowText => '显示文本';
+
+  @override
+  String get learnQsoListen => '收听';
+
+  @override
+  String get learnQsoAccepted => '已接受';
+
+  @override
+  String get learnQsoRejected => '未通过';
+
+  @override
+  String get learnQsoRemoteSending => '对方正在发送……';
+
+  @override
+  String get learnQsoYourTurn => '轮到你了：拍发回复，然后点“发送”。';
+
+  @override
+  String get learnQsoDecoded => '你的发送内容';
+
+  @override
+  String get learnQsoNothingKeyed => '尚未拍发';
+
+  @override
+  String get learnQsoPlayAgain => '请求重复（AGN）';
+
+  @override
+  String get learnQsoSlower => '请求放慢（QRS）';
+
+  @override
+  String get learnQsoHint => '提示';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '示例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '暂停';
+
+  @override
+  String get learnQsoSend => '发送';
+
+  @override
+  String get learnQsoClear => '清除';
+
+  @override
+  String get learnQsoIssueEmpty => '没有拍发任何内容。';
+
+  @override
+  String get learnQsoIssueMissingCq => '以 CQ 开头。';
+
+  @override
+  String get learnQsoIssueMissingDe => '在两个呼号之间加 DE。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '你的呼号缺失或错误。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '对方的呼号错误。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '呼号顺序反了：先对方，再 DE，再你的。';
+
+  @override
+  String get learnQsoIssueMissingEnding => '以 K 或 KN 结尾。';
+
+  @override
+  String get learnQsoIssueMissingRst => '给出信号报告，例如 UR RST 599。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 超出范围（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => '发送 NAME 和你的名字。';
+
+  @override
+  String get learnQsoIssueWrongName => '这不是你在本次 QSO 中的名字。';
+
+  @override
+  String get learnQsoIssueMissingQth => '发送 QTH 和你的位置。';
+
+  @override
+  String get learnQsoIssueWrongQth => '这不是你在本次 QSO 中的 QTH。';
+
+  @override
+  String get learnQsoIssueMissingAck => '用 R 或 QSL 表示确认。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '确认对方操作员的名字。';
+
+  @override
+  String get learnQsoIssueMissing73 => '加上 73。';
+
+  @override
+  String get learnQsoIssueMissingSk => '以 <SK> 结束联络。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一次通过：$total 步中 $count 步';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '重复次数：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '提示次数：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '你的发报：约 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 成绩与抄收正确率分开统计，不会解锁课程。';
+
+  @override
+  String get messageStatusCancelled => '已取消——未发送';
+
+  @override
+  String get chatMessageLearnActions => '消息操作';
+
+  @override
+  String get chatPracticeMessage => '练习抄收这条消息';
+
+  @override
+  String get chatSaveAsMaterial => '保存为训练素材';
+
+  @override
+  String get chatSavedAsMaterial => '已保存到“我的素材”';
+
+  @override
+  String get chatSaveMaterialFailed => '保存素材失败，请重试。';
+
+  @override
+  String get chatListenOnly => '纯听训练';
+
+  @override
+  String get chatListenOnlyHidden => '纯听模式：点播放收听';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '此会话中有 $count 条消息已保存为训练素材。这些副本会保留，直到你在“学习 › 我的素材”中删除。';
+  }
+
+  @override
+  String get chatPracticeTitle => '抄收练习';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '这条消息包含无法用莫尔斯码拍发的字符：$chars。练习时会略过它们。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '可练习 $count 个字符。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '这条消息中没有可用莫尔斯码练习的内容。';
+
+  @override
+  String get chatPracticeConfirm => '练习其余部分';
+
+  @override
+  String get chatPracticeHint => '提示';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '提示：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '已使用辅助：计入练习量，但不用于复习或速度建议。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong 个错误 · $missed 个遗漏 · $extra 个多余';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '练习出错字符：$symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => '划太长';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '你的划太长（约为一个点的 $ratio；目标是 3 倍）。满三个点长就松开。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$total 个划中有 $offending 个太长（平均 $ratio 点长）';
+  }
+
+  @override
+  String get learnRhythmTitle => '节奏';
+
+  @override
+  String get learnRhythmMine => '我的节奏';
+
+  @override
+  String get learnRhythmStandard => '标准节奏（目标速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '问题按你自己的点长（$ms 毫秒）判断，节奏均匀但偏慢没有问题。标准行按目标速度绘制。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '无法把你的拍发逐个对应到字符，因此问题未定位到具体字母。请改为练习整个目标。';
+
+  @override
+  String get learnRhythmPlayMine => '播放我的';
+
+  @override
+  String get learnRhythmPlayStandard => '播放标准';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '练习这个（$count 次）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '练习整个目标';
+
+  @override
+  String get learnRhythmSymbolOk => '很好';
+
+  @override
+  String get learnRhythmZoomIn => '放大';
+
+  @override
+  String get learnRhythmZoomOut => '缩小';
+
+  @override
+  String get chatSearchMessages => '搜索消息';
+
+  @override
+  String get chatSearchHint => '在此会话中搜索';
+
+  @override
+  String get chatSearchAnyone => '所有人';
+
+  @override
+  String get chatSearchMe => '我';
+
+  @override
+  String get chatSearchThem => '对方';
+
+  @override
+  String get chatSearchAnyDate => '任何日期';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '已收藏';
+
+  @override
+  String get chatSearchNoResults => '没有匹配的消息。';
+
+  @override
+  String get chatSearchMore => '加载更多';
+
+  @override
+  String get chatAddBookmark => '收藏';
+
+  @override
+  String get chatRemoveBookmark => '取消收藏';
+
+  @override
+  String get chatBookmarked => '已收藏';
+
+  @override
+  String get chatBookmarkFailed => '无法保存收藏。';
+
+  @override
+  String get chatRetrySend => '重新发送';
+
+  @override
+  String get chatCancelSend => '取消发送';
+
+  @override
+  String get chatRetryQueued => '已重新排队，联系人上线后发送。';
+
+  @override
+  String get chatSendCancelled => '已取消，消息未发送。';
+
+  @override
+  String get chatRetryNotNeeded => '这条消息已不再是失败状态，无需重试。';
+
+  @override
+  String get chatCancelTooLate => '无法取消：消息已交给网络，可能会送达。';
+
+  @override
+  String get chatSendControlUnavailable => '此消息不支持该操作。';
+
+  @override
+  String get chatSendControlFailed => '操作未完成，消息保持原状态，请重试。';
+
+  @override
+  String get workbenchTitle => '录音工作台';
+
+  @override
+  String get workbenchOpen => '录音';
+
+  @override
+  String get workbenchImport => '导入录音';
+
+  @override
+  String get workbenchEmpty => '导入 WAV 录音，即可循环播放、解码并自己抄收。无需麦克风。';
+
+  @override
+  String get workbenchFormats => 'WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。';
+
+  @override
+  String get workbenchBackupNote => '录音保存在本设备上，除非导出备份时选择包含，否则不会进入身份备份。已保存选段的标题、备注和位置始终会备份。';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '单声道';
+
+  @override
+  String get workbenchStereo => '立体声';
+
+  @override
+  String get workbenchTruncated => '文件提前结束，只使用已有的音频。';
+
+  @override
+  String get workbenchErrorNotWav => '这不是 WAV 文件。';
+
+  @override
+  String get workbenchErrorFormat => '目前只支持 16 位 PCM WAV（不支持 MP3、AAC 或浮点 WAV）。';
+
+  @override
+  String get workbenchErrorChannels => '只支持单声道或立体声录音。';
+
+  @override
+  String get workbenchErrorRate => '不支持该采样率。请使用 8、16、44.1 或 48 kHz。';
+
+  @override
+  String get workbenchErrorDamaged => '文件已损坏或不完整。';
+
+  @override
+  String get workbenchErrorTooLarge => '文件超过 50 MB。';
+
+  @override
+  String get workbenchErrorTooLong => '录音超过 20 分钟。';
+
+  @override
+  String get workbenchErrorIo => '无法读取该文件。';
+
+  @override
+  String get workbenchErrorMissing => '录音文件不见了。';
+
+  @override
+  String get workbenchStart => '开始（秒）';
+
+  @override
+  String get workbenchEnd => '结束（秒）';
+
+  @override
+  String get workbenchSelectAll => '全选';
+
+  @override
+  String get workbenchPlay => '播放所选片段';
+
+  @override
+  String get workbenchStop => '停止';
+
+  @override
+  String get workbenchLoop => '循环';
+
+  @override
+  String get workbenchPlayLimit => '较长的片段只播放前 5 分钟。';
+
+  @override
+  String get workbenchAutoTune => '自动寻找音调';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '音调：$hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '解码所选片段';
+
+  @override
+  String get workbenchCancel => '取消';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '正在解码……$percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '音调 $hz Hz · 约 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '没有找到稳定的音调，请尝试手动调谐。';
+
+  @override
+  String get workbenchNoText => '该片段没有解出内容。';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '无法识别的码型：$patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '片段边缘的字符被截断，可能不准确。';
+
+  @override
+  String get workbenchToneNote => '锁定音调不代表结果可信，请用耳朵核对文本。';
+
+  @override
+  String get workbenchModeDecoder => '解码器';
+
+  @override
+  String get workbenchModeCopy => '我自己抄收';
+
+  @override
+  String get workbenchDecoderHidden => '抄收时解码文本会隐藏。';
+
+  @override
+  String get workbenchShowDecoder => '显示解码文本';
+
+  @override
+  String get workbenchReference => '参考答案（可选）';
+
+  @override
+  String get workbenchReferenceHelp => '粘贴实际发送的文本；否则会与解码结果比较。';
+
+  @override
+  String get workbenchAgainstDecoder => '已与解码结果比较，而解码结果本身也可能有误。';
+
+  @override
+  String get workbenchSave => '保存片段';
+
+  @override
+  String get workbenchSaveTitle => '标题';
+
+  @override
+  String get workbenchSaveNote => '备注';
+
+  @override
+  String get workbenchSaved => '片段已保存';
+
+  @override
+  String get workbenchSaveFailed => '无法保存片段。';
+
+  @override
+  String get workbenchLibrary => '已保存的片段';
+
+  @override
+  String get workbenchLibraryEmpty => '还没有保存的片段。';
+
+  @override
+  String get workbenchMissing => '录音文件不见了——请重新选择文件或删除此项。';
+
+  @override
+  String get workbenchRelink => '重新选择文件';
+
+  @override
+  String get workbenchDelete => '删除';
+
+  @override
+  String get materialsTitle => '我的素材';
+
+  @override
+  String get materialsNew => '新建素材';
+
+  @override
+  String get materialsEdit => '编辑';
+
+  @override
+  String get materialsSave => '保存';
+
+  @override
+  String get materialsSaveFailed => '无法保存素材。';
+
+  @override
+  String get materialsTitleField => '标题';
+
+  @override
+  String get materialsTagsField => '标签（用逗号分隔）';
+
+  @override
+  String get materialsTextField => '文本';
+
+  @override
+  String get materialsListField => '每行一项';
+
+  @override
+  String get materialsKindText => '文本';
+
+  @override
+  String get materialsKindWords => '单词表';
+
+  @override
+  String get materialsKindCallsigns => '呼号';
+
+  @override
+  String get materialsPreview => '预览';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items 项 · $symbols 个字符 · $prosigns 个程序信号';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '无莫尔斯码，练习时略过：$chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count 个重复项只保留一次';
+  }
+
+  @override
+  String get materialsProblemEmpty => '请先输入文本。';
+
+  @override
+  String get materialsProblemTooLarge => '过大：素材上限为 1 MiB。';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '条目过多：最多 $count 条。';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '某个条目过长：每条最多 $count 个字符。';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '这里没有可以用莫尔斯码练习的内容。';
+
+  @override
+  String get materialsSearch => '搜索素材';
+
+  @override
+  String get materialsFavoritesOnly => '收藏';
+
+  @override
+  String get materialsFavorite => '加入收藏';
+
+  @override
+  String get materialsUnfavorite => '取消收藏';
+
+  @override
+  String get materialsEmpty => '还没有素材。添加你自己的文本、单词表或呼号，或保存一条聊天消息。';
+
+  @override
+  String materialsItems(int count) {
+    return '$count 项';
+  }
+
+  @override
+  String get materialsFromChat => '来自聊天';
+
+  @override
+  String get materialsActions => '素材操作';
+
+  @override
+  String get materialsPractise => '练习';
+
+  @override
+  String get materialsDelete => '删除';
+
+  @override
+  String get materialsDeleteTitle => '删除素材？';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '“$title”将从本设备删除，练习记录会保留。';
+  }
+
+  @override
+  String get materialsImport => '导入 TXT 或 JSON';
+
+  @override
+  String get materialsImportDialogTitle => '选择素材文件';
+
+  @override
+  String get materialsSaveDialogTitle => '保存素材';
+
+  @override
+  String get materialsImportFailed => '导入失败，素材库未改变。';
+
+  @override
+  String get materialsImportNotUtf8 => '只能导入 UTF-8 文本文件。';
+
+  @override
+  String get materialsImportInvalid => '不是有效的 MorseCQ 素材文件，未导入任何内容。';
+
+  @override
+  String materialsImported(int count) {
+    return '已导入 $count 个素材。';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '部分素材已存在';
+
+  @override
+  String get materialsDuplicateOverwrite => '替换';
+
+  @override
+  String get materialsDuplicateKeepCopy => '两者都保留（作为副本导入）';
+
+  @override
+  String get materialsDuplicateSkip => '跳过';
+
+  @override
+  String get materialsExportJson => '导出为 JSON';
+
+  @override
+  String materialsExported(int count) {
+    return '已导出 $count 个素材。';
+  }
+
+  @override
+  String get materialsExportFailed => '导出失败。';
+
+  @override
+  String get materialsExportWav => '导出音频（WAV）';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '字符速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '有效速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '音调：$hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '附带答案文本（.txt）';
+
+  @override
+  String get materialsWavFormat => '16 位单声道 WAV，48 kHz。';
+
+  @override
+  String materialsWavParts(int count) {
+    return '超过 10 分钟：将导出为 $count 个文件。';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '已保存 $count 个音频文件。';
+  }
+
+  @override
+  String get materialsPracticeMode => '练习范围';
+
+  @override
+  String get materialsPracticeLearned => '仅已学字符';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '仅已学字符（$count 项不可用：含尚未学习的字符）';
+  }
+
+  @override
+  String get materialsPracticeAll => '所有莫尔斯字符';
+
+  @override
+  String get materialsPracticeNothing => '此模式下没有可练习的条目。';
+
+  @override
+  String get guestTryLearning => '先试试学习';
+
+  @override
+  String get guestBanner => '访客学习：进度保存在本设备。聊天需要身份。';
+
+  @override
+  String get guestGetIdentity => '设置身份';
+
+  @override
+  String get guestIdentityTitle => '需要身份';
+
+  @override
+  String get guestIdentityBody => '通过 Tox 聊天需要你自己的身份。可以新建、从备份恢复，或解锁本设备上的身份。新建身份时，访客学习进度会自动转移过去。';
+
+  @override
+  String get guestClearData => '清除访客学习数据';
+
+  @override
+  String get guestClearDataBody => '删除你在本设备以访客身份产生的进度、计划和素材。不影响任何身份。';
+
+  @override
+  String get guestClearConfirm => '清除';
+
+  @override
+  String get guestCleared => '已清除访客学习数据。';
+
+  @override
+  String get guestClearFailed => '无法清除访客数据。';
+
+  @override
+  String get guestMigrationFailed => '身份已就绪，但访客学习进度尚未转移，数据仍安全保存在本设备。';
+
+  @override
+  String get guestChoiceBody => '你还有访客学习进度。当前使用的是恢复身份的进度，没有合并任何内容。';
+
+  @override
+  String get guestChoiceKeep => '保留恢复的进度';
+
+  @override
+  String get guestChoiceUseGuest => '改用访客进度';
+
+  @override
+  String get placementTitle => '测试我的水平';
+
+  @override
+  String get placementCheckLevel => '测试我现在的水平';
+
+  @override
+  String get placementFromZero => '从零开始';
+
+  @override
+  String get placementOfferTitle => '刚接触莫尔斯码，还是已经会抄收？';
+
+  @override
+  String get placementOfferBody => '简短测试可以建议起点。测试是可选的，在你选择前不会改变任何设置。';
+
+  @override
+  String get placementIntro => '约 3–5 分钟，分五步抄收：先按柯赫顺序分组、速度逐级提高，最后是短单词。这只是基于少量样本的粗略参考，不是认证。随时可以停止。';
+
+  @override
+  String get placementStart => '开始';
+
+  @override
+  String get placementSkip => '跳过';
+
+  @override
+  String get placementStop => '停止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '第 $step/$total 步 · 有效速度 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '抄得很好，下一步更快。';
+
+  @override
+  String get placementTierStopped => '这一步低于 90%，测试到此结束。';
+
+  @override
+  String get placementNextTier => '下一步';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '建议从第 $lesson 课开始';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '按顺序确认了 $total 个柯赫字符中的 $count 个。';
+  }
+
+  @override
+  String get placementLimits => '基于少量样本：未测到的字符仍视为未测试，也不会被标记为已掌握。你可以随时更改课程。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '从第 $lesson 课开始';
+  }
+
+  @override
+  String get chatJumpToLatest => '最新消息';
+
+  @override
+  String get chatMessageGone => '该消息已不在此会话中。';
+
+  @override
+  String get chatListenOnlyPreview => '新消息——请收听抄收';
+
+  @override
+  String get chatSaveMaterialConfirm => '保存其余部分';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '导入 $count 个素材？';
+  }
+
+  @override
+  String get materialsExportTxt => '导出为文本（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '包含已保存的录音吗？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '已保存 $count 段录音（$size MB）。标题、备注和位置始终在备份中；音频仅在你选择包含时才会加入。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '已保存的录音（$size MB）太大，无法放入备份；只会包含标题、备注和位置。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '包含录音';
+
+  @override
+  String get accountBackupMediaSkip => '不含录音';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4682,4 +5742,1064 @@ class SZhHant extends SZh {
 
   @override
   String get chatScanQrCameraUnavailable => '此裝置的相機無法使用。';
+
+  @override
+  String get learnReplayAssistedNote => '已重播：本次練習計入練習量，但不會解鎖課程或更新複習。';
+
+  @override
+  String get learnPlanTitle => '今日計畫';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '約 $minutes 分鐘 · 已完成 $done/$total 步';
+  }
+
+  @override
+  String get learnPlanBudget => '計畫時長';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes 分鐘';
+  }
+
+  @override
+  String get learnPlanStart => '開始計畫';
+
+  @override
+  String get learnPlanContinue => '繼續計畫';
+
+  @override
+  String get learnPlanStepReview => '複習到期字元';
+
+  @override
+  String get learnPlanStepFocus => '重點練習';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '第 $lesson 課';
+  }
+
+  @override
+  String get learnPlanStepSend => '發報練習';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '到期複習：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '經常混淆：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正確率低於 90%：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count 個字元：可以解鎖下一課';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '已延長到 $count 個字元，以便能解鎖下一課';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短練習：鞏固本課，不會解鎖下一課';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '課程已前進：練習第 $lesson 課，但不會解鎖';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '發送 $count 個短目標';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完成 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完成';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '已發送 $done/$total';
+  }
+
+  @override
+  String get learnPlanStale => '課程或速度已變更。要更新尚未開始的步驟嗎？';
+
+  @override
+  String get learnPlanUpdate => '更新步驟';
+
+  @override
+  String get learnPlanComplete => '今日計畫已完成';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '需要加強：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今天沒有薄弱字元。';
+
+  @override
+  String get learnPlanTomorrow => '明天會產生新計畫。自由練習隨時可用。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '下一步：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '之前的計畫停在第 $done/$total 步，不再計入今天。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '可以把有效速度提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '可以提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '目前速度抄收較吃力。可以試試 $wpm WPM 有效速度，或做重點練習。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '依據你最近 $count 次無輔助練習（$percent%）。按「套用」前不會變更任何設定。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '套用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '暫不';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度建議需要在目前速度下完成 3 次、每次 50 個字元以上的無輔助練習。';
+
+  @override
+  String get learnQsoAction => 'QSO 模擬';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '第 $lesson 課起開放';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 模擬';
+
+  @override
+  String get learnQsoRespond => '回應 CQ';
+
+  @override
+  String get learnQsoRespondHint => '一個電台在呼叫 CQ。回應它並交換信號報告。';
+
+  @override
+  String get learnQsoCall => '呼叫 CQ';
+
+  @override
+  String get learnQsoCallHint => '你呼叫 CQ，會有電台回應。';
+
+  @override
+  String get learnQsoYourCall => '你的呼號';
+
+  @override
+  String get learnQsoYourName => '你的名字';
+
+  @override
+  String get learnQsoYourQth => '你的 QTH';
+
+  @override
+  String get learnQsoInvalidCall => '請輸入呼號，例如 BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => '一個單字，僅限字母 A–Z';
+
+  @override
+  String get learnQsoOffline => '完全在本機執行，不會向任何人傳送內容。';
+
+  @override
+  String get learnQsoStart => '開始 QSO';
+
+  @override
+  String get learnQsoResume => '繼續未完成的 QSO';
+
+  @override
+  String get learnQsoStageCallCq => '用你的呼號呼叫 CQ';
+
+  @override
+  String get learnQsoStageCallConfirm => '回應：對方呼號、DE、你的呼號';
+
+  @override
+  String get learnQsoStageExchange => '發送信號報告、名字和 QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => '確認對方的資訊';
+
+  @override
+  String get learnQsoStageClosing => '以 73 和 <SK> 結束';
+
+  @override
+  String get learnQsoStageDone => 'QSO 完成';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '對方以 $wpm WPM 有效速度發送';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 發送';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '請憑聽覺抄收——文字已隱藏。';
+
+  @override
+  String get learnQsoShowText => '顯示文字';
+
+  @override
+  String get learnQsoListen => '收聽';
+
+  @override
+  String get learnQsoAccepted => '已接受';
+
+  @override
+  String get learnQsoRejected => '未通過';
+
+  @override
+  String get learnQsoRemoteSending => '對方正在發送……';
+
+  @override
+  String get learnQsoYourTurn => '輪到你了：拍發回覆，然後按「發送」。';
+
+  @override
+  String get learnQsoDecoded => '你的發送內容';
+
+  @override
+  String get learnQsoNothingKeyed => '尚未拍發';
+
+  @override
+  String get learnQsoPlayAgain => '請求重複（AGN）';
+
+  @override
+  String get learnQsoSlower => '請求放慢（QRS）';
+
+  @override
+  String get learnQsoHint => '提示';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '範例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '暫停';
+
+  @override
+  String get learnQsoSend => '發送';
+
+  @override
+  String get learnQsoClear => '清除';
+
+  @override
+  String get learnQsoIssueEmpty => '沒有拍發任何內容。';
+
+  @override
+  String get learnQsoIssueMissingCq => '以 CQ 開頭。';
+
+  @override
+  String get learnQsoIssueMissingDe => '在兩個呼號之間加 DE。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '你的呼號缺失或錯誤。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '對方的呼號錯誤。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '呼號順序反了：先對方，再 DE，再你的。';
+
+  @override
+  String get learnQsoIssueMissingEnding => '以 K 或 KN 結尾。';
+
+  @override
+  String get learnQsoIssueMissingRst => '給出信號報告，例如 UR RST 599。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 超出範圍（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => '發送 NAME 和你的名字。';
+
+  @override
+  String get learnQsoIssueWrongName => '這不是你在本次 QSO 中的名字。';
+
+  @override
+  String get learnQsoIssueMissingQth => '發送 QTH 和你的位置。';
+
+  @override
+  String get learnQsoIssueWrongQth => '這不是你在本次 QSO 中的 QTH。';
+
+  @override
+  String get learnQsoIssueMissingAck => '用 R 或 QSL 表示確認。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '確認對方操作員的名字。';
+
+  @override
+  String get learnQsoIssueMissing73 => '加上 73。';
+
+  @override
+  String get learnQsoIssueMissingSk => '以 <SK> 結束聯絡。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一次通過：$total 步中 $count 步';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '重複次數：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '提示次數：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '你的發報：約 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 成績與抄收正確率分開統計，不會解鎖課程。';
+
+  @override
+  String get messageStatusCancelled => '已取消——未發送';
+
+  @override
+  String get chatMessageLearnActions => '訊息操作';
+
+  @override
+  String get chatPracticeMessage => '練習抄收這則訊息';
+
+  @override
+  String get chatSaveAsMaterial => '儲存為訓練素材';
+
+  @override
+  String get chatSavedAsMaterial => '已儲存到「我的素材」';
+
+  @override
+  String get chatSaveMaterialFailed => '儲存素材失敗，請重試。';
+
+  @override
+  String get chatListenOnly => '純聽訓練';
+
+  @override
+  String get chatListenOnlyHidden => '純聽模式：點播放收聽';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '此對話中有 $count 則訊息已儲存為訓練素材。這些副本會保留，直到你在「學習 › 我的素材」中刪除。';
+  }
+
+  @override
+  String get chatPracticeTitle => '抄收練習';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '這則訊息包含無法用摩斯碼拍發的字元：$chars。練習時會略過它們。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '可練習 $count 個字元。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '這則訊息中沒有可用摩斯碼練習的內容。';
+
+  @override
+  String get chatPracticeConfirm => '練習其餘部分';
+
+  @override
+  String get chatPracticeHint => '提示';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '提示：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '已使用輔助：計入練習量，但不用於複習或速度建議。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong 個錯誤 · $missed 個遺漏 · $extra 個多餘';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '練習出錯字元：$symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => '劃太長';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '你的劃太長（約為一個點的 $ratio；目標是 3 倍）。滿三個點長就鬆開。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$total 個劃中有 $offending 個太長（平均 $ratio 點長）';
+  }
+
+  @override
+  String get learnRhythmTitle => '節奏';
+
+  @override
+  String get learnRhythmMine => '我的節奏';
+
+  @override
+  String get learnRhythmStandard => '標準節奏（目標速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '問題依你自己的點長（$ms 毫秒）判斷，節奏均勻但偏慢沒有問題。標準列依目標速度繪製。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '無法把你的拍發逐個對應到字元，因此問題未定位到具體字母。請改為練習整個目標。';
+
+  @override
+  String get learnRhythmPlayMine => '播放我的';
+
+  @override
+  String get learnRhythmPlayStandard => '播放標準';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '練習這個（$count 次）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '練習整個目標';
+
+  @override
+  String get learnRhythmSymbolOk => '很好';
+
+  @override
+  String get learnRhythmZoomIn => '放大';
+
+  @override
+  String get learnRhythmZoomOut => '縮小';
+
+  @override
+  String get chatSearchMessages => '搜尋訊息';
+
+  @override
+  String get chatSearchHint => '在此對話中搜尋';
+
+  @override
+  String get chatSearchAnyone => '所有人';
+
+  @override
+  String get chatSearchMe => '我';
+
+  @override
+  String get chatSearchThem => '對方';
+
+  @override
+  String get chatSearchAnyDate => '任何日期';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '已收藏';
+
+  @override
+  String get chatSearchNoResults => '沒有符合的訊息。';
+
+  @override
+  String get chatSearchMore => '載入更多';
+
+  @override
+  String get chatAddBookmark => '收藏';
+
+  @override
+  String get chatRemoveBookmark => '取消收藏';
+
+  @override
+  String get chatBookmarked => '已收藏';
+
+  @override
+  String get chatBookmarkFailed => '無法儲存收藏。';
+
+  @override
+  String get chatRetrySend => '重新傳送';
+
+  @override
+  String get chatCancelSend => '取消傳送';
+
+  @override
+  String get chatRetryQueued => '已重新排入佇列，聯絡人上線後傳送。';
+
+  @override
+  String get chatSendCancelled => '已取消，訊息未傳送。';
+
+  @override
+  String get chatRetryNotNeeded => '這則訊息已不是失敗狀態，無需重試。';
+
+  @override
+  String get chatCancelTooLate => '無法取消：訊息已交給網路，可能會送達。';
+
+  @override
+  String get chatSendControlUnavailable => '此訊息不支援此操作。';
+
+  @override
+  String get chatSendControlFailed => '操作未完成，訊息保持原狀態，請重試。';
+
+  @override
+  String get workbenchTitle => '錄音工作台';
+
+  @override
+  String get workbenchOpen => '錄音';
+
+  @override
+  String get workbenchImport => '匯入錄音';
+
+  @override
+  String get workbenchEmpty => '匯入 WAV 錄音，即可循環播放、解碼並自己抄收。不需要麥克風。';
+
+  @override
+  String get workbenchFormats => 'WAV，16 位元 PCM，單聲道或立體聲，8/16/44.1/48 kHz；最大 50 MB、20 分鐘。';
+
+  @override
+  String get workbenchBackupNote => '錄音儲存在本裝置上，除非匯出備份時選擇包含，否則不會進入身分備份。已儲存選段的標題、備註和位置一律會備份。';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '單聲道';
+
+  @override
+  String get workbenchStereo => '立體聲';
+
+  @override
+  String get workbenchTruncated => '檔案提前結束，只使用已有的音訊。';
+
+  @override
+  String get workbenchErrorNotWav => '這不是 WAV 檔案。';
+
+  @override
+  String get workbenchErrorFormat => '目前只支援 16 位元 PCM WAV（不支援 MP3、AAC 或浮點 WAV）。';
+
+  @override
+  String get workbenchErrorChannels => '只支援單聲道或立體聲錄音。';
+
+  @override
+  String get workbenchErrorRate => '不支援該取樣率。請使用 8、16、44.1 或 48 kHz。';
+
+  @override
+  String get workbenchErrorDamaged => '檔案已損毀或不完整。';
+
+  @override
+  String get workbenchErrorTooLarge => '檔案超過 50 MB。';
+
+  @override
+  String get workbenchErrorTooLong => '錄音超過 20 分鐘。';
+
+  @override
+  String get workbenchErrorIo => '無法讀取該檔案。';
+
+  @override
+  String get workbenchErrorMissing => '錄音檔案不見了。';
+
+  @override
+  String get workbenchStart => '開始（秒）';
+
+  @override
+  String get workbenchEnd => '結束（秒）';
+
+  @override
+  String get workbenchSelectAll => '全選';
+
+  @override
+  String get workbenchPlay => '播放所選片段';
+
+  @override
+  String get workbenchStop => '停止';
+
+  @override
+  String get workbenchLoop => '循環';
+
+  @override
+  String get workbenchPlayLimit => '較長的片段只播放前 5 分鐘。';
+
+  @override
+  String get workbenchAutoTune => '自動尋找音調';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '音調：$hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '解碼所選片段';
+
+  @override
+  String get workbenchCancel => '取消';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '正在解碼……$percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '音調 $hz Hz · 約 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '沒有找到穩定的音調，請嘗試手動調諧。';
+
+  @override
+  String get workbenchNoText => '該片段沒有解出內容。';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '無法識別的碼型：$patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '片段邊緣的字元被截斷，可能不準確。';
+
+  @override
+  String get workbenchToneNote => '鎖定音調不代表結果可信，請用耳朵核對文字。';
+
+  @override
+  String get workbenchModeDecoder => '解碼器';
+
+  @override
+  String get workbenchModeCopy => '我自己抄收';
+
+  @override
+  String get workbenchDecoderHidden => '抄收時解碼文字會隱藏。';
+
+  @override
+  String get workbenchShowDecoder => '顯示解碼文字';
+
+  @override
+  String get workbenchReference => '參考答案（選填）';
+
+  @override
+  String get workbenchReferenceHelp => '貼上實際發送的文字；否則會與解碼結果比較。';
+
+  @override
+  String get workbenchAgainstDecoder => '已與解碼結果比較，而解碼結果本身也可能有誤。';
+
+  @override
+  String get workbenchSave => '儲存片段';
+
+  @override
+  String get workbenchSaveTitle => '標題';
+
+  @override
+  String get workbenchSaveNote => '備註';
+
+  @override
+  String get workbenchSaved => '片段已儲存';
+
+  @override
+  String get workbenchSaveFailed => '無法儲存片段。';
+
+  @override
+  String get workbenchLibrary => '已儲存的片段';
+
+  @override
+  String get workbenchLibraryEmpty => '還沒有儲存的片段。';
+
+  @override
+  String get workbenchMissing => '錄音檔案不見了——請重新選擇檔案或刪除此項。';
+
+  @override
+  String get workbenchRelink => '重新選擇檔案';
+
+  @override
+  String get workbenchDelete => '刪除';
+
+  @override
+  String get materialsTitle => '我的素材';
+
+  @override
+  String get materialsNew => '新增素材';
+
+  @override
+  String get materialsEdit => '編輯';
+
+  @override
+  String get materialsSave => '儲存';
+
+  @override
+  String get materialsSaveFailed => '無法儲存素材。';
+
+  @override
+  String get materialsTitleField => '標題';
+
+  @override
+  String get materialsTagsField => '標籤（以逗號分隔）';
+
+  @override
+  String get materialsTextField => '文字';
+
+  @override
+  String get materialsListField => '每行一項';
+
+  @override
+  String get materialsKindText => '文字';
+
+  @override
+  String get materialsKindWords => '單字表';
+
+  @override
+  String get materialsKindCallsigns => '呼號';
+
+  @override
+  String get materialsPreview => '預覽';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items 項 · $symbols 個字元 · $prosigns 個程序信號';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '無摩斯碼，練習時略過：$chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count 個重複項只保留一次';
+  }
+
+  @override
+  String get materialsProblemEmpty => '請先輸入文字。';
+
+  @override
+  String get materialsProblemTooLarge => '過大：素材上限為 1 MiB。';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '條目過多：最多 $count 條。';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '某個條目過長：每條最多 $count 個字元。';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '這裡沒有可以用摩斯碼練習的內容。';
+
+  @override
+  String get materialsSearch => '搜尋素材';
+
+  @override
+  String get materialsFavoritesOnly => '收藏';
+
+  @override
+  String get materialsFavorite => '加入收藏';
+
+  @override
+  String get materialsUnfavorite => '取消收藏';
+
+  @override
+  String get materialsEmpty => '還沒有素材。新增你自己的文字、單字表或呼號，或儲存一則聊天訊息。';
+
+  @override
+  String materialsItems(int count) {
+    return '$count 項';
+  }
+
+  @override
+  String get materialsFromChat => '來自聊天';
+
+  @override
+  String get materialsActions => '素材操作';
+
+  @override
+  String get materialsPractise => '練習';
+
+  @override
+  String get materialsDelete => '刪除';
+
+  @override
+  String get materialsDeleteTitle => '刪除素材？';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '「$title」將從本裝置刪除，練習紀錄會保留。';
+  }
+
+  @override
+  String get materialsImport => '匯入 TXT 或 JSON';
+
+  @override
+  String get materialsImportDialogTitle => '選擇素材檔案';
+
+  @override
+  String get materialsSaveDialogTitle => '儲存素材';
+
+  @override
+  String get materialsImportFailed => '匯入失敗，素材庫未變更。';
+
+  @override
+  String get materialsImportNotUtf8 => '只能匯入 UTF-8 文字檔。';
+
+  @override
+  String get materialsImportInvalid => '不是有效的 MorseCQ 素材檔，未匯入任何內容。';
+
+  @override
+  String materialsImported(int count) {
+    return '已匯入 $count 個素材。';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '部分素材已存在';
+
+  @override
+  String get materialsDuplicateOverwrite => '取代';
+
+  @override
+  String get materialsDuplicateKeepCopy => '兩者都保留（作為副本匯入）';
+
+  @override
+  String get materialsDuplicateSkip => '略過';
+
+  @override
+  String get materialsExportJson => '匯出為 JSON';
+
+  @override
+  String materialsExported(int count) {
+    return '已匯出 $count 個素材。';
+  }
+
+  @override
+  String get materialsExportFailed => '匯出失敗。';
+
+  @override
+  String get materialsExportWav => '匯出音訊（WAV）';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '字元速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '有效速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '音調：$hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '附帶答案文字（.txt）';
+
+  @override
+  String get materialsWavFormat => '16 位元單聲道 WAV，48 kHz。';
+
+  @override
+  String materialsWavParts(int count) {
+    return '超過 10 分鐘：將匯出為 $count 個檔案。';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '已儲存 $count 個音訊檔。';
+  }
+
+  @override
+  String get materialsPracticeMode => '練習範圍';
+
+  @override
+  String get materialsPracticeLearned => '僅已學字元';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '僅已學字元（$count 項不可用：含尚未學習的字元）';
+  }
+
+  @override
+  String get materialsPracticeAll => '所有摩斯字元';
+
+  @override
+  String get materialsPracticeNothing => '此模式下沒有可練習的條目。';
+
+  @override
+  String get guestTryLearning => '先試試學習';
+
+  @override
+  String get guestBanner => '訪客學習：進度儲存在本裝置。聊天需要身分。';
+
+  @override
+  String get guestGetIdentity => '設定身分';
+
+  @override
+  String get guestIdentityTitle => '需要身分';
+
+  @override
+  String get guestIdentityBody => '透過 Tox 聊天需要你自己的身分。可以新建、從備份還原，或解鎖本裝置上的身分。新建身分時，訪客學習進度會自動轉移過去。';
+
+  @override
+  String get guestClearData => '清除訪客學習資料';
+
+  @override
+  String get guestClearDataBody => '刪除你在本裝置以訪客身分產生的進度、計畫和素材。不影響任何身分。';
+
+  @override
+  String get guestClearConfirm => '清除';
+
+  @override
+  String get guestCleared => '已清除訪客學習資料。';
+
+  @override
+  String get guestClearFailed => '無法清除訪客資料。';
+
+  @override
+  String get guestMigrationFailed => '身分已就緒，但訪客學習進度尚未轉移，資料仍安全儲存在本裝置。';
+
+  @override
+  String get guestChoiceBody => '你還有訪客學習進度。目前使用的是還原身分的進度，沒有合併任何內容。';
+
+  @override
+  String get guestChoiceKeep => '保留還原的進度';
+
+  @override
+  String get guestChoiceUseGuest => '改用訪客進度';
+
+  @override
+  String get placementTitle => '測試我的程度';
+
+  @override
+  String get placementCheckLevel => '測試我現在的程度';
+
+  @override
+  String get placementFromZero => '從零開始';
+
+  @override
+  String get placementOfferTitle => '剛接觸摩斯碼，還是已經會抄收？';
+
+  @override
+  String get placementOfferBody => '簡短測試可以建議起點。測試是可選的，在你選擇前不會改變任何設定。';
+
+  @override
+  String get placementIntro => '約 3–5 分鐘，分五步抄收：先按柯赫順序分組、速度逐級提高，最後是短單字。這只是基於少量樣本的粗略參考，不是認證。隨時可以停止。';
+
+  @override
+  String get placementStart => '開始';
+
+  @override
+  String get placementSkip => '略過';
+
+  @override
+  String get placementStop => '停止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '第 $step/$total 步 · 有效速度 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '抄得很好，下一步更快。';
+
+  @override
+  String get placementTierStopped => '這一步低於 90%，測試到此結束。';
+
+  @override
+  String get placementNextTier => '下一步';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '建議從第 $lesson 課開始';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '依順序確認了 $total 個柯赫字元中的 $count 個。';
+  }
+
+  @override
+  String get placementLimits => '基於少量樣本：未測到的字元仍視為未測試，也不會被標記為已掌握。你可以隨時變更課程。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '從第 $lesson 課開始';
+  }
+
+  @override
+  String get chatJumpToLatest => '最新訊息';
+
+  @override
+  String get chatMessageGone => '該訊息已不在此對話中。';
+
+  @override
+  String get chatListenOnlyPreview => '新訊息——請收聽抄收';
+
+  @override
+  String get chatSaveMaterialConfirm => '儲存其餘部分';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '匯入 $count 個素材？';
+  }
+
+  @override
+  String get materialsExportTxt => '匯出為文字（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '包含已儲存的錄音嗎？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '已儲存 $count 段錄音（$size MB）。標題、備註和位置一律在備份中；音訊僅在你選擇包含時才會加入。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '已儲存的錄音（$size MB）太大，無法放入備份；只會包含標題、備註和位置。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '包含錄音';
+
+  @override
+  String get accountBackupMediaSkip => '不含錄音';
 }

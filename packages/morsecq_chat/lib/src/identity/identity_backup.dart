@@ -1,7 +1,7 @@
 part of 'tim2tox_identity_service.dart';
 
 extension _IdentityBackup on Tim2ToxIdentityService {
-  Future<Uint8List> _exportBackup() async {
+  Future<Uint8List> _exportBackup({bool includeMedia = false}) async {
     final record = _requireRecord();
     await _persist();
     var profile = await File(_paths.profileFile).readAsBytes();
@@ -28,6 +28,29 @@ extension _IdentityBackup on Tim2ToxIdentityService {
           p.split(p.relative(file.path, from: training.path)),
         );
         entries['${BackupContainer.trainingPrefix}$rel'] = await file
+            .readAsBytes();
+      }
+    }
+    if (includeMedia) {
+      // Opt-in only: exactly the saved recordings the app counted before
+      // asking (BackupMedia.referenced) — never the working recording or
+      // staging/temporary files — and never more than BackupMedia.maxBytes.
+      final doc = File(p.join(training.path, BackupMedia.materialsDoc));
+      final names = BackupMedia.referenced(
+        await doc.exists() ? await doc.readAsString() : null,
+      ).toList()..sort();
+      var total = 0;
+      for (final name in names) {
+        final file = File(p.join(_paths.root, 'media', 'recordings', name));
+        if (!await file.exists()) continue;
+        total += await file.length();
+        if (total > BackupMedia.maxBytes) {
+          throw const ChatException(
+            'backup_media_too_large',
+            'Recordings exceed the backup size limit',
+          );
+        }
+        entries['${BackupContainer.mediaPrefix}$name'] = await file
             .readAsBytes();
       }
     }
@@ -86,6 +109,12 @@ extension _IdentityBackup on Tim2ToxIdentityService {
         final target = File(
           p.join(staged.trainingDirectory, p.joinAll(rel.split('/'))),
         );
+        await target.parent.create(recursive: true);
+        await target.writeAsBytes(entry.value, flush: true);
+      }
+      for (final entry in backup.mediaFiles) {
+        final name = entry.key.substring(BackupContainer.mediaPrefix.length);
+        final target = File(p.join(staged.root, 'media', 'recordings', name));
         await target.parent.create(recursive: true);
         await target.writeAsBytes(entry.value, flush: true);
       }

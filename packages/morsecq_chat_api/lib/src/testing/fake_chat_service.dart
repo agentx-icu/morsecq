@@ -3,11 +3,13 @@ import 'dart:convert';
 
 import '../chat_service.dart';
 import '../identity_service.dart';
+import '../message_search.dart';
 import '../models.dart';
 import '../tox_address.dart';
 import 'replay_stream.dart';
 
 part 'fake_chat_service_hooks.dart';
+part 'fake_chat_service_messages.dart';
 part 'fake_chat_service_rows.dart';
 part 'fake_chat_service_self.dart';
 part 'fake_chat_service_session.dart';
@@ -26,7 +28,7 @@ part 'fake_chat_service_session.dart';
 /// note-to-self row is not listed; replacing or deleting the identity
 /// empties everything. A fake without an identity is always "connected".
 /// Test hooks live in [FakeChatServiceTestHooks] (`fake_chat_service_hooks.dart`).
-final class FakeChatService implements ChatService {
+final class FakeChatService with _FakeMessageManagement implements ChatService {
   FakeChatService({
     String? selfPublicKey,
     IdentityService? identity,
@@ -61,8 +63,8 @@ final class FakeChatService implements ChatService {
   /// the next message, even for a friend.
   final Set<String> _hidden = <String>{};
 
-  /// Groups whose transport is down (see `setGroupConnected`): sends to
-  /// them stay pending.
+  /// Groups whose transport is down (`setGroupConnected`): sends stay pending.
+  @override
   final Set<String> _disconnectedGroups = <String>{};
 
   /// When set, friend-request and group-invite answers wait for it (lets a
@@ -86,9 +88,12 @@ final class FakeChatService implements ChatService {
   final DateTime Function() _clock;
   int _seq = 0;
 
+  @override
   final Map<String, Friend> _friends = <String, Friend>{};
   final List<FriendRequest> _friendRequests = <FriendRequest>[];
+  @override
   final Map<String, Conversation> _conversations = <String, Conversation>{};
+  @override
   final Map<String, List<ChatMessage>> _messages =
       <String, List<ChatMessage>>{};
   final Map<String, Group> _groups = <String, Group>{};
@@ -341,6 +346,14 @@ final class FakeChatService implements ChatService {
       _publishConversations();
     }
   }
+
+  /// The session check and status write the message-management mixin
+  /// needs (row bookkeeping lives in `fake_chat_service_rows.dart`).
+  @override
+  void _requireSession() => _FakeSession(this)._requireSession();
+  @override
+  void _applyStatus(String messageId, MessageStatus status) =>
+      _FakeConversationRows(this)._setStatus(messageId, status);
 
   // ---- Groups --------------------------------------------------------------
 

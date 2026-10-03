@@ -4165,6 +4165,1866 @@ abstract class S {
   /// In en, this message translates to:
   /// **'The camera is not available on this device.'**
   String get chatScanQrCameraUnavailable;
+
+  /// Receive drill: shown after the learner replayed a round; replays make the session assisted
+  ///
+  /// In en, this message translates to:
+  /// **'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.'**
+  String get learnReplayAssistedNote;
+
+  /// Learn home: title of the daily plan card
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s plan'**
+  String get learnPlanTitle;
+
+  /// Daily plan card: estimated minutes and completed steps
+  ///
+  /// In en, this message translates to:
+  /// **'About {minutes} min · {done} of {total} steps'**
+  String learnPlanSummary(int minutes, int done, int total);
+
+  /// Daily plan card: label of the plan-length selector
+  ///
+  /// In en, this message translates to:
+  /// **'Plan length'**
+  String get learnPlanBudget;
+
+  /// Daily plan card: one plan-length choice in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String learnPlanBudgetMinutes(int minutes);
+
+  /// Daily plan card: start the first step
+  ///
+  /// In en, this message translates to:
+  /// **'Start plan'**
+  String get learnPlanStart;
+
+  /// Daily plan card: continue with the next step
+  ///
+  /// In en, this message translates to:
+  /// **'Continue plan'**
+  String get learnPlanContinue;
+
+  /// Daily plan step title: spaced review
+  ///
+  /// In en, this message translates to:
+  /// **'Review due symbols'**
+  String get learnPlanStepReview;
+
+  /// Daily plan step title: focused drill on weak symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Focused practice'**
+  String get learnPlanStepFocus;
+
+  /// Daily plan step title: Koch course copying of a lesson
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {lesson}'**
+  String learnPlanStepCourse(int lesson);
+
+  /// Daily plan step title: short sending practice
+  ///
+  /// In en, this message translates to:
+  /// **'Sending practice'**
+  String get learnPlanStepSend;
+
+  /// Daily plan reason: symbols due for spaced review
+  ///
+  /// In en, this message translates to:
+  /// **'Due for review: {symbols}'**
+  String learnPlanReasonDueReview(String symbols);
+
+  /// Daily plan reason: symbols often confused with each other
+  ///
+  /// In en, this message translates to:
+  /// **'Often mixed up: {symbols}'**
+  String learnPlanReasonConfusions(String symbols);
+
+  /// Daily plan reason: symbols copied below 90 percent
+  ///
+  /// In en, this message translates to:
+  /// **'Below 90%: {symbols}'**
+  String learnPlanReasonWeak(String symbols);
+
+  /// Daily plan reason: course step long enough to unlock
+  ///
+  /// In en, this message translates to:
+  /// **'{count} symbols: can unlock the next lesson'**
+  String learnPlanReasonChallenge(int count);
+
+  /// Daily plan reason: course step lengthened beyond its time share so it can unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Lengthened to {count} symbols so it can unlock the next lesson'**
+  String learnPlanReasonExtended(int count);
+
+  /// Daily plan reason: course step too short to unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Short session: consolidates this lesson, cannot unlock the next'**
+  String get learnPlanReasonConsolidate;
+
+  /// Daily plan reason: the course moved on after the plan was made
+  ///
+  /// In en, this message translates to:
+  /// **'Your course moved on: practises lesson {lesson} without unlocking'**
+  String learnPlanReasonOutdated(int lesson);
+
+  /// Daily plan reason: number of short sending targets
+  ///
+  /// In en, this message translates to:
+  /// **'{count} short targets to key'**
+  String learnPlanReasonSend(int count);
+
+  /// Daily plan step: completed with strict accuracy
+  ///
+  /// In en, this message translates to:
+  /// **'Done · {percent}%'**
+  String learnPlanStepDonePercent(int percent);
+
+  /// Daily plan step: completed (no accuracy, e.g. sending)
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get learnPlanStepDone;
+
+  /// Daily plan send step: keyed targets so far
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} keyed'**
+  String learnPlanSendProgress(int done, int total);
+
+  /// Daily plan card: lesson or speed changed after planning
+  ///
+  /// In en, this message translates to:
+  /// **'Your lesson or speed changed. Update the steps you haven\'t started?'**
+  String get learnPlanStale;
+
+  /// Daily plan card: regenerate steps that have not started
+  ///
+  /// In en, this message translates to:
+  /// **'Update steps'**
+  String get learnPlanUpdate;
+
+  /// Daily plan card: every step done today
+  ///
+  /// In en, this message translates to:
+  /// **'Plan complete for today'**
+  String get learnPlanComplete;
+
+  /// Daily plan card: symbols that need work after today's plan
+  ///
+  /// In en, this message translates to:
+  /// **'Needs work: {symbols}'**
+  String learnPlanNeedsWork(String symbols);
+
+  /// Daily plan card: no weak symbols after today's plan
+  ///
+  /// In en, this message translates to:
+  /// **'No weak symbols today.'**
+  String get learnPlanAllGood;
+
+  /// Daily plan card: after completing the plan
+  ///
+  /// In en, this message translates to:
+  /// **'A new plan arrives tomorrow. Free practice is always open.'**
+  String get learnPlanTomorrow;
+
+  /// Daily plan card: the next step to do
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {step}'**
+  String learnPlanNext(String step);
+
+  /// Daily plan card: an earlier day's unfinished plan (inspect only)
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday\'s plan stopped at {done} of {total} steps; it no longer counts for today.'**
+  String learnPlanEarlier(int done, int total);
+
+  /// Speed advice: raise the effective (Farnsworth) speed
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for {wpm} WPM effective speed'**
+  String learnSpeedAdviceRaise(int wpm);
+
+  /// Speed advice: raise character and effective speed together
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for {wpm} WPM'**
+  String learnSpeedAdviceRaiseBoth(int wpm);
+
+  /// Speed advice: suggest lowering the effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Copying is hard at this speed. Try {wpm} WPM effective, or a focused drill.'**
+  String learnSpeedAdviceLower(int wpm);
+
+  /// Speed advice: evidence behind the recommendation
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your last {count} unassisted sessions ({percent}%). Nothing changes until you apply it.'**
+  String learnSpeedAdviceBody(int count, int percent);
+
+  /// Speed advice: apply the proposed speed
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get learnSpeedAdviceApply;
+
+  /// Speed advice: dismiss for this evidence batch
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get learnSpeedAdviceDismiss;
+
+  /// Daily plan card: why there is no speed advice yet
+  ///
+  /// In en, this message translates to:
+  /// **'Speed advice needs 3 unassisted sessions of 50+ symbols at your current speed.'**
+  String get learnSpeedAdviceInsufficient;
+
+  /// Learn home: entry to the interactive QSO simulator
+  ///
+  /// In en, this message translates to:
+  /// **'QSO simulator'**
+  String get learnQsoAction;
+
+  /// Learn home: QSO simulator is locked until a lesson
+  ///
+  /// In en, this message translates to:
+  /// **'From lesson {lesson}'**
+  String learnQsoLocked(int lesson);
+
+  /// QSO simulator: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'QSO simulator'**
+  String get learnQsoTitle;
+
+  /// QSO setup: scenario where the remote calls CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Answer a CQ'**
+  String get learnQsoRespond;
+
+  /// QSO setup: description of the answer-CQ scenario
+  ///
+  /// In en, this message translates to:
+  /// **'A station calls CQ. Answer it and exchange reports.'**
+  String get learnQsoRespondHint;
+
+  /// QSO setup: scenario where the learner calls CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Call CQ'**
+  String get learnQsoCall;
+
+  /// QSO setup: description of the call-CQ scenario
+  ///
+  /// In en, this message translates to:
+  /// **'You call CQ and a station answers.'**
+  String get learnQsoCallHint;
+
+  /// QSO setup: learner's callsign field
+  ///
+  /// In en, this message translates to:
+  /// **'Your callsign'**
+  String get learnQsoYourCall;
+
+  /// QSO setup: learner's name field (one word)
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get learnQsoYourName;
+
+  /// QSO setup: learner's location field (one word)
+  ///
+  /// In en, this message translates to:
+  /// **'Your QTH'**
+  String get learnQsoYourQth;
+
+  /// QSO setup: callsign validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a callsign such as BD1XYZ'**
+  String get learnQsoInvalidCall;
+
+  /// QSO setup: name/QTH validation error
+  ///
+  /// In en, this message translates to:
+  /// **'One word, letters A–Z only'**
+  String get learnQsoInvalidWord;
+
+  /// QSO setup: privacy note
+  ///
+  /// In en, this message translates to:
+  /// **'Runs entirely on this device. Nothing is sent to anyone.'**
+  String get learnQsoOffline;
+
+  /// QSO setup: start button
+  ///
+  /// In en, this message translates to:
+  /// **'Start QSO'**
+  String get learnQsoStart;
+
+  /// QSO setup: resume an unfinished simulated QSO
+  ///
+  /// In en, this message translates to:
+  /// **'Resume the unfinished QSO'**
+  String get learnQsoResume;
+
+  /// QSO stage: call CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Call CQ with your callsign'**
+  String get learnQsoStageCallCq;
+
+  /// QSO stage: answer with both callsigns
+  ///
+  /// In en, this message translates to:
+  /// **'Answer: their call, DE, your call'**
+  String get learnQsoStageCallConfirm;
+
+  /// QSO stage: send report, name and QTH
+  ///
+  /// In en, this message translates to:
+  /// **'Send report, name and QTH'**
+  String get learnQsoStageExchange;
+
+  /// QSO stage: acknowledge the remote's information
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm their information'**
+  String get learnQsoStageConfirmInfo;
+
+  /// QSO stage: close the contact
+  ///
+  /// In en, this message translates to:
+  /// **'Close with 73 and <SK>'**
+  String get learnQsoStageClosing;
+
+  /// QSO stage/summary: contact finished
+  ///
+  /// In en, this message translates to:
+  /// **'QSO complete'**
+  String get learnQsoStageDone;
+
+  /// QSO screen: current remote playback effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Remote sends at {wpm} WPM effective'**
+  String learnQsoSpeed(int wpm);
+
+  /// QSO log: caption of a remote transmission
+  ///
+  /// In en, this message translates to:
+  /// **'{call} sends'**
+  String learnQsoRemote(String call);
+
+  /// QSO log: placeholder while the remote text is hidden
+  ///
+  /// In en, this message translates to:
+  /// **'Copy by ear — the text is hidden.'**
+  String get learnQsoRemoteHidden;
+
+  /// QSO log: reveal a remote transmission (counts as a hint)
+  ///
+  /// In en, this message translates to:
+  /// **'Show text'**
+  String get learnQsoShowText;
+
+  /// QSO log: play a remote transmission again
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get learnQsoListen;
+
+  /// QSO log: semantics for an accepted transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get learnQsoAccepted;
+
+  /// QSO log: semantics for a rejected transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Not accepted'**
+  String get learnQsoRejected;
+
+  /// QSO screen: remote is transmitting; keying is paused
+  ///
+  /// In en, this message translates to:
+  /// **'The other station is sending…'**
+  String get learnQsoRemoteSending;
+
+  /// QSO screen: learner's turn to key
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn: key your reply, then Send.'**
+  String get learnQsoYourTurn;
+
+  /// QSO screen: label of the decoded own transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Your transmission'**
+  String get learnQsoDecoded;
+
+  /// QSO screen: nothing keyed yet
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing keyed yet'**
+  String get learnQsoNothingKeyed;
+
+  /// QSO screen: send PSE AGN (ask the remote to repeat)
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to repeat (AGN)'**
+  String get learnQsoPlayAgain;
+
+  /// QSO screen: send QRS (ask the remote to slow down)
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to slow down (QRS)'**
+  String get learnQsoSlower;
+
+  /// QSO screen: show an example for the current stage
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get learnQsoHint;
+
+  /// QSO screen: hint example (protocol text, not translated)
+  ///
+  /// In en, this message translates to:
+  /// **'Example: {example}'**
+  String learnQsoHintLabel(String example);
+
+  /// QSO screen: stop the remote's playback
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get learnQsoPause;
+
+  /// QSO screen: submit the keyed transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get learnQsoSend;
+
+  /// QSO screen: discard the keyed transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get learnQsoClear;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was keyed.'**
+  String get learnQsoIssueEmpty;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Start with CQ.'**
+  String get learnQsoIssueMissingCq;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Put DE between the callsigns.'**
+  String get learnQsoIssueMissingDe;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Your own callsign is missing or wrong.'**
+  String get learnQsoIssueWrongLocalCall;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'The other station\'s callsign is wrong.'**
+  String get learnQsoIssueWrongRemoteCall;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Callsigns are reversed: theirs first, then DE and yours.'**
+  String get learnQsoIssueReversedCalls;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'End with K or KN.'**
+  String get learnQsoIssueMissingEnding;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Give a report, e.g. UR RST 599.'**
+  String get learnQsoIssueMissingRst;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That RST is out of range (R 1–5, S 1–9, T 1–9).'**
+  String get learnQsoIssueInvalidRst;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Send NAME and your name.'**
+  String get learnQsoIssueMissingName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That is not your name for this QSO.'**
+  String get learnQsoIssueWrongName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Send QTH and your location.'**
+  String get learnQsoIssueMissingQth;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That is not your QTH for this QSO.'**
+  String get learnQsoIssueWrongQth;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledge with R or QSL.'**
+  String get learnQsoIssueMissingAck;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the other operator\'s name.'**
+  String get learnQsoIssueWrongRemoteName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Include 73.'**
+  String get learnQsoIssueMissing73;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'End the contact with <SK>.'**
+  String get learnQsoIssueMissingSk;
+
+  /// QSO summary: stages accepted on the first try
+  ///
+  /// In en, this message translates to:
+  /// **'Right first time: {count} of {total} steps'**
+  String learnQsoSummaryFields(int count, int total);
+
+  /// QSO summary: number of repeat requests
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats: {count}'**
+  String learnQsoSummaryRepeats(int count);
+
+  /// QSO summary: hints and revealed texts
+  ///
+  /// In en, this message translates to:
+  /// **'Hints: {count}'**
+  String learnQsoSummaryHints(int count);
+
+  /// QSO summary: average measured sending speed
+  ///
+  /// In en, this message translates to:
+  /// **'Your sending: about {wpm} WPM'**
+  String learnQsoSummaryRhythm(int wpm);
+
+  /// QSO summary: how the result is counted
+  ///
+  /// In en, this message translates to:
+  /// **'QSO results are kept apart from copying accuracy and never unlock lessons.'**
+  String get learnQsoSummaryNote;
+
+  /// Message status tooltip: a queued send the user cancelled before it left the device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled — never sent'**
+  String get messageStatusCancelled;
+
+  /// Message bubble: menu with learning actions for a received message
+  ///
+  /// In en, this message translates to:
+  /// **'Message actions'**
+  String get chatMessageLearnActions;
+
+  /// Message menu: open copy practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practice this message'**
+  String get chatPracticeMessage;
+
+  /// Message menu / practice result: keep a local copy as training material
+  ///
+  /// In en, this message translates to:
+  /// **'Save as training material'**
+  String get chatSaveAsMaterial;
+
+  /// Snack bar: the message was saved to My materials
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to My materials'**
+  String get chatSavedAsMaterial;
+
+  /// Snack bar: saving the material failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the material. Try again.'**
+  String get chatSaveMaterialFailed;
+
+  /// Conversation menu: listen-only training toggle (hides text and dots/dashes)
+  ///
+  /// In en, this message translates to:
+  /// **'Listen-only training'**
+  String get chatListenOnly;
+
+  /// Message bubble: placeholder while dots/dashes are hidden in listen-only mode
+  ///
+  /// In en, this message translates to:
+  /// **'Listen-only: tap play to hear it'**
+  String get chatListenOnlyHidden;
+
+  /// Clear history dialog: saved material copies stay
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message from this chat was saved as training material. That copy stays until you delete it in Learn › My materials.} other{{count} messages from this chat were saved as training material. Those copies stay until you delete them in Learn › My materials.}}'**
+  String chatClearHistoryMaterials(int count);
+
+  /// Chat copy practice: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Copy practice'**
+  String get chatPracticeTitle;
+
+  /// Chat copy practice: characters Morse cannot key
+  ///
+  /// In en, this message translates to:
+  /// **'This message contains characters Morse can\'t key: {chars}. They will be left out.'**
+  String chatPracticeUnsupported(String chars);
+
+  /// Chat copy practice: number of symbols that can be practised
+  ///
+  /// In en, this message translates to:
+  /// **'{count} symbols can be practised.'**
+  String chatPracticeTrainableCount(int count);
+
+  /// Chat copy practice: nothing in the message can be keyed
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this message can be practised in Morse.'**
+  String get chatPracticeNothingTrainable;
+
+  /// Chat copy practice: confirm practising the supported part
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the rest'**
+  String get chatPracticeConfirm;
+
+  /// Chat copy practice: reveal one more symbol (assistance)
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get chatPracticeHint;
+
+  /// Chat copy practice: symbols revealed by hints
+  ///
+  /// In en, this message translates to:
+  /// **'Hint: {symbols} …'**
+  String chatPracticeHintShown(String symbols);
+
+  /// Chat copy practice: assistance used, how it counts
+  ///
+  /// In en, this message translates to:
+  /// **'Assisted: counts as practice, not for reviews or speed advice.'**
+  String get chatPracticeAssisted;
+
+  /// Chat copy practice result: error counts
+  ///
+  /// In en, this message translates to:
+  /// **'{wrong} wrong · {missed} missed · {extra} extra'**
+  String chatPracticeErrors(int wrong, int missed, int extra);
+
+  /// Chat copy practice result: focused drill on missed learned symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Practice errors: {symbols}'**
+  String chatPracticeErrorsAction(String symbols);
+
+  /// Send practice tip title: dahs were held far too long
+  ///
+  /// In en, this message translates to:
+  /// **'Dahs too long'**
+  String get learnTipDahTooLongTitle;
+
+  /// Send tip for SendIssueKind.dahTooLong; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Your dahs run long (about {ratio} of a dit; aim for 3). Release as soon as three dits have passed.'**
+  String learnTipDahTooLong(String ratio);
+
+  /// Measurement line under the dahTooLong tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} dahs too long (avg {ratio} dit)'**
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio);
+
+  /// Send result: rhythm timeline section title
+  ///
+  /// In en, this message translates to:
+  /// **'Rhythm'**
+  String get learnRhythmTitle;
+
+  /// Rhythm timeline lane: measured keying
+  ///
+  /// In en, this message translates to:
+  /// **'My rhythm'**
+  String get learnRhythmMine;
+
+  /// Rhythm timeline lane: standard timing at the target speed
+  ///
+  /// In en, this message translates to:
+  /// **'Standard rhythm (target speed)'**
+  String get learnRhythmStandard;
+
+  /// Rhythm timeline: how problems are judged
+  ///
+  /// In en, this message translates to:
+  /// **'Problems are judged against your own dit ({ms} ms), so an even but slow fist is fine. The standard lane is the target speed.'**
+  String learnRhythmNormalizedNote(int ms);
+
+  /// Rhythm timeline: marks could not be matched symbol by symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Your marks couldn\'t be matched to single symbols, so problems aren\'t pinned to letters. Practise the whole target instead.'**
+  String get learnRhythmNotLocated;
+
+  /// Rhythm timeline: replay the measured timing
+  ///
+  /// In en, this message translates to:
+  /// **'Play mine'**
+  String get learnRhythmPlayMine;
+
+  /// Rhythm timeline / send screen: play the standard timing
+  ///
+  /// In en, this message translates to:
+  /// **'Play standard'**
+  String get learnRhythmPlayStandard;
+
+  /// Rhythm symbol card: start targeted practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practise this ({count} tries)'**
+  String learnRhythmPracticePart(int count);
+
+  /// Rhythm timeline: practise the whole target
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the whole target'**
+  String get learnRhythmPracticeWhole;
+
+  /// Rhythm symbol card: no problem found
+  ///
+  /// In en, this message translates to:
+  /// **'Looks good'**
+  String get learnRhythmSymbolOk;
+
+  /// Rhythm timeline: zoom in
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get learnRhythmZoomIn;
+
+  /// Rhythm timeline: zoom out
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get learnRhythmZoomOut;
+
+  /// Conversation app bar: search this conversation's history
+  ///
+  /// In en, this message translates to:
+  /// **'Search messages'**
+  String get chatSearchMessages;
+
+  /// Message search field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search this conversation'**
+  String get chatSearchHint;
+
+  /// Message search sender filter: everyone
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone'**
+  String get chatSearchAnyone;
+
+  /// Message search sender filter / result sender: the local user
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get chatSearchMe;
+
+  /// Message search sender filter: the other person in a one-to-one chat
+  ///
+  /// In en, this message translates to:
+  /// **'Them'**
+  String get chatSearchThem;
+
+  /// Message search date filter: no date limit
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get chatSearchAnyDate;
+
+  /// Message search date filter: chosen range
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String chatSearchDateRange(String from, String to);
+
+  /// Message search filter: bookmarked messages only
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get chatSearchBookmarked;
+
+  /// Message search: nothing found
+  ///
+  /// In en, this message translates to:
+  /// **'No matching messages.'**
+  String get chatSearchNoResults;
+
+  /// Message search: load the next page of results
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get chatSearchMore;
+
+  /// Message menu: bookmark this message (local only)
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmark'**
+  String get chatAddBookmark;
+
+  /// Message menu: remove the local bookmark
+  ///
+  /// In en, this message translates to:
+  /// **'Remove bookmark'**
+  String get chatRemoveBookmark;
+
+  /// Message bubble: semantics of the bookmark mark
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked'**
+  String get chatBookmarked;
+
+  /// Snack bar: bookmark could not be saved
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the bookmark.'**
+  String get chatBookmarkFailed;
+
+  /// Message menu: retry a failed send (same message, no duplicate bubble)
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sending'**
+  String get chatRetrySend;
+
+  /// Message menu: cancel a send that is still queued on this device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel sending'**
+  String get chatCancelSend;
+
+  /// Snack bar: failed message queued again
+  ///
+  /// In en, this message translates to:
+  /// **'Queued again. It will be sent when your contact is online.'**
+  String get chatRetryQueued;
+
+  /// Snack bar: queued message cancelled before it left the device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled. The message was never sent.'**
+  String get chatSendCancelled;
+
+  /// Snack bar: retry not applied because the message is no longer failed
+  ///
+  /// In en, this message translates to:
+  /// **'This message is no longer failed; nothing to retry.'**
+  String get chatRetryNotNeeded;
+
+  /// Snack bar: cancel failed because the transport already took the message
+  ///
+  /// In en, this message translates to:
+  /// **'Too late to cancel: the message was already handed to the network and may arrive.'**
+  String get chatCancelTooLate;
+
+  /// Snack bar: retry/cancel not available for this message
+  ///
+  /// In en, this message translates to:
+  /// **'Not available for this message.'**
+  String get chatSendControlUnavailable;
+
+  /// Snack bar: retry/cancel could not be completed
+  ///
+  /// In en, this message translates to:
+  /// **'That didn\'t work. The message keeps its current state; try again.'**
+  String get chatSendControlFailed;
+
+  /// Recording workbench: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Recording workbench'**
+  String get workbenchTitle;
+
+  /// Listen screen: open the recorded-audio workbench
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings'**
+  String get workbenchOpen;
+
+  /// Recording workbench: pick a WAV file
+  ///
+  /// In en, this message translates to:
+  /// **'Import recording'**
+  String get workbenchImport;
+
+  /// Recording workbench: empty state
+  ///
+  /// In en, this message translates to:
+  /// **'Import a WAV recording to loop, decode and copy it. No microphone needed.'**
+  String get workbenchEmpty;
+
+  /// Recording workbench: supported formats and limits
+  ///
+  /// In en, this message translates to:
+  /// **'WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.'**
+  String get workbenchFormats;
+
+  /// Recording workbench: recordings are not part of identity backups
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.'**
+  String get workbenchBackupNote;
+
+  /// Recording workbench: recording format line
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} kHz · {channels} · {duration}'**
+  String workbenchInfo(String rate, String channels, String duration);
+
+  /// Recording workbench: one channel
+  ///
+  /// In en, this message translates to:
+  /// **'mono'**
+  String get workbenchMono;
+
+  /// Recording workbench: two channels
+  ///
+  /// In en, this message translates to:
+  /// **'stereo'**
+  String get workbenchStereo;
+
+  /// Recording workbench: data chunk shorter than declared
+  ///
+  /// In en, this message translates to:
+  /// **'The file ends early; only the audio present is used.'**
+  String get workbenchTruncated;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a WAV file.'**
+  String get workbenchErrorNotWav;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Only 16-bit PCM WAV is supported for now (no MP3, AAC or float WAV).'**
+  String get workbenchErrorFormat;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Only mono or stereo recordings are supported.'**
+  String get workbenchErrorChannels;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate not supported. Use 8, 16, 44.1 or 48 kHz.'**
+  String get workbenchErrorRate;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The file is damaged or incomplete.'**
+  String get workbenchErrorDamaged;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The file is larger than 50 MB.'**
+  String get workbenchErrorTooLarge;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The recording is longer than 20 minutes.'**
+  String get workbenchErrorTooLong;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the file.'**
+  String get workbenchErrorIo;
+
+  /// Recording workbench: saved recording file not found
+  ///
+  /// In en, this message translates to:
+  /// **'The recording file is missing.'**
+  String get workbenchErrorMissing;
+
+  /// Recording workbench: selection start field (seconds)
+  ///
+  /// In en, this message translates to:
+  /// **'Start (s)'**
+  String get workbenchStart;
+
+  /// Recording workbench: selection end field (seconds)
+  ///
+  /// In en, this message translates to:
+  /// **'End (s)'**
+  String get workbenchEnd;
+
+  /// Recording workbench: select the whole recording
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get workbenchSelectAll;
+
+  /// Recording workbench: play the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Play selection'**
+  String get workbenchPlay;
+
+  /// Recording workbench: stop playback
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get workbenchStop;
+
+  /// Recording workbench: loop the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Loop'**
+  String get workbenchLoop;
+
+  /// Recording workbench: long selections play partly
+  ///
+  /// In en, this message translates to:
+  /// **'Only the first 5 minutes of a longer selection are played.'**
+  String get workbenchPlayLimit;
+
+  /// Recording workbench: automatic tone search
+  ///
+  /// In en, this message translates to:
+  /// **'Find the tone automatically'**
+  String get workbenchAutoTune;
+
+  /// Recording workbench: manual tone frequency
+  ///
+  /// In en, this message translates to:
+  /// **'Tone: {hz} Hz'**
+  String workbenchManualTone(int hz);
+
+  /// Recording workbench: decode the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Decode selection'**
+  String get workbenchDecode;
+
+  /// Recording workbench: cancel decoding
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get workbenchCancel;
+
+  /// Recording workbench: decoding progress
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding… {percent}%'**
+  String workbenchDecoding(int percent);
+
+  /// Recording workbench: decoder tone and speed
+  ///
+  /// In en, this message translates to:
+  /// **'Tone {hz} Hz · about {wpm} WPM'**
+  String workbenchResultStats(int hz, int wpm);
+
+  /// Recording workbench: no steady tone
+  ///
+  /// In en, this message translates to:
+  /// **'No steady tone found; try manual tuning.'**
+  String get workbenchToneNotLocked;
+
+  /// Recording workbench: nothing decoded
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing decoded in this selection.'**
+  String get workbenchNoText;
+
+  /// Recording workbench: patterns that match no symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown patterns: {patterns}'**
+  String workbenchUnknown(String patterns);
+
+  /// Recording workbench: symbol cut by the selection boundary
+  ///
+  /// In en, this message translates to:
+  /// **'A symbol at the edge of the selection is cut off and may be wrong.'**
+  String get workbenchEdgeCut;
+
+  /// Recording workbench: tone lock is not a confidence score
+  ///
+  /// In en, this message translates to:
+  /// **'Tone lock is not a confidence score; check the text by ear.'**
+  String get workbenchToneNote;
+
+  /// Recording workbench: show decoder output
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder'**
+  String get workbenchModeDecoder;
+
+  /// Recording workbench: copy the selection yourself
+  ///
+  /// In en, this message translates to:
+  /// **'Copy it myself'**
+  String get workbenchModeCopy;
+
+  /// Recording workbench: decoder output hidden in copy mode
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder text is hidden while you copy.'**
+  String get workbenchDecoderHidden;
+
+  /// Recording workbench: reveal decoder output (assisted)
+  ///
+  /// In en, this message translates to:
+  /// **'Show decoder text'**
+  String get workbenchShowDecoder;
+
+  /// Recording workbench: optional answer text field
+  ///
+  /// In en, this message translates to:
+  /// **'Reference text (optional)'**
+  String get workbenchReference;
+
+  /// Recording workbench: reference text help
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the text that was sent; otherwise your copy is compared with the decoder output.'**
+  String get workbenchReferenceHelp;
+
+  /// Recording workbench: scored against decoder output
+  ///
+  /// In en, this message translates to:
+  /// **'Compared with the decoder output, which can itself be wrong.'**
+  String get workbenchAgainstDecoder;
+
+  /// Recording workbench: save the selection as an audio material
+  ///
+  /// In en, this message translates to:
+  /// **'Save selection'**
+  String get workbenchSave;
+
+  /// Recording workbench: title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get workbenchSaveTitle;
+
+  /// Recording workbench: note field
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get workbenchSaveNote;
+
+  /// Recording workbench: selection saved
+  ///
+  /// In en, this message translates to:
+  /// **'Selection saved'**
+  String get workbenchSaved;
+
+  /// Recording workbench: saving failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the selection.'**
+  String get workbenchSaveFailed;
+
+  /// Recording workbench: saved selections list
+  ///
+  /// In en, this message translates to:
+  /// **'Saved selections'**
+  String get workbenchLibrary;
+
+  /// Recording workbench: no saved selections
+  ///
+  /// In en, this message translates to:
+  /// **'No saved selections yet.'**
+  String get workbenchLibraryEmpty;
+
+  /// Recording workbench: saved selection whose media file is gone
+  ///
+  /// In en, this message translates to:
+  /// **'Recording file missing — choose it again or delete the entry.'**
+  String get workbenchMissing;
+
+  /// Recording workbench: choose the missing file again
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the file again'**
+  String get workbenchRelink;
+
+  /// Recording workbench: delete a saved selection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get workbenchDelete;
+
+  /// My materials: screen title / Learn entry
+  ///
+  /// In en, this message translates to:
+  /// **'My materials'**
+  String get materialsTitle;
+
+  /// My materials: create a material
+  ///
+  /// In en, this message translates to:
+  /// **'New material'**
+  String get materialsNew;
+
+  /// My materials: edit a material
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get materialsEdit;
+
+  /// Material editor: save
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get materialsSave;
+
+  /// Material editor: saving failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the material.'**
+  String get materialsSaveFailed;
+
+  /// Material editor: title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get materialsTitleField;
+
+  /// Material editor: tags field (comma separated)
+  ///
+  /// In en, this message translates to:
+  /// **'Tags (comma separated)'**
+  String get materialsTagsField;
+
+  /// Material editor: running text field
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get materialsTextField;
+
+  /// Material editor: one entry per line field
+  ///
+  /// In en, this message translates to:
+  /// **'One entry per line'**
+  String get materialsListField;
+
+  /// Material kind: running text
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get materialsKindText;
+
+  /// Material kind: word list
+  ///
+  /// In en, this message translates to:
+  /// **'Word list'**
+  String get materialsKindWords;
+
+  /// Material kind: callsign list
+  ///
+  /// In en, this message translates to:
+  /// **'Callsigns'**
+  String get materialsKindCallsigns;
+
+  /// Material editor: preview heading
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get materialsPreview;
+
+  /// Material preview: item/symbol/prosign counts
+  ///
+  /// In en, this message translates to:
+  /// **'{items} items · {symbols} symbols · {prosigns} prosigns'**
+  String materialsPreviewCounts(int items, int symbols, int prosigns);
+
+  /// Material preview: characters without Morse code (left out of practice)
+  ///
+  /// In en, this message translates to:
+  /// **'No Morse code, left out of practice: {chars}'**
+  String materialsPreviewUnsupported(String chars);
+
+  /// Material preview: duplicate list entries kept once
+  ///
+  /// In en, this message translates to:
+  /// **'{count} duplicate entries are kept once'**
+  String materialsPreviewDuplicates(int count);
+
+  /// Material problem
+  ///
+  /// In en, this message translates to:
+  /// **'Enter some text first.'**
+  String get materialsProblemEmpty;
+
+  /// Material problem: over 1 MiB
+  ///
+  /// In en, this message translates to:
+  /// **'Too large: materials are limited to 1 MiB.'**
+  String get materialsProblemTooLarge;
+
+  /// Material problem: too many entries
+  ///
+  /// In en, this message translates to:
+  /// **'Too many entries: at most {count}.'**
+  String materialsProblemTooManyEntries(int count);
+
+  /// Material problem: an entry is too long
+  ///
+  /// In en, this message translates to:
+  /// **'An entry is too long: at most {count} symbols each.'**
+  String materialsProblemEntryTooLong(int count);
+
+  /// Material problem: nothing can be keyed
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here can be practised in Morse.'**
+  String get materialsProblemNothingTrainable;
+
+  /// My materials: search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search materials'**
+  String get materialsSearch;
+
+  /// My materials: favourites filter
+  ///
+  /// In en, this message translates to:
+  /// **'Favourites'**
+  String get materialsFavoritesOnly;
+
+  /// My materials: mark favourite
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favourites'**
+  String get materialsFavorite;
+
+  /// My materials: unmark favourite
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favourites'**
+  String get materialsUnfavorite;
+
+  /// My materials: empty library
+  ///
+  /// In en, this message translates to:
+  /// **'No materials yet. Add your own texts, word lists or callsigns, or save a chat message.'**
+  String get materialsEmpty;
+
+  /// My materials: number of items
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String materialsItems(int count);
+
+  /// My materials: saved from a chat message
+  ///
+  /// In en, this message translates to:
+  /// **'From chat'**
+  String get materialsFromChat;
+
+  /// My materials: per-material menu
+  ///
+  /// In en, this message translates to:
+  /// **'Material actions'**
+  String get materialsActions;
+
+  /// My materials: start practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practise'**
+  String get materialsPractise;
+
+  /// My materials: delete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get materialsDelete;
+
+  /// My materials: delete confirmation title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete material?'**
+  String get materialsDeleteTitle;
+
+  /// My materials: delete confirmation body
+  ///
+  /// In en, this message translates to:
+  /// **'“{title}” will be removed from this device. Your practice history stays.'**
+  String materialsDeleteBody(String title);
+
+  /// My materials: import a TXT or JSON file
+  ///
+  /// In en, this message translates to:
+  /// **'Import TXT or JSON'**
+  String get materialsImport;
+
+  /// Native file picker title for material import
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a material file'**
+  String get materialsImportDialogTitle;
+
+  /// Native save dialog title for material export
+  ///
+  /// In en, this message translates to:
+  /// **'Save material'**
+  String get materialsSaveDialogTitle;
+
+  /// My materials: import failed, library unchanged
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed. Your library is unchanged.'**
+  String get materialsImportFailed;
+
+  /// My materials: file is not UTF-8 text
+  ///
+  /// In en, this message translates to:
+  /// **'Only UTF-8 text files can be imported.'**
+  String get materialsImportNotUtf8;
+
+  /// My materials: JSON library invalid, nothing imported
+  ///
+  /// In en, this message translates to:
+  /// **'Not a valid MorseCQ material file. Nothing was imported.'**
+  String get materialsImportInvalid;
+
+  /// My materials: import done
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} materials.'**
+  String materialsImported(int count);
+
+  /// Import: some ids already exist
+  ///
+  /// In en, this message translates to:
+  /// **'Some materials already exist'**
+  String get materialsDuplicateTitle;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Replace them'**
+  String get materialsDuplicateOverwrite;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Keep both (import as copies)'**
+  String get materialsDuplicateKeepCopy;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Skip them'**
+  String get materialsDuplicateSkip;
+
+  /// My materials: export the (filtered) library as JSON
+  ///
+  /// In en, this message translates to:
+  /// **'Export as JSON'**
+  String get materialsExportJson;
+
+  /// My materials: export done
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {count} materials.'**
+  String materialsExported(int count);
+
+  /// My materials: export failed
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed.'**
+  String get materialsExportFailed;
+
+  /// My materials: export audio
+  ///
+  /// In en, this message translates to:
+  /// **'Export audio (WAV)'**
+  String get materialsExportWav;
+
+  /// WAV export: character speed
+  ///
+  /// In en, this message translates to:
+  /// **'Character speed: {wpm} WPM'**
+  String materialsWavCharSpeed(int wpm);
+
+  /// WAV export: effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Effective speed: {wpm} WPM'**
+  String materialsWavEffSpeed(int wpm);
+
+  /// WAV export: tone
+  ///
+  /// In en, this message translates to:
+  /// **'Tone: {hz} Hz'**
+  String materialsWavTone(int hz);
+
+  /// WAV export: also save the answer text
+  ///
+  /// In en, this message translates to:
+  /// **'Include the answer text (.txt)'**
+  String get materialsWavWithAnswer;
+
+  /// WAV export: file format note
+  ///
+  /// In en, this message translates to:
+  /// **'16-bit mono WAV, 48 kHz.'**
+  String get materialsWavFormat;
+
+  /// WAV export: split into parts of at most 10 minutes
+  ///
+  /// In en, this message translates to:
+  /// **'Longer than 10 minutes: exported as {count} files.'**
+  String materialsWavParts(int count);
+
+  /// WAV export: done
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {count} audio files.'**
+  String materialsWavExported(int count);
+
+  /// Material practice: choose symbol set
+  ///
+  /// In en, this message translates to:
+  /// **'Practise with'**
+  String get materialsPracticeMode;
+
+  /// Material practice: learned symbols only
+  ///
+  /// In en, this message translates to:
+  /// **'Learned symbols only'**
+  String get materialsPracticeLearned;
+
+  /// Material practice: learned-only leaves some entries out
+  ///
+  /// In en, this message translates to:
+  /// **'Learned symbols only ({count} entries unavailable: they use symbols not learned yet)'**
+  String materialsPracticeLearnedPartial(int count);
+
+  /// Material practice: every supported symbol
+  ///
+  /// In en, this message translates to:
+  /// **'All Morse symbols'**
+  String get materialsPracticeAll;
+
+  /// Material practice: no usable entries in this mode
+  ///
+  /// In en, this message translates to:
+  /// **'No entries can be practised in this mode.'**
+  String get materialsPracticeNothing;
+
+  /// Welcome/unlock: learn without an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Try learning first'**
+  String get guestTryLearning;
+
+  /// Guest mode banner over the shell
+  ///
+  /// In en, this message translates to:
+  /// **'Guest learning: progress stays on this device. Chat needs an identity.'**
+  String get guestBanner;
+
+  /// Guest mode: go to create / restore / unlock an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Set up identity'**
+  String get guestGetIdentity;
+
+  /// Guest mode: title of a chat destination that needs an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Identity needed'**
+  String get guestIdentityTitle;
+
+  /// Guest mode: why chat needs an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.'**
+  String get guestIdentityBody;
+
+  /// Guest Me page: delete guest learning data
+  ///
+  /// In en, this message translates to:
+  /// **'Clear guest learning data'**
+  String get guestClearData;
+
+  /// Guest Me page: what clearing does
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.'**
+  String get guestClearDataBody;
+
+  /// Guest clear dialog: confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get guestClearConfirm;
+
+  /// Snack: guest data cleared
+  ///
+  /// In en, this message translates to:
+  /// **'Guest learning data cleared.'**
+  String get guestCleared;
+
+  /// Snack: clearing guest data failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t clear the guest data.'**
+  String get guestClearFailed;
+
+  /// Banner: guest progress did not move to the new identity yet
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity is ready, but your guest learning progress hasn\'t moved to it yet. It is safe on this device.'**
+  String get guestMigrationFailed;
+
+  /// Banner after restore/unlock from guest mode: choose progress
+  ///
+  /// In en, this message translates to:
+  /// **'You also have guest learning progress. The restored identity\'s progress is in use; nothing was merged.'**
+  String get guestChoiceBody;
+
+  /// Banner action: keep restored progress
+  ///
+  /// In en, this message translates to:
+  /// **'Keep restored'**
+  String get guestChoiceKeep;
+
+  /// Banner action: replace with guest progress (restored data is kept aside)
+  ///
+  /// In en, this message translates to:
+  /// **'Use guest progress'**
+  String get guestChoiceUseGuest;
+
+  /// Placement assessment: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Check my level'**
+  String get placementTitle;
+
+  /// Placement offer: start the assessment
+  ///
+  /// In en, this message translates to:
+  /// **'Check my current level'**
+  String get placementCheckLevel;
+
+  /// Placement: start the course at lesson one
+  ///
+  /// In en, this message translates to:
+  /// **'Start from zero'**
+  String get placementFromZero;
+
+  /// Learn home: offer for brand-new learners
+  ///
+  /// In en, this message translates to:
+  /// **'New to Morse, or already copying?'**
+  String get placementOfferTitle;
+
+  /// Learn home: placement offer explanation
+  ///
+  /// In en, this message translates to:
+  /// **'A short check can suggest where to start. It is optional and changes nothing until you choose.'**
+  String get placementOfferBody;
+
+  /// Placement intro
+  ///
+  /// In en, this message translates to:
+  /// **'About 3–5 minutes of copying in five steps: Koch symbols in groups at rising speed, then short words. It is a rough guide from a small sample, not a certificate. Stop whenever you like.'**
+  String get placementIntro;
+
+  /// Placement: start
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get placementStart;
+
+  /// Placement: skip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get placementSkip;
+
+  /// Placement: stop early and see the suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get placementStop;
+
+  /// Placement: current step and effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total} · {wpm} WPM effective'**
+  String placementTierProgress(int step, int total, int wpm);
+
+  /// Placement: step passed
+  ///
+  /// In en, this message translates to:
+  /// **'Well copied. Next step is faster.'**
+  String get placementTierPassed;
+
+  /// Placement: step below 90 percent, check ends
+  ///
+  /// In en, this message translates to:
+  /// **'That step was below 90%, so the check ends here.'**
+  String get placementTierStopped;
+
+  /// Placement: continue to the next step
+  ///
+  /// In en, this message translates to:
+  /// **'Next step'**
+  String get placementNextTier;
+
+  /// Placement result headline
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested start: lesson {lesson}'**
+  String placementSuggestion(int lesson);
+
+  /// Placement result: verified Koch prefix
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} Koch symbols confirmed in order.'**
+  String placementVerified(int count, int total);
+
+  /// Placement result: limitations
+  ///
+  /// In en, this message translates to:
+  /// **'Based on a short sample: symbols you were not tested on stay untested, and nothing is marked as learned. You can change the lesson any time.'**
+  String get placementLimits;
+
+  /// Placement result: apply the suggested lesson
+  ///
+  /// In en, this message translates to:
+  /// **'Start at lesson {lesson}'**
+  String placementAdopt(int lesson);
+
+  /// Conversation: button back to the newest messages after jumping to an older search result
+  ///
+  /// In en, this message translates to:
+  /// **'Latest messages'**
+  String get chatJumpToLatest;
+
+  /// Snack: a search result or bookmark points at a message that no longer exists
+  ///
+  /// In en, this message translates to:
+  /// **'That message is no longer in this conversation.'**
+  String get chatMessageGone;
+
+  /// Conversation list preview of a received message while listen-only training hides it
+  ///
+  /// In en, this message translates to:
+  /// **'New message — listen to copy it'**
+  String get chatListenOnlyPreview;
+
+  /// Save-as-material confirmation: save the supported part
+  ///
+  /// In en, this message translates to:
+  /// **'Save the rest'**
+  String get chatSaveMaterialConfirm;
+
+  /// JSON import preview dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} materials?'**
+  String materialsImportConfirm(int count);
+
+  /// My materials: export the original text as a .txt file
+  ///
+  /// In en, this message translates to:
+  /// **'Export as text (TXT)'**
+  String get materialsExportTxt;
+
+  /// Backup export: ask whether to include saved recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Include saved recordings?'**
+  String get accountBackupMediaTitle;
+
+  /// Backup export: recordings count and size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved recordings ({size} MB). Their titles, notes and positions are always in the backup; the audio only if you include it.'**
+  String accountBackupMediaBody(int count, String size);
+
+  /// Backup export: recordings too large to include
+  ///
+  /// In en, this message translates to:
+  /// **'Saved recordings ({size} MB) are too large to put in a backup; only their titles, notes and positions are included.'**
+  String accountBackupMediaTooLarge(String size);
+
+  /// Backup export: include recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Include recordings'**
+  String get accountBackupMediaInclude;
+
+  /// Backup export: continue without recordings (default)
+  ///
+  /// In en, this message translates to:
+  /// **'Without recordings'**
+  String get accountBackupMediaSkip;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

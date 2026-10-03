@@ -27,6 +27,7 @@ import 'ui/account/backup_file_gateway.dart';
 import 'ui/learn/settings/training_settings_entry.dart';
 import 'ui/shell/app_shell.dart';
 import 'ui/theme.dart';
+import 'training/guest_profile.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +89,7 @@ class MorsecqApp extends StatelessWidget {
     super.key,
     required this.backend,
     this.backupFiles,
+    this.guestStore,
     this.localeStore,
     this.desktopShell,
     this.notifications,
@@ -98,6 +100,9 @@ class MorsecqApp extends StatelessWidget {
 
   /// Test hook: replaces the native save/pick dialogs.
   final BackupFileGateway? backupFiles;
+
+  /// Guest learning storage; defaults to app support storage.
+  final GuestStore? guestStore;
 
   /// Persistence for app preferences; memory when null.
   final KeyValueStore? localeStore;
@@ -116,6 +121,7 @@ class MorsecqApp extends StatelessWidget {
     return AppScope(
       factory: backend,
       backupFiles: backupFiles,
+      guestStore: guestStore,
       localeStore: localeStore,
       desktopShell: desktopShell,
       notificationApis: notifications,

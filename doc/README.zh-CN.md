@@ -27,6 +27,10 @@
 
 ## 规划（方案）
 
+- [plans/2026-10-03-functional-improvements.zh-CN.md](plans/2026-10-03-functional-improvements.zh-CN.md) /
+  [English](plans/2026-10-03-functional-improvements.md) —— 八项待实现功能的详细规格与 AI
+  交接：每日计划、交互 QSO、聊天练习、节奏回放、体验与水平测试、素材、消息管理、
+  音频工作台；含数据兼容、验收条件和分阶段实施任务。仅文档，未改变当前产品行为。
 - [plans/2026-10-03-interface-languages.zh-CN.md](plans/2026-10-03-interface-languages.zh-CN.md) /
   [English](plans/2026-10-03-interface-languages.md) —— 新增八种界面语言、完整 ARB
   翻译与手机/桌面验证。

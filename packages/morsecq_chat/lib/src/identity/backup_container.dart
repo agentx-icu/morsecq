@@ -24,6 +24,9 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 ///                         the profile on disk)
 ///   * `training/<path>`   every file under `dataDirectory()` (morse_trainer
 ///                         progress and anything else other modules stored)
+///   * `media/recordings/<name>`  saved workbench recordings, only when the
+///                         learner opted in on export. Additive: older
+///                         versions decode the container and ignore them.
 ///
 /// A container is not itself encrypted: the profile inside is, and the
 /// training data is not secret. Paths are validated on decode (no `..`, no
@@ -37,6 +40,7 @@ class BackupContainer {
   static const String identityEntry = 'identity.json';
   static const String profileEntry = 'tox_profile.tox';
   static const String trainingPrefix = 'training/';
+  static const String mediaPrefix = 'media/recordings/';
 
   /// Archive path → bytes, in insertion order.
   final Map<String, Uint8List> entries;
@@ -47,6 +51,13 @@ class BackupContainer {
 
   Iterable<MapEntry<String, Uint8List>> get trainingFiles =>
       entries.entries.where((e) => e.key.startsWith(trainingPrefix));
+
+  /// Recordings: plain file names directly under [mediaPrefix].
+  Iterable<MapEntry<String, Uint8List>> get mediaFiles => entries.entries.where(
+    (e) =>
+        e.key.startsWith(mediaPrefix) &&
+        !e.key.substring(mediaPrefix.length).contains('/'),
+  );
 
   Uint8List encode() {
     final out = BytesBuilder(copy: false);

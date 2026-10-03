@@ -79,6 +79,9 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _backgrounded = isDrillBackground(state);
     if (_backgrounded) {
       _playback?.player.stop();
+      _session.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      _session.resume();
     }
   }
 
@@ -97,7 +100,12 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _play();
   }
 
+  /// The current round was heard to the end once. A replay of an
+  /// interrupted round (background, stop) is not assistance.
+  bool _heard = false;
+
   void _onPlayerEvent(PlayerEvent event) {
+    if (event is PlayerCompleted) _heard = true;
     if (event is PlayerCompleted || event is PlayerStopped) {
       if (mounted && _playing) {
         setState(() => _playing = false);
@@ -114,12 +122,20 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     playback.player.play(_session.currentTimeline);
   }
 
+  /// Playing the round again is assistance (functional spec §3.3): the
+  /// session still counts as practice but no longer unlocks or feeds SRS.
+  void _replay() {
+    if (_heard) _session.markReplay();
+    _play();
+  }
+
   void _submit() {
     if (_phase != _Phase.listen || _session.isFinished) {
       return;
     }
     _playback?.player.stop();
     final round = _session.submit(_answer.text);
+    _heard = false;
     _answer.clear();
     setState(() {
       _lastRound = round;
@@ -270,7 +286,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
             ),
             const SizedBox(width: 12),
             OutlinedButton.icon(
-              onPressed: ready && !_playing ? _play : null,
+              onPressed: ready && !_playing ? _replay : null,
               icon: const Icon(Icons.replay),
               label: Text(s.learnReplay),
             ),
@@ -284,6 +300,17 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
               s.learnNoFeedbackWarning,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        if (_session.isAssisted)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              s.learnReplayAssistedNote,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

@@ -49,9 +49,9 @@ final class ListenController extends ChangeNotifier {
     bool ownsSource = false,
     this.sampleRate = 48000,
     ListenSettings settings = const ListenSettings(),
-  })  : _source = source,
-        _ownsSource = ownsSource,
-        _settings = settings {
+  }) : _source = source,
+       _ownsSource = ownsSource,
+       _settings = settings {
     _decoder = _buildDecoder();
   }
 
@@ -59,8 +59,9 @@ final class ListenController extends ChangeNotifier {
   final bool _ownsSource;
   final int sampleRate;
 
-  final ValueNotifier<ListenMeter> meter =
-      ValueNotifier<ListenMeter>(const ListenMeter());
+  final ValueNotifier<ListenMeter> meter = ValueNotifier<ListenMeter>(
+    const ListenMeter(),
+  );
 
   ListenSettings _settings;
   late AudioMorseDecoder _decoder;
@@ -105,10 +106,9 @@ final class ListenController extends ChangeNotifier {
   bool get isToneLocked => _decoder.isToneLocked;
 
   /// Speed estimate once at least one mark has been heard, else null.
-  double? get wpm =>
-      _decoder.text.isEmpty && _decoder.pendingPattern.isEmpty
-          ? null
-          : _decoder.estimatedWpm;
+  double? get wpm => _decoder.text.isEmpty && _decoder.pendingPattern.isEmpty
+      ? null
+      : _decoder.estimatedWpm;
 
   // ---------------------------------------------------------------------------
   // Capture
@@ -287,7 +287,8 @@ final class ListenController extends ChangeNotifier {
   /// decoded so far is kept in [text].
   void updateSettings(ListenSettings next) {
     if (next == _settings) return;
-    final rebuild = next.blockSize != _settings.blockSize ||
+    final rebuild =
+        next.blockSize != _settings.blockSize ||
         next.minElementMs != _settings.minElementMs;
     _settings = next;
     if (rebuild) {

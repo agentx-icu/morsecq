@@ -120,7 +120,12 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
   /// each "succeeds". A note to self must never appear here.
   final List<String> sentTextPeers = [];
 
+  /// When set, every C2C text send throws (a drain then marks the queued
+  /// row failed).
+  bool failSends = false;
+
   int _recordSend(ffi.Pointer<pkgffi.Utf8> peer) {
+    if (failSends) throw StateError('fake: native send failed');
     sentTextPeers.add(peer.toDartString());
     return 1;
   }

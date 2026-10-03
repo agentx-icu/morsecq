@@ -1,5 +1,7 @@
 import 'char_stats.dart';
 import 'confusion_matrix.dart';
+import 'daily_plan.dart';
+import 'exercise.dart';
 import 'koch_course.dart';
 import 'session_score.dart';
 import 'session_summary.dart';
@@ -22,6 +24,10 @@ final class TrainerProgress {
     this.maxHistory = 500,
     int? lifetimeSessions,
     int? lifetimeChars,
+    List<String> committedIds = const <String>[],
+    this.dailyPlan,
+    this.previousPlan,
+    this.speedAdviceKey,
   }) : assert(currentLesson >= 1, 'currentLesson must be >= 1'),
        assert(streakDays >= 0, 'streakDays must be >= 0'),
        assert(dailyGoalChars >= 0, 'dailyGoalChars must be >= 0'),
@@ -38,7 +44,17 @@ final class TrainerProgress {
            lifetimeChars ??
            history.fold<int>(0, (sum, s) => sum + s.totalChars),
        srs = srs ?? SrsScheduler(),
-       confusion = confusion ?? ConfusionMatrix();
+       confusion = confusion ?? ConfusionMatrix(),
+       committedIds = List<String>.unmodifiable(committedIds);
+
+  /// How many committed exercise ids are remembered for de-duplication.
+  ///
+  /// Far more than [maxHistory], so trimming history never forgets an id a
+  /// retry could still submit. Retries outlive a restart only through
+  /// unfinished drafts (a finished QSO awaiting its save), which are
+  /// committed the next time their screen opens; ten thousand later
+  /// exercises before that happens is not a reachable state.
+  static const int maxCommittedIds = 10000;
 
   /// 1-based Koch lesson the learner is working on.
   final int currentLesson;
@@ -70,6 +86,21 @@ final class TrainerProgress {
 
   /// Symbols ever practised; unlike [history] never trimmed.
   final int lifetimeChars;
+
+  /// Exercise ids already credited, oldest first (see [recordExercise]).
+  final List<String> committedIds;
+
+  /// Today's (or the latest) daily plan, committed with the progress so a
+  /// step's completion and its exercise land in one write.
+  final DailyPlan? dailyPlan;
+
+  /// The plan of an earlier day, kept for inspection only.
+  final DailyPlan? previousPlan;
+
+  /// Evidence batch the last speed recommendation was shown or applied for.
+  final String? speedAdviceKey;
+
+  bool hasCommitted(String id) => committedIds.contains(id);
 
   /// Local midnight of [when].
   static DateTime dayOf(DateTime when) =>
@@ -194,6 +225,78 @@ final class TrainerProgress {
 
   TrainerProgress withLesson(int lesson) => copyWith(currentLesson: lesson);
 
+  /// Credits one exercise according to [credit] (spec §3.3), exactly once
+  /// per [SessionSummary.id]: a repeated submission of the same id returns
+  /// this progress unchanged, also after a restart.
+  ///
+  /// Receive statistics, confusions and SRS only take symbols in [learned]
+  /// (all symbols when null): unknown-to-the-course symbols may be practised
+  /// but never enter the learned-symbol SRS. Lesson unlocks are the caller's
+  /// decision ([advanceIfPassed]) and only when [ExerciseCredit.unlock].
+  TrainerProgress recordExercise(
+    SessionScore score,
+    SessionSummary summary, {
+    required ExerciseCredit credit,
+    required DateTime now,
+    Set<String>? learned,
+    double srsPassAccuracy = 0.9,
+  }) {
+    final id = summary.id;
+    if (id != null && hasCommitted(id)) return this;
+    if (!credit.activity) {
+      return id == null ? this : copyWith(committedIds: _withId(id));
+    }
+    var next = recordPractice(summary, now: now);
+    if (id != null) next = next.copyWith(committedIds: _withId(id));
+    if (!credit.receiveStats) return next;
+    bool keep(String c) => learned == null || learned.contains(c);
+    final stats = <String, CharStats>{
+      for (final e in score.charStats.entries)
+        if (keep(e.key)) e.key: e.value,
+    };
+    final filtered = ConfusionMatrix();
+    for (final target in score.confusion.targets) {
+      if (target != ConfusionMatrix.missed && !keep(target)) continue;
+      for (final e in score.confusion.rowFor(target).entries) {
+        filtered.record(target, e.key, times: e.value);
+      }
+    }
+    return next.copyWith(
+      charStats: CharStats.merge(charStats, stats),
+      srs: srs.applyCharStats(stats, now: now, passAccuracy: srsPassAccuracy),
+      confusion: confusion.copy()..merge(filtered),
+    );
+  }
+
+  List<String> _withId(String id) {
+    final ids = <String>[...committedIds, id];
+    // Evict the oldest ordinary ids. Ids of results that can be parked
+    // across launches (prefix `qso_`, one per finished QSO) are never
+    // evicted, so a parked result can never be credited twice.
+    var excess = ids.length - maxCommittedIds;
+    if (excess > 0) {
+      ids.removeWhere((x) => excess-- > 0 && !x.startsWith(protectedIdPrefix));
+    }
+    return ids;
+  }
+
+  /// See [_withId].
+  static const String protectedIdPrefix = 'qso_';
+
+  /// Installs [plan] as today's plan; an older plan moves to [previousPlan].
+  TrainerProgress withDailyPlan(DailyPlan plan) {
+    final current = dailyPlan;
+    if (current != null && current.id == plan.id) {
+      return copyWith(dailyPlan: plan);
+    }
+    return copyWith(
+      dailyPlan: plan,
+      previousPlan: current == null || current.date == plan.date
+          ? previousPlan
+          : current,
+    );
+  }
+
   TrainerProgress copyWith({
     int? currentLesson,
     Map<String, CharStats>? charStats,
@@ -206,6 +309,10 @@ final class TrainerProgress {
     int? maxHistory,
     int? lifetimeSessions,
     int? lifetimeChars,
+    List<String>? committedIds,
+    DailyPlan? dailyPlan,
+    DailyPlan? previousPlan,
+    String? speedAdviceKey,
   }) => TrainerProgress(
     currentLesson: currentLesson ?? this.currentLesson,
     charStats: charStats ?? this.charStats,
@@ -218,6 +325,10 @@ final class TrainerProgress {
     maxHistory: maxHistory ?? this.maxHistory,
     lifetimeSessions: lifetimeSessions ?? this.lifetimeSessions,
     lifetimeChars: lifetimeChars ?? this.lifetimeChars,
+    committedIds: committedIds ?? this.committedIds,
+    dailyPlan: dailyPlan ?? this.dailyPlan,
+    previousPlan: previousPlan ?? this.previousPlan,
+    speedAdviceKey: speedAdviceKey ?? this.speedAdviceKey,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -233,6 +344,10 @@ final class TrainerProgress {
     'maxHistory': maxHistory,
     'lifetimeSessions': lifetimeSessions,
     'lifetimeChars': lifetimeChars,
+    if (committedIds.isNotEmpty) 'committedIds': committedIds,
+    if (dailyPlan != null) 'dailyPlan': dailyPlan!.toJson(),
+    if (previousPlan != null) 'previousPlan': previousPlan!.toJson(),
+    if (speedAdviceKey != null) 'speedAdviceKey': speedAdviceKey,
   };
 
   /// Reads [toJson] output. Values are taken as stored, so a store can
@@ -248,6 +363,8 @@ final class TrainerProgress {
         .toList();
     final lifetimeSessions = (json['lifetimeSessions'] as num?)?.toInt();
     final lifetimeChars = (json['lifetimeChars'] as num?)?.toInt();
+    final rawPlan = json['dailyPlan'];
+    final rawPrevious = json['previousPlan'];
     return TrainerProgress(
       currentLesson: (json['currentLesson'] as num?)?.toInt() ?? 1,
       charStats: CharStats.mapFromJson(
@@ -267,6 +384,16 @@ final class TrainerProgress {
       // taken as stored so a store can reject inconsistent ones.
       lifetimeSessions: lifetimeSessions,
       lifetimeChars: lifetimeChars,
+      committedIds:
+          (json['committedIds'] as List<Object?>?)?.cast<String>() ??
+          const <String>[],
+      dailyPlan: rawPlan is Map<String, Object?>
+          ? DailyPlan.fromJson(rawPlan)
+          : null,
+      previousPlan: rawPrevious is Map<String, Object?>
+          ? DailyPlan.fromJson(rawPrevious)
+          : null,
+      speedAdviceKey: json['speedAdviceKey'] as String?,
     );
   }
 

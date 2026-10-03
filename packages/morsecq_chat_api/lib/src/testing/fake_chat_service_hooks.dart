@@ -60,6 +60,11 @@ extension FakeChatServiceTestHooks on FakeChatService {
   void failMessage(String messageId) =>
       _setStatus(messageId, MessageStatus.failed);
 
+  /// The transport claimed one of our pending messages (it is now
+  /// `sending`): cancelling it reports `stateChanged`.
+  void claimMessage(String messageId) =>
+      _setStatus(messageId, MessageStatus.sending);
+
   /// Delivers an inbound message; bumps the conversation's unread count.
   ChatMessage receiveMessage(
     String conversationId,

@@ -36,13 +36,12 @@ final class ListenSettings {
     int? minElementMs,
     bool? autoTune,
     double? manualHz,
-  }) =>
-      ListenSettings(
-        blockSize: blockSize ?? this.blockSize,
-        minElementMs: minElementMs ?? this.minElementMs,
-        autoTune: autoTune ?? this.autoTune,
-        manualHz: manualHz ?? this.manualHz,
-      );
+  }) => ListenSettings(
+    blockSize: blockSize ?? this.blockSize,
+    minElementMs: minElementMs ?? this.minElementMs,
+    autoTune: autoTune ?? this.autoTune,
+    manualHz: manualHz ?? this.manualHz,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -96,10 +95,7 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: <Widget>[
           ListTile(
-            title: Text(
-              s.listenSettings,
-              style: theme.textTheme.titleMedium,
-            ),
+            title: Text(s.listenSettings, style: theme.textTheme.titleMedium),
           ),
           SwitchListTile(
             title: Text(s.listenAutoTune),
@@ -115,10 +111,7 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
               child: SegmentedButton<int>(
                 segments: <ButtonSegment<int>>[
                   for (final size in ListenSettings.blockSizes)
-                    ButtonSegment<int>(
-                      value: size,
-                      label: Text('$size'),
-                    ),
+                    ButtonSegment<int>(value: size, label: Text('$size')),
                 ],
                 selected: <int>{_draft.blockSize},
                 showSelectedIcon: false,
@@ -157,7 +150,8 @@ class _ListenSettingsSheetState extends State<ListenSettingsSheet> {
             label: s.listenMsValue(_draft.minElementMs),
             onChanged: (v) =>
                 _apply(_draft.copyWith(minElementMs: v.round()), notify: false),
-            onChangeEnd: (v) => _apply(_draft.copyWith(minElementMs: v.round())),
+            onChangeEnd: (v) =>
+                _apply(_draft.copyWith(minElementMs: v.round())),
           ),
         ],
       ),

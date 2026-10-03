@@ -10,6 +10,7 @@ String tipFor(S s, SendIssue issue) {
   return switch (issue.kind) {
     SendIssueKind.ditTooLong => s.learnTipDitTooLong(_x(s, ratio)),
     SendIssueKind.dahTooShort => s.learnTipDahTooShort(_x(s, ratio)),
+    SendIssueKind.dahTooLong => s.learnTipDahTooLong(_x(s, ratio)),
     SendIssueKind.intraGapTooLong => s.learnTipIntraGapTooLong(_x(s, ratio)),
     SendIssueKind.charGapTooShort => s.learnTipCharGapTooShort(_x(s, ratio)),
     SendIssueKind.wordGapTooShort => s.learnTipWordGapTooShort(_x(s, ratio)),
@@ -23,6 +24,7 @@ String tipFor(S s, SendIssue issue) {
 String titleFor(S s, SendIssueKind kind) => switch (kind) {
   SendIssueKind.ditTooLong => s.learnTipDitTooLongTitle,
   SendIssueKind.dahTooShort => s.learnTipDahTooShortTitle,
+  SendIssueKind.dahTooLong => s.learnTipDahTooLongTitle,
   SendIssueKind.intraGapTooLong => s.learnTipIntraGapTooLongTitle,
   SendIssueKind.charGapTooShort => s.learnTipCharGapTooShortTitle,
   SendIssueKind.wordGapTooShort => s.learnTipWordGapTooShortTitle,
@@ -46,6 +48,7 @@ String detailFor(S s, SendIssue issue) {
   return switch (issue.kind) {
     SendIssueKind.ditTooLong => s.learnIssueDetailDitTooLong(n, total, x),
     SendIssueKind.dahTooShort => s.learnIssueDetailDahTooShort(n, total, x),
+    SendIssueKind.dahTooLong => s.learnIssueDetailDahTooLong(n, total, x),
     SendIssueKind.intraGapTooLong => s.learnIssueDetailIntraGapTooLong(
       n,
       total,

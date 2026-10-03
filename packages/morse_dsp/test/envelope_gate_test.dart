@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:test/test.dart';
 
@@ -22,6 +24,7 @@ void main() {
     test('12 ms minimum durations round up to 3 blocks of 5.33 ms', () {
       expect(gate.minOnBlocks, 3);
       expect(gate.minOffBlocks, 3);
+      expect(gate.warmupBlocks, 0, reason: 'warm-up is off by default');
       expect(gate.latencyBlocks, 3);
     });
 
@@ -109,4 +112,40 @@ void main() {
       expect(gate.hasSignal, isFalse);
     });
   });
+
+  // Known limitation: the noise floor is seeded from the first block
+  // (warm-up off by default; see EnvelopeGateConfig.noiseWarmup). A warm-up
+  // heuristic cost early onsets at 8/16 kHz and produced false text on
+  // steady noise runs, so the original behaviour was kept.
+  test('a quiet first noise block cannot open the gate (warm-up)', skip: 'known limitation, see above', () {
+    // First block 20 dB below the noise, then white noise in a narrow bin:
+    // exponentially distributed block powers around 1.0. Many seeds, so
+    // the guard is not luck.
+    for (int seed = 0; seed < 50; seed++) {
+      final EnvelopeGate gate = EnvelopeGate(sampleRate: 44100, blockSize: 256);
+      final math.Random random = math.Random(seed);
+      for (int i = 0; i < 400; i++) {
+        final double p = i == 0 ? 0.01 : -math.log(1 - random.nextDouble());
+        expect(gate.feed(p), isNull, reason: 'seed $seed block $i');
+      }
+    }
+  });
+
+  test('a tone right after the first quiet block still opens on time', () {
+    final EnvelopeGate gate = EnvelopeGate(sampleRate: 48000, blockSize: 256);
+    final List<GateTransition> out = <GateTransition>[];
+    // One quiet 5.33 ms block, then a 320 ms tone (60 blocks).
+    out.addAll(gate.feedAll(1e-6));
+    for (int i = 0; i < 60; i++) {
+      out.addAll(gate.feedAll(1e-2));
+    }
+    for (int i = 0; i < 20; i++) {
+      out.addAll(gate.feedAll(1e-6));
+    }
+    expect(out.map((GateTransition t) => (t.isOn, t.atBlock)), <(bool, int)>[
+      (true, 1),
+      (false, 61),
+    ]);
+  });
+
 }

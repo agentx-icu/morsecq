@@ -67,5 +67,6 @@ class ReferencePlaybackSettings extends ChangeNotifier {
   }
 
   /// The timing these settings describe.
-  MorseTiming get timing => MorseTiming(wpm: _wpm, farnsworthWpm: _farnsworthWpm);
+  MorseTiming get timing =>
+      MorseTiming(wpm: _wpm, farnsworthWpm: _farnsworthWpm);
 }

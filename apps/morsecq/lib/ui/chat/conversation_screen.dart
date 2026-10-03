@@ -15,14 +15,17 @@ import 'conversation_auto_play.dart';
 import 'conversation_target.dart';
 import 'conversation_header.dart';
 import 'conversation_history.dart';
+import 'conversation_bubble.dart';
+import 'conversation_learning.dart';
+import 'conversation_menu.dart';
+import 'search/message_bookmarks.dart';
 import 'conversation_timeline.dart';
-import 'message_bubble.dart';
 import 'message_input.dart';
 import 'local_message_sends.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
 
-part 'conversation_screen_actions.dart';
+part 'conversation_screen_menu.dart';
 
 /// One conversation (c2c or group): history + live events, Morse bubbles,
 /// training mode, auto-play, playback settings and the keyed input.
@@ -46,34 +49,54 @@ class ConversationScreen extends StatefulWidget {
   State<ConversationScreen> createState() => _ConversationScreenState();
 }
 
-class _ConversationScreenState extends State<ConversationScreen> {
+class _ConversationScreenState extends State<ConversationScreen>
+    with _ConversationMenuActions {
+  @override
   late final ChatService _service;
+  @override
   late final MorsePlaybackController _playback;
   bool _ownsPlayback = false;
   late final ConversationAutoPlay _autoPlay = ConversationAutoPlay(_playback);
   late final ConversationAttention _attention;
   bool _sessionStartedWhileLoading = false;
   late final StreamSubscription<ChatMessage> _events;
+  @override
   late final LocalMessageSends _localSends;
+  @override
   final ScrollController _scroll = ScrollController();
   final GlobalKey _timelineOrigin = GlobalKey();
+  @override
   final List<ChatMessage> _older = <ChatMessage>[];
+  @override
   final List<ChatMessage> _messages = <ChatMessage>[];
+  @override
   final Set<String> _revealed = <String>{};
+  @override
   final Map<String, ChatMessage> _pendingStatuses = {};
+  @override
   bool _loading = true;
+  @override
   bool _loadingOlder = false;
+  @override
   bool _hasMore = false;
+  @override
   bool _clearing = false;
   bool _following = false;
+  @override
   int _historyLimit = 50;
+  @override
   int _generation = 0;
+  @override
   int _newMessages = 0;
+  @override
   Object? _error;
+  @override
   Object? _olderError;
 
+  @override
   String get _id => widget.target.id;
 
+  @override
   bool get _isGroup => widget.target.kind == ConversationKind.group;
 
   @override
@@ -100,6 +123,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ..addListener(_onLocalSend);
     _scroll.addListener(_onScroll);
     unawaited(_load());
+    unawaited(_initBookmarks());
   }
 
   @override
@@ -111,6 +135,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   void dispose() {
+    _bookmarkStore?.removeListener(_onBookmarks);
     _autoPlay.dispose();
     _attention.dispose();
     unawaited(_events.cancel());
@@ -137,6 +162,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
+  @override
   Future<void> _load() async {
     final int generation = _generation;
     _sessionStartedWhileLoading = false;
@@ -181,6 +207,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         _messages.isEmpty) {
       return;
     }
+    if (_jumpedAway) return _loadOlderAround();
     final int generation = _generation;
     final String origin = _messages.first.id;
     final int loaded = _older.length + _messages.length;
@@ -237,6 +264,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _pendingStatuses[message.id] = message;
       return;
     }
+    if (added && _jumpedAway && !ownSend) {
+      // Live rows are not appended to an older window: park them (merged
+      // when paging reaches the live end) and offer the latest.
+      _parked.add(message);
+      setState(() => _newMessages++);
+      return;
+    }
+    if (added && _jumpedAway) {
+      _showLatest();
+      return;
+    }
     final bool follow = _loading || _following || _nearBottom;
     setState(() {
       if (index >= 0) {
@@ -259,10 +297,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
       !_scroll.hasClients || _scroll.position.extentAfter <= 80;
 
   void _onScroll() {
-    if (_newMessages > 0 && _nearBottom) {
+    // The bottom of a jumped (historical) window is not the live end: it
+    // must not clear the arrival count or mark the conversation read.
+    if (_newMessages > 0 && _nearBottom && !_jumpedAway) {
       setState(() => _newMessages = 0);
       _attention.markRead();
     }
+    if (_jumpedAway && _nearBottom) unawaited(_loadNewerAround());
     if (!_following &&
         _scroll.hasClients &&
         _olderError == null &&
@@ -271,7 +312,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
-  void _scrollToEnd([int remainingPasses = 8]) {
+  @override
+  void _markRead() => _attention.markRead();
+
+  @override
+  void _scrollToEnd() => _scrollToEndIn(8);
+
+  void _scrollToEndIn(int remainingPasses) {
     final int generation = _generation;
     _following = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -285,7 +332,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         if (remainingPasses > 1 &&
             _scroll.hasClients &&
             _scroll.position.extentAfter > 1) {
-          _scrollToEnd(remainingPasses - 1);
+          _scrollToEndIn(remainingPasses - 1);
         } else {
           _following = false;
         }
@@ -295,64 +342,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     WidgetsBinding.instance.ensureVisualUpdate();
   }
 
-  void _showLatest() {
-    setState(() => _newMessages = 0);
-    _scrollToEnd();
-    _attention.markRead();
-  }
-
   void _onLocalSend() {
     final message = _localSends.latest!;
     if (message.conversationId != _id) return;
     _onEvent(_pendingStatuses.remove(message.id) ?? message, ownSend: true);
-  }
-
-  Future<void> _clearHistory() async {
-    final S s = context.s;
-    final bool ok = await confirm(
-      context,
-      title: s.chatClearHistory,
-      body: s.chatClearHistoryBody,
-      confirmLabel: s.chatClearHistory,
-    );
-    if (!ok || !mounted || _clearing) return;
-    final bool wasLoading = _loading;
-    final ids = {
-      for (final m in [..._older, ..._messages]) m.id,
-      ..._pendingStatuses.keys,
-    };
-    // Invalidate outstanding loads before deletion. New arrivals remain live.
-    _generation++;
-    setState(() {
-      _clearing = true;
-      _loading = false;
-      _loadingOlder = false;
-    });
-    // A message being deleted must not keep sounding or wait in the queue.
-    _playback.cancelMessages(ids);
-    try {
-      await _service.clearHistory(_id);
-      _localSends.recordClear(_id, ids);
-      if (!mounted) return;
-      setState(() {
-        _messages.removeWhere((m) => ids.contains(m.id));
-        _older.clear();
-        _revealed.clear();
-        _pendingStatuses.clear();
-        _historyLimit = 50;
-        _hasMore = false;
-        _newMessages = 0;
-        _error = _olderError = null;
-      });
-      _scrollToEnd();
-    } on Object catch (e) {
-      if (mounted) {
-        showSnack(context, describeChatError(s, e));
-        if (wasLoading) unawaited(_load());
-      }
-    } finally {
-      if (mounted) setState(() => _clearing = false);
-    }
   }
 
   @override
@@ -428,27 +421,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
         onLoadOlder: _clearing ? null : () => unawaited(_loadOlder()),
         newCount: _newMessages,
         onLatest: _showLatest,
+        showLatest: _jumpedAway,
       ),
     );
   }
 
   Widget _bubble(ChatMessage m, MorsePlaybackSettings settings) =>
-      MessageBubble(
-        key: ValueKey<String>(m.id),
+      conversationBubble(
+        context,
         message: m,
-        trainingMode: settings.trainingMode,
+        settings: settings,
+        playback: _playback,
+        isGroup: _isGroup,
         revealed: _revealed.contains(m.id),
-        playing: _playback.playingId == m.id,
-        activeMark: _playback.activeMarkFor(m.id),
-        showSender: _isGroup,
         onReveal: () => setState(() => _revealed.add(m.id)),
-        onPlay: () => unawaited(
-          _playback.toggle(
-            m.id,
-            m.text,
-            settings.timing,
-            toneHz: settings.toneHz,
-          ),
-        ),
+        fallbackTitle: widget.target.title,
+        service: _service,
+        isSelf: widget.target.isSelf,
+        bookmarked: _bookmarkStore?.contains(_id, m.id) ?? false,
       );
 }

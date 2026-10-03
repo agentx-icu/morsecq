@@ -38,9 +38,7 @@ void main() {
     expect(icon.semanticLabel, tip);
   });
 
-  testWidgets('sending, sent and failed each have their glyph', (
-    tester,
-  ) async {
+  testWidgets('sending, sent and failed each have their glyph', (tester) async {
     final ColorScheme scheme = MorsecqTheme.light().colorScheme;
 
     await _pump(tester, MessageStatus.sending);

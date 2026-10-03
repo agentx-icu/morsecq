@@ -1,21 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../../training/send_detail_store.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
-import '../../responsive.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
+import 'copy_from_memory_switch.dart';
 import 'keyer_legend.dart';
 import 'send_live_view.dart';
 import 'send_result_view.dart';
+import 'send_targeted_practice.dart';
+import 'send_timeline_view.dart';
 
 /// Send practice: a target to key, an on-screen straight key or paddles (also
 /// driven by Space / left Ctrl / right Ctrl when focused), live decode, and
@@ -30,8 +34,17 @@ class SendPracticeScreen extends StatefulWidget {
     required this.controller,
     required this.playback,
     this.session,
+    this.nextSession,
+    this.maxAttempts,
     this.screenWake = const WakelockScreenWake(),
   });
+
+  /// Targeted practice offers this many attempts, then only Done.
+  final int? maxAttempts;
+
+  /// Makes the session for "Try another" (daily-plan send steps); defaults
+  /// to `controller.startSendSession()`.
+  final Future<SendSession> Function()? nextSession;
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
@@ -62,6 +75,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   int _keyerGeneration = 0;
   Timer? _tick;
   SendDiagnostics? _result;
+  SendTimeline? _timeline;
+  int _attempts = 0;
   bool _hideTarget = false;
   bool _recording = false;
   bool _disposed = false;
@@ -89,8 +104,11 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     // The sidetone stops in the background; drop whatever is held so the
     // keyer stops sending and no key is stuck down on return.
     if (isDrillBackground(state) && _result == null && !_disposed) {
+      _session.pause();
       _buildKeyer();
       setState(() {});
+    } else if (state == AppLifecycleState.resumed) {
+      _session.resume();
     }
   }
 
@@ -180,11 +198,31 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     setState(() => _recording = true);
     _wake.setActive(false);
     final result = _session.finish();
-    final outcome = await widget.controller.recordSendSession(_session);
+    String? detailRef;
+    try {
+      // The detail is written before the summary refers to it.
+      detailRef = await widget.controller.saveSendDetail(_session, result);
+    } on Object {
+      detailRef = null;
+    }
+    final outcome = await widget.controller.recordSendSession(
+      _session,
+      detailRef: detailRef,
+    );
     if (!mounted) {
       return;
     }
-    setState(() => _result = result);
+    setState(() {
+      _result = result;
+      _attempts++;
+      _timeline = SendTimeline.build(
+        target: _session.target,
+        marks: _session.marks,
+        gaps: _session.gaps,
+        timing: _session.nominalTiming,
+        estimatedDit: result.attempt.estimatedDit,
+      );
+    });
     if (!outcome.saved) {
       showProgressSaveFailed(context, widget.controller);
     }
@@ -197,15 +235,38 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     setState(() {});
   }
 
-  void _another() {
+  Future<void> _another() async {
+    // A rhythm replay must not keep driving the sink the new keyer uses.
+    _playback?.player.stop();
+    final factory = widget.nextSession;
+    final next = factory == null
+        ? widget.controller.startSendSession()
+        : await factory();
+    if (_disposed) {
+      next.dispose();
+      return;
+    }
     _session.dispose();
-    _session = widget.controller.startSendSession();
+    _session = next;
     _watchSession();
     _result = null;
     _recording = false;
     _wake.setActive(true);
     _buildKeyer();
     setState(() {});
+  }
+
+  /// Three new attempts at [text] (one symbol or the whole target); the
+  /// standard can be heard first and playback never counts as an attempt.
+  Future<void> _practisePart(String text) {
+    _playback?.player.stop();
+    return openTargetedSendPractice(
+      context,
+      controller: widget.controller,
+      playback: widget.playback,
+      template: _session,
+      text: text,
+    );
   }
 
   @override
@@ -246,80 +307,36 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
 
   Widget _scaffold(S s, Widget body) {
     final flash = _playback?.flash;
-    // Keep the written label whenever the title, label and switch fit the
-    // bar at the current language and text size; a narrow phone or large
-    // text falls back to an icon. The tooltip and merged semantics keep the
-    // switch named for screen readers either way.
-    final roomForLabel = _appBarFits(s.learnSendTitle, s.learnCopyFromMemory);
     return Scaffold(
       appBar: AppBar(
         title: Text(s.learnSendTitle),
         actions: <Widget>[
-          MergeSemantics(
-            child: Tooltip(
-              message: s.learnCopyFromMemory,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (roomForLabel)
-                    Text(s.learnCopyFromMemory, maxLines: 1)
-                  else
-                    Semantics(
-                      label: s.learnCopyFromMemory,
-                      child: const Icon(Icons.visibility_off_outlined),
-                    ),
-                  Switch(
-                    value: _hideTarget,
-                    onChanged: _result == null
-                        ? (v) => setState(() => _hideTarget = v)
-                        : null,
-                  ),
-                ],
+          if (_result == null && _playback != null)
+            IconButton(
+              tooltip: s.learnRhythmPlayStandard,
+              icon: const Icon(Icons.hearing),
+              // Hearing the standard first never counts as an attempt.
+              onPressed: () => _playback?.player.play(
+                MorseEncoder.encode(_session.target, _session.nominalTiming),
               ),
             ),
+          CopyFromMemorySwitch(
+            showLabel: CopyFromMemorySwitch.labelFits(
+              context,
+              title: s.learnSendTitle,
+              // The "hear the standard" button takes room too.
+              extraActions: _result == null && _playback != null ? 1 : 0,
+            ),
+            value: _hideTarget,
+            onChanged: _result == null
+                ? (v) => setState(() => _hideTarget = v)
+                : null,
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
-  }
-
-  /// Whether [title] plus the [label] + switch action fit one app bar row
-  /// inside the horizontal safe area (a landscape notch takes ~47 pt per
-  /// side): back button, title spacing, the 60 px switch and the trailing
-  /// gap are fixed chrome.
-  bool _appBarFits(String title, String label) {
-    final media = MediaQuery.of(context);
-    final theme = Theme.of(context);
-    // The AppBar clamps the title's text scale; actions scale freely.
-    double width(String text, TextStyle? style, {bool title = false}) {
-      final painter = TextPainter(
-        text: TextSpan(text: text, style: style),
-        textDirection: Directionality.of(context),
-        textScaler: title
-            ? appBarTitleTextScaler(media.textScaler)
-            : media.textScaler,
-        maxLines: 1,
-      )..layout();
-      final w = painter.width;
-      painter.dispose();
-      return w;
-    }
-
-    const chrome = kToolbarHeight + NavigationToolbar.kMiddleSpacing * 2 + 68;
-    final needed =
-        chrome +
-        width(
-          title,
-          theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
-          title: true,
-        ) +
-        width(
-          label,
-          theme.appBarTheme.toolbarTextStyle ?? theme.textTheme.bodyMedium,
-        );
-    return needed <= media.size.width - media.padding.horizontal;
   }
 
   Widget _buildPractice(BuildContext context) {
@@ -433,6 +450,21 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         SendResultView(diagnostics: _result!),
+        if (_timeline != null) ...<Widget>[
+          const SizedBox(height: 16),
+          SendTimelineView(
+            timeline: _timeline!,
+            onPlayMine: (i) => _playback?.player.play(
+              i == null ? _timeline!.myElements : _timeline!.myElementsFor(i),
+            ),
+            onPlayStandard: (i) => _playback?.player.play(
+              i == null
+                  ? _timeline!.standardElements
+                  : _timeline!.standardElementsFor(i),
+            ),
+            onPractice: _practisePart,
+          ),
+        ],
         const SizedBox(height: 24),
         Row(
           children: <Widget>[
@@ -446,16 +478,17 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: _another,
-                autofocus: true,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+            if (widget.maxAttempts == null || _attempts < widget.maxAttempts!)
+              Expanded(
+                child: FilledButton(
+                  onPressed: _another,
+                  autofocus: true,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  child: Text(s.learnTryAnother),
                 ),
-                child: Text(s.learnTryAnother),
               ),
-            ),
           ],
         ),
       ],

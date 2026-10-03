@@ -2342,4 +2342,1064 @@ class SKo extends S {
 
   @override
   String get chatScanQrCameraUnavailable => '이 기기에서는 카메라를 사용할 수 없습니다.';
+
+  @override
+  String get learnReplayAssistedNote => '다시 들음: 연습으로는 집계되지만 레슨 해제나 복습 갱신에는 반영되지 않습니다.';
+
+  @override
+  String get learnPlanTitle => '오늘의 계획';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '약 $minutes분 · $total단계 중 $done단계 완료';
+  }
+
+  @override
+  String get learnPlanBudget => '계획 길이';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes분';
+  }
+
+  @override
+  String get learnPlanStart => '계획 시작';
+
+  @override
+  String get learnPlanContinue => '계획 계속';
+
+  @override
+  String get learnPlanStepReview => '복습할 문자';
+
+  @override
+  String get learnPlanStepFocus => '집중 연습';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '레슨 $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => '송신 연습';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '복습 차례: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '자주 헷갈림: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '정확도 90% 미만: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count자: 다음 레슨을 열 수 있음';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '다음 레슨을 열 수 있도록 $count자로 늘렸습니다';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '짧은 연습: 이번 레슨을 다지며 다음 레슨은 열리지 않습니다';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '코스가 진행됨: 레슨 $lesson을 연습하지만 해제하지 않습니다';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '짧은 목표 $count개 송신';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '완료 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '완료';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$total개 중 $done개 송신';
+  }
+
+  @override
+  String get learnPlanStale => '레슨 또는 속도가 바뀌었습니다. 시작하지 않은 단계를 갱신할까요?';
+
+  @override
+  String get learnPlanUpdate => '단계 갱신';
+
+  @override
+  String get learnPlanComplete => '오늘 계획 완료';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '더 연습할 문자: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '오늘은 약한 문자가 없습니다.';
+
+  @override
+  String get learnPlanTomorrow => '내일 새 계획이 만들어집니다. 자유 연습은 언제든 가능합니다.';
+
+  @override
+  String learnPlanNext(String step) {
+    return '다음: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '이전 계획은 $total단계 중 $done단계에서 멈췄으며 오늘에는 반영되지 않습니다.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '유효 속도 $wpm WPM으로 올릴 준비가 되었습니다';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '$wpm WPM으로 올릴 준비가 되었습니다';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '이 속도에서는 수신이 어렵습니다. 유효 속도 $wpm WPM 또는 집중 연습을 해 보세요.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '최근 보조 없는 연습 $count회($percent%) 기준입니다. 적용하기 전에는 아무것도 바뀌지 않습니다.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '적용';
+
+  @override
+  String get learnSpeedAdviceDismiss => '나중에';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '속도 조언에는 현재 속도에서 50자 이상의 보조 없는 연습 3회가 필요합니다.';
+
+  @override
+  String get learnQsoAction => 'QSO 시뮬레이터';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '레슨 $lesson부터';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 시뮬레이터';
+
+  @override
+  String get learnQsoRespond => 'CQ에 응답';
+
+  @override
+  String get learnQsoRespondHint => '한 국이 CQ를 냅니다. 응답하고 리포트를 교환하세요.';
+
+  @override
+  String get learnQsoCall => 'CQ 내기';
+
+  @override
+  String get learnQsoCallHint => 'CQ를 내면 한 국이 응답합니다.';
+
+  @override
+  String get learnQsoYourCall => '내 호출부호';
+
+  @override
+  String get learnQsoYourName => '내 이름';
+
+  @override
+  String get learnQsoYourQth => '내 QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'BD1XYZ 같은 호출부호를 입력하세요';
+
+  @override
+  String get learnQsoInvalidWord => '한 단어, A–Z 문자만';
+
+  @override
+  String get learnQsoOffline => '이 기기에서만 동작하며 아무것도 전송하지 않습니다.';
+
+  @override
+  String get learnQsoStart => 'QSO 시작';
+
+  @override
+  String get learnQsoResume => '중단된 QSO 이어하기';
+
+  @override
+  String get learnQsoStageCallCq => '내 호출부호로 CQ 내기';
+
+  @override
+  String get learnQsoStageCallConfirm => '응답: 상대 부호, DE, 내 부호';
+
+  @override
+  String get learnQsoStageExchange => '리포트, 이름, QTH 보내기';
+
+  @override
+  String get learnQsoStageConfirmInfo => '상대 정보 확인';
+
+  @override
+  String get learnQsoStageClosing => '73과 <SK>로 마무리';
+
+  @override
+  String get learnQsoStageDone => 'QSO 완료';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '상대는 유효 $wpm WPM으로 송신';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 송신';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '귀로 받아 적으세요. 텍스트는 숨겨져 있습니다.';
+
+  @override
+  String get learnQsoShowText => '텍스트 보기';
+
+  @override
+  String get learnQsoListen => '듣기';
+
+  @override
+  String get learnQsoAccepted => '통과';
+
+  @override
+  String get learnQsoRejected => '통과하지 못함';
+
+  @override
+  String get learnQsoRemoteSending => '상대 국이 송신 중…';
+
+  @override
+  String get learnQsoYourTurn => '내 차례: 응답을 키잉한 뒤 보내기를 누르세요.';
+
+  @override
+  String get learnQsoDecoded => '내 송신 내용';
+
+  @override
+  String get learnQsoNothingKeyed => '아직 키잉하지 않음';
+
+  @override
+  String get learnQsoPlayAgain => '반복 요청(AGN)';
+
+  @override
+  String get learnQsoSlower => '속도 낮춤 요청(QRS)';
+
+  @override
+  String get learnQsoHint => '힌트';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '예: $example';
+  }
+
+  @override
+  String get learnQsoPause => '일시정지';
+
+  @override
+  String get learnQsoSend => '보내기';
+
+  @override
+  String get learnQsoClear => '지우기';
+
+  @override
+  String get learnQsoIssueEmpty => '키잉한 내용이 없습니다.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'CQ로 시작하세요.';
+
+  @override
+  String get learnQsoIssueMissingDe => '호출부호 사이에 DE를 넣으세요.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '내 호출부호가 없거나 틀렸습니다.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '상대 국의 호출부호가 틀렸습니다.';
+
+  @override
+  String get learnQsoIssueReversedCalls => '순서가 반대입니다: 상대, DE, 내 부호 순입니다.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'K 또는 KN으로 끝내세요.';
+
+  @override
+  String get learnQsoIssueMissingRst => '리포트를 주세요. 예: UR RST 599';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 범위를 벗어났습니다(R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'NAME과 이름을 보내세요.';
+
+  @override
+  String get learnQsoIssueWrongName => '이번 QSO의 내 이름이 아닙니다.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'QTH와 위치를 보내세요.';
+
+  @override
+  String get learnQsoIssueWrongQth => '이번 QSO의 내 QTH가 아닙니다.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'R 또는 QSL로 확인하세요.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '상대 운용자 이름을 확인하세요.';
+
+  @override
+  String get learnQsoIssueMissing73 => '73을 넣으세요.';
+
+  @override
+  String get learnQsoIssueMissingSk => '<SK>로 교신을 끝내세요.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '한 번에 통과: $total단계 중 $count';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '반복: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '힌트: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '내 송신: 약 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 결과는 수신 정확도와 따로 집계되며 레슨을 열지 않습니다.';
+
+  @override
+  String get messageStatusCancelled => '취소됨 — 전송되지 않음';
+
+  @override
+  String get chatMessageLearnActions => '메시지 작업';
+
+  @override
+  String get chatPracticeMessage => '이 메시지 수신 연습';
+
+  @override
+  String get chatSaveAsMaterial => '연습 자료로 저장';
+
+  @override
+  String get chatSavedAsMaterial => '내 자료에 저장했습니다';
+
+  @override
+  String get chatSaveMaterialFailed => '자료를 저장하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get chatListenOnly => '듣기 전용 훈련';
+
+  @override
+  String get chatListenOnlyHidden => '듣기 전용: 재생을 눌러 들으세요';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '이 대화의 메시지 $count개가 연습 자료로 저장되어 있습니다. 사본은 학습 › 내 자료에서 삭제할 때까지 남습니다.';
+  }
+
+  @override
+  String get chatPracticeTitle => '수신 연습';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '이 메시지에 모스로 칠 수 없는 문자가 있습니다: $chars. 연습에서 제외됩니다.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count자를 연습할 수 있습니다.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '이 메시지에는 모스로 연습할 내용이 없습니다.';
+
+  @override
+  String get chatPracticeConfirm => '나머지 연습';
+
+  @override
+  String get chatPracticeHint => '힌트';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '힌트: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '보조 사용: 연습으로는 집계되지만 복습이나 속도 조언에는 쓰이지 않습니다.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '틀림 $wrong · 빠짐 $missed · 추가 $extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '틀린 문자 연습: $symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => '장점이 너무 김';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '장점이 깁니다(단점의 약 $ratio, 목표는 3배). 단점 세 개 길이가 지나면 떼세요.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '장점 $total개 중 $offending개가 너무 김(평균 $ratio 단점)';
+  }
+
+  @override
+  String get learnRhythmTitle => '리듬';
+
+  @override
+  String get learnRhythmMine => '내 리듬';
+
+  @override
+  String get learnRhythmStandard => '표준 리듬(목표 속도)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '문제는 내 단점 길이($ms ms)를 기준으로 판단하므로 느려도 고르면 괜찮습니다. 표준 줄은 목표 속도입니다.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '키잉을 문자 단위로 맞추지 못했습니다. 목표 전체를 연습하세요.';
+
+  @override
+  String get learnRhythmPlayMine => '내 것 재생';
+
+  @override
+  String get learnRhythmPlayStandard => '표준 재생';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '이것 연습($count회)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '목표 전체 연습';
+
+  @override
+  String get learnRhythmSymbolOk => '좋음';
+
+  @override
+  String get learnRhythmZoomIn => '확대';
+
+  @override
+  String get learnRhythmZoomOut => '축소';
+
+  @override
+  String get chatSearchMessages => '메시지 검색';
+
+  @override
+  String get chatSearchHint => '이 대화에서 검색';
+
+  @override
+  String get chatSearchAnyone => '모두';
+
+  @override
+  String get chatSearchMe => '나';
+
+  @override
+  String get chatSearchThem => '상대';
+
+  @override
+  String get chatSearchAnyDate => '모든 날짜';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => '북마크';
+
+  @override
+  String get chatSearchNoResults => '일치하는 메시지가 없습니다.';
+
+  @override
+  String get chatSearchMore => '더 보기';
+
+  @override
+  String get chatAddBookmark => '북마크';
+
+  @override
+  String get chatRemoveBookmark => '북마크 해제';
+
+  @override
+  String get chatBookmarked => '북마크됨';
+
+  @override
+  String get chatBookmarkFailed => '북마크를 저장하지 못했습니다.';
+
+  @override
+  String get chatRetrySend => '다시 보내기';
+
+  @override
+  String get chatCancelSend => '전송 취소';
+
+  @override
+  String get chatRetryQueued => '다시 대기열에 넣었습니다. 상대가 온라인이 되면 보냅니다.';
+
+  @override
+  String get chatSendCancelled => '취소했습니다. 메시지는 전송되지 않았습니다.';
+
+  @override
+  String get chatRetryNotNeeded => '이 메시지는 더 이상 실패 상태가 아닙니다.';
+
+  @override
+  String get chatCancelTooLate => '취소하기에 늦었습니다. 메시지가 이미 네트워크로 넘어가 도착할 수 있습니다.';
+
+  @override
+  String get chatSendControlUnavailable => '이 메시지에는 사용할 수 없습니다.';
+
+  @override
+  String get chatSendControlFailed => '실패했습니다. 메시지 상태는 그대로입니다. 다시 시도하세요.';
+
+  @override
+  String get workbenchTitle => '녹음 작업대';
+
+  @override
+  String get workbenchOpen => '녹음';
+
+  @override
+  String get workbenchImport => '녹음 가져오기';
+
+  @override
+  String get workbenchEmpty => 'WAV 녹음을 가져와 반복 재생, 해독, 직접 받아 적기를 할 수 있습니다. 마이크는 필요 없습니다.';
+
+  @override
+  String get workbenchFormats => 'WAV, 16비트 PCM, 모노 또는 스테레오, 8/16/44.1/48 kHz, 최대 50MB·20분.';
+
+  @override
+  String get workbenchBackupNote => '녹음은 이 기기에 남으며, 백업을 내보낼 때 포함하기로 선택하지 않으면 신원 백업에 들어가지 않습니다. 저장한 구간의 제목, 메모, 위치는 항상 백업됩니다.';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '모노';
+
+  @override
+  String get workbenchStereo => '스테레오';
+
+  @override
+  String get workbenchTruncated => '파일이 일찍 끝납니다. 있는 오디오만 사용합니다.';
+
+  @override
+  String get workbenchErrorNotWav => 'WAV 파일이 아닙니다.';
+
+  @override
+  String get workbenchErrorFormat => '현재는 16비트 PCM WAV만 지원합니다(MP3, AAC, 부동소수점 WAV 불가).';
+
+  @override
+  String get workbenchErrorChannels => '모노 또는 스테레오 녹음만 지원합니다.';
+
+  @override
+  String get workbenchErrorRate => '지원하지 않는 샘플레이트입니다. 8, 16, 44.1, 48kHz를 사용하세요.';
+
+  @override
+  String get workbenchErrorDamaged => '파일이 손상되었거나 불완전합니다.';
+
+  @override
+  String get workbenchErrorTooLarge => '파일이 50MB를 넘습니다.';
+
+  @override
+  String get workbenchErrorTooLong => '녹음이 20분을 넘습니다.';
+
+  @override
+  String get workbenchErrorIo => '파일을 읽을 수 없습니다.';
+
+  @override
+  String get workbenchErrorMissing => '녹음 파일이 없습니다.';
+
+  @override
+  String get workbenchStart => '시작(초)';
+
+  @override
+  String get workbenchEnd => '끝(초)';
+
+  @override
+  String get workbenchSelectAll => '전체 선택';
+
+  @override
+  String get workbenchPlay => '선택 구간 재생';
+
+  @override
+  String get workbenchStop => '정지';
+
+  @override
+  String get workbenchLoop => '반복';
+
+  @override
+  String get workbenchPlayLimit => '긴 구간은 처음 5분만 재생합니다.';
+
+  @override
+  String get workbenchAutoTune => '톤 자동 찾기';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '톤: $hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '선택 구간 해독';
+
+  @override
+  String get workbenchCancel => '취소';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '해독 중… $percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '톤 ${hz}Hz · 약 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '안정된 톤을 찾지 못했습니다. 수동 조정을 해 보세요.';
+
+  @override
+  String get workbenchNoText => '이 구간에서 해독된 내용이 없습니다.';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '알 수 없는 패턴: $patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '구간 가장자리의 문자가 잘려 틀릴 수 있습니다.';
+
+  @override
+  String get workbenchToneNote => '톤 고정은 신뢰도가 아닙니다. 귀로 텍스트를 확인하세요.';
+
+  @override
+  String get workbenchModeDecoder => '디코더';
+
+  @override
+  String get workbenchModeCopy => '직접 받아 적기';
+
+  @override
+  String get workbenchDecoderHidden => '받아 적는 동안 디코더 텍스트는 숨겨집니다.';
+
+  @override
+  String get workbenchShowDecoder => '디코더 텍스트 보기';
+
+  @override
+  String get workbenchReference => '기준 텍스트(선택)';
+
+  @override
+  String get workbenchReferenceHelp => '보낸 텍스트를 붙여 넣으세요. 없으면 디코더 출력과 비교합니다.';
+
+  @override
+  String get workbenchAgainstDecoder => '디코더 출력과 비교했으며, 출력 자체가 틀릴 수 있습니다.';
+
+  @override
+  String get workbenchSave => '구간 저장';
+
+  @override
+  String get workbenchSaveTitle => '제목';
+
+  @override
+  String get workbenchSaveNote => '메모';
+
+  @override
+  String get workbenchSaved => '구간을 저장했습니다';
+
+  @override
+  String get workbenchSaveFailed => '구간을 저장할 수 없습니다.';
+
+  @override
+  String get workbenchLibrary => '저장한 구간';
+
+  @override
+  String get workbenchLibraryEmpty => '아직 저장한 구간이 없습니다.';
+
+  @override
+  String get workbenchMissing => '녹음 파일이 없습니다. 다시 선택하거나 항목을 삭제하세요.';
+
+  @override
+  String get workbenchRelink => '파일 다시 선택';
+
+  @override
+  String get workbenchDelete => '삭제';
+
+  @override
+  String get materialsTitle => '내 자료';
+
+  @override
+  String get materialsNew => '새 자료';
+
+  @override
+  String get materialsEdit => '편집';
+
+  @override
+  String get materialsSave => '저장';
+
+  @override
+  String get materialsSaveFailed => '자료를 저장하지 못했습니다.';
+
+  @override
+  String get materialsTitleField => '제목';
+
+  @override
+  String get materialsTagsField => '태그(쉼표로 구분)';
+
+  @override
+  String get materialsTextField => '텍스트';
+
+  @override
+  String get materialsListField => '한 줄에 한 항목';
+
+  @override
+  String get materialsKindText => '텍스트';
+
+  @override
+  String get materialsKindWords => '단어 목록';
+
+  @override
+  String get materialsKindCallsigns => '호출부호';
+
+  @override
+  String get materialsPreview => '미리 보기';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items개 항목 · $symbols자 · 절차 신호 $prosigns개';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '모스 부호가 없어 연습에서 제외: $chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '중복 항목 $count개는 한 번만 유지';
+  }
+
+  @override
+  String get materialsProblemEmpty => '먼저 텍스트를 입력하세요.';
+
+  @override
+  String get materialsProblemTooLarge => '너무 큽니다. 자료는 1 MiB까지입니다.';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '항목이 너무 많습니다(최대 $count).';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '너무 긴 항목이 있습니다(항목당 $count자까지).';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '모스로 연습할 내용이 없습니다.';
+
+  @override
+  String get materialsSearch => '자료 검색';
+
+  @override
+  String get materialsFavoritesOnly => '즐겨찾기';
+
+  @override
+  String get materialsFavorite => '즐겨찾기에 추가';
+
+  @override
+  String get materialsUnfavorite => '즐겨찾기에서 제거';
+
+  @override
+  String get materialsEmpty => '아직 자료가 없습니다. 직접 텍스트, 단어 목록, 호출부호를 추가하거나 채팅 메시지를 저장하세요.';
+
+  @override
+  String materialsItems(int count) {
+    return '$count개 항목';
+  }
+
+  @override
+  String get materialsFromChat => '채팅에서';
+
+  @override
+  String get materialsActions => '자료 작업';
+
+  @override
+  String get materialsPractise => '연습';
+
+  @override
+  String get materialsDelete => '삭제';
+
+  @override
+  String get materialsDeleteTitle => '자료를 삭제할까요?';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '‘$title’을(를) 이 기기에서 삭제합니다. 연습 기록은 남습니다.';
+  }
+
+  @override
+  String get materialsImport => 'TXT 또는 JSON 가져오기';
+
+  @override
+  String get materialsImportDialogTitle => '자료 파일 선택';
+
+  @override
+  String get materialsSaveDialogTitle => '자료 저장';
+
+  @override
+  String get materialsImportFailed => '가져오기에 실패했습니다. 자료 목록은 그대로입니다.';
+
+  @override
+  String get materialsImportNotUtf8 => 'UTF-8 텍스트 파일만 가져올 수 있습니다.';
+
+  @override
+  String get materialsImportInvalid => '올바른 MorseCQ 자료 파일이 아닙니다. 아무것도 가져오지 않았습니다.';
+
+  @override
+  String materialsImported(int count) {
+    return '자료 $count개를 가져왔습니다.';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '일부 자료가 이미 있습니다';
+
+  @override
+  String get materialsDuplicateOverwrite => '바꾸기';
+
+  @override
+  String get materialsDuplicateKeepCopy => '둘 다 유지(사본으로)';
+
+  @override
+  String get materialsDuplicateSkip => '건너뛰기';
+
+  @override
+  String get materialsExportJson => 'JSON으로 내보내기';
+
+  @override
+  String materialsExported(int count) {
+    return '자료 $count개를 내보냈습니다.';
+  }
+
+  @override
+  String get materialsExportFailed => '내보내기에 실패했습니다.';
+
+  @override
+  String get materialsExportWav => '오디오 내보내기(WAV)';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '문자 속도: $wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '유효 속도: $wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '톤: $hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '정답 텍스트 포함(.txt)';
+
+  @override
+  String get materialsWavFormat => '16비트 모노 WAV, 48kHz.';
+
+  @override
+  String materialsWavParts(int count) {
+    return '10분이 넘어 파일 $count개로 내보냅니다.';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '오디오 파일 $count개를 저장했습니다.';
+  }
+
+  @override
+  String get materialsPracticeMode => '연습 범위';
+
+  @override
+  String get materialsPracticeLearned => '배운 문자만';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '배운 문자만(아직 배우지 않은 문자가 있어 $count개 항목 제외)';
+  }
+
+  @override
+  String get materialsPracticeAll => '모든 모스 문자';
+
+  @override
+  String get materialsPracticeNothing => '이 모드에서 연습할 항목이 없습니다.';
+
+  @override
+  String get guestTryLearning => '먼저 학습해 보기';
+
+  @override
+  String get guestBanner => '게스트 학습: 진행 상황은 이 기기에 남습니다. 채팅에는 신원이 필요합니다.';
+
+  @override
+  String get guestGetIdentity => '신원 설정';
+
+  @override
+  String get guestIdentityTitle => '신원 필요';
+
+  @override
+  String get guestIdentityBody => 'Tox 채팅에는 자신의 신원이 필요합니다. 새로 만들거나 백업을 복원하거나 이 기기의 신원을 잠금 해제하세요. 새 신원을 만들면 게스트 학습 진행 상황이 자동으로 옮겨집니다.';
+
+  @override
+  String get guestClearData => '게스트 학습 데이터 삭제';
+
+  @override
+  String get guestClearDataBody => '이 기기에서 게스트로 만든 진행 상황, 계획, 자료를 삭제합니다. 신원에는 영향이 없습니다.';
+
+  @override
+  String get guestClearConfirm => '삭제';
+
+  @override
+  String get guestCleared => '게스트 학습 데이터를 삭제했습니다.';
+
+  @override
+  String get guestClearFailed => '게스트 데이터를 삭제하지 못했습니다.';
+
+  @override
+  String get guestMigrationFailed => '신원은 준비되었지만 게스트 학습 진행 상황이 아직 옮겨지지 않았습니다. 이 기기에 안전하게 남아 있습니다.';
+
+  @override
+  String get guestChoiceBody => '게스트 학습 진행 상황도 있습니다. 복원한 신원의 진행 상황을 사용 중이며 합치지 않았습니다.';
+
+  @override
+  String get guestChoiceKeep => '복원본 유지';
+
+  @override
+  String get guestChoiceUseGuest => '게스트 진행 상황 사용';
+
+  @override
+  String get placementTitle => '내 수준 확인';
+
+  @override
+  String get placementCheckLevel => '현재 수준 확인';
+
+  @override
+  String get placementFromZero => '처음부터 시작';
+
+  @override
+  String get placementOfferTitle => '모스가 처음인가요, 이미 받아 적을 수 있나요?';
+
+  @override
+  String get placementOfferBody => '짧은 확인으로 시작 위치를 제안할 수 있습니다. 선택 사항이며 고르기 전에는 아무것도 바뀌지 않습니다.';
+
+  @override
+  String get placementIntro => '약 3~5분, 5단계로 받아 적습니다. 속도를 높여 가며 코흐 순서 문자 묶음, 마지막에 짧은 단어. 적은 표본에 따른 대략적 안내이며 인증이 아닙니다. 언제든 멈출 수 있습니다.';
+
+  @override
+  String get placementStart => '시작';
+
+  @override
+  String get placementSkip => '건너뛰기';
+
+  @override
+  String get placementStop => '중지';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '$total단계 중 $step · 유효 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '잘 받아 적었습니다. 다음 단계는 더 빠릅니다.';
+
+  @override
+  String get placementTierStopped => '이 단계가 90% 미만이라 확인을 마칩니다.';
+
+  @override
+  String get placementNextTier => '다음 단계';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '추천 시작: 레슨 $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '코흐 순서 문자 $total개 중 $count개를 차례로 확인했습니다.';
+  }
+
+  @override
+  String get placementLimits => '짧은 표본 기준입니다. 확인하지 않은 문자는 미확인으로 남고 습득으로 표시되지 않습니다. 레슨은 언제든 바꿀 수 있습니다.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '레슨 $lesson부터 시작';
+  }
+
+  @override
+  String get chatJumpToLatest => '최신 메시지';
+
+  @override
+  String get chatMessageGone => '그 메시지는 더 이상 이 대화에 없습니다.';
+
+  @override
+  String get chatListenOnlyPreview => '새 메시지 — 들으며 받아 적으세요';
+
+  @override
+  String get chatSaveMaterialConfirm => '나머지 저장';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '자료 $count개를 가져올까요?';
+  }
+
+  @override
+  String get materialsExportTxt => '텍스트로 내보내기(TXT)';
+
+  @override
+  String get accountBackupMediaTitle => '저장한 녹음을 포함할까요?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '저장한 녹음 $count개(${size}MB). 제목, 메모, 위치는 항상 백업되며, 오디오는 포함할 때만 들어갑니다.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '저장한 녹음(${size}MB)은 너무 커서 백업에 넣을 수 없습니다. 제목, 메모, 위치만 포함됩니다.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '녹음 포함';
+
+  @override
+  String get accountBackupMediaSkip => '녹음 없이';
 }

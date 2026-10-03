@@ -14,7 +14,7 @@ import 'backend_factory.dart';
 /// services the backend already holds.
 final class RealBackendFactory extends BackendFactory {
   RealBackendFactory({ChatLogger? logger})
-      : _logger = logger ?? CallbackChatLogger(_debugPrintRecord);
+    : _logger = logger ?? CallbackChatLogger(_debugPrintRecord);
 
   final ChatLogger _logger;
   MorsecqChatBackend? _backend;

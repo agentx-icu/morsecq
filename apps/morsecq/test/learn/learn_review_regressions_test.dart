@@ -132,7 +132,10 @@ void main() {
     test('a send session reports the failure too', () async {
       final (c, _) = await _flakyController(1);
       addTearDown(c.dispose);
-      final outcome = await c.recordSendSession(c.startSendSession());
+      final session = c.startSendSession()
+        ..keyDown(Duration.zero)
+        ..keyUp(const Duration(milliseconds: 60));
+      final outcome = await c.recordSendSession(session);
       expect(outcome.saved, isFalse);
       expect(c.progress.history, hasLength(1));
     });

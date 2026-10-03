@@ -11,6 +11,11 @@ enum MessageStatus {
   sent,
   failed,
   received,
+
+  /// Our queued message that the user cancelled before it was handed to
+  /// transport. The local row is kept; it is never re-queued after a
+  /// restart and never delivered.
+  cancelled,
 }
 
 enum ConversationKind { c2c, group }
@@ -44,13 +49,12 @@ final class Identity {
     String? displayName,
     String? statusMessage,
     bool? hasPassword,
-  }) =>
-      Identity(
-        toxId: toxId,
-        displayName: displayName ?? this.displayName,
-        statusMessage: statusMessage ?? this.statusMessage,
-        hasPassword: hasPassword ?? this.hasPassword,
-      );
+  }) => Identity(
+    toxId: toxId,
+    displayName: displayName ?? this.displayName,
+    statusMessage: statusMessage ?? this.statusMessage,
+    hasPassword: hasPassword ?? this.hasPassword,
+  );
 }
 
 /// What the startup gate finds on disk.

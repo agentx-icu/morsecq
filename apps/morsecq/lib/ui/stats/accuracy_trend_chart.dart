@@ -31,6 +31,7 @@ final class TrendGeometry {
   static const double kLeftInset = 44;
   static const double kRightInset = 12;
   static const double kTopInset = 12;
+
   /// Two label rows: the session ticks, then the axis caption on its own
   /// line (a caption anchored at the plot's right edge collided with the
   /// last tick's number).
@@ -99,10 +100,7 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
                     color: palette.receive,
                     label: s.statsSeriesReceive,
                   ),
-                  _LegendItem(
-                    color: palette.send,
-                    label: s.statsSeriesSend,
-                  ),
+                  _LegendItem(color: palette.send, label: s.statsSeriesSend),
                 ],
               ),
             ),

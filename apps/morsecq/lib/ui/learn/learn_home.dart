@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../../training/qso_practice.dart';
 import '../../training/training_controller.dart';
 import '../stats/stats_screen.dart';
 import '../appearance/appearance_page.dart';
@@ -9,6 +10,12 @@ import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'materials/materials_screen.dart';
+import 'placement/placement_offer_card.dart';
+import 'placement/placement_screen.dart';
+import 'plan/speed_advice_card.dart';
+import 'qso/qso_setup_screen.dart';
+import 'plan/today_plan_card.dart';
 import 'receive/drill_picker_sheet.dart';
 import 'receive/receive_drill_screen.dart';
 import 'review/review_screen.dart';
@@ -174,8 +181,27 @@ class LearnHome extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       DailyGoalCard(controller: controller),
+      ..._planCards(),
     ],
   );
+
+  /// Today's plan and any pending speed advice, under the goal card.
+  List<Widget> _planCards() => <Widget>[
+    const SizedBox(height: 12),
+    if (PlacementOfferCard.shows(controller))
+      Builder(
+        builder: (context) => PlacementOfferCard(
+          controller: controller,
+          onFromZero: () => _continueLesson(context),
+          onCheckLevel: () => _push(
+            context,
+            PlacementScreen(controller: controller, playback: playback),
+          ),
+        ),
+      ),
+    SpeedAdviceCard(controller: controller),
+    TodayPlanCard(controller: controller, playback: playback),
+  ];
 
   Widget _actions(BuildContext context) => QuickActions(
     showContinue: false,
@@ -184,7 +210,22 @@ class LearnHome extends StatelessWidget {
     onReceivePractice: () => _receivePractice(context),
     onSendPractice: () => _sendPractice(context),
     onReview: () => _review(context),
+    onQso: _qsoAction(context),
+    qsoFromLesson: TrainingController.qsoFromLesson,
+    onMaterials: () => _materials(context),
   );
+
+  void _materials(BuildContext context) => _push(
+    context,
+    MaterialsScreen(controller: controller, playback: playback),
+  );
+
+  VoidCallback? _qsoAction(BuildContext context) => controller.qsoUnlocked
+      ? () => _push(
+          context,
+          QsoSetupScreen(controller: controller, playback: playback),
+        )
+      : null;
 
   Widget _oneColumn(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,6 +264,9 @@ class LearnHome extends StatelessWidget {
       onReceivePractice: () => _receivePractice(context),
       onSendPractice: () => _sendPractice(context),
       onReview: () => _review(context),
+      onQso: _qsoAction(context),
+      qsoFromLesson: TrainingController.qsoFromLesson,
+      onMaterials: () => _materials(context),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -239,13 +283,22 @@ class LearnHome extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              Expanded(flex: 2, child: DailyGoalCard(controller: controller)),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    DailyGoalCard(controller: controller),
+                    ..._planCards(),
+                  ],
+                ),
+              ),
             ],
           )
         else ...[
           lesson,
           const SizedBox(height: 8),
           DailyGoalCard(controller: controller),
+          ..._planCards(),
           const SizedBox(height: 12),
           actions,
         ],

@@ -53,7 +53,7 @@ Morse Chat (digital.dong.morsechat) already offers "rooms by speed + private cha
 
 ### 2.2 Three modules
 
-All modules are used under the same Tox identity (product decision, 2026-09-30): the identity is created on first launch, training progress is persisted per identity and is backed up / migrated together with the identity file.
+All modules are used under the same Tox identity (product decision, 2026-09-30): the identity is created on first launch, training progress is persisted per identity and is backed up / migrated together with the identity file. **Changed 2026-10-03 (F05 guest learning):** learning can start without an identity on a separate local guest profile; chat still needs an identity, and creating one moves the guest progress to it (see the [functional improvements](./2026-10-03-functional-improvements.md) §8).
 
 | Module | Core capabilities | Needs network? |
 |---|---|---|
@@ -256,7 +256,7 @@ v1 totals about **33–42 CC-days**, roughly **260–630 person-days** at this r
 
 1. **Project name**: accept MorseCQ (Chinese sub-name 「滴答」)? Or choose from the candidates / something else.
 2. **Licence and iOS listing** (§3.4): accept the risk / dual-license own code / add a store exception to Tim2Tox.
-3. ~~Whether the training module must work without an account~~ **Settled (2026-09-30): training also requires an identity.** Impact: drop the learn build target; identity flow becomes a prerequisite of M1; training progress is persisted per identity and migrates with the `.tox` backup.
+3. ~~Whether the training module must work without an account~~ **Settled (2026-09-30): training also requires an identity.** *Superseded 2026-10-03 by F05: guest learning on a local profile; chat still requires an identity.* Impact: drop the learn build target; identity flow becomes a prerequisite of M1; training progress is persisted per identity and migrates with the `.tox` backup.
 4. **Whether v1 accepts "sender speed not transmitted"** (§5.2 layer one). If it must be transmitted, v1 has to wait for track D's message annotation and M2 becomes gated on upstream progress.
 5. **Chinese telegraph code** priority: this draft puts it at P4; if the target users are mainly Chinese-speaking, it could move to right after M1.
 6. New repository location: suggested `agentx-icu/morsecq`, same organisation as toxee.
@@ -298,6 +298,10 @@ From wave 3 on, per the user's instruction "code only, no build, no test": agent
 At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze` on all packages, `dart run tool/check_complexity.dart`, `dart run tool/import_guard.dart`, `flutter test` on all packages, then commits and pushes to `master` (the repository's default branch).
 
 ## Change log
+
+- **2026-10-03** — Implemented all eight [functional improvements](./2026-10-03-functional-improvements.md) (M0–M8). Product rule changed with F05: learning may start on a local guest profile; chat still requires an identity; guest progress moves to a newly created identity and is never merged silently into a restored or unlocked one. Single-message cancel/retry needed Tim2Tox send control (agentx-icu/tim2tox#27, submodule pin updated).
+
+- **2026-10-03** — At the user's request, documented eight proposed improvements in the [functional specification and AI handoff](./2026-10-03-functional-improvements.md), including default scope, data/credit rules, interaction, acceptance, and phased tasks. Specification only: current v1 scope and training identity requirements remain in force until guest mode ships and the product rules are updated.
 
 - **2026-10-01** — At the user's request, changed the default and Restore Defaults appearance to Modern Calm, preserved explicit saved choices, localized the English README product concept, and unified product screenshots in Modern Calm.
 

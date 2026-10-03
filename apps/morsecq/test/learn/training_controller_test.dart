@@ -177,7 +177,11 @@ void main() {
       final session = c.startSendSession();
       expect(session.target, isNotEmpty);
       expect(session.target.split(''), everyElement(isIn(<String>['K', 'M'])));
-      // Key nothing at all: an empty attempt.
+      // One dit: an answered (if wrong) attempt. An attempt with no keyed
+      // input earns no credit at all (functional spec §3.3).
+      session
+        ..keyDown(Duration.zero)
+        ..keyUp(const Duration(milliseconds: 60));
       final score = (await c.recordSendSession(session)).score;
       expect(score.drillKind, 'send');
       expect(c.progress.history.single.drillKind, 'send');

@@ -233,45 +233,46 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('short phone with the keyboard up: the send button stays reachable', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(360, 560);
-    tester.view.devicePixelRatio = 1.0;
-    // A soft keyboard covering the lower half of the screen.
-    tester.view.viewInsets = const FakeViewPadding(bottom: 280);
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetViewInsets);
-    final h = ChatHarness();
-    addTearDown(h.dispose);
-    await tester.pumpWidget(
-      h.wrap(
-        Scaffold(
-          body: Builder(
-            builder: (context) => Center(
-              child: FilledButton(
-                onPressed: () => showAddFriendSheet(
-                  context,
-                  service: h.service,
-                  canScan: true,
+  testWidgets(
+    'short phone with the keyboard up: the send button stays reachable',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 560);
+      tester.view.devicePixelRatio = 1.0;
+      // A soft keyboard covering the lower half of the screen.
+      tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetViewInsets);
+      final h = ChatHarness();
+      addTearDown(h.dispose);
+      await tester.pumpWidget(
+        h.wrap(
+          Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: FilledButton(
+                  onPressed: () => showAddFriendSheet(
+                    context,
+                    service: h.service,
+                    canScan: true,
+                  ),
+                  child: const Text('open'),
                 ),
-                child: const Text('open'),
               ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('open'));
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull); // no RenderFlex overflow
-    final send = find.text(s.chatSendRequest);
-    await tester.ensureVisible(send);
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).first, kPeerToxId);
-    await tester.tap(send);
-    await tester.pumpAndSettle();
-    expect(h.service.outgoingFriendRequests, [kPeerToxId]);
-  });
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull); // no RenderFlex overflow
+      final send = find.text(s.chatSendRequest);
+      await tester.ensureVisible(send);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).first, kPeerToxId);
+      await tester.tap(send);
+      await tester.pumpAndSettle();
+      expect(h.service.outgoingFriendRequests, [kPeerToxId]);
+    },
+  );
 }

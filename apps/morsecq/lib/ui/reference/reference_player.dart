@@ -22,7 +22,10 @@ final Expando<MorseSink> _sinks = Expando<MorseSink>('reference player sink');
 /// sink's `on` / `off` are no-ops, so an early tap is silent but harmless.
 /// A failed prepare (no audio device, headless CI) is logged and playback
 /// continues silently while the pattern highlight still shows progress.
-MorsePlayer createSidetoneMorsePlayer({double frequencyHz = 700, Clock? clock}) {
+MorsePlayer createSidetoneMorsePlayer({
+  double frequencyHz = 700,
+  Clock? clock,
+}) {
   final SidetoneSink sink = SidetoneSink(frequencyHz: frequencyHz);
   unawaited(
     sink.prepare().catchError((Object e) {

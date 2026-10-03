@@ -11,12 +11,19 @@ Future<(ChatHarness, List<Group>)> _pump(WidgetTester tester) async {
   final List<Group> opened = <Group>[];
   final ChatHarness h = await pumpChat(tester, (h) {
     h.service.addFakeGroup(
-      Group(id: 'tox_1', name: 'Net 40m', kind: GroupKind.group, chatId: 'C' * 64),
+      Group(
+        id: 'tox_1',
+        name: 'Net 40m',
+        kind: GroupKind.group,
+        chatId: 'C' * 64,
+      ),
     );
     h.service.addFakeGroup(
       const Group(id: 'tox_2', name: 'Old net', kind: GroupKind.conference),
     );
-    return Scaffold(body: GroupList(service: h.service, onOpen: opened.add));
+    return Scaffold(
+      body: GroupList(service: h.service, onOpen: opened.add),
+    );
   });
   return (h, opened);
 }
