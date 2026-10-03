@@ -109,4 +109,16 @@ void main() {
       expect(gate.hasSignal, isFalse);
     });
   });
+
+  test('a quiet first noise block cannot open the gate (warm-up)', () {
+    final EnvelopeGate gate = EnvelopeGate(sampleRate: 44100, blockSize: 256);
+    // First block 20 dB below the steady noise, then noise around 1.0 with
+    // occasional blocks 8 dB above it (white-noise maxima).
+    for (int i = 0; i < 200; i++) {
+      final double p = i == 0 ? 0.01 : (i % 17 == 0 ? 6.3 : 1);
+      expect(gate.feed(p), isNull, reason: 'block $i');
+    }
+    expect(gate.isOn, isFalse);
+    expect(gate.warmupBlocks, greaterThan(1));
+  });
 }

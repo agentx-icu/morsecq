@@ -64,6 +64,11 @@ final class AudioMorseDecoder {
 
   bool _autoTune;
   double _manualFrequencyHz;
+
+  /// Called synchronously for every gate transition, with its time on the
+  /// sample clock (the same timestamp handed to the [MorseDecoder]). Lets a
+  /// caller position decoded characters in the audio.
+  void Function(bool isOn, Duration at)? onKeyTransition;
   int _blocks = 0;
   int _oddByte = -1;
   bool _disposed = false;
@@ -190,6 +195,7 @@ final class AudioMorseDecoder {
       final GateTransition? transition = _gate.feed(power);
       if (transition != null) {
         final Duration at = _duration(transition.atBlock * blockSize);
+        onKeyTransition?.call(transition.isOn, at);
         if (transition.isOn) {
           _decoder.keyDown(at);
         } else {

@@ -14,6 +14,7 @@ final class EnvelopeGateConfig {
     this.minOn = const Duration(milliseconds: 12),
     this.minOff = const Duration(milliseconds: 12),
     this.meterRangeDb = 30,
+    this.noiseWarmup = const Duration(milliseconds: 50),
   })  : assert(offDropDb > onDropDb, 'offDropDb must exceed onDropDb'),
         assert(noiseAttack > 0 && noiseAttack <= 1, 'noiseAttack in (0, 1]');
 
@@ -56,6 +57,12 @@ final class EnvelopeGateConfig {
   /// Meter scale: dB above the noise estimate that reads as 1.0 when the
   /// signal contrast is smaller than this.
   final double meterRangeDb;
+
+  /// The noise floor is the mean of the blocks in this first stretch and
+  /// the gate stays closed meanwhile. One block of white noise in a narrow
+  /// bin is exponentially distributed and can sit 10 dB or more below the
+  /// mean; seeding the floor from it would open the gate on plain noise.
+  final Duration noiseWarmup;
 }
 
 /// A committed key state change. [atBlock] is the index (0-based, counting
@@ -88,6 +95,7 @@ final class EnvelopeGate {
         assert(blockSize > 0, 'blockSize must be positive'),
         minOnBlocks = _blocksFor(config.minOn, blockSize, sampleRate),
         minOffBlocks = _blocksFor(config.minOff, blockSize, sampleRate),
+        warmupBlocks = _blocksFor(config.noiseWarmup, blockSize, sampleRate),
         _peakDecay = _perBlock(-config.peakDecayDbPerSecond, blockSize, sampleRate),
         _noiseRise = _perBlock(config.noiseRiseDbPerSecond, blockSize, sampleRate),
         _onFactor = _fromDb(-config.onDropDb),
@@ -107,6 +115,10 @@ final class EnvelopeGate {
   /// Debounce lengths in blocks (at least 1).
   final int minOnBlocks;
   final int minOffBlocks;
+
+  /// Blocks averaged into the initial noise floor (gate closed meanwhile).
+  final int warmupBlocks;
+  double _warmupSum = 0;
 
   final double _peakDecay;
   final double _noiseRise;
@@ -168,9 +180,11 @@ final class EnvelopeGate {
     final int index = _blocks++;
     _lastPower = p;
 
-    if (_noise == null) {
-      _noise = p;
-      _peak = p;
+    if (index < warmupBlocks) {
+      _warmupSum += p;
+      _noise = _warmupSum / (index + 1);
+      _peak = math.max(p, _peak * _peakDecay);
+      return _debounce(false, index);
     }
     _peak = math.max(p, _peak * _peakDecay);
     final double noise = _noise!;
@@ -213,6 +227,7 @@ final class EnvelopeGate {
   void reset() {
     _blocks = 0;
     _noise = null;
+    _warmupSum = 0;
     _peak = 0;
     _lastPower = floorPower;
     _rawOn = false;

@@ -21,6 +21,7 @@ export 'src/sidetone_sink.dart';
 export 'src/sink.dart';
 export 'src/soloud_api.dart';
 export 'src/straight_key.dart';
+export 'src/wav_export.dart';
 export 'src/widgets/flash_overlay.dart';
 export 'src/widgets/paddle_buttons.dart';
 export 'src/widgets/straight_key_button.dart';
