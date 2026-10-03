@@ -21,7 +21,17 @@ class MessageBubble extends StatelessWidget {
     required this.onReveal,
     this.activeMark,
     this.showSender = false,
+    this.listenOnly = false,
+    this.onPractice,
+    this.onSaveMaterial,
   });
+
+  /// Listen-only training: also hide the dots and dashes until revealed.
+  final bool listenOnly;
+
+  /// Received messages: open copy practice / keep a material copy.
+  final VoidCallback? onPractice;
+  final VoidCallback? onSaveMaterial;
 
   final ChatMessage message;
   final bool trainingMode;
@@ -34,7 +44,10 @@ class MessageBubble extends StatelessWidget {
   /// Group chats show who keyed the message.
   final bool showSender;
 
-  bool get _textHidden => trainingMode && !revealed && !message.isMine;
+  bool get _textHidden =>
+      (trainingMode || listenOnly) && !revealed && !message.isMine;
+
+  bool get _patternHidden => listenOnly && !revealed && !message.isMine;
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +95,22 @@ class MessageBubble extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: MorsePatternText(
-                          pattern,
-                          activeMark: activeMark,
-                          style: theme.textTheme.bodyLarge,
-                          color: foreground.withValues(alpha: 0.75),
-                          highlightColor: scheme.primary,
-                        ),
+                        child: _patternHidden
+                            ? ExcludeSemantics(
+                                child: Text(
+                                  s.chatListenOnlyHidden,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              )
+                            : MorsePatternText(
+                                pattern,
+                                activeMark: activeMark,
+                                style: theme.textTheme.bodyLarge,
+                                color: foreground.withValues(alpha: 0.75),
+                                highlightColor: scheme.primary,
+                              ),
                       ),
                       IconButton(
                         tooltip: playing ? s.chatStop : s.chatPlay,
@@ -98,6 +120,28 @@ class MessageBubble extends StatelessWidget {
                           color: scheme.primary,
                         ),
                       ),
+                      if (!mine &&
+                          (onPractice != null || onSaveMaterial != null))
+                        PopupMenuButton<String>(
+                          key: ValueKey<String>('learn-menu-${message.id}'),
+                          tooltip: s.chatMessageLearnActions,
+                          icon: const Icon(Icons.school_outlined),
+                          onSelected: (v) =>
+                              (v == 'practice' ? onPractice : onSaveMaterial)
+                                  ?.call(),
+                          itemBuilder: (_) => [
+                            if (onPractice != null)
+                              PopupMenuItem(
+                                value: 'practice',
+                                child: Text(s.chatPracticeMessage),
+                              ),
+                            if (onSaveMaterial != null)
+                              PopupMenuItem(
+                                value: 'save',
+                                child: Text(s.chatSaveAsMaterial),
+                              ),
+                          ],
+                        ),
                     ],
                   ),
                   if (_textHidden)

@@ -66,6 +66,11 @@ class ConversationActions extends StatelessWidget {
           itemBuilder: (_) => [
             if (isGroup)
               PopupMenuItem(value: 'members', child: Text(s.chatMembers)),
+            CheckedPopupMenuItem(
+              value: 'listenOnly',
+              checked: settings.listenOnly,
+              child: Text(s.chatListenOnly),
+            ),
             PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
             if (isGroup)
               PopupMenuItem(value: 'leave', child: Text(s.chatLeaveGroup)),

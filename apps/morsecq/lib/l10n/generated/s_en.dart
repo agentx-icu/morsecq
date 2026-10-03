@@ -2683,4 +2683,76 @@ class SEn extends S {
 
   @override
   String get messageStatusCancelled => 'Cancelled — never sent';
+
+  @override
+  String get chatMessageLearnActions => 'Learn from this message';
+
+  @override
+  String get chatPracticeMessage => 'Practice this message';
+
+  @override
+  String get chatSaveAsMaterial => 'Save as training material';
+
+  @override
+  String get chatSavedAsMaterial => 'Saved to My materials';
+
+  @override
+  String get chatSaveMaterialFailed => 'Couldn\'t save the material. Try again.';
+
+  @override
+  String get chatListenOnly => 'Listen-only training';
+
+  @override
+  String get chatListenOnlyHidden => 'Listen-only: tap play to hear it';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages from this chat were saved as training material. Those copies stay until you delete them in Learn › My materials.',
+      one: '1 message from this chat was saved as training material. That copy stays until you delete it in Learn › My materials.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Copy practice';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'This message contains characters Morse can\'t key: $chars. They will be left out.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count symbols can be practised.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'Nothing in this message can be practised in Morse.';
+
+  @override
+  String get chatPracticeConfirm => 'Practice the rest';
+
+  @override
+  String get chatPracticeHint => 'Hint';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Hint: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'Assisted: counts as practice, not for reviews or speed advice.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong wrong · $missed missed · $extra extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Practice errors: $symbols';
+  }
 }

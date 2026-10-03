@@ -52,9 +52,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         displayName: name,
         statusMessage: _status.text.trim(),
       );
-      messenger?.showSnackBar(
-        SnackBar(content: Text(s.accountProfileUpdated)),
-      );
+      messenger?.showSnackBar(SnackBar(content: Text(s.accountProfileUpdated)));
       navigator.pop();
     } on Object catch (e) {
       if (!mounted) return;

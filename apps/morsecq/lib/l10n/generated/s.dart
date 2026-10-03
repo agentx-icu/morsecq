@@ -4699,6 +4699,114 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Cancelled — never sent'**
   String get messageStatusCancelled;
+
+  /// Message bubble: menu with learning actions for a received message
+  ///
+  /// In en, this message translates to:
+  /// **'Learn from this message'**
+  String get chatMessageLearnActions;
+
+  /// Message menu: open copy practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practice this message'**
+  String get chatPracticeMessage;
+
+  /// Message menu / practice result: keep a local copy as training material
+  ///
+  /// In en, this message translates to:
+  /// **'Save as training material'**
+  String get chatSaveAsMaterial;
+
+  /// Snack bar: the message was saved to My materials
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to My materials'**
+  String get chatSavedAsMaterial;
+
+  /// Snack bar: saving the material failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the material. Try again.'**
+  String get chatSaveMaterialFailed;
+
+  /// Conversation menu: listen-only training toggle (hides text and dots/dashes)
+  ///
+  /// In en, this message translates to:
+  /// **'Listen-only training'**
+  String get chatListenOnly;
+
+  /// Message bubble: placeholder while dots/dashes are hidden in listen-only mode
+  ///
+  /// In en, this message translates to:
+  /// **'Listen-only: tap play to hear it'**
+  String get chatListenOnlyHidden;
+
+  /// Clear history dialog: saved material copies stay
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message from this chat was saved as training material. That copy stays until you delete it in Learn › My materials.} other{{count} messages from this chat were saved as training material. Those copies stay until you delete them in Learn › My materials.}}'**
+  String chatClearHistoryMaterials(int count);
+
+  /// Chat copy practice: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Copy practice'**
+  String get chatPracticeTitle;
+
+  /// Chat copy practice: characters Morse cannot key
+  ///
+  /// In en, this message translates to:
+  /// **'This message contains characters Morse can\'t key: {chars}. They will be left out.'**
+  String chatPracticeUnsupported(String chars);
+
+  /// Chat copy practice: number of symbols that can be practised
+  ///
+  /// In en, this message translates to:
+  /// **'{count} symbols can be practised.'**
+  String chatPracticeTrainableCount(int count);
+
+  /// Chat copy practice: nothing in the message can be keyed
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this message can be practised in Morse.'**
+  String get chatPracticeNothingTrainable;
+
+  /// Chat copy practice: confirm practising the supported part
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the rest'**
+  String get chatPracticeConfirm;
+
+  /// Chat copy practice: reveal one more symbol (assistance)
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get chatPracticeHint;
+
+  /// Chat copy practice: symbols revealed by hints
+  ///
+  /// In en, this message translates to:
+  /// **'Hint: {symbols} …'**
+  String chatPracticeHintShown(String symbols);
+
+  /// Chat copy practice: assistance used, how it counts
+  ///
+  /// In en, this message translates to:
+  /// **'Assisted: counts as practice, not for reviews or speed advice.'**
+  String get chatPracticeAssisted;
+
+  /// Chat copy practice result: error counts
+  ///
+  /// In en, this message translates to:
+  /// **'{wrong} wrong · {missed} missed · {extra} extra'**
+  String chatPracticeErrors(int wrong, int missed, int extra);
+
+  /// Chat copy practice result: focused drill on missed learned symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Practice errors: {symbols}'**
+  String chatPracticeErrorsAction(String symbols);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

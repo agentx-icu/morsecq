@@ -59,7 +59,8 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   void initState() {
     super.initState();
     _settings = widget.settings ?? ReferencePlaybackSettings();
-    final MorsePlayerFactory factory = widget.playerFactory ??
+    final MorsePlayerFactory factory =
+        widget.playerFactory ??
         () => createSidetoneMorsePlayer(frequencyHz: _settings.toneHz);
     _controller = ReferencePlaybackController(
       playerFactory: factory,
@@ -86,14 +87,18 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ReferencePlaybackController>.value(value: _controller),
-        ChangeNotifierProvider<ReferencePlaybackSettings>.value(value: _settings),
+        ChangeNotifierProvider<ReferencePlaybackController>.value(
+          value: _controller,
+        ),
+        ChangeNotifierProvider<ReferencePlaybackSettings>.value(
+          value: _settings,
+        ),
       ],
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) =>
             referenceTwoPaneForWidth(constraints.maxWidth)
-                ? _buildTwoPane(context)
-                : _buildCompact(context),
+            ? _buildTwoPane(context)
+            : _buildCompact(context),
       ),
     );
   }
@@ -277,7 +282,9 @@ class ReferenceSectionRail extends StatelessWidget {
               style: theme.textTheme.labelMedium,
             ),
             selected: section == selected,
-            selectedTileColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+            selectedTileColor: theme.colorScheme.primaryContainer.withValues(
+              alpha: 0.4,
+            ),
             onTap: () => onSelected(section),
           ),
       ],

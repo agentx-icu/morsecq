@@ -2663,4 +2663,70 @@ class SKo extends S {
 
   @override
   String get messageStatusCancelled => '취소됨 — 전송되지 않음';
+
+  @override
+  String get chatMessageLearnActions => '이 메시지로 연습';
+
+  @override
+  String get chatPracticeMessage => '이 메시지 수신 연습';
+
+  @override
+  String get chatSaveAsMaterial => '연습 자료로 저장';
+
+  @override
+  String get chatSavedAsMaterial => '내 자료에 저장했습니다';
+
+  @override
+  String get chatSaveMaterialFailed => '자료를 저장하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get chatListenOnly => '듣기 전용 훈련';
+
+  @override
+  String get chatListenOnlyHidden => '듣기 전용: 재생을 눌러 들으세요';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '이 대화의 메시지 $count개가 연습 자료로 저장되어 있습니다. 사본은 학습 › 내 자료에서 삭제할 때까지 남습니다.';
+  }
+
+  @override
+  String get chatPracticeTitle => '수신 연습';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '이 메시지에 모스로 칠 수 없는 문자가 있습니다: $chars. 연습에서 제외됩니다.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count자를 연습할 수 있습니다.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '이 메시지에는 모스로 연습할 내용이 없습니다.';
+
+  @override
+  String get chatPracticeConfirm => '나머지 연습';
+
+  @override
+  String get chatPracticeHint => '힌트';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '힌트: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '보조 사용: 연습으로는 집계되지만 복습이나 속도 조언에는 쓰이지 않습니다.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '틀림 $wrong · 빠짐 $missed · 추가 $extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '틀린 문자 연습: $symbols';
+  }
 }

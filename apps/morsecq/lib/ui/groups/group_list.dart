@@ -70,7 +70,10 @@ class GroupList extends StatelessWidget {
             if (groups.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(context.s.chatNoGroups, textAlign: TextAlign.center),
+                child: Text(
+                  context.s.chatNoGroups,
+                  textAlign: TextAlign.center,
+                ),
               ),
             for (final Group g in groups)
               _GroupTile(

@@ -1,0 +1,135 @@
+import 'package:flutter/material.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:provider/provider.dart';
+
+import '../../i18n/l10n_extension.dart';
+import '../../training/chat_copy_session.dart';
+import '../../training/material_store.dart';
+import '../../training/training_controller.dart';
+import '../../training/training_controller_host.dart';
+import '../learn/chat_copy/chat_copy_screen.dart';
+import '../learn/learn_playback.dart';
+import 'chat_layout.dart';
+import 'morse_playback_controller.dart';
+import 'morse_playback_settings.dart';
+
+/// Chat-to-learning entry points (functional spec §6): practise a received
+/// message on a separate page, or keep a local copy as training material.
+/// Nothing here sends anything or touches the conversation's draft.
+abstract final class ConversationLearning {
+  static Future<TrainingController?> _controller(BuildContext context) async {
+    try {
+      return await TrainingControllerHost.fromContext(context);
+    } on Object {
+      if (context.mounted) showSnack(context, context.s.learnIdentityRequired);
+      return null;
+    }
+  }
+
+  static LearnPlaybackFactory _playbackFactory(BuildContext context) {
+    try {
+      return context.read<LearnPlaybackFactory>();
+    } on ProviderNotFoundException {
+      return const DevicePlaybackFactory();
+    }
+  }
+
+  /// Opens copy practice for [message]. Conversation auto-play is paused
+  /// while practising and restored afterwards only when the conversation is
+  /// still shown and nobody changed the switch in between; messages that
+  /// arrived meanwhile are not replayed.
+  static Future<void> practise(
+    BuildContext context, {
+    required ChatMessage message,
+    required MorsePlaybackSettings settings,
+    required MorsePlaybackController playback,
+    required String title,
+  }) async {
+    final controller = await _controller(context);
+    if (controller == null || !context.mounted) return;
+    final wasAuto = settings.autoPlay;
+    var touched = false;
+    void watch() => touched = true;
+    playback.stop();
+    if (wasAuto) settings.autoPlay = false;
+    settings.addListener(watch);
+    final session = ChatCopySession(
+      text: message.text,
+      conversationId: message.conversationId,
+      messageId: message.id,
+      profileKey: controller.profileKey,
+      timing: settings.timing,
+      toneHz: settings.toneHz,
+    );
+    try {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ChatCopyScreen(
+            controller: controller,
+            playback: _playbackFactory(context),
+            session: session,
+            onSaveMaterial: () => _save(controller, message, title),
+          ),
+        ),
+      );
+    } finally {
+      settings.removeListener(watch);
+      if (wasAuto && !touched && context.mounted && !settings.autoPlay) {
+        settings.autoPlay = true;
+      }
+    }
+  }
+
+  static Future<bool> _save(
+    TrainingController controller,
+    ChatMessage message,
+    String title,
+  ) async {
+    try {
+      await controller.saveChatMaterial(
+        conversationId: message.conversationId,
+        messageId: message.id,
+        text: message.text,
+        title: title,
+        description: message.timestamp.toUtc().toIso8601String(),
+      );
+      return true;
+    } on Object {
+      return false;
+    }
+  }
+
+  /// Saves [message] as a material and reports the result.
+  static Future<void> saveAsMaterial(
+    BuildContext context, {
+    required ChatMessage message,
+    required String title,
+  }) async {
+    final controller = await _controller(context);
+    if (controller == null || !context.mounted) return;
+    final s = context.s;
+    final ok = await _save(controller, message, title);
+    if (context.mounted) {
+      showSnack(context, ok ? s.chatSavedAsMaterial : s.chatSaveMaterialFailed);
+    }
+  }
+
+  /// Clear-history confirmation text, mentioning saved material copies
+  /// (they are independent and stay until deleted in My materials).
+  static Future<String> clearHistoryBody(
+    BuildContext context,
+    String conversationId,
+  ) async {
+    final s = context.s;
+    var saved = 0;
+    try {
+      final controller = await TrainingControllerHost.fromContext(context);
+      saved = await controller.materialsFromConversation(conversationId);
+    } on Object {
+      saved = 0;
+    }
+    return saved == 0
+        ? s.chatClearHistoryBody
+        : '${s.chatClearHistoryBody}\n\n${s.chatClearHistoryMaterials(saved)}';
+  }
+}

@@ -2730,4 +2730,78 @@ class SRu extends S {
 
   @override
   String get messageStatusCancelled => 'Отменено — не отправлено';
+
+  @override
+  String get chatMessageLearnActions => 'Учиться на этом сообщении';
+
+  @override
+  String get chatPracticeMessage => 'Потренироваться на этом сообщении';
+
+  @override
+  String get chatSaveAsMaterial => 'Сохранить как учебный материал';
+
+  @override
+  String get chatSavedAsMaterial => 'Сохранено в «Мои материалы»';
+
+  @override
+  String get chatSaveMaterialFailed => 'Не удалось сохранить материал. Повторите попытку.';
+
+  @override
+  String get chatListenOnly => 'Тренировка только на слух';
+
+  @override
+  String get chatListenOnlyHidden => 'Только на слух: нажмите воспроизведение';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщения из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      many: '$count сообщений из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      few: '$count сообщения из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      one: '$count сообщение из этого чата сохранено как материал. Копия останется, пока вы не удалите её в «Учёба › Мои материалы».',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Практика приёма';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'В сообщении есть символы без кода Морзе: $chars. Они будут пропущены.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return 'Можно потренировать знаков: $count.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'В этом сообщении нечего тренировать азбукой Морзе.';
+
+  @override
+  String get chatPracticeConfirm => 'Тренировать остальное';
+
+  @override
+  String get chatPracticeHint => 'Подсказка';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Подсказка: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'С подсказками: засчитывается как практика, но не для повторений и совета по скорости.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return 'Ошибок $wrong · пропусков $missed · лишних $extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Отработать ошибки: $symbols';
+  }
 }

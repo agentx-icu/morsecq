@@ -30,7 +30,10 @@ class KochOrderView extends StatelessWidget {
             ),
           );
         }
-        return ReferenceEntryTile(entry: entries[index - 1], showPosition: true);
+        return ReferenceEntryTile(
+          entry: entries[index - 1],
+          showPosition: true,
+        );
       },
     );
   }

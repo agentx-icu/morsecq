@@ -2685,4 +2685,76 @@ class SFr extends S {
 
   @override
   String get messageStatusCancelled => 'Annulé — jamais envoyé';
+
+  @override
+  String get chatMessageLearnActions => 'S\'entraîner avec ce message';
+
+  @override
+  String get chatPracticeMessage => 'S\'exercer sur ce message';
+
+  @override
+  String get chatSaveAsMaterial => 'Enregistrer comme support d\'entraînement';
+
+  @override
+  String get chatSavedAsMaterial => 'Enregistré dans Mes supports';
+
+  @override
+  String get chatSaveMaterialFailed => 'Impossible d\'enregistrer le support. Réessayez.';
+
+  @override
+  String get chatListenOnly => 'Entraînement à l\'écoute seule';
+
+  @override
+  String get chatListenOnlyHidden => 'Écoute seule : lancez la lecture';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages de ce chat ont été enregistrés comme supports. Ces copies restent jusqu\'à leur suppression dans Apprendre › Mes supports.',
+      one: '1 message de ce chat a été enregistré comme support. Cette copie reste jusqu\'à sa suppression dans Apprendre › Mes supports.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Exercice de copie';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'Ce message contient des caractères sans code Morse : $chars. Ils seront ignorés.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count signes peuvent être travaillés.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'Rien dans ce message ne peut être travaillé en Morse.';
+
+  @override
+  String get chatPracticeConfirm => 'S\'exercer sur le reste';
+
+  @override
+  String get chatPracticeHint => 'Indice';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Indice : $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'Avec aide : compte comme entraînement, pas pour les révisions ni le conseil de vitesse.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong faux · $missed oubliés · $extra en trop';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Travailler les erreurs : $symbols';
+  }
 }

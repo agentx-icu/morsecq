@@ -2684,4 +2684,76 @@ class SDe extends S {
 
   @override
   String get messageStatusCancelled => 'Abgebrochen – nie gesendet';
+
+  @override
+  String get chatMessageLearnActions => 'Mit dieser Nachricht üben';
+
+  @override
+  String get chatPracticeMessage => 'Diese Nachricht mitschreiben';
+
+  @override
+  String get chatSaveAsMaterial => 'Als Übungsmaterial speichern';
+
+  @override
+  String get chatSavedAsMaterial => 'In „Meine Materialien“ gespeichert';
+
+  @override
+  String get chatSaveMaterialFailed => 'Material konnte nicht gespeichert werden. Versuch es erneut.';
+
+  @override
+  String get chatListenOnly => 'Nur-Hören-Training';
+
+  @override
+  String get chatListenOnlyHidden => 'Nur Hören: zum Anhören abspielen';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Nachrichten aus diesem Chat wurden als Übungsmaterial gespeichert. Die Kopien bleiben, bis du sie unter Lernen › Meine Materialien löschst.',
+      one: '1 Nachricht aus diesem Chat wurde als Übungsmaterial gespeichert. Die Kopie bleibt, bis du sie unter Lernen › Meine Materialien löschst.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Mitschreib-Übung';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'Diese Nachricht enthält Zeichen ohne Morsecode: $chars. Sie werden ausgelassen.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count Zeichen können geübt werden.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'Nichts in dieser Nachricht lässt sich morsen.';
+
+  @override
+  String get chatPracticeConfirm => 'Den Rest üben';
+
+  @override
+  String get chatPracticeHint => 'Tipp';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Tipp: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'Mit Hilfe: zählt als Übung, nicht für Wiederholungen oder Tempo-Tipps.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong falsch · $missed fehlend · $extra zu viel';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Fehler üben: $symbols';
+  }
 }

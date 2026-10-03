@@ -261,10 +261,7 @@ class CharDetailSheet extends StatelessWidget {
                         style: muted,
                       ),
                       if (stats.attempts > 0 && lesson != null)
-                        Text(
-                          s.statsLessonIntroduced(lesson),
-                          style: muted,
-                        ),
+                        Text(s.statsLessonIntroduced(lesson), style: muted),
                     ],
                   ),
                 ),
@@ -282,10 +279,7 @@ class CharDetailSheet extends StatelessWidget {
                 now: snapshot.now,
               ),
             const SizedBox(height: 20),
-            Text(
-              s.statsConfusionsTitle,
-              style: theme.textTheme.titleSmall,
-            ),
+            Text(s.statsConfusionsTitle, style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
             if (confusions.isEmpty)
               Text(s.statsConfusionsNone, style: muted)

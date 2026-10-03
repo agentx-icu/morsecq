@@ -14,8 +14,9 @@ import 'conversation_target.dart';
 import 'conversation_header.dart';
 import 'conversation_presence.dart';
 import 'conversation_history.dart';
+import 'conversation_bubble.dart';
+import 'conversation_learning.dart';
 import 'conversation_timeline.dart';
-import 'message_bubble.dart';
 import 'message_input.dart';
 import 'local_message_sends.dart';
 import 'morse_playback_controller.dart';
@@ -330,10 +331,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Future<void> _clearHistory() async {
     final S s = context.s;
+    final String body = await ConversationLearning.clearHistoryBody(
+      context,
+      _id,
+    );
+    if (!mounted) return;
     final bool ok = await confirm(
       context,
       title: s.chatClearHistory,
-      body: s.chatClearHistoryBody,
+      body: body,
       confirmLabel: s.chatClearHistory,
     );
     if (!ok || !mounted || _clearing) return;
@@ -385,6 +391,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
         await _leaveGroup();
       case 'clear':
         await _clearHistory();
+      case 'listenOnly':
+        final settings = MorsePlaybackSettings.of(context, listen: false);
+        settings.listenOnly = !settings.listenOnly;
     }
   }
 
@@ -470,22 +479,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _bubble(ChatMessage m, MorsePlaybackSettings settings) =>
-      MessageBubble(
-        key: ValueKey<String>(m.id),
+      conversationBubble(
+        context,
         message: m,
-        trainingMode: settings.trainingMode,
+        settings: settings,
+        playback: _playback,
+        isGroup: _isGroup,
         revealed: _revealed.contains(m.id),
-        playing: _playback.playingId == m.id,
-        activeMark: _playback.activeMarkFor(m.id),
-        showSender: _isGroup,
         onReveal: () => setState(() => _revealed.add(m.id)),
-        onPlay: () => unawaited(
-          _playback.toggle(
-            m.id,
-            m.text,
-            settings.timing,
-            toneHz: settings.toneHz,
-          ),
-        ),
+        fallbackTitle: widget.target.title,
       );
 }

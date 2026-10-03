@@ -2663,4 +2663,70 @@ class SJa extends S {
 
   @override
   String get messageStatusCancelled => 'キャンセル済み（未送信）';
+
+  @override
+  String get chatMessageLearnActions => 'このメッセージで練習';
+
+  @override
+  String get chatPracticeMessage => 'このメッセージを受信練習';
+
+  @override
+  String get chatSaveAsMaterial => '練習素材として保存';
+
+  @override
+  String get chatSavedAsMaterial => '「マイ素材」に保存しました';
+
+  @override
+  String get chatSaveMaterialFailed => '素材を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get chatListenOnly => '聞き取り専用トレーニング';
+
+  @override
+  String get chatListenOnlyHidden => '聞き取り専用：再生して聴いてください';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return 'このチャットの$count件のメッセージが練習素材として保存されています。コピーは「学習 › マイ素材」で削除するまで残ります。';
+  }
+
+  @override
+  String get chatPracticeTitle => '受信練習';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'このメッセージにはモールスで打てない文字があります：$chars。練習では省きます。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count文字を練習できます。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'このメッセージにはモールスで練習できる内容がありません。';
+
+  @override
+  String get chatPracticeConfirm => '残りを練習する';
+
+  @override
+  String get chatPracticeHint => 'ヒント';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'ヒント：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '補助あり：練習には数えますが、復習や速度アドバイスには使いません。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '誤り$wrong · 抜け$missed · 余分$extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '間違えた文字を練習：$symbols';
+  }
 }

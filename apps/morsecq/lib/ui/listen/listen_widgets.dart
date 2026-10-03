@@ -86,8 +86,8 @@ class ListenFrequencyPanel extends StatelessWidget {
     final String badge = !auto
         ? s.listenToneManual
         : controller.isToneLocked
-            ? s.listenToneLocked
-            : s.listenToneSearching;
+        ? s.listenToneLocked
+        : s.listenToneSearching;
     final hz = controller.frequencyHz.clamp(
       ListenSettings.minHz,
       ListenSettings.maxHz,
@@ -120,8 +120,8 @@ class ListenFrequencyPanel extends StatelessWidget {
           value: hz,
           min: ListenSettings.minHz,
           max: ListenSettings.maxHz,
-          divisions:
-              ((ListenSettings.maxHz - ListenSettings.minHz) / 5).round(),
+          divisions: ((ListenSettings.maxHz - ListenSettings.minHz) / 5)
+              .round(),
           label: s.listenHzValue(hz.round()),
           onChanged: controller.setManualFrequency,
         ),
@@ -262,9 +262,9 @@ class ListenStatusBanner extends StatelessWidget {
     final S s = context.s;
     final String? message = switch (controller.status) {
       ListenStatus.failed => failureText(
-          s,
-          controller.failure?.kind ?? ListenFailureKind.startFailed,
-        ),
+        s,
+        controller.failure?.kind ?? ListenFailureKind.startFailed,
+      ),
       ListenStatus.starting => s.listenStarting,
       ListenStatus.idle when controller.stoppedInBackground =>
         s.listenStoppedInBackground,
@@ -273,8 +273,9 @@ class ListenStatusBanner extends StatelessWidget {
     if (message == null) return const SizedBox.shrink();
     final bool isError = controller.status == ListenStatus.failed;
     return MaterialBanner(
-      backgroundColor:
-          isError ? scheme.errorContainer : scheme.surfaceContainerHighest,
+      backgroundColor: isError
+          ? scheme.errorContainer
+          : scheme.surfaceContainerHighest,
       content: Text(
         message,
         style: TextStyle(
@@ -287,10 +288,7 @@ class ListenStatusBanner extends StatelessWidget {
       ),
       actions: <Widget>[
         if (isError)
-          TextButton(
-            onPressed: onRetry,
-            child: Text(s.listenPermissionRetry),
-          )
+          TextButton(onPressed: onRetry, child: Text(s.listenPermissionRetry))
         else
           const SizedBox.shrink(),
       ],
@@ -301,9 +299,9 @@ class ListenStatusBanner extends StatelessWidget {
   /// diagnostics only and deliberately not a parameter here.
   @visibleForTesting
   static String failureText(S s, ListenFailureKind kind) => switch (kind) {
-        ListenFailureKind.permissionDenied => s.listenPermissionDenied,
-        ListenFailureKind.noInputDevice => s.listenNoInput,
-        ListenFailureKind.startFailed => s.listenStartFailed,
-        ListenFailureKind.streamFailed => s.listenStreamFailed,
-      };
+    ListenFailureKind.permissionDenied => s.listenPermissionDenied,
+    ListenFailureKind.noInputDevice => s.listenNoInput,
+    ListenFailureKind.startFailed => s.listenStartFailed,
+    ListenFailureKind.streamFailed => s.listenStreamFailed,
+  };
 }

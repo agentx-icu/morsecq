@@ -2663,6 +2663,72 @@ class SZh extends S {
 
   @override
   String get messageStatusCancelled => '已取消——未发送';
+
+  @override
+  String get chatMessageLearnActions => '用这条消息练习';
+
+  @override
+  String get chatPracticeMessage => '练习抄收这条消息';
+
+  @override
+  String get chatSaveAsMaterial => '保存为训练素材';
+
+  @override
+  String get chatSavedAsMaterial => '已保存到“我的素材”';
+
+  @override
+  String get chatSaveMaterialFailed => '保存素材失败，请重试。';
+
+  @override
+  String get chatListenOnly => '纯听训练';
+
+  @override
+  String get chatListenOnlyHidden => '纯听模式：点播放收听';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '此会话中有 $count 条消息已保存为训练素材。这些副本会保留，直到你在“学习 › 我的素材”中删除。';
+  }
+
+  @override
+  String get chatPracticeTitle => '抄收练习';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '这条消息包含无法用莫尔斯码拍发的字符：$chars。练习时会略过它们。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '可练习 $count 个字符。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '这条消息中没有可用莫尔斯码练习的内容。';
+
+  @override
+  String get chatPracticeConfirm => '练习其余部分';
+
+  @override
+  String get chatPracticeHint => '提示';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '提示：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '已使用辅助：计入练习量，但不用于复习或速度建议。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong 个错误 · $missed 个遗漏 · $extra 个多余';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '练习出错字符：$symbols';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5324,4 +5390,70 @@ class SZhHant extends SZh {
 
   @override
   String get messageStatusCancelled => '已取消——未發送';
+
+  @override
+  String get chatMessageLearnActions => '用這則訊息練習';
+
+  @override
+  String get chatPracticeMessage => '練習抄收這則訊息';
+
+  @override
+  String get chatSaveAsMaterial => '儲存為訓練素材';
+
+  @override
+  String get chatSavedAsMaterial => '已儲存到「我的素材」';
+
+  @override
+  String get chatSaveMaterialFailed => '儲存素材失敗，請重試。';
+
+  @override
+  String get chatListenOnly => '純聽訓練';
+
+  @override
+  String get chatListenOnlyHidden => '純聽模式：點播放收聽';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return '此對話中有 $count 則訊息已儲存為訓練素材。這些副本會保留，直到你在「學習 › 我的素材」中刪除。';
+  }
+
+  @override
+  String get chatPracticeTitle => '抄收練習';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return '這則訊息包含無法用摩斯碼拍發的字元：$chars。練習時會略過它們。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '可練習 $count 個字元。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => '這則訊息中沒有可用摩斯碼練習的內容。';
+
+  @override
+  String get chatPracticeConfirm => '練習其餘部分';
+
+  @override
+  String get chatPracticeHint => '提示';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return '提示：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '已使用輔助：計入練習量，但不用於複習或速度建議。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong 個錯誤 · $missed 個遺漏 · $extra 個多餘';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '練習出錯字元：$symbols';
+  }
 }

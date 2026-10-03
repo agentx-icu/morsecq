@@ -43,6 +43,7 @@ final class AppPreferences implements IdentityDataStore {
         orElse: () => InputMode.straightKey,
       ),
       autoPlay: _bool(c, 'autoPlay', false),
+      listenOnly: _bool(c, 'listenOnly', false),
     );
     final r = _read('reference.playback');
     reference = ReferencePlaybackSettings(
@@ -72,6 +73,7 @@ final class AppPreferences implements IdentityDataStore {
         'trainingMode': playback.trainingMode,
         'inputMode': playback.inputMode.name,
         'autoPlay': playback.autoPlay,
+        'listenOnly': playback.listenOnly,
       }),
     );
     _watch(
