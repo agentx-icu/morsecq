@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "Tipp: {symbols} …",
   "chatPracticeAssisted": "Mit Hilfe: zählt als Übung, nicht für Wiederholungen oder Tempo-Tipps.",
   "chatPracticeErrors": "{wrong} falsch · {missed} fehlend · {extra} zu viel",
-  "chatPracticeErrorsAction": "Fehler üben: {symbols}"
+  "chatPracticeErrorsAction": "Fehler üben: {symbols}",
+  "learnTipDahTooLongTitle": "Striche zu lang",
+  "learnTipDahTooLong": "Deine Striche sind zu lang (etwa {ratio} eines Punkts; Ziel 3). Lass nach drei Punktlängen los.",
+  "learnIssueDetailDahTooLong": "{offending} von {total} Strichen zu lang (Ø {ratio} Punkt)",
+  "learnRhythmTitle": "Rhythmus",
+  "learnRhythmMine": "Mein Rhythmus",
+  "learnRhythmStandard": "Standardrhythmus (Zieltempo)",
+  "learnRhythmNormalizedNote": "Probleme werden an deiner eigenen Punktlänge ({ms} ms) gemessen; gleichmäßig, aber langsam ist in Ordnung. Die Standardspur zeigt das Zieltempo.",
+  "learnRhythmNotLocated": "Deine Zeichen ließen sich nicht einzelnen Buchstaben zuordnen. Übe stattdessen das ganze Ziel.",
+  "learnRhythmPlayMine": "Meins abspielen",
+  "learnRhythmPlayStandard": "Standard abspielen",
+  "learnRhythmPracticePart": "Das üben ({count} Versuche)",
+  "learnRhythmPracticeWhole": "Ganzes Ziel üben",
+  "learnRhythmSymbolOk": "Sieht gut aus",
+  "learnRhythmZoomIn": "Vergrößern",
+  "learnRhythmZoomOut": "Verkleinern"
 }

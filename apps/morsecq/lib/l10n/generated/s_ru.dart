@@ -2804,4 +2804,57 @@ class SRu extends S {
   String chatPracticeErrorsAction(String symbols) {
     return 'Отработать ошибки: $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Слишком длинные тире';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Ваши тире затянуты (примерно $ratio длительности точки; цель — 3). Отпускайте через три точки.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return 'Слишком длинных тире: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Ритм';
+
+  @override
+  String get learnRhythmMine => 'Мой ритм';
+
+  @override
+  String get learnRhythmStandard => 'Эталонный ритм (целевая скорость)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Ошибки оцениваются по вашей длительности точки ($ms мс): ровно, но медленно — нормально. Эталон — целевая скорость.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Не удалось сопоставить нажатия с отдельными знаками. Потренируйте всё задание целиком.';
+
+  @override
+  String get learnRhythmPlayMine => 'Мой вариант';
+
+  @override
+  String get learnRhythmPlayStandard => 'Эталон';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Потренировать ($count попытки)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Тренировать задание целиком';
+
+  @override
+  String get learnRhythmSymbolOk => 'Хорошо';
+
+  @override
+  String get learnRhythmZoomIn => 'Увеличить';
+
+  @override
+  String get learnRhythmZoomOut => 'Уменьшить';
 }

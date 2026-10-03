@@ -2729,6 +2729,59 @@ class SZh extends S {
   String chatPracticeErrorsAction(String symbols) {
     return '练习出错字符：$symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => '划太长';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '你的划太长（约为一个点的 $ratio；目标是 3 倍）。满三个点长就松开。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$total 个划中有 $offending 个太长（平均 $ratio 点长）';
+  }
+
+  @override
+  String get learnRhythmTitle => '节奏';
+
+  @override
+  String get learnRhythmMine => '我的节奏';
+
+  @override
+  String get learnRhythmStandard => '标准节奏（目标速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '问题按你自己的点长（$ms 毫秒）判断，节奏均匀但偏慢没有问题。标准行按目标速度绘制。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '无法把你的拍发逐个对应到字符，因此问题未定位到具体字母。请改为练习整个目标。';
+
+  @override
+  String get learnRhythmPlayMine => '播放我的';
+
+  @override
+  String get learnRhythmPlayStandard => '播放标准';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '练习这个（$count 次）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '练习整个目标';
+
+  @override
+  String get learnRhythmSymbolOk => '很好';
+
+  @override
+  String get learnRhythmZoomIn => '放大';
+
+  @override
+  String get learnRhythmZoomOut => '缩小';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5456,4 +5509,57 @@ class SZhHant extends SZh {
   String chatPracticeErrorsAction(String symbols) {
     return '練習出錯字元：$symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => '劃太長';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '你的劃太長（約為一個點的 $ratio；目標是 3 倍）。滿三個點長就鬆開。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$total 個劃中有 $offending 個太長（平均 $ratio 點長）';
+  }
+
+  @override
+  String get learnRhythmTitle => '節奏';
+
+  @override
+  String get learnRhythmMine => '我的節奏';
+
+  @override
+  String get learnRhythmStandard => '標準節奏（目標速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '問題依你自己的點長（$ms 毫秒）判斷，節奏均勻但偏慢沒有問題。標準列依目標速度繪製。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '無法把你的拍發逐個對應到字元，因此問題未定位到具體字母。請改為練習整個目標。';
+
+  @override
+  String get learnRhythmPlayMine => '播放我的';
+
+  @override
+  String get learnRhythmPlayStandard => '播放標準';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '練習這個（$count 次）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '練習整個目標';
+
+  @override
+  String get learnRhythmSymbolOk => '很好';
+
+  @override
+  String get learnRhythmZoomIn => '放大';
+
+  @override
+  String get learnRhythmZoomOut => '縮小';
 }

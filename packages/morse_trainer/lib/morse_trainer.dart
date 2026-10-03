@@ -30,6 +30,7 @@ export 'src/qso/qso_session.dart';
 export 'src/qso_drill.dart';
 export 'src/random_groups_drill.dart';
 export 'src/send_practice.dart';
+export 'src/send_timeline.dart';
 export 'src/session_score.dart';
 export 'src/session_summary.dart';
 export 'src/speed_recommendation.dart';

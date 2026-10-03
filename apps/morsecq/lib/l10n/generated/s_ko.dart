@@ -2729,4 +2729,57 @@ class SKo extends S {
   String chatPracticeErrorsAction(String symbols) {
     return '틀린 문자 연습: $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => '장점이 너무 김';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '장점이 깁니다(단점의 약 $ratio, 목표는 3배). 단점 세 개 길이가 지나면 떼세요.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '장점 $total개 중 $offending개가 너무 김(평균 $ratio 단점)';
+  }
+
+  @override
+  String get learnRhythmTitle => '리듬';
+
+  @override
+  String get learnRhythmMine => '내 리듬';
+
+  @override
+  String get learnRhythmStandard => '표준 리듬(목표 속도)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '문제는 내 단점 길이($ms ms)를 기준으로 판단하므로 느려도 고르면 괜찮습니다. 표준 줄은 목표 속도입니다.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '키잉을 문자 단위로 맞추지 못했습니다. 목표 전체를 연습하세요.';
+
+  @override
+  String get learnRhythmPlayMine => '내 것 재생';
+
+  @override
+  String get learnRhythmPlayStandard => '표준 재생';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return '이것 연습($count회)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '목표 전체 연습';
+
+  @override
+  String get learnRhythmSymbolOk => '좋음';
+
+  @override
+  String get learnRhythmZoomIn => '확대';
+
+  @override
+  String get learnRhythmZoomOut => '축소';
 }

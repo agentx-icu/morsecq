@@ -4807,6 +4807,96 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Practice errors: {symbols}'**
   String chatPracticeErrorsAction(String symbols);
+
+  /// Send practice tip title: dahs were held far too long
+  ///
+  /// In en, this message translates to:
+  /// **'Dahs too long'**
+  String get learnTipDahTooLongTitle;
+
+  /// Send tip for SendIssueKind.dahTooLong; ratio via learnRatioTimes
+  ///
+  /// In en, this message translates to:
+  /// **'Your dahs run long (about {ratio} of a dit; aim for 3). Release as soon as three dits have passed.'**
+  String learnTipDahTooLong(String ratio);
+
+  /// Measurement line under the dahTooLong tip
+  ///
+  /// In en, this message translates to:
+  /// **'{offending} of {total} dahs too long (avg {ratio} dit)'**
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio);
+
+  /// Send result: rhythm timeline section title
+  ///
+  /// In en, this message translates to:
+  /// **'Rhythm'**
+  String get learnRhythmTitle;
+
+  /// Rhythm timeline lane: measured keying
+  ///
+  /// In en, this message translates to:
+  /// **'My rhythm'**
+  String get learnRhythmMine;
+
+  /// Rhythm timeline lane: standard timing at the target speed
+  ///
+  /// In en, this message translates to:
+  /// **'Standard rhythm (target speed)'**
+  String get learnRhythmStandard;
+
+  /// Rhythm timeline: how problems are judged
+  ///
+  /// In en, this message translates to:
+  /// **'Problems are judged against your own dit ({ms} ms), so an even but slow fist is fine. The standard lane is the target speed.'**
+  String learnRhythmNormalizedNote(int ms);
+
+  /// Rhythm timeline: marks could not be matched symbol by symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Your marks couldn\'t be matched to single symbols, so problems aren\'t pinned to letters. Practise the whole target instead.'**
+  String get learnRhythmNotLocated;
+
+  /// Rhythm timeline: replay the measured timing
+  ///
+  /// In en, this message translates to:
+  /// **'Play mine'**
+  String get learnRhythmPlayMine;
+
+  /// Rhythm timeline / send screen: play the standard timing
+  ///
+  /// In en, this message translates to:
+  /// **'Play standard'**
+  String get learnRhythmPlayStandard;
+
+  /// Rhythm symbol card: start targeted practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practise this ({count} tries)'**
+  String learnRhythmPracticePart(int count);
+
+  /// Rhythm timeline: practise the whole target
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the whole target'**
+  String get learnRhythmPracticeWhole;
+
+  /// Rhythm symbol card: no problem found
+  ///
+  /// In en, this message translates to:
+  /// **'Looks good'**
+  String get learnRhythmSymbolOk;
+
+  /// Rhythm timeline: zoom in
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get learnRhythmZoomIn;
+
+  /// Rhythm timeline: zoom out
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get learnRhythmZoomOut;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

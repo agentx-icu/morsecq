@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "Pista: {symbols} …",
   "chatPracticeAssisted": "Con ayuda: cuenta como práctica, no para repasos ni consejo de velocidad.",
   "chatPracticeErrors": "{wrong} incorrectos · {missed} omitidos · {extra} de más",
-  "chatPracticeErrorsAction": "Practicar errores: {symbols}"
+  "chatPracticeErrorsAction": "Practicar errores: {symbols}",
+  "learnTipDahTooLongTitle": "Rayas demasiado largas",
+  "learnTipDahTooLong": "Tus rayas se alargan (unas {ratio} de un punto; objetivo 3). Suelta al cumplir tres puntos.",
+  "learnIssueDetailDahTooLong": "{offending} de {total} rayas demasiado largas (media {ratio} punto)",
+  "learnRhythmTitle": "Ritmo",
+  "learnRhythmMine": "Mi ritmo",
+  "learnRhythmStandard": "Ritmo estándar (velocidad objetivo)",
+  "learnRhythmNormalizedNote": "Los problemas se juzgan con tu propio punto ({ms} ms); un ritmo parejo pero lento está bien. La pista estándar es la velocidad objetivo.",
+  "learnRhythmNotLocated": "No se pudieron asignar tus marcas a símbolos concretos. Practica el objetivo completo.",
+  "learnRhythmPlayMine": "Reproducir el mío",
+  "learnRhythmPlayStandard": "Reproducir estándar",
+  "learnRhythmPracticePart": "Practicar esto ({count} intentos)",
+  "learnRhythmPracticeWhole": "Practicar el objetivo completo",
+  "learnRhythmSymbolOk": "Bien",
+  "learnRhythmZoomIn": "Acercar",
+  "learnRhythmZoomOut": "Alejar"
 }

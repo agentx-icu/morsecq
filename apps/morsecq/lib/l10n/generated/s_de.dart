@@ -2756,4 +2756,57 @@ class SDe extends S {
   String chatPracticeErrorsAction(String symbols) {
     return 'Fehler üben: $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Striche zu lang';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Deine Striche sind zu lang (etwa $ratio eines Punkts; Ziel 3). Lass nach drei Punktlängen los.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$offending von $total Strichen zu lang (Ø $ratio Punkt)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Rhythmus';
+
+  @override
+  String get learnRhythmMine => 'Mein Rhythmus';
+
+  @override
+  String get learnRhythmStandard => 'Standardrhythmus (Zieltempo)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Probleme werden an deiner eigenen Punktlänge ($ms ms) gemessen; gleichmäßig, aber langsam ist in Ordnung. Die Standardspur zeigt das Zieltempo.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Deine Zeichen ließen sich nicht einzelnen Buchstaben zuordnen. Übe stattdessen das ganze Ziel.';
+
+  @override
+  String get learnRhythmPlayMine => 'Meins abspielen';
+
+  @override
+  String get learnRhythmPlayStandard => 'Standard abspielen';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Das üben ($count Versuche)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Ganzes Ziel üben';
+
+  @override
+  String get learnRhythmSymbolOk => 'Sieht gut aus';
+
+  @override
+  String get learnRhythmZoomIn => 'Vergrößern';
+
+  @override
+  String get learnRhythmZoomOut => 'Verkleinern';
 }

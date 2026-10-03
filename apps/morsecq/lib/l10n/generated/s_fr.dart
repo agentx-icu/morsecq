@@ -2757,4 +2757,57 @@ class SFr extends S {
   String chatPracticeErrorsAction(String symbols) {
     return 'Travailler les erreurs : $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Traits trop longs';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Vos traits durent trop (environ $ratio d\'un point ; visez 3). Relâchez après trois points.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$offending trait(s) sur $total trop longs (moy. $ratio point)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Rythme';
+
+  @override
+  String get learnRhythmMine => 'Mon rythme';
+
+  @override
+  String get learnRhythmStandard => 'Rythme standard (vitesse cible)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Les problèmes sont jugés sur votre propre point ($ms ms) : régulier mais lent, c\'est correct. La piste standard suit la vitesse cible.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Impossible d\'associer vos signaux à des signes précis. Entraînez-vous sur la cible entière.';
+
+  @override
+  String get learnRhythmPlayMine => 'Écouter le mien';
+
+  @override
+  String get learnRhythmPlayStandard => 'Écouter le standard';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'S\'exercer ($count essais)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'S\'exercer sur toute la cible';
+
+  @override
+  String get learnRhythmSymbolOk => 'Correct';
+
+  @override
+  String get learnRhythmZoomIn => 'Zoom avant';
+
+  @override
+  String get learnRhythmZoomOut => 'Zoom arrière';
 }

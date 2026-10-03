@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../../training/send_detail_store.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
@@ -12,9 +14,11 @@ import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
+import 'copy_from_memory_switch.dart';
 import 'keyer_legend.dart';
 import 'send_live_view.dart';
 import 'send_result_view.dart';
+import 'send_timeline_view.dart';
 
 /// Send practice: a target to key, an on-screen straight key or paddles (also
 /// driven by Space / left Ctrl / right Ctrl when focused), live decode, and
@@ -30,8 +34,12 @@ class SendPracticeScreen extends StatefulWidget {
     required this.playback,
     this.session,
     this.nextSession,
+    this.maxAttempts,
     this.screenWake = const WakelockScreenWake(),
   });
+
+  /// Targeted practice offers this many attempts, then only Done.
+  final int? maxAttempts;
 
   /// Makes the session for "Try another" (daily-plan send steps); defaults
   /// to `controller.startSendSession()`.
@@ -66,6 +74,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   int _keyerGeneration = 0;
   Timer? _tick;
   SendDiagnostics? _result;
+  SendTimeline? _timeline;
+  int _attempts = 0;
   bool _hideTarget = false;
   bool _recording = false;
   bool _disposed = false;
@@ -184,11 +194,31 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     setState(() => _recording = true);
     _wake.setActive(false);
     final result = _session.finish();
-    final outcome = await widget.controller.recordSendSession(_session);
+    String? detailRef;
+    try {
+      // The detail is written before the summary refers to it.
+      detailRef = await widget.controller.saveSendDetail(_session, result);
+    } on Object {
+      detailRef = null;
+    }
+    final outcome = await widget.controller.recordSendSession(
+      _session,
+      detailRef: detailRef,
+    );
     if (!mounted) {
       return;
     }
-    setState(() => _result = result);
+    setState(() {
+      _result = result;
+      _attempts++;
+      _timeline = SendTimeline.build(
+        target: _session.target,
+        marks: _session.marks,
+        gaps: _session.gaps,
+        timing: _session.nominalTiming,
+        estimatedDit: result.attempt.estimatedDit,
+      );
+    });
     if (!outcome.saved) {
       showProgressSaveFailed(context, widget.controller);
     }
@@ -218,6 +248,28 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     _wake.setActive(true);
     _buildKeyer();
     setState(() {});
+  }
+
+  /// Three new attempts at [text] (one symbol or the whole target); the
+  /// standard can be heard first and playback never counts as an attempt.
+  Future<void> _practisePart(String text) async {
+    SendSession make() => SendSession(
+      target: text,
+      timing: _session.nominalTiming,
+      now: widget.controller.now,
+      lesson: _session.lesson,
+    );
+    await Navigator.of(context).push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => SendPracticeScreen(
+          controller: widget.controller,
+          playback: widget.playback,
+          session: make(),
+          nextSession: () async => make(),
+          maxAttempts: 3,
+        ),
+      ),
+    );
   }
 
   @override
@@ -258,38 +310,24 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
 
   Widget _scaffold(S s, Widget body) {
     final flash = _playback?.flash;
-    // A 320 px phone (or large text) has no room for the written label next
-    // to the title; fall back to an icon there. The tooltip and merged
-    // semantics keep the switch named for screen readers either way.
-    final media = MediaQuery.of(context);
-    final textScale = media.textScaler.scale(14) / 14;
-    final roomForLabel = media.size.width / textScale >= 420;
     return Scaffold(
       appBar: AppBar(
         title: Text(s.learnSendTitle),
         actions: <Widget>[
-          MergeSemantics(
-            child: Tooltip(
-              message: s.learnCopyFromMemory,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (roomForLabel)
-                    Text(s.learnCopyFromMemory, maxLines: 1)
-                  else
-                    Semantics(
-                      label: s.learnCopyFromMemory,
-                      child: const Icon(Icons.visibility_off_outlined),
-                    ),
-                  Switch(
-                    value: _hideTarget,
-                    onChanged: _result == null
-                        ? (v) => setState(() => _hideTarget = v)
-                        : null,
-                  ),
-                ],
+          if (_result == null && _playback != null)
+            IconButton(
+              tooltip: s.learnRhythmPlayStandard,
+              icon: const Icon(Icons.hearing),
+              // Hearing the standard first never counts as an attempt.
+              onPressed: () => _playback?.player.play(
+                MorseEncoder.encode(_session.target, _session.nominalTiming),
               ),
             ),
+          CopyFromMemorySwitch(
+            value: _hideTarget,
+            onChanged: _result == null
+                ? (v) => setState(() => _hideTarget = v)
+                : null,
           ),
           const SizedBox(width: 8),
         ],
@@ -409,6 +447,21 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         SendResultView(diagnostics: _result!),
+        if (_timeline != null) ...<Widget>[
+          const SizedBox(height: 16),
+          SendTimelineView(
+            timeline: _timeline!,
+            onPlayMine: (i) => _playback?.player.play(
+              i == null ? _timeline!.myElements : _timeline!.myElementsFor(i),
+            ),
+            onPlayStandard: (i) => _playback?.player.play(
+              i == null
+                  ? _timeline!.standardElements
+                  : _timeline!.standardElementsFor(i),
+            ),
+            onPractice: _practisePart,
+          ),
+        ],
         const SizedBox(height: 24),
         Row(
           children: <Widget>[
@@ -422,16 +475,17 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
               ),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(
-                onPressed: _another,
-                autofocus: true,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+            if (widget.maxAttempts == null || _attempts < widget.maxAttempts!)
+              Expanded(
+                child: FilledButton(
+                  onPressed: _another,
+                  autofocus: true,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  child: Text(s.learnTryAnother),
                 ),
-                child: Text(s.learnTryAnother),
               ),
-            ),
           ],
         ),
       ],

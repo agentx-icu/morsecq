@@ -2729,4 +2729,57 @@ class SJa extends S {
   String chatPracticeErrorsAction(String symbols) {
     return '間違えた文字を練習：$symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => '長点が長すぎる';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '長点が長すぎます（短点の約$ratio、目標は3倍）。短点3つ分で離しましょう。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '長点$total個中$offending個が長すぎ（平均$ratio短点）';
+  }
+
+  @override
+  String get learnRhythmTitle => 'リズム';
+
+  @override
+  String get learnRhythmMine => '自分のリズム';
+
+  @override
+  String get learnRhythmStandard => '標準のリズム（目標速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '問題は自分の短点（$ms ms）を基準に判断します。遅くても均等なら問題ありません。標準は目標速度です。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '打鍵を1文字ずつ対応付けられませんでした。課題全体を練習してください。';
+
+  @override
+  String get learnRhythmPlayMine => '自分のを再生';
+
+  @override
+  String get learnRhythmPlayStandard => '標準を再生';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'これを練習（$count回）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '課題全体を練習';
+
+  @override
+  String get learnRhythmSymbolOk => '良好';
+
+  @override
+  String get learnRhythmZoomIn => '拡大';
+
+  @override
+  String get learnRhythmZoomOut => '縮小';
 }

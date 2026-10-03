@@ -802,5 +802,20 @@
   "chatPracticeHintShown": "提示：{symbols} …",
   "chatPracticeAssisted": "已使用辅助：计入练习量，但不用于复习或速度建议。",
   "chatPracticeErrors": "{wrong} 个错误 · {missed} 个遗漏 · {extra} 个多余",
-  "chatPracticeErrorsAction": "练习出错字符：{symbols}"
+  "chatPracticeErrorsAction": "练习出错字符：{symbols}",
+  "learnTipDahTooLongTitle": "划太长",
+  "learnTipDahTooLong": "你的划太长（约为一个点的 {ratio}；目标是 3 倍）。满三个点长就松开。",
+  "learnIssueDetailDahTooLong": "{total} 个划中有 {offending} 个太长（平均 {ratio} 点长）",
+  "learnRhythmTitle": "节奏",
+  "learnRhythmMine": "我的节奏",
+  "learnRhythmStandard": "标准节奏（目标速度）",
+  "learnRhythmNormalizedNote": "问题按你自己的点长（{ms} 毫秒）判断，节奏均匀但偏慢没有问题。标准行按目标速度绘制。",
+  "learnRhythmNotLocated": "无法把你的拍发逐个对应到字符，因此问题未定位到具体字母。请改为练习整个目标。",
+  "learnRhythmPlayMine": "播放我的",
+  "learnRhythmPlayStandard": "播放标准",
+  "learnRhythmPracticePart": "练习这个（{count} 次）",
+  "learnRhythmPracticeWhole": "练习整个目标",
+  "learnRhythmSymbolOk": "很好",
+  "learnRhythmZoomIn": "放大",
+  "learnRhythmZoomOut": "缩小"
 }

@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "힌트: {symbols} …",
   "chatPracticeAssisted": "보조 사용: 연습으로는 집계되지만 복습이나 속도 조언에는 쓰이지 않습니다.",
   "chatPracticeErrors": "틀림 {wrong} · 빠짐 {missed} · 추가 {extra}",
-  "chatPracticeErrorsAction": "틀린 문자 연습: {symbols}"
+  "chatPracticeErrorsAction": "틀린 문자 연습: {symbols}",
+  "learnTipDahTooLongTitle": "장점이 너무 김",
+  "learnTipDahTooLong": "장점이 깁니다(단점의 약 {ratio}, 목표는 3배). 단점 세 개 길이가 지나면 떼세요.",
+  "learnIssueDetailDahTooLong": "장점 {total}개 중 {offending}개가 너무 김(평균 {ratio} 단점)",
+  "learnRhythmTitle": "리듬",
+  "learnRhythmMine": "내 리듬",
+  "learnRhythmStandard": "표준 리듬(목표 속도)",
+  "learnRhythmNormalizedNote": "문제는 내 단점 길이({ms} ms)를 기준으로 판단하므로 느려도 고르면 괜찮습니다. 표준 줄은 목표 속도입니다.",
+  "learnRhythmNotLocated": "키잉을 문자 단위로 맞추지 못했습니다. 목표 전체를 연습하세요.",
+  "learnRhythmPlayMine": "내 것 재생",
+  "learnRhythmPlayStandard": "표준 재생",
+  "learnRhythmPracticePart": "이것 연습({count}회)",
+  "learnRhythmPracticeWhole": "목표 전체 연습",
+  "learnRhythmSymbolOk": "좋음",
+  "learnRhythmZoomIn": "확대",
+  "learnRhythmZoomOut": "축소"
 }

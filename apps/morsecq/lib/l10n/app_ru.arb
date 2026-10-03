@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "Подсказка: {symbols} …",
   "chatPracticeAssisted": "С подсказками: засчитывается как практика, но не для повторений и совета по скорости.",
   "chatPracticeErrors": "Ошибок {wrong} · пропусков {missed} · лишних {extra}",
-  "chatPracticeErrorsAction": "Отработать ошибки: {symbols}"
+  "chatPracticeErrorsAction": "Отработать ошибки: {symbols}",
+  "learnTipDahTooLongTitle": "Слишком длинные тире",
+  "learnTipDahTooLong": "Ваши тире затянуты (примерно {ratio} длительности точки; цель — 3). Отпускайте через три точки.",
+  "learnIssueDetailDahTooLong": "Слишком длинных тире: {offending} из {total} (в среднем {ratio} длительности точки)",
+  "learnRhythmTitle": "Ритм",
+  "learnRhythmMine": "Мой ритм",
+  "learnRhythmStandard": "Эталонный ритм (целевая скорость)",
+  "learnRhythmNormalizedNote": "Ошибки оцениваются по вашей длительности точки ({ms} мс): ровно, но медленно — нормально. Эталон — целевая скорость.",
+  "learnRhythmNotLocated": "Не удалось сопоставить нажатия с отдельными знаками. Потренируйте всё задание целиком.",
+  "learnRhythmPlayMine": "Мой вариант",
+  "learnRhythmPlayStandard": "Эталон",
+  "learnRhythmPracticePart": "Потренировать ({count} попытки)",
+  "learnRhythmPracticeWhole": "Тренировать задание целиком",
+  "learnRhythmSymbolOk": "Хорошо",
+  "learnRhythmZoomIn": "Увеличить",
+  "learnRhythmZoomOut": "Уменьшить"
 }

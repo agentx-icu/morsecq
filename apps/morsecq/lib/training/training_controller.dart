@@ -402,7 +402,10 @@ final class TrainingController extends ChangeNotifier {
   /// Sending accuracy is a different skill from copying, so the per-symbol
   /// receive statistics, SRS boxes and confusion matrix are left untouched;
   /// only the history entry (and the streak derived from it) is added.
-  Future<SendOutcome> recordSendSession(SendSession session) async {
+  Future<SendOutcome> recordSendSession(
+    SendSession session, {
+    String? detailRef,
+  }) async {
     final score = session.scoreForHistory();
     final outcome = await recordExercise(
       score: score,
@@ -414,6 +417,7 @@ final class TrainingController extends ChangeNotifier {
       timing: session.nominalTiming,
       active: session.elapsed,
       planStepId: session.planStepId,
+      detailRef: detailRef,
     );
     return SendOutcome(score: score, saved: outcome.saved);
   }

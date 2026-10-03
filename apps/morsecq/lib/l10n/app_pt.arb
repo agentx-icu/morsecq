@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "Dica: {symbols} …",
   "chatPracticeAssisted": "Com ajuda: conta como prática, não para revisões nem sugestão de velocidade.",
   "chatPracticeErrors": "{wrong} errados · {missed} omitidos · {extra} a mais",
-  "chatPracticeErrorsAction": "Praticar erros: {symbols}"
+  "chatPracticeErrorsAction": "Praticar erros: {symbols}",
+  "learnTipDahTooLongTitle": "Traços longos demais",
+  "learnTipDahTooLong": "Seus traços estão longos (cerca de {ratio} de um ponto; meta 3). Solte ao completar três pontos.",
+  "learnIssueDetailDahTooLong": "{offending} de {total} traços longos demais (média {ratio} ponto)",
+  "learnRhythmTitle": "Ritmo",
+  "learnRhythmMine": "Meu ritmo",
+  "learnRhythmStandard": "Ritmo padrão (velocidade alvo)",
+  "learnRhythmNormalizedNote": "Os problemas são julgados pelo seu próprio ponto ({ms} ms); regular mas lento está ok. A faixa padrão é a velocidade alvo.",
+  "learnRhythmNotLocated": "Não foi possível associar suas marcas a símbolos. Pratique o alvo inteiro.",
+  "learnRhythmPlayMine": "Tocar o meu",
+  "learnRhythmPlayStandard": "Tocar padrão",
+  "learnRhythmPracticePart": "Praticar isto ({count} tentativas)",
+  "learnRhythmPracticeWhole": "Praticar o alvo inteiro",
+  "learnRhythmSymbolOk": "Bom",
+  "learnRhythmZoomIn": "Ampliar",
+  "learnRhythmZoomOut": "Reduzir"
 }

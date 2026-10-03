@@ -2756,4 +2756,57 @@ class SEs extends S {
   String chatPracticeErrorsAction(String symbols) {
     return 'Practicar errores: $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Rayas demasiado largas';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Tus rayas se alargan (unas $ratio de un punto; objetivo 3). Suelta al cumplir tres puntos.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$offending de $total rayas demasiado largas (media $ratio punto)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Ritmo';
+
+  @override
+  String get learnRhythmMine => 'Mi ritmo';
+
+  @override
+  String get learnRhythmStandard => 'Ritmo estándar (velocidad objetivo)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Los problemas se juzgan con tu propio punto ($ms ms); un ritmo parejo pero lento está bien. La pista estándar es la velocidad objetivo.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'No se pudieron asignar tus marcas a símbolos concretos. Practica el objetivo completo.';
+
+  @override
+  String get learnRhythmPlayMine => 'Reproducir el mío';
+
+  @override
+  String get learnRhythmPlayStandard => 'Reproducir estándar';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Practicar esto ($count intentos)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Practicar el objetivo completo';
+
+  @override
+  String get learnRhythmSymbolOk => 'Bien';
+
+  @override
+  String get learnRhythmZoomIn => 'Acercar';
+
+  @override
+  String get learnRhythmZoomOut => 'Alejar';
 }

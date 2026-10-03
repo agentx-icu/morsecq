@@ -2755,4 +2755,57 @@ class SEn extends S {
   String chatPracticeErrorsAction(String symbols) {
     return 'Practice errors: $symbols';
   }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Dahs too long';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Your dahs run long (about $ratio of a dit; aim for 3). Release as soon as three dits have passed.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$offending of $total dahs too long (avg $ratio dit)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Rhythm';
+
+  @override
+  String get learnRhythmMine => 'My rhythm';
+
+  @override
+  String get learnRhythmStandard => 'Standard rhythm (target speed)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Problems are judged against your own dit ($ms ms), so an even but slow fist is fine. The standard lane is the target speed.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Your marks couldn\'t be matched to single symbols, so problems aren\'t pinned to letters. Practise the whole target instead.';
+
+  @override
+  String get learnRhythmPlayMine => 'Play mine';
+
+  @override
+  String get learnRhythmPlayStandard => 'Play standard';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Practise this ($count tries)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Practise the whole target';
+
+  @override
+  String get learnRhythmSymbolOk => 'Looks good';
+
+  @override
+  String get learnRhythmZoomIn => 'Zoom in';
+
+  @override
+  String get learnRhythmZoomOut => 'Zoom out';
 }

@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "Indice : {symbols} …",
   "chatPracticeAssisted": "Avec aide : compte comme entraînement, pas pour les révisions ni le conseil de vitesse.",
   "chatPracticeErrors": "{wrong} faux · {missed} oubliés · {extra} en trop",
-  "chatPracticeErrorsAction": "Travailler les erreurs : {symbols}"
+  "chatPracticeErrorsAction": "Travailler les erreurs : {symbols}",
+  "learnTipDahTooLongTitle": "Traits trop longs",
+  "learnTipDahTooLong": "Vos traits durent trop (environ {ratio} d'un point ; visez 3). Relâchez après trois points.",
+  "learnIssueDetailDahTooLong": "{offending} trait(s) sur {total} trop longs (moy. {ratio} point)",
+  "learnRhythmTitle": "Rythme",
+  "learnRhythmMine": "Mon rythme",
+  "learnRhythmStandard": "Rythme standard (vitesse cible)",
+  "learnRhythmNormalizedNote": "Les problèmes sont jugés sur votre propre point ({ms} ms) : régulier mais lent, c'est correct. La piste standard suit la vitesse cible.",
+  "learnRhythmNotLocated": "Impossible d'associer vos signaux à des signes précis. Entraînez-vous sur la cible entière.",
+  "learnRhythmPlayMine": "Écouter le mien",
+  "learnRhythmPlayStandard": "Écouter le standard",
+  "learnRhythmPracticePart": "S'exercer ({count} essais)",
+  "learnRhythmPracticeWhole": "S'exercer sur toute la cible",
+  "learnRhythmSymbolOk": "Correct",
+  "learnRhythmZoomIn": "Zoom avant",
+  "learnRhythmZoomOut": "Zoom arrière"
 }

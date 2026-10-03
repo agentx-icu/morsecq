@@ -782,5 +782,20 @@
   "chatPracticeHintShown": "提示：{symbols} …",
   "chatPracticeAssisted": "已使用輔助：計入練習量，但不用於複習或速度建議。",
   "chatPracticeErrors": "{wrong} 個錯誤 · {missed} 個遺漏 · {extra} 個多餘",
-  "chatPracticeErrorsAction": "練習出錯字元：{symbols}"
+  "chatPracticeErrorsAction": "練習出錯字元：{symbols}",
+  "learnTipDahTooLongTitle": "劃太長",
+  "learnTipDahTooLong": "你的劃太長（約為一個點的 {ratio}；目標是 3 倍）。滿三個點長就鬆開。",
+  "learnIssueDetailDahTooLong": "{total} 個劃中有 {offending} 個太長（平均 {ratio} 點長）",
+  "learnRhythmTitle": "節奏",
+  "learnRhythmMine": "我的節奏",
+  "learnRhythmStandard": "標準節奏（目標速度）",
+  "learnRhythmNormalizedNote": "問題依你自己的點長（{ms} 毫秒）判斷，節奏均勻但偏慢沒有問題。標準列依目標速度繪製。",
+  "learnRhythmNotLocated": "無法把你的拍發逐個對應到字元，因此問題未定位到具體字母。請改為練習整個目標。",
+  "learnRhythmPlayMine": "播放我的",
+  "learnRhythmPlayStandard": "播放標準",
+  "learnRhythmPracticePart": "練習這個（{count} 次）",
+  "learnRhythmPracticeWhole": "練習整個目標",
+  "learnRhythmSymbolOk": "很好",
+  "learnRhythmZoomIn": "放大",
+  "learnRhythmZoomOut": "縮小"
 }
