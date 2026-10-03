@@ -10,10 +10,10 @@ import 'morse_text.dart';
 /// aligned with [SequenceAligner] so a single missed or extra character does
 /// not shift the rest of the copy out of place.
 ///
-/// [accuracy] is the Koch-style figure: correctly copied symbols divided by
-/// symbols sent. Insertions are counted separately (see [insertions] and
-/// [strictAccuracy]) so a trainee cannot inflate the figure by typing extra
-/// characters, but they do not lower the headline number either.
+/// [accuracy] is correctly copied symbols divided by symbols sent; it ignores
+/// inserted symbols, so typing extra characters can raise it. [strictAccuracy]
+/// also counts insertions against the copy and is what gates Koch lessons
+/// (see `KochCourse.passes`).
 final class SessionScore {
   SessionScore._({
     required this.target,

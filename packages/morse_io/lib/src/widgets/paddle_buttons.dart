@@ -11,7 +11,12 @@ import '../keyboard_binding.dart';
 /// Each paddle tracks its own pointer ids, so both can be held at once with
 /// two fingers (a squeeze) and a paddle only releases when its last finger
 /// lifts. Keyboard keys bound to [KeyerAction.dit] / [KeyerAction.dah] in
-/// [binding] work while the widget has focus; repeats are ignored.
+/// [binding] work while the widget has focus; repeats are ignored. Losing
+/// focus while a key is held releases that paddle.
+///
+/// Accessibility: each paddle exposes a semantic tap that presses and
+/// releases it, which the keyer turns into one element (its paddle memory
+/// keeps a tap shorter than an element).
 class PaddleButtons extends StatefulWidget {
   PaddleButtons({
     super.key,
@@ -51,6 +56,10 @@ class _PaddleButtonsState extends State<PaddleButtons> {
   final _PaddleState _dah = _PaddleState();
 
   void _sync(_PaddleState paddle, bool isDit) {
+    // See StraightKeyButton: late pointer events after dispose are dropped.
+    if (!mounted) {
+      return;
+    }
     final down = paddle.isDown;
     if (down == paddle.reported) {
       return;
@@ -85,6 +94,36 @@ class _PaddleButtonsState extends State<PaddleButtons> {
     return KeyEventResult.handled;
   }
 
+  void _onFocusChange(bool focused) {
+    if (focused) {
+      return;
+    }
+    for (final paddle in <_PaddleState>[_dit, _dah]) {
+      if (paddle.keyboardDown) {
+        paddle.keyboardDown = false;
+        _sync(paddle, paddle == _dit);
+      }
+    }
+  }
+
+  /// One press-and-release, as a screen reader's activation.
+  void _semanticTap(bool isDit) {
+    final at = widget.clock.now();
+    final paddle = isDit ? _dit : _dah;
+    if (paddle.reported) {
+      return;
+    }
+    if (isDit) {
+      widget.input
+        ..ditPaddle(true, at)
+        ..ditPaddle(false, at);
+    } else {
+      widget.input
+        ..dahPaddle(true, at)
+        ..dahPaddle(false, at);
+    }
+  }
+
   @override
   void dispose() {
     final at = widget.clock.now();
@@ -112,6 +151,7 @@ class _PaddleButtonsState extends State<PaddleButtons> {
         state.pointers.remove(event.pointer);
         _sync(state, isDit);
       },
+      onSemanticTap: () => _semanticTap(isDit),
     ),
   );
 
@@ -122,6 +162,7 @@ class _PaddleButtonsState extends State<PaddleButtons> {
     return Focus(
       autofocus: widget.autofocus,
       onKeyEvent: widget.binding == null ? null : _onKey,
+      onFocusChange: _onFocusChange,
       child: Row(
         children: <Widget>[
           left,
@@ -148,6 +189,7 @@ class _Paddle extends StatelessWidget {
     required this.height,
     required this.onPointerDown,
     required this.onPointerUp,
+    required this.onSemanticTap,
   });
 
   final String label;
@@ -155,6 +197,7 @@ class _Paddle extends StatelessWidget {
   final double height;
   final void Function(PointerDownEvent) onPointerDown;
   final void Function(PointerEvent) onPointerUp;
+  final VoidCallback onSemanticTap;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +206,7 @@ class _Paddle extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
+      onTap: onSemanticTap,
       child: Listener(
         behavior: HitTestBehavior.opaque,
         onPointerDown: onPointerDown,

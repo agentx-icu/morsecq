@@ -11,6 +11,7 @@ import '../../../training/training_settings.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import 'keyer_legend.dart';
 import 'send_live_view.dart';
 import 'send_result_view.dart';
@@ -54,6 +55,10 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   LearnPlayback? _playback;
   StraightKey? _straight;
   IambicKeyer? _keyer;
+
+  /// Bumped whenever the keyer is rebuilt; part of the key widgets' keys so
+  /// a fresh keyer never inherits a pointer or key the old widget held.
+  int _keyerGeneration = 0;
   Timer? _tick;
   SendDiagnostics? _result;
   bool _hideTarget = false;
@@ -78,8 +83,15 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) =>
-      _wake.onLifecycle(state);
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _wake.onLifecycle(state);
+    // The sidetone stops in the background; drop whatever is held so the
+    // keyer stops sending and no key is stuck down on return.
+    if (isDrillBackground(state) && _result == null && !_disposed) {
+      _buildKeyer();
+      setState(() {});
+    }
+  }
 
   void _watchSession() {
     _session.listenToDecoder();
@@ -110,10 +122,14 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     if (playback == null) {
       return;
     }
+    // Release any held key first: neither the old keyer nor its widget will
+    // deliver the key-up any more.
+    _session.cancelHeld();
     unawaited(_straight?.dispose());
     unawaited(_keyer?.dispose());
     _straight = null;
     _keyer = null;
+    _keyerGeneration++;
     switch (_mode) {
       case KeyerMode.straight:
         _straight = StraightKey(target: _session, sink: playback.sink);
@@ -163,15 +179,20 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     setState(() => _recording = true);
     _wake.setActive(false);
     final result = _session.finish();
-    await widget.controller.recordSendSession(_session);
+    final outcome = await widget.controller.recordSendSession(_session);
     if (!mounted) {
       return;
     }
     setState(() => _result = result);
+    if (!outcome.saved) {
+      showProgressSaveFailed(context, widget.controller);
+    }
   }
 
   void _restart() {
     _session.restart();
+    // A key held through the restart belongs to the old attempt.
+    _buildKeyer();
     setState(() {});
   }
 
@@ -345,18 +366,21 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     if (straight != null) {
       return Center(
         child: StraightKeyButton(
-          key: const ValueKey<String>('straight-key'),
+          key: ValueKey<String>('straight-key-$_keyerGeneration'),
           input: straight,
           clock: playback.clock,
           autofocus: true,
           size: 180,
           label: s.learnStraightKeyLabel,
+          semanticDit: _session.nominalTiming.dit,
+          semanticDitLabel: s.learnDitLabel,
+          semanticDahLabel: s.learnDahLabel,
         ),
       );
     }
     final keyer = _keyer!;
     return PaddleButtons(
-      key: const ValueKey<String>('paddles'),
+      key: ValueKey<String>('paddles-$_keyerGeneration'),
       input: keyer,
       clock: playback.clock,
       autofocus: true,

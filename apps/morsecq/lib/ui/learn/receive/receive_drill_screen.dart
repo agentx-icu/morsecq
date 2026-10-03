@@ -6,9 +6,11 @@ import 'package:morse_io/morse_io.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
+import '../../../training/training_settings.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import 'answer_keypad.dart';
 import 'receive_summary_view.dart';
 import 'round_result_view.dart';
@@ -66,9 +68,19 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     unawaited(_setup());
   }
 
+  /// Set while the app is in the background on a phone: the sidetone is
+  /// silenced there, so playback must not run (or start) unheard. The round
+  /// is replayed with the Replay button on return.
+  bool _backgrounded = false;
+
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) =>
-      _wake.onLifecycle(state);
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _wake.onLifecycle(state);
+    _backgrounded = isDrillBackground(state);
+    if (_backgrounded) {
+      _playback?.player.stop();
+    }
+  }
 
   /// Answered rounds that leaving now would throw away.
   bool get _hasUnsavedRounds =>
@@ -95,7 +107,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
 
   void _play() {
     final playback = _playback;
-    if (playback == null || _phase != _Phase.listen) {
+    if (playback == null || _phase != _Phase.listen || _backgrounded) {
       return;
     }
     setState(() => _playing = true);
@@ -143,7 +155,15 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       _unlockedChar = outcome.advanced ? widget.controller.newestChar : null;
       _phase = _Phase.summary;
     });
+    if (!outcome.saved) {
+      showProgressSaveFailed(context, widget.controller);
+    }
   }
+
+  static bool _perceivable(TrainingSettings settings) =>
+      settings.soundEnabled ||
+      settings.flashEnabled ||
+      (settings.hapticEnabled && isTouchPlatform);
 
   void _appendChar(String c) {
     _answer.text = '${_answer.text}$c';
@@ -256,7 +276,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
             ),
           ],
         ),
-        if (!widget.controller.settings.hasFeedback)
+        // Haptics only count on phones; elsewhere the flash fallback runs.
+        if (!_perceivable(widget.controller.settings))
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(

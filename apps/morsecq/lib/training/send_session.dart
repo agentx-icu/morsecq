@@ -18,9 +18,7 @@ final class SendSession implements KeyTarget {
     required DateTime Function() now,
     this.lesson,
     this.drillKind = 'send',
-  }) : decoder = MorseDecoder(
-         config: DecoderConfig(initialDit: timing.dit),
-       ),
+  }) : decoder = MorseDecoder(config: DecoderConfig(initialDit: timing.dit)),
        nominalTiming = timing,
        _now = now,
        startedAt = now();
@@ -47,6 +45,10 @@ final class SendSession implements KeyTarget {
   );
   Duration? _downAt;
   Duration? _lastUpAt;
+
+  /// Whether the key-down now held appended a gap to [_gaps]; a cancelled
+  /// press takes its gap back out.
+  bool _heldAddedGap = false;
   StreamSubscription<DecodeEvent>? _decodeSub;
   SendDiagnostics? _result;
 
@@ -58,7 +60,30 @@ final class SendSession implements KeyTarget {
   String get targetPattern => MorseEncoder.toPattern(target);
 
   /// Live decoded text (characters and spaces committed so far).
-  String get decodedText => decoder.text;
+  String get decodedText => _inTargetTerms(decoder.text);
+
+  /// Several prosigns are keyed exactly like a punctuation mark (`<AR>` and
+  /// `+`, `<BT>` and `=`, `<KN>` and `(`, `<AS>` and `&`), and the decoder
+  /// reads them as punctuation. When the target asks for such a prosign and
+  /// not for the look-alike mark, the mark is read as the prosign, so a
+  /// perfectly keyed prosign scores as correct.
+  String _inTargetTerms(String decoded) {
+    final wanted = MorseText.charSet(target);
+    final aliases = <String, String>{};
+    for (final symbol in wanted) {
+      final pattern = symbol.startsWith('<')
+          ? MorseAlphabet.encodeProsign(symbol)
+          : null;
+      final mark = pattern == null ? null : MorseAlphabet.decodePattern(pattern);
+      if (mark != null && !wanted.contains(mark)) {
+        aliases[mark] = symbol;
+      }
+    }
+    if (aliases.isEmpty) {
+      return decoded;
+    }
+    return MorseText.tokenize(decoded).map((t) => aliases[t] ?? t).join();
+  }
 
   /// Elements of the character being keyed right now.
   String get pendingPattern => decoder.pendingPattern;
@@ -96,10 +121,12 @@ final class SendSession implements KeyTarget {
       return;
     }
     final lastUp = _lastUpAt;
+    _heldAddedGap = false;
     if (lastUp != null) {
       final gap = at - lastUp;
       if (gap > Duration.zero) {
         _gaps.add(gap);
+        _heldAddedGap = true;
       }
     }
     _downAt = at;
@@ -132,6 +159,24 @@ final class SendSession implements KeyTarget {
     decoder.tick(now);
   }
 
+  /// Drops a key-down that will never see its key-up (the keyer was replaced
+  /// or the app went to the background while the key was held). The open
+  /// mark is discarded, not measured.
+  void cancelHeld() {
+    if (_downAt == null) {
+      return;
+    }
+    _downAt = null;
+    if (_heldAddedGap) {
+      // The gap before a mark that never happened is not a real gap; the
+      // next press measures from the last real key-up again.
+      _gaps.removeLast();
+      _heldAddedGap = false;
+    }
+    decoder.cancelMark();
+    _notify();
+  }
+
   /// Wipes the decoded text and measurements to retry the same target; the
   /// decoder keeps what it learnt about the operator's dit.
   void restart() {
@@ -157,7 +202,7 @@ final class SendSession implements KeyTarget {
       // Key still held when the operator hit "done": close the mark now.
       keyUp(downAt + decoder.estimatedDit);
     }
-    final decoded = decoder.flush();
+    final decoded = _inTargetTerms(decoder.flush());
     final attempt = SendAttempt(
       target: target,
       decoded: decoded,
