@@ -75,6 +75,9 @@ class _HistoryService implements ChatService {
   }
 
   @override
+  bool get supportsSendControl => delegate.supportsSendControl;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
