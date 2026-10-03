@@ -585,7 +585,7 @@
   "learnPendingPattern": "鍵控中：{pattern}",
   "learnIssueHeadline": "{title}（{severity}）",
   "learnRatioTimes": "{ratio} 倍",
-  "learnTipDitTooLong": "你的點拖得太長（約為一個點的 {ratio}）。想著“嘀”而不是“嗒”——點是輕敲，不是長按。",
+  "learnTipDitTooLong": "你的點拖得太長（約為一個點的 {ratio}）。想著「滴」而不是「答」——點是輕敲，不是長按。",
   "learnTipDahTooShort": "你的劃太短（約為一個點的 {ratio}；目標是 3 倍）。劃要按住三個點的時長。",
   "learnTipIntraGapTooLong": "字元內部的間隔太寬（約為一個點的 {ratio}）。同一字元的碼元要緊湊相連。",
   "learnTipCharGapTooShort": "字元之間黏在一起了（間隔約為一個點的 {ratio}；目標是 3 倍）。每個字元後留出明確的停頓。",

@@ -52,46 +52,26 @@ abstract final class ReferenceMnemonics {
   /// Translated phrases, by language then character, for phrases that
   /// describe the pattern rather than sound it out (the digits). A letter
   /// missing here keeps its English phrase plus [phraseNotes].
-  static const Map<String, Map<String, String>> localizedPhrases =
+  static final Map<String, Map<String, String>> localizedPhrases =
       <String, Map<String, String>>{
-    'zh': <String, String>{
-      '1': '一点，然后四划',
-      '2': '两点，然后三划',
-      '3': '三点，然后两划',
-      '4': '四点，然后一划',
-      '5': '五点',
-      '6': '一划，然后四点',
-      '7': '两划，然后三点',
-      '8': '三划，然后两点',
-      '9': '四划，然后一点',
-      '0': '五划',
-    },
-  };
+        for (final MapEntry<String, ReferenceText> e in kReferenceTexts.entries)
+          if (e.value.digitPhrases.isNotEmpty) e.key: e.value.digitPhrases,
+      };
 
   /// Explanation appended to an English phonetic phrase in other languages.
-  static const Map<String, String> phraseNotes = <String, String>{
-    'zh': '（英文口诀中重读音节为划）',
+  static final Map<String, String> phraseNotes = <String, String>{
+    for (final MapEntry<String, ReferenceText> e in kReferenceTexts.entries)
+      if (e.value.phraseNote.isNotEmpty) e.key: e.value.phraseNote,
   };
 
   /// `.-` -> `di-DAH`, `-...` -> `DAH-di-di-dit`, `.` -> `dit`.
   ///
-  /// The last dit is voiced `dit`; every dit before the end is `di`, the
-  /// way operators say patterns aloud. In Chinese (any `zh` tag:
-  /// `zh`, `zh_Hans`, `zh_Hant_TW`) the same pattern is read `嘀嗒` /
-  /// `嗒嘀嘀嘀`, as Chinese hams voice it.
-  static String spokenRhythm(String pattern, {String language = 'en'}) {
-    final List<String> parts = <String>[];
-    final bool zh = referenceLanguageCode(language) == 'zh';
-    for (int i = 0; i < pattern.length; i++) {
-      final String ch = pattern[i];
-      if (ch == '-') {
-        parts.add(zh ? '嗒' : 'DAH');
-      } else if (ch == '.') {
-        parts.add(zh ? '嘀' : (i == pattern.length - 1 ? 'dit' : 'di'));
-      }
-    }
-    return parts.join(zh ? '' : '-');
-  }
+  /// Voiced the way operators of [language] say patterns aloud
+  /// ([ReferenceText.rhythm]): in English the last dit is `dit` and every
+  /// dit before it `di`; Chinese hams read `嘀嗒` / `嗒嘀嘀嘀`. [language] is
+  /// any tag (`zh_Hant_TW`); an unregistered language reads English.
+  static String spokenRhythm(String pattern, {String language = 'en'}) =>
+      referenceTextFor(language).rhythm.voice(pattern);
 
   /// Full mnemonic line for a character with [pattern] in [language], e.g.
   /// `A: di-DAH — "a-PART"` or `A：嘀嗒 — "a-PART"（英文口诀中重读音节为划）`.

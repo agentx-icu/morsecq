@@ -121,20 +121,36 @@ ARB 字符串。查找顺序：完整标签 → `language_Script` → 语言 →
 `LocalNotificationsApi.refreshStrings()` 会重新创建 Android 频道，使频道名跟随语言。所以新语言无需额外工作
 就能覆盖这些面向操作系统的字符串；只有已经显示在屏幕上的通知保留原文本。
 
-参考手册的释义与记忆提示是独立数据表，目前提供英文和简体中文（§1.6）。繁体中文读取 `zh` 行；
-其余新增界面语言读取英文行。翻译这些数据表与新增界面消息属于不同工作。
+参考手册的释义与记忆提示不是 ARB 消息，而是每种语言一个 Dart 文件（§1.6）。每种已发布的界面语言
+都附带这些内容；新增语言必须在添加 ARB 的同一次改动中添加自己的文件（第 7 步）。
 
 ### 1.6 参考内容（Q 简语、缩略语、助记）
 
-参考*内容*是数据而不是界面外壳，所以不在 ARB 文件里。参考表的每一行按语言携带文本
-（`lib/ui/reference/reference_localized_text.dart`）。某个界面区域设置的查找顺序，从最具体开始：
+参考*内容*是数据而不是界面外壳，所以不在 ARB 文件里：Q 简语与 CW 缩略语的释义、勤务符号释义、
+标点名称、翻译后的数字助记、附加在英文字母谐音口诀后的说明，以及点划的读法。每种语言把这些全部放在
+一个文件里：
+
+- `lib/ui/reference/text/reference_text.dart`——类型定义：`ReferenceText`（表 `qCodes`、
+  `abbreviations`、`prosigns`、`punctuation`，以及 `digitPhrases`、`phraseNote`、`rhythm`）和
+  `ReferenceRhythm`（`dit`、`finalDit`、`dah`、`joiner`；`ReferenceRhythm.english` 是默认的 `di-DAH`）。
+- `lib/ui/reference/text/reference_text_<tag>.dart`——每种语言一个 `const ReferenceText`
+  （`reference_text_en.dart`、`reference_text_zh_hant.dart`……）。**英文文件定义有哪些行及其显示顺序**；
+  其他每种语言都恰好翻译这些行。
+- `lib/ui/reference/text/reference_texts.dart`——`kReferenceTexts`，按 ARB 的标签作键的注册表
+  （`en`、`zh`、`zh_Hant`、`ja`、`ko`、`de`、`fr`、`es`、`pt`、`ru`——全部十种已发布的界面语言），英文在前。
+
+`lib/ui/reference/reference_localized_text.dart` 存放查找辅助函数。`kReferenceLanguages` 由
+`kReferenceTexts.keys` 推导（不要手动编辑）；`referenceRows()` 把按语言组织的表转回按行组织的映射，
+供 `ReferenceQCodes.meanings`、`ReferenceAbbreviations.meanings` 以及目录中的勤务符号和标点表使用；
+`referenceTextFor(tag)` 返回某语言的 `ReferenceText`，其 `rhythm` 决定 `ReferenceMnemonics.spokenRhythm`
+的读法。字母助记在每种语言中都保留英文谐音口诀（其重音*就是*节奏），后接该语言的 `phraseNote`；
+数字助记是描述性的，所以每种语言都在 `digitPhrases` 中翻译。某个界面区域设置的查找顺序，从最具体开始：
 
 `lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` → `en`
 
-因此 `zh-Hant-TW` 界面在有 `zh_Hant` 行时读它，在那之前读 `zh`（简体）文本，而不是掉回英语。
-`kReferenceLanguages` 列出表格携带的语言（目前是 `en`、`zh`）；
-`test/reference/reference_catalog_test.dart` 要求每一行都有列出的每种语言。标签分隔符在 `zh` / `ja`
-下使用全角冒号。
+因此 `zh-Hant-TW` 界面读 `zh_Hant`，没有单独发布的地区变体（`de-AT`）读其语言（`de`）。英语只是完全没有
+注册语言的区域设置的最后一层，而不是翻译不完整时的回退——`test/reference/reference_texts_test.dart`
+（§1.7）会拒绝不完整的翻译。标签分隔符在 `zh` / `ja` 下使用全角冒号。
 
 ### 1.7 CI 检查什么
 
@@ -145,6 +161,7 @@ ARB 字符串。查找顺序：完整标签 → `language_Script` → 语言 →
 | `test/i18n/platform_locales_test.dart` | 同上 | 原生语言声明与 ARB 集合严格相等：Android `res/xml/locale_config.xml`（以及清单中的 `android:localeConfig`）、iOS/macOS 的 `CFBundleLocalizations`、iOS/macOS 的 `*.lproj/InfoPlist.strings` 集合及其在 Xcode 工程中的注册；每个 `NS*UsageDescription` 在每种语言下都有翻译。ARB 的 `zh` 映射为 `zh-Hans`，`zh_Hant` 为 `zh-Hant`，`pt_BR` 为 `pt-BR`。 |
 | `test/i18n/shipped_locales_test.dart` | 同上 | 已发布的十种语言集合、两份 Apple `Info.plist` 中的 `CFBundleLocalizations`、中文脚本/地区选择、每种语言的持久化与不依赖 context 的服务字符串、俄语 one/few/many 以及葡萄牙语零次数措辞。发布语言集合变化时须更新。 |
 | `test/i18n/locale_resolution_test.dart`、`locale_list_resolution_test.dart`、`locale_controller_test.dart`、`language_settings_tile_test.dart`、`language_dialog_save_test.dart`、`strings_resolver_test.dart` | 同上 | 解析规则（单个区域设置与首选列表）、持久化标签、选择器行为（320 × 568 手机上的每个选项）、操作系统语言变化时重新打标签。 |
+| `test/reference/reference_texts_test.dart` | 同上 | `kReferenceTexts` 的键与已发布 ARB 语言严格相等（英文在前），所以只有 `app_<tag>.arb` 而没有注册 `reference_text_<tag>.dart` 会失败。每种语言的 `qCodes` / `abbreviations` / `prosigns` / `punctuation` 恰好是英文的那些行、顺序相同、无空值；每种非英语语言都有 `0`–`9` 的 `digitPhrases` 和非空的 `phraseNote`；与英文完全相同的行不得达到 10%（"确实翻译了"）；读出的节奏永不为空。 |
 | `flutter analyze apps/morsecq` | CI 的 analyze 步骤 | 生成的代码能编译；严格 lint。 |
 
 gen-l10n 本身**永远不会因缺少翻译而失败**，而是悄悄回退。基础语言文件（`app_ja.arb`）缺的键会编译成
@@ -232,12 +249,26 @@ cd apps/morsecq && flutter test test/i18n test/reference
 并在 `language_settings_tile_test.dart` 的小屏幕用例中增加新的语言自称。
 验证持久化、后台字符串、系统解析和不同数量的语法形式。
 
-### 第 7 步——参考内容行（可选）
+### 第 7 步——参考内容（必需）
 
-在 `apps/morsecq/lib/ui/reference/reference_localized_text.dart` 的 `kReferenceLanguages` 中加入该语言，
-并为参考表（Q 简语释义、缩略语、勤务符号、助记）的每一行提供该语言的文本；
-`test/reference/reference_catalog_test.dart` 会对缺少任一列出语言的行报错。在此之前，§1.6 的查找会显示
-英语（脚本/地区变体则显示父语言的文本）。2026-10-03 新增的八种语言目前都还没有参考内容行。
+参考内容是添加语言的一部分，不是后续工作：只要 `app_it.arb` 存在而没有注册意大利语参考文本，
+`test/reference/reference_texts_test.dart` 就会失败（§1.7）。
+
+1. 把 `apps/morsecq/lib/ui/reference/text/reference_text_en.dart` 复制为 `reference_text_it.dart`
+   （文件名：ARB 标签的小写形式，`zh_Hant` 对应 `reference_text_zh_hant.dart`），并重命名常量
+   （`referenceTextIt`）。
+2. 翻译 `qCodes`、`abbreviations`、`prosigns` 与 `punctuation` 的每个值。键及其顺序与英文完全一致——
+   行由英文定义，这里绝不增删或调整顺序。Q 简语、缩略语和勤务符号是国际通用的，保留为键，只翻译释义。
+3. 添加 `'0'`–`'9'` 的 `digitPhrases`（英文数字口诀描述的是码型——"one dit, then four dahs"——所以翻译这段描述），
+   以及 `phraseNote`：界面会把它附在英文字母谐音口诀之后，说明其中重读音节为划（见
+   `reference_text_zh.dart`：`（英文口诀中重读音节为划）`）。
+4. 决定 `rhythm`。除非该语言有其报务员实际在用、**广泛确立的全国性约定**读法（例如中文的 `嘀嗒`），
+   否则不要设置（即使用默认的 `ReferenceRhythm.english`，`di-DAH`）。不要自创 `di-DAH` 的音译；
+   拿不准时保留英文默认值。
+5. 在 `apps/morsecq/lib/ui/reference/text/reference_texts.dart` 中导入该文件，并以 ARB 标签为键把
+   `'it': referenceTextIt` 加入 `kReferenceTexts`。`kReferenceLanguages` 会自动跟随。
+
+然后运行 `flutter test test/reference`。
 
 ### 第 8 步——平台语言清单
 
@@ -274,7 +305,8 @@ cd apps/morsecq && flutter test test/i18n test/reference
   而且它的完备性测试刻意排除它，因为 gen-l10n 通过 `zh` 解析它）。解析器把 `zh-Hant-*`、`zh-TW`、`zh-HK`、
   `zh-MO` 路由到 `zh_Hant`，其他中文都路由到 `zh`，没有需要手动维护的中文列表。`LanguageCatalog` 把
   `zh_Hant` 标为 `繁體中文`。它的原生标签是 `zh-Hant`（Info.plist、
-  `InfoPlist.strings`、`locale_config.xml`）；在添加 `zh_Hant` 行之前，参考内容显示 `zh`（简体）文本（§1.6）。
+  `InfoPlist.strings`、`locale_config.xml`）；它的参考内容是一份独立的完整繁体文件
+  `reference_text_zh_hant.dart`，以 `zh_Hant` 注册（§1.6），并有自己的读法（`滴答`）。
   gen-l10n 把该变体生成为子类（`s_zh.dart` 内的 `SZhHant`），只覆盖其文件中含有的键；
   这正是不完整文件会漏出简体文本的原因。它以台湾国语书写（Morse 在那里写作 摩斯），不用粤语口语
   （toxee 的测试会拒绝 `咗嘅唔喺哋嚟冇揀`）。
@@ -292,7 +324,7 @@ cd apps/morsecq && flutter test test/i18n test/reference
 - [ ] `LanguageCatalog._names` 中有该语言的自称（适用时也加入 `isRtl`）
 - [ ] 已运行 `flutter gen-l10n`；`lib/l10n/generated/` 已提交
 - [ ] 已为新语言更新 `shipped_locales_test.dart` 以及 `language_settings_tile_test.dart` 中的小屏幕选择器用例
-- [ ] 可选：参考内容——该语言已加入 `kReferenceLanguages`，且每个参考行都已翻译（否则显示英文行）
+- [ ] 参考内容：`lib/ui/reference/text/reference_text_<tag>.dart` 已翻译英文的每一行（行相同、顺序相同），含 `0`–`9` 的 `digitPhrases`、`phraseNote`，仅在有确立的全国性约定时设置 `rhythm`；已在 `kReferenceTexts`（`reference_texts.dart`）中注册；`test/reference/reference_texts_test.dart` 通过
 - [ ] iOS 与 macOS 的 `Info.plist` 中已更新 `CFBundleLocalizations`
 - [ ] iOS 与 macOS 都已添加 `<tag>.lproj/InfoPlist.strings`（覆盖每个 `NS*UsageDescription`）并在两个 Xcode 工程中注册
 - [ ] `android/app/src/main/res/xml/locale_config.xml` 中已添加 `<locale android:name="<tag>"/>`

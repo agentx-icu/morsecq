@@ -58,12 +58,16 @@ and the Runner `*.lproj/InfoPlist.strings`;
 `test/i18n/platform_locales_test.dart` keeps those in step with the ARB
 files). `currentS()` uses the same resolution for code without a context.
 
-Reference meanings and mnemonics are separate data tables, currently in English
-and Simplified Chinese (`kReferenceLanguages = ['en', 'zh']`). Lookup is
-tiered (`lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` →
-`en`), so Traditional Chinese reads the `zh` (Simplified) rows until
-`zh_Hant` rows are added, and the other added interface languages read the
-English rows.
+Reference meanings and mnemonics are not ARB messages: each language has one
+file, `lib/ui/reference/text/reference_text_<tag>.dart`, registered in
+`kReferenceTexts` (`text/reference_texts.dart`) for all ten shipped
+languages; `kReferenceLanguages` is derived from its keys. English defines
+the rows and their order. Lookup is tiered (`lang_Script_REGION` →
+`lang_Script` → `lang_REGION` → `lang` → `en`), so Traditional Chinese reads
+`zh_Hant`; English is reached only by a locale with no registered language.
+A new ARB locale without a registered reference text fails
+`test/reference/reference_texts_test.dart` (see
+`doc/i18n/ADDING_A_LANGUAGE.md`, Step 7).
 
 ## Using a string
 
@@ -177,7 +181,7 @@ translation covers these callers automatically:
 | Chat, contacts and groups | `chat*`, `messageStatus*` | `ui/chat/**`, `ui/contacts/**`, `ui/groups/**`; timestamp formatting uses `MaterialLocalizations` |
 | Learning | `learn*` | `ui/learn/**`; send-feedback helpers take `S` explicitly |
 | Statistics | `stats*` | `ui/stats/**`; date formatting uses the current locale |
-| Reference and translator | `reference*` | `ui/reference/**`; meanings and mnemonics remain separate data tables |
+| Reference and translator | `reference*` | `ui/reference/**`; meanings and mnemonics live in `ui/reference/text/reference_text_<tag>.dart` |
 | Microphone decoding | `listen*` | `ui/listen/**`; controllers expose state/errors, widgets resolve text |
 | Navigation and shell | `nav*`, `shellOfflineBanner` | `ui/pages/**`, `ui/shell/app_shell.dart` |
 | Notifications and desktop | `notification*`, `desktop*` | Services resolve strings at event time or on language changes |
@@ -185,11 +189,17 @@ translation covers these callers automatically:
 Notification titles and bodies, the desktop tray and the window title are
 resolved through `currentS()` / `StringsResolver` (see "Context-free
 strings" under "Using a string"), and reference *content* (Q-code /
-abbreviation / prosign meanings, mnemonics) is data keyed by language code
-inside the reference tables (`ui/reference/reference_qcodes.dart`,
-`reference_abbreviations.dart`, `reference_catalog.dart`,
-`reference_mnemonics.dart`), not ARB; `reference_localized_text.dart` only
-holds the lookup helpers (`referenceLanguageFor`, `localizedReferenceText`,
-label separator); `ReferenceEntry.meaning` / `mnemonic` in
-`reference_catalog.dart` call them. `test/i18n/arb_consistency_test.dart`
-enforces that every locale has the full template key set.
+abbreviation / prosign meanings, punctuation names, digit mnemonics, the
+note on the English letter mnemonics, the voiced dit/dah rhythm) is data,
+not ARB: one `ReferenceText` per language in
+`ui/reference/text/reference_text_<tag>.dart` (types in
+`text/reference_text.dart`), registered in `kReferenceTexts`
+(`text/reference_texts.dart`). `reference_localized_text.dart` holds the
+lookup helpers (`referenceRows()`, which pivots the per-language tables into
+per-row maps for `reference_qcodes.dart`, `reference_abbreviations.dart` and
+`reference_catalog.dart`; `referenceTextFor`, which `reference_mnemonics.dart`
+uses for the rhythm; `referenceLanguageFor`, `localizedReferenceText`, label
+separator); `ReferenceEntry.meaning` / `mnemonic` in `reference_catalog.dart`
+call them. `test/i18n/arb_consistency_test.dart` enforces that every locale
+has the full template key set; `test/reference/reference_texts_test.dart`
+that every shipped locale has a complete, translated reference text.

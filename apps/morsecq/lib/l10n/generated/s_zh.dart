@@ -4268,7 +4268,7 @@ class SZhHant extends SZh {
 
   @override
   String learnTipDitTooLong(String ratio) {
-    return '你的點拖得太長（約為一個點的 $ratio）。想著“嘀”而不是“嗒”——點是輕敲，不是長按。';
+    return '你的點拖得太長（約為一個點的 $ratio）。想著「滴」而不是「答」——點是輕敲，不是長按。';
   }
 
   @override

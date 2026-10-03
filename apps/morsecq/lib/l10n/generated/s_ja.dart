@@ -1976,7 +1976,7 @@ class SJa extends S {
 
   @override
   String learnTipDitTooLong(String ratio) {
-    return '短点が長すぎます（短点の約 $ratio）。「ダー」ではなく「ト」と短く、押し続けずに軽くたたく感覚で送信してください。';
+    return '短点が長すぎます（短点の約 $ratio）。「ツー」ではなく「トン」と短く、押し続けずに軽くたたく感覚で送信してください。';
   }
 
   @override

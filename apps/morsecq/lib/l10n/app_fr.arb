@@ -585,7 +585,7 @@
   "learnPendingPattern": "Manipulation : {pattern}",
   "learnIssueHeadline": "{title} ({severity})",
   "learnRatioTimes": "{ratio}×",
-  "learnTipDitTooLong": "Vos points sont trop longs (environ {ratio} la durée d’un point). Pensez « di », pas « daaah » : un point est une brève impulsion.",
+  "learnTipDitTooLong": "Vos points sont trop longs (environ {ratio} la durée d’un point). Pensez « ti », pas « taaah » : un point est une brève impulsion.",
   "learnTipDahTooShort": "Vos traits sont trop courts (environ {ratio} la durée d’un point ; visez 3). Maintenez chaque trait pendant la durée de trois points.",
   "learnTipIntraGapTooLong": "Les pauses à l’intérieur des caractères sont trop longues (environ {ratio} la durée d’un point). Rapprochez les éléments d’un même caractère.",
   "learnTipCharGapTooShort": "Les caractères se confondent (pauses d’environ {ratio} la durée d’un point ; visez 3). Laissez une pause nette après chaque caractère.",

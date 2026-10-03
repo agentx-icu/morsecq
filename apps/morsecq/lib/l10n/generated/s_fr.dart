@@ -1994,7 +1994,7 @@ class SFr extends S {
 
   @override
   String learnTipDitTooLong(String ratio) {
-    return 'Vos points sont trop longs (environ $ratio la durée d’un point). Pensez « di », pas « daaah » : un point est une brève impulsion.';
+    return 'Vos points sont trop longs (environ $ratio la durée d’un point). Pensez « ti », pas « taaah » : un point est une brève impulsion.';
   }
 
   @override

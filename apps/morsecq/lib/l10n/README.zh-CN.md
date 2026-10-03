@@ -50,9 +50,11 @@ MaterialApp(
 `*.lproj/InfoPlist.strings`；`test/i18n/platform_locales_test.dart` 保证它们与 ARB 文件一致）。
 `currentS()` 对没有 context 的代码使用同一套解析。
 
-参考手册的释义与记忆提示是独立数据表，目前提供英文和简体中文（`kReferenceLanguages = ['en', 'zh']`）。
-查找按层级进行（`lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` → `en`），
-所以在加入 `zh_Hant` 行之前，繁体中文读取 `zh`（简体）行；其余新增界面语言读取英文行。
+参考手册的释义与记忆提示不是 ARB 消息：每种语言一个文件 `lib/ui/reference/text/reference_text_<tag>.dart`，
+十种已发布语言都在 `kReferenceTexts`（`text/reference_texts.dart`）中注册；`kReferenceLanguages` 由其键推导。
+行及其顺序由英文定义。查找按层级进行（`lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` → `en`），
+所以繁体中文读取 `zh_Hant`；只有没有任何注册语言的区域设置才会落到英文。新增 ARB 语言而未注册参考文本时，
+`test/reference/reference_texts_test.dart` 会失败（见 `doc/i18n/ADDING_A_LANGUAGE.zh-CN.md` 第 7 步）。
 
 ## 使用字符串
 
@@ -144,15 +146,19 @@ Text(context.s.statsSessions(count))          // ICU plural
 | 聊天、联系人与群组 | `chat*`、`messageStatus*` | `ui/chat/**`、`ui/contacts/**`、`ui/groups/**`；时间戳通过 `MaterialLocalizations` 格式化 |
 | 学习 | `learn*` | `ui/learn/**`；发报反馈辅助函数显式接收 `S` |
 | 统计 | `stats*` | `ui/stats/**`；日期按当前语言格式化 |
-| 手册与翻译器 | `reference*` | `ui/reference/**`；释义与记忆提示仍是独立数据表 |
+| 手册与翻译器 | `reference*` | `ui/reference/**`；释义与记忆提示位于 `ui/reference/text/reference_text_<tag>.dart` |
 | 麦克风译码 | `listen*` | `ui/listen/**`；控制器暴露状态/错误，由界面解析文本 |
 | 导航与外壳 | `nav*`、`shellOfflineBanner` | `ui/pages/**`、`ui/shell/app_shell.dart` |
 | 通知与桌面 | `notification*`、`desktop*` | 服务在事件发生或语言变化时解析字符串 |
 
 通知标题与正文、桌面托盘和窗口标题都通过 `currentS()` / `StringsResolver` 解析（见"使用字符串"下的
-"不依赖 context 的字符串"）；参考资料*内容*（Q 简语 / 缩写 / 规程符号释义、助记）是按语言代码索引的数据，
-位于各参考表中（`ui/reference/reference_qcodes.dart`、`reference_abbreviations.dart`、
-`reference_catalog.dart`、`reference_mnemonics.dart`），不在 ARB 中；
-`reference_localized_text.dart` 只包含查找辅助函数（`referenceLanguageFor`、`localizedReferenceText`、标签分隔符）；
+"不依赖 context 的字符串"）；参考资料*内容*（Q 简语 / 缩写 / 规程符号释义、标点名称、数字助记、
+英文字母助记后的说明、点划读法）是数据而不是 ARB：每种语言一个 `ReferenceText`，位于
+`ui/reference/text/reference_text_<tag>.dart`（类型在 `text/reference_text.dart`），并在
+`kReferenceTexts`（`text/reference_texts.dart`）中注册。`reference_localized_text.dart` 包含查找辅助函数
+（`referenceRows()` 把按语言组织的表转成按行组织的映射，供 `reference_qcodes.dart`、
+`reference_abbreviations.dart` 和 `reference_catalog.dart` 使用；`referenceTextFor` 供
+`reference_mnemonics.dart` 取读法；`referenceLanguageFor`、`localizedReferenceText`、标签分隔符）；
 `reference_catalog.dart` 中的 `ReferenceEntry.meaning` / `mnemonic` 调用它们。
-`test/i18n/arb_consistency_test.dart` 约束每种语言都具备完整的模板键集合。
+`test/i18n/arb_consistency_test.dart` 约束每种语言都具备完整的模板键集合；
+`test/reference/reference_texts_test.dart` 约束每种已发布语言都有完整且确实翻译过的参考文本。
