@@ -4,6 +4,7 @@ pubspec.lock
 build/
 # release packages from tool/ci/package_artifacts.sh
 /dist/
+/output/
 coverage/
 .flutter-plugins
 .flutter-plugins-dependencies
