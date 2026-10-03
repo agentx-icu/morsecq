@@ -17,9 +17,21 @@ import 'morse_playback_settings.dart';
 /// message on a separate page, or keep a local copy as training material.
 /// Nothing here sends anything or touches the conversation's draft.
 abstract final class ConversationLearning {
+  /// The app-wide per-identity controller. Only the shared host is used:
+  /// a second controller on the same files would overwrite the first.
+  static TrainingControllerHost? _host(BuildContext context) {
+    try {
+      return context.read<TrainingControllerHost?>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
   static Future<TrainingController?> _controller(BuildContext context) async {
     try {
-      return await TrainingControllerHost.fromContext(context);
+      final host = _host(context);
+      if (host == null) throw StateError('no training host');
+      return await host.controller();
     } on Object {
       if (context.mounted) showSnack(context, context.s.learnIdentityRequired);
       return null;
@@ -121,12 +133,15 @@ abstract final class ConversationLearning {
     String conversationId,
   ) async {
     final s = context.s;
+    final host = _host(context);
     var saved = 0;
-    try {
-      final controller = await TrainingControllerHost.fromContext(context);
-      saved = await controller.materialsFromConversation(conversationId);
-    } on Object {
-      saved = 0;
+    if (host != null) {
+      try {
+        final controller = await host.controller();
+        saved = await controller.materialsFromConversation(conversationId);
+      } on Object {
+        saved = 0;
+      }
     }
     return saved == 0
         ? s.chatClearHistoryBody

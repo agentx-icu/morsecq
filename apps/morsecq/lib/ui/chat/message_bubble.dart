@@ -122,22 +122,24 @@ class MessageBubble extends StatelessWidget {
                       ),
                       if (!mine &&
                           (onPractice != null || onSaveMaterial != null))
-                        PopupMenuButton<String>(
+                        PopupMenuButton<_LearnAction>(
                           key: ValueKey<String>('learn-menu-${message.id}'),
                           tooltip: s.chatMessageLearnActions,
                           icon: const Icon(Icons.school_outlined),
                           onSelected: (v) =>
-                              (v == 'practice' ? onPractice : onSaveMaterial)
+                              (v == _LearnAction.practice
+                                      ? onPractice
+                                      : onSaveMaterial)
                                   ?.call(),
                           itemBuilder: (_) => [
                             if (onPractice != null)
                               PopupMenuItem(
-                                value: 'practice',
+                                value: _LearnAction.practice,
                                 child: Text(s.chatPracticeMessage),
                               ),
                             if (onSaveMaterial != null)
                               PopupMenuItem(
-                                value: 'save',
+                                value: _LearnAction.save,
                                 child: Text(s.chatSaveAsMaterial),
                               ),
                           ],
@@ -181,6 +183,9 @@ class MessageBubble extends StatelessWidget {
   static String _shortKey(String key) =>
       key.length > 8 ? key.substring(0, 8) : key;
 }
+
+/// Distinct from the app bar's `String` menu.
+enum _LearnAction { practice, save }
 
 class _HiddenText extends StatelessWidget {
   const _HiddenText({required this.onReveal});
