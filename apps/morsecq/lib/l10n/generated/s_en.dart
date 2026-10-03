@@ -776,6 +776,15 @@ class SEn extends S {
   String get chatTrainingModeOff => 'Training mode off';
 
   @override
+  String get chatAutoPlay => 'Auto-play received Morse';
+
+  @override
+  String get chatAutoPlayOn => 'Auto-play on: new messages play as they arrive';
+
+  @override
+  String get chatAutoPlayOff => 'Auto-play off';
+
+  @override
   String get chatReveal => 'Reveal';
 
   @override
@@ -827,16 +836,13 @@ class SEn extends S {
   String get chatClearHistory => 'Clear history';
 
   @override
-  String get chatModeKeyboard => 'Keyboard';
-
-  @override
   String get chatModeStraightKey => 'Straight key';
 
   @override
   String get chatModePaddles => 'Paddles';
 
   @override
-  String get chatTypeMessage => 'Type a message';
+  String get chatKeyMessage => 'Key your message';
 
   @override
   String get chatSend => 'Send';

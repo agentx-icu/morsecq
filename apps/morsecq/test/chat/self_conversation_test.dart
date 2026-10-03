@@ -65,7 +65,7 @@ Future<void> _dismissMenu(WidgetTester tester) async {
 }
 
 Future<void> _send(WidgetTester tester, String text) async {
-  await tester.enterText(find.byType(TextField), text);
+  await keyIn(tester, text);
   await tester.pump();
   await tester.tap(find.byTooltip(s.chatSend));
   await tester.pumpAndSettle();

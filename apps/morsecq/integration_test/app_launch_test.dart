@@ -90,7 +90,7 @@ void main() {
     );
     expect(find.byType(ConversationScreen), findsOneWidget);
     expect(find.text(s().chatSelfLocalOnly), findsOneWidget);
-    await tester.enterText(find.byType(TextField).last, 'NOTE TO SELF');
+    await keyIntoComposer(tester, 'NOTE TO SELF');
     await settle(tester);
     await tapTooltip(tester, s().chatSend);
     expect(
@@ -125,7 +125,7 @@ void main() {
       tester.element(find.byType(ConversationScreen)),
     ).clearSnackBars();
     await settle(tester);
-    await tester.enterText(find.byType(TextField).last, 'CQ CQ DE ANN');
+    await keyIntoComposer(tester, 'CQ CQ DE ANN');
     await settle(tester);
     await tapTooltip(tester, s().chatSend);
     // Sent: one bubble with the text, and the composer is empty again.
@@ -165,4 +165,15 @@ void main() {
     expect(find.text('Ann'), findsWidgets);
     expect(find.textContaining('fake'), findsOneWidget);
   });
+}
+
+/// The chat composer is keyed, not typed, and its draft field is read-only:
+/// put [text] in it the way decoded keying does.
+Future<void> keyIntoComposer(WidgetTester tester, String text) async {
+  tester.widget<TextField>(find.byType(TextField).last).controller!.value =
+      TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+  await tester.pump();
 }

@@ -972,6 +972,18 @@
   "@chatTrainingModeOff": {
     "description": "From ChatStrings.trainingModeOff (apps/morsecq/lib/ui/chat/chat_strings.dart)"
   },
+  "chatAutoPlay": "Auto-play received Morse",
+  "@chatAutoPlay": {
+    "description": "Chat app-bar toggle and playback-sheet switch: play incoming messages as they arrive"
+  },
+  "chatAutoPlayOn": "Auto-play on: new messages play as they arrive",
+  "@chatAutoPlayOn": {
+    "description": "Snack bar after turning chat auto-play on"
+  },
+  "chatAutoPlayOff": "Auto-play off",
+  "@chatAutoPlayOff": {
+    "description": "Snack bar after turning chat auto-play off"
+  },
   "chatReveal": "Reveal",
   "@chatReveal": {
     "description": "From ChatStrings.reveal (apps/morsecq/lib/ui/chat/chat_strings.dart)"
@@ -1040,10 +1052,6 @@
   "@chatClearHistory": {
     "description": "From ChatStrings.clearHistory (apps/morsecq/lib/ui/chat/chat_strings.dart)"
   },
-  "chatModeKeyboard": "Keyboard",
-  "@chatModeKeyboard": {
-    "description": "From ChatStrings.modeKeyboard (apps/morsecq/lib/ui/chat/chat_strings.dart)"
-  },
   "chatModeStraightKey": "Straight key",
   "@chatModeStraightKey": {
     "description": "From ChatStrings.modeStraightKey (apps/morsecq/lib/ui/chat/chat_strings.dart)"
@@ -1052,9 +1060,9 @@
   "@chatModePaddles": {
     "description": "From ChatStrings.modePaddles (apps/morsecq/lib/ui/chat/chat_strings.dart)"
   },
-  "chatTypeMessage": "Type a message",
-  "@chatTypeMessage": {
-    "description": "From ChatStrings.typeMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+  "chatKeyMessage": "Key your message",
+  "@chatKeyMessage": {
+    "description": "Hint in the read-only chat draft field: messages are keyed with the straight key or paddles, not typed"
   },
   "chatSend": "Send",
   "@chatSend": {

@@ -14,7 +14,7 @@ ConversationTarget _ann() => ConversationTarget(
 );
 
 Future<void> _send(WidgetTester tester, String text) async {
-  await tester.enterText(find.byType(TextField), text);
+  await keyIn(tester, text);
   await tester.pump();
   await tester.tap(find.byTooltip(s.chatSend));
   await tester.pumpAndSettle();
@@ -42,7 +42,7 @@ void main() {
       h.addAnn(withMessage: false);
       return ConversationScreen(target: _ann());
     });
-    await tester.enterText(find.byType(TextField), 'UNSENT CQ');
+    await keyIn(tester, 'UNSENT CQ');
     await tester.pump();
     expect(h.service.conversations.single.draft, isEmpty);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
@@ -180,7 +180,7 @@ void main() {
       h.addAnn(withMessage: false);
       return ConversationScreen(target: _ann());
     }, harness: h);
-    await tester.enterText(find.byType(TextField), 'ABCD');
+    await keyIn(tester, 'ABCD');
     await tester.pump();
     expect(find.text(s.chatTooLong), findsOneWidget);
     expect(find.text(s.chatBytesLeftCount(-1)), findsOneWidget);
@@ -189,7 +189,7 @@ void main() {
     expect(find.byType(MessageBubble), findsNothing);
   });
 
-  testWidgets('switching to the straight key shows the pad and the hint', (
+  testWidgets('the composer switches between straight key and paddles', (
     tester,
   ) async {
     await pumpChat(tester, (h) {
@@ -204,8 +204,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('DIT'), findsOneWidget);
     expect(find.text('DAH'), findsOneWidget);
-    await tester.tap(find.byTooltip(s.chatModeKeyboard));
+    await tester.tap(find.byTooltip(s.chatModeStraightKey));
     await tester.pumpAndSettle();
     expect(find.text('DIT'), findsNothing);
+    expect(find.text('KEY'), findsOneWidget);
   });
 }

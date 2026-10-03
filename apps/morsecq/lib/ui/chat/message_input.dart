@@ -11,14 +11,15 @@ import 'chat_layout.dart';
 import 'chat_scope.dart';
 import 'keying_input.dart';
 import 'input_mode.dart';
+import 'input_mode_selector.dart';
 import 'local_message_sends.dart';
 import 'morse_pattern_text.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
 
-/// Input modes from plan §5.3: typed text (auto-encoded), straight key,
-/// iambic paddles. Hand-keyed characters land in the same draft field, so
-/// the operator can mix modes and fix typos before sending.
+/// Input modes from plan §5.3: straight key or iambic paddles, never typed
+/// text. Decoded characters land in a read-only draft field; delete-last
+/// fixes mistakes before sending.
 export 'input_mode.dart';
 
 // Share write ordering across editors for the same service and conversation.
@@ -103,7 +104,7 @@ class _DraftWriter {
   }
 }
 
-/// The compose area: mode selector, optional keying pad, draft field with
+/// The compose area: mode selector, keying pad, read-only draft field with
 /// live Morse preview and remaining-byte counter, send button. Drafts are
 /// persisted through [ChatService.setDraft] (debounced, flushed on dispose).
 class MessageInput extends StatefulWidget {
@@ -142,7 +143,7 @@ class _MessageInputState extends State<MessageInput>
     _identity,
   );
   final FocusNode _focus = FocusNode();
-  InputMode _mode = InputMode.keyboard;
+  InputMode _mode = InputMode.straightKey;
   Timer? _draftTimer;
   late String _lastDraft;
   int _editRevision = 0;
@@ -333,9 +334,9 @@ class _MessageInputState extends State<MessageInput>
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
               child: LayoutBuilder(
-                builder: (context, constraints) => _ModeSelector(
+                builder: (context, constraints) => InputModeSelector(
                   mode: _mode,
-                  // Icon-only below ~420 px so all three segments fit a phone.
+                  // Icon-only below ~420 px so the segments fit a phone.
                   showLabels: constraints.maxWidth >= 420,
                   onChanged: (m) {
                     setState(() => _mode = m);
@@ -344,45 +345,45 @@ class _MessageInputState extends State<MessageInput>
                 ),
               ),
             ),
-            if (_mode != InputMode.keyboard)
-              KeyingInput(
-                key: ValueKey<InputMode>(_mode),
-                mode: _mode == InputMode.straightKey
-                    ? KeyingMode.straightKey
-                    : KeyingMode.paddles,
-                timing: settings.timing,
-                sink: widget.playback.sink,
-                clock: widget.playback.clock,
-                onText: _appendDecoded,
-              ),
+            KeyingInput(
+              key: ValueKey<InputMode>(_mode),
+              mode: _mode == InputMode.straightKey
+                  ? KeyingMode.straightKey
+                  : KeyingMode.paddles,
+              timing: settings.timing,
+              // Keyers take the sink from playback, which yields to them.
+              sink: widget.playback.keyingSink,
+              clock: widget.playback.clock,
+              onText: _appendDecoded,
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 6, 0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
+                    // Keyed, not typed: no soft keyboard, and focus stays
+                    // on the key so desktop keying keeps working.
                     child: TextField(
                       controller: _text,
                       focusNode: _focus,
+                      readOnly: true,
+                      canRequestFocus: false,
                       minLines: 1,
                       maxLines: 4,
-                      textCapitalization: TextCapitalization.characters,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => unawaited(_send()),
                       decoration: InputDecoration(
-                        hintText: s.chatTypeMessage,
+                        hintText: s.chatKeyMessage,
                         border: const OutlineInputBorder(),
                         isDense: true,
                         errorText: tooLong ? s.chatTooLong : null,
                       ),
                     ),
                   ),
-                  if (_mode != InputMode.keyboard)
-                    IconButton(
-                      tooltip: s.chatDeleteLast,
-                      onPressed: _text.text.isEmpty ? null : _deleteLast,
-                      icon: const Icon(Icons.backspace_outlined),
-                    ),
+                  IconButton(
+                    tooltip: s.chatDeleteLast,
+                    onPressed: _text.text.isEmpty ? null : _deleteLast,
+                    icon: const Icon(Icons.backspace_outlined),
+                  ),
                   IconButton.filled(
                     tooltip: s.chatSend,
                     onPressed: _canSend ? () => unawaited(_send()) : null,
@@ -421,56 +422,6 @@ class _MessageInputState extends State<MessageInput>
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ModeSelector extends StatelessWidget {
-  const _ModeSelector({
-    required this.mode,
-    required this.showLabels,
-    required this.onChanged,
-  });
-
-  final InputMode mode;
-  final bool showLabels;
-  final ValueChanged<InputMode> onChanged;
-
-  ButtonSegment<InputMode> _segment(
-    InputMode value,
-    IconData icon,
-    String label,
-  ) => ButtonSegment<InputMode>(
-    value: value,
-    icon: Icon(icon),
-    label: showLabels ? Text(label) : null,
-    tooltip: label,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final S s = context.s;
-    return SegmentedButton<InputMode>(
-      showSelectedIcon: false,
-      selected: <InputMode>{mode},
-      onSelectionChanged: (sel) => onChanged(sel.first),
-      segments: [
-        _segment(
-          InputMode.keyboard,
-          Icons.keyboard_alt_outlined,
-          s.chatModeKeyboard,
-        ),
-        _segment(
-          InputMode.straightKey,
-          Icons.radio_button_checked,
-          s.chatModeStraightKey,
-        ),
-        _segment(
-          InputMode.paddles,
-          Icons.view_column_outlined,
-          s.chatModePaddles,
-        ),
-      ],
     );
   }
 }

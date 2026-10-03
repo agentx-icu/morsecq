@@ -54,6 +54,8 @@ class _KeyingInputState extends State<KeyingInput> {
     );
     _events = _decoder.events.listen(_onDecode);
     _buildKeyer();
+    // A sink sounds nothing until prepared (the audio engine starts here).
+    unawaited(widget.sink.prepare());
     _tick = Timer.periodic(const Duration(milliseconds: 40), (_) {
       final String before = _decoder.pendingPattern;
       _decoder.tick(widget.clock.now());
@@ -67,6 +69,7 @@ class _KeyingInputState extends State<KeyingInput> {
     if (old.mode != widget.mode || old.sink != widget.sink) {
       _disposeKeyer();
       _buildKeyer();
+      if (old.sink != widget.sink) unawaited(widget.sink.prepare());
     } else if (old.timing != widget.timing) {
       _keyer?.timing = KeyerTiming.fromMorseTiming(widget.timing);
     }

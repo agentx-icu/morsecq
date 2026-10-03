@@ -1223,6 +1223,24 @@ abstract class S {
   /// **'Training mode off'**
   String get chatTrainingModeOff;
 
+  /// Chat app-bar toggle and playback-sheet switch: play incoming messages as they arrive
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play received Morse'**
+  String get chatAutoPlay;
+
+  /// Snack bar after turning chat auto-play on
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play on: new messages play as they arrive'**
+  String get chatAutoPlayOn;
+
+  /// Snack bar after turning chat auto-play off
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play off'**
+  String get chatAutoPlayOff;
+
   /// From ChatStrings.reveal (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1325,12 +1343,6 @@ abstract class S {
   /// **'Clear history'**
   String get chatClearHistory;
 
-  /// From ChatStrings.modeKeyboard (apps/morsecq/lib/ui/chat/chat_strings.dart)
-  ///
-  /// In en, this message translates to:
-  /// **'Keyboard'**
-  String get chatModeKeyboard;
-
   /// From ChatStrings.modeStraightKey (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
@@ -1343,11 +1355,11 @@ abstract class S {
   /// **'Paddles'**
   String get chatModePaddles;
 
-  /// From ChatStrings.typeMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Hint in the read-only chat draft field: messages are keyed with the straight key or paddles, not typed
   ///
   /// In en, this message translates to:
-  /// **'Type a message'**
-  String get chatTypeMessage;
+  /// **'Key your message'**
+  String get chatKeyMessage;
 
   /// From ChatStrings.send (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///

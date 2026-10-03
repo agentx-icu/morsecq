@@ -148,7 +148,12 @@ class _AppShellState extends State<AppShell> {
     final body = _withBanner(
       IndexedStack(
         index: _selectedIndex,
-        children: [for (final d in kShellDestinations) d.page],
+        // Hidden tabs keep their state but stop animating; a conversation
+        // left open on another tab reads this to stay silent.
+        children: [
+          for (final (i, d) in kShellDestinations.indexed)
+            TickerMode(enabled: i == _selectedIndex, child: d.page),
+        ],
       ),
     );
 
