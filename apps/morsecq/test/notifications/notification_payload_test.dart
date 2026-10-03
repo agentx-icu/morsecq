@@ -41,6 +41,36 @@ void main() {
         const OpenConversationTarget('a').hashCode,
       );
     });
+    test('hashes are per kind and toString names the kind', () {
+      expect(
+        const FriendRequestTarget('X').hashCode,
+        const FriendRequestTarget('X').hashCode,
+      );
+      expect(
+        const GroupInviteTarget('X').hashCode,
+        const GroupInviteTarget('X').hashCode,
+      );
+      expect(
+        const OpenConversationTarget('c2c_A').toString(),
+        'OpenConversationTarget(c2c_A)',
+      );
+      expect(
+        const FriendRequestTarget('ABC').toString(),
+        'FriendRequestTarget(ABC)',
+      );
+      expect(
+        const GroupInviteTarget('inv_1').toString(),
+        'GroupInviteTarget(inv_1)',
+      );
+      expect(
+        <NotificationTapTarget>{
+          const FriendRequestTarget('X'),
+          const GroupInviteTarget('X'),
+          const OpenConversationTarget('X'),
+        },
+        hasLength(3),
+      );
+    });
   });
 
   group('stableNotificationId', () {
