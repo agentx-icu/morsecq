@@ -1727,6 +1727,570 @@ abstract class S {
   /// **'QSO'**
   String get learnDrillQso;
 
+  /// Receive drill: one symbol per round
+  ///
+  /// In en, this message translates to:
+  /// **'Single characters'**
+  String get learnDrillCharacters;
+
+  /// Receive drill: CW abbreviations and Q-codes
+  ///
+  /// In en, this message translates to:
+  /// **'Abbreviations & Q-codes'**
+  String get learnDrillAbbreviations;
+
+  /// Receive drill: groups of digits
+  ///
+  /// In en, this message translates to:
+  /// **'Number groups'**
+  String get learnDrillNumbers;
+
+  /// Receive drill: confusable pairs drilled against each other
+  ///
+  /// In en, this message translates to:
+  /// **'Look-alike characters'**
+  String get learnDrillConfusables;
+
+  /// Receive drill: contest exchanges with cut numbers
+  ///
+  /// In en, this message translates to:
+  /// **'Contest exchanges'**
+  String get learnDrillContest;
+
+  /// Drill picker subtitle for random groups
+  ///
+  /// In en, this message translates to:
+  /// **'Random groups from every letter you know'**
+  String get learnDrillGroupsHint;
+
+  /// Drill picker subtitle for single characters
+  ///
+  /// In en, this message translates to:
+  /// **'One character at a time - name it instantly'**
+  String get learnDrillCharactersHint;
+
+  /// Drill picker subtitle for words
+  ///
+  /// In en, this message translates to:
+  /// **'Common English words'**
+  String get learnDrillWordsHint;
+
+  /// Drill picker subtitle for abbreviations
+  ///
+  /// In en, this message translates to:
+  /// **'TNX, FB, QTH, QSL - the shorthand of the air'**
+  String get learnDrillAbbreviationsHint;
+
+  /// Drill picker subtitle for number groups
+  ///
+  /// In en, this message translates to:
+  /// **'Five-digit groups, as in traffic and serials'**
+  String get learnDrillNumbersHint;
+
+  /// Drill picker subtitle for callsigns
+  ///
+  /// In en, this message translates to:
+  /// **'Amateur callsigns from around the world'**
+  String get learnDrillCallsignsHint;
+
+  /// Drill picker subtitle for confusables
+  ///
+  /// In en, this message translates to:
+  /// **'Pairs you mix up, like S/H or U/V, side by side'**
+  String get learnDrillConfusablesHint;
+
+  /// Drill picker subtitle for QSO
+  ///
+  /// In en, this message translates to:
+  /// **'Lines from a full contact'**
+  String get learnDrillQsoHint;
+
+  /// Drill picker subtitle for contest exchanges
+  ///
+  /// In en, this message translates to:
+  /// **'Call, 5NN and a serial or zone, at contest pace'**
+  String get learnDrillContestHint;
+
+  /// Drill picker subtitle for review
+  ///
+  /// In en, this message translates to:
+  /// **'Characters that are due for review'**
+  String get learnDrillReviewHint;
+
+  /// Title of the radio tools screen and its entry button
+  ///
+  /// In en, this message translates to:
+  /// **'Radio tools'**
+  String get toolsTitle;
+
+  /// Maidenhead locator tool title
+  ///
+  /// In en, this message translates to:
+  /// **'Grid locator'**
+  String get toolsGridTitle;
+
+  /// Maidenhead tool subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Locator from coordinates, distance and beam heading'**
+  String get toolsGridHint;
+
+  /// Band tool title
+  ///
+  /// In en, this message translates to:
+  /// **'Bands & antennas'**
+  String get toolsBandsTitle;
+
+  /// Band tool subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Which band a frequency is in, wavelength, dipole length'**
+  String get toolsBandsHint;
+
+  /// CW speed tool title
+  ///
+  /// In en, this message translates to:
+  /// **'CW speed'**
+  String get toolsSpeedTitle;
+
+  /// CW speed tool subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'WPM to dit length, gaps and characters per minute'**
+  String get toolsSpeedHint;
+
+  /// RST tool title
+  ///
+  /// In en, this message translates to:
+  /// **'RST report'**
+  String get toolsRstTitle;
+
+  /// RST tool subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Build a signal report and see what each digit means'**
+  String get toolsRstHint;
+
+  /// UTC clock tool title
+  ///
+  /// In en, this message translates to:
+  /// **'UTC clock'**
+  String get toolsClockTitle;
+
+  /// UTC clock tool subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Log time in UTC, next to your local time'**
+  String get toolsClockHint;
+
+  /// Section header: coordinates to locator
+  ///
+  /// In en, this message translates to:
+  /// **'From coordinates'**
+  String get toolsGridFromCoordinates;
+
+  /// Latitude field label
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get toolsGridLatitude;
+
+  /// Longitude field label
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get toolsGridLongitude;
+
+  /// Helper text under the coordinate fields
+  ///
+  /// In en, this message translates to:
+  /// **'Decimal degrees; south and west are negative'**
+  String get toolsGridCoordinatesHelp;
+
+  /// Error for out-of-range coordinates
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude -90 to 90, longitude -180 to 180'**
+  String get toolsGridInvalidCoordinates;
+
+  /// Result label: the computed locator
+  ///
+  /// In en, this message translates to:
+  /// **'Locator'**
+  String get toolsGridLocator;
+
+  /// Section header: distance between two locators
+  ///
+  /// In en, this message translates to:
+  /// **'Distance and heading'**
+  String get toolsGridDistanceSection;
+
+  /// Field label: own locator
+  ///
+  /// In en, this message translates to:
+  /// **'My locator'**
+  String get toolsGridMine;
+
+  /// Field label: other station's locator
+  ///
+  /// In en, this message translates to:
+  /// **'Their locator'**
+  String get toolsGridTheirs;
+
+  /// Error for a malformed locator
+  ///
+  /// In en, this message translates to:
+  /// **'Use 2, 4, 6 or 8 characters, e.g. OM89ex'**
+  String get toolsGridInvalidLocator;
+
+  /// Result label: centre of a locator square
+  ///
+  /// In en, this message translates to:
+  /// **'Square centre'**
+  String get toolsGridCenter;
+
+  /// Result label: great-circle distance
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get toolsGridDistance;
+
+  /// Result label: short-path bearing
+  ///
+  /// In en, this message translates to:
+  /// **'Short-path heading'**
+  String get toolsGridShortPath;
+
+  /// Result label: long-path bearing
+  ///
+  /// In en, this message translates to:
+  /// **'Long-path heading'**
+  String get toolsGridLongPath;
+
+  /// Frequency field label
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency (MHz)'**
+  String get toolsBandsFrequency;
+
+  /// Error for a non-positive frequency
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a frequency above 0'**
+  String get toolsBandsInvalidFrequency;
+
+  /// IARU region segment label
+  ///
+  /// In en, this message translates to:
+  /// **'Region {number}'**
+  String toolsBandsRegionLabel(int number);
+
+  /// Explains the three IARU regions
+  ///
+  /// In en, this message translates to:
+  /// **'1: Europe, Africa, Middle East - 2: the Americas - 3: Asia-Pacific'**
+  String get toolsBandsRegionHelp;
+
+  /// Result when the frequency is inside a band
+  ///
+  /// In en, this message translates to:
+  /// **'In the {band} amateur band'**
+  String toolsBandsInBand(String band);
+
+  /// Result when the frequency is in no band
+  ///
+  /// In en, this message translates to:
+  /// **'Outside the amateur bands'**
+  String get toolsBandsOutOfBand;
+
+  /// Result label: free-space wavelength
+  ///
+  /// In en, this message translates to:
+  /// **'Wavelength'**
+  String get toolsBandsWavelength;
+
+  /// Result label: dipole cut length
+  ///
+  /// In en, this message translates to:
+  /// **'Half-wave dipole (total)'**
+  String get toolsBandsDipole;
+
+  /// Result label: quarter-wave length
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter-wave vertical'**
+  String get toolsBandsQuarterWave;
+
+  /// Note under the antenna lengths
+  ///
+  /// In en, this message translates to:
+  /// **'Lengths include a 0.95 end factor; trim to resonance.'**
+  String get toolsBandsAntennaNote;
+
+  /// Header of the band table
+  ///
+  /// In en, this message translates to:
+  /// **'Band edges'**
+  String get toolsBandsTable;
+
+  /// QRP calling frequency in the band table
+  ///
+  /// In en, this message translates to:
+  /// **'QRP CW {frequency}'**
+  String toolsBandsQrp(String frequency);
+
+  /// Disclaimer under the band table
+  ///
+  /// In en, this message translates to:
+  /// **'ITU allocations. Your licence and national band plan may be narrower.'**
+  String get toolsBandsDisclaimer;
+
+  /// Slider label: character WPM
+  ///
+  /// In en, this message translates to:
+  /// **'Character speed'**
+  String get toolsSpeedCharacter;
+
+  /// Switch: enable Farnsworth spacing
+  ///
+  /// In en, this message translates to:
+  /// **'Farnsworth spacing'**
+  String get toolsSpeedFarnsworth;
+
+  /// Slider label: Farnsworth overall WPM
+  ///
+  /// In en, this message translates to:
+  /// **'Overall speed'**
+  String get toolsSpeedOverall;
+
+  /// Result label: dit length
+  ///
+  /// In en, this message translates to:
+  /// **'Dit'**
+  String get toolsSpeedDit;
+
+  /// Result label: dah length
+  ///
+  /// In en, this message translates to:
+  /// **'Dah'**
+  String get toolsSpeedDah;
+
+  /// Result label: character gap
+  ///
+  /// In en, this message translates to:
+  /// **'Gap between characters'**
+  String get toolsSpeedCharGap;
+
+  /// Result label: word gap
+  ///
+  /// In en, this message translates to:
+  /// **'Gap between words'**
+  String get toolsSpeedWordGap;
+
+  /// Result label: characters per minute
+  ///
+  /// In en, this message translates to:
+  /// **'Characters per minute'**
+  String get toolsSpeedCpm;
+
+  /// Result label: time for one PARIS word
+  ///
+  /// In en, this message translates to:
+  /// **'One PARIS word'**
+  String get toolsSpeedParis;
+
+  /// RST: readability scale
+  ///
+  /// In en, this message translates to:
+  /// **'Readability (R)'**
+  String get toolsRstReadability;
+
+  /// RST: strength scale
+  ///
+  /// In en, this message translates to:
+  /// **'Strength (S)'**
+  String get toolsRstStrength;
+
+  /// RST: tone scale
+  ///
+  /// In en, this message translates to:
+  /// **'Tone (T)'**
+  String get toolsRstTone;
+
+  /// RST: the composed report
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get toolsRstReport;
+
+  /// RST: cut-number form
+  ///
+  /// In en, this message translates to:
+  /// **'Contest form'**
+  String get toolsRstCut;
+
+  /// RST: two-digit RS report
+  ///
+  /// In en, this message translates to:
+  /// **'On voice (no tone)'**
+  String get toolsRstPhone;
+
+  /// RST readability 1
+  ///
+  /// In en, this message translates to:
+  /// **'Unreadable'**
+  String get toolsRstR1;
+
+  /// RST readability 2
+  ///
+  /// In en, this message translates to:
+  /// **'Barely readable, occasional words'**
+  String get toolsRstR2;
+
+  /// RST readability 3
+  ///
+  /// In en, this message translates to:
+  /// **'Readable with considerable difficulty'**
+  String get toolsRstR3;
+
+  /// RST readability 4
+  ///
+  /// In en, this message translates to:
+  /// **'Readable with practically no difficulty'**
+  String get toolsRstR4;
+
+  /// RST readability 5
+  ///
+  /// In en, this message translates to:
+  /// **'Perfectly readable'**
+  String get toolsRstR5;
+
+  /// RST strength 1
+  ///
+  /// In en, this message translates to:
+  /// **'Faint, barely perceptible'**
+  String get toolsRstS1;
+
+  /// RST strength 2
+  ///
+  /// In en, this message translates to:
+  /// **'Very weak'**
+  String get toolsRstS2;
+
+  /// RST strength 3
+  ///
+  /// In en, this message translates to:
+  /// **'Weak'**
+  String get toolsRstS3;
+
+  /// RST strength 4
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get toolsRstS4;
+
+  /// RST strength 5
+  ///
+  /// In en, this message translates to:
+  /// **'Fairly good'**
+  String get toolsRstS5;
+
+  /// RST strength 6
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get toolsRstS6;
+
+  /// RST strength 7
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately strong'**
+  String get toolsRstS7;
+
+  /// RST strength 8
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get toolsRstS8;
+
+  /// RST strength 9
+  ///
+  /// In en, this message translates to:
+  /// **'Extremely strong'**
+  String get toolsRstS9;
+
+  /// RST tone 1
+  ///
+  /// In en, this message translates to:
+  /// **'Very rough and broad, raw AC'**
+  String get toolsRstT1;
+
+  /// RST tone 2
+  ///
+  /// In en, this message translates to:
+  /// **'Very rough AC, harsh and broad'**
+  String get toolsRstT2;
+
+  /// RST tone 3
+  ///
+  /// In en, this message translates to:
+  /// **'Rough, rectified but not filtered'**
+  String get toolsRstT3;
+
+  /// RST tone 4
+  ///
+  /// In en, this message translates to:
+  /// **'Rough, some trace of filtering'**
+  String get toolsRstT4;
+
+  /// RST tone 5
+  ///
+  /// In en, this message translates to:
+  /// **'Filtered but strongly ripple-modulated'**
+  String get toolsRstT5;
+
+  /// RST tone 6
+  ///
+  /// In en, this message translates to:
+  /// **'Filtered, definite trace of ripple'**
+  String get toolsRstT6;
+
+  /// RST tone 7
+  ///
+  /// In en, this message translates to:
+  /// **'Near pure, trace of ripple'**
+  String get toolsRstT7;
+
+  /// RST tone 8
+  ///
+  /// In en, this message translates to:
+  /// **'Near perfect, slight trace of modulation'**
+  String get toolsRstT8;
+
+  /// RST tone 9
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect tone, no ripple at all'**
+  String get toolsRstT9;
+
+  /// UTC clock label
+  ///
+  /// In en, this message translates to:
+  /// **'UTC'**
+  String get toolsClockUtc;
+
+  /// Local clock label
+  ///
+  /// In en, this message translates to:
+  /// **'Local time'**
+  String get toolsClockLocal;
+
+  /// Note under the UTC clock
+  ///
+  /// In en, this message translates to:
+  /// **'Logs and QSL cards use UTC.'**
+  String get toolsClockNote;
+
   /// From LearnStrings.receiveTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
   ///
   /// In en, this message translates to:

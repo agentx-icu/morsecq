@@ -52,6 +52,9 @@ final class TrainingController extends ChangeNotifier {
   /// Lesson from which QSO drills are offered (they need most letters).
   static const int qsoFromLesson = 30;
 
+  /// Abbreviations / Q-codes needed before that drill is offered.
+  static const int minShorthandWords = 3;
+
   final TrainerStore _progressStore;
   final TrainingSettingsStore _settingsStore;
   final KochCourse course;
@@ -183,14 +186,11 @@ final class TrainingController extends ChangeNotifier {
 
   /// Drill kinds the learned set can support right now.
   List<ReceiveDrillKind> get availableReceiveKinds {
-    final allowed = course.charSetForLesson(currentLesson);
+    final chars = learnedChars;
     return <ReceiveDrillKind>[
-      ReceiveDrillKind.groups,
-      if (WordDrill.commonWords(allowedChars: allowed).hasCandidates)
-        ReceiveDrillKind.words,
-      if (CallsignDrill(allowedChars: allowed).canGenerate)
-        ReceiveDrillKind.callsigns,
-      if (currentLesson >= qsoFromLesson) ReceiveDrillKind.qso,
+      for (final kind in ReceiveDrillKind.values)
+        if (kind != ReceiveDrillKind.review && _drillFor(kind, chars) != null)
+          kind,
     ];
   }
 
@@ -207,10 +207,13 @@ final class TrainingController extends ChangeNotifier {
     }
     final chars = learnedChars;
     final t = trainerSettings;
+    final generator = _generatorFor(kind, chars);
     return ReceiveSession(
       kind: kind,
-      generator: _generatorFor(kind, chars),
-      chars: chars,
+      generator: generator,
+      // QSO scripts are fixed text (names, rigs, <BT>, <SK>), not filtered
+      // to the lesson, so their keypad offers every symbol of the course.
+      chars: generator is QsoDrill ? course.order : chars,
       timing: t.toTiming(),
       charBudget: t.sessionLengthChars,
       timeBudget: t.sessionLengthSeconds == null
@@ -320,30 +323,70 @@ final class TrainingController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   // Internals
 
-  DrillGenerator _generatorFor(ReceiveDrillKind kind, List<String> chars) {
+  /// The drill for [kind], falling back to lesson groups when the learned
+  /// set cannot support it yet.
+  DrillGenerator _generatorFor(ReceiveDrillKind kind, List<String> chars) =>
+      _drillFor(kind, chars) ?? _drillFor(ReceiveDrillKind.groups, chars)!;
+
+  /// The drill for [kind] over [chars], or null when [chars] (or the
+  /// current lesson) cannot support it. Single source of truth for both
+  /// [availableReceiveKinds] and the sessions that are started.
+  DrillGenerator? _drillFor(ReceiveDrillKind kind, List<String> chars) {
     final allowed = chars.toSet();
     final t = trainerSettings;
-    final groups = RandomGroupsDrill(
-      chars: chars,
-      groupCount: 1,
-      groupSize: t.groupSize,
-      weights: _weights(),
-    );
+    final lateLessons = currentLesson >= qsoFromLesson;
     switch (kind) {
       case ReceiveDrillKind.groups:
       case ReceiveDrillKind.review:
-        return groups;
+        return RandomGroupsDrill(
+          chars: chars,
+          groupCount: 1,
+          groupSize: t.groupSize,
+          weights: _weights(),
+        );
+      case ReceiveDrillKind.characters:
+        return RandomGroupsDrill(
+          chars: chars,
+          groupCount: 1,
+          groupSize: 1,
+          weights: _weights(),
+        );
       case ReceiveDrillKind.words:
         final words = WordDrill.commonWords(
           allowedChars: allowed,
           wordCount: 2,
         );
-        return words.hasCandidates ? words : groups;
+        return words.hasCandidates ? words : null;
+      case ReceiveDrillKind.abbreviations:
+        final shorthand = WordDrill.radioShorthand(
+          allowedChars: allowed,
+          wordCount: 2,
+        );
+        // `K` alone is an abbreviation; a drill of only `K K` is not one.
+        return shorthand.candidates.length >= minShorthandWords
+            ? shorthand
+            : null;
+      case ReceiveDrillKind.numbers:
+        final numbers = NumberGroupsDrill(
+          groupSize: t.groupSize,
+          allowedChars: allowed,
+        );
+        return numbers.canGenerate ? numbers : null;
       case ReceiveDrillKind.callsigns:
         final calls = CallsignDrill(count: 1, allowedChars: allowed);
-        return calls.canGenerate ? calls : groups;
+        return calls.canGenerate ? calls : null;
+      case ReceiveDrillKind.confusables:
+        final pairs = ConfusableDrill(
+          chars: chars,
+          confusion: _progress.confusion,
+          groupSize: t.groupSize,
+        );
+        return pairs.canGenerate ? pairs : null;
       case ReceiveDrillKind.qso:
-        return QsoDrill();
+        return lateLessons ? QsoDrill() : null;
+      case ReceiveDrillKind.contest:
+        final contest = ContestExchangeDrill(allowedChars: allowed);
+        return lateLessons && contest.canGenerate ? contest : null;
     }
   }
 

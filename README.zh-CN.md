@@ -54,9 +54,11 @@ App 有五个目的地——**Learn（学习）/ Chat（聊天）/ Groups（群�
 Me（我）**——全部位于同一个启动门之后：首次启动时创建（或解锁）一个 Tox 身份，训练与
 聊天都需要这一身份。
 
-- **学习** —— Koch 法字符课程 + Farnsworth 间距；听抄练习（字符组、常用词、呼号、
-  简短 QSO）；发报练习支持屏幕直键 / 双桨自动键 **以及** 桌面键盘；实时解码并给出
+- **学习** —— Koch 法字符课程 + Farnsworth 间距；听抄练习（字符组、单字速认、常用词、
+  缩语与 Q 简语、数字组、呼号、易混字符、简短 QSO、竞赛交换）；发报练习支持屏幕直键 / 双桨自动键 **以及** 桌面键盘；实时解码并给出
   节奏诊断；错字混淆矩阵；间隔复习与每日目标。进度按身份保存。
+- **无线电工具** —— 从手册页进入：梅登黑德网格定位（含距离与天线方位）、按 IARU
+  分区的频段边界与波长 / 天线长度、报速换算、RST 报告、UTC 时钟（`radio_tools`，纯 Dart）。
 - **麦克风听抄** —— 从实时音频中解码莫斯（`morse_dsp`：Goertzel 音调检测、自动
   调谐、包络门限），由 `record` 插件把 PCM 送入 `AudioMorseDecoder`。
 - **聊天** —— 通过 Tox ID 或二维码加好友；消息在线路上就是纯文本，任何 Tim2Tox
@@ -94,6 +96,7 @@ v1 明确不做：语音 / 视频通话、服务器推送、多账号同时在�
 | `packages/morse_core` | 纯 Dart 莫斯引擎：字母表、PARIS/Farnsworth 时序、编码器、流式按键解码器 |
 | `packages/morse_trainer` | 纯 Dart 教学法：Koch 课程进度、评分、间隔复习 |
 | `packages/morse_dsp` | 纯 Dart 音频解码：Goertzel 音调检测、自动调谐、包络门限、`AudioMorseDecoder` |
+| `packages/radio_tools` | 纯 Dart 业余无线电计算：梅登黑德网格、大圆距离与方位、IARU 频段边界、报速、RST |
 | `packages/morse_io` | Flutter I/O：侧音、触觉、闪光、触屏 + 键盘键控输入 |
 | `packages/morsecq_chat_api` | UI 与后端之间的纯 Dart 契约（`IdentityService`、`ChatService`、模型、内存假实现） |
 | `packages/morsecq_chat` | 在 Tim2Tox 上实现契约的 Tox 传输层（唯一允许接触 Tim2Tox / 腾讯 SDK 的包） |
