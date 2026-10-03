@@ -162,7 +162,8 @@ TrainerProgress completePlanStep(
       countsTowardLesson &&
       (lesson == null || lesson == before);
   if (mayUnlock) next = next.advanceIfPassed(course, score);
-  next = completePlanStep(next, planStepId, id, score);
+  // A plan step only completes with credited activity (no blank runs).
+  if (credit.activity) next = completePlanStep(next, planStepId, id, score);
   if (next.currentLesson != before && next.dailyPlan != null) {
     next = next.copyWith(dailyPlan: next.dailyPlan!.markPendingStale());
   }

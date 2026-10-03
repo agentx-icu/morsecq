@@ -149,8 +149,22 @@ final class SendTimeline {
         ? estimatedDit.inMicroseconds
         : timing.dit.inMicroseconds;
     final expectedMarks = standard.where((e) => e.isMark).toList();
-    final aligned = marks.length == expectedMarks.length && marks.isNotEmpty;
     final expectedGaps = standard.where((e) => !e.isMark).toList();
+    // Equal counts are not enough (`IE` keyed for `EI` has three marks
+    // too): every mark must have the expected class and every measured
+    // character boundary must sit where the target has one.
+    final aligned =
+        marks.isNotEmpty &&
+        marks.length == expectedMarks.length &&
+        gaps.length >= marks.length - 1 &&
+        _structureMatches(
+          marks,
+          gaps,
+          expectedMarks,
+          expectedGaps,
+          ditUs,
+          thresholds,
+        );
 
     final mine = <RhythmElement>[];
     var at = Duration.zero;
@@ -324,6 +338,28 @@ final class SendTimeline {
       }
     }
     return out;
+  }
+
+  static bool _structureMatches(
+    List<Duration> marks,
+    List<Duration> gaps,
+    List<RhythmElement> expectedMarks,
+    List<RhythmElement> expectedGaps,
+    int ditUs,
+    RhythmThresholds t,
+  ) {
+    for (var i = 0; i < marks.length; i++) {
+      final dah = marks[i].inMicroseconds / ditUs >= 2;
+      if (dah != (expectedMarks[i].kind == RhythmElementKind.dah)) {
+        return false;
+      }
+    }
+    for (var i = 0; i < marks.length - 1; i++) {
+      final boundary = gaps[i].inMicroseconds / ditUs >= t.charBoundary;
+      final expected = expectedGaps[i].kind != RhythmElementKind.intraGap;
+      if (boundary != expected) return false;
+    }
+    return true;
   }
 
   static RhythmIssue? _markIssue(

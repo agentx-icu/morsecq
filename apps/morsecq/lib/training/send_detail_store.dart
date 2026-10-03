@@ -109,16 +109,20 @@ extension SendDetailStore on TrainingController {
       ).aligned,
     );
     final json = detail.toJson();
-    await writeDoc(ref, json);
-    final index = await _index();
-    index.removeWhere((e) => e['ref'] == ref);
-    index.add(<String, Object?>{
-      'ref': ref,
-      'bytes': utf8.encode(jsonEncode(json)).length,
-      'at': detail.at.toIso8601String(),
-      'favorite': false,
+    await docTransaction(() async {
+      await writeDoc(ref, json);
+      final index = await _index();
+      // Saving the same attempt again keeps whether it was kept.
+      final kept = index.any((e) => e['ref'] == ref && e['favorite'] == true);
+      index.removeWhere((e) => e['ref'] == ref);
+      index.add(<String, Object?>{
+        'ref': ref,
+        'bytes': utf8.encode(jsonEncode(json)).length,
+        'at': detail.at.toIso8601String(),
+        'favorite': kept,
+      });
+      await _trim(index, budgetBytes);
     });
-    await _trim(index, budgetBytes);
     return ref;
   }
 
@@ -133,13 +137,14 @@ extension SendDetailStore on TrainingController {
   }
 
   /// Marks a detail as kept: excluded from cache trimming.
-  Future<void> setSendDetailFavorite(String ref, bool favorite) async {
-    final index = await _index();
-    for (final e in index) {
-      if (e['ref'] == ref) e['favorite'] = favorite;
-    }
-    await writeDoc(indexDoc, <String, Object?>{'entries': index});
-  }
+  Future<void> setSendDetailFavorite(String ref, bool favorite) =>
+      docTransaction(() async {
+        final index = await _index();
+        for (final e in index) {
+          if (e['ref'] == ref) e['favorite'] = favorite;
+        }
+        await writeDoc(indexDoc, <String, Object?>{'entries': index});
+      });
 
   Future<bool> isSendDetailFavorite(String ref) async =>
       (await _index()).any((e) => e['ref'] == ref && e['favorite'] == true);

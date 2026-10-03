@@ -179,6 +179,17 @@ final class TrainingController extends ChangeNotifier {
     return _persist(_docs, () => _docs.delete(name));
   }
 
+  Future<void> _docTxn = Future<void>.value();
+
+  /// Runs a read-modify-write of training documents with no other
+  /// transaction in between (concurrent saves would otherwise both read
+  /// the same snapshot and the last write would drop the other change).
+  Future<T> docTransaction<T>(Future<T> Function() body) {
+    final result = _docTxn.then((_) => body());
+    _docTxn = result.then<void>((_) {}, onError: (Object _) {});
+    return result;
+  }
+
   Future<List<String>> docNames() async {
     await _writes;
     return _docs.names();
@@ -328,7 +339,7 @@ final class TrainingController extends ChangeNotifier {
       id: session.id,
       source: session.source,
       assistance: session.assistance,
-      answered: session.roundCount > 0,
+      answered: session.hasAnswers,
       lesson: session.lesson,
       timing: session.timing,
       active: session.activeElapsed,
@@ -415,7 +426,7 @@ final class TrainingController extends ChangeNotifier {
       answered: session.hasInput,
       lesson: session.lesson,
       timing: session.nominalTiming,
-      active: session.elapsed,
+      active: session.activeElapsed,
       planStepId: session.planStepId,
       detailRef: detailRef,
     );

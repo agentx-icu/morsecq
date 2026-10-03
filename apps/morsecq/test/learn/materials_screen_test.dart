@@ -219,6 +219,41 @@ void main() {
     expect(find.text('Mix'), findsOneWidget, reason: 'drill title');
   });
 
+  testWidgets('every JSON import is confirmed; TXT export is lossless', (
+    tester,
+  ) async {
+    final (t, gateway) = await _pump(tester);
+    final c = t.controller;
+    final list = MaterialImport.create(
+      id: 'l1',
+      title: 'Calls',
+      kind: MaterialKind.callsigns,
+      text: 'K1ABC\nDL2XY',
+      analysis: MaterialImport.analyze('K1ABC\nDL2XY', MaterialKind.callsigns),
+      now: c.now(),
+    );
+    gateway.pickResult = PickedFile(
+      'lib.json',
+      Uint8List.fromList(utf8.encode(MaterialLibraryCodec.encode([list]))),
+    );
+    await tester.tap(find.byTooltip(en.materialsImport));
+    await tester.pumpAndSettle();
+    expect(find.text(en.materialsImportConfirm(1)), findsOneWidget);
+    await tester.tap(find.text(en.actionCancel));
+    await tester.pumpAndSettle();
+    expect(await c.loadMaterials(), isEmpty, reason: 'cancel imports nothing');
+    await tester.tap(find.byTooltip(en.materialsImport));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('import-keepCopy')));
+    await tester.pumpAndSettle();
+    expect(await c.loadMaterials(), hasLength(1));
+
+    await _menu(tester, en.materialsExportTxt);
+    final (name, bytes) = gateway.saved.single;
+    expect(name, 'Calls.txt');
+    expect(utf8.decode(bytes), 'K1ABC\nDL2XY');
+  });
+
   test('materials live under the training directory (in backups)', () {
     final store = FileTrainingDocStore.inDataDirectory('/data/id');
     expect(

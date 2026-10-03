@@ -13,6 +13,7 @@ import '../drill_session_guard.dart';
 import '../keying/keyer_panel.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import 'qso_labels.dart';
 import 'qso_log_view.dart';
 import 'qso_summary_view.dart';
@@ -28,8 +29,13 @@ class QsoScreen extends StatefulWidget {
     required this.controller,
     required this.playback,
     required this.session,
+    this.resumed,
     this.screenWake = const WakelockScreenWake(),
   });
+
+  /// The draft this QSO was resumed from (null for a fresh QSO): its
+  /// unsent keyed reply is kept, and nothing plays until asked.
+  final QsoDraft? resumed;
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
@@ -45,6 +51,18 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   final Set<int> _revealed = <int>{};
   final List<double> _wpms = <double>[];
   final Stopwatch _active = Stopwatch();
+  late final Duration _activeBefore = widget.resumed?.active ?? Duration.zero;
+
+  /// A keyed but unsent reply restored from the draft, and its id.
+  late String _carry = widget.resumed?.pendingText ?? '';
+  late String? _carryId = widget.resumed?.pendingId;
+
+  Duration get _activeTotal => _activeBefore + _active.elapsed;
+
+  String get _pendingText => [
+    _carry,
+    _keying.decodedText,
+  ].where((t) => t.trim().isNotEmpty).join(' ').trim();
   late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _playerSub;
@@ -92,7 +110,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     setState(() => _playback = playback);
     // A fresh QSO starts with the remote's call; a resumed one never
     // restarts playback on its own.
-    if (_session.learnerTurns == 0) _playRemote(_session.lastRemoteText);
+    if (widget.resumed == null && _session.learnerTurns == 0) {
+      _playRemote(_session.lastRemoteText);
+    }
   }
 
   void _newKeying() {
@@ -108,12 +128,15 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     final playback = _playback;
     if (text == null || playback == null || _disposed) return;
     _panel.currentState?.releaseHeld();
+    _active.start();
     setState(() => _remotePlaying = true);
     playback.player.play(MorseEncoder.encode(text, _remoteTiming));
   }
 
   void _pause() {
     _playback?.player.stop();
+    // A paused QSO is not active practice.
+    _active.stop();
     _panel.currentState?.releaseHeld();
     if (mounted) setState(() => _remotePlaying = false);
   }
@@ -132,7 +155,12 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   Future<void> _saveDraft() async {
     try {
-      await _c.saveQsoDraft(_session);
+      await _c.saveQsoDraft(
+        _session,
+        pendingText: _pendingText,
+        pendingId: _carryId ?? _keying.id,
+        active: _activeTotal,
+      );
     } on Object {
       // A lost draft only costs the resume option.
     }
@@ -159,12 +187,24 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     if (result.attempt.marks.length >= 3 && result.measuredWpm > 0) {
       _wpms.add(result.measuredWpm);
     }
+    final text = [
+      _carry,
+      result.attempt.decoded,
+    ].where((t) => t.trim().isNotEmpty).join(' ');
+    final id = _carryId ?? keying.id;
+    _carry = '';
+    _carryId = null;
     _newKeying();
     keying.dispose();
-    await _submitText(keying.id, result.attempt.decoded);
+    _active.start();
+    await _submitText(id, text);
   }
 
   void _clear() {
+    setState(() {
+      _carry = '';
+      _carryId = null;
+    });
     _keying.restart();
     _panel.currentState?.releaseHeld();
   }
@@ -188,19 +228,22 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     _recorded = true;
     _active.stop();
     _wake.setActive(false);
+    var saved = false;
     try {
-      await _c.recordQso(_session, _active.elapsed);
-      await _c.discardQsoDraft();
+      saved = await _c.finishQso(_session, _activeTotal);
     } on Object {
-      // The summary still shows; the controller keeps the result.
+      saved = false;
     }
+    // The draft stays until the result is saved; reopening the simulator
+    // commits it again (idempotent), and Retry writes the progress now.
+    if (!saved && mounted) showProgressSaveFailed(context, _c);
   }
 
   @override
   void dispose() {
     _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
-    if (!_session.isDone) unawaited(_saveDraft());
+    if (!_session.isDone && !_recorded) unawaited(_saveDraft());
     _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_keyingSub?.cancel());
@@ -225,21 +268,24 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
             ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: _session.isDone
-                  ? QsoSummaryView(
-                      session: _session,
-                      sendingWpm: _wpms.isEmpty
-                          ? null
-                          : _wpms.reduce((a, b) => a + b) / _wpms.length,
-                      onDone: () => Navigator.of(context).pop(),
-                    )
-                  : _running(context, s, playback),
+      body: _withFlash(
+        playback,
+        SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: _session.isDone
+                    ? QsoSummaryView(
+                        session: _session,
+                        sendingWpm: _wpms.isEmpty
+                            ? null
+                            : _wpms.reduce((a, b) => a + b) / _wpms.length,
+                        onDone: () => Navigator.of(context).pop(),
+                      )
+                    : _running(context, s, playback),
+              ),
             ),
           ),
         ),
@@ -247,9 +293,16 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     );
   }
 
+  /// Flash-only settings (or the fallback when audio fails) must still
+  /// show the remote's transmission.
+  static Widget _withFlash(LearnPlayback? playback, Widget body) {
+    final flash = playback?.flash;
+    return flash == null ? body : FlashOverlay(isOn: flash, child: body);
+  }
+
   Widget _running(BuildContext context, S s, LearnPlayback? playback) {
     final theme = Theme.of(context);
-    final decoded = _keying.decodedText;
+    final decoded = _pendingText;
     final canKey = playback != null && !_remotePlaying;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -360,7 +413,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
           children: <Widget>[
             Expanded(
               child: OutlinedButton(
-                onPressed: _keying.hasInput ? _clear : null,
+                onPressed: _keying.hasInput || _carry.isNotEmpty
+                    ? _clear
+                    : null,
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
                 ),
@@ -371,7 +426,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
             Expanded(
               child: FilledButton.icon(
                 key: const ValueKey('qso-send'),
-                onPressed: canKey && _keying.hasInput ? _send : null,
+                onPressed: canKey && (_keying.hasInput || _carry.isNotEmpty)
+                    ? _send
+                    : null,
                 icon: const Icon(Icons.send),
                 label: Text(s.learnQsoSend),
                 style: FilledButton.styleFrom(

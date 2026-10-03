@@ -72,6 +72,29 @@ void main() {
       );
     });
 
+    test('an over-long word is cut so every item round-trips', () {
+      final a = MaterialImport.analyze('E' * 201, MaterialKind.text);
+      expect(a.ok, isTrue);
+      for (final item in a.items) {
+        expect(
+          MorseText.symbols(item).length,
+          lessThanOrEqualTo(MaterialLimits.maxSymbolsPerEntry),
+        );
+      }
+      final m = MaterialImport.create(
+        id: 'x',
+        title: 'x',
+        kind: MaterialKind.text,
+        text: 'E' * 201,
+        analysis: a,
+        now: now,
+      );
+      expect(
+        MaterialLibraryCodec.decode(MaterialLibraryCodec.encode([m])),
+        hasLength(1),
+      );
+    });
+
     test('long text is segmented at word boundaries', () {
       final text = List.filled(30, 'PARIS').join(' ');
       final a = MaterialImport.analyze(text, MaterialKind.text);
@@ -109,6 +132,11 @@ void main() {
       ((bad['materials']! as List).single as Map)['normalizedItems'] = ['你'];
       expect(
         () => MaterialLibraryCodec.decode(jsonEncode(bad)),
+        throwsFormatException,
+      );
+      final wrongType = lib()..['version'] = 'bad';
+      expect(
+        () => MaterialLibraryCodec.decode(jsonEncode(wrongType)),
         throwsFormatException,
       );
       final newer = lib()..['version'] = 9;

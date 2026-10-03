@@ -208,4 +208,61 @@ void main() {
     expect(plan.settings.effectiveWpm, 18);
     expect(TrainingController.qsoFromLesson, 30);
   });
+
+  test('blank submissions earn no credit and do not complete a step', () async {
+    final t = await _training();
+    final c = t.controller;
+    final plan = await c.ensureTodayPlan();
+    final step = plan.steps.firstWhere((s) => s.kind == PlanStepKind.course);
+    final session = await c.startPlanReceiveStep(step);
+    while (!session.isComplete) {
+      session.submit('   ');
+    }
+    final outcome = await c.recordReceiveSession(session);
+    expect(outcome.credit.activity, isFalse);
+    expect(c.progress.lifetimeSessions, 0);
+    expect(c.progress.srs.cards, isEmpty);
+    expect(c.todayPlan!.stepById(step.id)!.isDone, isFalse);
+  });
+
+  test('a started step replays the same content after a refresh', () async {
+    final t = await _training();
+    final c = t.controller;
+    final plan = await c.ensureTodayPlan();
+    final step = plan.steps.firstWhere((s) => s.kind == PlanStepKind.course);
+    final first = (await c.startPlanReceiveStep(step)).currentDrill.text;
+    await c.setLesson(12);
+    await c.refreshPlan();
+    final again = c.todayPlan!.stepById(step.id)!;
+    expect((await c.startPlanReceiveStep(again)).currentDrill.text, first);
+  });
+
+  testWidgets('the plan card makes a new plan after midnight', (tester) async {
+    final t = await _training();
+    await t.controller.ensureTodayPlan();
+    await tester.pumpWidget(
+      l10nApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: AnimatedBuilder(
+              animation: t.controller,
+              builder: (_, _) => TodayPlanCard(
+                controller: t.controller,
+                playback: FakeLearnPlaybackFactory(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final yesterday = t.controller.todayPlan!.id;
+    t.clock.advance(const Duration(days: 1));
+    // Any rebuild on the new day (here: a notification) fetches a plan.
+    await t.controller.setDailyGoal(120);
+    await tester.pumpAndSettle();
+    expect(t.controller.todayPlan, isNotNull);
+    expect(t.controller.todayPlan!.id, isNot(yesterday));
+    expect(find.text(en.learnPlanTitle), findsOneWidget);
+  });
 }

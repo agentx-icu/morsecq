@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/audio_material_store.dart';
+import '../../../training/guest_profile.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
 import 'recording_files.dart';
@@ -45,6 +46,20 @@ class WorkbenchScreen extends StatefulWidget {
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
 
+/// The learning profile's data directory: the identity's, or the guest's
+/// when learning without an identity.
+Future<String> _profileDirectory(BuildContext context) {
+  final identity = context.read<IdentityService>();
+  GuestStore? guest;
+  try {
+    guest = context.read<GuestStore?>();
+  } on ProviderNotFoundException {
+    guest = null;
+  }
+  if (identity.current == null && guest != null) return guest.directory();
+  return identity.dataDirectory();
+}
+
 class _WorkbenchScreenState extends State<WorkbenchScreen>
     with WidgetsBindingObserver {
   WorkbenchController? _c;
@@ -62,8 +77,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   Future<void> _setup() async {
     try {
       final dir =
-          await (widget.dataDirectory ??
-              () => context.read<IdentityService>().dataDirectory())();
+          await (widget.dataDirectory ?? () => _profileDirectory(context))();
       if (!mounted) return;
       final controller = WorkbenchController(
         library: RecordingLibrary(dir),

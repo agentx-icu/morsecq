@@ -29,21 +29,29 @@ extension MaterialStore on TrainingController {
         'materials': [for (final m in materials) m.toJson()],
       });
 
-  Future<void> upsertMaterial(TrainingMaterial material) async {
-    final all = await loadMaterials();
-    final at = all.indexWhere((m) => m.id == material.id);
-    if (at < 0) {
-      all.add(material);
-    } else {
-      all[at] = material;
-    }
-    await saveMaterials(all);
-  }
+  Future<void> upsertMaterial(TrainingMaterial material) =>
+      docTransaction(() async {
+        final all = await loadMaterials();
+        final at = all.indexWhere((m) => m.id == material.id);
+        if (at < 0) {
+          all.add(material);
+        } else {
+          all[at] = material;
+        }
+        await saveMaterials(all);
+      });
 
-  Future<void> deleteMaterial(String id) async {
+  Future<void> deleteMaterial(String id) => docTransaction(() async {
     final all = await loadMaterials();
     await saveMaterials(all.where((m) => m.id != id).toList());
-  }
+  });
+
+  /// Applies [update] to the whole library atomically (imports, merges).
+  Future<void> updateMaterials(
+    List<TrainingMaterial> Function(List<TrainingMaterial> all) update,
+  ) => docTransaction(() async {
+    await saveMaterials(update(await loadMaterials()));
+  });
 
   /// Materials saved from messages of [conversationId] (shown when that
   /// conversation's history is cleared: the copies stay independent).
@@ -63,7 +71,7 @@ extension MaterialStore on TrainingController {
     required String text,
     required String title,
     required String description,
-  }) async {
+  }) => docTransaction(() async {
     final ref = 'chat:$profileKey/$conversationId/$messageId';
     final id = 'chat_${_fnv(ref)}';
     final all = await loadMaterials();
@@ -82,7 +90,7 @@ extension MaterialStore on TrainingController {
     );
     await saveMaterials([...all, material]);
     return material;
-  }
+  });
 
   /// A new random material id.
   String newMaterialId() =>

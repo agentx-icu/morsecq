@@ -79,8 +79,9 @@ void main() {
 
   test('crowded characters are flagged as too-short gaps', () {
     final (m, g) = keyed('KM', t20);
-    // The char gap between K and M (after K's 3 marks: gap index 2).
-    g[2] = dit;
+    // The char gap between K and M (after K's 3 marks: gap index 2):
+    // still a boundary (>= 2 dits) but shorter than 2.5 dits.
+    g[2] = dit * 2.2;
     final tl = SendTimeline.build(
       target: 'KM',
       marks: m,
@@ -151,5 +152,32 @@ void main() {
       estimatedDit: dit,
     ).evaluate();
     expect(d.hasIssue(SendIssueKind.dahTooLong), isTrue);
+  });
+
+  test('a merged character gap cannot be pinned to symbols', () {
+    final (m, g) = keyed('KM', t20);
+    g[2] = dit;
+    final tl = SendTimeline.build(
+      target: 'KM',
+      marks: m,
+      gaps: g,
+      timing: t20,
+      estimatedDit: dit,
+    );
+    expect(tl.aligned, isFalse);
+  });
+
+  test('equal mark counts with another structure are not aligned', () {
+    // IE keyed for EI: three dits either way, boundaries differ.
+    final (m, g) = keyed('IE', t20);
+    final tl = SendTimeline.build(
+      target: 'EI',
+      marks: m,
+      gaps: g,
+      timing: t20,
+      estimatedDit: dit,
+    );
+    expect(tl.aligned, isFalse);
+    expect(tl.issues, isEmpty);
   });
 }

@@ -114,7 +114,17 @@ final class PlanStep {
     this.resultRef,
     this.accuracy,
     this.stale = false,
+    this.seed = 0,
+    this.settings,
   }) : pool = List<String>.unmodifiable(pool);
+
+  /// Stable per-step seed: reopening the step plays the same content even
+  /// after other steps were refreshed or reordered.
+  final int seed;
+
+  /// Speeds frozen when the step started (null until then: the plan's
+  /// current settings apply).
+  final PlanSettings? settings;
 
   /// Stable within the plan (`<planId>/<index>`).
   final String id;
@@ -156,6 +166,7 @@ final class PlanStep {
     bool? stale,
     PlanReason? reason,
     bool? unlockEligible,
+    PlanSettings? settings,
   }) => PlanStep(
     id: id,
     kind: kind,
@@ -169,6 +180,8 @@ final class PlanStep {
     resultRef: resultRef ?? this.resultRef,
     accuracy: accuracy ?? this.accuracy,
     stale: stale ?? this.stale,
+    seed: seed,
+    settings: settings ?? this.settings,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -184,6 +197,8 @@ final class PlanStep {
     'resultRef': resultRef,
     'accuracy': accuracy,
     'stale': stale,
+    'seed': seed,
+    if (settings != null) 'settings': settings!.toJson(),
   };
 
   factory PlanStep.fromJson(Map<String, Object?> json) => PlanStep(
@@ -199,6 +214,10 @@ final class PlanStep {
     resultRef: json['resultRef'] as String?,
     accuracy: (json['accuracy'] as num?)?.toDouble(),
     stale: json['stale'] as bool? ?? false,
+    seed: (json['seed'] as num?)?.toInt() ?? 0,
+    settings: json['settings'] is Map<String, Object?>
+        ? PlanSettings.fromJson(json['settings']! as Map<String, Object?>)
+        : null,
   );
 }
 
@@ -274,10 +293,27 @@ final class DailyPlan {
     steps: next,
   );
 
-  /// Marks [stepId] started (its content is now frozen).
+  /// Marks [stepId] started: its content (seed, pool) and speeds are now
+  /// frozen on the step itself.
   DailyPlan start(String stepId) => _replace(
     stepId,
-    (s) => s.isDone ? s : s.copyWith(state: PlanStepState.active),
+    (s) => s.isDone || s.state == PlanStepState.active
+        ? s
+        : s.copyWith(state: PlanStepState.active, settings: settings),
+  );
+
+  /// The speeds [step] runs at: its frozen snapshot once started.
+  PlanSettings settingsOf(PlanStep step) => step.settings ?? settings;
+
+  /// The plan with new current speeds and budget (for steps not started).
+  DailyPlan withSettings(PlanSettings next, int budget) => DailyPlan(
+    id: id,
+    date: date,
+    profileKey: profileKey,
+    seed: seed,
+    budgetMinutes: budget,
+    settings: next,
+    steps: steps,
   );
 
   /// Marks [stepId] done with the exercise that completed it. Completing an

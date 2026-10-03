@@ -71,12 +71,28 @@ class GuestStore {
     }
   }
 
-  /// Whether there is guest progress worth migrating.
+  /// Whether the guest has any learning data worth migrating: progress,
+  /// settings, plans, materials or details.
   Future<bool> hasProgress() async {
-    final dir = await directory();
-    return File(
-      p.join(dir, FileTrainerStore.subdirectory, FileTrainerStore.fileName),
-    ).exists();
+    final training = Directory(
+      p.join(await directory(), FileTrainerStore.subdirectory),
+    );
+    if (!await training.exists()) return false;
+    return training.list(recursive: true).any((e) => e is File);
+  }
+
+  /// Identifies this batch of guest data; a new batch (after clearing or
+  /// migrating) gets a new one, so an earlier migration's completion
+  /// record never hides new data.
+  Future<String> generation() async {
+    final file = File(p.join(await directory(), 'generation'));
+    if (await file.exists()) {
+      final value = (await file.readAsString()).trim();
+      if (value.isNotEmpty) return value;
+    }
+    final value = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    await file.writeAsString(value, flush: true);
+    return value;
   }
 
   /// The guest's training controller (file stores under [directory]).
@@ -94,10 +110,11 @@ class GuestStore {
 
   /// Deletes the guest's learning data (the learner asked to clear it).
   Future<void> clear() async {
-    final training = Directory(
-      p.join(await directory(), FileTrainerStore.subdirectory),
-    );
+    final dir = await directory();
+    final training = Directory(p.join(dir, FileTrainerStore.subdirectory));
     if (await training.exists()) await training.delete(recursive: true);
+    final generation = File(p.join(dir, 'generation'));
+    if (await generation.exists()) await generation.delete();
   }
 }
 
@@ -120,17 +137,27 @@ final class GuestMigration {
   GuestMigration({
     required this.guestDirectory,
     required this.identityDirectory,
+    required this.generation,
   });
 
   final String guestDirectory;
   final String identityDirectory;
 
+  /// The guest data batch being moved ([GuestStore.generation]).
+  final String generation;
+
   String get _source => p.join(guestDirectory, FileTrainerStore.subdirectory);
   String get _target =>
       p.join(identityDirectory, FileTrainerStore.subdirectory);
   String get _staging => '$_target.guest-staging';
-  File _doneMarker(String key) =>
-      File(p.join(guestDirectory, 'migrated-${key.toLowerCase()}.json'));
+  File get _journal => File(p.join(guestDirectory, 'migration-journal.json'));
+  File _doneMarker(String key) => File(
+    p.join(guestDirectory, 'migrated-${key.toLowerCase()}-$generation.json'),
+  );
+
+  /// Whether an interrupted migration must be finished (startup check).
+  static Future<bool> hasJournal(String guestDirectory) =>
+      File(p.join(guestDirectory, 'migration-journal.json')).exists();
 
   Future<MigrationOutcome> run({
     required String identityKey,
@@ -139,10 +166,26 @@ final class GuestMigration {
     final marker = _doneMarker(identityKey);
     if (await marker.exists()) return MigrationOutcome.alreadyDone;
     final source = Directory(_source);
+    final staging = Directory(_staging);
+
+    // Resume a migration interrupted after its commit: the staged copy was
+    // renamed onto the target, only the bookkeeping is missing. Never redo
+    // the copy (that would replace newer identity activity).
+    if (await _journal.exists()) {
+      final journal = jsonDecode(await _journal.readAsString());
+      if (journal is Map &&
+          journal['state'] == 'committing' &&
+          journal['key'] == identityKey &&
+          !await staging.exists() &&
+          await Directory(_target).exists()) {
+        await _complete(marker, source, now);
+        return MigrationOutcome.done;
+      }
+      await _journal.delete();
+    }
     if (!await source.exists()) return MigrationOutcome.done;
 
     // 1. Stage a copy (a leftover staging dir from a crash is redone).
-    final staging = Directory(_staging);
     if (await staging.exists()) await staging.delete(recursive: true);
     await _copy(source, staging);
 
@@ -155,7 +198,16 @@ final class GuestMigration {
       }
     }
 
-    // 3. Move an existing target aside (never deleted here), 4. commit.
+    // 3. Journal the commit, move an existing target aside (never deleted
+    // here), 4. commit by rename.
+    await _journal.writeAsString(
+      jsonEncode(<String, Object?>{
+        'state': 'committing',
+        'key': identityKey,
+        'generation': generation,
+      }),
+      flush: true,
+    );
     final target = Directory(_target);
     if (await target.exists()) {
       await target.rename(
@@ -163,15 +215,21 @@ final class GuestMigration {
       );
     }
     await staging.rename(_target);
+    await _complete(marker, source, now);
+    return MigrationOutcome.done;
+  }
 
-    // 5. Record completion before removing the guest copy, so a retry after
-    // a failed removal is a no-op rather than a second copy.
+  /// 5. Record completion before removing the guest copy, so a retry after
+  /// a failed removal is a no-op rather than a second copy.
+  Future<void> _complete(File marker, Directory source, DateTime now) async {
     await marker.writeAsString(
       jsonEncode(<String, Object?>{'at': now.toIso8601String()}),
       flush: true,
     );
-    await source.delete(recursive: true);
-    return MigrationOutcome.done;
+    if (await source.exists()) await source.delete(recursive: true);
+    final gen = File(p.join(guestDirectory, 'generation'));
+    if (await gen.exists()) await gen.delete();
+    if (await _journal.exists()) await _journal.delete();
   }
 
   static Future<void> _copy(Directory from, Directory to) async {

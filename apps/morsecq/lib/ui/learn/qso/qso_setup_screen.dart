@@ -32,7 +32,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   final _name = TextEditingController();
   final _qth = TextEditingController();
   QsoScenario _scenario = QsoScenario.respondToCq;
-  QsoSession? _draft;
+  QsoDraft? _draft;
   bool _loaded = false;
 
   TrainingController get _c => widget.controller;
@@ -47,7 +47,16 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     final station =
         await _c.loadQsoStation() ??
         QsoStation.random(Random(_c.random.nextInt(1 << 30)));
-    final draft = await _c.loadQsoDraft();
+    var draft = await _c.loadQsoDraft();
+    if (draft != null && draft.session.isDone) {
+      // A finished QSO whose result was not saved last time: save it now.
+      try {
+        await _c.finishQso(draft.session, draft.active);
+      } on Object {
+        // Kept for the next attempt.
+      }
+      draft = null;
+    }
     if (!mounted) return;
     setState(() {
       _call.text = station.callsign;
@@ -69,13 +78,14 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
       QsoStation.isValidWord(_name.text) &&
       QsoStation.isValidWord(_qth.text);
 
-  Future<void> _open(QsoSession session) async {
+  Future<void> _open(QsoSession session, {QsoDraft? resumed}) async {
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => QsoScreen(
           controller: _c,
           playback: widget.playback,
           session: session,
+          resumed: resumed,
         ),
       ),
     );
@@ -134,7 +144,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                         if (_draft != null) ...<Widget>[
                           FilledButton.tonalIcon(
                             key: const ValueKey('qso-resume'),
-                            onPressed: () => _open(_draft!),
+                            onPressed: () =>
+                                _open(_draft!.session, resumed: _draft),
                             icon: const Icon(Icons.restore),
                             label: Text(s.learnQsoResume),
                           ),

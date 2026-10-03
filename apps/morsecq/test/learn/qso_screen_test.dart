@@ -201,4 +201,59 @@ void main() {
     );
     expect(start.onPressed, isNull);
   });
+
+  testWidgets('a resumed QSO keeps the unsent reply and does not autoplay', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session();
+    final draft = QsoDraft(
+      session: session,
+      pendingText: '${session.remote.callsign} DE BD1XYZ K',
+      pendingId: 'p1',
+    );
+    tester.view.physicalSize = const Size(430, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      l10nApp(
+        home: QsoScreen(
+          controller: t.controller,
+          playback: playback,
+          session: session,
+          resumed: draft,
+          screenWake: _NoWake(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text(en.learnQsoYourTurn), findsOneWidget, reason: 'silent');
+    expect(playback.sink.events, isEmpty);
+    await tester.tap(find.byKey(const ValueKey('qso-send')));
+    await tester.pump();
+    expect(session.stage, QsoStage.exchange);
+    await _finishPlayback(tester, playback.clock);
+  });
+
+  test('a finished QSO keeps its draft until the result is saved', () async {
+    final t = await _training();
+    final s = _session(scenario: QsoScenario.callCq);
+    s.submit('1', 'CQ CQ DE BD1XYZ K');
+    s.submit(
+      '2',
+      '${s.remote.callsign} DE BD1XYZ UR RST 599 NAME LI QTH PARIS K',
+    );
+    s.submit('3', 'R R TNX ${s.remote.name}');
+    s.submit('4', 'TU 73<SK>');
+    expect(s.isDone, isTrue);
+    await t.controller.saveQsoDraft(s);
+    // As if the app died before recording: the setup flow commits it once.
+    final draft = (await t.controller.loadQsoDraft())!;
+    expect(draft.session.isDone, isTrue);
+    expect(await t.controller.finishQso(draft.session, Duration.zero), isTrue);
+    expect(await t.controller.finishQso(draft.session, Duration.zero), isTrue);
+    expect(t.controller.progress.history, hasLength(1));
+    expect(await t.controller.loadQsoDraft(), isNull);
+  });
 }

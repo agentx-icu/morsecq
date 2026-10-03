@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
@@ -135,33 +136,56 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     }
     final all = await _c.loadMaterials();
     final ids = all.map((m) => m.id).toSet();
-    var policy = DuplicatePolicy.keepCopy;
-    if (incoming.any((m) => ids.contains(m.id))) {
-      if (!mounted) return;
-      final chosen = await showDialog<DuplicatePolicy>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          title: Text(s.materialsDuplicateTitle),
-          children: <Widget>[
-            for (final p in DuplicatePolicy.values)
-              SimpleDialogOption(
-                onPressed: () => Navigator.of(context).pop(p),
-                child: Text(switch (p) {
-                  DuplicatePolicy.overwrite => s.materialsDuplicateOverwrite,
-                  DuplicatePolicy.keepCopy => s.materialsDuplicateKeepCopy,
-                  DuplicatePolicy.skip => s.materialsDuplicateSkip,
-                }),
+    final seen = <String>{};
+    // Collisions with the library or within the file itself.
+    final collides = incoming.any((m) => ids.contains(m.id) || !seen.add(m.id));
+    if (!mounted) return;
+    // Every import is previewed and confirmed before anything is written.
+    final policy = await showDialog<DuplicatePolicy>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(s.materialsImportConfirm(incoming.length)),
+        children: <Widget>[
+          for (final m in incoming.take(5))
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                '• ${m.title}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-          ],
-        ),
-      );
-      if (chosen == null) return;
-      policy = chosen;
-    }
+            ),
+          if (collides)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              child: Text(s.materialsDuplicateTitle),
+            ),
+          for (final p
+              in collides
+                  ? DuplicatePolicy.values
+                  : const <DuplicatePolicy>[DuplicatePolicy.keepCopy])
+            SimpleDialogOption(
+              key: ValueKey('import-${p.name}'),
+              onPressed: () => Navigator.of(context).pop(p),
+              child: Text(switch (p) {
+                _ when !collides => s.materialsImport,
+                DuplicatePolicy.overwrite => s.materialsDuplicateOverwrite,
+                DuplicatePolicy.keepCopy => s.materialsDuplicateKeepCopy,
+                DuplicatePolicy.skip => s.materialsDuplicateSkip,
+              }),
+            ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(s.actionCancel),
+          ),
+        ],
+      ),
+    );
+    if (policy == null) return;
     try {
-      await _c.saveMaterials(
-        MaterialLibraryCodec.merge(
-          all,
+      await _c.updateMaterials(
+        (current) => MaterialLibraryCodec.merge(
+          current,
           incoming,
           policy: policy,
           newId: _c.newMaterialId,
@@ -172,6 +196,22 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
       _snack(s.materialsImportFailed);
     }
     await _reload();
+  }
+
+  /// Plain-text export keeps the original text (line breaks included), so
+  /// a list exported here imports back as the same list.
+  Future<void> _exportText(TrainingMaterial m) async {
+    final s = context.s;
+    try {
+      final ok = await MaterialFileGateway.of(context).save(
+        Uint8List.fromList(utf8.encode(m.originalText)),
+        fileName: '${safeFileName(m.title)}.txt',
+        mimeType: 'text/plain',
+      );
+      if (ok) _snack(s.materialsExported(1));
+    } on Object {
+      _snack(s.materialsExportFailed);
+    }
   }
 
   Future<void> _exportLibrary() async {
@@ -374,12 +414,14 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
             controller: _c,
             material: m,
           ),
+          'txt' => _exportText(m),
           'edit' => _edit(existing: m),
           _ => _delete(m),
         }),
         itemBuilder: (_) => [
           PopupMenuItem(value: 'practise', child: Text(s.materialsPractise)),
           PopupMenuItem(value: 'wav', child: Text(s.materialsExportWav)),
+          PopupMenuItem(value: 'txt', child: Text(s.materialsExportTxt)),
           PopupMenuItem(value: 'edit', child: Text(s.materialsEdit)),
           PopupMenuItem(value: 'delete', child: Text(s.materialsDelete)),
         ],

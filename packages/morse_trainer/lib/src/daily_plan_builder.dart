@@ -94,7 +94,12 @@ abstract final class DailyPlanBuilder {
       plan.id,
       plan.steps.length,
     ).where((s) => !keptKinds.contains(s.kind));
-    return plan.withSteps([...kept, ...fresh]);
+    // Started steps keep their own frozen speeds; the plan's current speeds
+    // and budget follow the inputs for everything new.
+    return plan.withSettings(inputs.settings, inputs.budgetMinutes).withSteps([
+      ...kept,
+      ...fresh,
+    ]);
   }
 
   /// Pool of symbols with enough evidence of trouble, worst first.
@@ -156,6 +161,8 @@ abstract final class DailyPlanBuilder {
     final eff = inputs.settings.effectiveWpm;
     final steps = <PlanStep>[];
     String nextId() => '$planId/${offset + steps.length}';
+    int nextSeed() =>
+        (inputs.seed * 31 + (offset + steps.length + 1) * 7919) & 0x3fffffff;
 
     // Priority order (spec §4.2.2): review, focus, course, send.
     if (available.contains(PlanStepKind.review)) {
@@ -164,6 +171,7 @@ abstract final class DailyPlanBuilder {
       steps.add(
         PlanStep(
           id: nextId(),
+          seed: nextSeed(),
           kind: PlanStepKind.review,
           pool: pool,
           minutes: minutes,
@@ -179,6 +187,7 @@ abstract final class DailyPlanBuilder {
       steps.add(
         PlanStep(
           id: nextId(),
+          seed: nextSeed(),
           kind: PlanStepKind.focus,
           pool: top.length >= 2 ? top : _withFallback(top, learned, random),
           minutes: minutes,
@@ -209,6 +218,7 @@ abstract final class DailyPlanBuilder {
       steps.add(
         PlanStep(
           id: nextId(),
+          seed: nextSeed(),
           kind: PlanStepKind.course,
           pool: learned,
           minutes: minutes,
@@ -224,6 +234,7 @@ abstract final class DailyPlanBuilder {
       steps.add(
         PlanStep(
           id: nextId(),
+          seed: nextSeed(),
           kind: PlanStepKind.send,
           pool: learned,
           minutes: minutes,

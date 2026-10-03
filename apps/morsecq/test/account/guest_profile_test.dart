@@ -10,6 +10,7 @@ import 'package:morsecq/training/file_trainer_store.dart';
 import 'package:morsecq/training/guest_profile.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_controller_host.dart';
+import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
@@ -36,6 +37,7 @@ void main() {
       final m = GuestMigration(
         guestDirectory: guest,
         identityDirectory: identity,
+        generation: 'g1',
       );
       final now = DateTime(2026, 10, 3);
       expect(await m.run(identityKey: 'AB', now: now), MigrationOutcome.done);
@@ -60,6 +62,7 @@ void main() {
         final m = GuestMigration(
           guestDirectory: guest,
           identityDirectory: identity,
+          generation: 'g1',
         );
         await expectLater(
           m.run(identityKey: 'AB', now: DateTime(2026)),
@@ -83,6 +86,7 @@ void main() {
         await GuestMigration(
           guestDirectory: guest,
           identityDirectory: identity,
+          generation: 'g1',
         ).run(identityKey: 'CD', now: DateTime(2026, 1, 1));
         final now = await FileTrainerStore.inDataDirectory(identity).load();
         expect(now!.currentLesson, 4);
@@ -103,6 +107,71 @@ void main() {
         expect(kept['currentLesson'], 20);
       },
     );
+  });
+
+  group('GuestMigration recovery', () {
+    test('a crash after the commit resumes without redoing the copy', () async {
+      final root = await _tmp();
+      final guest = p.join(root.path, 'guest');
+      final identity = p.join(root.path, 'id');
+      await _writeGuestProgress(guest, 6);
+      // Simulate: journal written, staged copy committed, bookkeeping lost.
+      await Directory(p.join(identity, 'training')).create(recursive: true);
+      await File(
+        p.join(guest, 'training', 'progress.json'),
+      ).copy(p.join(identity, 'training', 'progress.json'));
+      await File(p.join(guest, 'migration-journal.json')).writeAsString(
+        jsonEncode({'state': 'committing', 'key': 'AB', 'generation': 'g1'}),
+      );
+      // Newer identity activity after the commit must survive the resume.
+      await FileTrainerStore.inDataDirectory(
+        identity,
+      ).save(TrainerProgress(currentLesson: 12));
+      final m = GuestMigration(
+        guestDirectory: guest,
+        identityDirectory: identity,
+        generation: 'g1',
+      );
+      expect(
+        await m.run(identityKey: 'AB', now: DateTime(2026)),
+        MigrationOutcome.done,
+      );
+      final now = await FileTrainerStore.inDataDirectory(identity).load();
+      expect(now!.currentLesson, 12);
+      expect(await GuestMigration.hasJournal(guest), isFalse);
+    });
+
+    test(
+      'new guest data after a migration is not hidden by its marker',
+      () async {
+        final root = await _tmp();
+        final store = GuestStore(root: () async => p.join(root.path, 'guest'));
+        final identity = p.join(root.path, 'id');
+        final guestDir = await store.directory();
+        Future<void> migrate() async => GuestMigration(
+          guestDirectory: guestDir,
+          identityDirectory: identity,
+          generation: await store.generation(),
+        ).run(identityKey: 'AB', now: DateTime(2026));
+        await _writeGuestProgress(guestDir, 3);
+        await migrate();
+        await _writeGuestProgress(guestDir, 8);
+        expect(await store.hasProgress(), isTrue);
+        await migrate();
+        final moved = await FileTrainerStore.inDataDirectory(identity).load();
+        expect(moved!.currentLesson, 8);
+      },
+    );
+
+    test('settings-only guest data counts as data to move', () async {
+      final root = await _tmp();
+      final store = GuestStore(root: () async => p.join(root.path, 'guest'));
+      expect(await store.hasProgress(), isFalse);
+      await FileTrainingSettingsStore.inDataDirectory(
+        await store.directory(),
+      ).save(const TrainingSettings(planMinutes: 15));
+      expect(await store.hasProgress(), isTrue);
+    });
   });
 
   group('StartupController guest mode', () {
@@ -185,6 +254,49 @@ void main() {
       c.dispose();
     });
 
+    test('guest mode resumes without inspecting the identity', () async {
+      await store.setActive(true);
+      final counting = _CountingIdentity();
+      final c = StartupController(
+        counting,
+        guest: GuestHooks(store: store, releaseGuestController: () async {}),
+      );
+      await c.ensureStarted();
+      expect(c.phase, StartupPhase.guest);
+      expect(counting.inspections, 0);
+      await c.leaveGuest();
+      expect(counting.inspections, 1);
+      expect(c.phase, StartupPhase.onboarding);
+      c.dispose();
+    });
+
+    test(
+      'restoring from guest mode offers the guest progress choice',
+      () async {
+        final c = controller();
+        await c.ensureStarted();
+        await c.enterGuest();
+        await _writeGuestProgress(await store.directory(), 4);
+        await c.leaveGuest();
+        final bytes =
+            await FakeIdentityService(
+              connectDelay: Duration.zero,
+              dataDirectoryPath: p.join(root.path, 'other'),
+            ).let((other) async {
+              await other.create(displayName: 'Old');
+              return other.exportBackup();
+            });
+        await c.restoreFromBackup(bytes);
+        expect(c.guestChoicePending, isTrue);
+        await c.useGuestProgress();
+        final moved = await FileTrainerStore.inDataDirectory(
+          await identity.dataDirectory(),
+        ).load();
+        expect(moved!.currentLesson, 4);
+        c.dispose();
+      },
+    );
+
     test('a failed migration keeps guest data and can be retried', () async {
       final c = controller();
       await c.ensureStarted();
@@ -237,4 +349,29 @@ void main() {
       await host.dispose();
     });
   });
+}
+
+extension<T> on T {
+  R let<R>(R Function(T it) f) => f(this);
+}
+
+/// Counts identity inspections (guest resume must not inspect).
+final class _CountingIdentity implements IdentityService {
+  int inspections = 0;
+
+  @override
+  Stream<Identity?> get identityChanges => const Stream<Identity?>.empty();
+
+  @override
+  Identity? get current => null;
+
+  @override
+  Future<IdentityState> inspect() async {
+    inspections++;
+    return IdentityState.none;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName}');
 }

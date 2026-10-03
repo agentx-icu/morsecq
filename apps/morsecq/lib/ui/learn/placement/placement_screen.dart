@@ -40,6 +40,9 @@ class _PlacementScreenState extends State<PlacementScreen> {
   );
   final TextEditingController _answer = TextEditingController();
   final List<String> _answers = <String>[];
+
+  /// Every round played so far with what was actually typed.
+  final List<(String, String)> _copies = <(String, String)>[];
   final Set<int> _assisted = <int>{};
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _sub;
@@ -96,6 +99,7 @@ class _PlacementScreenState extends State<PlacementScreen> {
   void _submit() {
     _playback?.player.stop();
     _answers.add(_answer.text);
+    _copies.add((_tier.rounds[_round], _answer.text));
     _answer.clear();
     _heard = false;
     if (_round + 1 < _tier.rounds.length) {
@@ -120,15 +124,17 @@ class _PlacementScreenState extends State<PlacementScreen> {
 
   /// One activity-only exercise; placement never feeds SRS or speed advice.
   Future<void> _record() async {
-    final tiers = _assessment.tiers.take(_assessment.currentTierIndex);
-    final target = tiers.expand((t) => t.rounds).join(' ');
-    if (target.isEmpty) return;
+    if (_copies.isEmpty) return;
+    final target = _copies.map((c) => c.$1).join(' ');
+    final answer = _copies.map((c) => c.$2).join(' ');
     try {
+      // The learner's real copies; blank runs earn nothing.
       await widget.controller.recordExercise(
-        score: SessionScore.evaluate(target, target, drillKind: 'placement'),
+        score: SessionScore.evaluate(target, answer, drillKind: 'placement'),
         id: _id,
         source: ExerciseSource.placement,
-        assistance: const <Assistance>{},
+        assistance: <Assistance>{if (_assisted.isNotEmpty) Assistance.replay},
+        answered: MorseText.symbols(answer).isNotEmpty,
       );
     } on Object {
       // The suggestion still shows; activity credit is not essential.
@@ -160,23 +166,31 @@ class _PlacementScreenState extends State<PlacementScreen> {
             TextButton(onPressed: _stopEarly, child: Text(s.placementStop)),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 640),
-              child: switch (_phase) {
-                _Phase.intro => _intro(context),
-                _Phase.round => _roundView(context),
-                _Phase.tierResult => _tierResult(context),
-                _Phase.result => _result(context),
-              },
+      body: _flash(
+        SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: switch (_phase) {
+                  _Phase.intro => _intro(context),
+                  _Phase.round => _roundView(context),
+                  _Phase.tierResult => _tierResult(context),
+                  _Phase.result => _result(context),
+                },
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  /// The visual fallback when sound is off or unavailable.
+  Widget _flash(Widget body) {
+    final flash = _playback?.flash;
+    return flash == null ? body : FlashOverlay(isOn: flash, child: body);
   }
 
   Widget _intro(BuildContext context) {

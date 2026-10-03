@@ -103,8 +103,11 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     // The sidetone stops in the background; drop whatever is held so the
     // keyer stops sending and no key is stuck down on return.
     if (isDrillBackground(state) && _result == null && !_disposed) {
+      _session.pause();
       _buildKeyer();
       setState(() {});
+    } else if (state == AppLifecycleState.resumed) {
+      _session.resume();
     }
   }
 
@@ -232,6 +235,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   }
 
   Future<void> _another() async {
+    // A rhythm replay must not keep driving the sink the new keyer uses.
+    _playback?.player.stop();
     final factory = widget.nextSession;
     final next = factory == null
         ? widget.controller.startSendSession()
@@ -253,6 +258,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   /// Three new attempts at [text] (one symbol or the whole target); the
   /// standard can be heard first and playback never counts as an attempt.
   Future<void> _practisePart(String text) async {
+    _playback?.player.stop();
     SendSession make() => SendSession(
       target: text,
       timing: _session.nominalTiming,

@@ -47,10 +47,14 @@ final class TrainerProgress {
        confusion = confusion ?? ConfusionMatrix(),
        committedIds = List<String>.unmodifiable(committedIds);
 
-  /// How many committed exercise ids are remembered for de-duplication;
-  /// more than [maxHistory] so trimming history never forgets an id that a
-  /// pending retry could still submit.
-  static const int maxCommittedIds = 2000;
+  /// How many committed exercise ids are remembered for de-duplication.
+  ///
+  /// Far more than [maxHistory], so trimming history never forgets an id a
+  /// retry could still submit. Retries outlive a restart only through
+  /// unfinished drafts (a finished QSO awaiting its save), which are
+  /// committed the next time their screen opens; ten thousand later
+  /// exercises before that happens is not a reachable state.
+  static const int maxCommittedIds = 10000;
 
   /// 1-based Koch lesson the learner is working on.
   final int currentLesson;

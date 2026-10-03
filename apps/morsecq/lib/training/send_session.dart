@@ -116,6 +116,32 @@ final class SendSession implements KeyTarget {
   bool get isFinished => _result != null;
   Duration get elapsed => _now().difference(startedAt);
 
+  Duration _paused = Duration.zero;
+  DateTime? _pausedAt;
+  Duration? _activeAtFinish;
+
+  /// Background: excluded from [activeElapsed].
+  void pause() => _pausedAt ??= _now();
+
+  void resume() {
+    final at = _pausedAt;
+    if (at == null) return;
+    _paused += _now().difference(at);
+    _pausedAt = null;
+  }
+
+  /// Time spent keying: pauses excluded, frozen when the attempt finishes
+  /// (saving the result afterwards does not count).
+  Duration get activeElapsed {
+    final frozen = _activeAtFinish;
+    if (frozen != null) return frozen;
+    final open = _pausedAt == null
+        ? Duration.zero
+        : _now().difference(_pausedAt!);
+    final active = elapsed - _paused - open;
+    return active.isNegative ? Duration.zero : active;
+  }
+
   /// Marks (key-down durations) in order; a defensive copy.
   List<Duration> get marks => List<Duration>.unmodifiable(_marks);
 
@@ -215,6 +241,7 @@ final class SendSession implements KeyTarget {
       // Key still held when the operator hit "done": close the mark now.
       keyUp(downAt + decoder.estimatedDit);
     }
+    _activeAtFinish = activeElapsed;
     final decoded = _inTargetTerms(decoder.flush());
     final attempt = SendAttempt(
       target: target,

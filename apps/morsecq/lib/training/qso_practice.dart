@@ -28,23 +28,52 @@ extension QsoPractice on TrainingController {
   Future<void> saveQsoStation(QsoStation station) =>
       writeDoc(stationDoc, station.normalized().toJson());
 
-  Future<QsoSession?> loadQsoDraft() async {
+  /// The saved draft: unfinished text state, or a finished QSO whose
+  /// result was not saved yet (see [finishQso]).
+  Future<QsoDraft?> loadQsoDraft() async {
     try {
       final json = await readDoc(draftDoc);
       final raw = json?['session'];
       if (raw is! Map<String, Object?>) return null;
-      final session = QsoSession.fromJson(raw);
-      return session.isDone ? null : session;
+      return QsoDraft(
+        session: QsoSession.fromJson(raw),
+        pendingText: json!['pendingText'] as String? ?? '',
+        pendingId: json['pendingId'] as String?,
+        active: Duration(
+          milliseconds: (json['activeMs'] as num?)?.toInt() ?? 0,
+        ),
+      );
     } on Object {
       return null;
     }
   }
 
-  Future<void> saveQsoDraft(QsoSession session) => session.isDone
-      ? deleteDoc(draftDoc)
-      : writeDoc(draftDoc, <String, Object?>{'session': session.toJson()});
+  /// Keeps text and state only (never a held key or playback), including a
+  /// keyed reply that was not sent yet and its submission id.
+  Future<void> saveQsoDraft(
+    QsoSession session, {
+    String pendingText = '',
+    String? pendingId,
+    Duration active = Duration.zero,
+  }) => writeDoc(draftDoc, <String, Object?>{
+    'session': session.toJson(),
+    'pendingText': pendingText,
+    'pendingId': pendingId,
+    'activeMs': active.inMilliseconds,
+  });
 
   Future<void> discardQsoDraft() => deleteDoc(draftDoc);
+
+  /// Records a finished QSO, then drops its draft — only once the result is
+  /// saved, so a crash or failed write never loses it; the next open of the
+  /// simulator commits it again (idempotent by id).
+  Future<bool> finishQso(QsoSession session, Duration active) async {
+    await saveQsoDraft(session, active: active);
+    final outcome = await recordQso(session, active);
+    if (!outcome.saved) return false;
+    await discardQsoDraft();
+    return true;
+  }
 
   /// Credits a finished QSO once (its id is derived from the seed, so a
   /// resumed and finished session cannot be credited twice).
@@ -78,4 +107,23 @@ extension QsoPractice on TrainingController {
       active: active,
     );
   }
+}
+
+/// A stored simulator draft.
+final class QsoDraft {
+  const QsoDraft({
+    required this.session,
+    this.pendingText = '',
+    this.pendingId,
+    this.active = Duration.zero,
+  });
+
+  final QsoSession session;
+
+  /// A keyed reply that was not sent yet.
+  final String pendingText;
+
+  /// Its submission id, so sending it after a restore cannot double-submit.
+  final String? pendingId;
+  final Duration active;
 }

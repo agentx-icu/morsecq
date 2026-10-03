@@ -53,4 +53,32 @@ void main() {
     await tester.pumpAndSettle();
     expect(c.currentLesson, lesson);
   });
+
+  testWidgets('blank placement answers earn no activity credit', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final t = await TestTraining.create();
+    await tester.pumpWidget(
+      l10nApp(
+        home: PlacementScreen(
+          controller: t.controller,
+          playback: FakeLearnPlaybackFactory(),
+          seed: 5,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('placement-start')));
+    await tester.pump();
+    for (var i = 0; i < 4; i++) {
+      await tester.tap(find.byKey(const ValueKey('placement-submit')));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(find.text(en.placementSuggestion(1)), findsOneWidget);
+    expect(t.controller.progress.lifetimeSessions, 0);
+  });
 }

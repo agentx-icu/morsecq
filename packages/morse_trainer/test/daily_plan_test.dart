@@ -158,4 +158,39 @@ void main() {
     expect(back.dailyPlan!.date, '2026-10-03');
     expect(back.previousPlan!.date, '2026-10-02');
   });
+
+  test('started steps freeze seed and speeds; refresh updates the plan', () {
+    var plan = DailyPlanBuilder.build(inputs());
+    final first = plan.steps.first;
+    plan = plan.start(first.id);
+    expect(plan.steps.first.settings, settings);
+    const faster = PlanSettings(
+      characterWpm: 22,
+      effectiveWpm: 10,
+      toneHz: 700,
+      groupSize: 5,
+    );
+    final refreshed = DailyPlanBuilder.refreshPending(
+      plan,
+      PlanInputs(
+        now: DateTime(2026, 10, 3, 9),
+        profileKey: 'profile',
+        budgetMinutes: 15,
+        lesson: 10,
+        course: course,
+        due: const ['K', 'M'],
+        charStats: const {},
+        confusion: ConfusionMatrix(),
+        settings: faster,
+        seed: plan.seed,
+      ),
+    );
+    expect(refreshed.budgetMinutes, 15);
+    expect(refreshed.settings, faster);
+    final kept = refreshed.stepById(first.id)!;
+    expect(refreshed.settingsOf(kept), settings);
+    expect(kept.seed, first.seed);
+    final ids = refreshed.steps.map((s) => s.seed).toSet();
+    expect(ids, hasLength(refreshed.steps.length));
+  });
 }

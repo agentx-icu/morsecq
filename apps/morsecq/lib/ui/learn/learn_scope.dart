@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
+import '../../training/training_controller_host.dart';
 import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_settings_store.dart';
@@ -111,6 +113,7 @@ class _LearnScopeState extends State<LearnScope> {
     try {
       final identity = _identityService();
       if (identity != null) _watchIdentity(identity);
+      _watchReloads();
       if (factory != null) {
         controller = await factory(context);
       } else {
@@ -141,6 +144,24 @@ class _LearnScopeState extends State<LearnScope> {
     if (previousOwned && !identical(previous, controller)) previous?.dispose();
   }
 
+  ValueListenable<int>? _reloads;
+
+  /// The shared host announces when files under its controller were
+  /// replaced (guest migration, cleared guest data): load again.
+  void _watchReloads() {
+    if (_reloads != null) return;
+    try {
+      _reloads = context.read<TrainingControllerHost?>()?.reloads;
+    } on ProviderNotFoundException {
+      _reloads = null;
+    }
+    _reloads?.addListener(_onReload);
+  }
+
+  void _onReload() {
+    if (mounted) unawaited(_load());
+  }
+
   IdentityService? _identityService() {
     try {
       return context.read<IdentityService>();
@@ -162,6 +183,7 @@ class _LearnScopeState extends State<LearnScope> {
 
   @override
   void dispose() {
+    _reloads?.removeListener(_onReload);
     unawaited(_identitySub?.cancel());
     if (_ownsController) _controller?.dispose();
     super.dispose();

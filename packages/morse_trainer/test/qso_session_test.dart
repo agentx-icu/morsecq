@@ -117,6 +117,18 @@ void main() {
       expect(eval('AGN 73 <SK>', QsoStage.closing).intent, QsoIntent.answer);
     });
 
+    test('keyed prosigns need no word gap; CQ courtesy words pass', () {
+      expect(eval('TU 73<SK>', QsoStage.closing).accepted, isTrue);
+      expect(
+        eval('CQ CQ DE BD1XYZ BD1XYZ PSE K', QsoStage.callCq).accepted,
+        isTrue,
+      );
+      expect(
+        eval('CQ DE BD1XYZ K1ABC K', QsoStage.callCq).issues,
+        contains(QsoIssue.wrongLocalCall),
+      );
+    });
+
     test('cut numbers only inside the RST slot', () {
       expect(QsoEvaluator.isValidRst('5NN'), isTrue);
       expect(QsoEvaluator.isValidRst('59T'), isFalse);

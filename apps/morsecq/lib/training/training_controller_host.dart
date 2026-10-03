@@ -55,6 +55,18 @@ class TrainingControllerHost implements IdentityDataStore {
   bool _disposed = false;
   bool _replacing = false;
 
+  /// Learning data is being moved (guest migration): no controller is
+  /// served until [resumeLearning]. Unlike [_replacing], identity events
+  /// do not lift it.
+  bool _suspended = false;
+  Future<void>? _guestRelease;
+
+  final ValueNotifier<int> _reloads = ValueNotifier<int>(0);
+
+  /// Bumped when the learning files under a cached controller were
+  /// replaced; mounted learning screens reload their controller.
+  ValueListenable<int> get reloads => _reloads;
+
   /// Resolves (and caches) the controller for the current identity. Matches
   /// `LearnPage.controllerFactory`'s signature so it can be handed straight
   /// to the Learn tab.
@@ -64,7 +76,7 @@ class TrainingControllerHost implements IdentityDataStore {
   Future<TrainingController> controller() {
     final identity = _identity.current;
     final guest = _guestActive;
-    if ((identity == null && !guest) || _disposed || _replacing) {
+    if ((identity == null && !guest) || _disposed || _replacing || _suspended) {
       return Future<TrainingController>.error(
         StateError(
           _disposed
@@ -109,15 +121,42 @@ class TrainingControllerHost implements IdentityDataStore {
   }
 
   void _onGuestMode() {
-    if (_key == GuestProfile.profileKey && !_guestActive) _dropCurrent();
+    if (_key == GuestProfile.profileKey && !_guestActive) {
+      unawaited(releaseGuest().catchError((Object _) {}));
+    }
   }
 
-  /// Flushes and closes the guest controller before its files move to an
-  /// identity, so no late guest write can land after the migration.
-  Future<void> releaseGuest() async {
-    if (_key != GuestProfile.profileKey) return;
+  /// Closes the guest controller and completes once its pending writes are
+  /// on disk, so no late guest write can land after a migration. Repeated
+  /// calls (mode switch, identity event, migration) share one release.
+  Future<void> releaseGuest() {
+    if (_key == GuestProfile.profileKey) {
+      final loading = _loading;
+      final controller = _current;
+      _dropCurrent();
+      _guestRelease = () async {
+        if (controller != null) {
+          await controller.flush();
+        } else if (loading != null) {
+          final late = await loading;
+          late.dispose();
+          await late.flush();
+        }
+      }();
+    }
+    return _guestRelease ?? Future<void>.value();
+  }
+
+  /// Stops serving learning controllers and flushes the cached one before
+  /// learning files are replaced underneath it.
+  Future<void> suspendLearning() async {
+    _suspended = true;
     final loading = _loading;
     final controller = _current;
+    if (_key == GuestProfile.profileKey) {
+      await releaseGuest();
+      return;
+    }
     _dropCurrent();
     if (controller != null) {
       await controller.flush();
@@ -128,10 +167,23 @@ class TrainingControllerHost implements IdentityDataStore {
     }
   }
 
+  /// Serves controllers again; mounted screens reload from disk.
+  void resumeLearning() {
+    _suspended = false;
+    _dropCurrent();
+    _reloads.value++;
+  }
+
   void _onIdentity(Identity? identity) {
     final next =
         identity?.publicKey ?? (_guestActive ? GuestProfile.profileKey : null);
-    if (next != _key) _dropCurrent();
+    if (next != _key) {
+      if (_key == GuestProfile.profileKey) {
+        unawaited(releaseGuest().catchError((Object _) {}));
+      } else {
+        _dropCurrent();
+      }
+    }
     if (identity != null) _replacing = false;
   }
 

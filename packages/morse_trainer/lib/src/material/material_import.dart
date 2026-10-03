@@ -87,6 +87,9 @@ abstract final class MaterialImport {
     final duplicates = <String>[];
     if (kind == MaterialKind.text) {
       items.addAll(segment(clean(text)));
+      if (items.length > MaterialLimits.maxEntries) {
+        problems.add(MaterialProblem.tooManyEntries);
+      }
     } else {
       final lines = const LineSplitter()
           .convert(text)
@@ -132,10 +135,22 @@ abstract final class MaterialImport {
   }
 
   /// Splits normalised text into segments of about
-  /// [MaterialLimits.segmentSymbols] symbols at word boundaries (a single
-  /// longer word stays whole).
+  /// [MaterialLimits.segmentSymbols] symbols at word boundaries; a single
+  /// word longer than a segment is cut into segment-sized pieces, so every
+  /// item respects [MaterialLimits.maxSymbolsPerEntry].
   static List<String> segment(String text) {
-    final words = text.split(' ').where((w) => w.isNotEmpty).toList();
+    final words = <String>[];
+    for (final word in text.split(' ').where((w) => w.isNotEmpty)) {
+      final symbols = MorseText.symbols(word);
+      for (var i = 0; i < symbols.length; i += MaterialLimits.segmentSymbols) {
+        final end = i + MaterialLimits.segmentSymbols;
+        words.add(
+          symbols
+              .sublist(i, end > symbols.length ? symbols.length : end)
+              .join(),
+        );
+      }
+    }
     final out = <String>[];
     var current = <String>[];
     var count = 0;
@@ -202,6 +217,17 @@ abstract final class MaterialLibraryCodec {
   /// Parses a whole library or throws [FormatException]; never returns a
   /// partial result.
   static List<TrainingMaterial> decode(String raw) {
+    try {
+      return _decode(raw);
+    } on FormatException {
+      rethrow;
+    } on Object catch (e) {
+      // Wrong field types (`"version": "x"`) are malformed input too.
+      throw FormatException('malformed material library: $e');
+    }
+  }
+
+  static List<TrainingMaterial> _decode(String raw) {
     if (utf8.encode(raw).length > MaterialLimits.maxBytes) {
       throw const FormatException('library exceeds 1 MiB');
     }

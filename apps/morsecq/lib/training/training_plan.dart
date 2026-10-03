@@ -93,24 +93,26 @@ extension TrainingPlan on TrainingController {
     await commitProgress((p) => p.withDailyPlan(next));
   }
 
-  MorseTiming _timingOf(DailyPlan plan) {
-    final s = plan.settings;
+  MorseTiming _timingOf(DailyPlan plan, PlanStep step) {
+    final s = plan.settingsOf(step);
     return MorseTiming(
       wpm: s.characterWpm,
       farnsworthWpm: s.effectiveWpm < s.characterWpm ? s.effectiveWpm : null,
     );
   }
 
-  int _indexOf(DailyPlan plan, PlanStep step) =>
-      plan.steps.indexWhere((s) => s.id == step.id);
-
   /// Starts a receive step with the plan's frozen speeds and seed. Throws
   /// [StateError] when the step is not part of this profile's plan today.
   Future<ReceiveSession> startPlanReceiveStep(PlanStep step) async {
-    final plan = _ownPlan(step);
-    final effective = DailyPlanBuilder.effectiveStep(step, currentLesson);
-    await commitProgress((p) => p.withDailyPlan(plan.start(step.id)));
-    final seeded = Random(plan.seed + _indexOf(plan, step));
+    final started = _ownPlan(step).start(step.id);
+    await commitProgress((p) => p.withDailyPlan(started));
+    final plan = started;
+    final frozen = plan.stepById(step.id)!;
+    final effective = DailyPlanBuilder.effectiveStep(frozen, currentLesson);
+    // The step's own seed and pool fix its content: reopening the step
+    // after other steps changed, or after more practice, replays the same
+    // questions (uniform weights, not live statistics).
+    final seeded = Random(frozen.seed);
     final kind = step.kind == PlanStepKind.review
         ? ReceiveDrillKind.review
         : ReceiveDrillKind.groups;
@@ -119,11 +121,10 @@ extension TrainingPlan on TrainingController {
       generator: RandomGroupsDrill(
         chars: step.pool,
         groupCount: 1,
-        groupSize: plan.settings.groupSize,
-        weights: CharWeights.fromStats(progress.charStats),
+        groupSize: plan.settingsOf(frozen).groupSize,
       ),
       chars: step.pool,
-      timing: _timingOf(plan),
+      timing: _timingOf(plan, frozen),
       charBudget: step.charBudget,
       lesson: step.lesson,
       countsTowardLesson:
@@ -142,12 +143,11 @@ extension TrainingPlan on TrainingController {
   /// One target of a send step; the step completes after its number of
   /// keyed targets.
   Future<SendSession> startPlanSendStep(PlanStep step) async {
-    final plan = _ownPlan(step);
-    if (plan.stepById(step.id)!.state == PlanStepState.pending) {
-      await commitProgress((p) => p.withDailyPlan(plan.start(step.id)));
-    }
+    final plan = _ownPlan(step).start(step.id);
+    await commitProgress((p) => p.withDailyPlan(plan));
+    final frozen = plan.stepById(step.id)!;
     final done = progress.history.where((s) => s.planStepId == step.id).length;
-    final seeded = Random(plan.seed + _indexOf(plan, step) * 101 + done);
+    final seeded = Random(frozen.seed + done * 101);
     final words = WordDrill.commonWords(
       allowedChars: step.pool.toSet(),
       wordCount: 1,
@@ -161,7 +161,7 @@ extension TrainingPlan on TrainingController {
           );
     return SendSession(
       target: generator.generate(seeded).text,
-      timing: _timingOf(plan),
+      timing: _timingOf(plan, frozen),
       now: now,
       lesson: step.lesson,
       planStepId: step.id,

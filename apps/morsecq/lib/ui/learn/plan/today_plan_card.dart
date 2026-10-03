@@ -72,12 +72,26 @@ class _TodayPlanCardState extends State<TodayPlanCard> {
     ),
   );
 
+  bool _ensuring = false;
+
+  /// A new local day (or a reset) leaves no plan for today: make one after
+  /// this frame, never during the build.
+  void _ensureLater() {
+    if (_ensuring) return;
+    _ensuring = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted && _c.todayPlan == null) await _ensure();
+      _ensuring = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
     final plan = _c.todayPlan;
     if (plan == null) {
+      _ensureLater();
       return const Card(
         child: Padding(
           padding: EdgeInsets.all(24),

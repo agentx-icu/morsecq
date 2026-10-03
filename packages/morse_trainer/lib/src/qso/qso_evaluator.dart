@@ -52,7 +52,13 @@ abstract final class QsoEvaluator {
   /// punctuation), a trailing `?` is split off.
   static List<String> words(String text) {
     final out = <String>[];
-    for (final raw in text.toUpperCase().split(RegExp(r'\s+'))) {
+    // A keyed prosign is one symbol even without a word gap around it
+    // (`73<SK>`): split it into its own word before slot matching.
+    final spaced = text.toUpperCase().replaceAllMapped(
+      RegExp(r'<[A-Z]+>'),
+      (m) => ' ${m[0]} ',
+    );
+    for (final raw in spaced.split(RegExp(r'\s+'))) {
       if (raw.isEmpty) continue;
       var w = raw;
       if (w.length > 1 && w.endsWith('?')) {
@@ -140,8 +146,11 @@ abstract final class QsoEvaluator {
       return;
     }
     if (!w.sublist(0, de).contains('CQ')) out.add(QsoIssue.missingCq);
-    final after = w.sublist(de + 1).where((x) => x != 'K').toList();
-    if (after.isEmpty || after.any((x) => x != local.callsign)) {
+    // After DE: the local call (repeated as often as liked) plus courtesy
+    // words; any other callsign-like word is a wrong call.
+    final after = w.sublist(de + 1);
+    final calls = after.where(_looksLikeCall).toList();
+    if (calls.isEmpty || calls.any((x) => x != local.callsign)) {
       out.add(QsoIssue.wrongLocalCall);
     }
     if (w.last != 'K') out.add(QsoIssue.missingEnding);
@@ -169,6 +178,12 @@ abstract final class QsoEvaluator {
     if (before != remote.callsign) out.add(QsoIssue.wrongRemoteCall);
     if (after != local.callsign) out.add(QsoIssue.wrongLocalCall);
   }
+
+  /// Callsign-shaped: letters and digits with at least one of each.
+  static bool _looksLikeCall(String w) =>
+      RegExp(r'^[A-Z0-9/]{3,}$').hasMatch(w) &&
+      w.contains(RegExp(r'[0-9]')) &&
+      w.contains(RegExp(r'[A-Z]'));
 
   static void _checkEnding(List<String> w, List<QsoIssue> out) {
     const endings = {'K', 'KN', '<KN>'};
