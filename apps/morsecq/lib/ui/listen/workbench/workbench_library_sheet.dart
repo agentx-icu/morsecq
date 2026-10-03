@@ -167,11 +167,12 @@ class _LibrarySheetState extends State<_LibrarySheet> {
   }
 
   Future<void> _delete(AudioMaterial m) async {
-    await widget.training.deleteAudioMaterial(m.id);
-    final stillUsed = (await widget.training.loadAudioMaterials()).any(
-      (o) => o.file == m.file,
-    );
-    if (!stillUsed && m.file != RecordingLibrary.workingFile) {
+    final stillUsed = await widget.training.deleteAudioMaterial(m.id);
+    // The recording that is open stays on disk: saving another selection
+    // of it must not point at a deleted file. It is pruned the next time
+    // the workbench opens if nothing refers to it any more.
+    final open = m.file == widget.controller.file;
+    if (!stillUsed && !open && m.file != RecordingLibrary.workingFile) {
       await widget.controller.library.delete(m.file);
     }
     await _reload();

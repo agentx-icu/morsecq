@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -90,8 +91,10 @@ abstract final class MorseWavExport {
   );
 
   /// Splits [text] at word boundaries into explicit segments that each
-  /// render within [maxDuration] (including lead-in and tail). Throws
-  /// [WavExportException] when a single word is longer than that.
+  /// render within [maxDuration] (including lead-in and tail). A single
+  /// word longer than that is split between its symbols (prosigns stay
+  /// whole), so all content is exported. Throws [WavExportException] only
+  /// when one symbol alone cannot fit.
   static List<String> segments(
     String text,
     MorseTiming timing, {
@@ -107,10 +110,28 @@ abstract final class MorseWavExport {
     Duration len(List<String> ws) =>
         MorseEncoder.totalDuration(MorseEncoder.encode(ws.join(' '), timing)) +
         padding;
+    final List<String> pieces = <String>[];
     for (final String w in words) {
-      if (len(<String>[w]) > maxDuration) {
-        throw const WavExportException(WavExportError.wordTooLong);
+      if (len(<String>[w]) <= maxDuration) {
+        pieces.add(w);
+        continue;
       }
+      // Cut the word between symbols: each piece is played as its own word.
+      String piece = '';
+      for (final Match m in RegExp(r'<[^<>\s]+>|.').allMatches(w)) {
+        final String symbol = m[0]!;
+        if (len(<String>[symbol]) > maxDuration) {
+          throw const WavExportException(WavExportError.wordTooLong);
+        }
+        if (piece.isNotEmpty && len(<String>[piece + symbol]) > maxDuration) {
+          pieces.add(piece);
+          piece = '';
+        }
+        piece += symbol;
+      }
+      if (piece.isNotEmpty) pieces.add(piece);
+    }
+    for (final String w in pieces) {
       final List<String> next = <String>[...current, w];
       if (current.isNotEmpty && len(next) > maxDuration) {
         out.add(current.join(' '));
@@ -155,21 +176,29 @@ abstract final class MorseWavExport {
 }
 
 /// A file name safe on all five platforms: path separators, reserved and
-/// control characters removed, Windows device names avoided, length capped
-/// (in characters), Unicode letters kept. [fallback] when nothing is left.
+/// control characters removed, Windows device names avoided, Unicode
+/// letters kept. Capped at [maxLength] characters **and** [maxBytes] UTF-8
+/// bytes (file systems limit names to 255 bytes; the rest is left for a
+/// part suffix and extension). [fallback] when nothing is left.
 String safeFileName(
   String title, {
   String fallback = 'morse',
   int maxLength = 80,
+  int maxBytes = 120,
 }) {
   final String cleaned = title
       .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F\x7F]'), ' ')
       .replaceAll(RegExp(r'\s+'), ' ')
       .trim()
       .replaceAll(RegExp(r'^[ .]+|[ .]+$'), '');
-  final List<int> runes = cleaned.runes.toList();
+  List<int> runes = cleaned.runes.toList();
+  if (runes.length > maxLength) runes = runes.sublist(0, maxLength);
+  while (runes.isNotEmpty &&
+      utf8.encode(String.fromCharCodes(runes)).length > maxBytes) {
+    runes = runes.sublist(0, runes.length - 1);
+  }
   String name = String.fromCharCodes(
-    runes.length > maxLength ? runes.sublist(0, maxLength) : runes,
+    runes,
   ).trim().replaceAll(RegExp(r'[ .]+$'), '');
   if (name.isEmpty) name = fallback;
   const Set<String> reserved = <String>{

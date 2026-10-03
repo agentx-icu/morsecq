@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -82,6 +84,22 @@ void main() {
       );
     });
 
+    test('an over-long word is split between symbols, nothing lost', () {
+      const slow = MorseTiming(wpm: 10, farnsworthWpm: 5);
+      final word = '0' * 200;
+      final parts = MorseWavExport.segments(word, slow);
+      expect(parts.length, greaterThan(1));
+      expect(parts.join(), word);
+      for (final part in parts) {
+        expect(
+          MorseEncoder.totalDuration(MorseEncoder.encode(part, slow)),
+          lessThan(MorseWavExport.maxDuration),
+        );
+      }
+      final prosigns = MorseWavExport.segments('<SK>' * 150, slow);
+      expect(prosigns.join(), '<SK>' * 150);
+    });
+
     test('segments split at word boundaries and each fits', () {
       final long = List.filled(400, 'PARIS').join(' ');
       const t = MorseTiming(wpm: 5);
@@ -109,5 +127,9 @@ void main() {
     expect(safeFileName('练习 Übung\u0007'), '练习 Übung');
     expect(safeFileName('x' * 200).length, 80);
     expect(safeFileName('name.'), 'name');
+    // 80 emoji are 320 bytes: capped by encoded length, not characters.
+    final emoji = safeFileName('\u{1F4FB}' * 80);
+    expect(utf8.encode(emoji).length, lessThanOrEqualTo(120));
+    expect(emoji.runes.every((r) => r == 0x1F4FB), isTrue);
   });
 }

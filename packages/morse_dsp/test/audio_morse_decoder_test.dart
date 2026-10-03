@@ -206,4 +206,15 @@ void main() {
       expect(chunks.map((Uint8List c) => c.length), <int>[8, 8, 4]);
     });
   });
+
+  test('live decoding: a tone 5 ms after the start is not swallowed', () {
+    final Int16List pcm = SyntheticMorse(
+      leadIn: const Duration(milliseconds: 5),
+    ).renderText('TEST');
+    final AudioMorseDecoder decoder = AudioMorseDecoder();
+    decoder.feed(pcm);
+    decoder.commitPending();
+    expect(decoder.text.trim(), 'TEST');
+    decoder.dispose();
+  });
 }

@@ -22,7 +22,11 @@ void main() {
     dataDir = p.join(root.path, 'training');
     await Directory(dataDir).create();
     player = FakeClipPlayer();
-    c = WorkbenchController(library: RecordingLibrary(dataDir), player: player);
+    // Media live in the profile root, beside its backed-up training tree.
+    c = WorkbenchController(
+      library: RecordingLibrary(root.path),
+      player: player,
+    );
   });
 
   tearDown(() async {
@@ -158,7 +162,7 @@ void main() {
     final loaded = await ctl.loadAudioMaterials();
     expect(loaded.single.note, 'fast');
     expect(loaded.single.end, const Duration(seconds: 3));
-    expect(await RecordingLibrary(dataDir).exists(m.file), isFalse);
+    expect(await RecordingLibrary(root.path).exists(m.file), isFalse);
     expect(await c.openSaved(m.file, m.title), isFalse);
     expect(c.failure, WorkbenchFailure.missingFile);
     await ctl.deleteAudioMaterial(m.id);

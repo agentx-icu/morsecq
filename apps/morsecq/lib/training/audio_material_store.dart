@@ -59,9 +59,16 @@ final class AudioMaterial {
     'note': note,
   };
 
+  /// The only media paths accepted: a plain file name under
+  /// `media/recordings/` (no drive letters, backslashes or `..`), so a
+  /// restored or edited document can never point outside the profile.
+  static final RegExp safeFile = RegExp(
+    r'^media/recordings/[A-Za-z0-9_\-]+(\.[A-Za-z0-9]+)?$',
+  );
+
   factory AudioMaterial.fromJson(Map<String, Object?> json) {
     final file = json['file'];
-    if (file is! String || file.contains('..') || file.startsWith('/')) {
+    if (file is! String || !safeFile.hasMatch(file)) {
       throw const FormatException('unsafe media path');
     }
     return AudioMaterial(
@@ -105,21 +112,29 @@ extension AudioMaterialStore on TrainingController {
         'materials': [for (final m in all) m.toJson()],
       });
 
-  Future<void> upsertAudioMaterial(AudioMaterial material) async {
-    final all = await loadAudioMaterials();
-    final at = all.indexWhere((m) => m.id == material.id);
-    if (at < 0) {
-      all.add(material);
-    } else {
-      all[at] = material;
-    }
-    await _saveAll(all);
-  }
+  /// Read-modify-write under the controller's document transaction, so
+  /// concurrent saves and deletions never lose or resurrect entries.
+  Future<void> upsertAudioMaterial(AudioMaterial material) =>
+      docTransaction(() async {
+        final all = await loadAudioMaterials();
+        final at = all.indexWhere((m) => m.id == material.id);
+        if (at < 0) {
+          all.add(material);
+        } else {
+          all[at] = material;
+        }
+        await _saveAll(all);
+      });
 
-  Future<void> deleteAudioMaterial(String id) async {
+  /// Removes the entry and returns whether its media file is still
+  /// referenced by another entry (checked inside the same transaction).
+  Future<bool> deleteAudioMaterial(String id) => docTransaction(() async {
     final all = await loadAudioMaterials();
-    await _saveAll(all.where((m) => m.id != id).toList());
-  }
+    final gone = all.where((m) => m.id == id).toList();
+    final rest = all.where((m) => m.id != id).toList();
+    await _saveAll(rest);
+    return gone.any((g) => rest.any((m) => m.file == g.file));
+  });
 
   /// A new id, also used as the media file name.
   String newAudioMaterialId() =>

@@ -10,6 +10,7 @@ import 'package:morsecq/training/file_trainer_store.dart';
 import 'package:morsecq/training/guest_profile.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_controller_host.dart';
+import 'package:morsecq/training/training_doc_store.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
@@ -162,6 +163,58 @@ void main() {
         expect(moved!.currentLesson, 8);
       },
     );
+
+    test(
+      'saved recordings move with the guest data; identity media stay',
+      () async {
+        final root = await _tmp();
+        final guest = p.join(root.path, 'guest');
+        final identity = p.join(root.path, 'id');
+        await _writeGuestProgress(guest, 2);
+        Future<void> put(String dir, String name, String body) async {
+          final f = File(p.join(dir, 'media', 'recordings', name));
+          await f.create(recursive: true);
+          await f.writeAsString(body);
+        }
+
+        await put(guest, 'rec_a.wav', 'guest-a');
+        await put(guest, 'current.wav', 'guest-working');
+        await put(guest, 'rec_same.wav', 'guest-same');
+        // Identity media live in the identity root, beside `identity` (the
+        // backed-up data directory).
+        await put(root.path, 'rec_same.wav', 'identity-same');
+        await put(root.path, 'current.wav', 'identity-working');
+        await GuestMigration(
+          guestDirectory: guest,
+          identityDirectory: identity,
+          generation: 'g1',
+        ).run(identityKey: 'AB', now: DateTime(2026));
+        String read(String name) => File(
+          p.join(root.path, 'media', 'recordings', name),
+        ).readAsStringSync();
+        expect(read('rec_a.wav'), 'guest-a');
+        expect(read('rec_same.wav'), 'identity-same');
+        expect(read('current.wav'), 'identity-working');
+        expect(Directory(p.join(guest, 'media')).existsSync(), isFalse);
+        expect(
+          Directory(
+            p.join(root.path, 'media', 'recordings.guest-staging'),
+          ).existsSync(),
+          isFalse,
+        );
+      },
+    );
+
+    test('clearing guest data also removes guest recordings', () async {
+      final root = await _tmp();
+      final store = GuestStore(root: () async => p.join(root.path, 'guest'));
+      final f = File(
+        p.join(await store.directory(), 'media', 'recordings', 'rec_x.wav'),
+      );
+      await f.create(recursive: true);
+      await store.clear();
+      expect(f.existsSync(), isFalse);
+    });
 
     test('settings-only guest data counts as data to move', () async {
       final root = await _tmp();
@@ -348,6 +401,58 @@ void main() {
       expect(made, 1);
       await host.dispose();
     });
+  });
+
+  test('clearing guest data drops a stale migration journal', () async {
+    final root = await _tmp();
+    final store = GuestStore(root: () async => p.join(root.path, 'guest'));
+    final dir = await store.directory();
+    await _writeGuestProgress(dir, 2);
+    await File(p.join(dir, 'migration-journal.json')).writeAsString(
+      jsonEncode({'state': 'committing', 'key': 'AB', 'generation': 'old'}),
+    );
+    await store.clear();
+    expect(await GuestMigration.hasJournal(dir), isFalse);
+    // New data of a new generation migrates normally.
+    await _writeGuestProgress(dir, 9);
+    final identity = p.join(root.path, 'id');
+    await GuestMigration(
+      guestDirectory: dir,
+      identityDirectory: identity,
+      generation: await store.generation(),
+    ).run(identityKey: 'AB', now: DateTime(2026));
+    final moved = await FileTrainerStore.inDataDirectory(identity).load();
+    expect(moved!.currentLesson, 9);
+  });
+
+  test('a host suspension flushes a running document transaction', () async {
+    final identity = FakeIdentityService(connectDelay: Duration.zero);
+    final mode = ValueNotifier<bool>(true);
+    final docs = InMemoryTrainingDocStore();
+    final host = TrainingControllerHost(
+      identity,
+      guestMode: mode,
+      guestFactory: () async {
+        final c = TrainingController(
+          progressStore: InMemoryTrainerStore(),
+          settingsStore: InMemoryTrainingSettingsStore(),
+          profileKey: GuestProfile.profileKey,
+          docs: docs,
+        );
+        await c.load();
+        return c;
+      },
+    );
+    final c = await host.controller();
+    final txn = c.docTransaction(() async {
+      await c.readDoc('x');
+      await c.writeDoc('x', {'v': 1});
+    });
+    await host.suspendLearning();
+    await txn;
+    expect(docs.docs.containsKey('x'), isTrue);
+    host.resumeLearning();
+    await host.dispose();
   });
 }
 

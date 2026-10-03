@@ -123,7 +123,8 @@ void main() {
     });
 
     test('missing chunks', () async {
-      final noData = wavBytes(ramp).sublist(0, 36);
+      final noData = Uint8List.fromList(wavBytes(ramp).sublist(0, 36));
+      ByteData.sublistView(noData).setUint32(4, 28, Endian.little);
       expect(_open(noData), _rejects(WavError.missingData));
       final noFmt = wavBytes(ramp);
       // Replace the real fmt id so none is found.
@@ -133,7 +134,7 @@ void main() {
       expect(_open(bytes), _rejects(WavError.missingFmt));
     });
 
-    test('truncated headers reject, short data is flagged', () async {
+    test('truncated or overflowing files are rejected', () async {
       final full = wavBytes(ramp);
       expect(_open(full.sublist(0, 30)), _rejects(WavError.truncated));
       final listTooBig = wavBytes(
@@ -144,14 +145,21 @@ void main() {
       );
       ByteData.sublistView(listTooBig).setUint32(16, 1 << 30, Endian.little);
       expect(_open(listTooBig), _rejects(WavError.truncated));
-      final short = await _open(full.sublist(0, full.length - 101));
-      expect(short.info.dataTruncated, isTrue);
-      expect(short.info.frameCount, 149);
-      final overflow = await _open(
-        wavBytes(ramp, declaredDataSize: 0xFFFFFFF0),
+      expect(
+        _open(full.sublist(0, full.length - 101)),
+        _rejects(WavError.truncated),
       );
-      expect(overflow.info.dataTruncated, isTrue);
-      expect(overflow.info.frameCount, 200);
+      expect(
+        _open(wavBytes(ramp, declaredDataSize: 0xFFFFFFF0)),
+        _rejects(WavError.truncated),
+      );
+      // A data size that is not a whole number of frames is damage too.
+      final odd = wavBytes(ramp, declaredDataSize: 399);
+      expect(_open(odd), _rejects(WavError.truncated));
+      // A RIFF size claiming more than the file holds.
+      final riff = Uint8List.fromList(full);
+      ByteData.sublistView(riff).setUint32(4, full.length + 100, Endian.little);
+      expect(_open(riff), _rejects(WavError.truncated));
     });
 
     test('size and duration limits', () async {

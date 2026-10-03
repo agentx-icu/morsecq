@@ -14,6 +14,7 @@ import 'training_doc_store.dart';
 import 'training_settings_store.dart';
 
 export 'exercise_outcome.dart';
+export 'send_practice_start.dart';
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
 /// Koch position, SRS due list and streak, starts sessions and records their
@@ -307,29 +308,6 @@ final class TrainingController extends ChangeNotifier {
       lesson: currentLesson,
       random: _random,
       now: _now,
-    );
-  }
-
-  /// One short target (a word if the learned set allows, else a group).
-  SendSession startSendSession() {
-    final chars = learnedChars;
-    final words = WordDrill.commonWords(
-      allowedChars: chars.toSet(),
-      wordCount: 1,
-    );
-    final generator = words.hasCandidates
-        ? words
-        : RandomGroupsDrill(
-            chars: chars,
-            groupCount: 1,
-            groupSize: sendTargetChars,
-            weights: _catalog.weights(),
-          );
-    return SendSession(
-      target: generator.generate(_random).text,
-      timing: trainerSettings.toTiming(),
-      now: _now,
-      lesson: currentLesson,
     );
   }
 

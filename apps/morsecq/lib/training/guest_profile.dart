@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'file_trainer_store.dart';
+import 'qso_practice.dart';
 import 'training_controller.dart';
 import 'training_doc_store.dart';
 import 'training_settings_store.dart';
@@ -105,6 +106,8 @@ class GuestStore {
       docs: FileTrainingDocStore.inDataDirectory(dir),
     );
     await controller.load();
+    // A finished QSO whose save failed last time is committed now.
+    await controller.recoverFinishedQso();
     return controller;
   }
 
@@ -113,8 +116,13 @@ class GuestStore {
     final dir = await directory();
     final training = Directory(p.join(dir, FileTrainerStore.subdirectory));
     if (await training.exists()) await training.delete(recursive: true);
+    final media = Directory(p.join(dir, 'media'));
+    if (await media.exists()) await media.delete(recursive: true);
     final generation = File(p.join(dir, 'generation'));
     if (await generation.exists()) await generation.delete();
+    // A journal describes data that no longer exists.
+    final journal = File(p.join(dir, 'migration-journal.json'));
+    if (await journal.exists()) await journal.delete();
   }
 }
 
@@ -150,6 +158,17 @@ final class GuestMigration {
   String get _target =>
       p.join(identityDirectory, FileTrainerStore.subdirectory);
   String get _staging => '$_target.guest-staging';
+
+  /// Saved recordings (workbench audio materials) move with the data that
+  /// refers to them; the working recording does not.
+  String get _mediaSource => p.join(guestDirectory, 'media', 'recordings');
+
+  /// The identity root, beside its backed-up data directory (recordings
+  /// are not in identity backups).
+  String get _mediaTarget =>
+      p.join(p.dirname(identityDirectory), 'media', 'recordings');
+  String get _mediaStaging => '$_mediaTarget.guest-staging';
+  static const String _workingRecording = 'current.wav';
   File get _journal => File(p.join(guestDirectory, 'migration-journal.json'));
   File _doneMarker(String key) => File(
     p.join(guestDirectory, 'migrated-${key.toLowerCase()}-$generation.json'),
@@ -164,9 +183,13 @@ final class GuestMigration {
     required DateTime now,
   }) async {
     final marker = _doneMarker(identityKey);
-    if (await marker.exists()) return MigrationOutcome.alreadyDone;
     final source = Directory(_source);
     final staging = Directory(_staging);
+    if (await marker.exists()) {
+      // Moved before; finish any cleanup a crash interrupted.
+      await _complete(marker, source, now);
+      return MigrationOutcome.alreadyDone;
+    }
 
     // Resume a migration interrupted after its commit: the staged copy was
     // renamed onto the target, only the bookkeeping is missing. Never redo
@@ -176,8 +199,10 @@ final class GuestMigration {
       if (journal is Map &&
           journal['state'] == 'committing' &&
           journal['key'] == identityKey &&
+          journal['generation'] == generation &&
           !await staging.exists() &&
           await Directory(_target).exists()) {
+        await _commitMedia();
         await _complete(marker, source, now);
         return MigrationOutcome.done;
       }
@@ -188,6 +213,19 @@ final class GuestMigration {
     // 1. Stage a copy (a leftover staging dir from a crash is redone).
     if (await staging.exists()) await staging.delete(recursive: true);
     await _copy(source, staging);
+
+    final mediaStaging = Directory(_mediaStaging);
+    if (await mediaStaging.exists()) await mediaStaging.delete(recursive: true);
+    final media = Directory(_mediaSource);
+    if (await media.exists()) {
+      await mediaStaging.create(recursive: true);
+      await for (final entity in media.list()) {
+        if (entity is! File) continue;
+        final name = p.basename(entity.path);
+        if (name == _workingRecording) continue;
+        await entity.copy(p.join(mediaStaging.path, name));
+      }
+    }
 
     // 2. Validate: the staged progress must load.
     final progress = File(p.join(_staging, FileTrainerStore.fileName));
@@ -215,18 +253,39 @@ final class GuestMigration {
       );
     }
     await staging.rename(_target);
+    await _commitMedia();
     await _complete(marker, source, now);
     return MigrationOutcome.done;
+  }
+
+  /// Moves staged recordings next to the identity's own; an identity file
+  /// of the same name is never replaced (or deleted).
+  Future<void> _commitMedia() async {
+    final staged = Directory(_mediaStaging);
+    if (!await staged.exists()) return;
+    final target = Directory(_mediaTarget);
+    await target.create(recursive: true);
+    await for (final entity in staged.list()) {
+      if (entity is! File) continue;
+      final dest = File(p.join(target.path, p.basename(entity.path)));
+      if (await dest.exists()) continue;
+      await entity.rename(dest.path);
+    }
+    await staged.delete(recursive: true);
   }
 
   /// 5. Record completion before removing the guest copy, so a retry after
   /// a failed removal is a no-op rather than a second copy.
   Future<void> _complete(File marker, Directory source, DateTime now) async {
-    await marker.writeAsString(
-      jsonEncode(<String, Object?>{'at': now.toIso8601String()}),
-      flush: true,
-    );
+    if (!await marker.exists()) {
+      await marker.writeAsString(
+        jsonEncode(<String, Object?>{'at': now.toIso8601String()}),
+        flush: true,
+      );
+    }
     if (await source.exists()) await source.delete(recursive: true);
+    final guestMedia = Directory(p.join(guestDirectory, 'media'));
+    if (await guestMedia.exists()) await guestMedia.delete(recursive: true);
     final gen = File(p.join(guestDirectory, 'generation'));
     if (await gen.exists()) await gen.delete();
     if (await _journal.exists()) await _journal.delete();

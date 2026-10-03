@@ -825,7 +825,7 @@
   "workbenchImport": "Importar grabación",
   "workbenchEmpty": "Importa una grabación WAV para repetirla, decodificarla y copiarla. No hace falta micrófono.",
   "workbenchFormats": "WAV, PCM de 16 bits, mono o estéreo, 8/16/44,1/48 kHz; hasta 50 MB y 20 minutos.",
-  "workbenchBackupNote": "Las grabaciones se quedan en este dispositivo y no se incluyen en las copias de identidad; las selecciones guardadas solo copian título, notas y posiciones.",
+  "workbenchBackupNote": "Las grabaciones se quedan en este dispositivo y no entran en la copia de la identidad salvo que elijas incluirlas al exportar. Los títulos, notas y posiciones de las selecciones guardadas siempre se copian.",
   "workbenchInfo": "{rate} kHz · {channels} · {duration}",
   "workbenchMono": "mono",
   "workbenchStereo": "estéreo",
@@ -970,5 +970,10 @@
   "chatListenOnlyPreview": "Mensaje nuevo: escúchalo para copiarlo",
   "chatSaveMaterialConfirm": "Guardar el resto",
   "materialsImportConfirm": "¿Importar {count} materiales?",
-  "materialsExportTxt": "Exportar como texto (TXT)"
+  "materialsExportTxt": "Exportar como texto (TXT)",
+  "accountBackupMediaTitle": "¿Incluir las grabaciones guardadas?",
+  "accountBackupMediaBody": "{count} grabaciones guardadas ({size} MB). Sus títulos, notas y posiciones siempre están en la copia; el audio solo si lo incluyes.",
+  "accountBackupMediaTooLarge": "Las grabaciones guardadas ({size} MB) son demasiado grandes para la copia; solo se incluyen títulos, notas y posiciones.",
+  "accountBackupMediaInclude": "Incluir grabaciones",
+  "accountBackupMediaSkip": "Sin grabaciones"
 }

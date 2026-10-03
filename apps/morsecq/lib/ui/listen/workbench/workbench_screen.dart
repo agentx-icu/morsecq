@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
@@ -26,7 +27,7 @@ class WorkbenchScreen extends StatefulWidget {
     super.key,
     this.picker,
     this.player,
-    this.dataDirectory,
+    this.profileRoot,
     this.training,
   });
 
@@ -36,8 +37,9 @@ class WorkbenchScreen extends StatefulWidget {
   /// Injected in tests; defaults to SoLoud.
   final ClipPlayer? player;
 
-  /// The profile's data directory; defaults to the identity's.
-  final Future<String> Function()? dataDirectory;
+  /// The learning profile's media root ([RecordingLibrary.root]);
+  /// defaults to the identity's root, or the guest directory.
+  final Future<String> Function()? profileRoot;
 
   /// The shared training controller; defaults to the app's host.
   final Future<TrainingController> Function()? training;
@@ -46,8 +48,8 @@ class WorkbenchScreen extends StatefulWidget {
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
 
-/// The learning profile's data directory: the identity's, or the guest's
-/// when learning without an identity.
+/// The learning profile's media root: the identity's root, or the guest
+/// directory when learning without an identity.
 Future<String> _profileDirectory(BuildContext context) {
   final identity = context.read<IdentityService>();
   GuestStore? guest;
@@ -57,7 +59,8 @@ Future<String> _profileDirectory(BuildContext context) {
     guest = null;
   }
   if (identity.current == null && guest != null) return guest.directory();
-  return identity.dataDirectory();
+  // The identity root: media stay out of the backed-up data directory.
+  return identity.dataDirectory().then(p.dirname);
 }
 
 class _WorkbenchScreenState extends State<WorkbenchScreen>
@@ -77,7 +80,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   Future<void> _setup() async {
     try {
       final dir =
-          await (widget.dataDirectory ?? () => _profileDirectory(context))();
+          await (widget.profileRoot ?? () => _profileDirectory(context))();
       if (!mounted) return;
       final controller = WorkbenchController(
         library: RecordingLibrary(dir),
@@ -91,6 +94,12 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     try {
       final training = await (widget.training ?? _hostController)();
       if (mounted) setState(() => _training = training);
+      // Nothing is importing or saving yet: drop recordings left behind by
+      // entries deleted while their recording was open.
+      final referenced = {
+        for (final m in await training.loadAudioMaterials()) m.file,
+      };
+      await _c?.library.pruneUnreferenced(referenced);
     } on Object {
       // Without a profile controller attempts are scored, not recorded.
     }
@@ -293,11 +302,6 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
           ),
           key: const ValueKey('workbench-info'),
         ),
-        if (info.dataTruncated)
-          Text(
-            s.workbenchTruncated,
-            style: TextStyle(color: theme.colorScheme.error),
-          ),
         Text(s.workbenchBackupNote, style: theme.textTheme.bodySmall),
         const SizedBox(height: 12),
         WorkbenchWaveform(controller: c),

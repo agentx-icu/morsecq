@@ -2894,7 +2894,7 @@ class SEs extends S {
   String get workbenchFormats => 'WAV, PCM de 16 bits, mono o estéreo, 8/16/44,1/48 kHz; hasta 50 MB y 20 minutos.';
 
   @override
-  String get workbenchBackupNote => 'Las grabaciones se quedan en este dispositivo y no se incluyen en las copias de identidad; las selecciones guardadas solo copian título, notas y posiciones.';
+  String get workbenchBackupNote => 'Las grabaciones se quedan en este dispositivo y no entran en la copia de la identidad salvo que elijas incluirlas al exportar. Los títulos, notas y posiciones de las selecciones guardadas siempre se copian.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3380,4 +3380,23 @@ class SEs extends S {
 
   @override
   String get materialsExportTxt => 'Exportar como texto (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => '¿Incluir las grabaciones guardadas?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '$count grabaciones guardadas ($size MB). Sus títulos, notas y posiciones siempre están en la copia; el audio solo si lo incluyes.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Las grabaciones guardadas ($size MB) son demasiado grandes para la copia; solo se incluyen títulos, notas y posiciones.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Incluir grabaciones';
+
+  @override
+  String get accountBackupMediaSkip => 'Sin grabaciones';
 }

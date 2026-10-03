@@ -825,7 +825,7 @@
   "workbenchImport": "Aufnahme importieren",
   "workbenchEmpty": "Importiere eine WAV-Aufnahme, um sie zu wiederholen, zu dekodieren und mitzuschreiben. Kein Mikrofon nötig.",
   "workbenchFormats": "WAV, 16-Bit-PCM, Mono oder Stereo, 8/16/44,1/48 kHz; bis 50 MB und 20 Minuten.",
-  "workbenchBackupNote": "Aufnahmen bleiben auf diesem Gerät und sind nicht im Identitäts-Backup; gespeicherte Ausschnitte sichern nur Titel, Notizen und Positionen.",
+  "workbenchBackupNote": "Aufnahmen bleiben auf diesem Gerät und sind nur dann im Identitäts-Backup, wenn du sie beim Exportieren einschließt. Titel, Notizen und Positionen gespeicherter Ausschnitte werden immer gesichert.",
   "workbenchInfo": "{rate} kHz · {channels} · {duration}",
   "workbenchMono": "Mono",
   "workbenchStereo": "Stereo",
@@ -970,5 +970,10 @@
   "chatListenOnlyPreview": "Neue Nachricht – zum Mitschreiben anhören",
   "chatSaveMaterialConfirm": "Den Rest speichern",
   "materialsImportConfirm": "{count} Materialien importieren?",
-  "materialsExportTxt": "Als Text exportieren (TXT)"
+  "materialsExportTxt": "Als Text exportieren (TXT)",
+  "accountBackupMediaTitle": "Gespeicherte Aufnahmen einschließen?",
+  "accountBackupMediaBody": "{count} gespeicherte Aufnahmen ({size} MB). Titel, Notizen und Positionen sind immer im Backup, der Ton nur, wenn du ihn einschließt.",
+  "accountBackupMediaTooLarge": "Gespeicherte Aufnahmen ({size} MB) sind zu groß für ein Backup; nur Titel, Notizen und Positionen werden gesichert.",
+  "accountBackupMediaInclude": "Aufnahmen einschließen",
+  "accountBackupMediaSkip": "Ohne Aufnahmen"
 }

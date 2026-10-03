@@ -192,8 +192,7 @@ final class AudioMorseDecoder {
         _goertzel.frequencyHz = _finder.frequencyHz ?? _manualFrequencyHz;
       }
       final double power = _goertzel.power(data, offset: offset, length: blockSize);
-      final GateTransition? transition = _gate.feed(power);
-      if (transition != null) {
+      for (final GateTransition transition in _gate.feedAll(power)) {
         final Duration at = _duration(transition.atBlock * blockSize);
         onKeyTransition?.call(transition.isOn, at);
         if (transition.isOn) {
@@ -222,6 +221,17 @@ final class AudioMorseDecoder {
 
   /// Commits the character being received, if any, and returns the text.
   String commitPending() => _decoder.flush();
+
+  /// Ends the input: a key still down is released at the last fed sample,
+  /// so audio that stops mid-tone keeps its final mark. Returns whether a
+  /// mark was cut off this way.
+  bool endOfInput() {
+    if (!_gate.isOn) return false;
+    final Duration at = _duration(_blocks * blockSize + _samples.length);
+    onKeyTransition?.call(false, at);
+    _decoder.keyUp(at);
+    return true;
+  }
 
   /// Clears the text but keeps the tuning, the noise/peak estimates and the
   /// learned speed.

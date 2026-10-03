@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
+import '../listen/workbench/recording_files.dart';
 import 'backup_file_gateway.dart';
 
 /// File name for a backup of [identity]: readable, unique per identity, and
@@ -24,6 +26,57 @@ Rect? shareOriginOf(BuildContext context) {
   if (box is! RenderBox || !box.attached || !box.hasSize) return null;
   final rect = box.localToGlobal(Offset.zero) & box.size;
   return rect.isEmpty ? null : rect;
+}
+
+/// Largest total of saved recordings a backup may carry (the container is
+/// built in memory).
+const int maxBackupMediaBytes = 100 * 1024 * 1024;
+
+/// Recordings are left out of backups by default (functional spec §11.3);
+/// when there are saved ones, the learner may opt in. Null = cancelled.
+Future<bool?> _askIncludeRecordings(
+  BuildContext context,
+  IdentityService identity,
+) async {
+  final (int count, int bytes) saved;
+  try {
+    final root = p.dirname(await identity.dataDirectory());
+    saved = RecordingLibrary(root).savedSizeSync();
+  } on Object {
+    return false;
+  }
+  if (saved.$1 == 0 || !context.mounted) return false;
+  final s = context.s;
+  final mb = (saved.$2 / (1024 * 1024)).toStringAsFixed(1);
+  final tooLarge = saved.$2 > maxBackupMediaBytes;
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(s.accountBackupMediaTitle),
+      content: Text(
+        tooLarge
+            ? s.accountBackupMediaTooLarge(mb)
+            : s.accountBackupMediaBody(saved.$1, mb),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(s.actionCancel),
+        ),
+        if (!tooLarge)
+          TextButton(
+            key: const ValueKey('backup-include-media'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(s.accountBackupMediaInclude),
+          ),
+        FilledButton(
+          key: const ValueKey('backup-without-media'),
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(s.accountBackupMediaSkip),
+        ),
+      ],
+    ),
+  );
 }
 
 /// Outcome of [exportBackupWithFeedback].
@@ -50,8 +103,12 @@ Future<BackupExportResult> exportBackupWithFeedback(
     messenger?.showSnackBar(SnackBar(content: Text(s.accountMeNoIdentity)));
     return BackupExportResult.failed;
   }
+  final includeMedia = await _askIncludeRecordings(context, identityService);
+  if (includeMedia == null) return BackupExportResult.cancelled;
   try {
-    final bytes = await identityService.exportBackup();
+    final bytes = await identityService.exportBackup(
+      includeMedia: includeMedia,
+    );
     final saved = await gateway.saveBackup(
       bytes,
       fileName: backupFileName(identity),

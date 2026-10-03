@@ -1,7 +1,7 @@
 part of 'tim2tox_identity_service.dart';
 
 extension _IdentityBackup on Tim2ToxIdentityService {
-  Future<Uint8List> _exportBackup() async {
+  Future<Uint8List> _exportBackup({bool includeMedia = false}) async {
     final record = _requireRecord();
     await _persist();
     var profile = await File(_paths.profileFile).readAsBytes();
@@ -29,6 +29,19 @@ extension _IdentityBackup on Tim2ToxIdentityService {
         );
         entries['${BackupContainer.trainingPrefix}$rel'] = await file
             .readAsBytes();
+      }
+    }
+    if (includeMedia) {
+      // Opt-in only: saved recordings beside (not inside) the training tree.
+      final media = Directory(p.join(_paths.root, 'media', 'recordings'));
+      if (await media.exists()) {
+        final files =
+            media.listSync(followLinks: false).whereType<File>().toList()
+              ..sort((a, b) => a.path.compareTo(b.path));
+        for (final file in files) {
+          entries['${BackupContainer.mediaPrefix}${p.basename(file.path)}'] =
+              await file.readAsBytes();
+        }
       }
     }
     return BackupContainer(
@@ -85,6 +98,12 @@ extension _IdentityBackup on Tim2ToxIdentityService {
         final target = File(
           p.join(staged.trainingDirectory, p.joinAll(rel.split('/'))),
         );
+        await target.parent.create(recursive: true);
+        await target.writeAsBytes(entry.value, flush: true);
+      }
+      for (final entry in backup.mediaFiles) {
+        final name = entry.key.substring(BackupContainer.mediaPrefix.length);
+        final target = File(p.join(staged.root, 'media', 'recordings', name));
         await target.parent.create(recursive: true);
         await target.writeAsBytes(entry.value, flush: true);
       }

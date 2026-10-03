@@ -5063,7 +5063,7 @@ abstract class S {
   /// Recording workbench: recordings are not part of identity backups
   ///
   /// In en, this message translates to:
-  /// **'Recordings stay on this device and are not included in identity backups; saved selections back up only their titles, notes and positions.'**
+  /// **'Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.'**
   String get workbenchBackupNote;
 
   /// Recording workbench: recording format line
@@ -5935,6 +5935,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Export as text (TXT)'**
   String get materialsExportTxt;
+
+  /// Backup export: ask whether to include saved recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Include saved recordings?'**
+  String get accountBackupMediaTitle;
+
+  /// Backup export: recordings count and size
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved recordings ({size} MB). Their titles, notes and positions are always in the backup; the audio only if you include it.'**
+  String accountBackupMediaBody(int count, String size);
+
+  /// Backup export: recordings too large to include
+  ///
+  /// In en, this message translates to:
+  /// **'Saved recordings ({size} MB) are too large to put in a backup; only their titles, notes and positions are included.'**
+  String accountBackupMediaTooLarge(String size);
+
+  /// Backup export: include recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Include recordings'**
+  String get accountBackupMediaInclude;
+
+  /// Backup export: continue without recordings (default)
+  ///
+  /// In en, this message translates to:
+  /// **'Without recordings'**
+  String get accountBackupMediaSkip;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

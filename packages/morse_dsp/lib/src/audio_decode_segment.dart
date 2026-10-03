@@ -129,6 +129,9 @@ final class SegmentDecoder {
   bool _wordPending = false;
   bool _finished = false;
 
+  /// The audio ended while a key was down: the last symbol is incomplete.
+  bool _cutAtEof = false;
+
   int _frameOf(Duration at) =>
       feedStartFrame +
       (at.inMicroseconds * sampleRate / Duration.microsecondsPerSecond).round();
@@ -174,7 +177,7 @@ final class SegmentDecoder {
             end: _timeOf(end),
             wordBreakBefore: word && _events.isNotEmpty,
             cutAtStart: start < selectionStart,
-            cutAtEnd: end > selectionEnd,
+            cutAtEnd: end > selectionEnd || (_cutAtEof && _finished),
           ),
         );
       case DecodeEventKind.element:
@@ -193,6 +196,9 @@ final class SegmentDecoder {
   SegmentDecodeResult finish() {
     if (!_finished) {
       _finished = true;
+      // Release the underlying key at the last sample (not only our own
+      // bookkeeping), so the final mark is decoded; it is flagged as cut.
+      _cutAtEof = _decoder.endOfInput();
       if (_downFrame != null) {
         _marks.add((_downFrame!, math.max(_downFrame! + 1, selectionEnd + 1)));
         _downFrame = null;

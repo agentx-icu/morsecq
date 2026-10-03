@@ -82,7 +82,7 @@ class WorkbenchController extends ChangeNotifier {
     final reader = await library.importTo(
       picked,
       beforeReplace: () async {
-        await player.stop();
+        await stopPlayback();
         _cancelDecode();
         await closeReader(_reader);
         _reader = null;
@@ -101,7 +101,7 @@ class WorkbenchController extends ChangeNotifier {
       throw const FileSystemException('missing');
     }
     final reader = await library.open(file);
-    await player.stop();
+    await stopPlayback();
     _cancelDecode();
     await closeReader(_reader);
     _install(reader, name, file);
@@ -185,6 +185,9 @@ class WorkbenchController extends ChangeNotifier {
 
   void _invalidate() {
     _cancelDecode();
+    // Playback of the old selection or tuning is stale too.
+    if (_playing) unawaited(stopPlayback());
+    _playGen++;
     _result = null;
     notifyListeners();
   }
@@ -232,16 +235,21 @@ class WorkbenchController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Bumped by every stop / background / selection or tuning change: a
+  /// play request still reading PCM must not start sound afterwards.
+  int _playGen = 0;
+
   Future<void> togglePlay() async {
     if (_playing) {
-      await player.stop();
+      await stopPlayback();
       return;
     }
     final reader = _reader;
     if (reader == null || _end <= _start) return;
+    final gen = ++_playGen;
     final frames = math.min(_end - _start, reader.info.frameAt(maxPlay));
     final mono = await reader.readMono(_start, frames);
-    if (_disposed) return;
+    if (_disposed || gen != _playGen || !identical(reader, _reader)) return;
     await player.play(
       monoWav(mono, reader.info.sampleRate),
       length: reader.info.durationOf(frames),
@@ -249,8 +257,12 @@ class WorkbenchController extends ChangeNotifier {
     );
   }
 
-  /// Background / leaving: stop sound; resuming is up to the learner.
-  Future<void> stopPlayback() => player.stop();
+  /// Background / leaving: stop sound (also one still being prepared);
+  /// resuming is up to the learner.
+  Future<void> stopPlayback() {
+    _playGen++;
+    return player.stop();
+  }
 
   /// PCM16 mono WAV bytes of [samples] (-1..1) at [sampleRate].
   static Uint8List monoWav(Float64List samples, int sampleRate) {
@@ -286,6 +298,7 @@ class WorkbenchController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _waveGen++;
+    _playGen++;
     _cancelDecode();
     unawaited(_playerSub?.cancel());
     unawaited(player.stop());

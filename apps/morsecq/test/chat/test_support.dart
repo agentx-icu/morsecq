@@ -82,7 +82,8 @@ final class StubIdentityService implements IdentityService {
   }) => throw UnimplementedError();
 
   @override
-  Future<Uint8List> exportBackup() => throw UnimplementedError();
+  Future<Uint8List> exportBackup({bool includeMedia = false}) =>
+      throw UnimplementedError();
 
   @override
   Future<Identity> importBackup(Uint8List bytes, {String? password}) =>

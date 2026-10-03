@@ -825,7 +825,7 @@
   "workbenchImport": "Importer un enregistrement",
   "workbenchEmpty": "Importez un enregistrement WAV pour le boucler, le décoder et le copier. Aucun micro requis.",
   "workbenchFormats": "WAV, PCM 16 bits, mono ou stéréo, 8/16/44,1/48 kHz ; jusqu'à 50 Mo et 20 minutes.",
-  "workbenchBackupNote": "Les enregistrements restent sur cet appareil et ne font pas partie des sauvegardes d'identité ; les sélections enregistrées ne sauvegardent que titre, notes et positions.",
+  "workbenchBackupNote": "Les enregistrements restent sur cet appareil et ne sont pas dans la sauvegarde d'identité, sauf si vous choisissez de les inclure à l'export. Les titres, notes et positions des sélections sont toujours sauvegardés.",
   "workbenchInfo": "{rate} kHz · {channels} · {duration}",
   "workbenchMono": "mono",
   "workbenchStereo": "stéréo",
@@ -970,5 +970,10 @@
   "chatListenOnlyPreview": "Nouveau message — écoutez-le pour le copier",
   "chatSaveMaterialConfirm": "Enregistrer le reste",
   "materialsImportConfirm": "Importer {count} supports ?",
-  "materialsExportTxt": "Exporter en texte (TXT)"
+  "materialsExportTxt": "Exporter en texte (TXT)",
+  "accountBackupMediaTitle": "Inclure les enregistrements sauvegardés ?",
+  "accountBackupMediaBody": "{count} enregistrements sauvegardés ({size} Mo). Titres, notes et positions sont toujours dans la sauvegarde ; l'audio seulement si vous l'incluez.",
+  "accountBackupMediaTooLarge": "Les enregistrements ({size} Mo) sont trop volumineux pour la sauvegarde ; seuls titres, notes et positions sont inclus.",
+  "accountBackupMediaInclude": "Inclure les enregistrements",
+  "accountBackupMediaSkip": "Sans les enregistrements"
 }

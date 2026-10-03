@@ -58,10 +58,14 @@ final class EnvelopeGateConfig {
   /// signal contrast is smaller than this.
   final double meterRangeDb;
 
-  /// The noise floor is the mean of the blocks in this first stretch and
-  /// the gate stays closed meanwhile. One block of white noise in a narrow
-  /// bin is exponentially distributed and can sit 10 dB or more below the
-  /// mean; seeding the floor from it would open the gate on plain noise.
+  /// The first stretch is buffered before any decision. One block of white
+  /// noise in a narrow bin is exponentially distributed and can sit 10 dB
+  /// or more below the mean, so seeding the floor from the first block
+  /// alone opens the gate on plain noise. The floor comes from the quiet
+  /// blocks before a steady tone run when there is one (a tone may start
+  /// in the very first milliseconds), otherwise from the mean of the
+  /// stretch; the buffered blocks are then replayed through the gate, so
+  /// an early onset keeps its exact block position.
   final Duration noiseWarmup;
 }
 
@@ -116,9 +120,11 @@ final class EnvelopeGate {
   final int minOnBlocks;
   final int minOffBlocks;
 
-  /// Blocks averaged into the initial noise floor (gate closed meanwhile).
+  /// Blocks buffered before the first decision (see
+  /// [EnvelopeGateConfig.noiseWarmup]).
   final int warmupBlocks;
-  double _warmupSum = 0;
+  final List<double> _warmup = <double>[];
+  final List<GateTransition> _queued = <GateTransition>[];
 
   final double _peakDecay;
   final double _noiseRise;
@@ -142,7 +148,10 @@ final class EnvelopeGate {
 
   /// Worst-case commit delay in blocks; consumers that time-stamp from the
   /// block clock should hold back their clock by this much.
-  int get latencyBlocks => math.max(minOnBlocks, minOffBlocks);
+  /// While the warm-up stretch is buffered nothing is decided yet.
+  int get latencyBlocks =>
+      math.max(minOnBlocks, minOffBlocks) +
+      (_blocks < warmupBlocks ? warmupBlocks : 0);
 
   Duration get blockDuration => Duration(
         microseconds:
@@ -173,19 +182,65 @@ final class EnvelopeGate {
   }
 
   /// Feeds one block's tone power (squared amplitude, as produced by
-  /// `GoertzelDetector.power`). Returns a transition when the committed
-  /// state changes.
-  GateTransition? feed(double power) {
+  /// `GoertzelDetector.power`) and returns every committed state change it
+  /// settles (more than one only when the warm-up stretch is replayed).
+  List<GateTransition> feedAll(double power) {
     final double p = power > floorPower ? power : floorPower;
     final int index = _blocks++;
     _lastPower = p;
-
     if (index < warmupBlocks) {
-      _warmupSum += p;
-      _noise = _warmupSum / (index + 1);
+      _warmup.add(p);
       _peak = math.max(p, _peak * _peakDecay);
-      return _debounce(false, index);
+      if (index < warmupBlocks - 1) return const <GateTransition>[];
+      _noise = _initialNoise(_warmup);
+      _peak = 0;
+      final List<GateTransition> out = <GateTransition>[];
+      for (int i = 0; i < _warmup.length; i++) {
+        final GateTransition? t = _step(_warmup[i], i);
+        if (t != null) out.add(t);
+      }
+      _warmup.clear();
+      return out;
     }
+    final GateTransition? t = _step(p, index);
+    return t == null ? const <GateTransition>[] : <GateTransition>[t];
+  }
+
+  /// [feedAll] returning one transition per call; extra transitions from
+  /// a warm-up replay are handed out on the following calls (their
+  /// [GateTransition.atBlock] keeps the true position).
+  GateTransition? feed(double power) {
+    _queued.addAll(feedAll(power));
+    return _queued.isEmpty ? null : _queued.removeAt(0);
+  }
+
+  /// Noise floor for the warm-up stretch [w]: the quiet blocks before a
+  /// steady run (>= [EnvelopeGateConfig.minContrastDb] above them, within
+  /// 1 dB of each other) — a tone starting early — or the mean of all.
+  double _initialNoise(List<double> w) {
+    // A keyed tone is flat block to block; narrow-band noise is not (its
+    // block powers are exponentially distributed), so four blocks within
+    // 1 dB of each other almost never come from noise.
+    final int run = math.max(4, minOnBlocks);
+    final double steady = _fromDb(1);
+    for (int j = 1; j + run <= w.length; j++) {
+      final List<double> tone = w.sublist(j, j + run);
+      final double lo = tone.reduce(math.min);
+      final double hi = tone.reduce(math.max);
+      if (hi / lo > steady) continue;
+      // Quiet blocks: before the run and clearly below it (a block only
+      // partly covered by the onset is neither).
+      final List<double> quiet = <double>[
+        for (final double x in w.sublist(0, j))
+          if (x * _minContrastRatio <= lo) x,
+      ];
+      if (quiet.isEmpty) continue;
+      return quiet.reduce((a, b) => a + b) / quiet.length;
+    }
+    return w.reduce((a, b) => a + b) / w.length;
+  }
+
+  GateTransition? _step(double p, int index) {
     _peak = math.max(p, _peak * _peakDecay);
     final double noise = _noise!;
 
@@ -227,7 +282,8 @@ final class EnvelopeGate {
   void reset() {
     _blocks = 0;
     _noise = null;
-    _warmupSum = 0;
+    _warmup.clear();
+    _queued.clear();
     _peak = 0;
     _lastPower = floorPower;
     _rawOn = false;

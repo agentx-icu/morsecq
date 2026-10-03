@@ -2867,7 +2867,7 @@ class SKo extends S {
   String get workbenchFormats => 'WAV, 16비트 PCM, 모노 또는 스테레오, 8/16/44.1/48 kHz, 최대 50MB·20분.';
 
   @override
-  String get workbenchBackupNote => '녹음은 이 기기에만 남고 신원 백업에는 포함되지 않습니다. 저장한 구간은 제목·메모·위치만 백업됩니다.';
+  String get workbenchBackupNote => '녹음은 이 기기에 남으며, 백업을 내보낼 때 포함하기로 선택하지 않으면 신원 백업에 들어가지 않습니다. 저장한 구간의 제목, 메모, 위치는 항상 백업됩니다.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3353,4 +3353,23 @@ class SKo extends S {
 
   @override
   String get materialsExportTxt => '텍스트로 내보내기(TXT)';
+
+  @override
+  String get accountBackupMediaTitle => '저장한 녹음을 포함할까요?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '저장한 녹음 $count개(${size}MB). 제목, 메모, 위치는 항상 백업되며, 오디오는 포함할 때만 들어갑니다.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '저장한 녹음(${size}MB)은 너무 커서 백업에 넣을 수 없습니다. 제목, 메모, 위치만 포함됩니다.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '녹음 포함';
+
+  @override
+  String get accountBackupMediaSkip => '녹음 없이';
 }

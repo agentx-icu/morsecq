@@ -2893,7 +2893,7 @@ class SEn extends S {
   String get workbenchFormats => 'WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.';
 
   @override
-  String get workbenchBackupNote => 'Recordings stay on this device and are not included in identity backups; saved selections back up only their titles, notes and positions.';
+  String get workbenchBackupNote => 'Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3379,4 +3379,23 @@ class SEn extends S {
 
   @override
   String get materialsExportTxt => 'Export as text (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Include saved recordings?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '$count saved recordings ($size MB). Their titles, notes and positions are always in the backup; the audio only if you include it.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Saved recordings ($size MB) are too large to put in a backup; only their titles, notes and positions are included.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Include recordings';
+
+  @override
+  String get accountBackupMediaSkip => 'Without recordings';
 }

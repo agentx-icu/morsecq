@@ -7,6 +7,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
+import '../../learn/progress_save_snack.dart';
 import '../../learn/receive/answer_keypad.dart';
 import '../../learn/receive/round_result_view.dart';
 import 'workbench_controller.dart';
@@ -34,11 +35,15 @@ class WorkbenchDecodePanel extends StatefulWidget {
 class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   final _answer = TextEditingController();
   final _reference = TextEditingController();
-  bool _copyMode = false;
+
+  /// Copy-it-myself is the default: the decoder output stays hidden until
+  /// the learner asks for it (spec §11.2.4).
+  bool _copyMode = true;
   bool _decoderShown = false;
   SessionScore? _score;
   bool _againstDecoder = false;
   SegmentDecodeResult? _scoredFor;
+  String? _attemptId;
 
   WorkbenchController get _c => widget.controller;
 
@@ -52,8 +57,10 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   void _resetAttemptIfStale() {
     if (!identical(_scoredFor, _c.result)) {
       _score = null;
-      _decoderShown = false;
+      // A new result in decoder mode is exposed the moment it is shown.
+      _decoderShown = !_copyMode;
       _scoredFor = _c.result;
+      _attemptId = null;
     }
   }
 
@@ -74,18 +81,24 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
     });
     final training = widget.training;
     if (training == null) return;
+    // One id per attempt: a retried save never credits it twice.
+    final id = _attemptId ??= ExerciseIds.next(training.now(), Random());
+    var saved = false;
     try {
-      await training.recordExercise(
+      final outcome = await training.recordExercise(
         score: score,
-        id: ExerciseIds.next(training.now(), Random()),
+        id: id,
         source: ExerciseSource.recording,
         assistance: <Assistance>{if (_decoderShown) Assistance.decoder},
         answered: _answer.text.trim().isNotEmpty,
         sourceRef: 'recording:${_c.file}#${_c.start}-${_c.end}',
       );
+      saved = outcome.saved;
     } on Object {
-      // The score stays on screen; recording practice is activity only.
+      saved = false;
     }
+    // The score stays on screen either way; Retry writes the same result.
+    if (!saved && mounted) showProgressSaveFailed(context, training);
   }
 
   @override
@@ -153,7 +166,11 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
             ],
             selected: <bool>{_copyMode},
             showSelectedIcon: false,
-            onSelectionChanged: (v) => setState(() => _copyMode = v.first),
+            onSelectionChanged: (v) => setState(() {
+              _copyMode = v.first;
+              // Viewing the decoder output exposes the answer for good.
+              if (!_copyMode) _decoderShown = true;
+            }),
           ),
           const SizedBox(height: 12),
           if (!_copyMode || _decoderShown) _decoderView(context, result),
@@ -201,15 +218,17 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   ) {
     final s = context.s;
     final score = _score;
-    final keys = MorseText.charSet('${r.text} ${_reference.text}').toList()
-      ..sort();
+    // Every course symbol, never derived from the hidden decoder output.
+    final keys = KochCourse().order;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         if (!_decoderShown)
-          Row(
+          // Wrap: on a 320 px phone with large text the button goes below.
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: <Widget>[
-              Expanded(child: Text(s.workbenchDecoderHidden)),
+              Text(s.workbenchDecoderHidden),
               TextButton(
                 key: const ValueKey('workbench-show-decoder'),
                 onPressed: () => setState(() => _decoderShown = true),
@@ -241,7 +260,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         ),
         const SizedBox(height: 8),
         AnswerKeypad(
-          chars: keys.isEmpty ? MorseText.charSet('ETAN').toList() : keys,
+          chars: keys,
           onChar: (c) => _answer.text = '${_answer.text}$c',
           onBackspace: () {
             final t = _answer.text;

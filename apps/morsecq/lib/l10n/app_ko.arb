@@ -825,7 +825,7 @@
   "workbenchImport": "녹음 가져오기",
   "workbenchEmpty": "WAV 녹음을 가져와 반복 재생, 해독, 직접 받아 적기를 할 수 있습니다. 마이크는 필요 없습니다.",
   "workbenchFormats": "WAV, 16비트 PCM, 모노 또는 스테레오, 8/16/44.1/48 kHz, 최대 50MB·20분.",
-  "workbenchBackupNote": "녹음은 이 기기에만 남고 신원 백업에는 포함되지 않습니다. 저장한 구간은 제목·메모·위치만 백업됩니다.",
+  "workbenchBackupNote": "녹음은 이 기기에 남으며, 백업을 내보낼 때 포함하기로 선택하지 않으면 신원 백업에 들어가지 않습니다. 저장한 구간의 제목, 메모, 위치는 항상 백업됩니다.",
   "workbenchInfo": "{rate} kHz · {channels} · {duration}",
   "workbenchMono": "모노",
   "workbenchStereo": "스테레오",
@@ -970,5 +970,10 @@
   "chatListenOnlyPreview": "새 메시지 — 들으며 받아 적으세요",
   "chatSaveMaterialConfirm": "나머지 저장",
   "materialsImportConfirm": "자료 {count}개를 가져올까요?",
-  "materialsExportTxt": "텍스트로 내보내기(TXT)"
+  "materialsExportTxt": "텍스트로 내보내기(TXT)",
+  "accountBackupMediaTitle": "저장한 녹음을 포함할까요?",
+  "accountBackupMediaBody": "저장한 녹음 {count}개({size}MB). 제목, 메모, 위치는 항상 백업되며, 오디오는 포함할 때만 들어갑니다.",
+  "accountBackupMediaTooLarge": "저장한 녹음({size}MB)은 너무 커서 백업에 넣을 수 없습니다. 제목, 메모, 위치만 포함됩니다.",
+  "accountBackupMediaInclude": "녹음 포함",
+  "accountBackupMediaSkip": "녹음 없이"
 }

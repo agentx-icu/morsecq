@@ -2942,7 +2942,7 @@ class SRu extends S {
   String get workbenchFormats => 'WAV, 16-битный PCM, моно или стерео, 8/16/44,1/48 кГц; до 50 МБ и 20 минут.';
 
   @override
-  String get workbenchBackupNote => 'Записи остаются на этом устройстве и не входят в резервную копию профиля; для сохранённых фрагментов копируются только название, заметка и позиции.';
+  String get workbenchBackupNote => 'Записи хранятся на устройстве и попадают в резервную копию личности, только если вы включите их при экспорте. Названия, заметки и позиции сохранённых фрагментов сохраняются всегда.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3428,4 +3428,23 @@ class SRu extends S {
 
   @override
   String get materialsExportTxt => 'Экспорт в текст (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Включить сохранённые записи?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return 'Сохранённых записей: $count ($size МБ). Названия, заметки и позиции всегда в копии; звук — только если вы его включите.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Сохранённые записи ($size МБ) слишком велики для копии; сохраняются только названия, заметки и позиции.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Включить записи';
+
+  @override
+  String get accountBackupMediaSkip => 'Без записей';
 }

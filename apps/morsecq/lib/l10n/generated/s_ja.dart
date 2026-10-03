@@ -2867,7 +2867,7 @@ class SJa extends S {
   String get workbenchFormats => 'WAV（16ビットPCM、モノラル/ステレオ、8/16/44.1/48 kHz）、最大50 MB・20分。';
 
   @override
-  String get workbenchBackupNote => '録音はこの端末に残り、IDのバックアップには含まれません。保存した区間はタイトル・メモ・位置だけがバックアップされます。';
+  String get workbenchBackupNote => '録音はこの端末に残り、バックアップの書き出し時に含めると選んだ場合を除き、ID のバックアップには入りません。保存した選択範囲のタイトル・メモ・位置は常にバックアップされます。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3353,4 +3353,23 @@ class SJa extends S {
 
   @override
   String get materialsExportTxt => 'テキストで書き出す（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '保存した録音を含めますか？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '保存した録音 $count 件（$size MB）。タイトル・メモ・位置は常にバックアップに入ります。音声は含めた場合のみです。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '保存した録音（$size MB）は大きすぎるためバックアップに入れられません。タイトル・メモ・位置のみ含めます。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '録音を含める';
+
+  @override
+  String get accountBackupMediaSkip => '録音なし';
 }

@@ -845,7 +845,7 @@
   "workbenchImport": "导入录音",
   "workbenchEmpty": "导入 WAV 录音，即可循环播放、解码并自己抄收。无需麦克风。",
   "workbenchFormats": "WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。",
-  "workbenchBackupNote": "录音只保存在本机，不包含在身份备份中；已保存的片段只备份标题、备注和位置。",
+  "workbenchBackupNote": "录音保存在本设备上，除非导出备份时选择包含，否则不会进入身份备份。已保存选段的标题、备注和位置始终会备份。",
   "workbenchInfo": "{rate} kHz · {channels} · {duration}",
   "workbenchMono": "单声道",
   "workbenchStereo": "立体声",
@@ -990,5 +990,10 @@
   "chatListenOnlyPreview": "新消息——请收听抄收",
   "chatSaveMaterialConfirm": "保存其余部分",
   "materialsImportConfirm": "导入 {count} 个素材？",
-  "materialsExportTxt": "导出为文本（TXT）"
+  "materialsExportTxt": "导出为文本（TXT）",
+  "accountBackupMediaTitle": "包含已保存的录音吗？",
+  "accountBackupMediaBody": "已保存 {count} 段录音（{size} MB）。标题、备注和位置始终在备份中；音频仅在你选择包含时才会加入。",
+  "accountBackupMediaTooLarge": "已保存的录音（{size} MB）太大，无法放入备份；只会包含标题、备注和位置。",
+  "accountBackupMediaInclude": "包含录音",
+  "accountBackupMediaSkip": "不含录音"
 }

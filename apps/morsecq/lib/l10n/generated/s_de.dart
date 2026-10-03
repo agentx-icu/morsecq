@@ -2894,7 +2894,7 @@ class SDe extends S {
   String get workbenchFormats => 'WAV, 16-Bit-PCM, Mono oder Stereo, 8/16/44,1/48 kHz; bis 50 MB und 20 Minuten.';
 
   @override
-  String get workbenchBackupNote => 'Aufnahmen bleiben auf diesem Gerät und sind nicht im Identitäts-Backup; gespeicherte Ausschnitte sichern nur Titel, Notizen und Positionen.';
+  String get workbenchBackupNote => 'Aufnahmen bleiben auf diesem Gerät und sind nur dann im Identitäts-Backup, wenn du sie beim Exportieren einschließt. Titel, Notizen und Positionen gespeicherter Ausschnitte werden immer gesichert.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3380,4 +3380,23 @@ class SDe extends S {
 
   @override
   String get materialsExportTxt => 'Als Text exportieren (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Gespeicherte Aufnahmen einschließen?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '$count gespeicherte Aufnahmen ($size MB). Titel, Notizen und Positionen sind immer im Backup, der Ton nur, wenn du ihn einschließt.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Gespeicherte Aufnahmen ($size MB) sind zu groß für ein Backup; nur Titel, Notizen und Positionen werden gesichert.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Aufnahmen einschließen';
+
+  @override
+  String get accountBackupMediaSkip => 'Ohne Aufnahmen';
 }

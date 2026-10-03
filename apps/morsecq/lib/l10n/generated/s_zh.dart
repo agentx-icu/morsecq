@@ -2867,7 +2867,7 @@ class SZh extends S {
   String get workbenchFormats => 'WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。';
 
   @override
-  String get workbenchBackupNote => '录音只保存在本机，不包含在身份备份中；已保存的片段只备份标题、备注和位置。';
+  String get workbenchBackupNote => '录音保存在本设备上，除非导出备份时选择包含，否则不会进入身份备份。已保存选段的标题、备注和位置始终会备份。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3353,6 +3353,25 @@ class SZh extends S {
 
   @override
   String get materialsExportTxt => '导出为文本（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '包含已保存的录音吗？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '已保存 $count 段录音（$size MB）。标题、备注和位置始终在备份中；音频仅在你选择包含时才会加入。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '已保存的录音（$size MB）太大，无法放入备份；只会包含标题、备注和位置。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '包含录音';
+
+  @override
+  String get accountBackupMediaSkip => '不含录音';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6218,7 +6237,7 @@ class SZhHant extends SZh {
   String get workbenchFormats => 'WAV，16 位元 PCM，單聲道或立體聲，8/16/44.1/48 kHz；最大 50 MB、20 分鐘。';
 
   @override
-  String get workbenchBackupNote => '錄音只保存在本機，不包含在身分備份中；已儲存的片段只備份標題、備註和位置。';
+  String get workbenchBackupNote => '錄音儲存在本裝置上，除非匯出備份時選擇包含，否則不會進入身分備份。已儲存選段的標題、備註和位置一律會備份。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -6704,4 +6723,23 @@ class SZhHant extends SZh {
 
   @override
   String get materialsExportTxt => '匯出為文字（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '包含已儲存的錄音嗎？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '已儲存 $count 段錄音（$size MB）。標題、備註和位置一律在備份中；音訊僅在你選擇包含時才會加入。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '已儲存的錄音（$size MB）太大，無法放入備份；只會包含標題、備註和位置。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '包含錄音';
+
+  @override
+  String get accountBackupMediaSkip => '不含錄音';
 }

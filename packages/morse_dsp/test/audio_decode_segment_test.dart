@@ -167,4 +167,64 @@ void main() {
     final e = res.events.first;
     expect(e.start, r.info.durationOf(e.startFrame));
   });
+
+  group('recording edges', () {
+    Future<WavPcmReader> clip(
+      String text, {
+      Duration leadIn = const Duration(milliseconds: 300),
+      Duration tail = const Duration(milliseconds: 600),
+      double? snrDb = 20,
+    }) {
+      final Int16List pcm = SyntheticMorse(
+        snrDb: snrDb,
+        leadIn: leadIn,
+        tail: tail,
+      ).renderText(text);
+      return WavPcmReader.open(BytesSource(wavBytes(pcm)));
+    }
+
+    test('audio that ends mid-tone keeps its last mark, flagged', () async {
+      for (final text in <String>['T', 'SOS']) {
+        final r = await clip(text, tail: Duration.zero);
+        final result = await decodeSegment(
+          r,
+          startFrame: 0,
+          endFrame: r.info.frameCount,
+        );
+        expect(result!.text, text, reason: text);
+        expect(result.edgeAtEnd, isTrue, reason: text);
+      }
+    });
+
+    test('a tone 5 ms into the recording is decoded', () async {
+      final r = await clip(
+        'TEST',
+        leadIn: const Duration(milliseconds: 5),
+        snrDb: null,
+      );
+      final result = await decodeSegment(
+        r,
+        startFrame: 0,
+        endFrame: r.info.frameCount,
+      );
+      expect(result!.text, 'TEST');
+    });
+
+    test('noise before the call at 44.1 kHz decodes no extra symbol', () async {
+      final Int16List pcm = SyntheticMorse(
+        sampleRate: 44100,
+        snrDb: 10,
+        leadIn: const Duration(seconds: 1),
+      ).renderText('SOS');
+      final r = await WavPcmReader.open(
+        BytesSource(wavBytes(pcm, sampleRate: 44100)),
+      );
+      final result = await decodeSegment(
+        r,
+        startFrame: 0,
+        endFrame: r.info.frameCount,
+      );
+      expect(result!.text, 'SOS');
+    });
+  });
 }

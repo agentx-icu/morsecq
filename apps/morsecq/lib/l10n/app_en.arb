@@ -4074,7 +4074,7 @@
   "@workbenchFormats": {
     "description": "Recording workbench: supported formats and limits"
   },
-  "workbenchBackupNote": "Recordings stay on this device and are not included in identity backups; saved selections back up only their titles, notes and positions.",
+  "workbenchBackupNote": "Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.",
   "@workbenchBackupNote": {
     "description": "Recording workbench: recordings are not part of identity backups"
   },
@@ -4806,5 +4806,38 @@
   "materialsExportTxt": "Export as text (TXT)",
   "@materialsExportTxt": {
     "description": "My materials: export the original text as a .txt file"
+  },
+  "accountBackupMediaTitle": "Include saved recordings?",
+  "@accountBackupMediaTitle": {
+    "description": "Backup export: ask whether to include saved recordings"
+  },
+  "accountBackupMediaBody": "{count} saved recordings ({size} MB). Their titles, notes and positions are always in the backup; the audio only if you include it.",
+  "@accountBackupMediaBody": {
+    "description": "Backup export: recordings count and size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "accountBackupMediaTooLarge": "Saved recordings ({size} MB) are too large to put in a backup; only their titles, notes and positions are included.",
+  "@accountBackupMediaTooLarge": {
+    "description": "Backup export: recordings too large to include",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "accountBackupMediaInclude": "Include recordings",
+  "@accountBackupMediaInclude": {
+    "description": "Backup export: include recordings"
+  },
+  "accountBackupMediaSkip": "Without recordings",
+  "@accountBackupMediaSkip": {
+    "description": "Backup export: continue without recordings (default)"
   }
 }

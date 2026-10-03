@@ -222,6 +222,38 @@ void main() {
       await svc.dispose();
     });
 
+    test('recordings are left out unless the learner opts in', () async {
+      final svc = newService();
+      await svc.create(displayName: 'plain');
+      final media = Directory(p.join(paths.root, 'media', 'recordings'))
+        ..createSync(recursive: true);
+      File(p.join(media.path, 'rec_a.wav')).writeAsBytesSync([7, 8, 9]);
+
+      final without = BackupContainer.decode(await svc.exportBackup());
+      expect(without.mediaFiles, isEmpty);
+      expect(without.entries.keys.where((k) => k.startsWith('media/')), isEmpty);
+
+      final bytes = await svc.exportBackup(includeMedia: true);
+      final withMedia = BackupContainer.decode(bytes);
+      expect(withMedia.mediaFiles.map((e) => e.key), ['media/recordings/rec_a.wav']);
+      await svc.dispose();
+
+      final otherRoot = IdentityPaths(p.join(tempRoot.path, 'other'));
+      final restored = Tim2ToxIdentityService(
+        paths: otherRoot,
+        engine: engine,
+        crypto: crypto,
+        verifier: PasswordVerifier(MemorySecureStore(), iterations: 10),
+      );
+      await restored.importBackup(bytes);
+      expect(
+        File(p.join(otherRoot.root, 'media', 'recordings', 'rec_a.wav'))
+            .readAsBytesSync(),
+        [7, 8, 9],
+      );
+      await restored.dispose();
+    });
+
     test('garbage is rejected as invalid_backup', () async {
       final svc = newService();
       expect(

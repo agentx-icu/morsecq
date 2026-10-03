@@ -2895,7 +2895,7 @@ class SFr extends S {
   String get workbenchFormats => 'WAV, PCM 16 bits, mono ou stéréo, 8/16/44,1/48 kHz ; jusqu\'à 50 Mo et 20 minutes.';
 
   @override
-  String get workbenchBackupNote => 'Les enregistrements restent sur cet appareil et ne font pas partie des sauvegardes d\'identité ; les sélections enregistrées ne sauvegardent que titre, notes et positions.';
+  String get workbenchBackupNote => 'Les enregistrements restent sur cet appareil et ne sont pas dans la sauvegarde d\'identité, sauf si vous choisissez de les inclure à l\'export. Les titres, notes et positions des sélections sont toujours sauvegardés.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -3381,4 +3381,23 @@ class SFr extends S {
 
   @override
   String get materialsExportTxt => 'Exporter en texte (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Inclure les enregistrements sauvegardés ?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '$count enregistrements sauvegardés ($size Mo). Titres, notes et positions sont toujours dans la sauvegarde ; l\'audio seulement si vous l\'incluez.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Les enregistrements ($size Mo) sont trop volumineux pour la sauvegarde ; seuls titres, notes et positions sont inclus.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Inclure les enregistrements';
+
+  @override
+  String get accountBackupMediaSkip => 'Sans les enregistrements';
 }

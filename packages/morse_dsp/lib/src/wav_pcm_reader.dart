@@ -62,7 +62,6 @@ final class WavInfo {
     required this.bitsPerSample,
     required this.dataOffset,
     required this.dataLength,
-    required this.dataTruncated,
   });
 
   final int sampleRate;
@@ -72,12 +71,8 @@ final class WavInfo {
   /// Byte offset of the first sample.
   final int dataOffset;
 
-  /// Usable sample bytes (whole frames only).
+  /// Sample bytes (whole frames; a damaged declaration is rejected).
   final int dataLength;
-
-  /// The data chunk declared more bytes than the file holds; only the
-  /// frames actually present are used.
-  final bool dataTruncated;
 
   int get blockAlign => channels * bitsPerSample ~/ 8;
 
@@ -125,6 +120,12 @@ final class WavPcmReader {
     }
     if (_tag(head, 8) != 'WAVE') {
       throw const WavFormatException(WavError.notWave);
+    }
+    // The RIFF size must fit the file (one pad byte of slack): a shorter
+    // file was cut off, a larger declaration is damaged or streamed.
+    final int riffEnd = head.getUint32(4, Endian.little) + 8;
+    if (riffEnd > length + 1) {
+      throw const WavFormatException(WavError.truncated, 'RIFF size');
     }
 
     int? rate;
@@ -178,10 +179,13 @@ final class WavPcmReader {
           );
         }
       } else if (id == 'data') {
+        // A data chunk running past the end is a damaged or cut-off file:
+        // rejected, never silently clipped (functional spec §11.3).
+        if (body + size > length) {
+          throw const WavFormatException(WavError.truncated, 'data chunk');
+        }
         dataOffset = body;
         dataDeclared = size;
-        // Data running past the end: nothing can follow it.
-        if (body + size > length) break;
       } else if (body + size > length) {
         throw WavFormatException(WavError.truncated, 'chunk "$id"');
       }
@@ -196,16 +200,16 @@ final class WavPcmReader {
       throw const WavFormatException(WavError.missingData);
     }
     final int blockAlign = channels * 2;
-    final int available = math.min(dataDeclared, length - dataOffset);
-    final int usable = available - available % blockAlign;
-    if (usable <= 0) throw const WavFormatException(WavError.missingData);
+    if (dataDeclared % blockAlign != 0) {
+      throw const WavFormatException(WavError.truncated, 'partial frame');
+    }
+    if (dataDeclared <= 0) throw const WavFormatException(WavError.missingData);
     final WavInfo info = WavInfo(
       sampleRate: rate,
       channels: channels,
       bitsPerSample: bits,
       dataOffset: dataOffset,
-      dataLength: usable,
-      dataTruncated: dataDeclared > available,
+      dataLength: dataDeclared,
     );
     if (info.duration > maxDuration) {
       throw const WavFormatException(WavError.tooLong, 'over 20 minutes');

@@ -53,7 +53,7 @@ void main() {
         home: WorkbenchScreen(
           picker: picker,
           player: player,
-          dataDirectory: () async => dataDir,
+          profileRoot: () async => dataDir,
           training: () async => t.controller,
         ),
       ),
@@ -78,12 +78,9 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('workbench-decode')));
     await settle(tester);
-    expect(find.text('SOS TEST'), findsOneWidget);
-
-    await tester.tap(find.text(en.workbenchModeCopy));
-    await tester.pump();
-    // Decoder text is hidden by default while copying.
+    // Copy-it-myself is the default: the decoder text stays hidden.
     expect(find.text('SOS TEST'), findsNothing);
+    expect(find.text(en.workbenchDecoderHidden), findsOneWidget);
     await tester.enterText(
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',

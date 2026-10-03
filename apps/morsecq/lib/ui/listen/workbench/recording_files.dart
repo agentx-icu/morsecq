@@ -94,23 +94,55 @@ final class FileByteSource implements ByteSource {
   }
 }
 
-/// Recordings copied into managed storage beside (not inside) the
-/// profile's training directory: `<profile>/media/recordings/`. Training
-/// documents travel in identity backups; recordings deliberately do not
-/// (spec §11.3), only the metadata that refers to them.
+/// Recordings copied into managed storage in the learning profile's own
+/// root, beside (not inside) the tree identity backups copy:
+/// `<profile root>/media/recordings/`. Training documents travel in
+/// identity backups; recordings deliberately do not (spec §11.3), only the
+/// metadata that refers to them.
 final class RecordingLibrary {
-  RecordingLibrary(this.dataDirectory);
+  RecordingLibrary(this.root);
 
-  /// The profile's `IdentityService.dataDirectory()` (its training dir).
-  final String dataDirectory;
-
-  /// Where relative media paths are resolved from.
-  String get root => p.dirname(dataDirectory);
+  /// The profile root media paths resolve from: an identity's root (the
+  /// parent of `IdentityService.dataDirectory()`, which is the backed-up
+  /// tree), or the guest directory (`GuestStore.directory()`). Each profile
+  /// has its own.
+  final String root;
 
   static const String workingFile = 'media/recordings/current.wav';
+  static final RegExp _safe = RegExp(
+    r'^media/recordings/[A-Za-z0-9_\-]+(\.[A-Za-z0-9]+)?$',
+  );
 
-  File fileFor(String relativePath) =>
-      File(p.joinAll(<String>[root, ...relativePath.split('/')]));
+  /// The managed file for [relativePath]; throws [ArgumentError] for any
+  /// path that is not a plain name under `media/recordings/` or that would
+  /// resolve outside the profile.
+  File fileFor(String relativePath) {
+    if (!_safe.hasMatch(relativePath)) {
+      throw ArgumentError.value(relativePath, 'relativePath', 'unsafe');
+    }
+    final resolved = p.normalize(
+      p.joinAll(<String>[root, ...relativePath.split('/')]),
+    );
+    if (!p.isWithin(p.normalize(root), resolved)) {
+      throw ArgumentError.value(relativePath, 'relativePath', 'outside');
+    }
+    return File(resolved);
+  }
+
+  /// Deletes recordings no entry refers to (left behind when an entry was
+  /// deleted while its recording was open). Call only when no import or
+  /// save is in flight.
+  Future<void> pruneUnreferenced(Set<String> referenced) async {
+    final dir = Directory(p.join(root, 'media', 'recordings'));
+    if (!await dir.exists()) return;
+    await for (final entity in dir.list()) {
+      if (entity is! File) continue;
+      final rel = 'media/recordings/${p.basename(entity.path)}';
+      if (rel == workingFile || referenced.contains(rel)) continue;
+      if (!_safe.hasMatch(rel)) continue;
+      await entity.delete();
+    }
+  }
 
   /// Copies [picked] into [relativePath] (the working slot by default)
   /// after validating it, and opens it. Throws [WavFormatException] for
@@ -193,6 +225,23 @@ final class RecordingLibrary {
   }
 
   Future<bool> exists(String relativePath) => fileFor(relativePath).exists();
+
+  /// Saved recordings (not the working one): count and total bytes.
+  /// Synchronous: a handful of directory entries, read before a backup.
+  (int, int) savedSizeSync() {
+    final dir = Directory(p.join(root, 'media', 'recordings'));
+    if (!dir.existsSync()) return (0, 0);
+    var count = 0;
+    var bytes = 0;
+    for (final entity in dir.listSync(followLinks: false)) {
+      if (entity is! File || p.basename(entity.path) == 'current.wav') {
+        continue;
+      }
+      count++;
+      bytes += entity.lengthSync();
+    }
+    return (count, bytes);
+  }
 
   Future<void> delete(String relativePath) async {
     final f = fileFor(relativePath);
