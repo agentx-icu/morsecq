@@ -66,7 +66,12 @@ abstract interface class LocalNotificationsApi {
 
   /// Requests the OS permission where one exists (Android 13+, iOS, macOS).
   /// Returns true where no permission concept exists (Linux, Windows).
+  /// May show a system dialog, so only call it while the app is visible.
   Future<bool> requestPermission();
+
+  /// Whether posting is currently allowed, WITHOUT prompting: safe from the
+  /// background. True where no permission concept exists.
+  Future<bool> isPermissionGranted();
 
   Future<void> show(NotificationRequest request);
 

@@ -12,8 +12,21 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
     this.launchPayload,
   });
 
-  /// What [requestPermission] answers.
+  /// The OS permission state: what [isPermissionGranted] reports and what
+  /// [requestPermission] answers (unless [grantOnRequest] changes it first).
   bool permissionGranted;
+
+  /// When non-null, the user's answer to the next prompt: [requestPermission]
+  /// stores it in [permissionGranted] before answering.
+  bool? grantOnRequest;
+
+  /// When non-null, the prompt stays on screen until this completes; its
+  /// value is the user's answer (overrides [grantOnRequest]).
+  Future<bool>? promptAnswer;
+
+  /// When non-null, the silent permission check ([isPermissionGranted]) is
+  /// still running until this completes; its value is the OS answer.
+  Future<bool>? permissionCheckAnswer;
 
   /// What [initialize] answers (false simulates a plugin failure).
   bool initializeResult;
@@ -27,6 +40,7 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
   int cancelAllCalls = 0;
   int refreshStringsCalls = 0;
   int permissionRequests = 0;
+  int permissionChecks = 0;
   bool initialized = false;
 
   final Map<int, NotificationRequest> _active = <int, NotificationRequest>{};
@@ -60,6 +74,21 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
   @override
   Future<bool> requestPermission() async {
     permissionRequests++;
+    final Future<bool>? held = promptAnswer;
+    if (held != null) {
+      permissionGranted = await held;
+      return permissionGranted;
+    }
+    final bool? answer = grantOnRequest;
+    if (answer != null) permissionGranted = answer;
+    return permissionGranted;
+  }
+
+  @override
+  Future<bool> isPermissionGranted() async {
+    permissionChecks++;
+    final Future<bool>? held = permissionCheckAnswer;
+    if (held != null) return held;
     return permissionGranted;
   }
 

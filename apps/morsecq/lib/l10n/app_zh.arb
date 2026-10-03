@@ -679,5 +679,10 @@
   "chatSelfMe": "我",
   "chatSelfLocalOnly": "仅保存在本机",
   "chatSelfContactSubtitle": "草稿、练习与备忘 · 不会发送",
-  "learnShowFewerChars": "收起字符"
+  "learnShowFewerChars": "收起字符",
+  "learnLeaveDrillTitle": "退出本次练习？",
+  "learnLeaveDrillBody": "本次练习已完成的轮次不会被保存。",
+  "learnLeaveDrillConfirm": "退出",
+  "chatScanQrPermissionDenied": "MorseCQ 需要相机权限才能扫描二维码，请在系统设置中允许。",
+  "chatScanQrCameraUnavailable": "此设备的相机不可用。"
 }

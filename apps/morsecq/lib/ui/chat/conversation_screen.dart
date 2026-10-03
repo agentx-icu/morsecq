@@ -12,6 +12,7 @@ import 'conversation_actions.dart';
 import 'conversation_auto_play.dart';
 import 'conversation_target.dart';
 import 'conversation_header.dart';
+import 'conversation_presence.dart';
 import 'conversation_history.dart';
 import 'conversation_timeline.dart';
 import 'message_bubble.dart';
@@ -49,6 +50,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   late final ConversationAutoPlay _autoPlay = ConversationAutoPlay(_playback);
   late final StreamSubscription<ChatMessage> _events;
   late final LocalMessageSends _localSends;
+  late final ConversationPresence _presence = ConversationPresence(
+    conversationId: _id,
+    onSeen: () => unawaited(_markReadNow()),
+  );
   final ScrollController _scroll = ScrollController();
   final GlobalKey _timelineOrigin = GlobalKey();
   final List<ChatMessage> _older = <ChatMessage>[];
@@ -84,6 +89,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _localSends = LocalMessageSends.forService(_service)
       ..addListener(_onLocalSend);
     _scroll.addListener(_onScroll);
+    _presence.attach(context);
     unawaited(_load());
   }
 
@@ -91,11 +97,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _autoPlay.update(context);
+    _presence.update(context);
   }
 
   @override
   void dispose() {
     _autoPlay.dispose();
+    _presence.dispose();
     unawaited(_events.cancel());
     _localSends.removeListener(_onLocalSend);
     _scroll.dispose();
@@ -133,7 +141,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         _hasMore = history.length == _historyLimit;
       });
       _scrollToEnd();
-      await _markRead();
+      _markRead();
     } on Object catch (e) {
       if (mounted && generation == _generation) {
         setState(() {
@@ -197,7 +205,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
-  Future<void> _markRead() async {
+  /// Only once the user can see it: see [ConversationPresence].
+  void _markRead() => _presence.requestRead();
+
+  Future<void> _markReadNow() async {
     try {
       await _service.markRead(_id);
     } on Object {
@@ -230,7 +241,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (added && !message.isMine) _autoPlay.incoming(message);
     if (added && follow) {
       _scrollToEnd();
-      if (!message.isMine) unawaited(_markRead());
+      if (!message.isMine) _markRead();
     }
   }
 
@@ -240,7 +251,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _onScroll() {
     if (_newMessages > 0 && _nearBottom) {
       setState(() => _newMessages = 0);
-      unawaited(_markRead());
+      _markRead();
     }
     if (!_following &&
         _scroll.hasClients &&
@@ -277,7 +288,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _showLatest() {
     setState(() => _newMessages = 0);
     _scrollToEnd();
-    unawaited(_markRead());
+    _markRead();
   }
 
   void _onLocalSend() {
@@ -395,19 +406,28 @@ class _ConversationScreenState extends State<ConversationScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (conference) const ConferenceNote(),
-          Expanded(child: _buildList(settings)),
-          MessageInput(
-            key: ValueKey<String>('input_$_id'),
-            service: _service,
-            conversationId: _id,
-            playback: _playback,
-            initialDraft: _draft(),
-            onSent: (_) => _showLatest(),
-          ),
-        ],
+      // Landscape phones (~320-430 px tall) and large text make the keyed
+      // composer taller than the body; cap it and let it scroll instead.
+      body: LayoutBuilder(
+        builder: (context, box) => Column(
+          children: [
+            if (conference) const ConferenceNote(),
+            Expanded(child: _buildList(settings)),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: box.maxHeight * 0.75),
+              child: SingleChildScrollView(
+                child: MessageInput(
+                  key: ValueKey<String>('input_$_id'),
+                  service: _service,
+                  conversationId: _id,
+                  playback: _playback,
+                  initialDraft: _draft(),
+                  onSent: (_) => _showLatest(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -422,29 +442,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget _buildList(MorsePlaybackSettings settings) {
     final Object? error = _error;
     if (error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(describeChatError(context.s, error)),
-            TextButton(
-              onPressed: () => unawaited(_load()),
-              child: Text(context.s.chatRetryHistory),
-            ),
-          ],
-        ),
+      return ConversationPlaceholder(
+        text: describeChatError(context.s, error),
+        onRetry: () => unawaited(_load()),
       );
     }
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_messages.isEmpty) {
-      return Center(
-        child: Text(
-          context.s.chatNoMessages,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
+      return ConversationPlaceholder(text: context.s.chatNoMessages);
     }
     return ListenableBuilder(
       listenable: _playback,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/ui/listen/listen_controller.dart';
 import 'package:morsecq/ui/listen/record_pcm_source.dart';
 import 'package:record/record.dart';
@@ -59,6 +60,13 @@ final class _FakeRecorder implements AudioRecorder {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+final class _CountingSession implements AudioSessionApi {
+  int restores = 0;
+
+  @override
+  Future<void> configureForPlayback() async => restores++;
+}
+
 Future<Stream<Uint8List>> _start(RecordPcmSource source) =>
     source.start(sampleRate: 48000, channels: 1);
 
@@ -102,6 +110,59 @@ void main() {
     await pumpEventQueue();
     expect(done, isTrue);
     expect(recorder.states.hasListener, isFalse);
+  });
+
+  group('playback session', () {
+    late _CountingSession session;
+
+    setUp(() {
+      session = _CountingSession();
+      source = RecordPcmSource(recorder: recorder, audioSession: session);
+    });
+
+    test('a capture the platform ends restores it without stop()', () async {
+      // Regression (merge with the _CaptureSession rewrite): a platform-side
+      // stop ends the stream and the controller goes idle without calling
+      // stop(), so iOS stayed in playAndRecord.
+      final stream = await _start(source);
+      final sub = stream.listen((_) {});
+      addTearDown(sub.cancel);
+      recorder.states
+        ..add(RecordState.record)
+        ..add(RecordState.stop);
+      await pumpEventQueue();
+      expect(session.restores, 1);
+      expect(recorder.stopCalls, 0, reason: 'the platform already stopped');
+      await source.stop();
+      expect(session.restores, 1, reason: 'restored once per capture');
+    });
+
+    test(
+      'an explicit stop restores once and the end is not double-counted',
+      () async {
+        final stream = await _start(source);
+        final sub = stream.listen((_) {});
+        await source.stop();
+        await sub.cancel();
+        await pumpEventQueue();
+        expect(session.restores, 1);
+        expect(recorder.stopCalls, 1);
+      },
+    );
+
+    test('an old capture ending does not stop a newer one', () async {
+      final first = await _start(source);
+      final firstSub = first.listen((_) {});
+      addTearDown(firstSub.cancel);
+      final second = await _start(source);
+      final secondSub = second.listen((_) {});
+      addTearDown(secondSub.cancel);
+      await pumpEventQueue();
+      expect(recorder.stopCalls, 0, reason: 'the restart replaced capture 1');
+      expect(session.restores, 0);
+      await source.stop();
+      expect(session.restores, 1);
+    });
   });
 
   test('a late stop from the previous capture is ignored', () async {

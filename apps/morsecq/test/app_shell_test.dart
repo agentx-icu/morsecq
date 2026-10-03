@@ -1,14 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/di/app_services.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/i18n/locale_resolution.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
+import 'package:morsecq/notifications/notification_payload.dart';
+import 'package:morsecq/notifications/testing/fake_badge_api.dart';
+import 'package:morsecq/notifications/testing/fake_local_notifications_api.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
+import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/conversation_list.dart';
+import 'package:morsecq/ui/learn/drill_session_guard.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
@@ -18,6 +26,7 @@ import 'package:morsecq/ui/reference/reference_screen.dart';
 import 'package:morsecq/ui/responsive.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
+import 'package:provider/provider.dart';
 
 import 'account/test_app.dart';
 
@@ -50,6 +59,7 @@ Future<void> _pumpAt(
   WidgetTester tester,
   Size logicalSize, {
   String? localeTag,
+  FakeLocalNotificationsApi? notifications,
 }) async {
   tester.view.physicalSize = logicalSize;
   tester.view.devicePixelRatio = 1.0;
@@ -67,6 +77,12 @@ Future<void> _pumpAt(
     MorsecqApp(
       backend: FakeBackendFactory(identityService: identity),
       backupFiles: FakeBackupFileGateway(),
+      notifications: notifications == null
+          ? null
+          : NotificationApis(
+              notifications: notifications,
+              badge: FakeBadgeApi(),
+            ),
       localeStore: localeTag == null
           ? null
           : InMemoryKeyValueStore({LocaleController.storageKey: localeTag}),
@@ -180,6 +196,140 @@ void main() {
         await settle(tester);
         _expectSelected(label);
       }
+    });
+  });
+
+  group('notification taps', () {
+    /// Every ConversationScreen in the navigator, covered routes included.
+    final Finder screens = find.byType(ConversationScreen, skipOffstage: false);
+
+    Future<(FakeLocalNotificationsApi, String)> openChat(
+      WidgetTester tester,
+    ) async {
+      final api = FakeLocalNotificationsApi();
+      await _pumpAt(tester, kPhoneSize, notifications: api);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(NavigationBar),
+          matching: find.text(ChatPage.title(en)),
+        ),
+      );
+      await settle(tester);
+      final chat = tester
+          .element(find.byType(ConversationList))
+          .read<ChatService>();
+      return (api, chat.conversations.first.id);
+    }
+
+    testWidgets('tapping the open conversation does not stack a duplicate', (
+      tester,
+    ) async {
+      final (api, id) = await openChat(tester);
+      api.tapTarget(OpenConversationTarget(id));
+      await settle(tester);
+      expect(screens, findsOneWidget);
+
+      // Reading it already: a second tap (or a cold-start replay) is a no-op.
+      api.tapTarget(OpenConversationTarget(id));
+      await settle(tester);
+      expect(screens, findsOneWidget);
+    });
+
+    testWidgets('a group invite tap leaves the chat for the Groups tab', (
+      tester,
+    ) async {
+      final (api, id) = await openChat(tester);
+      api.tapTarget(OpenConversationTarget(id));
+      await settle(tester);
+      expect(screens, findsOneWidget);
+
+      api.tapTarget(const GroupInviteTarget('invite-1'));
+      await settle(tester);
+      expect(screens, findsNothing);
+      _expectSelected(GroupsPage.title(en));
+
+      api.tapTarget(FriendRequestTarget('A' * 64));
+      await settle(tester);
+      _expectSelected(ChatPage.title(en));
+    });
+
+    testWidgets('two quick taps for one conversation open it once', (
+      tester,
+    ) async {
+      final (api, id) = await openChat(tester);
+      // No frame between them: the first screen has not built yet.
+      api.tapTarget(OpenConversationTarget(id));
+      api.tapTarget(OpenConversationTarget(id));
+      await settle(tester);
+      expect(screens, findsOneWidget);
+
+      // The reservation is released when the route pops.
+      await tester.tap(find.byType(BackButton));
+      await settle(tester);
+      expect(screens, findsNothing);
+      api.tapTarget(OpenConversationTarget(id));
+      await settle(tester);
+      expect(screens, findsOneWidget);
+    });
+
+    testWidgets('A, B, A before the first frame opens A once', (tester) async {
+      final (api, a) = await openChat(tester);
+      final chat =
+          tester.element(find.byType(ConversationList)).read<ChatService>()
+              as FakeChatService;
+      final String bob = 'B' * 64;
+      chat.addFakeFriend(Friend(publicKey: bob, displayName: 'Bob'));
+      chat.receiveMessage('c2c_$bob', 'CQ DE BOB');
+      await settle(tester);
+
+      api.tapTarget(OpenConversationTarget(a));
+      api.tapTarget(OpenConversationTarget('c2c_$bob'));
+      api.tapTarget(OpenConversationTarget(a));
+      await settle(tester);
+      expect(screens, findsNWidgets(2));
+    });
+
+    testWidgets('an invite tap right after a conversation tap', (tester) async {
+      final (api, id) = await openChat(tester);
+      // No frame between: the conversation route is pushed, not built.
+      api.tapTarget(OpenConversationTarget(id));
+      api.tapTarget(const GroupInviteTarget('invite-1'));
+      await settle(tester);
+      expect(tester.takeException(), isNull);
+      expect(screens, findsNothing);
+      _expectSelected(GroupsPage.title(en));
+    });
+
+    testWidgets('a friend-request tap does not discard a guarded drill', (
+      tester,
+    ) async {
+      final api = FakeLocalNotificationsApi();
+      await _pumpAt(tester, kPhoneSize, notifications: api);
+      final navigator = Navigator.of(
+        tester.element(find.byType(NavigationBar)),
+      );
+      unawaited(
+        navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => const DrillLeaveGuard(
+              guard: true,
+              child: Scaffold(body: Text('drill in progress')),
+            ),
+          ),
+        ),
+      );
+      await settle(tester);
+
+      api.tapTarget(FriendRequestTarget('A' * 64));
+      await settle(tester);
+      // The guard was asked, not bypassed.
+      expect(find.text('drill in progress'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      await tester.tap(find.text(en.actionCancel));
+      await settle(tester);
+      expect(find.text('drill in progress'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
     });
   });
 

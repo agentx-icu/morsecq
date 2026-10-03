@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'app_foreground.dart';
 import 'sink.dart';
 import 'soloud_api.dart';
 
@@ -11,18 +14,33 @@ import 'soloud_api.dart';
 /// buffer size alone, and the short linear ramp removes the click a hard
 /// gate would produce at a non-zero sample.
 ///
+/// Mobile lifecycle: the silent looping voice keeps the output device
+/// running, and on iOS (playback category) a running device would keep a
+/// backgrounded app alive indefinitely under an `audio` background mode
+/// (which the app therefore does not declare). So while
+/// [AppForeground] reports background the voice is stopped (the engine then
+/// idles its device) and key-downs are ignored; back in the foreground a
+/// fresh voice is started.
+///
+/// Recovery: every [on] first asks the engine to restart the device if the
+/// OS stopped it (an interruption that never reported its end), and starts a
+/// new voice when the old one is gone, so the tone never stays dead.
+///
 /// All engine access goes through [SoloudApi] so tests can substitute a fake.
 final class SidetoneSink implements MorseSink {
   SidetoneSink({
     SoloudApi? api,
+    AppForeground? foreground,
     double frequencyHz = 700,
     double volume = 0.8,
     this.ramp = const Duration(milliseconds: 5),
   })  : _api = api ?? FlutterSoloudApi(),
+        _foreground = foreground ?? const BindingAppForeground(),
         _frequencyHz = frequencyHz,
         _volume = volume.clamp(0.0, 1.0);
 
   final SoloudApi _api;
+  final AppForeground _foreground;
 
   /// Attack / release time applied to every on/off transition.
   final Duration ramp;
@@ -36,6 +54,8 @@ final class SidetoneSink implements MorseSink {
   bool _prepared = false;
   bool _disposed = false;
   bool _isOn = false;
+  bool _background = false;
+  void Function()? _stopListening;
 
   bool get isPrepared => _prepared;
   bool get isOn => _isOn;
@@ -92,7 +112,11 @@ final class SidetoneSink implements MorseSink {
         return;
       }
       _api.setWaveformFrequency(source, _frequencyHz);
-      _voice = _api.playLooping(source, volume: 0);
+      _stopListening ??= _foreground.listen(_onForegroundChanged);
+      _background = !_foreground.isForeground;
+      if (!_background) {
+        _voice = _api.playLooping(source, volume: 0);
+      }
       _prepared = true;
     } on Object {
       if (!_disposed) {
@@ -112,12 +136,67 @@ final class SidetoneSink implements MorseSink {
 
   @override
   void on() {
-    final voice = _voice;
-    if (voice == null || _isOn) {
+    if (!_prepared || _isOn || _background) {
+      return;
+    }
+    final voice = _audibleVoice();
+    if (voice == null) {
       return;
     }
     _isOn = true;
     _api.fadeVolume(voice, _volume, ramp);
+  }
+
+  /// The running voice with its device started, replacing a voice the
+  /// engine lost; null when the OS refuses output right now (a call is
+  /// active), in which case the next [on] tries again.
+  SidetoneVoice? _audibleVoice() {
+    final voice = _voice;
+    if (voice != null) {
+      try {
+        _api.resumeVoice(voice);
+        return voice;
+      } on Object {
+        _voice = null;
+        _stopQuietly(voice);
+      }
+    }
+    return _startVoice();
+  }
+
+  SidetoneVoice? _startVoice() {
+    final source = _source;
+    if (source == null) {
+      return null;
+    }
+    try {
+      return _voice = _api.playLooping(source, volume: 0);
+    } on Object {
+      return null;
+    }
+  }
+
+  void _stopQuietly(SidetoneVoice voice) {
+    unawaited(
+      Future<void>.sync(() => _api.stop(voice)).catchError((Object _) {}),
+    );
+  }
+
+  void _onForegroundChanged(bool foreground) {
+    if (!_prepared || foreground == !_background) {
+      return;
+    }
+    _background = !foreground;
+    if (foreground) {
+      _voice ??= _startVoice();
+      return;
+    }
+    _isOn = false;
+    final voice = _voice;
+    _voice = null;
+    if (voice != null) {
+      _stopQuietly(voice);
+    }
   }
 
   @override
@@ -156,6 +235,8 @@ final class SidetoneSink implements MorseSink {
   /// Frees the voice and source (if any) and returns the engine lease even
   /// when freeing them throws.
   Future<void> _release() async {
+    _stopListening?.call();
+    _stopListening = null;
     final voice = _voice;
     final source = _source;
     _voice = null;

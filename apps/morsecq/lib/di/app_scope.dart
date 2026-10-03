@@ -6,6 +6,7 @@ import '../desktop/desktop_shell_controller.dart';
 import '../i18n/key_value_store.dart';
 import '../i18n/locale_controller.dart';
 import '../lifecycle/app_lifecycle_coordinator.dart';
+import '../lifecycle/background_task_api.dart';
 import '../notifications/connection_banner_policy.dart';
 import '../notifications/notification_center.dart';
 import '../notifications/notification_prefs.dart';
@@ -38,6 +39,7 @@ class AppScope extends StatefulWidget {
     this.localeStore,
     this.notificationApis,
     this.desktopShell,
+    this.backgroundTasks,
   });
 
   final BackendFactory factory;
@@ -56,6 +58,10 @@ class AppScope extends StatefulWidget {
 
   /// Initialised desktop shell from `main()`; null on mobile and in tests.
   final DesktopShellController? desktopShell;
+
+  /// OS background-task bridge from `main()` (iOS grace time while the
+  /// durability flush runs); null means none (tests).
+  final BackgroundTaskApi? backgroundTasks;
 
   @override
   State<AppScope> createState() => _AppScopeState();
@@ -84,6 +90,7 @@ class _AppScopeState extends State<AppScope> {
     notificationApis: widget.notificationApis,
     notificationPrefs: _preferences.notifications,
     onBackground: _flushSettings,
+    backgroundTasks: widget.backgroundTasks,
     desktopShell: widget.desktopShell,
   );
 

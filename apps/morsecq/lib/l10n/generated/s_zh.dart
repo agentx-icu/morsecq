@@ -2294,6 +2294,21 @@ class SZh extends S {
 
   @override
   String get learnShowFewerChars => '收起字符';
+
+  @override
+  String get learnLeaveDrillTitle => '退出本次练习？';
+
+  @override
+  String get learnLeaveDrillBody => '本次练习已完成的轮次不会被保存。';
+
+  @override
+  String get learnLeaveDrillConfirm => '退出';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ 需要相机权限才能扫描二维码，请在系统设置中允许。';
+
+  @override
+  String get chatScanQrCameraUnavailable => '此设备的相机不可用。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4586,4 +4601,19 @@ class SZhHant extends SZh {
 
   @override
   String get learnShowFewerChars => '收起字元';
+
+  @override
+  String get learnLeaveDrillTitle => '退出本次練習？';
+
+  @override
+  String get learnLeaveDrillBody => '本次練習已完成的輪次不會被儲存。';
+
+  @override
+  String get learnLeaveDrillConfirm => '退出';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ 需要相機權限才能掃描 QR 碼，請在系統設定中允許。';
+
+  @override
+  String get chatScanQrCameraUnavailable => '此裝置的相機無法使用。';
 }

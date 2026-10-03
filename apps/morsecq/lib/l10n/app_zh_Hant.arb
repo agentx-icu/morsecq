@@ -659,5 +659,10 @@
   "chatSelfMe": "我",
   "chatSelfLocalOnly": "僅儲存在本機",
   "chatSelfContactSubtitle": "草稿、練習與備忘 · 不會傳送",
-  "learnShowFewerChars": "收起字元"
+  "learnShowFewerChars": "收起字元",
+  "learnLeaveDrillTitle": "退出本次練習？",
+  "learnLeaveDrillBody": "本次練習已完成的輪次不會被儲存。",
+  "learnLeaveDrillConfirm": "退出",
+  "chatScanQrPermissionDenied": "MorseCQ 需要相機權限才能掃描 QR 碼，請在系統設定中允許。",
+  "chatScanQrCameraUnavailable": "此裝置的相機無法使用。"
 }

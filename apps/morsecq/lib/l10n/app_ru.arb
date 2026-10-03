@@ -659,5 +659,10 @@
   "chatSelfMe": "Я",
   "chatSelfLocalOnly": "Сохранено только на этом устройстве",
   "chatSelfContactSubtitle": "Черновики, практика и заметки · без отправки",
-  "learnShowFewerChars": "Свернуть символы"
+  "learnShowFewerChars": "Свернуть символы",
+  "learnLeaveDrillTitle": "Выйти из занятия?",
+  "learnLeaveDrillBody": "Пройденные в этом занятии раунды не сохранятся.",
+  "learnLeaveDrillConfirm": "Выйти",
+  "chatScanQrPermissionDenied": "MorseCQ нужен доступ к камере для сканирования QR-кода. Разрешите его в настройках системы.",
+  "chatScanQrCameraUnavailable": "Камера на этом устройстве недоступна."
 }

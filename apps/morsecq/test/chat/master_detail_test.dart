@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/ui/chat/chat_layout.dart';
 import 'package:morsecq/ui/chat/conversation_list.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
+import 'package:morsecq/ui/chat/message_input.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
@@ -93,6 +94,141 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ConversationScreen), findsOneWidget);
     expect(find.byType(BackButton), findsNothing);
+  });
+
+  group('iPad rotation landscape -> portrait (two panes -> one)', () {
+    const Size landscape = Size(1180, 820); // iPad Air
+    const Size portrait = Size(820, 1180);
+
+    Future<void> rotate(WidgetTester tester, Size size) async {
+      tester.view.physicalSize = size;
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the open conversation stays open, draft included', (
+      tester,
+    ) async {
+      final ChatHarness h = await pumpChat(tester, (h) {
+        h.addAnn();
+        return const ChatPage();
+      }, size: landscape);
+      await tester.tap(find.text('Ann').first);
+      await tester.pumpAndSettle();
+      // The composer's field (the list has a search field too). Keyed, not
+      // typed: fill it the way decoded keying does.
+      final Finder draft = find.descendant(
+        of: find.byType(MessageInput),
+        matching: find.byType(TextField),
+      );
+      tester.widget<TextField>(draft).controller!.text = 'CQ DE';
+      await tester.pump();
+
+      await rotate(tester, portrait);
+      expect(find.byType(MasterDetail), findsNothing);
+      expect(find.byType(ConversationScreen), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
+      expect(tester.widget<TextField>(draft).controller?.text, 'CQ DE');
+      await tester.pump(const Duration(seconds: 1));
+      expect(
+        h.service.conversations
+            .firstWhere((c) => c.id.startsWith('c2c_'))
+            .draft,
+        'CQ DE',
+      );
+
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(ConversationList), findsOneWidget);
+      expect(find.byType(ConversationScreen), findsNothing);
+    });
+
+    testWidgets('the groups page keeps the open group too', (tester) async {
+      await pumpChat(tester, (h) {
+        h.service.addFakeGroup(
+          const Group(id: 'tox_1', name: 'Net', kind: GroupKind.group),
+        );
+        return const GroupsPage();
+      }, size: landscape);
+      await tester.tap(find.text('Net').first);
+      await tester.pumpAndSettle();
+      await rotate(tester, portrait);
+      expect(find.byType(ConversationScreen), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
+    });
+
+    for (final bool groups in <bool>[false, true]) {
+      testWidgets(
+        'a dialog over the ${groups ? 'group' : 'chat'} pane survives the '
+        'collapse; the route reopens once it closes',
+        (tester) async {
+          final ChatHarness h = await pumpChat(tester, (h) {
+            if (groups) {
+              h.service.addFakeGroup(
+                const Group(id: 'tox_1', name: 'Net', kind: GroupKind.group),
+              );
+              h.service.receiveMessage('group_tox_1', 'QST DE NET');
+              return const GroupsPage();
+            }
+            h.addAnn();
+            return const ChatPage();
+          }, size: landscape);
+          await tester.tap(find.text(groups ? 'Net' : 'Ann').first);
+          await tester.pumpAndSettle();
+          final String id = groups ? 'group_tox_1' : 'c2c_$kPeerKey';
+          expect(await h.service.loadHistory(id), isNotEmpty);
+          await tester.tap(
+            find.descendant(
+              of: find.byType(ConversationScreen),
+              matching: find.byType(PopupMenuButton<String>),
+            ),
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(s.chatClearHistory));
+          await tester.pumpAndSettle();
+          expect(find.byType(AlertDialog), findsOneWidget);
+
+          await rotate(tester, portrait);
+          // Nothing was pushed above the dialog, and its owner is alive.
+          expect(find.byType(AlertDialog), findsOneWidget);
+          expect(find.byType(BackButton), findsNothing);
+          await tester.tap(
+            find.widgetWithText(FilledButton, s.chatClearHistory),
+          );
+          await tester.pumpAndSettle();
+          expect(await h.service.loadHistory(id), isEmpty);
+
+          expect(find.byType(ConversationScreen), findsOneWidget);
+          expect(find.byType(BackButton), findsOneWidget);
+        },
+      );
+    }
+
+    testWidgets('a hidden tab reopens the conversation once it is shown', (
+      tester,
+    ) async {
+      final ValueNotifier<bool> shown = ValueNotifier<bool>(true);
+      addTearDown(shown.dispose);
+      await pumpChat(tester, (h) {
+        h.addAnn();
+        return ValueListenableBuilder<bool>(
+          valueListenable: shown,
+          builder: (_, enabled, child) =>
+              TickerMode(enabled: enabled, child: child!),
+          child: const ChatPage(),
+        );
+      }, size: landscape);
+      await tester.tap(find.text('Ann').first);
+      await tester.pumpAndSettle();
+
+      shown.value = false;
+      await rotate(tester, portrait);
+      expect(find.byType(BackButton), findsNothing);
+
+      shown.value = true;
+      await tester.pumpAndSettle();
+      expect(find.byType(ConversationScreen), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
+    });
   });
 
   testWidgets('without providers the pages fall back to the placeholder', (

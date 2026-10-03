@@ -659,5 +659,10 @@
   "chatSelfMe": "Eu",
   "chatSelfLocalOnly": "Salvo apenas neste dispositivo",
   "chatSelfContactSubtitle": "Rascunhos, prática e notas · nunca enviados",
-  "learnShowFewerChars": "Mostrar menos caracteres"
+  "learnShowFewerChars": "Mostrar menos caracteres",
+  "learnLeaveDrillTitle": "Sair desta sessão?",
+  "learnLeaveDrillBody": "As rodadas desta sessão não serão salvas.",
+  "learnLeaveDrillConfirm": "Sair",
+  "chatScanQrPermissionDenied": "O MorseCQ precisa de acesso à câmera para ler um código QR. Permita-o nas configurações do sistema.",
+  "chatScanQrCameraUnavailable": "A câmera não está disponível neste dispositivo."
 }

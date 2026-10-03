@@ -131,7 +131,7 @@ class _StatusChip extends StatelessWidget {
         message: offline ? s.accountConnectionTapToReconnect : label,
         child: ActionChip(
           avatar: Icon(icon, size: 18, color: color),
-          label: Text(label),
+          label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
           labelStyle: TextStyle(color: color, fontSize: 12),
           visualDensity: VisualDensity.compact,
           onPressed: offline
