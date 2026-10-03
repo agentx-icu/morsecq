@@ -187,43 +187,52 @@ class _Placeholder extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (busy)
-                const CircularProgressIndicator()
-              else
-                Icon(
-                  Icons.school_outlined,
-                  size: 56,
-                  color: theme.colorScheme.primary,
+      // Scrolls instead of overflowing on a small phone with large text;
+      // centred whenever it fits.
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (busy)
+                      const CircularProgressIndicator()
+                    else
+                      Icon(
+                        Icons.school_outlined,
+                        size: 56,
+                        color: theme.colorScheme.primary,
+                      ),
+                    const SizedBox(height: 16),
+                    Text(
+                      title,
+                      style: theme.textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    if (description != null) ...<Widget>[
+                      const SizedBox(height: 8),
+                      Text(
+                        description!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Text(
+                      message,
+                      style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: theme.textTheme.headlineSmall,
-                textAlign: TextAlign.center,
               ),
-              if (description != null) ...<Widget>[
-                const SizedBox(height: 8),
-                Text(
-                  description!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              const SizedBox(height: 16),
-              Text(
-                message,
-                style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -395,16 +395,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final bool conference = group?.kind == GroupKind.conference;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: !widget.embedded,
-        title: ConversationTitle(service: _service, target: widget.target),
-        actions: [
-          ConversationActions(
-            settings: settings,
-            isGroup: _isGroup,
-            onMenu: (a) => unawaited(_onMenu(a)),
-          ),
-        ],
+      appBar: ConversationAppBar(
+        service: _service,
+        target: widget.target,
+        settings: settings,
+        embedded: widget.embedded,
+        onMenu: (a) => unawaited(_onMenu(a)),
       ),
       // Landscape phones (~320-430 px tall) and large text make the keyed
       // composer taller than the body; cap it and let it scroll instead.
