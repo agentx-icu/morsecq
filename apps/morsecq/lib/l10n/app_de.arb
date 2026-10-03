@@ -280,6 +280,7 @@
   "learnLoading": "Dein Fortschritt wird geladen…",
   "learnIdentityRequired": "Erstelle oder entsperre deine Identität, um mit dem Training zu beginnen. Dein Fortschritt wird mit der Identität gespeichert und mit deiner Sicherung übertragen.",
   "learnLoadFailed": "Dein gespeicherter Fortschritt konnte nicht gelesen werden. Du beginnst neu; die alte Datei wurde als .corrupt aufbewahrt.",
+  "learnProgressSaveFailed": "Fortschritt konnte nicht gespeichert werden. Das Ergebnis zählt, solange MorseCQ geöffnet bleibt.",
   "learnChooseDrill": "Übung wählen",
   "learnDrillGroups": "Zufällige Gruppen",
   "learnDrillWords": "Wörter",

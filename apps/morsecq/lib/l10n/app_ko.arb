@@ -280,6 +280,7 @@
   "learnLoading": "학습 진도 불러오는 중…",
   "learnIdentityRequired": "훈련을 시작하려면 신원 정보를 생성하거나 잠금을 해제하세요. 진도는 신원 정보와 함께 저장되며 백업에도 포함됩니다.",
   "learnLoadFailed": "저장된 진도를 읽을 수 없습니다. 처음부터 시작합니다. 기존 파일은 .corrupt로 보관되었습니다.",
+  "learnProgressSaveFailed": "진행 상황을 저장하지 못했습니다. MorseCQ를 닫기 전까지는 이번 결과가 유지됩니다.",
   "learnChooseDrill": "연습 선택",
   "learnDrillGroups": "무작위 문자 묶음",
   "learnDrillWords": "단어",

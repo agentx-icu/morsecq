@@ -280,6 +280,7 @@
   "learnLoading": "正在加载你的进度...",
   "learnIdentityRequired": "创建或解锁身份后即可开始训练。进度随身份保存，会一同进入备份。",
   "learnLoadFailed": "无法读取已保存的进度。将从头开始；旧文件已保留为 .corrupt。",
+  "learnProgressSaveFailed": "无法保存进度。在 MorseCQ 关闭前，本次成绩仍然有效。",
   "learnChooseDrill": "选择一种练习",
   "learnDrillGroups": "随机字组",
   "learnDrillWords": "单词",

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 import '../clock.dart';
@@ -18,6 +21,9 @@ import '../straight_key.dart';
 /// * Leaving the foreground (backgrounded, window deactivated) releases the
 ///   key: on mobile Flutter keeps focus across that, but the key-up and
 ///   pointer-up never arrive.
+/// * Accessibility: when [semanticDit] is set, screen readers get two custom
+///   actions ([semanticDitLabel], [semanticDahLabel]) that key one dit or one
+///   dah (three dits) through the same input.
 /// * Timestamps come from [clock] (default [SystemClock.shared]); use the same
 ///   clock for the decoder's `tick`.
 class StraightKeyButton extends StatefulWidget {
@@ -32,8 +38,11 @@ class StraightKeyButton extends StatefulWidget {
     this.autofocus = false,
     this.color,
     this.pressedColor,
-  })  : clock = clock ?? SystemClock.shared,
-        binding = keyboard ? (binding ?? KeyboardKeyBinding.defaults) : null;
+    this.semanticDit,
+    this.semanticDitLabel = 'dit',
+    this.semanticDahLabel = 'dah',
+  }) : clock = clock ?? SystemClock.shared,
+       binding = keyboard ? (binding ?? KeyboardKeyBinding.defaults) : null;
 
   /// Minimum touch target in logical pixels.
   static const double minTouchTarget = 48;
@@ -47,6 +56,11 @@ class StraightKeyButton extends StatefulWidget {
   final Color? color;
   final Color? pressedColor;
 
+  /// Dit length for the accessibility actions; null hides them.
+  final Duration? semanticDit;
+  final String semanticDitLabel;
+  final String semanticDahLabel;
+
   @override
   State<StraightKeyButton> createState() => _StraightKeyButtonState();
 }
@@ -56,11 +70,19 @@ class _StraightKeyButtonState extends State<StraightKeyButton>
   final FocusNode _focus = FocusNode(debugLabel: 'StraightKeyButton');
   final Set<int> _pointers = <int>{};
   bool _keyboardDown = false;
+  bool _semanticDown = false;
+  Timer? _semanticTimer;
   bool _reportedDown = false;
 
-  bool get _isDown => _pointers.isNotEmpty || _keyboardDown;
+  bool get _isDown => _pointers.isNotEmpty || _keyboardDown || _semanticDown;
 
   void _sync() {
+    // A pointer that went down on this widget keeps its hit-test path after
+    // the widget is replaced; its late up/cancel must not reach the input
+    // (dispose already released it) or call setState.
+    if (!mounted) {
+      return;
+    }
     final down = _isDown;
     if (down == _reportedDown) {
       return;
@@ -78,12 +100,6 @@ class _StraightKeyButtonState extends State<StraightKeyButton>
   void _pointerDown(PointerDownEvent event) {
     if (widget.binding != null && !_focus.hasFocus) _focus.requestFocus();
     _pointers.add(event.pointer);
-    _sync();
-  }
-
-  void _focusChanged(bool focused) {
-    if (focused || !_keyboardDown) return;
-    _keyboardDown = false;
     _sync();
   }
 
@@ -108,7 +124,8 @@ class _StraightKeyButtonState extends State<StraightKeyButton>
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     final binding = widget.binding;
-    if (binding == null || binding.actionFor(event.logicalKey) != KeyerAction.straight) {
+    if (binding == null ||
+        binding.actionFor(event.logicalKey) != KeyerAction.straight) {
       return KeyEventResult.ignored;
     }
     if (event is KeyDownEvent) {
@@ -122,8 +139,32 @@ class _StraightKeyButtonState extends State<StraightKeyButton>
     return KeyEventResult.handled;
   }
 
+  void _onFocusChange(bool focused) {
+    if (!focused && _keyboardDown) {
+      _keyboardDown = false;
+      _sync();
+    }
+  }
+
+  void _semanticElement(int dits) {
+    final dit = widget.semanticDit;
+    if (dit == null || _semanticTimer != null) {
+      return;
+    }
+    _semanticDown = true;
+    _sync();
+    _semanticTimer = Timer(dit * dits, () {
+      _semanticTimer = null;
+      _semanticDown = false;
+      if (mounted) {
+        _sync();
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _semanticTimer?.cancel();
     if (_reportedDown) {
       widget.input.release(widget.clock.now());
     }
@@ -148,11 +189,19 @@ class _StraightKeyButtonState extends State<StraightKeyButton>
     return Focus(
       focusNode: _focus,
       autofocus: widget.autofocus,
-      onFocusChange: _focusChanged,
       onKeyEvent: widget.binding == null ? null : _onKey,
+      onFocusChange: _onFocusChange,
       child: Semantics(
         button: true,
         label: widget.label,
+        customSemanticsActions: widget.semanticDit == null
+            ? null
+            : <CustomSemanticsAction, VoidCallback>{
+                CustomSemanticsAction(label: widget.semanticDitLabel): () =>
+                    _semanticElement(1),
+                CustomSemanticsAction(label: widget.semanticDahLabel): () =>
+                    _semanticElement(3),
+              },
         child: Listener(
           behavior: HitTestBehavior.opaque,
           onPointerDown: _pointerDown,

@@ -46,7 +46,10 @@ final class TrainingSettings {
   static const double minFarnsworthWpm = 5;
   static const double minToneHz = 400;
   static const double maxToneHz = 1000;
-  static const int minSessionChars = 20;
+
+  /// Never below the Koch course minimum: a shorter lesson session could
+  /// not unlock the next lesson.
+  static const int minSessionChars = KochCourse.defaultMinCharsPerSession;
   static const int maxSessionChars = 200;
 
   final TrainerSettings trainer;

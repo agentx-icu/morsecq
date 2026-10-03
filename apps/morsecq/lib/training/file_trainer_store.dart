@@ -37,6 +37,10 @@ final class FileTrainerStore implements TrainerStore {
         progress.streakDays < 0 ||
         progress.dailyGoalChars < 0 ||
         progress.maxHistory <= 0 ||
+        // Lifetime counters can never be below what the kept history shows.
+        progress.lifetimeSessions < progress.history.length ||
+        progress.lifetimeChars <
+            progress.history.fold<int>(0, (sum, s) => sum + s.totalChars) ||
         progress.charStats.values.any(
           (s) => s.attempts < 0 || s.correct < 0 || s.correct > s.attempts,
         ) ||

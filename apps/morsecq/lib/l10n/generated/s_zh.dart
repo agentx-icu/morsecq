@@ -1036,6 +1036,9 @@ class SZh extends S {
   String get learnLoadFailed => '无法读取已保存的进度。将从头开始；旧文件已保留为 .corrupt。';
 
   @override
+  String get learnProgressSaveFailed => '无法保存进度。在 MorseCQ 关闭前，本次成绩仍然有效。';
+
+  @override
   String get learnChooseDrill => '选择一种练习';
 
   @override
@@ -3371,6 +3374,9 @@ class SZhHant extends SZh {
 
   @override
   String get learnLoadFailed => '無法讀取已儲存的進度。將從頭開始；舊檔案已保留為 .corrupt。';
+
+  @override
+  String get learnProgressSaveFailed => '無法儲存進度。在 MorseCQ 關閉前，本次成績仍然有效。';
 
   @override
   String get learnChooseDrill => '選擇一種練習';

@@ -48,6 +48,16 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
   StreamSubscription<PlayerEvent>? _sampleSub;
   bool _samplePlaying = false;
 
+  /// Bumped when the feedback outputs change; a sample bundle created for an
+  /// older generation is thrown away instead of played.
+  int _sampleGeneration = 0;
+
+  /// True while a sample bundle is being created.
+  bool _creatingSample = false;
+
+  /// Daily goal while its slider is dragged; written on release.
+  int? _goalDraft;
+
   TrainerSettings get _t => _draft.trainer;
 
   String _wpm(S s, double wpm) => s.learnWpmValue(wpm.toStringAsFixed(0));
@@ -55,7 +65,16 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
 
   /// Updates the draft; persists when [persist] (slider release, toggles).
   void _apply(TrainingSettings next, {bool persist = true}) {
+    final outputsChanged =
+        next.soundEnabled != _draft.soundEnabled ||
+        next.flashEnabled != _draft.flashEnabled ||
+        next.hapticEnabled != _draft.hapticEnabled;
     setState(() => _draft = next);
+    if (outputsChanged) {
+      // The sample's sinks were built from the old switches; rebuild them
+      // on the next "Play sample".
+      _dropSample();
+    }
     _sample?.sidetone?.frequencyHz = next.trainer.toneHz;
     if (persist) {
       unawaited(widget.controller.updateSettings(next));
@@ -85,17 +104,49 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     }
   }
 
+  void _dropSample() {
+    _sampleGeneration++;
+    final sample = _sample;
+    _sample = null;
+    unawaited(_sampleSub?.cancel());
+    _sampleSub = null;
+    if (sample != null) {
+      sample.player.stop();
+      unawaited(sample.dispose());
+    }
+    _samplePlaying = false;
+  }
+
   Future<void> _playSample() async {
-    if (_samplePlaying) {
+    if (_samplePlaying || _creatingSample) {
       return;
     }
     setState(() => _samplePlaying = true);
     var playback = _sample;
     if (playback == null) {
-      playback = await widget.playback.create(_draft);
-      if (!mounted) {
-        await playback.dispose();
-        return;
+      // Only one creation runs at a time; a switch flipped meanwhile bumps
+      // the generation, and the bundle built for the old switches is thrown
+      // away and built again.
+      _creatingSample = true;
+      try {
+        while (playback == null) {
+          final generation = _sampleGeneration;
+          final created = await widget.playback.create(_draft);
+          if (!mounted) {
+            await created.dispose();
+            return;
+          }
+          if (generation == _sampleGeneration) {
+            playback = created;
+          } else {
+            await created.dispose();
+            if (!mounted) {
+              return;
+            }
+          }
+        }
+      } finally {
+        _creatingSample = false;
       }
       _sample = playback;
       _sampleSub = playback.player.events.listen((event) {
@@ -103,6 +154,8 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
           setState(() => _samplePlaying = false);
         }
       });
+      // Rebuild now so a flash-only sample shows its overlay while playing.
+      setState(() => _samplePlaying = true);
     }
     playback.sidetone?.frequencyHz = _t.toneHz;
     playback.player.play(
@@ -121,6 +174,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
   Widget build(BuildContext context) {
     final s = context.s;
     final flash = _sample?.flash;
+    final goal = _goalDraft ?? widget.controller.dailyGoal;
     final body = ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: <Widget>[
@@ -156,7 +210,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
           value: _hz(s, _t.toneHz),
           trailing: IconButton.filledTonal(
             tooltip: s.learnPlaySample,
-            onPressed: _samplePlaying ? null : _playSample,
+            onPressed: _samplePlaying || _creatingSample ? null : _playSample,
             icon: Icon(_samplePlaying ? Icons.volume_up : Icons.play_arrow),
           ),
           slider: Slider(
@@ -206,15 +260,19 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         _SliderTile(
           title: s.learnDailyGoal,
-          value: s.learnCharsCount(widget.controller.dailyGoal),
+          value: s.learnCharsCount(goal),
           slider: Slider(
-            value: widget.controller.dailyGoal.clamp(25, 500).toDouble(),
+            value: goal.clamp(25, 500).toDouble(),
             min: 25,
             max: 500,
             divisions: 19,
-            label: s.learnCharsCount(widget.controller.dailyGoal),
-            onChanged: (v) =>
-                unawaited(widget.controller.setDailyGoal(v.round())),
+            label: s.learnCharsCount(goal),
+            // Shown live while dragging, written once on release.
+            onChanged: (v) => setState(() => _goalDraft = v.round()),
+            onChangeEnd: (v) {
+              setState(() => _goalDraft = null);
+              unawaited(widget.controller.setDailyGoal(v.round()));
+            },
           ),
         ),
         const Divider(),

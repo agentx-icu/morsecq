@@ -1054,6 +1054,9 @@ class SFr extends S {
   String get learnLoadFailed => 'Votre progression enregistrée n’a pas pu être lue. Vous repartez de zéro ; l’ancien fichier a été conservé avec le suffixe .corrupt.';
 
   @override
+  String get learnProgressSaveFailed => 'Impossible d\'enregistrer votre progression. Le résultat compte tant que MorseCQ reste ouvert.';
+
+  @override
   String get learnChooseDrill => 'Choisir un exercice';
 
   @override

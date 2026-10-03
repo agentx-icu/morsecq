@@ -64,17 +64,46 @@ class AlignedSymbols extends StatelessWidget {
     final style = theme.textTheme.titleLarge?.copyWith(
       fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
     );
+    final scaler = MediaQuery.textScalerOf(context);
     return Wrap(
       spacing: 4,
       runSpacing: 4,
       children: <Widget>[
         for (final pair in alignment)
-          _cell(pair, style, scheme),
+          _cell(pair, style, scheme, width: cellWidth(pair, style, scaler)),
       ],
     );
   }
 
-  Widget _cell(AlignedPair pair, TextStyle? style, ColorScheme scheme) {
+  /// Width of the column for [pair], the same on the target and the answer
+  /// row: wide enough for either side, so both rows wrap at the same places
+  /// and each copied symbol sits under the one that was sent.
+  static double cellWidth(
+    AlignedPair pair,
+    TextStyle? style,
+    TextScaler scaler,
+  ) {
+    var widest = 0.0;
+    for (final text in <String>[pair.target ?? '·', pair.answer ?? '·']) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: TextDirection.ltr,
+        textScaler: scaler,
+      )..layout();
+      if (painter.width > widest) {
+        widest = painter.width;
+      }
+      painter.dispose();
+    }
+    return widest + 12 < 32 ? 32 : widest + 12;
+  }
+
+  Widget _cell(
+    AlignedPair pair,
+    TextStyle? style,
+    ColorScheme scheme, {
+    required double width,
+  }) {
     final symbol = showTarget ? pair.target : pair.answer;
     final Color background;
     final Color foreground;
@@ -95,8 +124,8 @@ class AlignedSymbols extends StatelessWidget {
             : scheme.onErrorContainer;
     }
     return Container(
-      constraints: const BoxConstraints(minWidth: 32, minHeight: 36),
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      width: width,
+      constraints: const BoxConstraints(minHeight: 36),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(6),

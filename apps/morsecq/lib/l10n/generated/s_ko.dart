@@ -1036,6 +1036,9 @@ class SKo extends S {
   String get learnLoadFailed => '저장된 진도를 읽을 수 없습니다. 처음부터 시작합니다. 기존 파일은 .corrupt로 보관되었습니다.';
 
   @override
+  String get learnProgressSaveFailed => '진행 상황을 저장하지 못했습니다. MorseCQ를 닫기 전까지는 이번 결과가 유지됩니다.';
+
+  @override
   String get learnChooseDrill => '연습 선택';
 
   @override

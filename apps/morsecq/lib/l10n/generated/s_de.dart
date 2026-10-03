@@ -1053,6 +1053,9 @@ class SDe extends S {
   String get learnLoadFailed => 'Dein gespeicherter Fortschritt konnte nicht gelesen werden. Du beginnst neu; die alte Datei wurde als .corrupt aufbewahrt.';
 
   @override
+  String get learnProgressSaveFailed => 'Fortschritt konnte nicht gespeichert werden. Das Ergebnis zählt, solange MorseCQ geöffnet bleibt.';
+
+  @override
   String get learnChooseDrill => 'Übung wählen';
 
   @override

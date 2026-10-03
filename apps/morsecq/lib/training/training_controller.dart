@@ -15,9 +15,15 @@ final class ReceiveOutcome {
     required this.passed,
     required this.advanced,
     required this.lesson,
+    this.saved = true,
   });
 
   final SessionScore score;
+
+  /// False when writing progress failed. The session still counts in memory
+  /// and is written by [TrainingController.retryProgressSave] or the next
+  /// successful save.
+  final bool saved;
 
   /// Whether the Koch unlock rule was met (regardless of [advanced]).
   final bool passed;
@@ -27,6 +33,16 @@ final class ReceiveOutcome {
 
   /// Lesson after recording.
   final int lesson;
+}
+
+/// What recording a send session did.
+final class SendOutcome {
+  const SendOutcome({required this.score, this.saved = true});
+
+  final SessionScore score;
+
+  /// See [ReceiveOutcome.saved].
+  final bool saved;
 }
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
@@ -288,12 +304,13 @@ final class TrainingController extends ChangeNotifier {
     if (session.countsTowardLesson) {
       next = next.advanceIfPassed(course, score);
     }
-    await _commit(next);
+    final saved = await _commitKeepingResult(next);
     return ReceiveOutcome(
       score: score,
       passed: course.passes(score),
       advanced: next.currentLesson != before,
       lesson: next.currentLesson,
+      saved: saved,
     );
   }
 
@@ -302,22 +319,30 @@ final class TrainingController extends ChangeNotifier {
   /// Sending accuracy is a different skill from copying, so the per-symbol
   /// receive statistics, SRS boxes and confusion matrix are left untouched;
   /// only the history entry (and the streak derived from it) is added.
-  Future<SessionScore> recordSendSession(SendSession session) async {
+  Future<SendOutcome> recordSendSession(SendSession session) async {
     final score = session.scoreForHistory();
     final now = _now();
-    final summary = SessionSummary.fromScore(score, at: now);
-    final history = <SessionSummary>[..._progress.history, summary];
-    if (history.length > _progress.maxHistory) {
-      history.removeRange(0, history.length - _progress.maxHistory);
-    }
-    await _commit(
-      _progress.copyWith(
-        history: history,
-        streakDays: _streakAfterPracticeOn(now),
-        lastPracticeDay: TrainerProgress.dayOf(now),
+    final saved = await _commitKeepingResult(
+      _progress.recordPractice(
+        SessionSummary.fromScore(score, at: now),
+        now: now,
       ),
     );
-    return score;
+    return SendOutcome(score: score, saved: saved);
+  }
+
+  /// Writes the current in-memory progress again after a failed save. Never
+  /// re-applies a session, so retrying cannot credit one twice. Returns
+  /// whether the write succeeded.
+  Future<bool> retryProgressSave() async {
+    _ensureActive();
+    final progress = _progress;
+    try {
+      await _persist(_progressStore, () => _progressStore.save(progress));
+      return true;
+    } on Object {
+      return false;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -395,25 +420,24 @@ final class TrainingController extends ChangeNotifier {
     recent: course.recentCharsForLesson(currentLesson),
   );
 
-  /// Same rule as `TrainerProgress.recordSession`: same day keeps the streak,
-  /// the next day extends it, anything later restarts at 1.
-  int _streakAfterPracticeOn(DateTime now) {
-    final last = _progress.lastPracticeDay;
-    if (last == null) {
-      return 1;
-    }
-    final gap = TrainerProgress.dayOf(now).difference(last).inDays;
-    if (gap == 0) {
-      return _progress.streakDays;
-    }
-    return gap == 1 ? _progress.streakDays + 1 : 1;
-  }
-
   TrainerProgress _clampLesson(TrainerProgress progress) {
     final clamped = course.clampLesson(progress.currentLesson);
     return clamped == progress.currentLesson
         ? progress
         : progress.withLesson(clamped);
+  }
+
+  /// [_commit] for a finished session: the in-memory progress keeps the
+  /// session even when the write fails, so the screen can still show the
+  /// result and offer [retryProgressSave]. Returns whether it was saved.
+  Future<bool> _commitKeepingResult(TrainerProgress next) async {
+    _ensureActive();
+    try {
+      await _commit(next);
+      return true;
+    } on Object {
+      return false;
+    }
   }
 
   Future<void> _commit(TrainerProgress next) async {

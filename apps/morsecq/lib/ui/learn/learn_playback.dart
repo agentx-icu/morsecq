@@ -69,12 +69,21 @@ final class DevicePlaybackFactory implements LearnPlaybackFactory {
       sidetone = SidetoneSink(frequencyHz: settings.trainer.toneHz);
       sinks.add(sidetone);
     }
-    if (settings.flashEnabled || !settings.hasFeedback) {
+    if (settings.flashEnabled) {
       flash = FlashSink();
       sinks.add(flash);
     }
     if (settings.hapticEnabled) {
-      sinks.add(HapticSink());
+      // Vibration exists on phones only; a haptic-only profile restored on a
+      // desktop must fall back to the flash below, not to nothing.
+      final haptic = HapticSink();
+      if (haptic.isEnabled) {
+        sinks.add(haptic);
+      }
+    }
+    if (sinks.isEmpty) {
+      flash = FlashSink();
+      sinks.add(flash);
     }
     final composite = CompositeSink(sinks);
     // A sidetone that fails to initialise (no audio device, sandbox denial)
