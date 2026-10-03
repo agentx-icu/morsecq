@@ -3359,4 +3359,24 @@ class SEn extends S {
   String placementAdopt(int lesson) {
     return 'Start at lesson $lesson';
   }
+
+  @override
+  String get chatJumpToLatest => 'Latest messages';
+
+  @override
+  String get chatMessageGone => 'That message is no longer in this conversation.';
+
+  @override
+  String get chatListenOnlyPreview => 'New message — listen to copy it';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Save the rest';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return 'Import $count materials?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Export as text (TXT)';
 }

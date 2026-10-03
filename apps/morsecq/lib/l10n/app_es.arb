@@ -964,5 +964,11 @@
   "placementSuggestion": "Inicio sugerido: lección {lesson}",
   "placementVerified": "{count} de {total} símbolos Koch confirmados en orden.",
   "placementLimits": "Basado en una muestra corta: los símbolos no probados siguen sin probar y nada se marca como aprendido. Puedes cambiar la lección cuando quieras.",
-  "placementAdopt": "Empezar en la lección {lesson}"
+  "placementAdopt": "Empezar en la lección {lesson}",
+  "chatJumpToLatest": "Mensajes más recientes",
+  "chatMessageGone": "Ese mensaje ya no está en esta conversación.",
+  "chatListenOnlyPreview": "Mensaje nuevo: escúchalo para copiarlo",
+  "chatSaveMaterialConfirm": "Guardar el resto",
+  "materialsImportConfirm": "¿Importar {count} materiales?",
+  "materialsExportTxt": "Exportar como texto (TXT)"
 }

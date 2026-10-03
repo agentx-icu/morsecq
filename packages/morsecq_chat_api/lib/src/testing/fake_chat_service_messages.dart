@@ -16,12 +16,16 @@ mixin _FakeMessageManagement implements ChatService {
     MessageSearchQuery query, {
     MessageSearchCursor? cursor,
     int limit = 20,
-  }) async => MessageOrder.page(
-    _messages[conversationId] ?? const <ChatMessage>[],
-    query,
-    cursor: cursor,
-    limit: limit,
-  );
+    MessageSearchCancel? cancel,
+  }) async {
+    if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
+    return MessageOrder.page(
+      _messages[conversationId] ?? const <ChatMessage>[],
+      query,
+      cursor: cursor,
+      limit: limit,
+    );
+  }
 
   @override
   Future<List<ChatMessage>> loadAround(

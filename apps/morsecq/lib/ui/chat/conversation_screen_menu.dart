@@ -31,6 +31,76 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
 
   /// Showing a search result's surroundings, detached from the live end.
   bool _jumpedAway = false;
+  bool _loadingNewer = false;
+
+  /// Rows per page when paging around a jumped window.
+  static const int _aroundPage = 50;
+
+  /// Earlier rows before a jumped window, anchored on its oldest row (the
+  /// live-end window read cannot find that origin).
+  Future<void> _loadOlderAround() async {
+    final anchor = _older.isNotEmpty ? _older.first : _messages.first;
+    final int generation = _generation;
+    setState(() {
+      _loadingOlder = true;
+      _olderError = null;
+    });
+    try {
+      final rows = await _service.loadAround(
+        _id,
+        anchor.id,
+        before: _aroundPage,
+        after: 0,
+      );
+      if (!mounted || generation != _generation) return;
+      final earlier = rows.where((m) => m.id != anchor.id).toList();
+      setState(() {
+        _older.insertAll(0, earlier);
+        _hasMore = earlier.length == _aroundPage;
+        _loadingOlder = false;
+      });
+    } on Object catch (e) {
+      if (mounted && generation == _generation) {
+        setState(() {
+          _olderError = e;
+          _loadingOlder = false;
+        });
+      }
+    }
+  }
+
+  /// Later rows after a jumped window. Fewer than a page means the live
+  /// end was reached: the window becomes the live timeline again.
+  Future<void> _loadNewerAround() async {
+    if (_loadingNewer || _messages.isEmpty || _loading || _clearing) return;
+    _loadingNewer = true;
+    final anchor = _messages.last;
+    final int generation = _generation;
+    try {
+      final rows = await _service.loadAround(
+        _id,
+        anchor.id,
+        before: 0,
+        after: _aroundPage,
+      );
+      if (!mounted || generation != _generation || !_jumpedAway) return;
+      final later = rows.where((m) => m.id != anchor.id).toList();
+      final reachedEnd = later.length < _aroundPage;
+      setState(() {
+        final known = {for (final m in _messages) m.id};
+        _messages.addAll(later.where((m) => !known.contains(m.id)));
+        if (reachedEnd) {
+          _jumpedAway = false;
+          _newMessages = 0;
+        }
+      });
+      if (reachedEnd) _markRead();
+    } on Object {
+      // Scrolling again retries.
+    } finally {
+      _loadingNewer = false;
+    }
+  }
 
   /// The profile's bookmarks, once resolved.
   MessageBookmarks? _bookmarkStore;
@@ -47,9 +117,15 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
 
   void _showLatest() {
     if (_jumpedAway) {
+      // Drop the whole historical window; live arrivals during the reload
+      // land in the emptied list and are merged by `_load`.
       _jumpedAway = false;
       _generation++;
-      _older.clear();
+      setState(() {
+        _older.clear();
+        _messages.clear();
+        _newMessages = 0;
+      });
       unawaited(_load());
       return;
     }
@@ -73,7 +149,17 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
     final int generation = ++_generation;
     try {
       final rows = await _service.loadAround(_id, hit.id);
-      if (!mounted || generation != _generation || rows.isEmpty) return;
+      if (!mounted || generation != _generation) return;
+      if (rows.isEmpty) {
+        // Gone (cleared / deleted): its bookmark no longer resolves.
+        try {
+          await bookmarks.removeMissing(_id, {hit.id});
+        } on Object {
+          // Kept dirty; retried by the store.
+        }
+        if (mounted) showSnack(context, context.s.chatMessageGone);
+        return;
+      }
       final at = rows.indexWhere((m) => m.id == hit.id);
       setState(() {
         _jumpedAway = true;
@@ -146,8 +232,16 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       await _service.clearHistory(_id);
       _localSends.recordClear(_id, ids);
       if (!mounted) return;
-      unawaited(_bookmarkStore?.removeConversation(_id));
+      // Clearing history invalidates its bookmarks; failures are kept dirty
+      // and retried by the store.
+      try {
+        await _bookmarkStore?.removeConversation(_id);
+      } on Object {
+        // The store stays dirty and rewrites on its next flush.
+      }
+      if (!mounted) return;
       setState(() {
+        _jumpedAway = false;
         _messages.removeWhere((m) => ids.contains(m.id));
         _older.clear();
         _revealed.clear();

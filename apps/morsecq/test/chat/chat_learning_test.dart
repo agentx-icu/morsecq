@@ -84,6 +84,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('chat-practice-play')));
     await tester.pump();
     await tester.enterText(find.byType(TextField), 'CQ CQ DE ANN');
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('chat-practice-submit')));
     await tester.pumpAndSettle();
     expect(find.text(s.learnAccuracyPercent(100)), findsOneWidget);
@@ -111,6 +112,7 @@ void main() {
     await tester.tap(find.text(s.chatReveal));
     await tester.pump();
     await tester.enterText(find.byType(TextField), 'CQ CQ DE ANN');
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('chat-practice-submit')));
     await tester.pumpAndSettle();
     final record = t.controller.progress.history.single;

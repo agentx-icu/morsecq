@@ -3333,4 +3333,24 @@ class SJa extends S {
   String placementAdopt(int lesson) {
     return 'レッスン$lessonから始める';
   }
+
+  @override
+  String get chatJumpToLatest => '最新のメッセージ';
+
+  @override
+  String get chatMessageGone => 'そのメッセージはこの会話にもうありません。';
+
+  @override
+  String get chatListenOnlyPreview => '新着メッセージ — 聴いて受信してください';
+
+  @override
+  String get chatSaveMaterialConfirm => '残りを保存';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '$count件の素材を読み込みますか？';
+  }
+
+  @override
+  String get materialsExportTxt => 'テキストで書き出す（TXT）';
 }

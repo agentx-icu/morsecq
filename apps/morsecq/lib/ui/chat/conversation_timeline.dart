@@ -19,7 +19,12 @@ class ConversationTimeline extends StatelessWidget {
     required this.onLoadOlder,
     required this.newCount,
     required this.onLatest,
+    this.showLatest = false,
   });
+
+  /// Showing an older window (after a search jump): the way back to the
+  /// latest messages is always offered, not only when new ones arrived.
+  final bool showLatest;
 
   final ScrollController controller;
   final Key origin;
@@ -58,7 +63,7 @@ class ConversationTimeline extends StatelessWidget {
           ),
         ],
       ),
-      if (newCount > 0)
+      if (newCount > 0 || showLatest)
         Positioned(
           bottom: 12,
           right: 12,
@@ -66,7 +71,11 @@ class ConversationTimeline extends StatelessWidget {
             key: const ValueKey('new-messages'),
             onPressed: onLatest,
             icon: const Icon(Icons.arrow_downward),
-            label: Text(context.s.chatNewMessages(newCount)),
+            label: Text(
+              newCount > 0
+                  ? context.s.chatNewMessages(newCount)
+                  : context.s.chatJumpToLatest,
+            ),
           ),
         ),
     ],

@@ -3361,4 +3361,24 @@ class SPt extends S {
   String placementAdopt(int lesson) {
     return 'Começar na lição $lesson';
   }
+
+  @override
+  String get chatJumpToLatest => 'Mensagens mais recentes';
+
+  @override
+  String get chatMessageGone => 'Essa mensagem não está mais nesta conversa.';
+
+  @override
+  String get chatListenOnlyPreview => 'Nova mensagem — ouça para copiá-la';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Salvar o resto';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return 'Importar $count materiais?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Exportar como texto (TXT)';
 }

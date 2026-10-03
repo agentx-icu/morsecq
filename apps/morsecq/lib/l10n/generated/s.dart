@@ -5899,6 +5899,42 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Start at lesson {lesson}'**
   String placementAdopt(int lesson);
+
+  /// Conversation: button back to the newest messages after jumping to an older search result
+  ///
+  /// In en, this message translates to:
+  /// **'Latest messages'**
+  String get chatJumpToLatest;
+
+  /// Snack: a search result or bookmark points at a message that no longer exists
+  ///
+  /// In en, this message translates to:
+  /// **'That message is no longer in this conversation.'**
+  String get chatMessageGone;
+
+  /// Conversation list preview of a received message while listen-only training hides it
+  ///
+  /// In en, this message translates to:
+  /// **'New message — listen to copy it'**
+  String get chatListenOnlyPreview;
+
+  /// Save-as-material confirmation: save the supported part
+  ///
+  /// In en, this message translates to:
+  /// **'Save the rest'**
+  String get chatSaveMaterialConfirm;
+
+  /// JSON import preview dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} materials?'**
+  String materialsImportConfirm(int count);
+
+  /// My materials: export the original text as a .txt file
+  ///
+  /// In en, this message translates to:
+  /// **'Export as text (TXT)'**
+  String get materialsExportTxt;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

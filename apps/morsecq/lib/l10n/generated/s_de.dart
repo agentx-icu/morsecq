@@ -3360,4 +3360,24 @@ class SDe extends S {
   String placementAdopt(int lesson) {
     return 'Mit Lektion $lesson beginnen';
   }
+
+  @override
+  String get chatJumpToLatest => 'Neueste Nachrichten';
+
+  @override
+  String get chatMessageGone => 'Diese Nachricht ist nicht mehr in diesem Chat.';
+
+  @override
+  String get chatListenOnlyPreview => 'Neue Nachricht – zum Mitschreiben anhören';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Den Rest speichern';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '$count Materialien importieren?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Als Text exportieren (TXT)';
 }

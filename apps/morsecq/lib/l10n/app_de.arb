@@ -964,5 +964,11 @@
   "placementSuggestion": "Vorgeschlagener Start: Lektion {lesson}",
   "placementVerified": "{count} von {total} Koch-Zeichen der Reihe nach bestätigt.",
   "placementLimits": "Auf Basis einer kleinen Probe: nicht geprüfte Zeichen bleiben ungeprüft, nichts wird als gelernt markiert. Die Lektion lässt sich jederzeit ändern.",
-  "placementAdopt": "Mit Lektion {lesson} beginnen"
+  "placementAdopt": "Mit Lektion {lesson} beginnen",
+  "chatJumpToLatest": "Neueste Nachrichten",
+  "chatMessageGone": "Diese Nachricht ist nicht mehr in diesem Chat.",
+  "chatListenOnlyPreview": "Neue Nachricht – zum Mitschreiben anhören",
+  "chatSaveMaterialConfirm": "Den Rest speichern",
+  "materialsImportConfirm": "{count} Materialien importieren?",
+  "materialsExportTxt": "Als Text exportieren (TXT)"
 }

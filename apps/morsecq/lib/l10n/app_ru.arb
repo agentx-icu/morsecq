@@ -964,5 +964,11 @@
   "placementSuggestion": "Рекомендуемый старт: урок {lesson}",
   "placementVerified": "Подтверждено по порядку: {count} из {total} знаков Коха.",
   "placementLimits": "По короткой выборке: непроверенные знаки остаются непроверенными, ничего не отмечается как выученное. Урок можно сменить в любой момент.",
-  "placementAdopt": "Начать с урока {lesson}"
+  "placementAdopt": "Начать с урока {lesson}",
+  "chatJumpToLatest": "Последние сообщения",
+  "chatMessageGone": "Этого сообщения больше нет в чате.",
+  "chatListenOnlyPreview": "Новое сообщение — примите его на слух",
+  "chatSaveMaterialConfirm": "Сохранить остальное",
+  "materialsImportConfirm": "Импортировать материалов: {count}?",
+  "materialsExportTxt": "Экспорт в текст (TXT)"
 }

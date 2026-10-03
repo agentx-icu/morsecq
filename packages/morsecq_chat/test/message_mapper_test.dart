@@ -88,5 +88,35 @@ void main() {
       mapper.map(row(cancelled: true), conversationId: 'c2c_PEER').status,
       MessageStatus.cancelled,
     );
+    // Tim2Tox emits the failed row before the queue item is durably
+    // removed: failure wins over queue membership.
+    expect(
+      mapper.map(row(failed: true), conversationId: 'c2c_PEER').status,
+      MessageStatus.failed,
+    );
+  });
+
+  test('legacy rows without msgID get sender-unique ids', () {
+    final at = DateTime.utc(2026, 1, 1);
+    final mapper = MessageMapper(
+      selfKey: 'SELF',
+      selfName: 'me',
+      nameOf: (_) => null,
+    );
+    t2t.ChatMessage legacy(String from) => t2t.ChatMessage(
+      fromUserId: from,
+      text: 'CQ',
+      timestamp: at,
+      isSelf: false,
+      groupId: 'tox_1',
+    );
+    final a = mapper.map(legacy('A' * 64), conversationId: 'group_tox_1');
+    final b = mapper.map(legacy('B' * 64), conversationId: 'group_tox_1');
+    expect(a.id, isNot(b.id));
+    // Stable across calls.
+    expect(
+      mapper.map(legacy('A' * 64), conversationId: 'group_tox_1').id,
+      a.id,
+    );
   });
 }

@@ -3408,4 +3408,24 @@ class SRu extends S {
   String placementAdopt(int lesson) {
     return 'Начать с урока $lesson';
   }
+
+  @override
+  String get chatJumpToLatest => 'Последние сообщения';
+
+  @override
+  String get chatMessageGone => 'Этого сообщения больше нет в чате.';
+
+  @override
+  String get chatListenOnlyPreview => 'Новое сообщение — примите его на слух';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Сохранить остальное';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return 'Импортировать материалов: $count?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Экспорт в текст (TXT)';
 }

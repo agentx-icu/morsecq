@@ -15,11 +15,17 @@ mixin _MessageManagement implements ChatService {
 
   /// Every persisted row of [conversationId] (live window plus archive),
   /// mapped, in no particular order. Scanned in chunks.
-  Future<List<ChatMessage>> _allRows(String conversationId) async {
+  Future<List<ChatMessage>> _allRows(
+    String conversationId, {
+    MessageSearchCancel? cancel,
+  }) async {
     final svc = _requireService();
     final peer = ConversationIds.peerOf(conversationId);
     final rows = List<t2t.ChatMessage>.of(svc.getHistory(peer));
-    if (await svc.hasArchivedHistory(peer)) {
+    final hasArchive = await svc.hasArchivedHistory(peer);
+    // The session may have changed during any await: never map old rows.
+    _ensureCurrent(svc);
+    if (hasArchive) {
       final archived = await svc.getArchivedHistory(peer);
       _ensureCurrent(svc);
       final seen = rows.map((r) => r.msgID).whereType<String>().toSet();
@@ -32,8 +38,10 @@ mixin _MessageManagement implements ChatService {
       if (i % _scanChunk == _scanChunk - 1) {
         await Future<void>.delayed(Duration.zero);
         _ensureCurrent(svc);
+        if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
       }
     }
+    if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
     return out;
   }
 
@@ -43,8 +51,9 @@ mixin _MessageManagement implements ChatService {
     MessageSearchQuery query, {
     MessageSearchCursor? cursor,
     int limit = 20,
+    MessageSearchCancel? cancel,
   }) async => MessageOrder.page(
-    await _allRows(conversationId),
+    await _allRows(conversationId, cancel: cancel),
     query,
     cursor: cursor,
     limit: limit,

@@ -39,6 +39,26 @@ final class MessageSearchQuery {
   }
 }
 
+/// Lets a caller abandon a running [ChatService.searchMessages]: the
+/// implementation stops scanning at its next chunk boundary and the call
+/// completes with [MessageSearchCancelled].
+final class MessageSearchCancel {
+  bool _cancelled = false;
+
+  bool get isCancelled => _cancelled;
+
+  void cancel() => _cancelled = true;
+}
+
+/// Thrown by [ChatService.searchMessages] when its [MessageSearchCancel]
+/// fired before the scan finished.
+final class MessageSearchCancelled implements Exception {
+  const MessageSearchCancelled();
+
+  @override
+  String toString() => 'MessageSearchCancelled';
+}
+
 /// Position after the last result of a page: results are ordered newest
 /// first by (timestamp, id), so the next page holds the rows strictly after
 /// this key in that order. Equal timestamps are told apart by id, so no row

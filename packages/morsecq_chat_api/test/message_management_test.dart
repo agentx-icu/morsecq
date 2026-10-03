@@ -20,6 +20,15 @@ void main() {
   tearDown(() => chat.dispose());
 
   group('searchMessages', () {
+    test('a fired cancel token aborts the search', () async {
+      chat.receiveMessage(cid, 'CQ');
+      final cancel = MessageSearchCancel()..cancel();
+      await expectLater(
+        chat.searchMessages(cid, const MessageSearchQuery(), cancel: cancel),
+        throwsA(isA<MessageSearchCancelled>()),
+      );
+    });
+
     test('matches the whole history case-insensitively, newest first', () {
       for (var i = 0; i < 120; i++) {
         chat.receiveMessage(

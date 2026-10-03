@@ -984,5 +984,11 @@
   "placementSuggestion": "建议从第 {lesson} 课开始",
   "placementVerified": "按顺序确认了 {total} 个柯赫字符中的 {count} 个。",
   "placementLimits": "基于少量样本：未测到的字符仍视为未测试，也不会被标记为已掌握。你可以随时更改课程。",
-  "placementAdopt": "从第 {lesson} 课开始"
+  "placementAdopt": "从第 {lesson} 课开始",
+  "chatJumpToLatest": "最新消息",
+  "chatMessageGone": "该消息已不在此会话中。",
+  "chatListenOnlyPreview": "新消息——请收听抄收",
+  "chatSaveMaterialConfirm": "保存其余部分",
+  "materialsImportConfirm": "导入 {count} 个素材？",
+  "materialsExportTxt": "导出为文本（TXT）"
 }

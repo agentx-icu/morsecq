@@ -74,7 +74,24 @@ class _MessageSearchScreenState extends State<MessageSearchScreen> {
         : DateTime(_range!.end.year, _range!.end.month, _range!.end.day + 1),
   );
 
+  /// The query the current [_next] cursor belongs to: "more" always pages
+  /// that query, never a newer one with an old cursor.
+  MessageSearchQuery? _pagedQuery;
+  MessageSearchCancel? _cancel;
+
+  /// Any change of query or filter: older searches are void at once (their
+  /// results can no longer land) and their scans are cancelled.
+  void _invalidate() {
+    _generation++;
+    _cancel?.cancel();
+    _cancel = null;
+    _results.clear();
+    _next = null;
+    _pagedQuery = null;
+  }
+
   void _changed() {
+    setState(_invalidate);
     _debounce?.cancel();
     _debounce = Timer(
       const Duration(milliseconds: 300),
@@ -82,23 +99,27 @@ class _MessageSearchScreenState extends State<MessageSearchScreen> {
     );
   }
 
-  /// Starts over (or, with [more], loads the next page). A newer search
-  /// invalidates every older one still running.
+  /// Starts over (or, with [more], loads the next page of the same query).
   Future<void> _search({bool more = false}) async {
-    final generation = more ? _generation : ++_generation;
+    if (more && (_pagedQuery == null || _next == null)) return;
+    if (!more) {
+      _debounce?.cancel();
+      _invalidate();
+    }
+    final generation = _generation;
+    final query = more ? _pagedQuery! : _q;
+    final cursor = more ? _next : null;
+    final cancel = _cancel ??= MessageSearchCancel();
     setState(() {
       _loading = true;
       _error = null;
-      if (!more) {
-        _results.clear();
-        _next = null;
-      }
     });
     try {
       final page = await widget.service.searchMessages(
         widget.conversationId,
-        _q,
-        cursor: more ? _next : null,
+        query,
+        cursor: cursor,
+        cancel: cancel,
       );
       if (!mounted || generation != _generation) return;
       setState(() {
@@ -110,8 +131,11 @@ class _MessageSearchScreenState extends State<MessageSearchScreen> {
               : page.results,
         );
         _next = page.next;
+        _pagedQuery = query;
         _loading = false;
       });
+    } on MessageSearchCancelled {
+      return;
     } on Object catch (e) {
       if (!mounted || generation != _generation) return;
       setState(() {
@@ -137,6 +161,7 @@ class _MessageSearchScreenState extends State<MessageSearchScreen> {
   @override
   void dispose() {
     _generation++;
+    _cancel?.cancel();
     _debounce?.cancel();
     _query.dispose();
     super.dispose();
@@ -284,7 +309,10 @@ class _ResultTile extends StatelessWidget {
     final theme = Theme.of(context);
     final who = message.isMine
         ? s.chatSearchMe
-        : message.senderName ?? message.senderId.substring(0, 8);
+        : message.senderName ??
+              (message.senderId.length > 8
+                  ? message.senderId.substring(0, 8)
+                  : message.senderId);
     return ListTile(
       minTileHeight: 56,
       leading: Icon(bookmarked ? Icons.bookmark : Icons.chat_bubble_outline),

@@ -3333,6 +3333,26 @@ class SZh extends S {
   String placementAdopt(int lesson) {
     return '从第 $lesson 课开始';
   }
+
+  @override
+  String get chatJumpToLatest => '最新消息';
+
+  @override
+  String get chatMessageGone => '该消息已不在此会话中。';
+
+  @override
+  String get chatListenOnlyPreview => '新消息——请收听抄收';
+
+  @override
+  String get chatSaveMaterialConfirm => '保存其余部分';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '导入 $count 个素材？';
+  }
+
+  @override
+  String get materialsExportTxt => '导出为文本（TXT）';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6664,4 +6684,24 @@ class SZhHant extends SZh {
   String placementAdopt(int lesson) {
     return '從第 $lesson 課開始';
   }
+
+  @override
+  String get chatJumpToLatest => '最新訊息';
+
+  @override
+  String get chatMessageGone => '該訊息已不在此對話中。';
+
+  @override
+  String get chatListenOnlyPreview => '新訊息——請收聽抄收';
+
+  @override
+  String get chatSaveMaterialConfirm => '儲存其餘部分';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '匯入 $count 個素材？';
+  }
+
+  @override
+  String get materialsExportTxt => '匯出為文字（TXT）';
 }

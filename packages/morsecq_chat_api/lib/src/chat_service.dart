@@ -81,11 +81,13 @@ abstract interface class ChatService {
   /// rows a screen loaded), newest first by (timestamp, id). Pass the
   /// previous page's [MessageSearchPage.next] as [cursor] for the next page;
   /// pages never lose or repeat rows, even with equal timestamps.
+  /// A fired [cancel] stops the scan and throws [MessageSearchCancelled].
   Future<MessageSearchPage> searchMessages(
     String conversationId,
     MessageSearchQuery query, {
     MessageSearchCursor? cursor,
     int limit = 20,
+    MessageSearchCancel? cancel,
   });
 
   /// Up to [before] older and [after] newer rows around [messageId], oldest

@@ -3333,4 +3333,24 @@ class SKo extends S {
   String placementAdopt(int lesson) {
     return '레슨 $lesson부터 시작';
   }
+
+  @override
+  String get chatJumpToLatest => '최신 메시지';
+
+  @override
+  String get chatMessageGone => '그 메시지는 더 이상 이 대화에 없습니다.';
+
+  @override
+  String get chatListenOnlyPreview => '새 메시지 — 들으며 받아 적으세요';
+
+  @override
+  String get chatSaveMaterialConfirm => '나머지 저장';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '자료 $count개를 가져올까요?';
+  }
+
+  @override
+  String get materialsExportTxt => '텍스트로 내보내기(TXT)';
 }

@@ -3360,4 +3360,24 @@ class SEs extends S {
   String placementAdopt(int lesson) {
     return 'Empezar en la lección $lesson';
   }
+
+  @override
+  String get chatJumpToLatest => 'Mensajes más recientes';
+
+  @override
+  String get chatMessageGone => 'Ese mensaje ya no está en esta conversación.';
+
+  @override
+  String get chatListenOnlyPreview => 'Mensaje nuevo: escúchalo para copiarlo';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Guardar el resto';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '¿Importar $count materiales?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Exportar como texto (TXT)';
 }

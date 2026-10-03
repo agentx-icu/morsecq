@@ -64,17 +64,24 @@ class MessageMapper {
         ? '/me ${m.text}'
         : m.text;
     return api.ChatMessage(
-      id: m.msgID ?? '${m.timestamp.microsecondsSinceEpoch}_${text.hashCode}',
+      // Legacy rows without a msgID: include the sender so two peers'
+      // identical texts at the same instant never share an id (paging,
+      // bookmarks and jumps key on it).
+      id:
+          m.msgID ??
+          '${m.timestamp.microsecondsSinceEpoch}_${sender}_${text.hashCode}',
       conversationId: conversationId,
       senderId: sender,
       senderName: isMine ? selfName : nameOf(sender),
       text: text,
       timestamp: m.timestamp,
-      // A cancelled row stays cancelled even while its queue item lingers
-      // (the drain drops it); otherwise the durable queue says pending.
+      // A cancelled or failed row keeps that state even while its queue item
+      // lingers (Tim2Tox emits the row before the durable removal);
+      // otherwise the durable queue says pending.
       status:
           isMine &&
               !m.isCancelled &&
+              !m.isFailed &&
               (isQueued?.call(m, conversationId) ?? false)
           ? api.MessageStatus.pending
           : statusOf(m),

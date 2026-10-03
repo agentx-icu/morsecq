@@ -48,15 +48,40 @@ typedef BookmarksResolver = Future<MessageBookmarks> Function();
 class MessageBookmarks extends ChangeNotifier {
   MessageBookmarks._(this._file);
 
-  /// Store for [dataDirectory]; one instance per directory so every screen
-  /// of a profile sees the same state, and profiles never share one.
-  static MessageBookmarks forDirectory(String dataDirectory) =>
+  /// Store for one profile ([profileKey] in [dataDirectory]); one instance
+  /// per profile so every screen sees the same state. A replaced, deleted
+  /// or switched identity retires its instance ([retireAll]): the backend
+  /// may reuse the directory, and a stale cache must never be written over
+  /// the next profile's file.
+  static MessageBookmarks forProfile(String dataDirectory, String profileKey) =>
       _instances.putIfAbsent(
-        dataDirectory,
+        '$dataDirectory#$profileKey',
         () => MessageBookmarks._(
           AtomicJsonFile(File(p.join(dataDirectory, 'chat', 'bookmarks.json'))),
         ),
       );
+
+  /// Durability barrier: every cached store's pending (or failed) writes.
+  static Future<void> flushAll() async {
+    for (final store in List.of(_instances.values)) {
+      await store.flush();
+    }
+  }
+
+  /// Flushes, then retires every cached store; the next [forProfile]
+  /// reloads from disk. Retired stores ignore further changes.
+  static Future<void> retireAll() async {
+    final stores = List.of(_instances.values);
+    _instances.clear();
+    for (final store in stores) {
+      try {
+        await store.flush();
+      } on Object {
+        // Retiring must not be blocked by a failing disk.
+      }
+      store._retired = true;
+    }
+  }
 
   /// In-memory store for tests and stub identities.
   @visibleForTesting
@@ -98,6 +123,12 @@ class MessageBookmarks extends ChangeNotifier {
   Future<void>? _loading;
   Future<void> _writes = Future<void>.value();
 
+  /// The last write failed; the next change or [flush] writes again.
+  bool _dirty = false;
+  bool _retired = false;
+
+  bool get isDirty => _dirty;
+
   List<MessageBookmark> get items => List.unmodifiable(_items);
 
   Future<void> load() =>
@@ -131,6 +162,7 @@ class MessageBookmarks extends ChangeNotifier {
         ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
   Future<void> toggle(String conversationId, String messageId, DateTime at) {
+    if (_retired) return Future<void>.value();
     if (contains(conversationId, messageId)) {
       _items.removeWhere(
         (b) => b.conversationId == conversationId && b.messageId == messageId,
@@ -149,6 +181,7 @@ class MessageBookmarks extends ChangeNotifier {
 
   /// Clearing a conversation's history invalidates its bookmarks.
   Future<void> removeConversation(String conversationId) {
+    if (_retired) return Future<void>.value();
     final before = _items.length;
     _items.removeWhere((b) => b.conversationId == conversationId);
     return before == _items.length ? Future<void>.value() : _save();
@@ -156,6 +189,7 @@ class MessageBookmarks extends ChangeNotifier {
 
   /// Drops bookmarks of messages that no longer exist.
   Future<void> removeMissing(String conversationId, Set<String> missing) {
+    if (_retired) return Future<void>.value();
     final before = _items.length;
     _items.removeWhere(
       (b) =>
@@ -164,16 +198,66 @@ class MessageBookmarks extends ChangeNotifier {
     return before == _items.length ? Future<void>.value() : _save();
   }
 
+  /// Waits for pending writes and retries a failed one.
+  Future<void> flush() async {
+    await _writes;
+    if (_dirty && !_retired) await _write();
+  }
+
   Future<void> _save() {
     notifyListeners();
+    return _write();
+  }
+
+  /// Writes the current snapshot (every write is a full snapshot, so a
+  /// retry after a failure needs no replay).
+  Future<void> _write() {
     final file = _file;
     if (file == null) return Future<void>.value();
     final snapshot = <String, Object?>{
       'v': 1,
       'bookmarks': [for (final b in _items) b.toJson()],
     };
-    final write = _writes.then((_) => file.write(snapshot));
-    _writes = write.catchError((Object _) {});
+    final write = _writes
+        .then((_) => file.write(snapshot))
+        .then(
+          (_) => _dirty = false,
+          onError: (Object e, StackTrace st) {
+            _dirty = true;
+            Error.throwWithStackTrace(e, st);
+          },
+        );
+    _writes = write.then<void>((_) {}, onError: (Object _) {});
     return write;
+  }
+}
+
+/// Registered with the identity service: the bookmark files are flushed
+/// before backup and retired before the identity's data is replaced, and
+/// retired again whenever the open identity changes.
+final class MessageBookmarksBarrier implements IdentityDataStore {
+  MessageBookmarksBarrier(this._identity) {
+    _sub = _identity.identityChanges.listen((_) {
+      MessageBookmarks.retireAll().ignore();
+    });
+    final identity = _identity;
+    if (identity is PersistentIdentityService) identity.registerDataStore(this);
+  }
+
+  final IdentityService _identity;
+  late final StreamSubscription<Identity?> _sub;
+
+  @override
+  Future<void> flush() => MessageBookmarks.flushAll();
+
+  @override
+  Future<void> prepareForReplacement() => MessageBookmarks.retireAll();
+
+  void dispose() {
+    final identity = _identity;
+    if (identity is PersistentIdentityService) {
+      identity.unregisterDataStore(this);
+    }
+    _sub.cancel().ignore();
   }
 }

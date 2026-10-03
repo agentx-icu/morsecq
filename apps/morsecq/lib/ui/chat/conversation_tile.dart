@@ -5,6 +5,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/l10n_extension.dart';
 import 'chat_layout.dart';
 import 'morse_pattern_text.dart';
+import 'morse_playback_settings.dart';
 import 'self_badge.dart';
 
 /// Actions a tile can ask its owner to perform.
@@ -80,10 +81,20 @@ class ConversationTile extends StatelessWidget {
     final ColorScheme scheme = theme.colorScheme;
     final ChatMessage? last = conversation.lastMessage;
     final bool hasDraft = conversation.draft.trim().isNotEmpty;
+    // Listen-only training: a received last message is the answer, so the
+    // preview hides its text and its dots/dashes (visually and for screen
+    // readers) the same way the bubble does.
+    final bool hidden =
+        !hasDraft &&
+        last != null &&
+        !last.isMine &&
+        MorsePlaybackSettings.of(context).listenOnly;
     final String previewText = hasDraft
         ? conversation.draft
+        : hidden
+        ? context.s.chatListenOnlyPreview
         : (last?.text ?? '');
-    final String pattern = previewText.isEmpty
+    final String pattern = previewText.isEmpty || hidden
         ? ''
         : MorseEncoder.toPattern(previewText);
     final bool unread = conversation.unreadCount > 0;

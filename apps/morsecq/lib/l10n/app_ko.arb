@@ -964,5 +964,11 @@
   "placementSuggestion": "추천 시작: 레슨 {lesson}",
   "placementVerified": "코흐 순서 문자 {total}개 중 {count}개를 차례로 확인했습니다.",
   "placementLimits": "짧은 표본 기준입니다. 확인하지 않은 문자는 미확인으로 남고 습득으로 표시되지 않습니다. 레슨은 언제든 바꿀 수 있습니다.",
-  "placementAdopt": "레슨 {lesson}부터 시작"
+  "placementAdopt": "레슨 {lesson}부터 시작",
+  "chatJumpToLatest": "최신 메시지",
+  "chatMessageGone": "그 메시지는 더 이상 이 대화에 없습니다.",
+  "chatListenOnlyPreview": "새 메시지 — 들으며 받아 적으세요",
+  "chatSaveMaterialConfirm": "나머지 저장",
+  "materialsImportConfirm": "자료 {count}개를 가져올까요?",
+  "materialsExportTxt": "텍스트로 내보내기(TXT)"
 }

@@ -90,6 +90,8 @@ class _AppScopeState extends State<AppScope> {
     guest: GuestHooks(
       store: _guest,
       releaseGuestController: () => _training.releaseGuest(),
+      suspendLearning: () => _training.suspendLearning(),
+      resumeLearning: () => _training.resumeLearning(),
     ),
   );
   late final BackupFileGateway _backupFiles =
@@ -120,6 +122,7 @@ class _AppScopeState extends State<AppScope> {
   @override
   void initState() {
     super.initState();
+    _bookmarkBarrier = MessageBookmarksBarrier(_identity);
     // Context-free code (notifications, tray) reads strings through
     // currentS() / the services' StringsResolver, both following this
     // controller. Set before start(): the resolver is built from _locale, and
@@ -128,10 +131,14 @@ class _AppScopeState extends State<AppScope> {
     _services.start();
   }
 
+  /// Flushes / retires chat bookmarks around identity replacement.
+  late final MessageBookmarksBarrier _bookmarkBarrier;
+
   @override
   void dispose() {
     if (LocaleController.active == _locale) LocaleController.active = null;
     _training.dispose().ignore();
+    _bookmarkBarrier.dispose();
     _services.dispose().ignore();
     _preferences.dispose();
     _locale.dispose();
@@ -173,9 +180,12 @@ class _AppScopeState extends State<AppScope> {
           value: widget.desktopShell,
         ),
         Provider<TrainingControllerHost?>.value(value: _training),
+        Provider<GuestStore?>.value(value: _guest),
         Provider<BookmarksResolver?>.value(
-          value: () async =>
-              MessageBookmarks.forDirectory(await _identity.dataDirectory()),
+          value: () async => MessageBookmarks.forProfile(
+            await _identity.dataDirectory(),
+            _identity.current?.publicKey ?? '',
+          ),
         ),
       ],
       child: widget.child,

@@ -964,5 +964,11 @@
   "placementSuggestion": "Départ suggéré : leçon {lesson}",
   "placementVerified": "{count} signes Koch sur {total} confirmés dans l'ordre.",
   "placementLimits": "Sur un court échantillon : les signes non testés restent non testés et rien n'est marqué comme acquis. Vous pouvez changer de leçon à tout moment.",
-  "placementAdopt": "Commencer à la leçon {lesson}"
+  "placementAdopt": "Commencer à la leçon {lesson}",
+  "chatJumpToLatest": "Derniers messages",
+  "chatMessageGone": "Ce message n'est plus dans cette conversation.",
+  "chatListenOnlyPreview": "Nouveau message — écoutez-le pour le copier",
+  "chatSaveMaterialConfirm": "Enregistrer le reste",
+  "materialsImportConfirm": "Importer {count} supports ?",
+  "materialsExportTxt": "Exporter en texte (TXT)"
 }

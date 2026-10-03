@@ -188,6 +188,7 @@ class _ConversationScreenState extends State<ConversationScreen>
         _messages.isEmpty) {
       return;
     }
+    if (_jumpedAway) return _loadOlderAround();
     final int generation = _generation;
     final String origin = _messages.first.id;
     final int loaded = _older.length + _messages.length;
@@ -287,10 +288,13 @@ class _ConversationScreenState extends State<ConversationScreen>
       !_scroll.hasClients || _scroll.position.extentAfter <= 80;
 
   void _onScroll() {
-    if (_newMessages > 0 && _nearBottom) {
+    // The bottom of a jumped (historical) window is not the live end: it
+    // must not clear the arrival count or mark the conversation read.
+    if (_newMessages > 0 && _nearBottom && !_jumpedAway) {
       setState(() => _newMessages = 0);
       _markRead();
     }
+    if (_jumpedAway && _nearBottom) unawaited(_loadNewerAround());
     if (!_following &&
         _scroll.hasClients &&
         _olderError == null &&
@@ -414,6 +418,7 @@ class _ConversationScreenState extends State<ConversationScreen>
         onLoadOlder: _clearing ? null : () => unawaited(_loadOlder()),
         newCount: _newMessages,
         onLatest: _showLatest,
+        showLatest: _jumpedAway,
       ),
     );
   }

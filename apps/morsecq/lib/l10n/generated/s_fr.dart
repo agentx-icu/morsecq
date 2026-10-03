@@ -3361,4 +3361,24 @@ class SFr extends S {
   String placementAdopt(int lesson) {
     return 'Commencer à la leçon $lesson';
   }
+
+  @override
+  String get chatJumpToLatest => 'Derniers messages';
+
+  @override
+  String get chatMessageGone => 'Ce message n\'est plus dans cette conversation.';
+
+  @override
+  String get chatListenOnlyPreview => 'Nouveau message — écoutez-le pour le copier';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Enregistrer le reste';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return 'Importer $count supports ?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Exporter en texte (TXT)';
 }

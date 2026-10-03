@@ -964,5 +964,11 @@
   "placementSuggestion": "おすすめの開始：レッスン{lesson}",
   "placementVerified": "コッホ順の{total}文字中{count}文字を順に確認しました。",
   "placementLimits": "少ないサンプルに基づきます。テストしていない文字は未テストのままで、習得済みにはなりません。レッスンはいつでも変えられます。",
-  "placementAdopt": "レッスン{lesson}から始める"
+  "placementAdopt": "レッスン{lesson}から始める",
+  "chatJumpToLatest": "最新のメッセージ",
+  "chatMessageGone": "そのメッセージはこの会話にもうありません。",
+  "chatListenOnlyPreview": "新着メッセージ — 聴いて受信してください",
+  "chatSaveMaterialConfirm": "残りを保存",
+  "materialsImportConfirm": "{count}件の素材を読み込みますか？",
+  "materialsExportTxt": "テキストで書き出す（TXT）"
 }

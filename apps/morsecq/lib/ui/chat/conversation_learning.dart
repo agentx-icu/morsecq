@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
@@ -60,8 +63,13 @@ abstract final class ConversationLearning {
     final controller = await _controller(context);
     if (controller == null || !context.mounted) return;
     final wasAuto = settings.autoPlay;
+    // Only a change of the auto-play switch itself counts as the learner
+    // deciding; other playback settings may change freely meanwhile.
     var touched = false;
-    void watch() => touched = true;
+    void watch() {
+      if (settings.autoPlay) touched = true;
+    }
+
     playback.stop();
     if (wasAuto) settings.autoPlay = false;
     settings.addListener(watch);
@@ -86,9 +94,59 @@ abstract final class ConversationLearning {
       );
     } finally {
       settings.removeListener(watch);
-      if (wasAuto && !touched && context.mounted && !settings.autoPlay) {
+      // The practice route is still animating out: wait until the
+      // conversation is uncovered before judging whether it is visible.
+      if (context.mounted) await _uncovered(ModalRoute.of(context));
+      if (wasAuto &&
+          !touched &&
+          !settings.autoPlay &&
+          context.mounted &&
+          _stillShowing(context) &&
+          _sameProfile(context, controller)) {
         settings.autoPlay = true;
       }
+    }
+  }
+
+  static Future<void> _uncovered(ModalRoute<Object?>? route) async {
+    final secondary = route?.secondaryAnimation;
+    if (secondary == null || secondary.status == AnimationStatus.dismissed) {
+      return;
+    }
+    final done = Completer<void>();
+    void onStatus(AnimationStatus status) {
+      if (status == AnimationStatus.dismissed && !done.isCompleted) {
+        done.complete();
+      }
+    }
+
+    secondary.addStatusListener(onStatus);
+    try {
+      await done.future.timeout(const Duration(seconds: 2), onTimeout: () {});
+    } finally {
+      secondary.removeStatusListener(onStatus);
+    }
+  }
+
+  /// The original conversation is mounted, on top and not in a hidden tab.
+  static bool _stillShowing(BuildContext context) =>
+      context.mounted &&
+      (ModalRoute.of(context)?.isCurrent ?? true) &&
+      TickerMode.valuesOf(context).enabled;
+
+  /// The identity that owned the practice is still the open one.
+  static bool _sameProfile(
+    BuildContext context,
+    TrainingController controller,
+  ) {
+    try {
+      final key = context.read<IdentityService>().current?.publicKey;
+      // An unnamed controller (isolated screens) cannot be told apart.
+      return controller.profileKey.isEmpty ||
+          key == null ||
+          key == controller.profileKey;
+    } on Object {
+      return true;
     }
   }
 
@@ -120,6 +178,22 @@ abstract final class ConversationLearning {
     final controller = await _controller(context);
     if (controller == null || !context.mounted) return;
     final s = context.s;
+    // Never transform the practice text silently: characters Morse cannot
+    // key are listed and the learner confirms leaving them out.
+    final analysis = MaterialImport.analyze(message.text, MaterialKind.text);
+    if (analysis.items.isEmpty) {
+      showSnack(context, s.chatPracticeNothingTrainable);
+      return;
+    }
+    if (analysis.unsupported.isNotEmpty) {
+      final ok = await confirm(
+        context,
+        title: s.chatSaveAsMaterial,
+        body: s.chatPracticeUnsupported(analysis.unsupported.join(' ')),
+        confirmLabel: s.chatSaveMaterialConfirm,
+      );
+      if (!ok || !context.mounted) return;
+    }
     final ok = await _save(controller, message, title);
     if (context.mounted) {
       showSnack(context, ok ? s.chatSavedAsMaterial : s.chatSaveMaterialFailed);

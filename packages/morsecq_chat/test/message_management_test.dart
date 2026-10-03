@@ -88,6 +88,19 @@ void main() {
     expect(seen.last, 'CQ test 0');
   });
 
+  test('a cancelled search stops instead of returning results', () async {
+    await chat.sendText(cid, 'CQ');
+    final cancel = MessageSearchCancel()..cancel();
+    await expectLater(
+      chat.searchMessages(
+        cid,
+        const MessageSearchQuery(text: 'cq'),
+        cancel: cancel,
+      ),
+      throwsA(isA<MessageSearchCancelled>()),
+    );
+  });
+
   test('loadAround finds an old row for a deep jump', () async {
     final rows = <ChatMessage>[];
     for (var i = 0; i < 60; i++) {

@@ -56,6 +56,8 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
   @override
   void initState() {
     super.initState();
+    // Submit follows whether the copy holds any Morse symbol.
+    _answer.addListener(_onAnswer);
     unawaited(_setup());
   }
 
@@ -87,8 +89,15 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
     playback.player.play(_session.timeline);
   }
 
+  void _onAnswer() {
+    if (mounted) setState(() {});
+  }
+
+  /// An empty (or symbol-free) copy is no answer: no submit, no credit.
+  bool get _hasAnswer => MorseText.symbols(_answer.text).isNotEmpty;
+
   Future<void> _submit() async {
-    if (_recording || _session.score != null) return;
+    if (_recording || _session.score != null || !_hasAnswer) return;
     _playback?.player.stop();
     final c = widget.controller;
     final score = _session.submit(_answer.text, c.now());
@@ -103,6 +112,7 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
         id: _session.id,
         source: ExerciseSource.chat,
         assistance: _session.assistance,
+        answered: _hasAnswer,
         timing: _session.timing,
         sourceRef: _session.sourceRef,
         learned: c.learnedChars.toSet(),
@@ -164,6 +174,7 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
   @override
   void dispose() {
     _disposed = true;
+    _answer.removeListener(_onAnswer);
     unawaited(_sub?.cancel());
     // Releases the audio lease on every exit path.
     unawaited(_playback?.dispose());
@@ -174,23 +185,26 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return Scaffold(
-      appBar: AppBar(title: Text(s.chatPracticeTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: switch (_phase) {
-                _Phase.confirm => _confirm(context),
-                _Phase.answer => _answerView(context),
-                _Phase.result => _result(context),
-              },
-            ),
+    final body = SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: switch (_phase) {
+              _Phase.confirm => _confirm(context),
+              _Phase.answer => _answerView(context),
+              _Phase.result => _result(context),
+            },
           ),
         ),
       ),
+    );
+    // With sound off (or unavailable) the flash fallback is the question.
+    final flash = _playback?.flash;
+    return Scaffold(
+      appBar: AppBar(title: Text(s.chatPracticeTitle)),
+      body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
   }
 
@@ -300,7 +314,7 @@ class _ChatCopyScreenState extends State<ChatCopyScreen> {
         const SizedBox(height: 16),
         FilledButton(
           key: const ValueKey('chat-practice-submit'),
-          onPressed: () => unawaited(_submit()),
+          onPressed: _hasAnswer ? () => unawaited(_submit()) : null,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: Text(s.learnSubmit),
         ),
