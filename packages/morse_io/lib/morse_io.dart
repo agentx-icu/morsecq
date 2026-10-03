@@ -7,6 +7,7 @@ library;
 
 export 'src/app_foreground.dart';
 export 'src/audio_session_api.dart';
+export 'src/clip_player.dart';
 export 'src/clock.dart';
 export 'src/engine_leases.dart';
 export 'src/flash_sink.dart';

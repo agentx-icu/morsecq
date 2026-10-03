@@ -12,6 +12,7 @@ import 'listen_settings.dart';
 import 'listen_widgets.dart';
 import 'pcm_source.dart';
 import 'record_pcm_source.dart';
+import 'workbench/workbench_screen.dart';
 
 /// Microphone -> Morse -> text.
 ///
@@ -156,6 +157,14 @@ class _ListenScreenState extends State<ListenScreen>
       appBar: AppBar(
         title: Text(s.listenTitle),
         actions: <Widget>[
+          IconButton(
+            key: const ValueKey('listen-open-workbench'),
+            tooltip: s.workbenchOpen,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()),
+            ),
+            icon: const Icon(Icons.audio_file_outlined),
+          ),
           IconButton(
             tooltip: s.listenClear,
             onPressed: _controller.hasText ? _controller.clear : null,
