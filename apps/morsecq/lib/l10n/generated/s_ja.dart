@@ -1,0 +1,2291 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 's.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Japanese (`ja`).
+class SJa extends S {
+  SJa([String locale = 'ja']) : super(locale);
+
+  @override
+  String get appName => 'MorseCQ';
+
+  @override
+  String get navLearn => '学習';
+
+  @override
+  String get navChat => 'チャット';
+
+  @override
+  String get navGroups => 'グループ';
+
+  @override
+  String get navMe => '自分';
+
+  @override
+  String get navReference => '資料';
+
+  @override
+  String get navLearnDescription => 'Koch 法のレッスン、送信練習、受信練習。';
+
+  @override
+  String get navChatDescription => 'Tox P2P による、サーバーを使わない 1 対 1 のモールス通信。';
+
+  @override
+  String get navGroupsDescription => 'グループ通信網 — 複数の通信者が同じチャンネルで送信。';
+
+  @override
+  String get navReferenceDescription => '文字表、手続き符号、Q 符号、略語、双方向変換ツール。';
+
+  @override
+  String get navMeDescription => 'コールサイン、Tox の ID 情報、学習の進捗と設定。';
+
+  @override
+  String get shellOfflineBanner => 'オフライン：Tox ネットワークに接続していません。オンラインに戻るとメッセージを送信します。';
+
+  @override
+  String get actionOk => '確認';
+
+  @override
+  String get actionCancel => 'キャンセル';
+
+  @override
+  String get actionSave => '保存';
+
+  @override
+  String get actionDelete => '削除';
+
+  @override
+  String get actionCopy => 'コピー';
+
+  @override
+  String get actionShare => '共有';
+
+  @override
+  String get actionRetry => '再試行';
+
+  @override
+  String get actionClose => '閉じる';
+
+  @override
+  String get actionSearch => '検索';
+
+  @override
+  String get actionSettings => '設定';
+
+  @override
+  String get connectionConnecting => '接続中…';
+
+  @override
+  String get connectionOnline => 'オンライン';
+
+  @override
+  String get connectionOffline => 'オフライン';
+
+  @override
+  String get messageStatusPending => '送信待ち — 相手がオフライン';
+
+  @override
+  String get messageStatusPendingDetail => 'Tox にサーバーはありません。相手がオンラインになるとメッセージが届きます。';
+
+  @override
+  String get messageStatusSending => '送信中';
+
+  @override
+  String get messageStatusSent => '送信済み';
+
+  @override
+  String get messageStatusFailed => '送信失敗';
+
+  @override
+  String get errorWrongPassword => 'パスワードが違います。もう一度お試しください。';
+
+  @override
+  String get errorPeerOffline => 'この連絡先はオフラインです。Tox にサーバーはないため、相手が戻るまでメッセージは送信待ちになります。';
+
+  @override
+  String get errorInvalidToxId => '有効な Tox ID ではありません（76 桁の 16 進数が必要です）。';
+
+  @override
+  String get errorAlreadyFriend => 'この Tox ID はすでに友達リストに登録されています。';
+
+  @override
+  String get errorOwnId => 'これは自分の Tox ID です。';
+
+  @override
+  String get errorGroupNotFound => 'グループが見つかりません。';
+
+  @override
+  String get errorMessageTooLong => 'メッセージが Tox の 1 件あたりの長さ制限を超えています。';
+
+  @override
+  String get errorUnknown => '問題が発生しました';
+
+  @override
+  String get languageTitle => '言語';
+
+  @override
+  String get languageSystemDefault => 'システムの設定に従う';
+
+  @override
+  String learnLessonOf(int lesson, int total) {
+    return 'レッスン $lesson / $total';
+  }
+
+  @override
+  String learnCharsLearned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 文字を習得',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnDailyGoalProgress(int done, int goal) {
+    return '$done / $goal 文字';
+  }
+
+  @override
+  String learnStreakDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days 日連続で練習',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnReviewDueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '復習する文字：$count 文字',
+      zero: '復習する文字はありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnRoundScore(int correct, int total) {
+    return '$total 文字中 $correct 文字正解';
+  }
+
+  @override
+  String learnRoundOf(int round) {
+    return 'ラウンド $round';
+  }
+
+  @override
+  String learnAccuracyPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String learnCharsSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 文字を送信',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnLessonUnlocked(String char) {
+    return '次の文字を解放しました：$char';
+  }
+
+  @override
+  String learnConfusedMissed(String target) {
+    return '$target を聞き逃しました';
+  }
+
+  @override
+  String learnConfusedAs(String target, String answered) {
+    return '$target を $answered と聞き違えました';
+  }
+
+  @override
+  String learnWpmValue(String wpm) {
+    return '$wpm wpm';
+  }
+
+  @override
+  String learnHzValue(String hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String learnCharsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 文字',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsLessonOf(int lesson, int total) {
+    return '$lesson / $total';
+  }
+
+  @override
+  String statsCharsLearned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 文字を習得',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPercent(String percent) {
+    return '$percent%';
+  }
+
+  @override
+  String statsCharsCopied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 文字を受信記録',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsSessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回の練習',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 日',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsBestStreak(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '最長 $count 日連続',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsGoalProgress(int done, int goal) {
+    return '$done / $goal 文字';
+  }
+
+  @override
+  String statsGoalRemaining(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'あと $remaining 文字',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTrendSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '最近 $count 回の練習',
+      one: '前回の練習',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTooltipSession(int index, int total) {
+    return '練習 $index / $total';
+  }
+
+  @override
+  String statsTooltipCopied(int correct, int total) {
+    return '$correct / $total 正解';
+  }
+
+  @override
+  String statsTooltipLesson(int lesson) {
+    return 'レッスン $lesson';
+  }
+
+  @override
+  String statsAttempts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回の試行',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsCorrectOf(int correct, int attempts) {
+    return '$attempts 回中 $correct 回正解';
+  }
+
+  @override
+  String statsLessonIntroduced(int lesson) {
+    return 'レッスン $lesson で登場';
+  }
+
+  @override
+  String statsSrsBox(int box, int maxBox) {
+    return 'ボックス $box / $maxBox';
+  }
+
+  @override
+  String statsSrsDueIn(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days 日後に復習',
+      one: '明日復習',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsHeatmapCell(String target, String answered, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回',
+    );
+    return '$target を $answered と回答：$_temp0';
+  }
+
+  @override
+  String statsCalendarDay(String date, int chars) {
+    String _temp0 = intl.Intl.pluralLogic(
+      chars,
+      locale: localeName,
+      other: '$chars 文字',
+      zero: '練習なし',
+    );
+    return '$date：$_temp0';
+  }
+
+  @override
+  String statsActiveDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '練習した日：$count 日',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referenceEntryCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referenceWpmValue(String wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String referenceHzValue(String hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String referenceSkippedChars(String chars) {
+    return 'スキップしました（モールス符号なし）：$chars';
+  }
+
+  @override
+  String referenceKochPositionValue(int position) {
+    return 'Koch 法での順番：$position';
+  }
+
+  @override
+  String referenceEstimatedSpeed(String wpm) {
+    return '推定 $wpm WPM';
+  }
+
+  @override
+  String get accountCopied => 'Tox ID をクリップボードにコピーしました';
+
+  @override
+  String get accountShowQr => 'QR コードを表示';
+
+  @override
+  String get accountToxId => 'Tox ID';
+
+  @override
+  String get accountDisplayName => '表示名';
+
+  @override
+  String get accountDisplayNameHint => 'コールサインまたはニックネーム';
+
+  @override
+  String get accountDisplayNameRequired => '表示名を入力してください';
+
+  @override
+  String get accountStatusMessage => 'ステータスメッセージ';
+
+  @override
+  String get accountPassword => 'パスワード';
+
+  @override
+  String get accountPasswordOptional => 'パスワード（任意）';
+
+  @override
+  String get accountConfirmPassword => 'パスワードの確認';
+
+  @override
+  String get accountPasswordsDoNotMatch => 'パスワードが一致しません';
+
+  @override
+  String get accountShowPassword => 'パスワードを表示';
+
+  @override
+  String get accountHidePassword => 'パスワードを隠す';
+
+  @override
+  String get accountStrengthWeak => '弱い：8 文字以上にしてください';
+
+  @override
+  String get accountStrengthFair => '普通：12 文字以上で複数の文字種を混ぜるとより安全です';
+
+  @override
+  String get accountStrengthStrong => '強い';
+
+  @override
+  String get accountStartupInspecting => 'ID 情報を確認中…';
+
+  @override
+  String get accountStartupOpening => 'ID 情報を開いています…';
+
+  @override
+  String get accountStartupFailedTitle => '起動できませんでした';
+
+  @override
+  String get accountStartupFailedBody => 'MorseCQ が ID 情報を読み取れませんでした。データは変更されていません。再試行できます。';
+
+  @override
+  String get accountConnectionTapToReconnect => 'タップして再接続';
+
+  @override
+  String get accountWelcomeTitle => 'ID 情報はこのデバイスに保存されます';
+
+  @override
+  String get accountWelcomeIntro => 'MorseCQ は Tox の P2P ネットワークを使用します。サーバーもアカウント登録も不要です。ID 情報は、このデバイスだけに保存される鍵のペアです。';
+
+  @override
+  String get accountWelcomePointNoServer => 'サーバー、電話番号、メールアドレスは不要です。通信者同士がモールス符号で直接やり取りします。';
+
+  @override
+  String get accountWelcomePointTraining => '学習の進捗は ID 情報と一緒に保存されるため、バックアップやデバイス間の移行ができます。';
+
+  @override
+  String get accountWelcomePointBackup => 'ID 情報を復元できるのは自分だけです。作成したらすぐにバックアップしてください。バックアップがなければ、デバイスを失うと ID 情報も失われます。';
+
+  @override
+  String get accountCreateIdentity => 'ID 情報を作成';
+
+  @override
+  String get accountRestoreFromBackup => 'バックアップから復元';
+
+  @override
+  String get accountCreateTitle => '自分の ID 情報を作成';
+
+  @override
+  String get accountCreateBody => '相手に表示する名前を選んでください。パスワードはこのデバイスの ID 情報ファイルを暗号化します。パスワードなしでアプリを開きたい場合は空欄にしてください。';
+
+  @override
+  String get accountCreateButton => '作成';
+
+  @override
+  String get accountCreating => '作成中…';
+
+  @override
+  String get accountBackupTitle => '今すぐ ID 情報をバックアップ';
+
+  @override
+  String get accountBackupBody => 'ID 情報はこのデバイスにしか存在しません。デバイスの紛失、初期化、盗難があった場合は復元できません。新しい ID 情報では連絡先に本人だと認識されず、学習の進捗も失われます。';
+
+  @override
+  String get accountBackupWhatIsInside => 'バックアップファイルには、暗号化された ID 情報と学習の進捗が含まれます。このデバイス以外の安全な場所に保管してください。';
+
+  @override
+  String get accountBackupSaveFile => 'バックアップファイルを保存';
+
+  @override
+  String get accountBackupShareFile => 'バックアップファイルを共有';
+
+  @override
+  String get accountBackupSaved => 'バックアップを保存しました';
+
+  @override
+  String get accountBackupNotSaved => 'バックアップは保存されませんでした';
+
+  @override
+  String get accountBackupFailed => 'バックアップを書き込めませんでした';
+
+  @override
+  String get accountBackupAcknowledge => 'このバックアップがなければ ID 情報を復元できないことを理解しました。';
+
+  @override
+  String get accountBackupContinue => 'MorseCQ を始める';
+
+  @override
+  String get accountBackupShowQrHint => '友達は Tox ID を使ってあなたを追加します。テキストまたは QR コードで共有できます。';
+
+  @override
+  String get accountRestoreTitle => 'バックアップから復元';
+
+  @override
+  String get accountRestoreBody => 'MorseCQ からエクスポートしたバックアップファイルを選んでください。ID 情報にパスワードを設定していた場合は、ここで入力する必要があります。';
+
+  @override
+  String get accountRestoreChooseFile => 'バックアップファイルを選択';
+
+  @override
+  String get accountRestoreNoFile => '先にバックアップファイルを選んでください';
+
+  @override
+  String get accountRestoreButton => '復元';
+
+  @override
+  String get accountRestoring => '復元中…';
+
+  @override
+  String get accountRestoreInvalidFile => 'このファイルは MorseCQ のバックアップではありません。';
+
+  @override
+  String get accountRestoreReplacesWarning => '復元すると、このデバイスにある現在の ID 情報が置き換わります。';
+
+  @override
+  String get accountUnlockTitle => 'ID 情報のロックを解除';
+
+  @override
+  String get accountUnlockBody => 'ID 情報ファイルは暗号化されています。パスワードを入力して続行してください。';
+
+  @override
+  String get accountUnlockButton => 'ロック解除';
+
+  @override
+  String get accountUnlocking => 'ロック解除中…';
+
+  @override
+  String get accountUnlockRestoreInstead => '代わりにバックアップから復元';
+
+  @override
+  String get accountMeNoIdentity => 'ID 情報が読み込まれていません';
+
+  @override
+  String get accountSectionAccount => 'アカウント';
+
+  @override
+  String get accountSectionTraining => '練習';
+
+  @override
+  String get accountSectionAbout => 'アプリについて';
+
+  @override
+  String get accountSectionDanger => '危険な操作';
+
+  @override
+  String get accountEditProfile => 'プロフィールを編集';
+
+  @override
+  String get accountEditProfileBody => 'Tox ネットワーク上の連絡先に表示されます。';
+
+  @override
+  String get accountSetPassword => 'パスワードを設定';
+
+  @override
+  String get accountChangePassword => 'パスワードを変更';
+
+  @override
+  String get accountRemovePassword => 'パスワードを削除';
+
+  @override
+  String get accountCurrentPassword => '現在のパスワード';
+
+  @override
+  String get accountNewPassword => '新しいパスワード';
+
+  @override
+  String get accountPasswordUpdated => 'パスワードを更新しました';
+
+  @override
+  String get accountPasswordRemoved => 'パスワードを削除しました';
+
+  @override
+  String get accountProfileUpdated => 'プロフィールを更新しました';
+
+  @override
+  String get accountExportBackup => 'バックアップをエクスポート';
+
+  @override
+  String get accountExportBackupSubtitle => 'ID 情報と学習の進捗をファイルに保存';
+
+  @override
+  String get accountTrainingDefaults => '再生と練習の初期設定';
+
+  @override
+  String get accountTrainingDefaultsSubtitle => '速度、音の高さ、Farnsworth 間隔';
+
+  @override
+  String get accountTrainingDefaultsPlaceholder => '速度、音の高さ、Farnsworth 間隔の初期設定がここに表示されます。';
+
+  @override
+  String get accountAboutLicence => 'ライセンス';
+
+  @override
+  String get accountAboutLicenceValue => 'GPL-3.0';
+
+  @override
+  String get accountAboutSource => 'ソースコード';
+
+  @override
+  String get accountAboutSourceCopied => 'ソースコードのリンクをコピーしました';
+
+  @override
+  String get accountAboutBackend => 'バックエンド';
+
+  @override
+  String get accountDeleteIdentity => 'ID 情報を削除';
+
+  @override
+  String get accountDeleteIdentitySubtitle => 'このデバイスから ID 情報、履歴、学習の進捗を消去';
+
+  @override
+  String get accountDeleteDialogTitle => 'この ID 情報を削除しますか？';
+
+  @override
+  String get accountDeleteDialogBody => 'このデバイスから ID 情報、チャット履歴、学習の進捗が削除されます。バックアップがなければ復元できません。確認のため DELETE と入力してください。';
+
+  @override
+  String get accountDeleteConfirmWord => 'DELETE';
+
+  @override
+  String get accountDeleteConfirmHint => 'DELETE と入力';
+
+  @override
+  String get accountDeleteButton => '削除';
+
+  @override
+  String accountRestoreFileChosenSize(int bytes) {
+    return 'バックアップファイルを選択しました（$bytes バイト）';
+  }
+
+  @override
+  String get chatSearchConversations => '会話を検索';
+
+  @override
+  String get chatNoConversations => 'まだ会話がありません';
+
+  @override
+  String get chatNoSearchResults => '一致する会話がありません';
+
+  @override
+  String get chatPin => '固定';
+
+  @override
+  String get chatUnpin => '固定を解除';
+
+  @override
+  String get chatMarkRead => '既読にする';
+
+  @override
+  String get chatDelete => '削除';
+
+  @override
+  String get chatDeleteConversationTitle => '会話を削除しますか？';
+
+  @override
+  String get chatDeleteConversationBody => 'このデバイス上の会話履歴が削除されます。Tox にコピーは保存されていません。';
+
+  @override
+  String get chatDraftPrefix => '下書き：';
+
+  @override
+  String get chatSelectConversation => '会話を選択';
+
+  @override
+  String get chatContacts => '連絡先';
+
+  @override
+  String get chatNoMessages => 'まだメッセージがありません。CQ を送って始めましょう。';
+
+  @override
+  String get chatTrainingMode => '練習モード';
+
+  @override
+  String get chatTrainingModeOn => '練習モード有効：テキストを非表示';
+
+  @override
+  String get chatTrainingModeOff => '練習モード無効';
+
+  @override
+  String get chatAutoPlay => '受信したモールスを自動再生';
+
+  @override
+  String get chatAutoPlayOn => '自動再生オン：新着メッセージを受信時に再生します';
+
+  @override
+  String get chatAutoPlayOff => '自動再生オフ';
+
+  @override
+  String get chatReveal => '表示';
+
+  @override
+  String get chatHiddenText => 'まず聞いてから表示';
+
+  @override
+  String get chatPlay => 'モールス符号を再生';
+
+  @override
+  String get chatStop => '停止';
+
+  @override
+  String get chatPlaybackSettings => '再生設定';
+
+  @override
+  String get chatCharacterSpeed => '文字速度';
+
+  @override
+  String get chatFarnsworthSpeed => 'Farnsworth 速度';
+
+  @override
+  String get chatTone => '音の高さ';
+
+  @override
+  String get chatWpm => 'WPM';
+
+  @override
+  String get chatHz => 'Hz';
+
+  @override
+  String get chatMembers => 'メンバー';
+
+  @override
+  String get chatLeaveGroup => 'グループを退出';
+
+  @override
+  String get chatLeaveGroupTitle => 'このグループを退出しますか？';
+
+  @override
+  String get chatLeaveGroupBody => 'メッセージを受信しなくなります。あとでチャット ID を使って再参加できます。';
+
+  @override
+  String get chatLeave => '退出';
+
+  @override
+  String get chatConferenceNote => '旧形式の会議：ここではモールスのキー操作メタデータ（v2）を利用できません。テキストは利用できます。';
+
+  @override
+  String get chatClearHistory => '履歴を消去';
+
+  @override
+  String get chatModeStraightKey => '縦振れ電鍵';
+
+  @override
+  String get chatModePaddles => 'パドル';
+
+  @override
+  String get chatKeyMessage => '電鍵でメッセージを打鍵';
+
+  @override
+  String get chatSend => '送信';
+
+  @override
+  String get chatTooLong => 'Tox メッセージ 1 件の長さ制限を超えています';
+
+  @override
+  String get chatKeyHint => '電鍵エリアを押すか、スペースキーを押してください';
+
+  @override
+  String get chatPaddleHint => 'パドルをタップするか Ctrl を押し続けてください（左：短点、右：長点）';
+
+  @override
+  String get chatDeleteLast => '最後の文字を削除';
+
+  @override
+  String get chatNoFriends => 'まだ友達がいません。相手の Tox ID で追加してください。';
+
+  @override
+  String get chatNoRequests => '保留中のリクエストはありません';
+
+  @override
+  String get chatAddFriend => '友達を追加';
+
+  @override
+  String get chatMyToxId => '自分の Tox ID';
+
+  @override
+  String get chatToxIdLabel => 'Tox ID（76 桁の 16 進数）';
+
+  @override
+  String get chatToxIdInvalid => 'Tox ID は 76 桁の 16 進数でなければなりません';
+
+  @override
+  String get chatToxIdOwn => 'これは自分の Tox ID です';
+
+  @override
+  String get chatToxIdAlreadyFriend => 'すでに友達リストに登録されています';
+
+  @override
+  String get chatRequestMessage => 'メッセージ';
+
+  @override
+  String get chatDefaultRequestMessage => 'MorseCQ CQ';
+
+  @override
+  String get chatSendRequest => 'リクエストを送信';
+
+  @override
+  String get chatRequestSent => '友達リクエストを送信しました';
+
+  @override
+  String get chatScanQr => 'QR コードをスキャン';
+
+  @override
+  String get chatScanQrDesktopHint => 'QR コードの読み取りにはスマートフォンのカメラが必要です';
+
+  @override
+  String get chatScanQrTitle => 'Tox ID をスキャン';
+
+  @override
+  String get chatScanQrNotToxId => 'この QR コードは Tox ID ではありません';
+
+  @override
+  String get chatAccept => '承認';
+
+  @override
+  String get chatReject => '拒否';
+
+  @override
+  String get chatCopied => 'クリップボードにコピーしました';
+
+  @override
+  String get chatNoIdentity => 'ID 情報が読み込まれていません';
+
+  @override
+  String get chatRemoveFriend => '友達を削除';
+
+  @override
+  String get chatRemoveFriendTitle => 'この友達を削除しますか？';
+
+  @override
+  String get chatRemoveFriendBody => '相手からメッセージを受信しなくなります。';
+
+  @override
+  String get chatRemove => '削除';
+
+  @override
+  String get chatNoGroups => 'まだグループがありません。作成するか、チャット ID で参加してください。';
+
+  @override
+  String get chatCreateGroup => 'グループを作成';
+
+  @override
+  String get chatJoinGroup => 'グループに参加';
+
+  @override
+  String get chatGroupName => 'グループ名';
+
+  @override
+  String get chatGroupNameRequired => 'グループ名を入力してください';
+
+  @override
+  String get chatAdvanced => '詳細設定';
+
+  @override
+  String get chatLegacyConference => '旧形式の会議（旧クライアント用）';
+
+  @override
+  String get chatLegacyConferenceHint => '非推奨：固定のチャット ID もモールスのメタデータもありません。';
+
+  @override
+  String get chatCreate => '作成';
+
+  @override
+  String get chatChatIdLabel => 'チャット ID（64 桁の 16 進数）';
+
+  @override
+  String get chatChatIdInvalid => 'チャット ID は 64 桁の 16 進数でなければなりません';
+
+  @override
+  String get chatPassword => 'パスワード（任意）';
+
+  @override
+  String get chatJoin => '参加';
+
+  @override
+  String get chatJoinRequested => '参加中 — メンバーが見つかるとグループが表示されます。';
+
+  @override
+  String get chatConferenceBadge => '会議';
+
+  @override
+  String get chatCopyChatId => 'チャット ID をコピー';
+
+  @override
+  String get learnLessonCardTitle => 'Koch 法のレッスン';
+
+  @override
+  String get learnCourseComplete => 'コース完了！引き続き腕を磨きましょう。';
+
+  @override
+  String get learnDailyGoalTitle => '今日';
+
+  @override
+  String get learnDailyGoalMet => '今日の目標を達成';
+
+  @override
+  String get learnNoStreak => '今日から毎日練習しましょう';
+
+  @override
+  String get learnContinueLesson => 'レッスンを続ける';
+
+  @override
+  String get learnReceivePractice => '受信練習';
+
+  @override
+  String get learnSendPractice => '送信練習';
+
+  @override
+  String get learnReviewDue => '復習の時期が来た文字';
+
+  @override
+  String get learnSettings => '練習設定';
+
+  @override
+  String get learnLoading => '学習の進捗を読み込み中…';
+
+  @override
+  String get learnIdentityRequired => '練習を始めるには ID 情報を作成するか、ロックを解除してください。進捗は ID 情報と一緒に保存され、バックアップにも含まれます。';
+
+  @override
+  String get learnLoadFailed => '保存済みの進捗を読み取れませんでした。最初から始めます。元のファイルは .corrupt として保存されています。';
+
+  @override
+  String get learnChooseDrill => '練習を選択';
+
+  @override
+  String get learnDrillGroups => 'ランダムな文字列';
+
+  @override
+  String get learnDrillWords => '単語';
+
+  @override
+  String get learnDrillCallsigns => 'コールサイン';
+
+  @override
+  String get learnDrillQso => '交信（QSO）';
+
+  @override
+  String get learnDrillCharacters => '1 文字ずつ';
+
+  @override
+  String get learnDrillAbbreviations => '略語と Q 符号';
+
+  @override
+  String get learnDrillNumbers => '数字のグループ';
+
+  @override
+  String get learnDrillConfusables => '聞き違えやすい文字';
+
+  @override
+  String get learnDrillContest => 'コンテストの交信';
+
+  @override
+  String get learnDrillGroupsHint => '学習済みの文字から作るランダムな文字列';
+
+  @override
+  String get learnDrillCharactersHint => '1 文字ずつ聞いて、すぐに答えましょう';
+
+  @override
+  String get learnDrillWordsHint => 'よく使う英単語';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX、FB、QTH、QSL など、無線交信で使う略語';
+
+  @override
+  String get learnDrillNumbersHint => '電文や通し番号で使う 5 桁の数字グループ';
+
+  @override
+  String get learnDrillCallsignsHint => '世界各地のアマチュア無線のコールサイン';
+
+  @override
+  String get learnDrillConfusablesHint => 'S/H、U/V など、聞き違えやすい文字をペアで練習';
+
+  @override
+  String get learnDrillQsoHint => '一連の交信で使う文章';
+
+  @override
+  String get learnDrillContestHint => 'コンテストの速度でコールサイン、5NN、通し番号やゾーンを受信';
+
+  @override
+  String get learnDrillReviewHint => '復習の時期が来た文字';
+
+  @override
+  String get toolsTitle => '無線のツール';
+
+  @override
+  String get toolsGridTitle => 'グリッドロケーター';
+
+  @override
+  String get toolsGridHint => '座標からロケーターを算出し、距離とアンテナの方位を確認';
+
+  @override
+  String get toolsBandsTitle => '周波数帯とアンテナ';
+
+  @override
+  String get toolsBandsHint => '周波数が属するバンド、波長、ダイポールの長さを確認';
+
+  @override
+  String get toolsSpeedTitle => 'CW の速度';
+
+  @override
+  String get toolsSpeedHint => 'WPM を短点の長さ、間隔、1 分あたりの文字数に換算';
+
+  @override
+  String get toolsRstTitle => 'RST レポート';
+
+  @override
+  String get toolsRstHint => '信号レポートを作成し、各桁の意味を確認';
+
+  @override
+  String get toolsClockTitle => 'UTC 時計';
+
+  @override
+  String get toolsClockHint => 'ログに記録する UTC と現地時刻を並べて表示';
+
+  @override
+  String get toolsGridFromCoordinates => '座標から算出';
+
+  @override
+  String get toolsGridLatitude => '緯度';
+
+  @override
+  String get toolsGridLongitude => '経度';
+
+  @override
+  String get toolsGridCoordinatesHelp => '十進数の度数で入力。南緯と西経は負の値です';
+
+  @override
+  String get toolsGridInvalidCoordinates => '緯度は -90～90、経度は -180～180';
+
+  @override
+  String get toolsGridLocator => 'ロケーター';
+
+  @override
+  String get toolsGridDistanceSection => '距離と方位';
+
+  @override
+  String get toolsGridMine => '自局のロケーター';
+
+  @override
+  String get toolsGridTheirs => '相手局のロケーター';
+
+  @override
+  String get toolsGridInvalidLocator => '2、4、6、8 文字で入力してください。例：OM89ex';
+
+  @override
+  String get toolsGridCenter => 'グリッドの中心';
+
+  @override
+  String get toolsGridDistance => '距離';
+
+  @override
+  String get toolsGridShortPath => 'ショートパスの方位';
+
+  @override
+  String get toolsGridLongPath => 'ロングパスの方位';
+
+  @override
+  String get toolsBandsFrequency => '周波数（MHz）';
+
+  @override
+  String get toolsBandsInvalidFrequency => '0 より大きい周波数を入力してください';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return '第 $number 地域';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1：ヨーロッパ・アフリカ・中東 — 2：南北アメリカ — 3：アジア・太平洋';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return '$band アマチュア無線バンド内';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => 'アマチュア無線バンド外';
+
+  @override
+  String get toolsBandsWavelength => '波長';
+
+  @override
+  String get toolsBandsDipole => '半波長ダイポール（全長）';
+
+  @override
+  String get toolsBandsQuarterWave => '1/4 波長の垂直アンテナ';
+
+  @override
+  String get toolsBandsAntennaNote => '長さには 0.95 の短縮係数を含みます。共振するように長さを調整してください。';
+
+  @override
+  String get toolsBandsTable => '周波数帯の範囲';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => 'ITU の周波数分配です。免許や各国のバンドプランでは、利用できる範囲が狭い場合があります。';
+
+  @override
+  String get toolsSpeedCharacter => '文字速度';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Farnsworth 間隔';
+
+  @override
+  String get toolsSpeedOverall => '全体の速度';
+
+  @override
+  String get toolsSpeedDit => '短点';
+
+  @override
+  String get toolsSpeedDah => '長点';
+
+  @override
+  String get toolsSpeedCharGap => '文字間の間隔';
+
+  @override
+  String get toolsSpeedWordGap => '単語間の間隔';
+
+  @override
+  String get toolsSpeedCpm => '1 分あたりの文字数';
+
+  @override
+  String get toolsSpeedParis => 'PARIS 1 語の所要時間';
+
+  @override
+  String get toolsRstReadability => '了解度（R）';
+
+  @override
+  String get toolsRstStrength => '信号強度（S）';
+
+  @override
+  String get toolsRstTone => '音調（T）';
+
+  @override
+  String get toolsRstReport => 'レポート';
+
+  @override
+  String get toolsRstCut => 'コンテスト用の略記';
+
+  @override
+  String get toolsRstPhone => '音声通信（T の報告なし）';
+
+  @override
+  String get toolsRstR1 => '了解できない';
+
+  @override
+  String get toolsRstR2 => 'かろうじて了解でき、ときどき単語が聞き取れる';
+
+  @override
+  String get toolsRstR3 => 'かなり困難だが了解できる';
+
+  @override
+  String get toolsRstR4 => 'ほぼ困難なく了解できる';
+
+  @override
+  String get toolsRstR5 => '完全に了解できる';
+
+  @override
+  String get toolsRstS1 => '非常に弱く、かろうじて感じられる';
+
+  @override
+  String get toolsRstS2 => '非常に弱い';
+
+  @override
+  String get toolsRstS3 => '弱い';
+
+  @override
+  String get toolsRstS4 => 'まずまずの強さ';
+
+  @override
+  String get toolsRstS5 => 'やや良好';
+
+  @override
+  String get toolsRstS6 => '良好';
+
+  @override
+  String get toolsRstS7 => 'かなり強い';
+
+  @override
+  String get toolsRstS8 => '強い';
+
+  @override
+  String get toolsRstS9 => '極めて強い';
+
+  @override
+  String get toolsRstT1 => '非常に粗く帯域が広い、未整流の交流音';
+
+  @override
+  String get toolsRstT2 => '非常に粗い交流音で、耳障りかつ帯域が広い';
+
+  @override
+  String get toolsRstT3 => '粗い音。整流されているが、平滑化されていない';
+
+  @override
+  String get toolsRstT4 => '粗い音だが、わずかに平滑化されている';
+
+  @override
+  String get toolsRstT5 => '平滑化されているが、リップル変調が強い';
+
+  @override
+  String get toolsRstT6 => '平滑化されているが、明らかなリップルがある';
+
+  @override
+  String get toolsRstT7 => 'ほぼ純音だが、わずかなリップルがある';
+
+  @override
+  String get toolsRstT8 => 'ほぼ完全な音で、ごくわずかな変調がある';
+
+  @override
+  String get toolsRstT9 => '完全な純音で、リップルがない';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => '現地時刻';
+
+  @override
+  String get toolsClockNote => 'ログと QSL カードには UTC を使います。';
+
+  @override
+  String get learnReceiveTitle => '受信';
+
+  @override
+  String get learnReviewTitle => '復習';
+
+  @override
+  String get learnListen => '聞いてください…';
+
+  @override
+  String get learnReady => '準備完了';
+
+  @override
+  String get learnReplay => 'もう一度再生';
+
+  @override
+  String get learnAnswerHint => '聞こえた内容を入力';
+
+  @override
+  String get learnSubmit => '答え合わせ';
+
+  @override
+  String get learnNext => '次へ';
+
+  @override
+  String get learnFinish => '終了';
+
+  @override
+  String get learnDone => '完了';
+
+  @override
+  String get learnBackspace => '削除';
+
+  @override
+  String get learnSpace => 'スペース';
+
+  @override
+  String get learnSent => '送信内容';
+
+  @override
+  String get learnYourCopy => '受信記録';
+
+  @override
+  String get learnRoundPerfect => '全問正解！';
+
+  @override
+  String get learnSessionSummary => '練習結果';
+
+  @override
+  String get learnLessonPassed => 'レッスン合格';
+
+  @override
+  String get learnLessonNotPassed => '続けましょう：正答率 90% で次の文字を解放';
+
+  @override
+  String get learnReviewRecorded => '復習を記録しました';
+
+  @override
+  String get learnWeakChars => '練習が必要';
+
+  @override
+  String get learnConfusions => '聞き違い';
+
+  @override
+  String get learnNoFeedbackWarning => '音、画面点滅、振動がすべて無効です。代わりに画面を点滅させます。';
+
+  @override
+  String get learnSendTitle => '送信';
+
+  @override
+  String get learnSendThis => 'これを送信';
+
+  @override
+  String get learnCopyFromMemory => '記憶を頼りに';
+
+  @override
+  String get learnHiddenTarget => '非表示 — 記憶を頼りに送信';
+
+  @override
+  String get learnDecoded => '解読結果';
+
+  @override
+  String get learnWaitingForKey => '準備ができたら送信を始めてください';
+
+  @override
+  String get learnRestart => '最初から';
+
+  @override
+  String get learnTryAnother => '別の問題に挑戦';
+
+  @override
+  String get learnKeyerStraight => '縦振れ電鍵';
+
+  @override
+  String get learnKeyerIambicA => 'アイアンビック A';
+
+  @override
+  String get learnKeyerIambicB => 'アイアンビック B';
+
+  @override
+  String get learnLegendStraight => 'スペースキー = 電鍵';
+
+  @override
+  String get learnLegendPaddles => '左 Ctrl = 短点、右 Ctrl = 長点';
+
+  @override
+  String get learnSendClean => '正確な送信です。修正点はありません。';
+
+  @override
+  String get learnSendIssues => 'リズムのアドバイス';
+
+  @override
+  String get learnYourSending => '解読結果';
+
+  @override
+  String get learnStraightKeyLabel => '電鍵';
+
+  @override
+  String get learnDitLabel => '短点';
+
+  @override
+  String get learnDahLabel => '長点';
+
+  @override
+  String get learnSettingsTitle => '練習設定';
+
+  @override
+  String get learnCharacterSpeed => '文字速度';
+
+  @override
+  String get learnFarnsworth => 'Farnsworth 間隔';
+
+  @override
+  String get learnFarnsworthHelp => '文字自体の速度は速いまま、文字間の間隔をこの速度に合わせて広げます。';
+
+  @override
+  String get learnEffectiveSpeed => '実効速度';
+
+  @override
+  String get learnTone => '音の高さ';
+
+  @override
+  String get learnPlaySample => 'サンプルを再生';
+
+  @override
+  String get learnSessionLength => '練習の長さ';
+
+  @override
+  String get learnFeedback => 'フィードバック';
+
+  @override
+  String get learnSound => '音';
+
+  @override
+  String get learnFlash => '画面点滅';
+
+  @override
+  String get learnHaptic => '振動';
+
+  @override
+  String get learnKeyer => '電鍵モード';
+
+  @override
+  String get learnDailyGoal => '毎日の目標';
+
+  @override
+  String get referenceReferenceTitle => 'モールス符号の資料';
+
+  @override
+  String get referenceTranslatorTitle => '変換ツール';
+
+  @override
+  String get referencePlay => '再生';
+
+  @override
+  String get referenceStop => '停止';
+
+  @override
+  String get referenceClear => '消去';
+
+  @override
+  String get referenceClose => '閉じる';
+
+  @override
+  String get referenceEmptyOutput => '—';
+
+  @override
+  String get referenceSearchHint => '文字、手続き符号、Q 符号を検索…';
+
+  @override
+  String get referenceClearSearch => '検索をクリア';
+
+  @override
+  String get referenceNoResults => '検索に一致する項目がありません。';
+
+  @override
+  String get referenceSectionAlphabet => '文字表';
+
+  @override
+  String get referenceSectionPunctuation => '句読点';
+
+  @override
+  String get referenceSectionProsigns => '手続き符号';
+
+  @override
+  String get referenceSectionQCodes => 'Q 符号';
+
+  @override
+  String get referenceSectionAbbreviations => 'CW 略語';
+
+  @override
+  String get referenceSectionKoch => 'Koch 法の順番';
+
+  @override
+  String get referenceAlphabetHint => 'カードをタップすると音を聞けます。長押しすると覚え方を表示します。';
+
+  @override
+  String get referenceKochHint => 'Koch 法で文字を学ぶ順番です（LCWO の順番）。K と M から始め、受信の正答率が 90% に達したら 1 文字追加します。';
+
+  @override
+  String get referenceMnemonicTitle => '覚え方';
+
+  @override
+  String get referenceMeaningLabel => '意味';
+
+  @override
+  String get referencePlaybackSettings => '再生設定';
+
+  @override
+  String get referenceCharacterSpeed => '文字速度';
+
+  @override
+  String get referenceFarnsworth => 'Farnsworth 間隔';
+
+  @override
+  String get referenceFarnsworthHelp => '文字自体の速度はそのまま、間隔を実効速度に合わせて広げます。';
+
+  @override
+  String get referenceEffectiveSpeed => '実効速度';
+
+  @override
+  String get referenceTone => '音の高さ';
+
+  @override
+  String get referenceModeTextToMorse => 'テキスト → モールス符号';
+
+  @override
+  String get referenceModeMorseToText => 'モールス符号 → テキスト';
+
+  @override
+  String get referenceModeKey => '電鍵で送信';
+
+  @override
+  String get referenceTextInputLabel => 'テキスト';
+
+  @override
+  String get referenceTextInputHint => '符号に変換するテキストを入力…';
+
+  @override
+  String get referencePatternOutputLabel => 'モールス符号';
+
+  @override
+  String get referenceCopyPattern => '符号をコピー';
+
+  @override
+  String get referencePatternCopied => '符号をコピーしました';
+
+  @override
+  String get referencePatternInputLabel => 'モールス符号';
+
+  @override
+  String get referencePatternInputHint => '. と - を入力し、文字間はスペース、単語間は / で区切ってください';
+
+  @override
+  String get referenceTextOutputLabel => 'テキスト';
+
+  @override
+  String get referenceCopyText => 'テキストをコピー';
+
+  @override
+  String get referenceTextCopied => 'テキストをコピーしました';
+
+  @override
+  String get referenceUnknownPatternHelp => '対応する文字がない符号は <pattern> として表示されます。';
+
+  @override
+  String get referenceKeypadDit => '短点';
+
+  @override
+  String get referenceKeypadDah => '長点';
+
+  @override
+  String get referenceKeypadCharGap => '文字間隔';
+
+  @override
+  String get referenceKeypadWordGap => '単語間隔';
+
+  @override
+  String get referenceKeypadBackspace => 'バックスペース';
+
+  @override
+  String get referenceKeyHint => '電鍵を押し続けて送信してください。キーボードではスペースキーを押し続けます。';
+
+  @override
+  String get referenceKeyLabel => '電鍵';
+
+  @override
+  String get referenceKeyDecodedLabel => '解読結果';
+
+  @override
+  String get referenceKeyPendingLabel => '送信中';
+
+  @override
+  String get statsTitle => '統計';
+
+  @override
+  String get statsLoading => '統計を読み込み中…';
+
+  @override
+  String get statsLoadFailed => '学習の進捗を読み込めませんでした。下に引くか、開き直して再試行してください。';
+
+  @override
+  String get statsRetry => '再試行';
+
+  @override
+  String get statsEmptyTitle => 'まだ練習記録がありません';
+
+  @override
+  String get statsEmptyBody => '初めての受信練習または送信練習を終えると、正答率の推移、文字ごとの習熟度、練習カレンダーがここに表示されます。';
+
+  @override
+  String get statsEmptyCallToAction => '「学習」で「レッスンを続ける」を押すと始められます。';
+
+  @override
+  String get statsOverviewTitle => '概要';
+
+  @override
+  String get statsTileLesson => 'Koch 法のレッスン';
+
+  @override
+  String get statsTileAccuracy => '正答率';
+
+  @override
+  String get statsNoData => '--';
+
+  @override
+  String get statsTilePractice => '練習量';
+
+  @override
+  String get statsTileStreak => '連続日数';
+
+  @override
+  String get statsTileDailyGoal => '毎日の目標';
+
+  @override
+  String get statsGoalMet => '今日の目標達成';
+
+  @override
+  String get statsSummaryTitle => '自分の統計';
+
+  @override
+  String get statsSummaryOpen => '統計を見る';
+
+  @override
+  String get statsTrendTitle => '正答率の推移';
+
+  @override
+  String get statsTrendHint => '点をタップすると練習の詳細を確認できます。';
+
+  @override
+  String get statsSeriesReceive => '受信';
+
+  @override
+  String get statsSeriesSend => '送信';
+
+  @override
+  String get statsAxisSessions => '練習';
+
+  @override
+  String get statsCharsTitle => '文字';
+
+  @override
+  String get statsCharsSubtitle => 'Koch 法の順番です。文字をタップすると詳細を表示します。';
+
+  @override
+  String get statsCharsNotStarted => 'まだ練習していません';
+
+  @override
+  String get statsNotInCourse => 'Koch 法のコースに含まれていません';
+
+  @override
+  String get statsSrsTitle => '間隔反復学習';
+
+  @override
+  String get statsSrsNotTracked => 'まだ予定がありません';
+
+  @override
+  String get statsSrsDueNow => '今すぐ復習';
+
+  @override
+  String get statsConfusionsTitle => 'よく聞き違える文字';
+
+  @override
+  String get statsConfusionsNone => '聞き違いの記録はありません';
+
+  @override
+  String get statsConfusionMissed => '聞き逃し';
+
+  @override
+  String get statsBucketLegendTitle => '正答率';
+
+  @override
+  String get statsBucketNone => 'なし';
+
+  @override
+  String get statsBucketWeak => '< 70%';
+
+  @override
+  String get statsBucketFair => '70-89%';
+
+  @override
+  String get statsBucketGood => '90-97%';
+
+  @override
+  String get statsBucketStrong => '>= 98%';
+
+  @override
+  String get statsHeatmapTitle => '聞き違いの一覧';
+
+  @override
+  String get statsHeatmapSubtitle => '行は送信された文字、列は回答した文字です。色が濃いほど回数が多いことを示します。';
+
+  @override
+  String get statsHeatmapEmpty => 'まだ聞き違いの記録がありません。間違えた回答がここに表示されます。';
+
+  @override
+  String get statsHeatmapLegendLow => '少ない';
+
+  @override
+  String get statsHeatmapLegendHigh => '多い';
+
+  @override
+  String get statsHeatmapAxisTarget => '送信内容';
+
+  @override
+  String get statsHeatmapAxisAnswered => '回答内容';
+
+  @override
+  String get statsCalendarTitle => '練習カレンダー';
+
+  @override
+  String get statsCalendarSubtitle => '最近 12 週間';
+
+  @override
+  String get statsCalendarLegendLess => '少ない';
+
+  @override
+  String get statsCalendarLegendMore => '多い';
+
+  @override
+  String get statsStreakExplanation => '1 回以上練習した日が何日続いたかを数えます。丸 1 日練習を休むとリセットされます。同じ日に 2 回練習しても 1 日として数えます。';
+
+  @override
+  String get learnStatistics => '統計';
+
+  @override
+  String get listenTitle => '受信する';
+
+  @override
+  String get listenStart => '開始';
+
+  @override
+  String get listenStop => '停止';
+
+  @override
+  String get listenStarting => 'マイクを起動中…';
+
+  @override
+  String get listenClear => 'テキストを消去';
+
+  @override
+  String get listenCopy => 'テキストをコピー';
+
+  @override
+  String get listenCopied => '解読したテキストをコピーしました';
+
+  @override
+  String get listenSettings => '受信設定';
+
+  @override
+  String get listenDecoded => '解読結果';
+
+  @override
+  String get listenEmptyHint => 'モールスの音にマイクを向けてください。解読したテキストがここに表示されます。';
+
+  @override
+  String get listenIdleHint => '「開始」をタップしてモールスの音を受信してください。';
+
+  @override
+  String get listenPending => '受信中';
+
+  @override
+  String get listenSpeed => '速度';
+
+  @override
+  String get listenSpeedUnknown => '-- WPM';
+
+  @override
+  String get listenLevel => '信号';
+
+  @override
+  String get listenToneOn => '音あり';
+
+  @override
+  String get listenTone => '音の周波数';
+
+  @override
+  String get listenToneLocked => '周波数ロック中';
+
+  @override
+  String get listenToneSearching => '探索中';
+
+  @override
+  String get listenToneManual => '手動';
+
+  @override
+  String get listenAutoTune => '自動同調';
+
+  @override
+  String get listenAutoTuneHelp => '400–1000 Hz の範囲で最も強い音を追尾します。スライダーを動かすと手動で同調できます。';
+
+  @override
+  String get listenRetune => '自動';
+
+  @override
+  String get listenBlockSize => '解析ブロック';
+
+  @override
+  String get listenBlockSizeHelp => 'ブロックが小さいほど短点・長点の境界を正確に捉えますが、ノイズの影響を受けやすくなります。256 サンプル（5.3 ms）は 5–40 WPM に適しています。';
+
+  @override
+  String get listenMinElement => '最短の符号要素';
+
+  @override
+  String get listenMinElementHelp => 'これより短い音や間隔は、クリックノイズや音切れとして無視します。';
+
+  @override
+  String get listenPermissionDenied => 'マイクへのアクセスが許可されていません。システム設定で許可してから再試行してください。';
+
+  @override
+  String get listenPermissionRetry => '再試行';
+
+  @override
+  String get listenStartFailed => 'マイクを起動できませんでした。';
+
+  @override
+  String get listenNoInput => 'マイクが見つかりません。接続してから再試行してください。';
+
+  @override
+  String listenWpmValue(int wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String listenHzValue(int hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String listenBlockSamples(int samples, String ms) {
+    return '$samples サンプル（$ms ms）';
+  }
+
+  @override
+  String listenMsValue(int ms) {
+    return '$ms ms';
+  }
+
+  @override
+  String get listenStoppedInBackground => 'アプリがバックグラウンドに移ったため、受信を停止しました。';
+
+  @override
+  String get learnWpmUnknown => '- wpm';
+
+  @override
+  String get learnTipDitTooLongTitle => '短点が長すぎます';
+
+  @override
+  String get learnTipDahTooShortTitle => '長点が短すぎます';
+
+  @override
+  String get learnTipIntraGapTooLongTitle => '符号要素が離れすぎています';
+
+  @override
+  String get learnTipCharGapTooShortTitle => '文字間が詰まっています';
+
+  @override
+  String get learnTipWordGapTooShortTitle => '単語間が詰まっています';
+
+  @override
+  String get learnTipSpeedUnsteadyTitle => '速度が不安定です';
+
+  @override
+  String get learnSeverityMinor => '軽微';
+
+  @override
+  String get learnSeverityModerate => '目立つ';
+
+  @override
+  String get learnSeveritySevere => '大きい';
+
+  @override
+  String get notificationOpen => '開く';
+
+  @override
+  String get notificationChannelMessages => 'メッセージ';
+
+  @override
+  String get notificationChannelMessagesDescription => '友達やグループからの新しいモールスメッセージ';
+
+  @override
+  String get notificationChannelFriendRequests => '友達リクエスト';
+
+  @override
+  String get notificationChannelFriendRequestsDescription => '誰かがあなたを友達に追加したがっています';
+
+  @override
+  String get notificationChannelGroupInvites => 'グループへの招待';
+
+  @override
+  String get notificationChannelGroupInvitesDescription => '友達からグループに招待されました';
+
+  @override
+  String get notificationNewMessage => '新しいメッセージ';
+
+  @override
+  String get notificationFriendRequestTitle => '新しい友達リクエスト';
+
+  @override
+  String learnNewestCharIs(String char) {
+    return 'このレッスンの新しい文字：$char';
+  }
+
+  @override
+  String learnCharNewSemantics(String char) {
+    return '$char、新しい文字';
+  }
+
+  @override
+  String learnPendingPattern(String pattern) {
+    return '送信中：$pattern';
+  }
+
+  @override
+  String learnIssueHeadline(String title, String severity) {
+    return '$title（$severity）';
+  }
+
+  @override
+  String learnRatioTimes(String ratio) {
+    return '$ratio 倍';
+  }
+
+  @override
+  String learnTipDitTooLong(String ratio) {
+    return '短点が長すぎます（短点の約 $ratio）。「ダー」ではなく「ト」と短く、押し続けずに軽くたたく感覚で送信してください。';
+  }
+
+  @override
+  String learnTipDahTooShort(String ratio) {
+    return '長点が短すぎます（短点の約 $ratio、目標は 3 倍）。短点 3 つ分の長さで押し続けてください。';
+  }
+
+  @override
+  String learnTipIntraGapTooLong(String ratio) {
+    return '文字内の間隔が広すぎます（短点の約 $ratio）。1 文字の符号要素は間隔を詰めて送信してください。';
+  }
+
+  @override
+  String learnTipCharGapTooShort(String ratio) {
+    return '文字同士がつながっています（間隔は短点の約 $ratio、目標は 3 倍）。文字の後に明確な休止を入れてください。';
+  }
+
+  @override
+  String learnTipWordGapTooShort(String ratio) {
+    return '単語同士が近すぎます（間隔は短点の約 $ratio、目標は 7 倍）。単語の間には長めの休止を入れてください。';
+  }
+
+  @override
+  String learnTipSpeedUnsteady(int percent) {
+    return '速度が変動しています（変動 $percent%）。一定のテンポを決め、行の最後まで保ちましょう。';
+  }
+
+  @override
+  String learnIssueDetailDitTooLong(int offending, int total, String ratio) {
+    return '短点 $total 個中 $offending 個が長すぎます（平均：短点の $ratio）';
+  }
+
+  @override
+  String learnIssueDetailDahTooShort(int offending, int total, String ratio) {
+    return '長点 $total 個中 $offending 個が短すぎます（平均：短点の $ratio）';
+  }
+
+  @override
+  String learnIssueDetailIntraGapTooLong(int offending, int total, String ratio) {
+    return '文字内の間隔 $total 個中 $offending 個が長すぎます（平均：短点の $ratio）';
+  }
+
+  @override
+  String learnIssueDetailCharGapTooShort(int offending, int total, String ratio) {
+    return '文字間隔 $total 個中 $offending 個が短すぎます（平均：短点の $ratio）';
+  }
+
+  @override
+  String learnIssueDetailWordGapTooShort(int offending, int total, String ratio) {
+    return '単語間隔 $total 個中 $offending 個が短すぎます（平均：短点の $ratio）';
+  }
+
+  @override
+  String learnIssueDetailSpeedUnsteady(String cv) {
+    return '送信速度が不安定です（変動係数 $cv）';
+  }
+
+  @override
+  String statsAccuracyDetail(String allTime) {
+    return '最近 7 日間 / 全期間 $allTime';
+  }
+
+  @override
+  String statsDurationHoursMinutes(int hours, int minutes) {
+    return '$hours 時間 $minutes 分';
+  }
+
+  @override
+  String statsDurationMinutes(int minutes) {
+    return '$minutes 分';
+  }
+
+  @override
+  String statsDurationSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get accountNewPasswordRequired => '新しいパスワードを入力してください';
+
+  @override
+  String get accountToxIdQrSemantics => 'Tox ID の QR コード';
+
+  @override
+  String get accountBackupSaveDialogTitle => 'MorseCQ のバックアップを保存';
+
+  @override
+  String get accountBackupShareSubject => 'MorseCQ の ID 情報のバックアップ';
+
+  @override
+  String get accountBackupChooseDialogTitle => 'MorseCQ のバックアップを選択';
+
+  @override
+  String notificationNewMessages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '新しいメッセージ $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationFriendRequestFrom(String name) {
+    return '$name からの友達リクエスト';
+  }
+
+  @override
+  String notificationFriendRequestBody(String name, String message) {
+    return '$name：$message';
+  }
+
+  @override
+  String notificationGroupInviteTitle(String group) {
+    return '$group への招待';
+  }
+
+  @override
+  String notificationGroupInviteBody(String name) {
+    return '$name から招待されました';
+  }
+
+  @override
+  String desktopTrayShow(String app) {
+    return '$app を表示';
+  }
+
+  @override
+  String desktopTrayHide(String app) {
+    return '$app を非表示';
+  }
+
+  @override
+  String get desktopTraySoundOn => '音を有効にしました';
+
+  @override
+  String get desktopTraySoundOff => '音を無効にしました';
+
+  @override
+  String desktopTrayQuit(String app) {
+    return '$app を終了';
+  }
+
+  @override
+  String desktopTrayTooltipUnread(String app, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未読メッセージ $count 件',
+    );
+    return '$app — $_temp0';
+  }
+
+  @override
+  String desktopWindowTitleUnread(String badge, String app) {
+    return '($badge) $app';
+  }
+
+  @override
+  String get listenStateOn => 'オン';
+
+  @override
+  String get listenStateOff => 'オフ';
+
+  @override
+  String chatBytesLeftCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '残り $count バイト',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'メンバー $count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatFriendsCount(int count) {
+    return '友達（$count）';
+  }
+
+  @override
+  String chatFriendRequestsCount(int count) {
+    return '友達リクエスト（$count）';
+  }
+
+  @override
+  String chatGroupInvitesCount(int count) {
+    return 'グループへの招待（$count）';
+  }
+
+  @override
+  String chatMembersTitleCount(int count) {
+    return 'メンバー · $count';
+  }
+
+  @override
+  String chatInvitedByName(String name) {
+    return '$name からの招待';
+  }
+
+  @override
+  String chatMemberSelf(String name) {
+    return '$name（自分）';
+  }
+
+  @override
+  String chatSliderValue(String label, int value, String unit) {
+    return '$label：$value $unit';
+  }
+
+  @override
+  String referenceTelegraphCodes(String codes) {
+    return '中国語電信コード：$codes';
+  }
+
+  @override
+  String get referenceTelegraphMainland => '中国本土（1983 年版）';
+
+  @override
+  String get referenceTelegraphTaiwan => '台湾 / 香港';
+
+  @override
+  String get referenceTelegraphNone => 'このコード表にありません';
+
+  @override
+  String get appearanceTitle => '外観';
+
+  @override
+  String get appearanceStyles => 'インターフェースのスタイル';
+
+  @override
+  String get appearanceChoose => 'スタイルを選び、プレビューしてから適用';
+
+  @override
+  String get appearanceMode => '明るさ';
+
+  @override
+  String get appearancePreview => 'プレビュー';
+
+  @override
+  String get appearanceApply => 'スタイルを適用';
+
+  @override
+  String get appearanceRestore => '初期設定に戻す';
+
+  @override
+  String get appearanceApplied => '外観を保存しました';
+
+  @override
+  String get appearanceSaveFailed => '外観を保存できませんでした。再試行してください。';
+
+  @override
+  String get appearanceClassic => 'クラシックな真鍮';
+
+  @override
+  String get appearanceModern => '落ち着いたモダン';
+
+  @override
+  String get appearanceRadio => '夜の無線局';
+
+  @override
+  String get appearancePaper => '紙のハンドブック';
+
+  @override
+  String get appearanceCartoon => 'さわやかなカートゥーン';
+
+  @override
+  String get appearanceLight => 'ライト';
+
+  @override
+  String get appearanceDark => 'ダーク';
+
+  @override
+  String get appearanceSubtitle => '5 つのスタイルにライト・ダークモードを用意';
+
+  @override
+  String get chatClearHistoryBody => 'このデバイスに保存された会話履歴を削除しますか？他のデバイスのコピーには影響しません。この操作は取り消せません。';
+
+  @override
+  String get chatLoadEarlier => '以前のメッセージを読み込む';
+
+  @override
+  String get chatHistoryLoadFailed => '以前のメッセージを読み込めませんでした。タップして再試行してください。';
+
+  @override
+  String get chatRetryHistory => '再試行';
+
+  @override
+  String chatNewMessages(int count) {
+    return '新しいメッセージ $count 件';
+  }
+
+  @override
+  String learnShowAllChars(int count) {
+    return '全 $count 文字を表示';
+  }
+
+  @override
+  String get chatSelfMe => '自分';
+
+  @override
+  String get chatSelfLocalOnly => 'このデバイスにのみ保存';
+
+  @override
+  String get chatSelfContactSubtitle => '下書き、練習、メモ · 送信されません';
+
+  @override
+  String get learnShowFewerChars => '文字を折りたたむ';
+}

@@ -1889,7 +1889,7 @@
   },
   "learnSessionLength": "Session length",
   "@learnSessionLength": {
-    "description": "From LearnStrings.sessionLength (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: practice length in characters, not time; labels the per-session character count slider"
   },
   "learnFeedback": "Feedback",
   "@learnFeedback": {
