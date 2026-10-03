@@ -2312,6 +2312,357 @@ class SZh extends S {
 
   @override
   String get chatScanQrCameraUnavailable => '此设备的相机不可用。';
+
+  @override
+  String get learnReplayAssistedNote => '已重播：本次练习计入练习量，但不会解锁课程或更新复习。';
+
+  @override
+  String get learnPlanTitle => '今日计划';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '约 $minutes 分钟 · 已完成 $done/$total 步';
+  }
+
+  @override
+  String get learnPlanBudget => '计划时长';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes 分钟';
+  }
+
+  @override
+  String get learnPlanStart => '开始计划';
+
+  @override
+  String get learnPlanContinue => '继续计划';
+
+  @override
+  String get learnPlanStepReview => '复习到期字符';
+
+  @override
+  String get learnPlanStepFocus => '重点练习';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '第 $lesson 课';
+  }
+
+  @override
+  String get learnPlanStepSend => '发报练习';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '到期复习：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '经常混淆：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正确率低于 90%：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count 个字符：可以解锁下一课';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '已延长到 $count 个字符，以便能解锁下一课';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短练习：巩固本课，不会解锁下一课';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '课程已前进：练习第 $lesson 课，但不会解锁';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '发送 $count 个短目标';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完成 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完成';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '已发送 $done/$total';
+  }
+
+  @override
+  String get learnPlanStale => '课程或速度已更改。要更新尚未开始的步骤吗？';
+
+  @override
+  String get learnPlanUpdate => '更新步骤';
+
+  @override
+  String get learnPlanComplete => '今日计划已完成';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '需要加强：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今天没有薄弱字符。';
+
+  @override
+  String get learnPlanTomorrow => '明天会生成新计划。自由练习随时可用。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '下一步：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '之前的计划停在第 $done/$total 步，不再计入今天。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '可以把有效速度提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '可以提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '当前速度抄收较吃力。可以试试 $wpm WPM 有效速度，或做重点练习。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '依据你最近 $count 次无辅助练习（$percent%）。点“应用”前不会改变任何设置。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '应用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '暂不';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度建议需要在当前速度下完成 3 次、每次 50 个字符以上的无辅助练习。';
+
+  @override
+  String get learnQsoAction => 'QSO 模拟';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '第 $lesson 课起开放';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 模拟';
+
+  @override
+  String get learnQsoRespond => '回应 CQ';
+
+  @override
+  String get learnQsoRespondHint => '一个电台在呼叫 CQ。回应它并交换信号报告。';
+
+  @override
+  String get learnQsoCall => '呼叫 CQ';
+
+  @override
+  String get learnQsoCallHint => '你呼叫 CQ，会有电台回应。';
+
+  @override
+  String get learnQsoYourCall => '你的呼号';
+
+  @override
+  String get learnQsoYourName => '你的名字';
+
+  @override
+  String get learnQsoYourQth => '你的 QTH';
+
+  @override
+  String get learnQsoInvalidCall => '请输入呼号，例如 BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => '一个单词，仅限字母 A–Z';
+
+  @override
+  String get learnQsoOffline => '完全在本机运行，不会向任何人发送内容。';
+
+  @override
+  String get learnQsoStart => '开始 QSO';
+
+  @override
+  String get learnQsoResume => '继续未完成的 QSO';
+
+  @override
+  String get learnQsoStageCallCq => '用你的呼号呼叫 CQ';
+
+  @override
+  String get learnQsoStageCallConfirm => '回应：对方呼号、DE、你的呼号';
+
+  @override
+  String get learnQsoStageExchange => '发送信号报告、名字和 QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => '确认对方的信息';
+
+  @override
+  String get learnQsoStageClosing => '以 73 和 <SK> 结束';
+
+  @override
+  String get learnQsoStageDone => 'QSO 完成';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '对方以 $wpm WPM 有效速度发送';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 发送';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '请凭听觉抄收——文本已隐藏。';
+
+  @override
+  String get learnQsoShowText => '显示文本';
+
+  @override
+  String get learnQsoListen => '收听';
+
+  @override
+  String get learnQsoAccepted => '已接受';
+
+  @override
+  String get learnQsoRejected => '未通过';
+
+  @override
+  String get learnQsoRemoteSending => '对方正在发送……';
+
+  @override
+  String get learnQsoYourTurn => '轮到你了：拍发回复，然后点“发送”。';
+
+  @override
+  String get learnQsoDecoded => '你的发送内容';
+
+  @override
+  String get learnQsoNothingKeyed => '尚未拍发';
+
+  @override
+  String get learnQsoPlayAgain => '请求重复（AGN）';
+
+  @override
+  String get learnQsoSlower => '请求放慢（QRS）';
+
+  @override
+  String get learnQsoHint => '提示';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '示例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '暂停';
+
+  @override
+  String get learnQsoSend => '发送';
+
+  @override
+  String get learnQsoClear => '清除';
+
+  @override
+  String get learnQsoIssueEmpty => '没有拍发任何内容。';
+
+  @override
+  String get learnQsoIssueMissingCq => '以 CQ 开头。';
+
+  @override
+  String get learnQsoIssueMissingDe => '在两个呼号之间加 DE。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '你的呼号缺失或错误。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '对方的呼号错误。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '呼号顺序反了：先对方，再 DE，再你的。';
+
+  @override
+  String get learnQsoIssueMissingEnding => '以 K 或 KN 结尾。';
+
+  @override
+  String get learnQsoIssueMissingRst => '给出信号报告，例如 UR RST 599。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 超出范围（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => '发送 NAME 和你的名字。';
+
+  @override
+  String get learnQsoIssueWrongName => '这不是你在本次 QSO 中的名字。';
+
+  @override
+  String get learnQsoIssueMissingQth => '发送 QTH 和你的位置。';
+
+  @override
+  String get learnQsoIssueWrongQth => '这不是你在本次 QSO 中的 QTH。';
+
+  @override
+  String get learnQsoIssueMissingAck => '用 R 或 QSL 表示确认。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '确认对方操作员的名字。';
+
+  @override
+  String get learnQsoIssueMissing73 => '加上 73。';
+
+  @override
+  String get learnQsoIssueMissingSk => '以 <SK> 结束联络。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一次通过：$total 步中 $count 步';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '重复次数：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '提示次数：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '你的发报：约 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 成绩与抄收正确率分开统计，不会解锁课程。';
+
+  @override
+  String get messageStatusCancelled => '已取消——未发送';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4622,4 +4973,355 @@ class SZhHant extends SZh {
 
   @override
   String get chatScanQrCameraUnavailable => '此裝置的相機無法使用。';
+
+  @override
+  String get learnReplayAssistedNote => '已重播：本次練習計入練習量，但不會解鎖課程或更新複習。';
+
+  @override
+  String get learnPlanTitle => '今日計畫';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '約 $minutes 分鐘 · 已完成 $done/$total 步';
+  }
+
+  @override
+  String get learnPlanBudget => '計畫時長';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes 分鐘';
+  }
+
+  @override
+  String get learnPlanStart => '開始計畫';
+
+  @override
+  String get learnPlanContinue => '繼續計畫';
+
+  @override
+  String get learnPlanStepReview => '複習到期字元';
+
+  @override
+  String get learnPlanStepFocus => '重點練習';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '第 $lesson 課';
+  }
+
+  @override
+  String get learnPlanStepSend => '發報練習';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '到期複習：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '經常混淆：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正確率低於 90%：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count 個字元：可以解鎖下一課';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '已延長到 $count 個字元，以便能解鎖下一課';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短練習：鞏固本課，不會解鎖下一課';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '課程已前進：練習第 $lesson 課，但不會解鎖';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '發送 $count 個短目標';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完成 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完成';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '已發送 $done/$total';
+  }
+
+  @override
+  String get learnPlanStale => '課程或速度已變更。要更新尚未開始的步驟嗎？';
+
+  @override
+  String get learnPlanUpdate => '更新步驟';
+
+  @override
+  String get learnPlanComplete => '今日計畫已完成';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '需要加強：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今天沒有薄弱字元。';
+
+  @override
+  String get learnPlanTomorrow => '明天會產生新計畫。自由練習隨時可用。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '下一步：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '之前的計畫停在第 $done/$total 步，不再計入今天。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '可以把有效速度提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '可以提高到 $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '目前速度抄收較吃力。可以試試 $wpm WPM 有效速度，或做重點練習。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '依據你最近 $count 次無輔助練習（$percent%）。按「套用」前不會變更任何設定。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '套用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '暫不';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度建議需要在目前速度下完成 3 次、每次 50 個字元以上的無輔助練習。';
+
+  @override
+  String get learnQsoAction => 'QSO 模擬';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '第 $lesson 課起開放';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 模擬';
+
+  @override
+  String get learnQsoRespond => '回應 CQ';
+
+  @override
+  String get learnQsoRespondHint => '一個電台在呼叫 CQ。回應它並交換信號報告。';
+
+  @override
+  String get learnQsoCall => '呼叫 CQ';
+
+  @override
+  String get learnQsoCallHint => '你呼叫 CQ，會有電台回應。';
+
+  @override
+  String get learnQsoYourCall => '你的呼號';
+
+  @override
+  String get learnQsoYourName => '你的名字';
+
+  @override
+  String get learnQsoYourQth => '你的 QTH';
+
+  @override
+  String get learnQsoInvalidCall => '請輸入呼號，例如 BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => '一個單字，僅限字母 A–Z';
+
+  @override
+  String get learnQsoOffline => '完全在本機執行，不會向任何人傳送內容。';
+
+  @override
+  String get learnQsoStart => '開始 QSO';
+
+  @override
+  String get learnQsoResume => '繼續未完成的 QSO';
+
+  @override
+  String get learnQsoStageCallCq => '用你的呼號呼叫 CQ';
+
+  @override
+  String get learnQsoStageCallConfirm => '回應：對方呼號、DE、你的呼號';
+
+  @override
+  String get learnQsoStageExchange => '發送信號報告、名字和 QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => '確認對方的資訊';
+
+  @override
+  String get learnQsoStageClosing => '以 73 和 <SK> 結束';
+
+  @override
+  String get learnQsoStageDone => 'QSO 完成';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '對方以 $wpm WPM 有效速度發送';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 發送';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '請憑聽覺抄收——文字已隱藏。';
+
+  @override
+  String get learnQsoShowText => '顯示文字';
+
+  @override
+  String get learnQsoListen => '收聽';
+
+  @override
+  String get learnQsoAccepted => '已接受';
+
+  @override
+  String get learnQsoRejected => '未通過';
+
+  @override
+  String get learnQsoRemoteSending => '對方正在發送……';
+
+  @override
+  String get learnQsoYourTurn => '輪到你了：拍發回覆，然後按「發送」。';
+
+  @override
+  String get learnQsoDecoded => '你的發送內容';
+
+  @override
+  String get learnQsoNothingKeyed => '尚未拍發';
+
+  @override
+  String get learnQsoPlayAgain => '請求重複（AGN）';
+
+  @override
+  String get learnQsoSlower => '請求放慢（QRS）';
+
+  @override
+  String get learnQsoHint => '提示';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '範例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '暫停';
+
+  @override
+  String get learnQsoSend => '發送';
+
+  @override
+  String get learnQsoClear => '清除';
+
+  @override
+  String get learnQsoIssueEmpty => '沒有拍發任何內容。';
+
+  @override
+  String get learnQsoIssueMissingCq => '以 CQ 開頭。';
+
+  @override
+  String get learnQsoIssueMissingDe => '在兩個呼號之間加 DE。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '你的呼號缺失或錯誤。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '對方的呼號錯誤。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '呼號順序反了：先對方，再 DE，再你的。';
+
+  @override
+  String get learnQsoIssueMissingEnding => '以 K 或 KN 結尾。';
+
+  @override
+  String get learnQsoIssueMissingRst => '給出信號報告，例如 UR RST 599。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 超出範圍（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => '發送 NAME 和你的名字。';
+
+  @override
+  String get learnQsoIssueWrongName => '這不是你在本次 QSO 中的名字。';
+
+  @override
+  String get learnQsoIssueMissingQth => '發送 QTH 和你的位置。';
+
+  @override
+  String get learnQsoIssueWrongQth => '這不是你在本次 QSO 中的 QTH。';
+
+  @override
+  String get learnQsoIssueMissingAck => '用 R 或 QSL 表示確認。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '確認對方操作員的名字。';
+
+  @override
+  String get learnQsoIssueMissing73 => '加上 73。';
+
+  @override
+  String get learnQsoIssueMissingSk => '以 <SK> 結束聯絡。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一次通過：$total 步中 $count 步';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '重複次數：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '提示次數：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '你的發報：約 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 成績與抄收正確率分開統計，不會解鎖課程。';
+
+  @override
+  String get messageStatusCancelled => '已取消——未發送';
 }

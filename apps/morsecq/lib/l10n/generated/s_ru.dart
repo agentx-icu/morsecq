@@ -2379,4 +2379,355 @@ class SRu extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'Камера на этом устройстве недоступна.';
+
+  @override
+  String get learnReplayAssistedNote => 'Повтор: занятие засчитано как практика, но не открывает урок и не обновляет повторения.';
+
+  @override
+  String get learnPlanTitle => 'План на сегодня';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return 'Около $minutes мин · $done из $total шагов';
+  }
+
+  @override
+  String get learnPlanBudget => 'Длительность плана';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String get learnPlanStart => 'Начать план';
+
+  @override
+  String get learnPlanContinue => 'Продолжить план';
+
+  @override
+  String get learnPlanStepReview => 'Повторить знаки';
+
+  @override
+  String get learnPlanStepFocus => 'Точечная практика';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'Урок $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => 'Практика передачи';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return 'Пора повторить: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'Часто путаются: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return 'Ниже 90 %: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count знаков: может открыть следующий урок';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return 'Увеличено до $count знаков, чтобы можно было открыть следующий урок';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => 'Короткое занятие: закрепляет урок, не открывает следующий';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'Курс продвинулся: урок $lesson без открытия нового';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '$count коротких заданий на передачу';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return 'Готово · $percent %';
+  }
+
+  @override
+  String get learnPlanStepDone => 'Готово';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return 'Передано $done из $total';
+  }
+
+  @override
+  String get learnPlanStale => 'Урок или скорость изменились. Обновить ещё не начатые шаги?';
+
+  @override
+  String get learnPlanUpdate => 'Обновить шаги';
+
+  @override
+  String get learnPlanComplete => 'План на сегодня выполнен';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return 'Нужно подтянуть: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => 'Сегодня слабых знаков нет.';
+
+  @override
+  String get learnPlanTomorrow => 'Завтра будет новый план. Свободная практика доступна всегда.';
+
+  @override
+  String learnPlanNext(String step) {
+    return 'Далее: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return 'Прошлый план остановился на $done из $total шагов и сегодня не засчитывается.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return 'Можно перейти на эффективную скорость $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return 'Можно перейти на $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'На этой скорости принимать трудно. Попробуйте $wpm WPM эффективной скорости или точечную практику.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return 'По последним $count занятиям без подсказок ($percent %). Ничего не изменится, пока вы не примените.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => 'Применить';
+
+  @override
+  String get learnSpeedAdviceDismiss => 'Не сейчас';
+
+  @override
+  String get learnSpeedAdviceInsufficient => 'Для совета по скорости нужно 3 занятия без подсказок по 50+ знаков на текущей скорости.';
+
+  @override
+  String get learnQsoAction => 'Симулятор QSO';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'С урока $lesson';
+  }
+
+  @override
+  String get learnQsoTitle => 'Симулятор QSO';
+
+  @override
+  String get learnQsoRespond => 'Ответить на CQ';
+
+  @override
+  String get learnQsoRespondHint => 'Станция зовёт CQ. Ответьте и обменяйтесь рапортами.';
+
+  @override
+  String get learnQsoCall => 'Дать CQ';
+
+  @override
+  String get learnQsoCallHint => 'Вы даёте CQ, и станция отвечает.';
+
+  @override
+  String get learnQsoYourCall => 'Ваш позывной';
+
+  @override
+  String get learnQsoYourName => 'Ваше имя';
+
+  @override
+  String get learnQsoYourQth => 'Ваш QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'Введите позывной, например BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => 'Одно слово, только буквы A–Z';
+
+  @override
+  String get learnQsoOffline => 'Работает только на этом устройстве. Ничего не отправляется.';
+
+  @override
+  String get learnQsoStart => 'Начать QSO';
+
+  @override
+  String get learnQsoResume => 'Продолжить незавершённое QSO';
+
+  @override
+  String get learnQsoStageCallCq => 'Дайте CQ со своим позывным';
+
+  @override
+  String get learnQsoStageCallConfirm => 'Ответ: его позывной, DE, ваш';
+
+  @override
+  String get learnQsoStageExchange => 'Передайте рапорт, имя и QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => 'Подтвердите его данные';
+
+  @override
+  String get learnQsoStageClosing => 'Завершите 73 и <SK>';
+
+  @override
+  String get learnQsoStageDone => 'QSO завершено';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return 'Корреспондент передаёт на $wpm WPM';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call передаёт';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => 'Принимайте на слух — текст скрыт.';
+
+  @override
+  String get learnQsoShowText => 'Показать текст';
+
+  @override
+  String get learnQsoListen => 'Слушать';
+
+  @override
+  String get learnQsoAccepted => 'Принято';
+
+  @override
+  String get learnQsoRejected => 'Не принято';
+
+  @override
+  String get learnQsoRemoteSending => 'Корреспондент передаёт…';
+
+  @override
+  String get learnQsoYourTurn => 'Ваша очередь: передайте ответ и нажмите «Отправить».';
+
+  @override
+  String get learnQsoDecoded => 'Ваша передача';
+
+  @override
+  String get learnQsoNothingKeyed => 'Пока ничего не передано';
+
+  @override
+  String get learnQsoPlayAgain => 'Попросить повторить (AGN)';
+
+  @override
+  String get learnQsoSlower => 'Попросить медленнее (QRS)';
+
+  @override
+  String get learnQsoHint => 'Подсказка';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return 'Пример: $example';
+  }
+
+  @override
+  String get learnQsoPause => 'Пауза';
+
+  @override
+  String get learnQsoSend => 'Отправить';
+
+  @override
+  String get learnQsoClear => 'Очистить';
+
+  @override
+  String get learnQsoIssueEmpty => 'Ничего не передано.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'Начните с CQ.';
+
+  @override
+  String get learnQsoIssueMissingDe => 'Поставьте DE между позывными.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => 'Ваш позывной отсутствует или неверен.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => 'Позывной корреспондента неверен.';
+
+  @override
+  String get learnQsoIssueReversedCalls => 'Позывные перепутаны: сначала его, затем DE и ваш.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'Закончите K или KN.';
+
+  @override
+  String get learnQsoIssueMissingRst => 'Дайте рапорт, например UR RST 599.';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST вне диапазона (R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'Передайте NAME и своё имя.';
+
+  @override
+  String get learnQsoIssueWrongName => 'Это не ваше имя в этом QSO.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'Передайте QTH и своё местоположение.';
+
+  @override
+  String get learnQsoIssueWrongQth => 'Это не ваш QTH в этом QSO.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'Подтвердите R или QSL.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => 'Подтвердите имя оператора.';
+
+  @override
+  String get learnQsoIssueMissing73 => 'Добавьте 73.';
+
+  @override
+  String get learnQsoIssueMissingSk => 'Завершите связь <SK>.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return 'С первого раза: $count из $total шагов';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return 'Повторы: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'Подсказки: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'Ваша передача: около $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'Результаты QSO учитываются отдельно от точности приёма и не открывают уроки.';
+
+  @override
+  String get messageStatusCancelled => 'Отменено — не отправлено';
 }

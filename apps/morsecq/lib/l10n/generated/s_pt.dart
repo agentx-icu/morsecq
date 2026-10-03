@@ -2334,4 +2334,355 @@ class SPt extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'A câmera não está disponível neste dispositivo.';
+
+  @override
+  String get learnReplayAssistedNote => 'Repetido: esta sessão conta como prática, mas não desbloqueia lições nem atualiza revisões.';
+
+  @override
+  String get learnPlanTitle => 'Plano de hoje';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return 'Cerca de $minutes min · $done de $total passos';
+  }
+
+  @override
+  String get learnPlanBudget => 'Duração do plano';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get learnPlanStart => 'Começar o plano';
+
+  @override
+  String get learnPlanContinue => 'Continuar o plano';
+
+  @override
+  String get learnPlanStepReview => 'Revisar símbolos pendentes';
+
+  @override
+  String get learnPlanStepFocus => 'Prática focada';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'Lição $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => 'Prática de transmissão';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return 'Para revisar: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'Confundidos com frequência: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return 'Abaixo de 90%: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count símbolos: pode desbloquear a próxima lição';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return 'Ampliado para $count símbolos para poder desbloquear a próxima lição';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => 'Sessão curta: consolida a lição, não desbloqueia a próxima';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'Seu curso avançou: pratica a lição $lesson sem desbloquear';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '$count alvos curtos para transmitir';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return 'Concluído · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => 'Concluído';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$done de $total enviados';
+  }
+
+  @override
+  String get learnPlanStale => 'Sua lição ou velocidade mudou. Atualizar os passos não iniciados?';
+
+  @override
+  String get learnPlanUpdate => 'Atualizar passos';
+
+  @override
+  String get learnPlanComplete => 'Plano de hoje concluído';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return 'Precisa de prática: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => 'Nenhum símbolo fraco hoje.';
+
+  @override
+  String get learnPlanTomorrow => 'Amanhã chega um plano novo. A prática livre está sempre aberta.';
+
+  @override
+  String learnPlanNext(String step) {
+    return 'Próximo: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return 'O plano anterior parou em $done de $total passos; não conta para hoje.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return 'Pronto para $wpm PPM de velocidade efetiva';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return 'Pronto para $wpm PPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'Copiar nesta velocidade está difícil. Tente $wpm PPM efetivas ou uma prática focada.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return 'Com base nas suas últimas $count sessões sem ajuda ($percent%). Nada muda até você aplicar.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => 'Aplicar';
+
+  @override
+  String get learnSpeedAdviceDismiss => 'Agora não';
+
+  @override
+  String get learnSpeedAdviceInsufficient => 'A sugestão de velocidade precisa de 3 sessões sem ajuda de 50+ símbolos na velocidade atual.';
+
+  @override
+  String get learnQsoAction => 'Simulador de QSO';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'A partir da lição $lesson';
+  }
+
+  @override
+  String get learnQsoTitle => 'Simulador de QSO';
+
+  @override
+  String get learnQsoRespond => 'Responder a um CQ';
+
+  @override
+  String get learnQsoRespondHint => 'Uma estação chama CQ. Responda e troquem reportagens.';
+
+  @override
+  String get learnQsoCall => 'Chamar CQ';
+
+  @override
+  String get learnQsoCallHint => 'Você chama CQ e uma estação responde.';
+
+  @override
+  String get learnQsoYourCall => 'Seu indicativo';
+
+  @override
+  String get learnQsoYourName => 'Seu nome';
+
+  @override
+  String get learnQsoYourQth => 'Seu QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'Digite um indicativo como BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => 'Uma palavra, apenas letras A–Z';
+
+  @override
+  String get learnQsoOffline => 'Funciona inteiramente neste dispositivo. Nada é enviado.';
+
+  @override
+  String get learnQsoStart => 'Iniciar QSO';
+
+  @override
+  String get learnQsoResume => 'Retomar o QSO inacabado';
+
+  @override
+  String get learnQsoStageCallCq => 'Chame CQ com seu indicativo';
+
+  @override
+  String get learnQsoStageCallConfirm => 'Responda: indicativo dele, DE, o seu';
+
+  @override
+  String get learnQsoStageExchange => 'Envie reportagem, nome e QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => 'Confirme as informações dele';
+
+  @override
+  String get learnQsoStageClosing => 'Encerre com 73 e <SK>';
+
+  @override
+  String get learnQsoStageDone => 'QSO concluído';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return 'O correspondente transmite a $wpm PPM efetivas';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call transmite';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => 'Copie de ouvido: o texto está oculto.';
+
+  @override
+  String get learnQsoShowText => 'Mostrar texto';
+
+  @override
+  String get learnQsoListen => 'Ouvir';
+
+  @override
+  String get learnQsoAccepted => 'Aceito';
+
+  @override
+  String get learnQsoRejected => 'Não aceito';
+
+  @override
+  String get learnQsoRemoteSending => 'A outra estação está transmitindo…';
+
+  @override
+  String get learnQsoYourTurn => 'Sua vez: transmita a resposta e toque em Enviar.';
+
+  @override
+  String get learnQsoDecoded => 'Sua transmissão';
+
+  @override
+  String get learnQsoNothingKeyed => 'Nada transmitido ainda';
+
+  @override
+  String get learnQsoPlayAgain => 'Pedir repetição (AGN)';
+
+  @override
+  String get learnQsoSlower => 'Pedir mais devagar (QRS)';
+
+  @override
+  String get learnQsoHint => 'Dica';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return 'Exemplo: $example';
+  }
+
+  @override
+  String get learnQsoPause => 'Pausar';
+
+  @override
+  String get learnQsoSend => 'Enviar';
+
+  @override
+  String get learnQsoClear => 'Limpar';
+
+  @override
+  String get learnQsoIssueEmpty => 'Nada foi transmitido.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'Comece com CQ.';
+
+  @override
+  String get learnQsoIssueMissingDe => 'Coloque DE entre os indicativos.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => 'Seu indicativo está ausente ou errado.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => 'O indicativo da outra estação está errado.';
+
+  @override
+  String get learnQsoIssueReversedCalls => 'Indicativos invertidos: primeiro o dele, depois DE e o seu.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'Termine com K ou KN.';
+
+  @override
+  String get learnQsoIssueMissingRst => 'Dê uma reportagem, ex.: UR RST 599.';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'Esse RST está fora do intervalo (R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'Envie NAME e seu nome.';
+
+  @override
+  String get learnQsoIssueWrongName => 'Esse não é seu nome neste QSO.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'Envie QTH e sua localização.';
+
+  @override
+  String get learnQsoIssueWrongQth => 'Esse não é seu QTH neste QSO.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'Confirme com R ou QSL.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => 'Confirme o nome do outro operador.';
+
+  @override
+  String get learnQsoIssueMissing73 => 'Inclua 73.';
+
+  @override
+  String get learnQsoIssueMissingSk => 'Encerre o contato com <SK>.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return 'Certo de primeira: $count de $total passos';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return 'Repetições: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'Dicas: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'Sua transmissão: cerca de $wpm PPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'Os resultados de QSO ficam separados da precisão de cópia e nunca desbloqueiam lições.';
+
+  @override
+  String get messageStatusCancelled => 'Cancelado — nunca enviado';
 }

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
+import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_settings_store.dart';
 import 'learn_playback.dart';
@@ -55,6 +56,7 @@ class LearnScope extends StatefulWidget {
       progressStore: FileTrainerStore.inDataDirectory(dir),
       settingsStore: FileTrainingSettingsStore.inDataDirectory(dir),
       profileKey: _profileKeyOf(identity),
+      docs: FileTrainingDocStore.inDataDirectory(dir),
     );
     await controller.load();
     return controller;

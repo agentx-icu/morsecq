@@ -10,6 +10,7 @@ import 'exercise_outcome.dart';
 import 'receive_session.dart';
 import 'send_session.dart';
 import 'training_settings.dart';
+import 'training_doc_store.dart';
 import 'training_settings_store.dart';
 
 export 'exercise_outcome.dart';
@@ -26,7 +27,9 @@ final class TrainingController extends ChangeNotifier {
     DateTime Function()? now,
     Random? random,
     this.profileKey = '',
-  }) : _progressStore = progressStore,
+    TrainingDocStore? docs,
+  }) : _docs = docs ?? InMemoryTrainingDocStore(),
+       _progressStore = progressStore,
        _settingsStore = settingsStore,
        course = course ?? KochCourse(),
        _now = now ?? DateTime.now,
@@ -43,6 +46,7 @@ final class TrainingController extends ChangeNotifier {
 
   final TrainerStore _progressStore;
   final TrainingSettingsStore _settingsStore;
+  final TrainingDocStore _docs;
   final KochCourse course;
 
   /// The learning profile this controller belongs to (identity public key,
@@ -155,6 +159,29 @@ final class TrainingController extends ChangeNotifier {
     final clear = _persist(_progressStore, _progressStore.clear);
     notifyListeners();
     await clear;
+  }
+
+  /// Reads a training document (drafts, materials, details).
+  Future<Map<String, Object?>?> readDoc(String name) async {
+    await _writes;
+    return _docs.read(name);
+  }
+
+  /// Writes a document in order with every other training write, so
+  /// [flush] covers it.
+  Future<void> writeDoc(String name, Map<String, Object?> json) {
+    _ensureActive();
+    return _persist(_docs, () => _docs.write(name, json));
+  }
+
+  Future<void> deleteDoc(String name) {
+    _ensureActive();
+    return _persist(_docs, () => _docs.delete(name));
+  }
+
+  Future<List<String>> docNames() async {
+    await _writes;
+    return _docs.names();
   }
 
   /// Durability barrier used before backgrounding, backup or replacement.
@@ -332,67 +359,29 @@ final class TrainingController extends ChangeNotifier {
     Set<String>? learned,
     bool countsTowardLesson = false,
   }) async {
-    final now = _now();
-    if (_progress.hasCommitted(id)) {
-      return ReceiveOutcome(
-        score: score,
-        passed: false,
-        advanced: false,
-        lesson: currentLesson,
-        duplicate: true,
-        exerciseId: id,
-      );
-    }
-    final credit = CreditPolicy.decide(
-      source: source,
-      completed: completed,
-      answered: answered,
-      assistance: assistance,
-    );
-    final t = timing ?? trainerSettings.toTiming();
-    final summary = SessionSummary.exercise(
-      score,
+    final (next, outcome) = applyExercise(
+      _progress,
+      course: course,
+      now: _now(),
+      score: score,
       id: id,
       source: source,
-      at: score.at ?? now,
       assistance: assistance,
-      lesson: lesson ?? score.lesson ?? currentLesson,
-      characterWpm: t.wpm,
-      effectiveWpm: t.isFarnsworth ? t.farnsworthWpm : t.wpm,
-      toneHz: _settings.trainer.toneHz,
+      answered: answered,
       completed: completed,
+      lesson: lesson,
+      timing: timing ?? trainerSettings.toTiming(),
+      toneHz: _settings.trainer.toneHz,
       active: active,
       planStepId: planStepId,
       sourceRef: sourceRef,
       detailRef: detailRef,
-    );
-    var next = _progress.recordExercise(
-      score,
-      summary,
-      credit: credit,
-      now: now,
       learned: learned ?? learnedChars.toSet(),
+      countsTowardLesson: countsTowardLesson,
     );
-    final before = next.currentLesson;
-    final mayUnlock =
-        credit.unlock &&
-        countsTowardLesson &&
-        (lesson == null || lesson == before);
-    if (mayUnlock) next = next.advanceIfPassed(course, score);
-    next = completePlanStep(next, planStepId, id, score);
-    if (next.currentLesson != before && next.dailyPlan != null) {
-      next = next.copyWith(dailyPlan: next.dailyPlan!.markPendingStale());
-    }
+    if (outcome.duplicate) return outcome;
     final saved = await _commitKeepingResult(next);
-    return ReceiveOutcome(
-      score: score,
-      passed: course.passes(score),
-      advanced: next.currentLesson != before,
-      lesson: next.currentLesson,
-      saved: saved,
-      credit: credit,
-      exerciseId: id,
-    );
+    return outcome.withSaved(saved);
   }
 
   void _markPlanStale() {

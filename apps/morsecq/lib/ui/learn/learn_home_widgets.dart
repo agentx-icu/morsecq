@@ -344,7 +344,15 @@ class QuickActions extends StatelessWidget {
     required this.onSendPractice,
     required this.onReview,
     this.showContinue = true,
+    this.onQso,
+    this.qsoFromLesson,
   });
+
+  /// Opens the QSO simulator; null while it is locked.
+  final VoidCallback? onQso;
+
+  /// Shown as the unlock lesson while [onQso] is null.
+  final int? qsoFromLesson;
 
   final int dueCount;
   final VoidCallback onContinueLesson;
@@ -387,6 +395,14 @@ class QuickActions extends StatelessWidget {
           trailing: s.learnReviewDueCount(dueCount),
           onTap: onReview,
         ),
+        _ActionTile(
+          icon: Icons.cell_tower,
+          label: s.learnQsoAction,
+          trailing: onQso == null && qsoFromLesson != null
+              ? s.learnQsoLocked(qsoFromLesson!)
+              : null,
+          onTap: onQso,
+        ),
       ],
     );
   }
@@ -404,7 +420,7 @@ class _ActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String? trailing;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? color;
 
   @override

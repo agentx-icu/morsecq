@@ -2312,4 +2312,355 @@ class SJa extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'このデバイスではカメラを利用できません。';
+
+  @override
+  String get learnReplayAssistedNote => '再生し直しました：練習には数えますが、レッスンの解放や復習の更新は行いません。';
+
+  @override
+  String get learnPlanTitle => '今日のプラン';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '約$minutes分 · $totalステップ中$done完了';
+  }
+
+  @override
+  String get learnPlanBudget => 'プランの長さ';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes分';
+  }
+
+  @override
+  String get learnPlanStart => 'プランを始める';
+
+  @override
+  String get learnPlanContinue => 'プランを続ける';
+
+  @override
+  String get learnPlanStepReview => '復習期限の文字';
+
+  @override
+  String get learnPlanStepFocus => '重点練習';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'レッスン$lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => '送信練習';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '復習時期：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'よく取り違える：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正答率90%未満：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count文字：次のレッスンを解放できます';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '次のレッスンを解放できるよう$count文字に延長しました';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短い練習：このレッスンの定着用で、次は解放されません';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'コースが進みました：レッスン$lessonを練習しますが解放はしません';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '短い課題を$count回送信';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完了 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完了';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$total中$done送信済み';
+  }
+
+  @override
+  String get learnPlanStale => 'レッスンまたは速度が変わりました。未開始のステップを更新しますか？';
+
+  @override
+  String get learnPlanUpdate => 'ステップを更新';
+
+  @override
+  String get learnPlanComplete => '今日のプランは完了です';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '要練習：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今日は苦手な文字はありません。';
+
+  @override
+  String get learnPlanTomorrow => '明日は新しいプランです。自由練習はいつでもできます。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '次：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '前回のプランは$totalステップ中$doneで止まりました。今日の分には数えません。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '実効速度$wpm WPMに進めます';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '$wpm WPMに進めます';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'この速度では受信が難しいようです。実効$wpm WPMか重点練習を試しましょう。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '直近の補助なし練習$count回（$percent%）に基づきます。適用するまで設定は変わりません。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '適用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '今はしない';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度アドバイスには、現在の速度で50文字以上の補助なし練習が3回必要です。';
+
+  @override
+  String get learnQsoAction => 'QSOシミュレーター';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'レッスン$lessonから';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSOシミュレーター';
+
+  @override
+  String get learnQsoRespond => 'CQに応答する';
+
+  @override
+  String get learnQsoRespondHint => '局がCQを出しています。応答してレポートを交換します。';
+
+  @override
+  String get learnQsoCall => 'CQを出す';
+
+  @override
+  String get learnQsoCallHint => 'あなたがCQを出し、局が応答します。';
+
+  @override
+  String get learnQsoYourCall => 'あなたのコールサイン';
+
+  @override
+  String get learnQsoYourName => 'あなたの名前';
+
+  @override
+  String get learnQsoYourQth => 'あなたのQTH';
+
+  @override
+  String get learnQsoInvalidCall => 'BD1XYZのようなコールサインを入力してください';
+
+  @override
+  String get learnQsoInvalidWord => '1語、A–Zの文字のみ';
+
+  @override
+  String get learnQsoOffline => 'すべてこの端末内で動作し、誰にも送信しません。';
+
+  @override
+  String get learnQsoStart => 'QSOを始める';
+
+  @override
+  String get learnQsoResume => '途中のQSOを再開';
+
+  @override
+  String get learnQsoStageCallCq => '自分のコールサインでCQを出す';
+
+  @override
+  String get learnQsoStageCallConfirm => '応答：相手のコール、DE、自分のコール';
+
+  @override
+  String get learnQsoStageExchange => 'レポート・名前・QTHを送る';
+
+  @override
+  String get learnQsoStageConfirmInfo => '相手の情報を確認する';
+
+  @override
+  String get learnQsoStageClosing => '73と<SK>で終える';
+
+  @override
+  String get learnQsoStageDone => 'QSO完了';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '相手は実効$wpm WPMで送信';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$callの送信';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '耳で受信してください（テキストは非表示）。';
+
+  @override
+  String get learnQsoShowText => 'テキストを表示';
+
+  @override
+  String get learnQsoListen => '聴く';
+
+  @override
+  String get learnQsoAccepted => '受理';
+
+  @override
+  String get learnQsoRejected => '不受理';
+
+  @override
+  String get learnQsoRemoteSending => '相手局が送信中…';
+
+  @override
+  String get learnQsoYourTurn => 'あなたの番です：返信を打鍵して「送信」。';
+
+  @override
+  String get learnQsoDecoded => 'あなたの送信内容';
+
+  @override
+  String get learnQsoNothingKeyed => 'まだ打鍵していません';
+
+  @override
+  String get learnQsoPlayAgain => '再送を頼む（AGN）';
+
+  @override
+  String get learnQsoSlower => '減速を頼む（QRS）';
+
+  @override
+  String get learnQsoHint => 'ヒント';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '一時停止';
+
+  @override
+  String get learnQsoSend => '送信';
+
+  @override
+  String get learnQsoClear => '消去';
+
+  @override
+  String get learnQsoIssueEmpty => '何も打鍵されていません。';
+
+  @override
+  String get learnQsoIssueMissingCq => 'CQで始めてください。';
+
+  @override
+  String get learnQsoIssueMissingDe => 'コールサインの間にDEを入れてください。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '自分のコールサインがないか誤っています。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '相手局のコールサインが違います。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '順序が逆です：相手、DE、自分の順です。';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'KまたはKNで終えてください。';
+
+  @override
+  String get learnQsoIssueMissingRst => 'レポートを送ってください（例：UR RST 599）。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RSTが範囲外です（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => 'NAMEと名前を送ってください。';
+
+  @override
+  String get learnQsoIssueWrongName => 'このQSOでのあなたの名前ではありません。';
+
+  @override
+  String get learnQsoIssueMissingQth => 'QTHと場所を送ってください。';
+
+  @override
+  String get learnQsoIssueWrongQth => 'このQSOでのあなたのQTHではありません。';
+
+  @override
+  String get learnQsoIssueMissingAck => 'RまたはQSLで了解を伝えてください。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '相手のオペレーター名を確認してください。';
+
+  @override
+  String get learnQsoIssueMissing73 => '73を入れてください。';
+
+  @override
+  String get learnQsoIssueMissingSk => '<SK>で交信を終えてください。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一度で正解：$totalステップ中$count';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '再送：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'ヒント：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'あなたの送信：約$wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSOの結果は受信正答率とは別に扱い、レッスンは解放しません。';
+
+  @override
+  String get messageStatusCancelled => 'キャンセル済み（未送信）';
 }

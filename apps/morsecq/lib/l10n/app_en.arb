@@ -3472,5 +3472,296 @@
   "learnSpeedAdviceInsufficient": "Speed advice needs 3 unassisted sessions of 50+ symbols at your current speed.",
   "@learnSpeedAdviceInsufficient": {
     "description": "Daily plan card: why there is no speed advice yet"
+  },
+  "learnQsoAction": "QSO simulator",
+  "@learnQsoAction": {
+    "description": "Learn home: entry to the interactive QSO simulator"
+  },
+  "learnQsoLocked": "From lesson {lesson}",
+  "@learnQsoLocked": {
+    "description": "Learn home: QSO simulator is locked until a lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoTitle": "QSO simulator",
+  "@learnQsoTitle": {
+    "description": "QSO simulator: screen title"
+  },
+  "learnQsoRespond": "Answer a CQ",
+  "@learnQsoRespond": {
+    "description": "QSO setup: scenario where the remote calls CQ"
+  },
+  "learnQsoRespondHint": "A station calls CQ. Answer it and exchange reports.",
+  "@learnQsoRespondHint": {
+    "description": "QSO setup: description of the answer-CQ scenario"
+  },
+  "learnQsoCall": "Call CQ",
+  "@learnQsoCall": {
+    "description": "QSO setup: scenario where the learner calls CQ"
+  },
+  "learnQsoCallHint": "You call CQ and a station answers.",
+  "@learnQsoCallHint": {
+    "description": "QSO setup: description of the call-CQ scenario"
+  },
+  "learnQsoYourCall": "Your callsign",
+  "@learnQsoYourCall": {
+    "description": "QSO setup: learner's callsign field"
+  },
+  "learnQsoYourName": "Your name",
+  "@learnQsoYourName": {
+    "description": "QSO setup: learner's name field (one word)"
+  },
+  "learnQsoYourQth": "Your QTH",
+  "@learnQsoYourQth": {
+    "description": "QSO setup: learner's location field (one word)"
+  },
+  "learnQsoInvalidCall": "Enter a callsign such as BD1XYZ",
+  "@learnQsoInvalidCall": {
+    "description": "QSO setup: callsign validation error"
+  },
+  "learnQsoInvalidWord": "One word, letters A–Z only",
+  "@learnQsoInvalidWord": {
+    "description": "QSO setup: name/QTH validation error"
+  },
+  "learnQsoOffline": "Runs entirely on this device. Nothing is sent to anyone.",
+  "@learnQsoOffline": {
+    "description": "QSO setup: privacy note"
+  },
+  "learnQsoStart": "Start QSO",
+  "@learnQsoStart": {
+    "description": "QSO setup: start button"
+  },
+  "learnQsoResume": "Resume the unfinished QSO",
+  "@learnQsoResume": {
+    "description": "QSO setup: resume an unfinished simulated QSO"
+  },
+  "learnQsoStageCallCq": "Call CQ with your callsign",
+  "@learnQsoStageCallCq": {
+    "description": "QSO stage: call CQ"
+  },
+  "learnQsoStageCallConfirm": "Answer: their call, DE, your call",
+  "@learnQsoStageCallConfirm": {
+    "description": "QSO stage: answer with both callsigns"
+  },
+  "learnQsoStageExchange": "Send report, name and QTH",
+  "@learnQsoStageExchange": {
+    "description": "QSO stage: send report, name and QTH"
+  },
+  "learnQsoStageConfirmInfo": "Confirm their information",
+  "@learnQsoStageConfirmInfo": {
+    "description": "QSO stage: acknowledge the remote's information"
+  },
+  "learnQsoStageClosing": "Close with 73 and <SK>",
+  "@learnQsoStageClosing": {
+    "description": "QSO stage: close the contact"
+  },
+  "learnQsoStageDone": "QSO complete",
+  "@learnQsoStageDone": {
+    "description": "QSO stage/summary: contact finished"
+  },
+  "learnQsoSpeed": "Remote sends at {wpm} WPM effective",
+  "@learnQsoSpeed": {
+    "description": "QSO screen: current remote playback effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoRemote": "{call} sends",
+  "@learnQsoRemote": {
+    "description": "QSO log: caption of a remote transmission",
+    "placeholders": {
+      "call": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoRemoteHidden": "Copy by ear — the text is hidden.",
+  "@learnQsoRemoteHidden": {
+    "description": "QSO log: placeholder while the remote text is hidden"
+  },
+  "learnQsoShowText": "Show text",
+  "@learnQsoShowText": {
+    "description": "QSO log: reveal a remote transmission (counts as a hint)"
+  },
+  "learnQsoListen": "Listen",
+  "@learnQsoListen": {
+    "description": "QSO log: play a remote transmission again"
+  },
+  "learnQsoAccepted": "Accepted",
+  "@learnQsoAccepted": {
+    "description": "QSO log: semantics for an accepted transmission"
+  },
+  "learnQsoRejected": "Not accepted",
+  "@learnQsoRejected": {
+    "description": "QSO log: semantics for a rejected transmission"
+  },
+  "learnQsoRemoteSending": "The other station is sending…",
+  "@learnQsoRemoteSending": {
+    "description": "QSO screen: remote is transmitting; keying is paused"
+  },
+  "learnQsoYourTurn": "Your turn: key your reply, then Send.",
+  "@learnQsoYourTurn": {
+    "description": "QSO screen: learner's turn to key"
+  },
+  "learnQsoDecoded": "Your transmission",
+  "@learnQsoDecoded": {
+    "description": "QSO screen: label of the decoded own transmission"
+  },
+  "learnQsoNothingKeyed": "Nothing keyed yet",
+  "@learnQsoNothingKeyed": {
+    "description": "QSO screen: nothing keyed yet"
+  },
+  "learnQsoPlayAgain": "Ask to repeat (AGN)",
+  "@learnQsoPlayAgain": {
+    "description": "QSO screen: send PSE AGN (ask the remote to repeat)"
+  },
+  "learnQsoSlower": "Ask to slow down (QRS)",
+  "@learnQsoSlower": {
+    "description": "QSO screen: send QRS (ask the remote to slow down)"
+  },
+  "learnQsoHint": "Hint",
+  "@learnQsoHint": {
+    "description": "QSO screen: show an example for the current stage"
+  },
+  "learnQsoHintLabel": "Example: {example}",
+  "@learnQsoHintLabel": {
+    "description": "QSO screen: hint example (protocol text, not translated)",
+    "placeholders": {
+      "example": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoPause": "Pause",
+  "@learnQsoPause": {
+    "description": "QSO screen: stop the remote's playback"
+  },
+  "learnQsoSend": "Send",
+  "@learnQsoSend": {
+    "description": "QSO screen: submit the keyed transmission"
+  },
+  "learnQsoClear": "Clear",
+  "@learnQsoClear": {
+    "description": "QSO screen: discard the keyed transmission"
+  },
+  "learnQsoIssueEmpty": "Nothing was keyed.",
+  "@learnQsoIssueEmpty": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingCq": "Start with CQ.",
+  "@learnQsoIssueMissingCq": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingDe": "Put DE between the callsigns.",
+  "@learnQsoIssueMissingDe": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongLocalCall": "Your own callsign is missing or wrong.",
+  "@learnQsoIssueWrongLocalCall": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongRemoteCall": "The other station's callsign is wrong.",
+  "@learnQsoIssueWrongRemoteCall": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueReversedCalls": "Callsigns are reversed: theirs first, then DE and yours.",
+  "@learnQsoIssueReversedCalls": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingEnding": "End with K or KN.",
+  "@learnQsoIssueMissingEnding": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingRst": "Give a report, e.g. UR RST 599.",
+  "@learnQsoIssueMissingRst": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueInvalidRst": "That RST is out of range (R 1–5, S 1–9, T 1–9).",
+  "@learnQsoIssueInvalidRst": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingName": "Send NAME and your name.",
+  "@learnQsoIssueMissingName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongName": "That is not your name for this QSO.",
+  "@learnQsoIssueWrongName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingQth": "Send QTH and your location.",
+  "@learnQsoIssueMissingQth": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongQth": "That is not your QTH for this QSO.",
+  "@learnQsoIssueWrongQth": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingAck": "Acknowledge with R or QSL.",
+  "@learnQsoIssueMissingAck": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongRemoteName": "Confirm the other operator's name.",
+  "@learnQsoIssueWrongRemoteName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissing73": "Include 73.",
+  "@learnQsoIssueMissing73": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingSk": "End the contact with <SK>.",
+  "@learnQsoIssueMissingSk": {
+    "description": "QSO feedback"
+  },
+  "learnQsoSummaryFields": "Right first time: {count} of {total} steps",
+  "@learnQsoSummaryFields": {
+    "description": "QSO summary: stages accepted on the first try",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryRepeats": "Repeats: {count}",
+  "@learnQsoSummaryRepeats": {
+    "description": "QSO summary: number of repeat requests",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryHints": "Hints: {count}",
+  "@learnQsoSummaryHints": {
+    "description": "QSO summary: hints and revealed texts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryRhythm": "Your sending: about {wpm} WPM",
+  "@learnQsoSummaryRhythm": {
+    "description": "QSO summary: average measured sending speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryNote": "QSO results are kept apart from copying accuracy and never unlock lessons.",
+  "@learnQsoSummaryNote": {
+    "description": "QSO summary: how the result is counted"
+  },
+  "messageStatusCancelled": "Cancelled — never sent",
+  "@messageStatusCancelled": {
+    "description": "Message status tooltip: a queued send the user cancelled before it left the device"
   }
 }

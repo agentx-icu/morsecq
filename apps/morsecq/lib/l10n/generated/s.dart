@@ -4105,6 +4105,600 @@ abstract class S {
   /// In en, this message translates to:
   /// **'The camera is not available on this device.'**
   String get chatScanQrCameraUnavailable;
+
+  /// Receive drill: shown after the learner replayed a round; replays make the session assisted
+  ///
+  /// In en, this message translates to:
+  /// **'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.'**
+  String get learnReplayAssistedNote;
+
+  /// Learn home: title of the daily plan card
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s plan'**
+  String get learnPlanTitle;
+
+  /// Daily plan card: estimated minutes and completed steps
+  ///
+  /// In en, this message translates to:
+  /// **'About {minutes} min · {done} of {total} steps'**
+  String learnPlanSummary(int minutes, int done, int total);
+
+  /// Daily plan card: label of the plan-length selector
+  ///
+  /// In en, this message translates to:
+  /// **'Plan length'**
+  String get learnPlanBudget;
+
+  /// Daily plan card: one plan-length choice in minutes
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String learnPlanBudgetMinutes(int minutes);
+
+  /// Daily plan card: start the first step
+  ///
+  /// In en, this message translates to:
+  /// **'Start plan'**
+  String get learnPlanStart;
+
+  /// Daily plan card: continue with the next step
+  ///
+  /// In en, this message translates to:
+  /// **'Continue plan'**
+  String get learnPlanContinue;
+
+  /// Daily plan step title: spaced review
+  ///
+  /// In en, this message translates to:
+  /// **'Review due symbols'**
+  String get learnPlanStepReview;
+
+  /// Daily plan step title: focused drill on weak symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Focused practice'**
+  String get learnPlanStepFocus;
+
+  /// Daily plan step title: Koch course copying of a lesson
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {lesson}'**
+  String learnPlanStepCourse(int lesson);
+
+  /// Daily plan step title: short sending practice
+  ///
+  /// In en, this message translates to:
+  /// **'Sending practice'**
+  String get learnPlanStepSend;
+
+  /// Daily plan reason: symbols due for spaced review
+  ///
+  /// In en, this message translates to:
+  /// **'Due for review: {symbols}'**
+  String learnPlanReasonDueReview(String symbols);
+
+  /// Daily plan reason: symbols often confused with each other
+  ///
+  /// In en, this message translates to:
+  /// **'Often mixed up: {symbols}'**
+  String learnPlanReasonConfusions(String symbols);
+
+  /// Daily plan reason: symbols copied below 90 percent
+  ///
+  /// In en, this message translates to:
+  /// **'Below 90%: {symbols}'**
+  String learnPlanReasonWeak(String symbols);
+
+  /// Daily plan reason: course step long enough to unlock
+  ///
+  /// In en, this message translates to:
+  /// **'{count} symbols: can unlock the next lesson'**
+  String learnPlanReasonChallenge(int count);
+
+  /// Daily plan reason: course step lengthened beyond its time share so it can unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Lengthened to {count} symbols so it can unlock the next lesson'**
+  String learnPlanReasonExtended(int count);
+
+  /// Daily plan reason: course step too short to unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Short session: consolidates this lesson, cannot unlock the next'**
+  String get learnPlanReasonConsolidate;
+
+  /// Daily plan reason: the course moved on after the plan was made
+  ///
+  /// In en, this message translates to:
+  /// **'Your course moved on: practises lesson {lesson} without unlocking'**
+  String learnPlanReasonOutdated(int lesson);
+
+  /// Daily plan reason: number of short sending targets
+  ///
+  /// In en, this message translates to:
+  /// **'{count} short targets to key'**
+  String learnPlanReasonSend(int count);
+
+  /// Daily plan step: completed with strict accuracy
+  ///
+  /// In en, this message translates to:
+  /// **'Done · {percent}%'**
+  String learnPlanStepDonePercent(int percent);
+
+  /// Daily plan step: completed (no accuracy, e.g. sending)
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get learnPlanStepDone;
+
+  /// Daily plan send step: keyed targets so far
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} keyed'**
+  String learnPlanSendProgress(int done, int total);
+
+  /// Daily plan card: lesson or speed changed after planning
+  ///
+  /// In en, this message translates to:
+  /// **'Your lesson or speed changed. Update the steps you haven\'t started?'**
+  String get learnPlanStale;
+
+  /// Daily plan card: regenerate steps that have not started
+  ///
+  /// In en, this message translates to:
+  /// **'Update steps'**
+  String get learnPlanUpdate;
+
+  /// Daily plan card: every step done today
+  ///
+  /// In en, this message translates to:
+  /// **'Plan complete for today'**
+  String get learnPlanComplete;
+
+  /// Daily plan card: symbols that need work after today's plan
+  ///
+  /// In en, this message translates to:
+  /// **'Needs work: {symbols}'**
+  String learnPlanNeedsWork(String symbols);
+
+  /// Daily plan card: no weak symbols after today's plan
+  ///
+  /// In en, this message translates to:
+  /// **'No weak symbols today.'**
+  String get learnPlanAllGood;
+
+  /// Daily plan card: after completing the plan
+  ///
+  /// In en, this message translates to:
+  /// **'A new plan arrives tomorrow. Free practice is always open.'**
+  String get learnPlanTomorrow;
+
+  /// Daily plan card: the next step to do
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {step}'**
+  String learnPlanNext(String step);
+
+  /// Daily plan card: an earlier day's unfinished plan (inspect only)
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday\'s plan stopped at {done} of {total} steps; it no longer counts for today.'**
+  String learnPlanEarlier(int done, int total);
+
+  /// Speed advice: raise the effective (Farnsworth) speed
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for {wpm} WPM effective speed'**
+  String learnSpeedAdviceRaise(int wpm);
+
+  /// Speed advice: raise character and effective speed together
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for {wpm} WPM'**
+  String learnSpeedAdviceRaiseBoth(int wpm);
+
+  /// Speed advice: suggest lowering the effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Copying is hard at this speed. Try {wpm} WPM effective, or a focused drill.'**
+  String learnSpeedAdviceLower(int wpm);
+
+  /// Speed advice: evidence behind the recommendation
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your last {count} unassisted sessions ({percent}%). Nothing changes until you apply it.'**
+  String learnSpeedAdviceBody(int count, int percent);
+
+  /// Speed advice: apply the proposed speed
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get learnSpeedAdviceApply;
+
+  /// Speed advice: dismiss for this evidence batch
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get learnSpeedAdviceDismiss;
+
+  /// Daily plan card: why there is no speed advice yet
+  ///
+  /// In en, this message translates to:
+  /// **'Speed advice needs 3 unassisted sessions of 50+ symbols at your current speed.'**
+  String get learnSpeedAdviceInsufficient;
+
+  /// Learn home: entry to the interactive QSO simulator
+  ///
+  /// In en, this message translates to:
+  /// **'QSO simulator'**
+  String get learnQsoAction;
+
+  /// Learn home: QSO simulator is locked until a lesson
+  ///
+  /// In en, this message translates to:
+  /// **'From lesson {lesson}'**
+  String learnQsoLocked(int lesson);
+
+  /// QSO simulator: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'QSO simulator'**
+  String get learnQsoTitle;
+
+  /// QSO setup: scenario where the remote calls CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Answer a CQ'**
+  String get learnQsoRespond;
+
+  /// QSO setup: description of the answer-CQ scenario
+  ///
+  /// In en, this message translates to:
+  /// **'A station calls CQ. Answer it and exchange reports.'**
+  String get learnQsoRespondHint;
+
+  /// QSO setup: scenario where the learner calls CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Call CQ'**
+  String get learnQsoCall;
+
+  /// QSO setup: description of the call-CQ scenario
+  ///
+  /// In en, this message translates to:
+  /// **'You call CQ and a station answers.'**
+  String get learnQsoCallHint;
+
+  /// QSO setup: learner's callsign field
+  ///
+  /// In en, this message translates to:
+  /// **'Your callsign'**
+  String get learnQsoYourCall;
+
+  /// QSO setup: learner's name field (one word)
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get learnQsoYourName;
+
+  /// QSO setup: learner's location field (one word)
+  ///
+  /// In en, this message translates to:
+  /// **'Your QTH'**
+  String get learnQsoYourQth;
+
+  /// QSO setup: callsign validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a callsign such as BD1XYZ'**
+  String get learnQsoInvalidCall;
+
+  /// QSO setup: name/QTH validation error
+  ///
+  /// In en, this message translates to:
+  /// **'One word, letters A–Z only'**
+  String get learnQsoInvalidWord;
+
+  /// QSO setup: privacy note
+  ///
+  /// In en, this message translates to:
+  /// **'Runs entirely on this device. Nothing is sent to anyone.'**
+  String get learnQsoOffline;
+
+  /// QSO setup: start button
+  ///
+  /// In en, this message translates to:
+  /// **'Start QSO'**
+  String get learnQsoStart;
+
+  /// QSO setup: resume an unfinished simulated QSO
+  ///
+  /// In en, this message translates to:
+  /// **'Resume the unfinished QSO'**
+  String get learnQsoResume;
+
+  /// QSO stage: call CQ
+  ///
+  /// In en, this message translates to:
+  /// **'Call CQ with your callsign'**
+  String get learnQsoStageCallCq;
+
+  /// QSO stage: answer with both callsigns
+  ///
+  /// In en, this message translates to:
+  /// **'Answer: their call, DE, your call'**
+  String get learnQsoStageCallConfirm;
+
+  /// QSO stage: send report, name and QTH
+  ///
+  /// In en, this message translates to:
+  /// **'Send report, name and QTH'**
+  String get learnQsoStageExchange;
+
+  /// QSO stage: acknowledge the remote's information
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm their information'**
+  String get learnQsoStageConfirmInfo;
+
+  /// QSO stage: close the contact
+  ///
+  /// In en, this message translates to:
+  /// **'Close with 73 and <SK>'**
+  String get learnQsoStageClosing;
+
+  /// QSO stage/summary: contact finished
+  ///
+  /// In en, this message translates to:
+  /// **'QSO complete'**
+  String get learnQsoStageDone;
+
+  /// QSO screen: current remote playback effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Remote sends at {wpm} WPM effective'**
+  String learnQsoSpeed(int wpm);
+
+  /// QSO log: caption of a remote transmission
+  ///
+  /// In en, this message translates to:
+  /// **'{call} sends'**
+  String learnQsoRemote(String call);
+
+  /// QSO log: placeholder while the remote text is hidden
+  ///
+  /// In en, this message translates to:
+  /// **'Copy by ear — the text is hidden.'**
+  String get learnQsoRemoteHidden;
+
+  /// QSO log: reveal a remote transmission (counts as a hint)
+  ///
+  /// In en, this message translates to:
+  /// **'Show text'**
+  String get learnQsoShowText;
+
+  /// QSO log: play a remote transmission again
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get learnQsoListen;
+
+  /// QSO log: semantics for an accepted transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get learnQsoAccepted;
+
+  /// QSO log: semantics for a rejected transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Not accepted'**
+  String get learnQsoRejected;
+
+  /// QSO screen: remote is transmitting; keying is paused
+  ///
+  /// In en, this message translates to:
+  /// **'The other station is sending…'**
+  String get learnQsoRemoteSending;
+
+  /// QSO screen: learner's turn to key
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn: key your reply, then Send.'**
+  String get learnQsoYourTurn;
+
+  /// QSO screen: label of the decoded own transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Your transmission'**
+  String get learnQsoDecoded;
+
+  /// QSO screen: nothing keyed yet
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing keyed yet'**
+  String get learnQsoNothingKeyed;
+
+  /// QSO screen: send PSE AGN (ask the remote to repeat)
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to repeat (AGN)'**
+  String get learnQsoPlayAgain;
+
+  /// QSO screen: send QRS (ask the remote to slow down)
+  ///
+  /// In en, this message translates to:
+  /// **'Ask to slow down (QRS)'**
+  String get learnQsoSlower;
+
+  /// QSO screen: show an example for the current stage
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get learnQsoHint;
+
+  /// QSO screen: hint example (protocol text, not translated)
+  ///
+  /// In en, this message translates to:
+  /// **'Example: {example}'**
+  String learnQsoHintLabel(String example);
+
+  /// QSO screen: stop the remote's playback
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get learnQsoPause;
+
+  /// QSO screen: submit the keyed transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get learnQsoSend;
+
+  /// QSO screen: discard the keyed transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get learnQsoClear;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was keyed.'**
+  String get learnQsoIssueEmpty;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Start with CQ.'**
+  String get learnQsoIssueMissingCq;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Put DE between the callsigns.'**
+  String get learnQsoIssueMissingDe;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Your own callsign is missing or wrong.'**
+  String get learnQsoIssueWrongLocalCall;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'The other station\'s callsign is wrong.'**
+  String get learnQsoIssueWrongRemoteCall;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Callsigns are reversed: theirs first, then DE and yours.'**
+  String get learnQsoIssueReversedCalls;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'End with K or KN.'**
+  String get learnQsoIssueMissingEnding;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Give a report, e.g. UR RST 599.'**
+  String get learnQsoIssueMissingRst;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That RST is out of range (R 1–5, S 1–9, T 1–9).'**
+  String get learnQsoIssueInvalidRst;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Send NAME and your name.'**
+  String get learnQsoIssueMissingName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That is not your name for this QSO.'**
+  String get learnQsoIssueWrongName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Send QTH and your location.'**
+  String get learnQsoIssueMissingQth;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'That is not your QTH for this QSO.'**
+  String get learnQsoIssueWrongQth;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledge with R or QSL.'**
+  String get learnQsoIssueMissingAck;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the other operator\'s name.'**
+  String get learnQsoIssueWrongRemoteName;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'Include 73.'**
+  String get learnQsoIssueMissing73;
+
+  /// QSO feedback
+  ///
+  /// In en, this message translates to:
+  /// **'End the contact with <SK>.'**
+  String get learnQsoIssueMissingSk;
+
+  /// QSO summary: stages accepted on the first try
+  ///
+  /// In en, this message translates to:
+  /// **'Right first time: {count} of {total} steps'**
+  String learnQsoSummaryFields(int count, int total);
+
+  /// QSO summary: number of repeat requests
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats: {count}'**
+  String learnQsoSummaryRepeats(int count);
+
+  /// QSO summary: hints and revealed texts
+  ///
+  /// In en, this message translates to:
+  /// **'Hints: {count}'**
+  String learnQsoSummaryHints(int count);
+
+  /// QSO summary: average measured sending speed
+  ///
+  /// In en, this message translates to:
+  /// **'Your sending: about {wpm} WPM'**
+  String learnQsoSummaryRhythm(int wpm);
+
+  /// QSO summary: how the result is counted
+  ///
+  /// In en, this message translates to:
+  /// **'QSO results are kept apart from copying accuracy and never unlock lessons.'**
+  String get learnQsoSummaryNote;
+
+  /// Message status tooltip: a queued send the user cancelled before it left the device
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled — never sent'**
+  String get messageStatusCancelled;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

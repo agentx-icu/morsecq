@@ -33,6 +33,11 @@ class MessageStatusIcon extends StatelessWidget {
         scheme.error,
         s.messageStatusFailed,
       ),
+      MessageStatus.cancelled => (
+        Icons.block,
+        scheme.onSurfaceVariant,
+        s.messageStatusCancelled,
+      ),
       MessageStatus.received => (Icons.check, Colors.transparent, ''),
     };
     return Tooltip(

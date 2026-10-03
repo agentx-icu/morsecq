@@ -2312,4 +2312,355 @@ class SKo extends S {
 
   @override
   String get chatScanQrCameraUnavailable => '이 기기에서는 카메라를 사용할 수 없습니다.';
+
+  @override
+  String get learnReplayAssistedNote => '다시 들음: 연습으로는 집계되지만 레슨 해제나 복습 갱신에는 반영되지 않습니다.';
+
+  @override
+  String get learnPlanTitle => '오늘의 계획';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '약 $minutes분 · $total단계 중 $done단계 완료';
+  }
+
+  @override
+  String get learnPlanBudget => '계획 길이';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes분';
+  }
+
+  @override
+  String get learnPlanStart => '계획 시작';
+
+  @override
+  String get learnPlanContinue => '계획 계속';
+
+  @override
+  String get learnPlanStepReview => '복습할 문자';
+
+  @override
+  String get learnPlanStepFocus => '집중 연습';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return '레슨 $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => '송신 연습';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '복습 차례: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return '자주 헷갈림: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '정확도 90% 미만: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count자: 다음 레슨을 열 수 있음';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '다음 레슨을 열 수 있도록 $count자로 늘렸습니다';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '짧은 연습: 이번 레슨을 다지며 다음 레슨은 열리지 않습니다';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return '코스가 진행됨: 레슨 $lesson을 연습하지만 해제하지 않습니다';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '짧은 목표 $count개 송신';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '완료 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '완료';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$total개 중 $done개 송신';
+  }
+
+  @override
+  String get learnPlanStale => '레슨 또는 속도가 바뀌었습니다. 시작하지 않은 단계를 갱신할까요?';
+
+  @override
+  String get learnPlanUpdate => '단계 갱신';
+
+  @override
+  String get learnPlanComplete => '오늘 계획 완료';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '더 연습할 문자: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '오늘은 약한 문자가 없습니다.';
+
+  @override
+  String get learnPlanTomorrow => '내일 새 계획이 만들어집니다. 자유 연습은 언제든 가능합니다.';
+
+  @override
+  String learnPlanNext(String step) {
+    return '다음: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '이전 계획은 $total단계 중 $done단계에서 멈췄으며 오늘에는 반영되지 않습니다.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '유효 속도 $wpm WPM으로 올릴 준비가 되었습니다';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '$wpm WPM으로 올릴 준비가 되었습니다';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return '이 속도에서는 수신이 어렵습니다. 유효 속도 $wpm WPM 또는 집중 연습을 해 보세요.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '최근 보조 없는 연습 $count회($percent%) 기준입니다. 적용하기 전에는 아무것도 바뀌지 않습니다.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '적용';
+
+  @override
+  String get learnSpeedAdviceDismiss => '나중에';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '속도 조언에는 현재 속도에서 50자 이상의 보조 없는 연습 3회가 필요합니다.';
+
+  @override
+  String get learnQsoAction => 'QSO 시뮬레이터';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return '레슨 $lesson부터';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO 시뮬레이터';
+
+  @override
+  String get learnQsoRespond => 'CQ에 응답';
+
+  @override
+  String get learnQsoRespondHint => '한 국이 CQ를 냅니다. 응답하고 리포트를 교환하세요.';
+
+  @override
+  String get learnQsoCall => 'CQ 내기';
+
+  @override
+  String get learnQsoCallHint => 'CQ를 내면 한 국이 응답합니다.';
+
+  @override
+  String get learnQsoYourCall => '내 호출부호';
+
+  @override
+  String get learnQsoYourName => '내 이름';
+
+  @override
+  String get learnQsoYourQth => '내 QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'BD1XYZ 같은 호출부호를 입력하세요';
+
+  @override
+  String get learnQsoInvalidWord => '한 단어, A–Z 문자만';
+
+  @override
+  String get learnQsoOffline => '이 기기에서만 동작하며 아무것도 전송하지 않습니다.';
+
+  @override
+  String get learnQsoStart => 'QSO 시작';
+
+  @override
+  String get learnQsoResume => '중단된 QSO 이어하기';
+
+  @override
+  String get learnQsoStageCallCq => '내 호출부호로 CQ 내기';
+
+  @override
+  String get learnQsoStageCallConfirm => '응답: 상대 부호, DE, 내 부호';
+
+  @override
+  String get learnQsoStageExchange => '리포트, 이름, QTH 보내기';
+
+  @override
+  String get learnQsoStageConfirmInfo => '상대 정보 확인';
+
+  @override
+  String get learnQsoStageClosing => '73과 <SK>로 마무리';
+
+  @override
+  String get learnQsoStageDone => 'QSO 완료';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '상대는 유효 $wpm WPM으로 송신';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call 송신';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '귀로 받아 적으세요. 텍스트는 숨겨져 있습니다.';
+
+  @override
+  String get learnQsoShowText => '텍스트 보기';
+
+  @override
+  String get learnQsoListen => '듣기';
+
+  @override
+  String get learnQsoAccepted => '통과';
+
+  @override
+  String get learnQsoRejected => '통과하지 못함';
+
+  @override
+  String get learnQsoRemoteSending => '상대 국이 송신 중…';
+
+  @override
+  String get learnQsoYourTurn => '내 차례: 응답을 키잉한 뒤 보내기를 누르세요.';
+
+  @override
+  String get learnQsoDecoded => '내 송신 내용';
+
+  @override
+  String get learnQsoNothingKeyed => '아직 키잉하지 않음';
+
+  @override
+  String get learnQsoPlayAgain => '반복 요청(AGN)';
+
+  @override
+  String get learnQsoSlower => '속도 낮춤 요청(QRS)';
+
+  @override
+  String get learnQsoHint => '힌트';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '예: $example';
+  }
+
+  @override
+  String get learnQsoPause => '일시정지';
+
+  @override
+  String get learnQsoSend => '보내기';
+
+  @override
+  String get learnQsoClear => '지우기';
+
+  @override
+  String get learnQsoIssueEmpty => '키잉한 내용이 없습니다.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'CQ로 시작하세요.';
+
+  @override
+  String get learnQsoIssueMissingDe => '호출부호 사이에 DE를 넣으세요.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '내 호출부호가 없거나 틀렸습니다.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '상대 국의 호출부호가 틀렸습니다.';
+
+  @override
+  String get learnQsoIssueReversedCalls => '순서가 반대입니다: 상대, DE, 내 부호 순입니다.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'K 또는 KN으로 끝내세요.';
+
+  @override
+  String get learnQsoIssueMissingRst => '리포트를 주세요. 예: UR RST 599';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST 범위를 벗어났습니다(R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'NAME과 이름을 보내세요.';
+
+  @override
+  String get learnQsoIssueWrongName => '이번 QSO의 내 이름이 아닙니다.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'QTH와 위치를 보내세요.';
+
+  @override
+  String get learnQsoIssueWrongQth => '이번 QSO의 내 QTH가 아닙니다.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'R 또는 QSL로 확인하세요.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '상대 운용자 이름을 확인하세요.';
+
+  @override
+  String get learnQsoIssueMissing73 => '73을 넣으세요.';
+
+  @override
+  String get learnQsoIssueMissingSk => '<SK>로 교신을 끝내세요.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '한 번에 통과: $total단계 중 $count';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '반복: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return '힌트: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return '내 송신: 약 $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO 결과는 수신 정확도와 따로 집계되며 레슨을 열지 않습니다.';
+
+  @override
+  String get messageStatusCancelled => '취소됨 — 전송되지 않음';
 }
