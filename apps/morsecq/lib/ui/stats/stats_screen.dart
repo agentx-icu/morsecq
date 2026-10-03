@@ -178,10 +178,7 @@ class _ErrorState extends StatelessWidget {
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
-            FilledButton.tonal(
-              onPressed: onRetry,
-              child: Text(s.statsRetry),
-            ),
+            FilledButton.tonal(onPressed: onRetry, child: Text(s.statsRetry)),
           ],
         ),
       ),

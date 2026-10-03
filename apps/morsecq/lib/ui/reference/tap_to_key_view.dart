@@ -42,10 +42,13 @@ class _TapToKeyViewState extends State<TapToKeyView> {
   @override
   void initState() {
     super.initState();
-    final ReferencePlaybackController controller =
-        context.read<ReferencePlaybackController>();
+    final ReferencePlaybackController controller = context
+        .read<ReferencePlaybackController>();
     controller.stop();
-    _key = StraightKey(target: MorseDecoderTarget(_decoder), sink: controller.sink);
+    _key = StraightKey(
+      target: MorseDecoderTarget(_decoder),
+      sink: controller.sink,
+    );
     _events = _decoder.events.listen((_) => _refresh());
     _scheduleTick();
   }

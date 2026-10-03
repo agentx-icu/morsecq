@@ -2363,4 +2363,1070 @@ class SDe extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'Die Kamera ist auf diesem Gerät nicht verfügbar.';
+
+  @override
+  String get learnReplayAssistedNote => 'Wiederholt: Diese Übung zählt als Training, schaltet aber keine Lektion frei und ändert keine Wiederholungen.';
+
+  @override
+  String get learnPlanTitle => 'Plan für heute';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return 'Etwa $minutes Min. · $done von $total Schritten';
+  }
+
+  @override
+  String get learnPlanBudget => 'Planlänge';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes Min.';
+  }
+
+  @override
+  String get learnPlanStart => 'Plan starten';
+
+  @override
+  String get learnPlanContinue => 'Plan fortsetzen';
+
+  @override
+  String get learnPlanStepReview => 'Fällige Zeichen wiederholen';
+
+  @override
+  String get learnPlanStepFocus => 'Gezieltes Üben';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'Lektion $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => 'Gebeübung';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return 'Zur Wiederholung fällig: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'Oft verwechselt: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return 'Unter 90 %: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count Zeichen: kann die nächste Lektion freischalten';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return 'Auf $count Zeichen verlängert, damit sie die nächste Lektion freischalten kann';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => 'Kurze Übung: festigt diese Lektion, schaltet die nächste nicht frei';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'Dein Kurs ist weiter: übt Lektion $lesson ohne Freischaltung';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '$count kurze Ziele geben';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return 'Erledigt · $percent %';
+  }
+
+  @override
+  String get learnPlanStepDone => 'Erledigt';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$done von $total gegeben';
+  }
+
+  @override
+  String get learnPlanStale => 'Lektion oder Tempo haben sich geändert. Noch nicht begonnene Schritte aktualisieren?';
+
+  @override
+  String get learnPlanUpdate => 'Schritte aktualisieren';
+
+  @override
+  String get learnPlanComplete => 'Plan für heute erledigt';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return 'Noch üben: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => 'Heute keine schwachen Zeichen.';
+
+  @override
+  String get learnPlanTomorrow => 'Morgen gibt es einen neuen Plan. Freies Üben ist jederzeit möglich.';
+
+  @override
+  String learnPlanNext(String step) {
+    return 'Als Nächstes: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return 'Der frühere Plan endete bei $done von $total Schritten und zählt heute nicht mehr.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return 'Bereit für $wpm WpM effektives Tempo';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return 'Bereit für $wpm WpM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'Das Mitschreiben fällt bei diesem Tempo schwer. Versuch $wpm WpM effektiv oder eine gezielte Übung.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return 'Basierend auf deinen letzten $count Übungen ohne Hilfe ($percent %). Nichts ändert sich, bevor du es übernimmst.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => 'Übernehmen';
+
+  @override
+  String get learnSpeedAdviceDismiss => 'Nicht jetzt';
+
+  @override
+  String get learnSpeedAdviceInsufficient => 'Für Tempo-Tipps braucht es 3 Übungen ohne Hilfe mit je 50+ Zeichen bei deinem aktuellen Tempo.';
+
+  @override
+  String get learnQsoAction => 'QSO-Simulator';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'Ab Lektion $lesson';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSO-Simulator';
+
+  @override
+  String get learnQsoRespond => 'Auf CQ antworten';
+
+  @override
+  String get learnQsoRespondHint => 'Eine Station ruft CQ. Antworte und tauscht Rapporte aus.';
+
+  @override
+  String get learnQsoCall => 'CQ rufen';
+
+  @override
+  String get learnQsoCallHint => 'Du rufst CQ und eine Station antwortet.';
+
+  @override
+  String get learnQsoYourCall => 'Dein Rufzeichen';
+
+  @override
+  String get learnQsoYourName => 'Dein Name';
+
+  @override
+  String get learnQsoYourQth => 'Dein QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'Gib ein Rufzeichen wie BD1XYZ ein';
+
+  @override
+  String get learnQsoInvalidWord => 'Ein Wort, nur Buchstaben A–Z';
+
+  @override
+  String get learnQsoOffline => 'Läuft komplett auf diesem Gerät. Es wird nichts gesendet.';
+
+  @override
+  String get learnQsoStart => 'QSO starten';
+
+  @override
+  String get learnQsoResume => 'Unterbrochenes QSO fortsetzen';
+
+  @override
+  String get learnQsoStageCallCq => 'Rufe CQ mit deinem Rufzeichen';
+
+  @override
+  String get learnQsoStageCallConfirm => 'Antworte: ihr Rufzeichen, DE, deins';
+
+  @override
+  String get learnQsoStageExchange => 'Rapport, Name und QTH senden';
+
+  @override
+  String get learnQsoStageConfirmInfo => 'Ihre Angaben bestätigen';
+
+  @override
+  String get learnQsoStageClosing => 'Mit 73 und <SK> beenden';
+
+  @override
+  String get learnQsoStageDone => 'QSO abgeschlossen';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return 'Gegenstation gibt mit $wpm WpM effektiv';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call gibt';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => 'Nach Gehör mitschreiben – der Text ist verborgen.';
+
+  @override
+  String get learnQsoShowText => 'Text zeigen';
+
+  @override
+  String get learnQsoListen => 'Anhören';
+
+  @override
+  String get learnQsoAccepted => 'Angenommen';
+
+  @override
+  String get learnQsoRejected => 'Nicht angenommen';
+
+  @override
+  String get learnQsoRemoteSending => 'Die Gegenstation gibt …';
+
+  @override
+  String get learnQsoYourTurn => 'Du bist dran: gib deine Antwort und tippe auf Senden.';
+
+  @override
+  String get learnQsoDecoded => 'Deine Sendung';
+
+  @override
+  String get learnQsoNothingKeyed => 'Noch nichts gegeben';
+
+  @override
+  String get learnQsoPlayAgain => 'Wiederholung erbitten (AGN)';
+
+  @override
+  String get learnQsoSlower => 'Langsamer erbitten (QRS)';
+
+  @override
+  String get learnQsoHint => 'Tipp';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return 'Beispiel: $example';
+  }
+
+  @override
+  String get learnQsoPause => 'Pause';
+
+  @override
+  String get learnQsoSend => 'Senden';
+
+  @override
+  String get learnQsoClear => 'Löschen';
+
+  @override
+  String get learnQsoIssueEmpty => 'Es wurde nichts gegeben.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'Beginne mit CQ.';
+
+  @override
+  String get learnQsoIssueMissingDe => 'Setze DE zwischen die Rufzeichen.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => 'Dein Rufzeichen fehlt oder ist falsch.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => 'Das Rufzeichen der Gegenstation ist falsch.';
+
+  @override
+  String get learnQsoIssueReversedCalls => 'Rufzeichen vertauscht: zuerst ihres, dann DE und deins.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'Ende mit K oder KN.';
+
+  @override
+  String get learnQsoIssueMissingRst => 'Gib einen Rapport, z. B. UR RST 599.';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'Dieser RST ist ungültig (R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'Sende NAME und deinen Namen.';
+
+  @override
+  String get learnQsoIssueWrongName => 'Das ist nicht dein Name in diesem QSO.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'Sende QTH und deinen Standort.';
+
+  @override
+  String get learnQsoIssueWrongQth => 'Das ist nicht dein QTH in diesem QSO.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'Bestätige mit R oder QSL.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => 'Bestätige den Namen der Gegenstation.';
+
+  @override
+  String get learnQsoIssueMissing73 => '73 einfügen.';
+
+  @override
+  String get learnQsoIssueMissingSk => 'Beende die Verbindung mit <SK>.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return 'Beim ersten Mal richtig: $count von $total Schritten';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return 'Wiederholungen: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'Tipps: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'Dein Geben: etwa $wpm WpM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSO-Ergebnisse zählen getrennt von der Mitschreib-Genauigkeit und schalten keine Lektionen frei.';
+
+  @override
+  String get messageStatusCancelled => 'Abgebrochen – nie gesendet';
+
+  @override
+  String get chatMessageLearnActions => 'Nachrichtenaktionen';
+
+  @override
+  String get chatPracticeMessage => 'Diese Nachricht mitschreiben';
+
+  @override
+  String get chatSaveAsMaterial => 'Als Übungsmaterial speichern';
+
+  @override
+  String get chatSavedAsMaterial => 'In „Meine Materialien“ gespeichert';
+
+  @override
+  String get chatSaveMaterialFailed => 'Material konnte nicht gespeichert werden. Versuch es erneut.';
+
+  @override
+  String get chatListenOnly => 'Nur-Hören-Training';
+
+  @override
+  String get chatListenOnlyHidden => 'Nur Hören: zum Anhören abspielen';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Nachrichten aus diesem Chat wurden als Übungsmaterial gespeichert. Die Kopien bleiben, bis du sie unter Lernen › Meine Materialien löschst.',
+      one: '1 Nachricht aus diesem Chat wurde als Übungsmaterial gespeichert. Die Kopie bleibt, bis du sie unter Lernen › Meine Materialien löschst.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Mitschreib-Übung';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'Diese Nachricht enthält Zeichen ohne Morsecode: $chars. Sie werden ausgelassen.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count Zeichen können geübt werden.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'Nichts in dieser Nachricht lässt sich morsen.';
+
+  @override
+  String get chatPracticeConfirm => 'Den Rest üben';
+
+  @override
+  String get chatPracticeHint => 'Tipp';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Tipp: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'Mit Hilfe: zählt als Übung, nicht für Wiederholungen oder Tempo-Tipps.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '$wrong falsch · $missed fehlend · $extra zu viel';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Fehler üben: $symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Striche zu lang';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Deine Striche sind zu lang (etwa $ratio eines Punkts; Ziel 3). Lass nach drei Punktlängen los.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '$offending von $total Strichen zu lang (Ø $ratio Punkt)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Rhythmus';
+
+  @override
+  String get learnRhythmMine => 'Mein Rhythmus';
+
+  @override
+  String get learnRhythmStandard => 'Standardrhythmus (Zieltempo)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Probleme werden an deiner eigenen Punktlänge ($ms ms) gemessen; gleichmäßig, aber langsam ist in Ordnung. Die Standardspur zeigt das Zieltempo.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Deine Zeichen ließen sich nicht einzelnen Buchstaben zuordnen. Übe stattdessen das ganze Ziel.';
+
+  @override
+  String get learnRhythmPlayMine => 'Meins abspielen';
+
+  @override
+  String get learnRhythmPlayStandard => 'Standard abspielen';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Das üben ($count Versuche)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Ganzes Ziel üben';
+
+  @override
+  String get learnRhythmSymbolOk => 'Sieht gut aus';
+
+  @override
+  String get learnRhythmZoomIn => 'Vergrößern';
+
+  @override
+  String get learnRhythmZoomOut => 'Verkleinern';
+
+  @override
+  String get chatSearchMessages => 'Nachrichten suchen';
+
+  @override
+  String get chatSearchHint => 'Diesen Chat durchsuchen';
+
+  @override
+  String get chatSearchAnyone => 'Alle';
+
+  @override
+  String get chatSearchMe => 'Ich';
+
+  @override
+  String get chatSearchThem => 'Gegenüber';
+
+  @override
+  String get chatSearchAnyDate => 'Beliebiges Datum';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'Gemerkt';
+
+  @override
+  String get chatSearchNoResults => 'Keine passenden Nachrichten.';
+
+  @override
+  String get chatSearchMore => 'Mehr laden';
+
+  @override
+  String get chatAddBookmark => 'Merken';
+
+  @override
+  String get chatRemoveBookmark => 'Nicht mehr merken';
+
+  @override
+  String get chatBookmarked => 'Gemerkt';
+
+  @override
+  String get chatBookmarkFailed => 'Lesezeichen konnte nicht gespeichert werden.';
+
+  @override
+  String get chatRetrySend => 'Erneut senden';
+
+  @override
+  String get chatCancelSend => 'Senden abbrechen';
+
+  @override
+  String get chatRetryQueued => 'Erneut eingereiht. Wird gesendet, sobald der Kontakt online ist.';
+
+  @override
+  String get chatSendCancelled => 'Abgebrochen. Die Nachricht wurde nicht gesendet.';
+
+  @override
+  String get chatRetryNotNeeded => 'Diese Nachricht ist nicht mehr fehlgeschlagen.';
+
+  @override
+  String get chatCancelTooLate => 'Zu spät: Die Nachricht ist bereits unterwegs und kommt eventuell an.';
+
+  @override
+  String get chatSendControlUnavailable => 'Für diese Nachricht nicht verfügbar.';
+
+  @override
+  String get chatSendControlFailed => 'Das hat nicht geklappt. Die Nachricht behält ihren Zustand; versuch es erneut.';
+
+  @override
+  String get workbenchTitle => 'Aufnahme-Werkbank';
+
+  @override
+  String get workbenchOpen => 'Aufnahmen';
+
+  @override
+  String get workbenchImport => 'Aufnahme importieren';
+
+  @override
+  String get workbenchEmpty => 'Importiere eine WAV-Aufnahme, um sie zu wiederholen, zu dekodieren und mitzuschreiben. Kein Mikrofon nötig.';
+
+  @override
+  String get workbenchFormats => 'WAV, 16-Bit-PCM, Mono oder Stereo, 8/16/44,1/48 kHz; bis 50 MB und 20 Minuten.';
+
+  @override
+  String get workbenchBackupNote => 'Aufnahmen bleiben auf diesem Gerät und sind nur dann im Identitäts-Backup, wenn du sie beim Exportieren einschließt. Titel, Notizen und Positionen gespeicherter Ausschnitte werden immer gesichert.';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => 'Mono';
+
+  @override
+  String get workbenchStereo => 'Stereo';
+
+  @override
+  String get workbenchTruncated => 'Die Datei endet vorzeitig; nur das vorhandene Audio wird verwendet.';
+
+  @override
+  String get workbenchErrorNotWav => 'Das ist keine WAV-Datei.';
+
+  @override
+  String get workbenchErrorFormat => 'Derzeit wird nur 16-Bit-PCM-WAV unterstützt (kein MP3, AAC oder Float-WAV).';
+
+  @override
+  String get workbenchErrorChannels => 'Nur Mono- oder Stereoaufnahmen werden unterstützt.';
+
+  @override
+  String get workbenchErrorRate => 'Abtastrate nicht unterstützt. Verwende 8, 16, 44,1 oder 48 kHz.';
+
+  @override
+  String get workbenchErrorDamaged => 'Die Datei ist beschädigt oder unvollständig.';
+
+  @override
+  String get workbenchErrorTooLarge => 'Die Datei ist größer als 50 MB.';
+
+  @override
+  String get workbenchErrorTooLong => 'Die Aufnahme ist länger als 20 Minuten.';
+
+  @override
+  String get workbenchErrorIo => 'Die Datei konnte nicht gelesen werden.';
+
+  @override
+  String get workbenchErrorMissing => 'Die Aufnahmedatei fehlt.';
+
+  @override
+  String get workbenchStart => 'Start (s)';
+
+  @override
+  String get workbenchEnd => 'Ende (s)';
+
+  @override
+  String get workbenchSelectAll => 'Alles auswählen';
+
+  @override
+  String get workbenchPlay => 'Auswahl abspielen';
+
+  @override
+  String get workbenchStop => 'Stopp';
+
+  @override
+  String get workbenchLoop => 'Schleife';
+
+  @override
+  String get workbenchPlayLimit => 'Von längeren Auswahlen werden nur die ersten 5 Minuten abgespielt.';
+
+  @override
+  String get workbenchAutoTune => 'Ton automatisch finden';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return 'Ton: $hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => 'Auswahl dekodieren';
+
+  @override
+  String get workbenchCancel => 'Abbrechen';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return 'Dekodiere … $percent %';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return 'Ton $hz Hz · etwa $wpm WpM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => 'Kein stabiler Ton gefunden; versuch die manuelle Abstimmung.';
+
+  @override
+  String get workbenchNoText => 'In dieser Auswahl wurde nichts dekodiert.';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return 'Unbekannte Muster: $patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => 'Ein Zeichen am Rand der Auswahl ist abgeschnitten und kann falsch sein.';
+
+  @override
+  String get workbenchToneNote => 'Die Tonerkennung ist kein Vertrauenswert; prüfe den Text mit dem Ohr.';
+
+  @override
+  String get workbenchModeDecoder => 'Decoder';
+
+  @override
+  String get workbenchModeCopy => 'Selbst mitschreiben';
+
+  @override
+  String get workbenchDecoderHidden => 'Der Decodertext ist beim Mitschreiben verborgen.';
+
+  @override
+  String get workbenchShowDecoder => 'Decodertext zeigen';
+
+  @override
+  String get workbenchReference => 'Referenztext (optional)';
+
+  @override
+  String get workbenchReferenceHelp => 'Füge den gesendeten Text ein; sonst wird mit der Decoderausgabe verglichen.';
+
+  @override
+  String get workbenchAgainstDecoder => 'Mit der Decoderausgabe verglichen, die selbst falsch sein kann.';
+
+  @override
+  String get workbenchSave => 'Auswahl speichern';
+
+  @override
+  String get workbenchSaveTitle => 'Titel';
+
+  @override
+  String get workbenchSaveNote => 'Notiz';
+
+  @override
+  String get workbenchSaved => 'Auswahl gespeichert';
+
+  @override
+  String get workbenchSaveFailed => 'Auswahl konnte nicht gespeichert werden.';
+
+  @override
+  String get workbenchLibrary => 'Gespeicherte Auswahlen';
+
+  @override
+  String get workbenchLibraryEmpty => 'Noch keine gespeicherten Auswahlen.';
+
+  @override
+  String get workbenchMissing => 'Aufnahmedatei fehlt – wähle sie erneut oder lösche den Eintrag.';
+
+  @override
+  String get workbenchRelink => 'Datei erneut wählen';
+
+  @override
+  String get workbenchDelete => 'Löschen';
+
+  @override
+  String get materialsTitle => 'Meine Materialien';
+
+  @override
+  String get materialsNew => 'Neues Material';
+
+  @override
+  String get materialsEdit => 'Bearbeiten';
+
+  @override
+  String get materialsSave => 'Speichern';
+
+  @override
+  String get materialsSaveFailed => 'Material konnte nicht gespeichert werden.';
+
+  @override
+  String get materialsTitleField => 'Titel';
+
+  @override
+  String get materialsTagsField => 'Schlagwörter (durch Komma getrennt)';
+
+  @override
+  String get materialsTextField => 'Text';
+
+  @override
+  String get materialsListField => 'Ein Eintrag pro Zeile';
+
+  @override
+  String get materialsKindText => 'Text';
+
+  @override
+  String get materialsKindWords => 'Wortliste';
+
+  @override
+  String get materialsKindCallsigns => 'Rufzeichen';
+
+  @override
+  String get materialsPreview => 'Vorschau';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items Einträge · $symbols Zeichen · $prosigns Betriebszeichen';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return 'Ohne Morsecode, beim Üben ausgelassen: $chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count doppelte Einträge werden einmal behalten';
+  }
+
+  @override
+  String get materialsProblemEmpty => 'Gib zuerst Text ein.';
+
+  @override
+  String get materialsProblemTooLarge => 'Zu groß: Materialien sind auf 1 MiB begrenzt.';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return 'Zu viele Einträge: höchstens $count.';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return 'Ein Eintrag ist zu lang: höchstens $count Zeichen.';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => 'Hier lässt sich nichts morsen.';
+
+  @override
+  String get materialsSearch => 'Materialien durchsuchen';
+
+  @override
+  String get materialsFavoritesOnly => 'Favoriten';
+
+  @override
+  String get materialsFavorite => 'Zu Favoriten';
+
+  @override
+  String get materialsUnfavorite => 'Aus Favoriten entfernen';
+
+  @override
+  String get materialsEmpty => 'Noch keine Materialien. Füge eigene Texte, Wortlisten oder Rufzeichen hinzu oder speichere eine Chatnachricht.';
+
+  @override
+  String materialsItems(int count) {
+    return '$count Einträge';
+  }
+
+  @override
+  String get materialsFromChat => 'Aus dem Chat';
+
+  @override
+  String get materialsActions => 'Aktionen';
+
+  @override
+  String get materialsPractise => 'Üben';
+
+  @override
+  String get materialsDelete => 'Löschen';
+
+  @override
+  String get materialsDeleteTitle => 'Material löschen?';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '„$title“ wird von diesem Gerät entfernt. Dein Übungsverlauf bleibt.';
+  }
+
+  @override
+  String get materialsImport => 'TXT oder JSON importieren';
+
+  @override
+  String get materialsImportDialogTitle => 'Materialdatei wählen';
+
+  @override
+  String get materialsSaveDialogTitle => 'Material speichern';
+
+  @override
+  String get materialsImportFailed => 'Import fehlgeschlagen. Deine Bibliothek ist unverändert.';
+
+  @override
+  String get materialsImportNotUtf8 => 'Nur UTF-8-Textdateien können importiert werden.';
+
+  @override
+  String get materialsImportInvalid => 'Keine gültige MorseCQ-Materialdatei. Nichts importiert.';
+
+  @override
+  String materialsImported(int count) {
+    return '$count Materialien importiert.';
+  }
+
+  @override
+  String get materialsDuplicateTitle => 'Einige Materialien gibt es schon';
+
+  @override
+  String get materialsDuplicateOverwrite => 'Ersetzen';
+
+  @override
+  String get materialsDuplicateKeepCopy => 'Beide behalten (als Kopie)';
+
+  @override
+  String get materialsDuplicateSkip => 'Überspringen';
+
+  @override
+  String get materialsExportJson => 'Als JSON exportieren';
+
+  @override
+  String materialsExported(int count) {
+    return '$count Materialien exportiert.';
+  }
+
+  @override
+  String get materialsExportFailed => 'Export fehlgeschlagen.';
+
+  @override
+  String get materialsExportWav => 'Audio exportieren (WAV)';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return 'Zeichentempo: $wpm WpM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return 'Effektives Tempo: $wpm WpM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return 'Ton: $hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => 'Lösungstext beilegen (.txt)';
+
+  @override
+  String get materialsWavFormat => '16-Bit-Mono-WAV, 48 kHz.';
+
+  @override
+  String materialsWavParts(int count) {
+    return 'Länger als 10 Minuten: wird als $count Dateien exportiert.';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '$count Audiodateien gespeichert.';
+  }
+
+  @override
+  String get materialsPracticeMode => 'Üben mit';
+
+  @override
+  String get materialsPracticeLearned => 'Nur gelernte Zeichen';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return 'Nur gelernte Zeichen ($count Einträge nicht verfügbar: noch nicht gelernte Zeichen)';
+  }
+
+  @override
+  String get materialsPracticeAll => 'Alle Morsezeichen';
+
+  @override
+  String get materialsPracticeNothing => 'In diesem Modus lässt sich kein Eintrag üben.';
+
+  @override
+  String get guestTryLearning => 'Erst einmal lernen';
+
+  @override
+  String get guestBanner => 'Gastmodus: Fortschritt bleibt auf diesem Gerät. Chat braucht eine Identität.';
+
+  @override
+  String get guestGetIdentity => 'Identität einrichten';
+
+  @override
+  String get guestIdentityTitle => 'Identität erforderlich';
+
+  @override
+  String get guestIdentityBody => 'Chatten über Tox braucht deine eigene Identität. Erstelle eine neue, stelle ein Backup wieder her oder entsperre die auf diesem Gerät. Dein Gast-Lernfortschritt zieht automatisch in eine neue Identität um.';
+
+  @override
+  String get guestClearData => 'Gast-Lerndaten löschen';
+
+  @override
+  String get guestClearDataBody => 'Löscht Fortschritt, Pläne und Materialien aus dem Gastmodus auf diesem Gerät. Identitäten bleiben unberührt.';
+
+  @override
+  String get guestClearConfirm => 'Löschen';
+
+  @override
+  String get guestCleared => 'Gast-Lerndaten gelöscht.';
+
+  @override
+  String get guestClearFailed => 'Gastdaten konnten nicht gelöscht werden.';
+
+  @override
+  String get guestMigrationFailed => 'Deine Identität ist bereit, aber dein Gast-Lernfortschritt ist noch nicht umgezogen. Er ist sicher auf diesem Gerät.';
+
+  @override
+  String get guestChoiceBody => 'Du hast auch Gast-Lernfortschritt. Verwendet wird der Fortschritt der wiederhergestellten Identität; nichts wurde zusammengeführt.';
+
+  @override
+  String get guestChoiceKeep => 'Wiederhergestellten behalten';
+
+  @override
+  String get guestChoiceUseGuest => 'Gastfortschritt verwenden';
+
+  @override
+  String get placementTitle => 'Mein Niveau prüfen';
+
+  @override
+  String get placementCheckLevel => 'Mein aktuelles Niveau prüfen';
+
+  @override
+  String get placementFromZero => 'Bei null anfangen';
+
+  @override
+  String get placementOfferTitle => 'Neu bei Morse oder schon geübt?';
+
+  @override
+  String get placementOfferBody => 'Ein kurzer Test kann einen Startpunkt vorschlagen. Er ist freiwillig und ändert nichts, bis du dich entscheidest.';
+
+  @override
+  String get placementIntro => 'Etwa 3–5 Minuten Mitschreiben in fünf Stufen: Koch-Zeichen in Gruppen mit steigendem Tempo, dann kurze Wörter. Eine grobe Orientierung aus wenigen Proben, kein Zertifikat. Jederzeit abbrechbar.';
+
+  @override
+  String get placementStart => 'Starten';
+
+  @override
+  String get placementSkip => 'Überspringen';
+
+  @override
+  String get placementStop => 'Beenden';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Stufe $step von $total · $wpm WpM effektiv';
+  }
+
+  @override
+  String get placementTierPassed => 'Gut mitgeschrieben. Die nächste Stufe ist schneller.';
+
+  @override
+  String get placementTierStopped => 'Diese Stufe lag unter 90 %, der Test endet hier.';
+
+  @override
+  String get placementNextTier => 'Nächste Stufe';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Vorgeschlagener Start: Lektion $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '$count von $total Koch-Zeichen der Reihe nach bestätigt.';
+  }
+
+  @override
+  String get placementLimits => 'Auf Basis einer kleinen Probe: nicht geprüfte Zeichen bleiben ungeprüft, nichts wird als gelernt markiert. Die Lektion lässt sich jederzeit ändern.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Mit Lektion $lesson beginnen';
+  }
+
+  @override
+  String get chatJumpToLatest => 'Neueste Nachrichten';
+
+  @override
+  String get chatMessageGone => 'Diese Nachricht ist nicht mehr in diesem Chat.';
+
+  @override
+  String get chatListenOnlyPreview => 'Neue Nachricht – zum Mitschreiben anhören';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Den Rest speichern';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '$count Materialien importieren?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Als Text exportieren (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Gespeicherte Aufnahmen einschließen?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '$count gespeicherte Aufnahmen ($size MB). Titel, Notizen und Positionen sind immer im Backup, der Ton nur, wenn du ihn einschließt.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Gespeicherte Aufnahmen ($size MB) sind zu groß für ein Backup; nur Titel, Notizen und Positionen werden gesichert.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Aufnahmen einschließen';
+
+  @override
+  String get accountBackupMediaSkip => 'Ohne Aufnahmen';
 }

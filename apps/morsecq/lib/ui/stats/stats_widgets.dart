@@ -132,9 +132,8 @@ String formatPracticeDuration(S s, Duration d) {
 
 /// Accuracy fraction as a percentage: one decimal, none from 99.5% up
 /// (`0.9236` -> `92.4%`, `0.997` -> `100%`).
-String formatPercent(S s, double fraction) => s.statsPercent(
-  (fraction * 100).toStringAsFixed(fraction >= 0.995 ? 0 : 1),
-);
+String formatPercent(S s, double fraction) =>
+    s.statsPercent((fraction * 100).toStringAsFixed(fraction >= 0.995 ? 0 : 1));
 
 /// [formatPercent], or the no-data placeholder for a null accuracy.
 String formatPercentOrNoData(S s, double? fraction) =>

@@ -58,6 +58,14 @@ final class StatsSnapshot {
     required this.calendar,
   });
 
+  /// Whether [s] is a copy/send accuracy record (legacy records are).
+  static bool countsAsCopying(SessionSummary s) => switch (s.source) {
+    ExerciseSource.qso ||
+    ExerciseSource.placement ||
+    ExerciseSource.recording => false,
+    _ => true,
+  };
+
   factory StatsSnapshot.from(
     TrainerProgress progress, {
     KochCourse? course,
@@ -78,14 +86,19 @@ final class StatsSnapshot {
     var elapsed = Duration.zero;
     for (final s in progress.history) {
       elapsed += s.elapsed ?? Duration.zero;
-      if (!s.at.isBefore(since)) {
+      // QSO, placement and recording records carry activity, not copying
+      // accuracy: they never enter accuracy figures.
+      if (!s.at.isBefore(since) && countsAsCopying(s)) {
         recentTotal += s.totalChars;
         recentCorrect += s.correctChars;
       }
     }
 
     final windowStart = math.max(0, progress.history.length - trendWindow);
-    final window = progress.history.sublist(windowStart);
+    final window = progress.history
+        .sublist(windowStart)
+        .where(countsAsCopying)
+        .toList();
     final trend = <TrendPoint>[
       for (var i = 0; i < window.length; i++)
         TrendPoint(

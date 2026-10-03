@@ -72,9 +72,12 @@ class MessageMapper {
       senderName: isMine ? selfName : nameOf(sender),
       text: text,
       timestamp: m.timestamp,
-      // A failed send is failed even while Tim2Tox is still removing it from
-      // the outbox (it reports the failure first).
-      status: isMine &&
+      // A cancelled or failed row keeps that state even while its queue item
+      // lingers (Tim2Tox emits the row before the durable removal);
+      // otherwise the durable queue says pending.
+      status:
+          isMine &&
+              !m.isCancelled &&
               !m.isFailed &&
               (isQueued?.call(m, conversationId) ?? false)
           ? api.MessageStatus.pending
@@ -83,10 +86,11 @@ class MessageMapper {
     );
   }
 
-  /// Our rows: pending while queued, failed when a queued send could not be
-  /// delivered (Tim2Tox `isFailed`), otherwise sent.
+  /// Our rows: cancelled (`isCancelled`), failed (a queued send whose
+  /// drain failed: `isFailed`), still queued (`isPending`), else sent.
   static api.MessageStatus statusOf(t2t.ChatMessage m) {
     if (!m.isSelf) return api.MessageStatus.received;
+    if (m.isCancelled) return api.MessageStatus.cancelled;
     if (m.isFailed) return api.MessageStatus.failed;
     return m.isPending ? api.MessageStatus.pending : api.MessageStatus.sent;
   }

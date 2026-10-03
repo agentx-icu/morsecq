@@ -61,7 +61,8 @@ String? validateToxIdInput(S s, String? raw, {String? ownToxId}) {
 }
 
 /// Whether [raw] is a 64-hex NGC chat id (whitespace / `tox:` tolerated).
-bool isValidChatIdInput(String? raw) => isValidChatId(normalizeToxId(raw ?? ''));
+bool isValidChatIdInput(String? raw) =>
+    isValidChatId(normalizeToxId(raw ?? ''));
 
 /// Form-field validator for the join-group sheet.
 String? validateChatIdInput(S s, String? raw) =>

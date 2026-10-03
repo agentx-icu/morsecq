@@ -172,4 +172,18 @@ void main() {
       expect(CharStats.mapFromJson(CharStats.mapToJson(merged)), merged);
     });
   });
+
+  test('combine never lets a copy borrow symbols across rounds', () {
+    // Answer 1 holds rounds 1+2, answer 2 is blank: per-round scoring.
+    final parts = [
+      SessionScore.evaluate('KMRSU', 'KMRSUAPTLO'),
+      SessionScore.evaluate('APTLO', ''),
+    ];
+    final c = SessionScore.combine(parts);
+    expect(c.totalChars, 10);
+    expect(c.correctChars, 5);
+    expect(c.insertions, 5);
+    expect(c.alignment, hasLength(15));
+    expect(SessionScore.evaluate('KMRSU APTLO', 'KMRSUAPTLO').correctChars, 10);
+  });
 }

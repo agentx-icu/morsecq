@@ -2409,4 +2409,1072 @@ class SRu extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'Камера на этом устройстве недоступна.';
+
+  @override
+  String get learnReplayAssistedNote => 'Повтор: занятие засчитано как практика, но не открывает урок и не обновляет повторения.';
+
+  @override
+  String get learnPlanTitle => 'План на сегодня';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return 'Около $minutes мин · $done из $total шагов';
+  }
+
+  @override
+  String get learnPlanBudget => 'Длительность плана';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String get learnPlanStart => 'Начать план';
+
+  @override
+  String get learnPlanContinue => 'Продолжить план';
+
+  @override
+  String get learnPlanStepReview => 'Повторить знаки';
+
+  @override
+  String get learnPlanStepFocus => 'Точечная практика';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'Урок $lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => 'Практика передачи';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return 'Пора повторить: $symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'Часто путаются: $symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return 'Ниже 90 %: $symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count знаков: может открыть следующий урок';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return 'Увеличено до $count знаков, чтобы можно было открыть следующий урок';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => 'Короткое занятие: закрепляет урок, не открывает следующий';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'Курс продвинулся: урок $lesson без открытия нового';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '$count коротких заданий на передачу';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return 'Готово · $percent %';
+  }
+
+  @override
+  String get learnPlanStepDone => 'Готово';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return 'Передано $done из $total';
+  }
+
+  @override
+  String get learnPlanStale => 'Урок или скорость изменились. Обновить ещё не начатые шаги?';
+
+  @override
+  String get learnPlanUpdate => 'Обновить шаги';
+
+  @override
+  String get learnPlanComplete => 'План на сегодня выполнен';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return 'Нужно подтянуть: $symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => 'Сегодня слабых знаков нет.';
+
+  @override
+  String get learnPlanTomorrow => 'Завтра будет новый план. Свободная практика доступна всегда.';
+
+  @override
+  String learnPlanNext(String step) {
+    return 'Далее: $step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return 'Прошлый план остановился на $done из $total шагов и сегодня не засчитывается.';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return 'Можно перейти на эффективную скорость $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return 'Можно перейти на $wpm WPM';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'На этой скорости принимать трудно. Попробуйте $wpm WPM эффективной скорости или точечную практику.';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return 'По последним $count занятиям без подсказок ($percent %). Ничего не изменится, пока вы не примените.';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => 'Применить';
+
+  @override
+  String get learnSpeedAdviceDismiss => 'Не сейчас';
+
+  @override
+  String get learnSpeedAdviceInsufficient => 'Для совета по скорости нужно 3 занятия без подсказок по 50+ знаков на текущей скорости.';
+
+  @override
+  String get learnQsoAction => 'Симулятор QSO';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'С урока $lesson';
+  }
+
+  @override
+  String get learnQsoTitle => 'Симулятор QSO';
+
+  @override
+  String get learnQsoRespond => 'Ответить на CQ';
+
+  @override
+  String get learnQsoRespondHint => 'Станция зовёт CQ. Ответьте и обменяйтесь рапортами.';
+
+  @override
+  String get learnQsoCall => 'Дать CQ';
+
+  @override
+  String get learnQsoCallHint => 'Вы даёте CQ, и станция отвечает.';
+
+  @override
+  String get learnQsoYourCall => 'Ваш позывной';
+
+  @override
+  String get learnQsoYourName => 'Ваше имя';
+
+  @override
+  String get learnQsoYourQth => 'Ваш QTH';
+
+  @override
+  String get learnQsoInvalidCall => 'Введите позывной, например BD1XYZ';
+
+  @override
+  String get learnQsoInvalidWord => 'Одно слово, только буквы A–Z';
+
+  @override
+  String get learnQsoOffline => 'Работает только на этом устройстве. Ничего не отправляется.';
+
+  @override
+  String get learnQsoStart => 'Начать QSO';
+
+  @override
+  String get learnQsoResume => 'Продолжить незавершённое QSO';
+
+  @override
+  String get learnQsoStageCallCq => 'Дайте CQ со своим позывным';
+
+  @override
+  String get learnQsoStageCallConfirm => 'Ответ: его позывной, DE, ваш';
+
+  @override
+  String get learnQsoStageExchange => 'Передайте рапорт, имя и QTH';
+
+  @override
+  String get learnQsoStageConfirmInfo => 'Подтвердите его данные';
+
+  @override
+  String get learnQsoStageClosing => 'Завершите 73 и <SK>';
+
+  @override
+  String get learnQsoStageDone => 'QSO завершено';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return 'Корреспондент передаёт на $wpm WPM';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$call передаёт';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => 'Принимайте на слух — текст скрыт.';
+
+  @override
+  String get learnQsoShowText => 'Показать текст';
+
+  @override
+  String get learnQsoListen => 'Слушать';
+
+  @override
+  String get learnQsoAccepted => 'Принято';
+
+  @override
+  String get learnQsoRejected => 'Не принято';
+
+  @override
+  String get learnQsoRemoteSending => 'Корреспондент передаёт…';
+
+  @override
+  String get learnQsoYourTurn => 'Ваша очередь: передайте ответ и нажмите «Отправить».';
+
+  @override
+  String get learnQsoDecoded => 'Ваша передача';
+
+  @override
+  String get learnQsoNothingKeyed => 'Пока ничего не передано';
+
+  @override
+  String get learnQsoPlayAgain => 'Попросить повторить (AGN)';
+
+  @override
+  String get learnQsoSlower => 'Попросить медленнее (QRS)';
+
+  @override
+  String get learnQsoHint => 'Подсказка';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return 'Пример: $example';
+  }
+
+  @override
+  String get learnQsoPause => 'Пауза';
+
+  @override
+  String get learnQsoSend => 'Отправить';
+
+  @override
+  String get learnQsoClear => 'Очистить';
+
+  @override
+  String get learnQsoIssueEmpty => 'Ничего не передано.';
+
+  @override
+  String get learnQsoIssueMissingCq => 'Начните с CQ.';
+
+  @override
+  String get learnQsoIssueMissingDe => 'Поставьте DE между позывными.';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => 'Ваш позывной отсутствует или неверен.';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => 'Позывной корреспондента неверен.';
+
+  @override
+  String get learnQsoIssueReversedCalls => 'Позывные перепутаны: сначала его, затем DE и ваш.';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'Закончите K или KN.';
+
+  @override
+  String get learnQsoIssueMissingRst => 'Дайте рапорт, например UR RST 599.';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RST вне диапазона (R 1–5, S 1–9, T 1–9).';
+
+  @override
+  String get learnQsoIssueMissingName => 'Передайте NAME и своё имя.';
+
+  @override
+  String get learnQsoIssueWrongName => 'Это не ваше имя в этом QSO.';
+
+  @override
+  String get learnQsoIssueMissingQth => 'Передайте QTH и своё местоположение.';
+
+  @override
+  String get learnQsoIssueWrongQth => 'Это не ваш QTH в этом QSO.';
+
+  @override
+  String get learnQsoIssueMissingAck => 'Подтвердите R или QSL.';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => 'Подтвердите имя оператора.';
+
+  @override
+  String get learnQsoIssueMissing73 => 'Добавьте 73.';
+
+  @override
+  String get learnQsoIssueMissingSk => 'Завершите связь <SK>.';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return 'С первого раза: $count из $total шагов';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return 'Повторы: $count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'Подсказки: $count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'Ваша передача: около $wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'Результаты QSO учитываются отдельно от точности приёма и не открывают уроки.';
+
+  @override
+  String get messageStatusCancelled => 'Отменено — не отправлено';
+
+  @override
+  String get chatMessageLearnActions => 'Действия с сообщением';
+
+  @override
+  String get chatPracticeMessage => 'Потренироваться на этом сообщении';
+
+  @override
+  String get chatSaveAsMaterial => 'Сохранить как учебный материал';
+
+  @override
+  String get chatSavedAsMaterial => 'Сохранено в «Мои материалы»';
+
+  @override
+  String get chatSaveMaterialFailed => 'Не удалось сохранить материал. Повторите попытку.';
+
+  @override
+  String get chatListenOnly => 'Тренировка только на слух';
+
+  @override
+  String get chatListenOnlyHidden => 'Только на слух: нажмите воспроизведение';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщения из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      many: '$count сообщений из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      few: '$count сообщения из этого чата сохранены как материалы. Копии останутся, пока вы не удалите их в «Учёба › Мои материалы».',
+      one: '$count сообщение из этого чата сохранено как материал. Копия останется, пока вы не удалите её в «Учёба › Мои материалы».',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatPracticeTitle => 'Практика приёма';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'В сообщении есть символы без кода Морзе: $chars. Они будут пропущены.';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return 'Можно потренировать знаков: $count.';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'В этом сообщении нечего тренировать азбукой Морзе.';
+
+  @override
+  String get chatPracticeConfirm => 'Тренировать остальное';
+
+  @override
+  String get chatPracticeHint => 'Подсказка';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'Подсказка: $symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => 'С подсказками: засчитывается как практика, но не для повторений и совета по скорости.';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return 'Ошибок $wrong · пропусков $missed · лишних $extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return 'Отработать ошибки: $symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => 'Слишком длинные тире';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return 'Ваши тире затянуты (примерно $ratio длительности точки; цель — 3). Отпускайте через три точки.';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return 'Слишком длинных тире: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String get learnRhythmTitle => 'Ритм';
+
+  @override
+  String get learnRhythmMine => 'Мой ритм';
+
+  @override
+  String get learnRhythmStandard => 'Эталонный ритм (целевая скорость)';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return 'Ошибки оцениваются по вашей длительности точки ($ms мс): ровно, но медленно — нормально. Эталон — целевая скорость.';
+  }
+
+  @override
+  String get learnRhythmNotLocated => 'Не удалось сопоставить нажатия с отдельными знаками. Потренируйте всё задание целиком.';
+
+  @override
+  String get learnRhythmPlayMine => 'Мой вариант';
+
+  @override
+  String get learnRhythmPlayStandard => 'Эталон';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'Потренировать ($count попытки)';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => 'Тренировать задание целиком';
+
+  @override
+  String get learnRhythmSymbolOk => 'Хорошо';
+
+  @override
+  String get learnRhythmZoomIn => 'Увеличить';
+
+  @override
+  String get learnRhythmZoomOut => 'Уменьшить';
+
+  @override
+  String get chatSearchMessages => 'Поиск сообщений';
+
+  @override
+  String get chatSearchHint => 'Искать в этом чате';
+
+  @override
+  String get chatSearchAnyone => 'Все';
+
+  @override
+  String get chatSearchMe => 'Я';
+
+  @override
+  String get chatSearchThem => 'Собеседник';
+
+  @override
+  String get chatSearchAnyDate => 'Любая дата';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'В закладках';
+
+  @override
+  String get chatSearchNoResults => 'Подходящих сообщений нет.';
+
+  @override
+  String get chatSearchMore => 'Загрузить ещё';
+
+  @override
+  String get chatAddBookmark => 'В закладки';
+
+  @override
+  String get chatRemoveBookmark => 'Убрать из закладок';
+
+  @override
+  String get chatBookmarked => 'В закладках';
+
+  @override
+  String get chatBookmarkFailed => 'Не удалось сохранить закладку.';
+
+  @override
+  String get chatRetrySend => 'Отправить снова';
+
+  @override
+  String get chatCancelSend => 'Отменить отправку';
+
+  @override
+  String get chatRetryQueued => 'Снова в очереди. Отправится, когда собеседник будет в сети.';
+
+  @override
+  String get chatSendCancelled => 'Отменено. Сообщение не отправлялось.';
+
+  @override
+  String get chatRetryNotNeeded => 'Это сообщение больше не в ошибке.';
+
+  @override
+  String get chatCancelTooLate => 'Слишком поздно: сообщение уже передано в сеть и может дойти.';
+
+  @override
+  String get chatSendControlUnavailable => 'Недоступно для этого сообщения.';
+
+  @override
+  String get chatSendControlFailed => 'Не получилось. Состояние сообщения не изменилось; повторите.';
+
+  @override
+  String get workbenchTitle => 'Работа с записями';
+
+  @override
+  String get workbenchOpen => 'Записи';
+
+  @override
+  String get workbenchImport => 'Импортировать запись';
+
+  @override
+  String get workbenchEmpty => 'Импортируйте запись WAV, чтобы прослушивать её по кругу, декодировать и принимать самостоятельно. Микрофон не нужен.';
+
+  @override
+  String get workbenchFormats => 'WAV, 16-битный PCM, моно или стерео, 8/16/44,1/48 кГц; до 50 МБ и 20 минут.';
+
+  @override
+  String get workbenchBackupNote => 'Записи хранятся на устройстве и попадают в резервную копию личности, только если вы включите их при экспорте. Названия, заметки и позиции сохранённых фрагментов сохраняются всегда.';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate кГц · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => 'моно';
+
+  @override
+  String get workbenchStereo => 'стерео';
+
+  @override
+  String get workbenchTruncated => 'Файл обрывается; используется только имеющийся звук.';
+
+  @override
+  String get workbenchErrorNotWav => 'Это не файл WAV.';
+
+  @override
+  String get workbenchErrorFormat => 'Пока поддерживается только 16-битный PCM WAV (без MP3, AAC и WAV с плавающей точкой).';
+
+  @override
+  String get workbenchErrorChannels => 'Поддерживаются только моно- или стереозаписи.';
+
+  @override
+  String get workbenchErrorRate => 'Частота дискретизации не поддерживается. Используйте 8, 16, 44,1 или 48 кГц.';
+
+  @override
+  String get workbenchErrorDamaged => 'Файл повреждён или неполон.';
+
+  @override
+  String get workbenchErrorTooLarge => 'Файл больше 50 МБ.';
+
+  @override
+  String get workbenchErrorTooLong => 'Запись длиннее 20 минут.';
+
+  @override
+  String get workbenchErrorIo => 'Не удалось прочитать файл.';
+
+  @override
+  String get workbenchErrorMissing => 'Файл записи не найден.';
+
+  @override
+  String get workbenchStart => 'Начало (с)';
+
+  @override
+  String get workbenchEnd => 'Конец (с)';
+
+  @override
+  String get workbenchSelectAll => 'Выбрать всё';
+
+  @override
+  String get workbenchPlay => 'Воспроизвести фрагмент';
+
+  @override
+  String get workbenchStop => 'Стоп';
+
+  @override
+  String get workbenchLoop => 'Повтор';
+
+  @override
+  String get workbenchPlayLimit => 'У длинного фрагмента воспроизводятся только первые 5 минут.';
+
+  @override
+  String get workbenchAutoTune => 'Искать тон автоматически';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return 'Тон: $hz Гц';
+  }
+
+  @override
+  String get workbenchDecode => 'Декодировать фрагмент';
+
+  @override
+  String get workbenchCancel => 'Отмена';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return 'Декодирование… $percent %';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return 'Тон $hz Гц · около $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => 'Устойчивый тон не найден; попробуйте ручную настройку.';
+
+  @override
+  String get workbenchNoText => 'В этом фрагменте ничего не декодировано.';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return 'Неизвестные коды: $patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => 'Знак на краю фрагмента обрезан и может быть неверен.';
+
+  @override
+  String get workbenchToneNote => 'Захват тона — не показатель достоверности; проверьте текст на слух.';
+
+  @override
+  String get workbenchModeDecoder => 'Декодер';
+
+  @override
+  String get workbenchModeCopy => 'Принять самому';
+
+  @override
+  String get workbenchDecoderHidden => 'Текст декодера скрыт, пока вы принимаете.';
+
+  @override
+  String get workbenchShowDecoder => 'Показать текст декодера';
+
+  @override
+  String get workbenchReference => 'Эталонный текст (необязательно)';
+
+  @override
+  String get workbenchReferenceHelp => 'Вставьте переданный текст; иначе ваш приём сравнивается с выводом декодера.';
+
+  @override
+  String get workbenchAgainstDecoder => 'Сравнено с выводом декодера, который сам может ошибаться.';
+
+  @override
+  String get workbenchSave => 'Сохранить фрагмент';
+
+  @override
+  String get workbenchSaveTitle => 'Название';
+
+  @override
+  String get workbenchSaveNote => 'Заметка';
+
+  @override
+  String get workbenchSaved => 'Фрагмент сохранён';
+
+  @override
+  String get workbenchSaveFailed => 'Не удалось сохранить фрагмент.';
+
+  @override
+  String get workbenchLibrary => 'Сохранённые фрагменты';
+
+  @override
+  String get workbenchLibraryEmpty => 'Сохранённых фрагментов пока нет.';
+
+  @override
+  String get workbenchMissing => 'Файл записи отсутствует — выберите его снова или удалите запись.';
+
+  @override
+  String get workbenchRelink => 'Выбрать файл снова';
+
+  @override
+  String get workbenchDelete => 'Удалить';
+
+  @override
+  String get materialsTitle => 'Мои материалы';
+
+  @override
+  String get materialsNew => 'Новый материал';
+
+  @override
+  String get materialsEdit => 'Изменить';
+
+  @override
+  String get materialsSave => 'Сохранить';
+
+  @override
+  String get materialsSaveFailed => 'Не удалось сохранить материал.';
+
+  @override
+  String get materialsTitleField => 'Название';
+
+  @override
+  String get materialsTagsField => 'Теги (через запятую)';
+
+  @override
+  String get materialsTextField => 'Текст';
+
+  @override
+  String get materialsListField => 'По одной записи в строке';
+
+  @override
+  String get materialsKindText => 'Текст';
+
+  @override
+  String get materialsKindWords => 'Список слов';
+
+  @override
+  String get materialsKindCallsigns => 'Позывные';
+
+  @override
+  String get materialsPreview => 'Предпросмотр';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items записей · $symbols знаков · $prosigns процедурных';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return 'Без кода Морзе, пропускаются: $chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return 'Повторов: $count, сохраняется по одному';
+  }
+
+  @override
+  String get materialsProblemEmpty => 'Сначала введите текст.';
+
+  @override
+  String get materialsProblemTooLarge => 'Слишком большой: ограничение 1 МиБ.';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return 'Слишком много записей: не более $count.';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return 'Запись слишком длинная: не более $count знаков.';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => 'Здесь нечего тренировать азбукой Морзе.';
+
+  @override
+  String get materialsSearch => 'Поиск материалов';
+
+  @override
+  String get materialsFavoritesOnly => 'Избранное';
+
+  @override
+  String get materialsFavorite => 'В избранное';
+
+  @override
+  String get materialsUnfavorite => 'Убрать из избранного';
+
+  @override
+  String get materialsEmpty => 'Материалов пока нет. Добавьте свои тексты, списки слов или позывные либо сохраните сообщение из чата.';
+
+  @override
+  String materialsItems(int count) {
+    return 'Записей: $count';
+  }
+
+  @override
+  String get materialsFromChat => 'Из чата';
+
+  @override
+  String get materialsActions => 'Действия';
+
+  @override
+  String get materialsPractise => 'Тренировать';
+
+  @override
+  String get materialsDelete => 'Удалить';
+
+  @override
+  String get materialsDeleteTitle => 'Удалить материал?';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '«$title» будет удалён с устройства. История занятий сохранится.';
+  }
+
+  @override
+  String get materialsImport => 'Импорт TXT или JSON';
+
+  @override
+  String get materialsImportDialogTitle => 'Выберите файл материала';
+
+  @override
+  String get materialsSaveDialogTitle => 'Сохранить материал';
+
+  @override
+  String get materialsImportFailed => 'Импорт не удался. Библиотека не изменилась.';
+
+  @override
+  String get materialsImportNotUtf8 => 'Можно импортировать только текст в UTF-8.';
+
+  @override
+  String get materialsImportInvalid => 'Это не файл материалов MorseCQ. Ничего не импортировано.';
+
+  @override
+  String materialsImported(int count) {
+    return 'Импортировано материалов: $count.';
+  }
+
+  @override
+  String get materialsDuplicateTitle => 'Некоторые материалы уже есть';
+
+  @override
+  String get materialsDuplicateOverwrite => 'Заменить';
+
+  @override
+  String get materialsDuplicateKeepCopy => 'Оставить оба (как копии)';
+
+  @override
+  String get materialsDuplicateSkip => 'Пропустить';
+
+  @override
+  String get materialsExportJson => 'Экспорт в JSON';
+
+  @override
+  String materialsExported(int count) {
+    return 'Экспортировано материалов: $count.';
+  }
+
+  @override
+  String get materialsExportFailed => 'Экспорт не удался.';
+
+  @override
+  String get materialsExportWav => 'Экспорт аудио (WAV)';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return 'Скорость знаков: $wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return 'Эффективная скорость: $wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return 'Тон: $hz Гц';
+  }
+
+  @override
+  String get materialsWavWithAnswer => 'Добавить текст ответа (.txt)';
+
+  @override
+  String get materialsWavFormat => 'WAV, 16 бит, моно, 48 кГц.';
+
+  @override
+  String materialsWavParts(int count) {
+    return 'Длиннее 10 минут: будет $count файлов.';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return 'Сохранено аудиофайлов: $count.';
+  }
+
+  @override
+  String get materialsPracticeMode => 'Тренировать';
+
+  @override
+  String get materialsPracticeLearned => 'Только изученные знаки';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return 'Только изученные ($count записей недоступны: в них неизученные знаки)';
+  }
+
+  @override
+  String get materialsPracticeAll => 'Все знаки Морзе';
+
+  @override
+  String get materialsPracticeNothing => 'В этом режиме нет записей для тренировки.';
+
+  @override
+  String get guestTryLearning => 'Сначала попробовать учёбу';
+
+  @override
+  String get guestBanner => 'Гостевой режим: прогресс хранится на устройстве. Для чата нужна личность.';
+
+  @override
+  String get guestGetIdentity => 'Настроить личность';
+
+  @override
+  String get guestIdentityTitle => 'Нужна личность';
+
+  @override
+  String get guestIdentityBody => 'Для чата через Tox нужна своя личность. Создайте новую, восстановите резервную копию или разблокируйте имеющуюся. Гостевой прогресс автоматически перейдёт в новую личность.';
+
+  @override
+  String get guestClearData => 'Удалить гостевые данные';
+
+  @override
+  String get guestClearDataBody => 'Удаляет прогресс, планы и материалы гостевого режима на этом устройстве. Личности не затрагиваются.';
+
+  @override
+  String get guestClearConfirm => 'Удалить';
+
+  @override
+  String get guestCleared => 'Гостевые данные удалены.';
+
+  @override
+  String get guestClearFailed => 'Не удалось удалить гостевые данные.';
+
+  @override
+  String get guestMigrationFailed => 'Личность готова, но гостевой прогресс ещё не перенесён. Он сохранён на устройстве.';
+
+  @override
+  String get guestChoiceBody => 'Есть и гостевой прогресс. Используется прогресс восстановленной личности; ничего не объединялось.';
+
+  @override
+  String get guestChoiceKeep => 'Оставить восстановленный';
+
+  @override
+  String get guestChoiceUseGuest => 'Взять гостевой прогресс';
+
+  @override
+  String get placementTitle => 'Проверить уровень';
+
+  @override
+  String get placementCheckLevel => 'Проверить текущий уровень';
+
+  @override
+  String get placementFromZero => 'Начать с нуля';
+
+  @override
+  String get placementOfferTitle => 'Новичок или уже принимаете?';
+
+  @override
+  String get placementOfferBody => 'Короткая проверка подскажет, с чего начать. Она необязательна и ничего не меняет, пока вы не решите.';
+
+  @override
+  String get placementIntro => 'Около 3–5 минут приёма в пять этапов: знаки Коха группами с ростом скорости, затем короткие слова. Это грубая оценка по малой выборке, а не сертификат. Можно остановиться в любой момент.';
+
+  @override
+  String get placementStart => 'Начать';
+
+  @override
+  String get placementSkip => 'Пропустить';
+
+  @override
+  String get placementStop => 'Стоп';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Этап $step из $total · $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => 'Хорошо принято. Следующий этап быстрее.';
+
+  @override
+  String get placementTierStopped => 'Этап ниже 90 %, проверка завершена.';
+
+  @override
+  String get placementNextTier => 'Следующий этап';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Рекомендуемый старт: урок $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return 'Подтверждено по порядку: $count из $total знаков Коха.';
+  }
+
+  @override
+  String get placementLimits => 'По короткой выборке: непроверенные знаки остаются непроверенными, ничего не отмечается как выученное. Урок можно сменить в любой момент.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Начать с урока $lesson';
+  }
+
+  @override
+  String get chatJumpToLatest => 'Последние сообщения';
+
+  @override
+  String get chatMessageGone => 'Этого сообщения больше нет в чате.';
+
+  @override
+  String get chatListenOnlyPreview => 'Новое сообщение — примите его на слух';
+
+  @override
+  String get chatSaveMaterialConfirm => 'Сохранить остальное';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return 'Импортировать материалов: $count?';
+  }
+
+  @override
+  String get materialsExportTxt => 'Экспорт в текст (TXT)';
+
+  @override
+  String get accountBackupMediaTitle => 'Включить сохранённые записи?';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return 'Сохранённых записей: $count ($size МБ). Названия, заметки и позиции всегда в копии; звук — только если вы его включите.';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return 'Сохранённые записи ($size МБ) слишком велики для копии; сохраняются только названия, заметки и позиции.';
+  }
+
+  @override
+  String get accountBackupMediaInclude => 'Включить записи';
+
+  @override
+  String get accountBackupMediaSkip => 'Без записей';
 }

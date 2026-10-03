@@ -80,10 +80,7 @@ class SendResultView extends StatelessWidget {
               Icon(Icons.check_circle_outline, color: scheme.primary),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  s.learnSendClean,
-                  style: theme.textTheme.bodyLarge,
-                ),
+                child: Text(s.learnSendClean, style: theme.textTheme.bodyLarge),
               ),
             ],
           )

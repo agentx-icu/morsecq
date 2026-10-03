@@ -2342,4 +2342,1064 @@ class SJa extends S {
 
   @override
   String get chatScanQrCameraUnavailable => 'このデバイスではカメラを利用できません。';
+
+  @override
+  String get learnReplayAssistedNote => '再生し直しました：練習には数えますが、レッスンの解放や復習の更新は行いません。';
+
+  @override
+  String get learnPlanTitle => '今日のプラン';
+
+  @override
+  String learnPlanSummary(int minutes, int done, int total) {
+    return '約$minutes分 · $totalステップ中$done完了';
+  }
+
+  @override
+  String get learnPlanBudget => 'プランの長さ';
+
+  @override
+  String learnPlanBudgetMinutes(int minutes) {
+    return '$minutes分';
+  }
+
+  @override
+  String get learnPlanStart => 'プランを始める';
+
+  @override
+  String get learnPlanContinue => 'プランを続ける';
+
+  @override
+  String get learnPlanStepReview => '復習期限の文字';
+
+  @override
+  String get learnPlanStepFocus => '重点練習';
+
+  @override
+  String learnPlanStepCourse(int lesson) {
+    return 'レッスン$lesson';
+  }
+
+  @override
+  String get learnPlanStepSend => '送信練習';
+
+  @override
+  String learnPlanReasonDueReview(String symbols) {
+    return '復習時期：$symbols';
+  }
+
+  @override
+  String learnPlanReasonConfusions(String symbols) {
+    return 'よく取り違える：$symbols';
+  }
+
+  @override
+  String learnPlanReasonWeak(String symbols) {
+    return '正答率90%未満：$symbols';
+  }
+
+  @override
+  String learnPlanReasonChallenge(int count) {
+    return '$count文字：次のレッスンを解放できます';
+  }
+
+  @override
+  String learnPlanReasonExtended(int count) {
+    return '次のレッスンを解放できるよう$count文字に延長しました';
+  }
+
+  @override
+  String get learnPlanReasonConsolidate => '短い練習：このレッスンの定着用で、次は解放されません';
+
+  @override
+  String learnPlanReasonOutdated(int lesson) {
+    return 'コースが進みました：レッスン$lessonを練習しますが解放はしません';
+  }
+
+  @override
+  String learnPlanReasonSend(int count) {
+    return '短い課題を$count回送信';
+  }
+
+  @override
+  String learnPlanStepDonePercent(int percent) {
+    return '完了 · $percent%';
+  }
+
+  @override
+  String get learnPlanStepDone => '完了';
+
+  @override
+  String learnPlanSendProgress(int done, int total) {
+    return '$total中$done送信済み';
+  }
+
+  @override
+  String get learnPlanStale => 'レッスンまたは速度が変わりました。未開始のステップを更新しますか？';
+
+  @override
+  String get learnPlanUpdate => 'ステップを更新';
+
+  @override
+  String get learnPlanComplete => '今日のプランは完了です';
+
+  @override
+  String learnPlanNeedsWork(String symbols) {
+    return '要練習：$symbols';
+  }
+
+  @override
+  String get learnPlanAllGood => '今日は苦手な文字はありません。';
+
+  @override
+  String get learnPlanTomorrow => '明日は新しいプランです。自由練習はいつでもできます。';
+
+  @override
+  String learnPlanNext(String step) {
+    return '次：$step';
+  }
+
+  @override
+  String learnPlanEarlier(int done, int total) {
+    return '前回のプランは$totalステップ中$doneで止まりました。今日の分には数えません。';
+  }
+
+  @override
+  String learnSpeedAdviceRaise(int wpm) {
+    return '実効速度$wpm WPMに進めます';
+  }
+
+  @override
+  String learnSpeedAdviceRaiseBoth(int wpm) {
+    return '$wpm WPMに進めます';
+  }
+
+  @override
+  String learnSpeedAdviceLower(int wpm) {
+    return 'この速度では受信が難しいようです。実効$wpm WPMか重点練習を試しましょう。';
+  }
+
+  @override
+  String learnSpeedAdviceBody(int count, int percent) {
+    return '直近の補助なし練習$count回（$percent%）に基づきます。適用するまで設定は変わりません。';
+  }
+
+  @override
+  String get learnSpeedAdviceApply => '適用';
+
+  @override
+  String get learnSpeedAdviceDismiss => '今はしない';
+
+  @override
+  String get learnSpeedAdviceInsufficient => '速度アドバイスには、現在の速度で50文字以上の補助なし練習が3回必要です。';
+
+  @override
+  String get learnQsoAction => 'QSOシミュレーター';
+
+  @override
+  String learnQsoLocked(int lesson) {
+    return 'レッスン$lessonから';
+  }
+
+  @override
+  String get learnQsoTitle => 'QSOシミュレーター';
+
+  @override
+  String get learnQsoRespond => 'CQに応答する';
+
+  @override
+  String get learnQsoRespondHint => '局がCQを出しています。応答してレポートを交換します。';
+
+  @override
+  String get learnQsoCall => 'CQを出す';
+
+  @override
+  String get learnQsoCallHint => 'あなたがCQを出し、局が応答します。';
+
+  @override
+  String get learnQsoYourCall => 'あなたのコールサイン';
+
+  @override
+  String get learnQsoYourName => 'あなたの名前';
+
+  @override
+  String get learnQsoYourQth => 'あなたのQTH';
+
+  @override
+  String get learnQsoInvalidCall => 'BD1XYZのようなコールサインを入力してください';
+
+  @override
+  String get learnQsoInvalidWord => '1語、A–Zの文字のみ';
+
+  @override
+  String get learnQsoOffline => 'すべてこの端末内で動作し、誰にも送信しません。';
+
+  @override
+  String get learnQsoStart => 'QSOを始める';
+
+  @override
+  String get learnQsoResume => '途中のQSOを再開';
+
+  @override
+  String get learnQsoStageCallCq => '自分のコールサインでCQを出す';
+
+  @override
+  String get learnQsoStageCallConfirm => '応答：相手のコール、DE、自分のコール';
+
+  @override
+  String get learnQsoStageExchange => 'レポート・名前・QTHを送る';
+
+  @override
+  String get learnQsoStageConfirmInfo => '相手の情報を確認する';
+
+  @override
+  String get learnQsoStageClosing => '73と<SK>で終える';
+
+  @override
+  String get learnQsoStageDone => 'QSO完了';
+
+  @override
+  String learnQsoSpeed(int wpm) {
+    return '相手は実効$wpm WPMで送信';
+  }
+
+  @override
+  String learnQsoRemote(String call) {
+    return '$callの送信';
+  }
+
+  @override
+  String get learnQsoRemoteHidden => '耳で受信してください（テキストは非表示）。';
+
+  @override
+  String get learnQsoShowText => 'テキストを表示';
+
+  @override
+  String get learnQsoListen => '聴く';
+
+  @override
+  String get learnQsoAccepted => '受理';
+
+  @override
+  String get learnQsoRejected => '不受理';
+
+  @override
+  String get learnQsoRemoteSending => '相手局が送信中…';
+
+  @override
+  String get learnQsoYourTurn => 'あなたの番です：返信を打鍵して「送信」。';
+
+  @override
+  String get learnQsoDecoded => 'あなたの送信内容';
+
+  @override
+  String get learnQsoNothingKeyed => 'まだ打鍵していません';
+
+  @override
+  String get learnQsoPlayAgain => '再送を頼む（AGN）';
+
+  @override
+  String get learnQsoSlower => '減速を頼む（QRS）';
+
+  @override
+  String get learnQsoHint => 'ヒント';
+
+  @override
+  String learnQsoHintLabel(String example) {
+    return '例：$example';
+  }
+
+  @override
+  String get learnQsoPause => '一時停止';
+
+  @override
+  String get learnQsoSend => '送信';
+
+  @override
+  String get learnQsoClear => '消去';
+
+  @override
+  String get learnQsoIssueEmpty => '何も打鍵されていません。';
+
+  @override
+  String get learnQsoIssueMissingCq => 'CQで始めてください。';
+
+  @override
+  String get learnQsoIssueMissingDe => 'コールサインの間にDEを入れてください。';
+
+  @override
+  String get learnQsoIssueWrongLocalCall => '自分のコールサインがないか誤っています。';
+
+  @override
+  String get learnQsoIssueWrongRemoteCall => '相手局のコールサインが違います。';
+
+  @override
+  String get learnQsoIssueReversedCalls => '順序が逆です：相手、DE、自分の順です。';
+
+  @override
+  String get learnQsoIssueMissingEnding => 'KまたはKNで終えてください。';
+
+  @override
+  String get learnQsoIssueMissingRst => 'レポートを送ってください（例：UR RST 599）。';
+
+  @override
+  String get learnQsoIssueInvalidRst => 'RSTが範囲外です（R 1–5、S 1–9、T 1–9）。';
+
+  @override
+  String get learnQsoIssueMissingName => 'NAMEと名前を送ってください。';
+
+  @override
+  String get learnQsoIssueWrongName => 'このQSOでのあなたの名前ではありません。';
+
+  @override
+  String get learnQsoIssueMissingQth => 'QTHと場所を送ってください。';
+
+  @override
+  String get learnQsoIssueWrongQth => 'このQSOでのあなたのQTHではありません。';
+
+  @override
+  String get learnQsoIssueMissingAck => 'RまたはQSLで了解を伝えてください。';
+
+  @override
+  String get learnQsoIssueWrongRemoteName => '相手のオペレーター名を確認してください。';
+
+  @override
+  String get learnQsoIssueMissing73 => '73を入れてください。';
+
+  @override
+  String get learnQsoIssueMissingSk => '<SK>で交信を終えてください。';
+
+  @override
+  String learnQsoSummaryFields(int count, int total) {
+    return '一度で正解：$totalステップ中$count';
+  }
+
+  @override
+  String learnQsoSummaryRepeats(int count) {
+    return '再送：$count';
+  }
+
+  @override
+  String learnQsoSummaryHints(int count) {
+    return 'ヒント：$count';
+  }
+
+  @override
+  String learnQsoSummaryRhythm(int wpm) {
+    return 'あなたの送信：約$wpm WPM';
+  }
+
+  @override
+  String get learnQsoSummaryNote => 'QSOの結果は受信正答率とは別に扱い、レッスンは解放しません。';
+
+  @override
+  String get messageStatusCancelled => 'キャンセル済み（未送信）';
+
+  @override
+  String get chatMessageLearnActions => 'メッセージの操作';
+
+  @override
+  String get chatPracticeMessage => 'このメッセージを受信練習';
+
+  @override
+  String get chatSaveAsMaterial => '練習素材として保存';
+
+  @override
+  String get chatSavedAsMaterial => '「マイ素材」に保存しました';
+
+  @override
+  String get chatSaveMaterialFailed => '素材を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get chatListenOnly => '聞き取り専用トレーニング';
+
+  @override
+  String get chatListenOnlyHidden => '聞き取り専用：再生して聴いてください';
+
+  @override
+  String chatClearHistoryMaterials(int count) {
+    return 'このチャットの$count件のメッセージが練習素材として保存されています。コピーは「学習 › マイ素材」で削除するまで残ります。';
+  }
+
+  @override
+  String get chatPracticeTitle => '受信練習';
+
+  @override
+  String chatPracticeUnsupported(String chars) {
+    return 'このメッセージにはモールスで打てない文字があります：$chars。練習では省きます。';
+  }
+
+  @override
+  String chatPracticeTrainableCount(int count) {
+    return '$count文字を練習できます。';
+  }
+
+  @override
+  String get chatPracticeNothingTrainable => 'このメッセージにはモールスで練習できる内容がありません。';
+
+  @override
+  String get chatPracticeConfirm => '残りを練習する';
+
+  @override
+  String get chatPracticeHint => 'ヒント';
+
+  @override
+  String chatPracticeHintShown(String symbols) {
+    return 'ヒント：$symbols …';
+  }
+
+  @override
+  String get chatPracticeAssisted => '補助あり：練習には数えますが、復習や速度アドバイスには使いません。';
+
+  @override
+  String chatPracticeErrors(int wrong, int missed, int extra) {
+    return '誤り$wrong · 抜け$missed · 余分$extra';
+  }
+
+  @override
+  String chatPracticeErrorsAction(String symbols) {
+    return '間違えた文字を練習：$symbols';
+  }
+
+  @override
+  String get learnTipDahTooLongTitle => '長点が長すぎる';
+
+  @override
+  String learnTipDahTooLong(String ratio) {
+    return '長点が長すぎます（短点の約$ratio、目標は3倍）。短点3つ分で離しましょう。';
+  }
+
+  @override
+  String learnIssueDetailDahTooLong(int offending, int total, String ratio) {
+    return '長点$total個中$offending個が長すぎ（平均$ratio短点）';
+  }
+
+  @override
+  String get learnRhythmTitle => 'リズム';
+
+  @override
+  String get learnRhythmMine => '自分のリズム';
+
+  @override
+  String get learnRhythmStandard => '標準のリズム（目標速度）';
+
+  @override
+  String learnRhythmNormalizedNote(int ms) {
+    return '問題は自分の短点（$ms ms）を基準に判断します。遅くても均等なら問題ありません。標準は目標速度です。';
+  }
+
+  @override
+  String get learnRhythmNotLocated => '打鍵を1文字ずつ対応付けられませんでした。課題全体を練習してください。';
+
+  @override
+  String get learnRhythmPlayMine => '自分のを再生';
+
+  @override
+  String get learnRhythmPlayStandard => '標準を再生';
+
+  @override
+  String learnRhythmPracticePart(int count) {
+    return 'これを練習（$count回）';
+  }
+
+  @override
+  String get learnRhythmPracticeWhole => '課題全体を練習';
+
+  @override
+  String get learnRhythmSymbolOk => '良好';
+
+  @override
+  String get learnRhythmZoomIn => '拡大';
+
+  @override
+  String get learnRhythmZoomOut => '縮小';
+
+  @override
+  String get chatSearchMessages => 'メッセージを検索';
+
+  @override
+  String get chatSearchHint => 'この会話を検索';
+
+  @override
+  String get chatSearchAnyone => '全員';
+
+  @override
+  String get chatSearchMe => '自分';
+
+  @override
+  String get chatSearchThem => '相手';
+
+  @override
+  String get chatSearchAnyDate => '期間指定なし';
+
+  @override
+  String chatSearchDateRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get chatSearchBookmarked => 'ブックマーク';
+
+  @override
+  String get chatSearchNoResults => '一致するメッセージはありません。';
+
+  @override
+  String get chatSearchMore => 'さらに読み込む';
+
+  @override
+  String get chatAddBookmark => 'ブックマーク';
+
+  @override
+  String get chatRemoveBookmark => 'ブックマークを解除';
+
+  @override
+  String get chatBookmarked => 'ブックマーク済み';
+
+  @override
+  String get chatBookmarkFailed => 'ブックマークを保存できませんでした。';
+
+  @override
+  String get chatRetrySend => '再送信';
+
+  @override
+  String get chatCancelSend => '送信を取り消す';
+
+  @override
+  String get chatRetryQueued => '再びキューに入れました。相手がオンラインになると送信します。';
+
+  @override
+  String get chatSendCancelled => '取り消しました。メッセージは送信されていません。';
+
+  @override
+  String get chatRetryNotNeeded => 'このメッセージはもう失敗状態ではありません。';
+
+  @override
+  String get chatCancelTooLate => '取り消せません。メッセージはすでにネットワークに渡され、届く可能性があります。';
+
+  @override
+  String get chatSendControlUnavailable => 'このメッセージでは利用できません。';
+
+  @override
+  String get chatSendControlFailed => 'うまくいきませんでした。メッセージの状態は変わっていません。もう一度お試しください。';
+
+  @override
+  String get workbenchTitle => '録音ワークベンチ';
+
+  @override
+  String get workbenchOpen => '録音';
+
+  @override
+  String get workbenchImport => '録音を読み込む';
+
+  @override
+  String get workbenchEmpty => 'WAV録音を読み込むと、ループ再生・解読・自分での受信練習ができます。マイクは不要です。';
+
+  @override
+  String get workbenchFormats => 'WAV（16ビットPCM、モノラル/ステレオ、8/16/44.1/48 kHz）、最大50 MB・20分。';
+
+  @override
+  String get workbenchBackupNote => '録音はこの端末に残り、バックアップの書き出し時に含めると選んだ場合を除き、ID のバックアップには入りません。保存した選択範囲のタイトル・メモ・位置は常にバックアップされます。';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => 'モノラル';
+
+  @override
+  String get workbenchStereo => 'ステレオ';
+
+  @override
+  String get workbenchTruncated => 'ファイルが途中で終わっています。ある分だけ使います。';
+
+  @override
+  String get workbenchErrorNotWav => 'WAVファイルではありません。';
+
+  @override
+  String get workbenchErrorFormat => '現在は16ビットPCMのWAVのみ対応です（MP3・AAC・浮動小数点WAVは不可）。';
+
+  @override
+  String get workbenchErrorChannels => 'モノラルかステレオの録音のみ対応しています。';
+
+  @override
+  String get workbenchErrorRate => 'このサンプルレートは非対応です。8・16・44.1・48 kHzを使ってください。';
+
+  @override
+  String get workbenchErrorDamaged => 'ファイルが壊れているか不完全です。';
+
+  @override
+  String get workbenchErrorTooLarge => 'ファイルが50 MBを超えています。';
+
+  @override
+  String get workbenchErrorTooLong => '録音が20分を超えています。';
+
+  @override
+  String get workbenchErrorIo => 'ファイルを読み込めませんでした。';
+
+  @override
+  String get workbenchErrorMissing => '録音ファイルが見つかりません。';
+
+  @override
+  String get workbenchStart => '開始（秒）';
+
+  @override
+  String get workbenchEnd => '終了（秒）';
+
+  @override
+  String get workbenchSelectAll => 'すべて選択';
+
+  @override
+  String get workbenchPlay => '選択範囲を再生';
+
+  @override
+  String get workbenchStop => '停止';
+
+  @override
+  String get workbenchLoop => 'ループ';
+
+  @override
+  String get workbenchPlayLimit => '長い選択範囲は最初の5分だけ再生します。';
+
+  @override
+  String get workbenchAutoTune => 'トーンを自動で探す';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return 'トーン：$hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '選択範囲を解読';
+
+  @override
+  String get workbenchCancel => 'キャンセル';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '解読中… $percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return 'トーン$hz Hz · 約$wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '安定したトーンが見つかりません。手動で合わせてください。';
+
+  @override
+  String get workbenchNoText => 'この範囲では何も解読できませんでした。';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '不明な符号：$patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '選択範囲の端の文字が切れており、誤っている可能性があります。';
+
+  @override
+  String get workbenchToneNote => 'トーンの捕捉は信頼度ではありません。耳で確認してください。';
+
+  @override
+  String get workbenchModeDecoder => 'デコーダー';
+
+  @override
+  String get workbenchModeCopy => '自分で受信する';
+
+  @override
+  String get workbenchDecoderHidden => '受信中はデコーダーの文字を隠します。';
+
+  @override
+  String get workbenchShowDecoder => 'デコーダーの文字を表示';
+
+  @override
+  String get workbenchReference => '正解テキスト（任意）';
+
+  @override
+  String get workbenchReferenceHelp => '送信されたテキストを貼り付けてください。なければデコーダーの出力と比較します。';
+
+  @override
+  String get workbenchAgainstDecoder => 'デコーダーの出力と比較しました。出力自体が誤っている可能性があります。';
+
+  @override
+  String get workbenchSave => '選択範囲を保存';
+
+  @override
+  String get workbenchSaveTitle => 'タイトル';
+
+  @override
+  String get workbenchSaveNote => 'メモ';
+
+  @override
+  String get workbenchSaved => '選択範囲を保存しました';
+
+  @override
+  String get workbenchSaveFailed => '選択範囲を保存できませんでした。';
+
+  @override
+  String get workbenchLibrary => '保存した区間';
+
+  @override
+  String get workbenchLibraryEmpty => '保存した区間はまだありません。';
+
+  @override
+  String get workbenchMissing => '録音ファイルがありません。選び直すか項目を削除してください。';
+
+  @override
+  String get workbenchRelink => 'ファイルを選び直す';
+
+  @override
+  String get workbenchDelete => '削除';
+
+  @override
+  String get materialsTitle => 'マイ素材';
+
+  @override
+  String get materialsNew => '新しい素材';
+
+  @override
+  String get materialsEdit => '編集';
+
+  @override
+  String get materialsSave => '保存';
+
+  @override
+  String get materialsSaveFailed => '素材を保存できませんでした。';
+
+  @override
+  String get materialsTitleField => 'タイトル';
+
+  @override
+  String get materialsTagsField => 'タグ（カンマ区切り）';
+
+  @override
+  String get materialsTextField => 'テキスト';
+
+  @override
+  String get materialsListField => '1行に1項目';
+
+  @override
+  String get materialsKindText => 'テキスト';
+
+  @override
+  String get materialsKindWords => '単語リスト';
+
+  @override
+  String get materialsKindCallsigns => 'コールサイン';
+
+  @override
+  String get materialsPreview => 'プレビュー';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items項目 · $symbols文字 · $prosigns略符号';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return 'モールス符号がなく練習で省く文字：$chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '重複$count件は1つにまとめます';
+  }
+
+  @override
+  String get materialsProblemEmpty => '先にテキストを入力してください。';
+
+  @override
+  String get materialsProblemTooLarge => '大きすぎます（上限1 MiB）。';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '項目が多すぎます（最大$count）。';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '長すぎる項目があります（各$count文字まで）。';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => 'モールスで練習できる内容がありません。';
+
+  @override
+  String get materialsSearch => '素材を検索';
+
+  @override
+  String get materialsFavoritesOnly => 'お気に入り';
+
+  @override
+  String get materialsFavorite => 'お気に入りに追加';
+
+  @override
+  String get materialsUnfavorite => 'お気に入りから削除';
+
+  @override
+  String get materialsEmpty => '素材はまだありません。テキスト・単語リスト・コールサインを追加するか、チャットのメッセージを保存してください。';
+
+  @override
+  String materialsItems(int count) {
+    return '$count項目';
+  }
+
+  @override
+  String get materialsFromChat => 'チャットから';
+
+  @override
+  String get materialsActions => '素材の操作';
+
+  @override
+  String get materialsPractise => '練習';
+
+  @override
+  String get materialsDelete => '削除';
+
+  @override
+  String get materialsDeleteTitle => '素材を削除しますか？';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '「$title」をこの端末から削除します。練習履歴は残ります。';
+  }
+
+  @override
+  String get materialsImport => 'TXT/JSONを読み込む';
+
+  @override
+  String get materialsImportDialogTitle => '素材ファイルを選択';
+
+  @override
+  String get materialsSaveDialogTitle => '素材を保存';
+
+  @override
+  String get materialsImportFailed => '読み込みに失敗しました。ライブラリは変更されていません。';
+
+  @override
+  String get materialsImportNotUtf8 => 'UTF-8のテキストファイルのみ読み込めます。';
+
+  @override
+  String get materialsImportInvalid => '有効なMorseCQ素材ファイルではありません。何も読み込んでいません。';
+
+  @override
+  String materialsImported(int count) {
+    return '$count件の素材を読み込みました。';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '一部の素材はすでにあります';
+
+  @override
+  String get materialsDuplicateOverwrite => '置き換える';
+
+  @override
+  String get materialsDuplicateKeepCopy => '両方残す（コピーとして）';
+
+  @override
+  String get materialsDuplicateSkip => 'スキップ';
+
+  @override
+  String get materialsExportJson => 'JSONで書き出す';
+
+  @override
+  String materialsExported(int count) {
+    return '$count件の素材を書き出しました。';
+  }
+
+  @override
+  String get materialsExportFailed => '書き出しに失敗しました。';
+
+  @override
+  String get materialsExportWav => '音声を書き出す（WAV）';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '文字速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '実効速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '音程：$hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '答えのテキストも付ける（.txt）';
+
+  @override
+  String get materialsWavFormat => '16ビット・モノラルWAV、48 kHz。';
+
+  @override
+  String materialsWavParts(int count) {
+    return '10分を超えるため$count個のファイルに分けて書き出します。';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '音声ファイルを$count個保存しました。';
+  }
+
+  @override
+  String get materialsPracticeMode => '練習の範囲';
+
+  @override
+  String get materialsPracticeLearned => '習得済みの文字のみ';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '習得済みのみ（$count項目は未習得の文字を含むため使えません）';
+  }
+
+  @override
+  String get materialsPracticeAll => 'すべてのモールス文字';
+
+  @override
+  String get materialsPracticeNothing => 'このモードで練習できる項目はありません。';
+
+  @override
+  String get guestTryLearning => 'まず学習を試す';
+
+  @override
+  String get guestBanner => 'ゲスト学習：進捗はこの端末に保存されます。チャットには ID が必要です。';
+
+  @override
+  String get guestGetIdentity => 'ID を設定';
+
+  @override
+  String get guestIdentityTitle => 'ID が必要です';
+
+  @override
+  String get guestIdentityBody => 'Tox でのチャットには自分の ID が必要です。新規作成、バックアップから復元、またはこの端末の ID のロック解除を行ってください。新しい ID を作るとゲストの学習進捗は自動で移ります。';
+
+  @override
+  String get guestClearData => 'ゲストの学習データを消去';
+
+  @override
+  String get guestClearDataBody => 'この端末でゲストとして作った進捗・プラン・素材を削除します。ID には影響しません。';
+
+  @override
+  String get guestClearConfirm => '消去';
+
+  @override
+  String get guestCleared => 'ゲストの学習データを消去しました。';
+
+  @override
+  String get guestClearFailed => 'ゲストデータを消去できませんでした。';
+
+  @override
+  String get guestMigrationFailed => 'ID は準備できましたが、ゲストの学習進捗はまだ移っていません。この端末に安全に残っています。';
+
+  @override
+  String get guestChoiceBody => 'ゲストの学習進捗もあります。現在は復元した ID の進捗を使用しており、統合はしていません。';
+
+  @override
+  String get guestChoiceKeep => '復元した方を使う';
+
+  @override
+  String get guestChoiceUseGuest => 'ゲストの進捗を使う';
+
+  @override
+  String get placementTitle => 'レベルチェック';
+
+  @override
+  String get placementCheckLevel => '今のレベルをチェック';
+
+  @override
+  String get placementFromZero => 'ゼロから始める';
+
+  @override
+  String get placementOfferTitle => 'モールスは初めて？それとも受信できる？';
+
+  @override
+  String get placementOfferBody => '短いチェックで開始位置を提案できます。任意で、選ぶまで何も変わりません。';
+
+  @override
+  String get placementIntro => '約3〜5分、5段階で受信します。速度を上げながらコッホ順の文字グループ、最後に短い単語。少ないサンプルによる目安で、認定ではありません。いつでも中止できます。';
+
+  @override
+  String get placementStart => '開始';
+
+  @override
+  String get placementSkip => 'スキップ';
+
+  @override
+  String get placementStop => '中止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '$total段階中$step · 実効 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => 'よく受信できました。次はもっと速くなります。';
+
+  @override
+  String get placementTierStopped => 'この段階は90%未満だったため、ここで終了します。';
+
+  @override
+  String get placementNextTier => '次の段階';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'おすすめの開始：レッスン$lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return 'コッホ順の$total文字中$count文字を順に確認しました。';
+  }
+
+  @override
+  String get placementLimits => '少ないサンプルに基づきます。テストしていない文字は未テストのままで、習得済みにはなりません。レッスンはいつでも変えられます。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'レッスン$lessonから始める';
+  }
+
+  @override
+  String get chatJumpToLatest => '最新のメッセージ';
+
+  @override
+  String get chatMessageGone => 'そのメッセージはこの会話にもうありません。';
+
+  @override
+  String get chatListenOnlyPreview => '新着メッセージ — 聴いて受信してください';
+
+  @override
+  String get chatSaveMaterialConfirm => '残りを保存';
+
+  @override
+  String materialsImportConfirm(int count) {
+    return '$count件の素材を読み込みますか？';
+  }
+
+  @override
+  String get materialsExportTxt => 'テキストで書き出す（TXT）';
+
+  @override
+  String get accountBackupMediaTitle => '保存した録音を含めますか？';
+
+  @override
+  String accountBackupMediaBody(int count, String size) {
+    return '保存した録音 $count 件（$size MB）。タイトル・メモ・位置は常にバックアップに入ります。音声は含めた場合のみです。';
+  }
+
+  @override
+  String accountBackupMediaTooLarge(String size) {
+    return '保存した録音（$size MB）は大きすぎるためバックアップに入れられません。タイトル・メモ・位置のみ含めます。';
+  }
+
+  @override
+  String get accountBackupMediaInclude => '録音を含める';
+
+  @override
+  String get accountBackupMediaSkip => '録音なし';
 }

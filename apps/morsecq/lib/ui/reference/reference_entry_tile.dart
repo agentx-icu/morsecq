@@ -10,7 +10,11 @@ import 'reference_playback_controller.dart';
 /// meaning and a play / stop button. Tap plays, long-press shows the
 /// mnemonic when the entry has one.
 class ReferenceEntryTile extends StatelessWidget {
-  const ReferenceEntryTile({super.key, required this.entry, this.showPosition = false});
+  const ReferenceEntryTile({
+    super.key,
+    required this.entry,
+    this.showPosition = false,
+  });
 
   final ReferenceEntry entry;
 
@@ -19,8 +23,8 @@ class ReferenceEntryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ReferencePlaybackController controller =
-        context.watch<ReferencePlaybackController>();
+    final ReferencePlaybackController controller = context
+        .watch<ReferencePlaybackController>();
     final ThemeData theme = Theme.of(context);
     final S s = context.s;
     final bool playing = controller.isPlayingId(entry.id);
@@ -64,7 +68,9 @@ class ReferenceEntryTile extends StatelessWidget {
       subtitle: meaning == null || meaning.isEmpty ? null : Text(meaning),
       trailing: IconButton(
         tooltip: playing ? s.referenceStop : s.referencePlay,
-        icon: Icon(playing ? Icons.stop_circle_outlined : Icons.play_circle_outline),
+        icon: Icon(
+          playing ? Icons.stop_circle_outlined : Icons.play_circle_outline,
+        ),
         onPressed: () => controller.toggle(entry.id, entry.playText),
       ),
       onTap: () => controller.toggle(entry.id, entry.playText),
@@ -77,8 +83,8 @@ class ReferenceEntryTile extends StatelessWidget {
 
 /// Shows the mnemonic for [entry] in a dialog, with a play button.
 Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
-  final ReferencePlaybackController controller =
-      context.read<ReferencePlaybackController>();
+  final ReferencePlaybackController controller = context
+      .read<ReferencePlaybackController>();
   return showDialog<void>(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -96,16 +102,20 @@ Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
             ChangeNotifierProvider<ReferencePlaybackController>.value(
               value: controller,
               child: Consumer<ReferencePlaybackController>(
-                builder: (_, ReferencePlaybackController c, _) => MorsePatternText(
-                  entry.pattern,
-                  activeMark: c.activeMarkFor(entry.id),
-                  style: theme.textTheme.headlineSmall,
-                ),
+                builder: (_, ReferencePlaybackController c, _) =>
+                    MorsePatternText(
+                      entry.pattern,
+                      activeMark: c.activeMarkFor(entry.id),
+                      style: theme.textTheme.headlineSmall,
+                    ),
               ),
             ),
             const SizedBox(height: 16),
             Text(s.referenceMnemonicTitle, style: theme.textTheme.labelLarge),
-            Text(entry.mnemonic(locale) ?? '', style: theme.textTheme.bodyLarge),
+            Text(
+              entry.mnemonic(locale) ?? '',
+              style: theme.textTheme.bodyLarge,
+            ),
             if (meaning != null && meaning.isNotEmpty) ...<Widget>[
               const SizedBox(height: 12),
               Text(s.referenceMeaningLabel, style: theme.textTheme.labelLarge),

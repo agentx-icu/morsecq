@@ -23,7 +23,7 @@ Read it before changing scope; keep it in sync when scope changes.
 | `packages/morsecq_chat` | Tox transport implementing the contract on Tim2Tox (`Tim2ToxIdentityService`, `Tim2ToxChatService`). **The ONLY package allowed to import Tim2Tox / Tencent SDK.** | everything else talks to the contract |
 | `packages/morse_dsp` | **Pure Dart** audio decoding: Goertzel tone detection, auto-tune, envelope gate, `AudioMorseDecoder` | never imports Flutter |
 | `packages/radio_tools` | **Pure Dart** operator maths for the radio tools: Maidenhead locators, great-circle distance / heading, IARU band edges and antenna lengths, `CwSpeed`, `RstReport` | never imports Flutter |
-| `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity is required before training too). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,tools}`, `lib/training` (per-identity progress store), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
+| `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity required for chat; Learn/Reference/tools also run on a local guest profile). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,tools}`, `lib/training` (per-identity progress store), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
 | `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — to be added with `morsecq_chat` | never edit in place |
 | `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`, `ui_literal_guard.dart` (tests in `apps/morsecq/test/i18n/`); `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too; analyzed with `dart analyze --fatal-infos tool` (deps from the root `pubspec.yaml` `dev_dependencies`) |
 | `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
@@ -112,9 +112,14 @@ the workspace — wait and retry rather than running pub inside a sub-package.
 - **Both keying modalities must exist.** Any keying UI ships for touch (on-screen
   paddle/straight key) **and** keyboard (desktop key-down/key-up) at the same
   time; one modality alone is not done.
-- **Accounts are required before training too** (product decision). The startup
-  gate wraps the whole shell, not just Chat/Groups. See the `TODO(startup-gate)`
-  in `apps/morsecq/lib/ui/shell/app_shell.dart`.
+- **Chat requires an identity; learning may start as a guest** (product
+  decision changed with F05, 2026-10-03). The startup gate wraps the whole
+  shell. "Try learning first" runs on a separate guest learning profile
+  (`<support>/morsecq/guest/`) that never reads, decrypts or overwrites an
+  identity; Chat/Groups/Me ask for an identity there. Creating an identity
+  moves guest progress (staged, validated, committed); restore/unlock never
+  merges it silently. See `apps/morsecq/lib/training/guest_profile.dart` and
+  `doc/plans/2026-10-03-functional-improvements.md` §8.
 - **Product name is MorseCQ** in every user-visible place (store labels,
   window titles, menus, installers, notifications, docs prose). Technical
   identifiers stay lowercase `morsecq` so existing profiles keep working:

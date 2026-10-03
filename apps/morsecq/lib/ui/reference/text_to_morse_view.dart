@@ -32,8 +32,9 @@ class TextToMorseView extends StatefulWidget {
 class _TextToMorseViewState extends State<TextToMorseView> {
   static final RegExp _prosignToken = RegExp(r'<([^<>]+)>');
 
-  late final TextEditingController _text =
-      TextEditingController(text: widget.initialText ?? '');
+  late final TextEditingController _text = TextEditingController(
+    text: widget.initialText ?? '',
+  );
   String _pattern = '';
   String _skipped = '';
 
@@ -82,8 +83,8 @@ class _TextToMorseViewState extends State<TextToMorseView> {
     if (book == _codebook) return;
     // The pattern changes under the player: stop rather than let the old
     // audio run on beside the new display.
-    final ReferencePlaybackController controller =
-        context.read<ReferencePlaybackController>();
+    final ReferencePlaybackController controller = context
+        .read<ReferencePlaybackController>();
     if (controller.isPlayingId(TextToMorseView.playId)) controller.stop();
     setState(() {
       _codebook = book;
@@ -119,8 +120,8 @@ class _TextToMorseViewState extends State<TextToMorseView> {
 
   @override
   Widget build(BuildContext context) {
-    final ReferencePlaybackController controller =
-        context.watch<ReferencePlaybackController>();
+    final ReferencePlaybackController controller = context
+        .watch<ReferencePlaybackController>();
     final ThemeData theme = Theme.of(context);
     final S s = context.s;
     final bool playing = controller.isPlayingId(TextToMorseView.playId);

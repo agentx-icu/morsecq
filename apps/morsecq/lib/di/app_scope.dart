@@ -11,7 +11,9 @@ import '../notifications/connection_banner_policy.dart';
 import '../notifications/notification_center.dart';
 import '../notifications/notification_prefs.dart';
 import '../startup/startup_controller.dart';
+import '../training/guest_profile.dart';
 import '../training/training_controller_host.dart';
+import '../ui/chat/search/message_bookmarks.dart';
 import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
 import '../ui/listen/listen_preferences.dart';
@@ -36,6 +38,7 @@ class AppScope extends StatefulWidget {
     required this.factory,
     required this.child,
     this.backupFiles,
+    this.guestStore,
     this.localeStore,
     this.notificationApis,
     this.desktopShell,
@@ -47,6 +50,9 @@ class AppScope extends StatefulWidget {
 
   /// Override for the file save/pick gateway; tests pass a fake.
   final BackupFileGateway? backupFiles;
+
+  /// Where guest learning data lives; defaults to app support storage.
+  final GuestStore? guestStore;
 
   /// Where the language choice persists; defaults to memory (tests, fake
   /// backend). `main()` passes a file-backed store.
@@ -78,7 +84,16 @@ class _AppScopeState extends State<AppScope> {
     identity: _identity,
   );
   AppSettings get _settings => _preferences.settings;
-  late final StartupController _startup = StartupController(_identity);
+  late final GuestStore _guest = widget.guestStore ?? GuestStore();
+  late final StartupController _startup = StartupController(
+    _identity,
+    guest: GuestHooks(
+      store: _guest,
+      releaseGuestController: () => _training.releaseGuest(),
+      suspendLearning: () => _training.suspendLearning(),
+      resumeLearning: () => _training.resumeLearning(),
+    ),
+  );
   late final BackupFileGateway _backupFiles =
       widget.backupFiles ?? const PlatformBackupFileGateway();
   late final LocaleController _locale = LocaleController(_store);
@@ -96,6 +111,8 @@ class _AppScopeState extends State<AppScope> {
 
   late final TrainingControllerHost _training = TrainingControllerHost(
     _identity,
+    guestMode: _startup.guestMode,
+    guestFactory: _guest.openController,
   );
 
   Future<void> _flushSettings() async {
@@ -105,6 +122,7 @@ class _AppScopeState extends State<AppScope> {
   @override
   void initState() {
     super.initState();
+    _bookmarkBarrier = MessageBookmarksBarrier(_identity);
     // Context-free code (notifications, tray) reads strings through
     // currentS() / the services' StringsResolver, both following this
     // controller. Set before start(): the resolver is built from _locale, and
@@ -113,10 +131,14 @@ class _AppScopeState extends State<AppScope> {
     _services.start();
   }
 
+  /// Flushes / retires chat bookmarks around identity replacement.
+  late final MessageBookmarksBarrier _bookmarkBarrier;
+
   @override
   void dispose() {
     if (LocaleController.active == _locale) LocaleController.active = null;
     _training.dispose().ignore();
+    _bookmarkBarrier.dispose();
     _services.dispose().ignore();
     _preferences.dispose();
     _locale.dispose();
@@ -158,6 +180,13 @@ class _AppScopeState extends State<AppScope> {
           value: widget.desktopShell,
         ),
         Provider<TrainingControllerHost?>.value(value: _training),
+        Provider<GuestStore?>.value(value: _guest),
+        Provider<BookmarksResolver?>.value(
+          value: () async => MessageBookmarks.forProfile(
+            await _identity.dataDirectory(),
+            _identity.current?.publicKey ?? '',
+          ),
+        ),
       ],
       child: widget.child,
     );

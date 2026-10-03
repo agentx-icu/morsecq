@@ -3254,5 +3254,1630 @@
   "chatScanQrCameraUnavailable": "The camera is not available on this device.",
   "@chatScanQrCameraUnavailable": {
     "description": "Shown in the QR scanner when the camera cannot be started"
+  },
+  "learnReplayAssistedNote": "Replayed: this session counts as practice but won't unlock a lesson or update reviews.",
+  "@learnReplayAssistedNote": {
+    "description": "Receive drill: shown after the learner replayed a round; replays make the session assisted"
+  },
+  "learnPlanTitle": "Today's plan",
+  "@learnPlanTitle": {
+    "description": "Learn home: title of the daily plan card"
+  },
+  "learnPlanSummary": "About {minutes} min · {done} of {total} steps",
+  "@learnPlanSummary": {
+    "description": "Daily plan card: estimated minutes and completed steps",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanBudget": "Plan length",
+  "@learnPlanBudget": {
+    "description": "Daily plan card: label of the plan-length selector"
+  },
+  "learnPlanBudgetMinutes": "{minutes} min",
+  "@learnPlanBudgetMinutes": {
+    "description": "Daily plan card: one plan-length choice in minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStart": "Start plan",
+  "@learnPlanStart": {
+    "description": "Daily plan card: start the first step"
+  },
+  "learnPlanContinue": "Continue plan",
+  "@learnPlanContinue": {
+    "description": "Daily plan card: continue with the next step"
+  },
+  "learnPlanStepReview": "Review due symbols",
+  "@learnPlanStepReview": {
+    "description": "Daily plan step title: spaced review"
+  },
+  "learnPlanStepFocus": "Focused practice",
+  "@learnPlanStepFocus": {
+    "description": "Daily plan step title: focused drill on weak symbols"
+  },
+  "learnPlanStepCourse": "Lesson {lesson}",
+  "@learnPlanStepCourse": {
+    "description": "Daily plan step title: Koch course copying of a lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepSend": "Sending practice",
+  "@learnPlanStepSend": {
+    "description": "Daily plan step title: short sending practice"
+  },
+  "learnPlanReasonDueReview": "Due for review: {symbols}",
+  "@learnPlanReasonDueReview": {
+    "description": "Daily plan reason: symbols due for spaced review",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonConfusions": "Often mixed up: {symbols}",
+  "@learnPlanReasonConfusions": {
+    "description": "Daily plan reason: symbols often confused with each other",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonWeak": "Below 90%: {symbols}",
+  "@learnPlanReasonWeak": {
+    "description": "Daily plan reason: symbols copied below 90 percent",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonChallenge": "{count} symbols: can unlock the next lesson",
+  "@learnPlanReasonChallenge": {
+    "description": "Daily plan reason: course step long enough to unlock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonExtended": "Lengthened to {count} symbols so it can unlock the next lesson",
+  "@learnPlanReasonExtended": {
+    "description": "Daily plan reason: course step lengthened beyond its time share so it can unlock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonConsolidate": "Short session: consolidates this lesson, cannot unlock the next",
+  "@learnPlanReasonConsolidate": {
+    "description": "Daily plan reason: course step too short to unlock"
+  },
+  "learnPlanReasonOutdated": "Your course moved on: practises lesson {lesson} without unlocking",
+  "@learnPlanReasonOutdated": {
+    "description": "Daily plan reason: the course moved on after the plan was made",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonSend": "{count} short targets to key",
+  "@learnPlanReasonSend": {
+    "description": "Daily plan reason: number of short sending targets",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepDonePercent": "Done · {percent}%",
+  "@learnPlanStepDonePercent": {
+    "description": "Daily plan step: completed with strict accuracy",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepDone": "Done",
+  "@learnPlanStepDone": {
+    "description": "Daily plan step: completed (no accuracy, e.g. sending)"
+  },
+  "learnPlanSendProgress": "{done} of {total} keyed",
+  "@learnPlanSendProgress": {
+    "description": "Daily plan send step: keyed targets so far",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStale": "Your lesson or speed changed. Update the steps you haven't started?",
+  "@learnPlanStale": {
+    "description": "Daily plan card: lesson or speed changed after planning"
+  },
+  "learnPlanUpdate": "Update steps",
+  "@learnPlanUpdate": {
+    "description": "Daily plan card: regenerate steps that have not started"
+  },
+  "learnPlanComplete": "Plan complete for today",
+  "@learnPlanComplete": {
+    "description": "Daily plan card: every step done today"
+  },
+  "learnPlanNeedsWork": "Needs work: {symbols}",
+  "@learnPlanNeedsWork": {
+    "description": "Daily plan card: symbols that need work after today's plan",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanAllGood": "No weak symbols today.",
+  "@learnPlanAllGood": {
+    "description": "Daily plan card: no weak symbols after today's plan"
+  },
+  "learnPlanTomorrow": "A new plan arrives tomorrow. Free practice is always open.",
+  "@learnPlanTomorrow": {
+    "description": "Daily plan card: after completing the plan"
+  },
+  "learnPlanNext": "Next: {step}",
+  "@learnPlanNext": {
+    "description": "Daily plan card: the next step to do",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanEarlier": "Yesterday's plan stopped at {done} of {total} steps; it no longer counts for today.",
+  "@learnPlanEarlier": {
+    "description": "Daily plan card: an earlier day's unfinished plan (inspect only)",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceRaise": "Ready for {wpm} WPM effective speed",
+  "@learnSpeedAdviceRaise": {
+    "description": "Speed advice: raise the effective (Farnsworth) speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceRaiseBoth": "Ready for {wpm} WPM",
+  "@learnSpeedAdviceRaiseBoth": {
+    "description": "Speed advice: raise character and effective speed together",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceLower": "Copying is hard at this speed. Try {wpm} WPM effective, or a focused drill.",
+  "@learnSpeedAdviceLower": {
+    "description": "Speed advice: suggest lowering the effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceBody": "Based on your last {count} unassisted sessions ({percent}%). Nothing changes until you apply it.",
+  "@learnSpeedAdviceBody": {
+    "description": "Speed advice: evidence behind the recommendation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceApply": "Apply",
+  "@learnSpeedAdviceApply": {
+    "description": "Speed advice: apply the proposed speed"
+  },
+  "learnSpeedAdviceDismiss": "Not now",
+  "@learnSpeedAdviceDismiss": {
+    "description": "Speed advice: dismiss for this evidence batch"
+  },
+  "learnSpeedAdviceInsufficient": "Speed advice needs 3 unassisted sessions of 50+ symbols at your current speed.",
+  "@learnSpeedAdviceInsufficient": {
+    "description": "Daily plan card: why there is no speed advice yet"
+  },
+  "learnQsoAction": "QSO simulator",
+  "@learnQsoAction": {
+    "description": "Learn home: entry to the interactive QSO simulator"
+  },
+  "learnQsoLocked": "From lesson {lesson}",
+  "@learnQsoLocked": {
+    "description": "Learn home: QSO simulator is locked until a lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoTitle": "QSO simulator",
+  "@learnQsoTitle": {
+    "description": "QSO simulator: screen title"
+  },
+  "learnQsoRespond": "Answer a CQ",
+  "@learnQsoRespond": {
+    "description": "QSO setup: scenario where the remote calls CQ"
+  },
+  "learnQsoRespondHint": "A station calls CQ. Answer it and exchange reports.",
+  "@learnQsoRespondHint": {
+    "description": "QSO setup: description of the answer-CQ scenario"
+  },
+  "learnQsoCall": "Call CQ",
+  "@learnQsoCall": {
+    "description": "QSO setup: scenario where the learner calls CQ"
+  },
+  "learnQsoCallHint": "You call CQ and a station answers.",
+  "@learnQsoCallHint": {
+    "description": "QSO setup: description of the call-CQ scenario"
+  },
+  "learnQsoYourCall": "Your callsign",
+  "@learnQsoYourCall": {
+    "description": "QSO setup: learner's callsign field"
+  },
+  "learnQsoYourName": "Your name",
+  "@learnQsoYourName": {
+    "description": "QSO setup: learner's name field (one word)"
+  },
+  "learnQsoYourQth": "Your QTH",
+  "@learnQsoYourQth": {
+    "description": "QSO setup: learner's location field (one word)"
+  },
+  "learnQsoInvalidCall": "Enter a callsign such as BD1XYZ",
+  "@learnQsoInvalidCall": {
+    "description": "QSO setup: callsign validation error"
+  },
+  "learnQsoInvalidWord": "One word, letters A–Z only",
+  "@learnQsoInvalidWord": {
+    "description": "QSO setup: name/QTH validation error"
+  },
+  "learnQsoOffline": "Runs entirely on this device. Nothing is sent to anyone.",
+  "@learnQsoOffline": {
+    "description": "QSO setup: privacy note"
+  },
+  "learnQsoStart": "Start QSO",
+  "@learnQsoStart": {
+    "description": "QSO setup: start button"
+  },
+  "learnQsoResume": "Resume the unfinished QSO",
+  "@learnQsoResume": {
+    "description": "QSO setup: resume an unfinished simulated QSO"
+  },
+  "learnQsoStageCallCq": "Call CQ with your callsign",
+  "@learnQsoStageCallCq": {
+    "description": "QSO stage: call CQ"
+  },
+  "learnQsoStageCallConfirm": "Answer: their call, DE, your call",
+  "@learnQsoStageCallConfirm": {
+    "description": "QSO stage: answer with both callsigns"
+  },
+  "learnQsoStageExchange": "Send report, name and QTH",
+  "@learnQsoStageExchange": {
+    "description": "QSO stage: send report, name and QTH"
+  },
+  "learnQsoStageConfirmInfo": "Confirm their information",
+  "@learnQsoStageConfirmInfo": {
+    "description": "QSO stage: acknowledge the remote's information"
+  },
+  "learnQsoStageClosing": "Close with 73 and <SK>",
+  "@learnQsoStageClosing": {
+    "description": "QSO stage: close the contact"
+  },
+  "learnQsoStageDone": "QSO complete",
+  "@learnQsoStageDone": {
+    "description": "QSO stage/summary: contact finished"
+  },
+  "learnQsoSpeed": "Remote sends at {wpm} WPM effective",
+  "@learnQsoSpeed": {
+    "description": "QSO screen: current remote playback effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoRemote": "{call} sends",
+  "@learnQsoRemote": {
+    "description": "QSO log: caption of a remote transmission",
+    "placeholders": {
+      "call": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoRemoteHidden": "Copy by ear — the text is hidden.",
+  "@learnQsoRemoteHidden": {
+    "description": "QSO log: placeholder while the remote text is hidden"
+  },
+  "learnQsoShowText": "Show text",
+  "@learnQsoShowText": {
+    "description": "QSO log: reveal a remote transmission (counts as a hint)"
+  },
+  "learnQsoListen": "Listen",
+  "@learnQsoListen": {
+    "description": "QSO log: play a remote transmission again"
+  },
+  "learnQsoAccepted": "Accepted",
+  "@learnQsoAccepted": {
+    "description": "QSO log: semantics for an accepted transmission"
+  },
+  "learnQsoRejected": "Not accepted",
+  "@learnQsoRejected": {
+    "description": "QSO log: semantics for a rejected transmission"
+  },
+  "learnQsoRemoteSending": "The other station is sending…",
+  "@learnQsoRemoteSending": {
+    "description": "QSO screen: remote is transmitting; keying is paused"
+  },
+  "learnQsoYourTurn": "Your turn: key your reply, then Send.",
+  "@learnQsoYourTurn": {
+    "description": "QSO screen: learner's turn to key"
+  },
+  "learnQsoDecoded": "Your transmission",
+  "@learnQsoDecoded": {
+    "description": "QSO screen: label of the decoded own transmission"
+  },
+  "learnQsoNothingKeyed": "Nothing keyed yet",
+  "@learnQsoNothingKeyed": {
+    "description": "QSO screen: nothing keyed yet"
+  },
+  "learnQsoPlayAgain": "Ask to repeat (AGN)",
+  "@learnQsoPlayAgain": {
+    "description": "QSO screen: send PSE AGN (ask the remote to repeat)"
+  },
+  "learnQsoSlower": "Ask to slow down (QRS)",
+  "@learnQsoSlower": {
+    "description": "QSO screen: send QRS (ask the remote to slow down)"
+  },
+  "learnQsoHint": "Hint",
+  "@learnQsoHint": {
+    "description": "QSO screen: show an example for the current stage"
+  },
+  "learnQsoHintLabel": "Example: {example}",
+  "@learnQsoHintLabel": {
+    "description": "QSO screen: hint example (protocol text, not translated)",
+    "placeholders": {
+      "example": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoPause": "Pause",
+  "@learnQsoPause": {
+    "description": "QSO screen: stop the remote's playback"
+  },
+  "learnQsoSend": "Send",
+  "@learnQsoSend": {
+    "description": "QSO screen: submit the keyed transmission"
+  },
+  "learnQsoClear": "Clear",
+  "@learnQsoClear": {
+    "description": "QSO screen: discard the keyed transmission"
+  },
+  "learnQsoIssueEmpty": "Nothing was keyed.",
+  "@learnQsoIssueEmpty": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingCq": "Start with CQ.",
+  "@learnQsoIssueMissingCq": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingDe": "Put DE between the callsigns.",
+  "@learnQsoIssueMissingDe": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongLocalCall": "Your own callsign is missing or wrong.",
+  "@learnQsoIssueWrongLocalCall": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongRemoteCall": "The other station's callsign is wrong.",
+  "@learnQsoIssueWrongRemoteCall": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueReversedCalls": "Callsigns are reversed: theirs first, then DE and yours.",
+  "@learnQsoIssueReversedCalls": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingEnding": "End with K or KN.",
+  "@learnQsoIssueMissingEnding": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingRst": "Give a report, e.g. UR RST 599.",
+  "@learnQsoIssueMissingRst": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueInvalidRst": "That RST is out of range (R 1–5, S 1–9, T 1–9).",
+  "@learnQsoIssueInvalidRst": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingName": "Send NAME and your name.",
+  "@learnQsoIssueMissingName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongName": "That is not your name for this QSO.",
+  "@learnQsoIssueWrongName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingQth": "Send QTH and your location.",
+  "@learnQsoIssueMissingQth": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongQth": "That is not your QTH for this QSO.",
+  "@learnQsoIssueWrongQth": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingAck": "Acknowledge with R or QSL.",
+  "@learnQsoIssueMissingAck": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueWrongRemoteName": "Confirm the other operator's name.",
+  "@learnQsoIssueWrongRemoteName": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissing73": "Include 73.",
+  "@learnQsoIssueMissing73": {
+    "description": "QSO feedback"
+  },
+  "learnQsoIssueMissingSk": "End the contact with <SK>.",
+  "@learnQsoIssueMissingSk": {
+    "description": "QSO feedback"
+  },
+  "learnQsoSummaryFields": "Right first time: {count} of {total} steps",
+  "@learnQsoSummaryFields": {
+    "description": "QSO summary: stages accepted on the first try",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryRepeats": "Repeats: {count}",
+  "@learnQsoSummaryRepeats": {
+    "description": "QSO summary: number of repeat requests",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryHints": "Hints: {count}",
+  "@learnQsoSummaryHints": {
+    "description": "QSO summary: hints and revealed texts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryRhythm": "Your sending: about {wpm} WPM",
+  "@learnQsoSummaryRhythm": {
+    "description": "QSO summary: average measured sending speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoSummaryNote": "QSO results are kept apart from copying accuracy and never unlock lessons.",
+  "@learnQsoSummaryNote": {
+    "description": "QSO summary: how the result is counted"
+  },
+  "messageStatusCancelled": "Cancelled — never sent",
+  "@messageStatusCancelled": {
+    "description": "Message status tooltip: a queued send the user cancelled before it left the device"
+  },
+  "chatMessageLearnActions": "Message actions",
+  "@chatMessageLearnActions": {
+    "description": "Message bubble: menu with learning actions for a received message"
+  },
+  "chatPracticeMessage": "Practice this message",
+  "@chatPracticeMessage": {
+    "description": "Message menu: open copy practice"
+  },
+  "chatSaveAsMaterial": "Save as training material",
+  "@chatSaveAsMaterial": {
+    "description": "Message menu / practice result: keep a local copy as training material"
+  },
+  "chatSavedAsMaterial": "Saved to My materials",
+  "@chatSavedAsMaterial": {
+    "description": "Snack bar: the message was saved to My materials"
+  },
+  "chatSaveMaterialFailed": "Couldn't save the material. Try again.",
+  "@chatSaveMaterialFailed": {
+    "description": "Snack bar: saving the material failed"
+  },
+  "chatListenOnly": "Listen-only training",
+  "@chatListenOnly": {
+    "description": "Conversation menu: listen-only training toggle (hides text and dots/dashes)"
+  },
+  "chatListenOnlyHidden": "Listen-only: tap play to hear it",
+  "@chatListenOnlyHidden": {
+    "description": "Message bubble: placeholder while dots/dashes are hidden in listen-only mode"
+  },
+  "chatClearHistoryMaterials": "{count, plural, =1{1 message from this chat was saved as training material. That copy stays until you delete it in Learn › My materials.} other{{count} messages from this chat were saved as training material. Those copies stay until you delete them in Learn › My materials.}}",
+  "@chatClearHistoryMaterials": {
+    "description": "Clear history dialog: saved material copies stay",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPracticeTitle": "Copy practice",
+  "@chatPracticeTitle": {
+    "description": "Chat copy practice: screen title"
+  },
+  "chatPracticeUnsupported": "This message contains characters Morse can't key: {chars}. They will be left out.",
+  "@chatPracticeUnsupported": {
+    "description": "Chat copy practice: characters Morse cannot key",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPracticeTrainableCount": "{count} symbols can be practised.",
+  "@chatPracticeTrainableCount": {
+    "description": "Chat copy practice: number of symbols that can be practised",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPracticeNothingTrainable": "Nothing in this message can be practised in Morse.",
+  "@chatPracticeNothingTrainable": {
+    "description": "Chat copy practice: nothing in the message can be keyed"
+  },
+  "chatPracticeConfirm": "Practice the rest",
+  "@chatPracticeConfirm": {
+    "description": "Chat copy practice: confirm practising the supported part"
+  },
+  "chatPracticeHint": "Hint",
+  "@chatPracticeHint": {
+    "description": "Chat copy practice: reveal one more symbol (assistance)"
+  },
+  "chatPracticeHintShown": "Hint: {symbols} …",
+  "@chatPracticeHintShown": {
+    "description": "Chat copy practice: symbols revealed by hints",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPracticeAssisted": "Assisted: counts as practice, not for reviews or speed advice.",
+  "@chatPracticeAssisted": {
+    "description": "Chat copy practice: assistance used, how it counts"
+  },
+  "chatPracticeErrors": "{wrong} wrong · {missed} missed · {extra} extra",
+  "@chatPracticeErrors": {
+    "description": "Chat copy practice result: error counts",
+    "placeholders": {
+      "wrong": {
+        "type": "int"
+      },
+      "missed": {
+        "type": "int"
+      },
+      "extra": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPracticeErrorsAction": "Practice errors: {symbols}",
+  "@chatPracticeErrorsAction": {
+    "description": "Chat copy practice result: focused drill on missed learned symbols",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnTipDahTooLongTitle": "Dahs too long",
+  "@learnTipDahTooLongTitle": {
+    "description": "Send practice tip title: dahs were held far too long"
+  },
+  "learnTipDahTooLong": "Your dahs run long (about {ratio} of a dit; aim for 3). Release as soon as three dits have passed.",
+  "@learnTipDahTooLong": {
+    "description": "Send tip for SendIssueKind.dahTooLong; ratio via learnRatioTimes",
+    "placeholders": {
+      "ratio": {
+        "type": "String"
+      }
+    }
+  },
+  "learnIssueDetailDahTooLong": "{offending} of {total} dahs too long (avg {ratio} dit)",
+  "@learnIssueDetailDahTooLong": {
+    "description": "Measurement line under the dahTooLong tip",
+    "placeholders": {
+      "offending": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "ratio": {
+        "type": "String"
+      }
+    }
+  },
+  "learnRhythmTitle": "Rhythm",
+  "@learnRhythmTitle": {
+    "description": "Send result: rhythm timeline section title"
+  },
+  "learnRhythmMine": "My rhythm",
+  "@learnRhythmMine": {
+    "description": "Rhythm timeline lane: measured keying"
+  },
+  "learnRhythmStandard": "Standard rhythm (target speed)",
+  "@learnRhythmStandard": {
+    "description": "Rhythm timeline lane: standard timing at the target speed"
+  },
+  "learnRhythmNormalizedNote": "Problems are judged against your own dit ({ms} ms), so an even but slow fist is fine. The standard lane is the target speed.",
+  "@learnRhythmNormalizedNote": {
+    "description": "Rhythm timeline: how problems are judged",
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "learnRhythmNotLocated": "Your marks couldn't be matched to single symbols, so problems aren't pinned to letters. Practise the whole target instead.",
+  "@learnRhythmNotLocated": {
+    "description": "Rhythm timeline: marks could not be matched symbol by symbol"
+  },
+  "learnRhythmPlayMine": "Play mine",
+  "@learnRhythmPlayMine": {
+    "description": "Rhythm timeline: replay the measured timing"
+  },
+  "learnRhythmPlayStandard": "Play standard",
+  "@learnRhythmPlayStandard": {
+    "description": "Rhythm timeline / send screen: play the standard timing"
+  },
+  "learnRhythmPracticePart": "Practise this ({count} tries)",
+  "@learnRhythmPracticePart": {
+    "description": "Rhythm symbol card: start targeted practice",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnRhythmPracticeWhole": "Practise the whole target",
+  "@learnRhythmPracticeWhole": {
+    "description": "Rhythm timeline: practise the whole target"
+  },
+  "learnRhythmSymbolOk": "Looks good",
+  "@learnRhythmSymbolOk": {
+    "description": "Rhythm symbol card: no problem found"
+  },
+  "learnRhythmZoomIn": "Zoom in",
+  "@learnRhythmZoomIn": {
+    "description": "Rhythm timeline: zoom in"
+  },
+  "learnRhythmZoomOut": "Zoom out",
+  "@learnRhythmZoomOut": {
+    "description": "Rhythm timeline: zoom out"
+  },
+  "chatSearchMessages": "Search messages",
+  "@chatSearchMessages": {
+    "description": "Conversation app bar: search this conversation's history"
+  },
+  "chatSearchHint": "Search this conversation",
+  "@chatSearchHint": {
+    "description": "Message search field hint"
+  },
+  "chatSearchAnyone": "Anyone",
+  "@chatSearchAnyone": {
+    "description": "Message search sender filter: everyone"
+  },
+  "chatSearchMe": "Me",
+  "@chatSearchMe": {
+    "description": "Message search sender filter / result sender: the local user"
+  },
+  "chatSearchThem": "Them",
+  "@chatSearchThem": {
+    "description": "Message search sender filter: the other person in a one-to-one chat"
+  },
+  "chatSearchAnyDate": "Any date",
+  "@chatSearchAnyDate": {
+    "description": "Message search date filter: no date limit"
+  },
+  "chatSearchDateRange": "{from} – {to}",
+  "@chatSearchDateRange": {
+    "description": "Message search date filter: chosen range",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "chatSearchBookmarked": "Bookmarked",
+  "@chatSearchBookmarked": {
+    "description": "Message search filter: bookmarked messages only"
+  },
+  "chatSearchNoResults": "No matching messages.",
+  "@chatSearchNoResults": {
+    "description": "Message search: nothing found"
+  },
+  "chatSearchMore": "Load more",
+  "@chatSearchMore": {
+    "description": "Message search: load the next page of results"
+  },
+  "chatAddBookmark": "Bookmark",
+  "@chatAddBookmark": {
+    "description": "Message menu: bookmark this message (local only)"
+  },
+  "chatRemoveBookmark": "Remove bookmark",
+  "@chatRemoveBookmark": {
+    "description": "Message menu: remove the local bookmark"
+  },
+  "chatBookmarked": "Bookmarked",
+  "@chatBookmarked": {
+    "description": "Message bubble: semantics of the bookmark mark"
+  },
+  "chatBookmarkFailed": "Couldn't save the bookmark.",
+  "@chatBookmarkFailed": {
+    "description": "Snack bar: bookmark could not be saved"
+  },
+  "chatRetrySend": "Retry sending",
+  "@chatRetrySend": {
+    "description": "Message menu: retry a failed send (same message, no duplicate bubble)"
+  },
+  "chatCancelSend": "Cancel sending",
+  "@chatCancelSend": {
+    "description": "Message menu: cancel a send that is still queued on this device"
+  },
+  "chatRetryQueued": "Queued again. It will be sent when your contact is online.",
+  "@chatRetryQueued": {
+    "description": "Snack bar: failed message queued again"
+  },
+  "chatSendCancelled": "Cancelled. The message was never sent.",
+  "@chatSendCancelled": {
+    "description": "Snack bar: queued message cancelled before it left the device"
+  },
+  "chatRetryNotNeeded": "This message is no longer failed; nothing to retry.",
+  "@chatRetryNotNeeded": {
+    "description": "Snack bar: retry not applied because the message is no longer failed"
+  },
+  "chatCancelTooLate": "Too late to cancel: the message was already handed to the network and may arrive.",
+  "@chatCancelTooLate": {
+    "description": "Snack bar: cancel failed because the transport already took the message"
+  },
+  "chatSendControlUnavailable": "Not available for this message.",
+  "@chatSendControlUnavailable": {
+    "description": "Snack bar: retry/cancel not available for this message"
+  },
+  "chatSendControlFailed": "That didn't work. The message keeps its current state; try again.",
+  "@chatSendControlFailed": {
+    "description": "Snack bar: retry/cancel could not be completed"
+  },
+  "workbenchTitle": "Recording workbench",
+  "@workbenchTitle": {
+    "description": "Recording workbench: screen title"
+  },
+  "workbenchOpen": "Recordings",
+  "@workbenchOpen": {
+    "description": "Listen screen: open the recorded-audio workbench"
+  },
+  "workbenchImport": "Import recording",
+  "@workbenchImport": {
+    "description": "Recording workbench: pick a WAV file"
+  },
+  "workbenchEmpty": "Import a WAV recording to loop, decode and copy it. No microphone needed.",
+  "@workbenchEmpty": {
+    "description": "Recording workbench: empty state"
+  },
+  "workbenchFormats": "WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.",
+  "@workbenchFormats": {
+    "description": "Recording workbench: supported formats and limits"
+  },
+  "workbenchBackupNote": "Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.",
+  "@workbenchBackupNote": {
+    "description": "Recording workbench: recordings are not part of identity backups"
+  },
+  "workbenchInfo": "{rate} kHz · {channels} · {duration}",
+  "@workbenchInfo": {
+    "description": "Recording workbench: recording format line",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "channels": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchMono": "mono",
+  "@workbenchMono": {
+    "description": "Recording workbench: one channel"
+  },
+  "workbenchStereo": "stereo",
+  "@workbenchStereo": {
+    "description": "Recording workbench: two channels"
+  },
+  "workbenchTruncated": "The file ends early; only the audio present is used.",
+  "@workbenchTruncated": {
+    "description": "Recording workbench: data chunk shorter than declared"
+  },
+  "workbenchErrorNotWav": "This is not a WAV file.",
+  "@workbenchErrorNotWav": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorFormat": "Only 16-bit PCM WAV is supported for now (no MP3, AAC or float WAV).",
+  "@workbenchErrorFormat": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorChannels": "Only mono or stereo recordings are supported.",
+  "@workbenchErrorChannels": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorRate": "Sample rate not supported. Use 8, 16, 44.1 or 48 kHz.",
+  "@workbenchErrorRate": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorDamaged": "The file is damaged or incomplete.",
+  "@workbenchErrorDamaged": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorTooLarge": "The file is larger than 50 MB.",
+  "@workbenchErrorTooLarge": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorTooLong": "The recording is longer than 20 minutes.",
+  "@workbenchErrorTooLong": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorIo": "Couldn't read the file.",
+  "@workbenchErrorIo": {
+    "description": "Recording workbench: import error"
+  },
+  "workbenchErrorMissing": "The recording file is missing.",
+  "@workbenchErrorMissing": {
+    "description": "Recording workbench: saved recording file not found"
+  },
+  "workbenchStart": "Start (s)",
+  "@workbenchStart": {
+    "description": "Recording workbench: selection start field (seconds)"
+  },
+  "workbenchEnd": "End (s)",
+  "@workbenchEnd": {
+    "description": "Recording workbench: selection end field (seconds)"
+  },
+  "workbenchSelectAll": "Select all",
+  "@workbenchSelectAll": {
+    "description": "Recording workbench: select the whole recording"
+  },
+  "workbenchPlay": "Play selection",
+  "@workbenchPlay": {
+    "description": "Recording workbench: play the selection"
+  },
+  "workbenchStop": "Stop",
+  "@workbenchStop": {
+    "description": "Recording workbench: stop playback"
+  },
+  "workbenchLoop": "Loop",
+  "@workbenchLoop": {
+    "description": "Recording workbench: loop the selection"
+  },
+  "workbenchPlayLimit": "Only the first 5 minutes of a longer selection are played.",
+  "@workbenchPlayLimit": {
+    "description": "Recording workbench: long selections play partly"
+  },
+  "workbenchAutoTune": "Find the tone automatically",
+  "@workbenchAutoTune": {
+    "description": "Recording workbench: automatic tone search"
+  },
+  "workbenchManualTone": "Tone: {hz} Hz",
+  "@workbenchManualTone": {
+    "description": "Recording workbench: manual tone frequency",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchDecode": "Decode selection",
+  "@workbenchDecode": {
+    "description": "Recording workbench: decode the selection"
+  },
+  "workbenchCancel": "Cancel",
+  "@workbenchCancel": {
+    "description": "Recording workbench: cancel decoding"
+  },
+  "workbenchDecoding": "Decoding… {percent}%",
+  "@workbenchDecoding": {
+    "description": "Recording workbench: decoding progress",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchResultStats": "Tone {hz} Hz · about {wpm} WPM",
+  "@workbenchResultStats": {
+    "description": "Recording workbench: decoder tone and speed",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchToneNotLocked": "No steady tone found; try manual tuning.",
+  "@workbenchToneNotLocked": {
+    "description": "Recording workbench: no steady tone"
+  },
+  "workbenchNoText": "Nothing decoded in this selection.",
+  "@workbenchNoText": {
+    "description": "Recording workbench: nothing decoded"
+  },
+  "workbenchUnknown": "Unknown patterns: {patterns}",
+  "@workbenchUnknown": {
+    "description": "Recording workbench: patterns that match no symbol",
+    "placeholders": {
+      "patterns": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchEdgeCut": "A symbol at the edge of the selection is cut off and may be wrong.",
+  "@workbenchEdgeCut": {
+    "description": "Recording workbench: symbol cut by the selection boundary"
+  },
+  "workbenchToneNote": "Tone lock is not a confidence score; check the text by ear.",
+  "@workbenchToneNote": {
+    "description": "Recording workbench: tone lock is not a confidence score"
+  },
+  "workbenchModeDecoder": "Decoder",
+  "@workbenchModeDecoder": {
+    "description": "Recording workbench: show decoder output"
+  },
+  "workbenchModeCopy": "Copy it myself",
+  "@workbenchModeCopy": {
+    "description": "Recording workbench: copy the selection yourself"
+  },
+  "workbenchDecoderHidden": "Decoder text is hidden while you copy.",
+  "@workbenchDecoderHidden": {
+    "description": "Recording workbench: decoder output hidden in copy mode"
+  },
+  "workbenchShowDecoder": "Show decoder text",
+  "@workbenchShowDecoder": {
+    "description": "Recording workbench: reveal decoder output (assisted)"
+  },
+  "workbenchReference": "Reference text (optional)",
+  "@workbenchReference": {
+    "description": "Recording workbench: optional answer text field"
+  },
+  "workbenchReferenceHelp": "Paste the text that was sent; otherwise your copy is compared with the decoder output.",
+  "@workbenchReferenceHelp": {
+    "description": "Recording workbench: reference text help"
+  },
+  "workbenchAgainstDecoder": "Compared with the decoder output, which can itself be wrong.",
+  "@workbenchAgainstDecoder": {
+    "description": "Recording workbench: scored against decoder output"
+  },
+  "workbenchSave": "Save selection",
+  "@workbenchSave": {
+    "description": "Recording workbench: save the selection as an audio material"
+  },
+  "workbenchSaveTitle": "Title",
+  "@workbenchSaveTitle": {
+    "description": "Recording workbench: title field"
+  },
+  "workbenchSaveNote": "Note",
+  "@workbenchSaveNote": {
+    "description": "Recording workbench: note field"
+  },
+  "workbenchSaved": "Selection saved",
+  "@workbenchSaved": {
+    "description": "Recording workbench: selection saved"
+  },
+  "workbenchSaveFailed": "Couldn't save the selection.",
+  "@workbenchSaveFailed": {
+    "description": "Recording workbench: saving failed"
+  },
+  "workbenchLibrary": "Saved selections",
+  "@workbenchLibrary": {
+    "description": "Recording workbench: saved selections list"
+  },
+  "workbenchLibraryEmpty": "No saved selections yet.",
+  "@workbenchLibraryEmpty": {
+    "description": "Recording workbench: no saved selections"
+  },
+  "workbenchMissing": "Recording file missing — choose it again or delete the entry.",
+  "@workbenchMissing": {
+    "description": "Recording workbench: saved selection whose media file is gone"
+  },
+  "workbenchRelink": "Choose the file again",
+  "@workbenchRelink": {
+    "description": "Recording workbench: choose the missing file again"
+  },
+  "workbenchDelete": "Delete",
+  "@workbenchDelete": {
+    "description": "Recording workbench: delete a saved selection"
+  },
+  "materialsTitle": "My materials",
+  "@materialsTitle": {
+    "description": "My materials: screen title / Learn entry"
+  },
+  "materialsNew": "New material",
+  "@materialsNew": {
+    "description": "My materials: create a material"
+  },
+  "materialsEdit": "Edit",
+  "@materialsEdit": {
+    "description": "My materials: edit a material"
+  },
+  "materialsSave": "Save",
+  "@materialsSave": {
+    "description": "Material editor: save"
+  },
+  "materialsSaveFailed": "Couldn't save the material.",
+  "@materialsSaveFailed": {
+    "description": "Material editor: saving failed"
+  },
+  "materialsTitleField": "Title",
+  "@materialsTitleField": {
+    "description": "Material editor: title field"
+  },
+  "materialsTagsField": "Tags (comma separated)",
+  "@materialsTagsField": {
+    "description": "Material editor: tags field (comma separated)"
+  },
+  "materialsTextField": "Text",
+  "@materialsTextField": {
+    "description": "Material editor: running text field"
+  },
+  "materialsListField": "One entry per line",
+  "@materialsListField": {
+    "description": "Material editor: one entry per line field"
+  },
+  "materialsKindText": "Text",
+  "@materialsKindText": {
+    "description": "Material kind: running text"
+  },
+  "materialsKindWords": "Word list",
+  "@materialsKindWords": {
+    "description": "Material kind: word list"
+  },
+  "materialsKindCallsigns": "Callsigns",
+  "@materialsKindCallsigns": {
+    "description": "Material kind: callsign list"
+  },
+  "materialsPreview": "Preview",
+  "@materialsPreview": {
+    "description": "Material editor: preview heading"
+  },
+  "materialsPreviewCounts": "{items} items · {symbols} symbols · {prosigns} prosigns",
+  "@materialsPreviewCounts": {
+    "description": "Material preview: item/symbol/prosign counts",
+    "placeholders": {
+      "items": {
+        "type": "int"
+      },
+      "symbols": {
+        "type": "int"
+      },
+      "prosigns": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPreviewUnsupported": "No Morse code, left out of practice: {chars}",
+  "@materialsPreviewUnsupported": {
+    "description": "Material preview: characters without Morse code (left out of practice)",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
+  },
+  "materialsPreviewDuplicates": "{count} duplicate entries are kept once",
+  "@materialsPreviewDuplicates": {
+    "description": "Material preview: duplicate list entries kept once",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemEmpty": "Enter some text first.",
+  "@materialsProblemEmpty": {
+    "description": "Material problem"
+  },
+  "materialsProblemTooLarge": "Too large: materials are limited to 1 MiB.",
+  "@materialsProblemTooLarge": {
+    "description": "Material problem: over 1 MiB"
+  },
+  "materialsProblemTooManyEntries": "Too many entries: at most {count}.",
+  "@materialsProblemTooManyEntries": {
+    "description": "Material problem: too many entries",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemEntryTooLong": "An entry is too long: at most {count} symbols each.",
+  "@materialsProblemEntryTooLong": {
+    "description": "Material problem: an entry is too long",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemNothingTrainable": "Nothing here can be practised in Morse.",
+  "@materialsProblemNothingTrainable": {
+    "description": "Material problem: nothing can be keyed"
+  },
+  "materialsSearch": "Search materials",
+  "@materialsSearch": {
+    "description": "My materials: search field"
+  },
+  "materialsFavoritesOnly": "Favourites",
+  "@materialsFavoritesOnly": {
+    "description": "My materials: favourites filter"
+  },
+  "materialsFavorite": "Add to favourites",
+  "@materialsFavorite": {
+    "description": "My materials: mark favourite"
+  },
+  "materialsUnfavorite": "Remove from favourites",
+  "@materialsUnfavorite": {
+    "description": "My materials: unmark favourite"
+  },
+  "materialsEmpty": "No materials yet. Add your own texts, word lists or callsigns, or save a chat message.",
+  "@materialsEmpty": {
+    "description": "My materials: empty library"
+  },
+  "materialsItems": "{count} items",
+  "@materialsItems": {
+    "description": "My materials: number of items",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsFromChat": "From chat",
+  "@materialsFromChat": {
+    "description": "My materials: saved from a chat message"
+  },
+  "materialsActions": "Material actions",
+  "@materialsActions": {
+    "description": "My materials: per-material menu"
+  },
+  "materialsPractise": "Practise",
+  "@materialsPractise": {
+    "description": "My materials: start practice"
+  },
+  "materialsDelete": "Delete",
+  "@materialsDelete": {
+    "description": "My materials: delete"
+  },
+  "materialsDeleteTitle": "Delete material?",
+  "@materialsDeleteTitle": {
+    "description": "My materials: delete confirmation title"
+  },
+  "materialsDeleteBody": "“{title}” will be removed from this device. Your practice history stays.",
+  "@materialsDeleteBody": {
+    "description": "My materials: delete confirmation body",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "materialsImport": "Import TXT or JSON",
+  "@materialsImport": {
+    "description": "My materials: import a TXT or JSON file"
+  },
+  "materialsImportDialogTitle": "Choose a material file",
+  "@materialsImportDialogTitle": {
+    "description": "Native file picker title for material import"
+  },
+  "materialsSaveDialogTitle": "Save material",
+  "@materialsSaveDialogTitle": {
+    "description": "Native save dialog title for material export"
+  },
+  "materialsImportFailed": "Import failed. Your library is unchanged.",
+  "@materialsImportFailed": {
+    "description": "My materials: import failed, library unchanged"
+  },
+  "materialsImportNotUtf8": "Only UTF-8 text files can be imported.",
+  "@materialsImportNotUtf8": {
+    "description": "My materials: file is not UTF-8 text"
+  },
+  "materialsImportInvalid": "Not a valid MorseCQ material file. Nothing was imported.",
+  "@materialsImportInvalid": {
+    "description": "My materials: JSON library invalid, nothing imported"
+  },
+  "materialsImported": "Imported {count} materials.",
+  "@materialsImported": {
+    "description": "My materials: import done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsDuplicateTitle": "Some materials already exist",
+  "@materialsDuplicateTitle": {
+    "description": "Import: some ids already exist"
+  },
+  "materialsDuplicateOverwrite": "Replace them",
+  "@materialsDuplicateOverwrite": {
+    "description": "Import duplicate policy"
+  },
+  "materialsDuplicateKeepCopy": "Keep both (import as copies)",
+  "@materialsDuplicateKeepCopy": {
+    "description": "Import duplicate policy"
+  },
+  "materialsDuplicateSkip": "Skip them",
+  "@materialsDuplicateSkip": {
+    "description": "Import duplicate policy"
+  },
+  "materialsExportJson": "Export as JSON",
+  "@materialsExportJson": {
+    "description": "My materials: export the (filtered) library as JSON"
+  },
+  "materialsExported": "Exported {count} materials.",
+  "@materialsExported": {
+    "description": "My materials: export done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsExportFailed": "Export failed.",
+  "@materialsExportFailed": {
+    "description": "My materials: export failed"
+  },
+  "materialsExportWav": "Export audio (WAV)",
+  "@materialsExportWav": {
+    "description": "My materials: export audio"
+  },
+  "materialsWavCharSpeed": "Character speed: {wpm} WPM",
+  "@materialsWavCharSpeed": {
+    "description": "WAV export: character speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavEffSpeed": "Effective speed: {wpm} WPM",
+  "@materialsWavEffSpeed": {
+    "description": "WAV export: effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavTone": "Tone: {hz} Hz",
+  "@materialsWavTone": {
+    "description": "WAV export: tone",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavWithAnswer": "Include the answer text (.txt)",
+  "@materialsWavWithAnswer": {
+    "description": "WAV export: also save the answer text"
+  },
+  "materialsWavFormat": "16-bit mono WAV, 48 kHz.",
+  "@materialsWavFormat": {
+    "description": "WAV export: file format note"
+  },
+  "materialsWavParts": "Longer than 10 minutes: exported as {count} files.",
+  "@materialsWavParts": {
+    "description": "WAV export: split into parts of at most 10 minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavExported": "Saved {count} audio files.",
+  "@materialsWavExported": {
+    "description": "WAV export: done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPracticeMode": "Practise with",
+  "@materialsPracticeMode": {
+    "description": "Material practice: choose symbol set"
+  },
+  "materialsPracticeLearned": "Learned symbols only",
+  "@materialsPracticeLearned": {
+    "description": "Material practice: learned symbols only"
+  },
+  "materialsPracticeLearnedPartial": "Learned symbols only ({count} entries unavailable: they use symbols not learned yet)",
+  "@materialsPracticeLearnedPartial": {
+    "description": "Material practice: learned-only leaves some entries out",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPracticeAll": "All Morse symbols",
+  "@materialsPracticeAll": {
+    "description": "Material practice: every supported symbol"
+  },
+  "materialsPracticeNothing": "No entries can be practised in this mode.",
+  "@materialsPracticeNothing": {
+    "description": "Material practice: no usable entries in this mode"
+  },
+  "guestTryLearning": "Try learning first",
+  "@guestTryLearning": {
+    "description": "Welcome/unlock: learn without an identity"
+  },
+  "guestBanner": "Guest learning: progress stays on this device. Chat needs an identity.",
+  "@guestBanner": {
+    "description": "Guest mode banner over the shell"
+  },
+  "guestGetIdentity": "Set up identity",
+  "@guestGetIdentity": {
+    "description": "Guest mode: go to create / restore / unlock an identity"
+  },
+  "guestIdentityTitle": "Identity needed",
+  "@guestIdentityTitle": {
+    "description": "Guest mode: title of a chat destination that needs an identity"
+  },
+  "guestIdentityBody": "Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.",
+  "@guestIdentityBody": {
+    "description": "Guest mode: why chat needs an identity"
+  },
+  "guestClearData": "Clear guest learning data",
+  "@guestClearData": {
+    "description": "Guest Me page: delete guest learning data"
+  },
+  "guestClearDataBody": "Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.",
+  "@guestClearDataBody": {
+    "description": "Guest Me page: what clearing does"
+  },
+  "guestClearConfirm": "Clear",
+  "@guestClearConfirm": {
+    "description": "Guest clear dialog: confirm"
+  },
+  "guestCleared": "Guest learning data cleared.",
+  "@guestCleared": {
+    "description": "Snack: guest data cleared"
+  },
+  "guestClearFailed": "Couldn't clear the guest data.",
+  "@guestClearFailed": {
+    "description": "Snack: clearing guest data failed"
+  },
+  "guestMigrationFailed": "Your identity is ready, but your guest learning progress hasn't moved to it yet. It is safe on this device.",
+  "@guestMigrationFailed": {
+    "description": "Banner: guest progress did not move to the new identity yet"
+  },
+  "guestChoiceBody": "You also have guest learning progress. The restored identity's progress is in use; nothing was merged.",
+  "@guestChoiceBody": {
+    "description": "Banner after restore/unlock from guest mode: choose progress"
+  },
+  "guestChoiceKeep": "Keep restored",
+  "@guestChoiceKeep": {
+    "description": "Banner action: keep restored progress"
+  },
+  "guestChoiceUseGuest": "Use guest progress",
+  "@guestChoiceUseGuest": {
+    "description": "Banner action: replace with guest progress (restored data is kept aside)"
+  },
+  "placementTitle": "Check my level",
+  "@placementTitle": {
+    "description": "Placement assessment: screen title"
+  },
+  "placementCheckLevel": "Check my current level",
+  "@placementCheckLevel": {
+    "description": "Placement offer: start the assessment"
+  },
+  "placementFromZero": "Start from zero",
+  "@placementFromZero": {
+    "description": "Placement: start the course at lesson one"
+  },
+  "placementOfferTitle": "New to Morse, or already copying?",
+  "@placementOfferTitle": {
+    "description": "Learn home: offer for brand-new learners"
+  },
+  "placementOfferBody": "A short check can suggest where to start. It is optional and changes nothing until you choose.",
+  "@placementOfferBody": {
+    "description": "Learn home: placement offer explanation"
+  },
+  "placementIntro": "About 3–5 minutes of copying in five steps: Koch symbols in groups at rising speed, then short words. It is a rough guide from a small sample, not a certificate. Stop whenever you like.",
+  "@placementIntro": {
+    "description": "Placement intro"
+  },
+  "placementStart": "Start",
+  "@placementStart": {
+    "description": "Placement: start"
+  },
+  "placementSkip": "Skip",
+  "@placementSkip": {
+    "description": "Placement: skip"
+  },
+  "placementStop": "Stop",
+  "@placementStop": {
+    "description": "Placement: stop early and see the suggestion"
+  },
+  "placementTierProgress": "Step {step} of {total} · {wpm} WPM effective",
+  "@placementTierProgress": {
+    "description": "Placement: current step and effective speed",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementTierPassed": "Well copied. Next step is faster.",
+  "@placementTierPassed": {
+    "description": "Placement: step passed"
+  },
+  "placementTierStopped": "That step was below 90%, so the check ends here.",
+  "@placementTierStopped": {
+    "description": "Placement: step below 90 percent, check ends"
+  },
+  "placementNextTier": "Next step",
+  "@placementNextTier": {
+    "description": "Placement: continue to the next step"
+  },
+  "placementSuggestion": "Suggested start: lesson {lesson}",
+  "@placementSuggestion": {
+    "description": "Placement result headline",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerified": "{count} of {total} Koch symbols confirmed in order.",
+  "@placementVerified": {
+    "description": "Placement result: verified Koch prefix",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placementLimits": "Based on a short sample: symbols you were not tested on stay untested, and nothing is marked as learned. You can change the lesson any time.",
+  "@placementLimits": {
+    "description": "Placement result: limitations"
+  },
+  "placementAdopt": "Start at lesson {lesson}",
+  "@placementAdopt": {
+    "description": "Placement result: apply the suggested lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "chatJumpToLatest": "Latest messages",
+  "@chatJumpToLatest": {
+    "description": "Conversation: button back to the newest messages after jumping to an older search result"
+  },
+  "chatMessageGone": "That message is no longer in this conversation.",
+  "@chatMessageGone": {
+    "description": "Snack: a search result or bookmark points at a message that no longer exists"
+  },
+  "chatListenOnlyPreview": "New message — listen to copy it",
+  "@chatListenOnlyPreview": {
+    "description": "Conversation list preview of a received message while listen-only training hides it"
+  },
+  "chatSaveMaterialConfirm": "Save the rest",
+  "@chatSaveMaterialConfirm": {
+    "description": "Save-as-material confirmation: save the supported part"
+  },
+  "materialsImportConfirm": "Import {count} materials?",
+  "@materialsImportConfirm": {
+    "description": "JSON import preview dialog title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsExportTxt": "Export as text (TXT)",
+  "@materialsExportTxt": {
+    "description": "My materials: export the original text as a .txt file"
+  },
+  "accountBackupMediaTitle": "Include saved recordings?",
+  "@accountBackupMediaTitle": {
+    "description": "Backup export: ask whether to include saved recordings"
+  },
+  "accountBackupMediaBody": "{count} saved recordings ({size} MB). Their titles, notes and positions are always in the backup; the audio only if you include it.",
+  "@accountBackupMediaBody": {
+    "description": "Backup export: recordings count and size",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "accountBackupMediaTooLarge": "Saved recordings ({size} MB) are too large to put in a backup; only their titles, notes and positions are included.",
+  "@accountBackupMediaTooLarge": {
+    "description": "Backup export: recordings too large to include",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "accountBackupMediaInclude": "Include recordings",
+  "@accountBackupMediaInclude": {
+    "description": "Backup export: include recordings"
+  },
+  "accountBackupMediaSkip": "Without recordings",
+  "@accountBackupMediaSkip": {
+    "description": "Backup export: continue without recordings (default)"
   }
 }

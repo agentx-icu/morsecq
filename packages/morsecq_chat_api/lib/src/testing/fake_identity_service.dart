@@ -211,7 +211,7 @@ final class FakeIdentityService implements IdentityService {
   }
 
   @override
-  Future<Uint8List> exportBackup() async {
+  Future<Uint8List> exportBackup({bool includeMedia = false}) async {
     final disk = _requireDisk();
     _requireCurrent();
     final payload = jsonEncode({

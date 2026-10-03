@@ -116,9 +116,7 @@ class AlignedSymbols extends StatelessWidget {
         foreground = scheme.onErrorContainer;
       case AlignmentOp.deletion:
       case AlignmentOp.insertion:
-        background = symbol == null
-            ? scheme.surface
-            : scheme.errorContainer;
+        background = symbol == null ? scheme.surface : scheme.errorContainer;
         foreground = symbol == null
             ? scheme.onSurfaceVariant
             : scheme.onErrorContainer;

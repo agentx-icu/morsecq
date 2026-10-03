@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
@@ -18,10 +19,20 @@ final class SendSession implements KeyTarget {
     required DateTime Function() now,
     this.lesson,
     this.drillKind = 'send',
+    this.planStepId,
+    String? id,
   }) : decoder = MorseDecoder(config: DecoderConfig(initialDit: timing.dit)),
        nominalTiming = timing,
        _now = now,
-       startedAt = now();
+       startedAt = now() {
+    this.id = id ?? ExerciseIds.next(startedAt, Random());
+  }
+
+  /// Stable exercise id of this attempt (see `ReceiveSession.id`).
+  late final String id;
+
+  /// Daily-plan step this attempt belongs to, if any.
+  final String? planStepId;
 
   /// Text the operator is asked to send.
   final String target;
@@ -74,7 +85,9 @@ final class SendSession implements KeyTarget {
       final pattern = symbol.startsWith('<')
           ? MorseAlphabet.encodeProsign(symbol)
           : null;
-      final mark = pattern == null ? null : MorseAlphabet.decodePattern(pattern);
+      final mark = pattern == null
+          ? null
+          : MorseAlphabet.decodePattern(pattern);
       if (mark != null && !wanted.contains(mark)) {
         aliases[mark] = symbol;
       }
@@ -102,6 +115,32 @@ final class SendSession implements KeyTarget {
   bool get hasInput => _marks.isNotEmpty;
   bool get isFinished => _result != null;
   Duration get elapsed => _now().difference(startedAt);
+
+  Duration _paused = Duration.zero;
+  DateTime? _pausedAt;
+  Duration? _activeAtFinish;
+
+  /// Background: excluded from [activeElapsed].
+  void pause() => _pausedAt ??= _now();
+
+  void resume() {
+    final at = _pausedAt;
+    if (at == null) return;
+    _paused += _now().difference(at);
+    _pausedAt = null;
+  }
+
+  /// Time spent keying: pauses excluded, frozen when the attempt finishes
+  /// (saving the result afterwards does not count).
+  Duration get activeElapsed {
+    final frozen = _activeAtFinish;
+    if (frozen != null) return frozen;
+    final open = _pausedAt == null
+        ? Duration.zero
+        : _now().difference(_pausedAt!);
+    final active = elapsed - _paused - open;
+    return active.isNegative ? Duration.zero : active;
+  }
 
   /// Marks (key-down durations) in order; a defensive copy.
   List<Duration> get marks => List<Duration>.unmodifiable(_marks);
@@ -202,6 +241,7 @@ final class SendSession implements KeyTarget {
       // Key still held when the operator hit "done": close the mark now.
       keyUp(downAt + decoder.estimatedDit);
     }
+    _activeAtFinish = activeElapsed;
     final decoded = _inTargetTerms(decoder.flush());
     final attempt = SendAttempt(
       target: target,

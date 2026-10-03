@@ -75,6 +75,9 @@ class _HistoryService implements ChatService {
   }
 
   @override
+  bool get supportsSendControl => delegate.supportsSendControl;
+
+  @override
   bool get hasSession => delegate.hasSession;
 
   @override

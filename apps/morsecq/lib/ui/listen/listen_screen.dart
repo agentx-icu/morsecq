@@ -12,6 +12,7 @@ import 'listen_settings.dart';
 import 'listen_widgets.dart';
 import 'pcm_source.dart';
 import 'record_pcm_source.dart';
+import 'workbench/workbench_screen.dart';
 
 /// Microphone -> Morse -> text.
 ///
@@ -147,6 +148,16 @@ class _ListenScreenState extends State<ListenScreen>
     ),
   );
 
+  /// The microphone stops before the workbench plays anything (it would
+  /// otherwise decode the playback); the learner restarts it by hand.
+  Future<void> _openWorkbench() async {
+    if (_controller.isListening || _controller.isBusy) await _controller.stop();
+    if (!mounted) return;
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final listening = _controller.isListening;
@@ -156,6 +167,12 @@ class _ListenScreenState extends State<ListenScreen>
       appBar: AppBar(
         title: Text(s.listenTitle),
         actions: <Widget>[
+          IconButton(
+            key: const ValueKey('listen-open-workbench'),
+            tooltip: s.workbenchOpen,
+            onPressed: () => unawaited(_openWorkbench()),
+            icon: const Icon(Icons.audio_file_outlined),
+          ),
           IconButton(
             tooltip: s.listenClear,
             onPressed: _controller.hasText ? _controller.clear : null,

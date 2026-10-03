@@ -40,7 +40,10 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(s.referencePlaybackSettings, style: theme.textTheme.titleLarge),
+            Text(
+              s.referencePlaybackSettings,
+              style: theme.textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
             _SliderRow(
               label: s.referenceCharacterSpeed,
@@ -48,9 +51,10 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
               valueLabel: wpmLabel(settings.wpm),
               min: ReferencePlaybackSettings.minWpm,
               max: ReferencePlaybackSettings.maxWpm,
-              divisions: (ReferencePlaybackSettings.maxWpm -
-                      ReferencePlaybackSettings.minWpm)
-                  .round(),
+              divisions:
+                  (ReferencePlaybackSettings.maxWpm -
+                          ReferencePlaybackSettings.minWpm)
+                      .round(),
               onChanged: (double v) => settings.wpm = v,
             ),
             SwitchListTile(
@@ -78,10 +82,11 @@ class ReferencePlaybackSettingsSheet extends StatelessWidget {
               valueLabel: s.referenceHzValue('${settings.toneHz.round()}'),
               min: ReferencePlaybackSettings.minToneHz,
               max: ReferencePlaybackSettings.maxToneHz,
-              divisions: ((ReferencePlaybackSettings.maxToneHz -
-                          ReferencePlaybackSettings.minToneHz) /
-                      25)
-                  .round(),
+              divisions:
+                  ((ReferencePlaybackSettings.maxToneHz -
+                              ReferencePlaybackSettings.minToneHz) /
+                          25)
+                      .round(),
               onChanged: (double v) => settings.toneHz = v,
             ),
           ],

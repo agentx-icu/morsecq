@@ -222,7 +222,8 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
   }) => _runMutation(() => _updateProfile(displayName, statusMessage));
 
   @override
-  Future<Uint8List> exportBackup() => _runMutation(_exportBackup);
+  Future<Uint8List> exportBackup({bool includeMedia = false}) =>
+      _runMutation(() => _exportBackup(includeMedia: includeMedia));
 
   @override
   Future<Identity> importBackup(Uint8List bytes, {String? password}) =>

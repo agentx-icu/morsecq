@@ -54,7 +54,10 @@ Every screen on macOS, Linux, Windows, iPhone, iPad and Android, in English and 
 
 The app has five destinations — **Learn / Chat / Groups / Reference / Me** —
 behind a single startup gate: a Tox identity is created (or unlocked) on first
-launch and is required for training as well as chat.
+launch for chat. **Try learning first** runs Learn, Reference and the tools on a
+separate local guest profile; creating an identity later moves that progress to
+it (a restored or unlocked identity keeps its own progress unless you choose
+the guest progress).
 
 - **Learn** — Koch-method character course with Farnsworth spacing, copy
   drills (character groups, single characters, words, abbreviations and
@@ -62,21 +65,34 @@ launch and is required for training as well as chat.
   exchanges), send practice on an
   on-screen straight key or iambic paddle **and** on the desktop keyboard,
   real-time decoding with rhythm diagnostics, confusion matrix, spaced
-  repetition and daily goals. Progress is stored per identity.
+  repetition and daily goals. Progress is stored per identity (or guest).
+  **Today's plan** (5/10/15 minutes: review, focused practice, course,
+  sending) with evidence-based speed advice that changes nothing until you
+  apply it; an interactive **QSO simulator** (answer a CQ or call CQ, keyed
+  replies checked slot by slot, AGN/QRS); sending **rhythm timelines** with
+  replay and targeted practice; a skippable **placement check**; **My
+  materials** (own texts, word lists, callsigns; TXT/JSON import and export;
+  16-bit WAV export).
 - **Radio tools** — from the Reference tab: Maidenhead locator with distance
   and beam heading, band edges per IARU region with wavelength and antenna
   lengths, CW speed calculator, RST report builder and a UTC clock
   (`radio_tools`, pure Dart).
 - **Listen by microphone** — decode Morse from live audio (`morse_dsp`:
   Goertzel tone detection, auto-tune, envelope gate) with the `record` plugin
-  feeding PCM into `AudioMorseDecoder`.
+  feeding PCM into `AudioMorseDecoder`. A **recording workbench** imports WAV
+  files (PCM16, 8–48 kHz, mono/stereo), loops a selection, decodes it, or lets
+  you copy it yourself and score the copy.
 - **Chat** — add friends by Tox ID or QR code; messages travel as plain text so
   any Tim2Tox client (including toxee) can read them, and MorseCQ replays them
   as dits and dahs at the *listener's* chosen speed. Bubbles show dot/dash
   pattern, plain text and a play button; "listen first, then reveal" training
   mode; messages are keyed with a straight key or paddles (touch, or keyboard
   keys on desktop) into a read-only draft, with pre-listen; offline queue
-  with "pending" status while the peer is offline.
+  with "pending" status while the peer is offline. Received messages can be
+  practised as a copy exercise or saved as training material; a listen-only
+  mode hides text and dots/dashes. History search with filters, jump to a
+  result, local bookmarks, cancelling a still-queued send and retrying a
+  failed one (same message, no duplicate bubble).
 - **Groups** — create, invite and join by chat_id (Tox NGC groups), group
   Morse messages, member list, automatic re-join after restart.
 - **Reference** — alphabet, punctuation, prosigns, Q-codes and CW

@@ -196,4 +196,28 @@ void main() {
       expect(b.bestStreak, a.bestStreak);
     });
   });
+
+  test('QSO and placement records never enter accuracy figures', () {
+    final now = DateTime(2026, 10, 3, 12);
+    SessionSummary rec(ExerciseSource source, int correct) => SessionSummary(
+      at: now,
+      totalChars: 10,
+      correctChars: correct,
+      id: 'ex${source.name}',
+      source: source,
+      assistance: const {},
+    );
+    final snap = StatsSnapshot.from(
+      TrainerProgress(
+        history: [
+          rec(ExerciseSource.course, 5),
+          rec(ExerciseSource.qso, 10),
+          rec(ExerciseSource.placement, 10),
+        ],
+      ),
+      now: now,
+    );
+    expect(snap.accuracyLast7Days, 0.5);
+    expect(snap.trend, hasLength(1));
+  });
 }

@@ -111,16 +111,14 @@ void main() {
 
         await _openOverflow(tester);
         expect(find.text(s.chatPlaybackSettings), findsOneWidget);
-        await tester.tap(find.byType(CheckedPopupMenuItem<String>));
+        await tester.tap(_trainingItem);
         await tester.pumpAndSettle();
         expect(h.settings.trainingMode, isTrue);
         expect(find.text(s.chatTrainingModeOn), findsOneWidget);
 
         // The menu entry reflects the toggled state.
         await _openOverflow(tester);
-        final CheckedPopupMenuItem<String> item = tester.widget(
-          find.byType(CheckedPopupMenuItem<String>),
-        );
+        final CheckedPopupMenuItem<String> item = tester.widget(_trainingItem);
         expect(item.checked, isTrue);
       });
 
@@ -147,8 +145,14 @@ void main() {
         await _openOverflow(tester);
         expect(find.text(s.chatClearHistory), findsOneWidget);
         expect(find.text(s.chatPlaybackSettings), findsNothing);
-        expect(find.byType(CheckedPopupMenuItem<String>), findsNothing);
+        expect(_trainingItem, findsNothing);
       });
     });
   }
 }
+
+/// The training-mode entry (the menu also holds the listen-only toggle).
+final Finder _trainingItem = find.widgetWithText(
+  CheckedPopupMenuItem<String>,
+  s.chatTrainingMode,
+);

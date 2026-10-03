@@ -1,3 +1,4 @@
+import 'message_search.dart';
 import 'models.dart';
 
 /// Friends, conversations, C2C and group messaging.
@@ -103,6 +104,54 @@ abstract interface class ChatService {
   int get maxMessageBytes;
 
   Future<void> clearHistory(String conversationId);
+
+  // ---- Message management (F07) ---------------------------------------------
+
+  /// Searches the whole persisted history of [conversationId] (not only the
+  /// rows a screen loaded), newest first by (timestamp, id). Pass the
+  /// previous page's [MessageSearchPage.next] as [cursor] for the next page;
+  /// pages never lose or repeat rows, even with equal timestamps.
+  /// A fired [cancel] stops the scan and throws [MessageSearchCancelled].
+  Future<MessageSearchPage> searchMessages(
+    String conversationId,
+    MessageSearchQuery query, {
+    MessageSearchCursor? cursor,
+    int limit = 20,
+    MessageSearchCancel? cancel,
+  });
+
+  /// Up to [before] older and [after] newer rows around [messageId], oldest
+  /// first, including the message itself; empty when it is not in the
+  /// history (deleted, cleared). For jumping to a search result.
+  Future<List<ChatMessage>> loadAround(
+    String conversationId,
+    String messageId, {
+    int before = 25,
+    int after = 25,
+  });
+
+  /// Whether [retryMessage] / [cancelPendingMessage] are backed by the
+  /// transport. When false both return [MessageActionResult.unavailable]
+  /// and the UI must not offer them.
+  bool get supportsSendControl;
+
+  /// Re-sends our [MessageStatus.failed] message under its stable local id
+  /// (no second row); the row turns [MessageStatus.pending] and drains when
+  /// the peer is reachable. Only confirmed failures qualify. A stable local
+  /// id is not end-to-end exactly-once delivery.
+  Future<MessageActionResult> retryMessage(
+    String conversationId,
+    String messageId,
+  );
+
+  /// Cancels our [MessageStatus.pending] message while it is still only
+  /// queued locally. Returns [MessageActionResult.stateChanged] when the
+  /// transport already claimed it (it may be delivered). The row is kept as
+  /// [MessageStatus.cancelled] and emitted on [messageEvents].
+  Future<MessageActionResult> cancelPendingMessage(
+    String conversationId,
+    String messageId,
+  );
 
   // ---- Groups --------------------------------------------------------------
 

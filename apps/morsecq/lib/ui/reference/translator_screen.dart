@@ -24,10 +24,10 @@ enum TranslatorMode {
 
   /// Localised segment label.
   String label(S s) => switch (this) {
-        TranslatorMode.textToMorse => s.referenceModeTextToMorse,
-        TranslatorMode.morseToText => s.referenceModeMorseToText,
-        TranslatorMode.key => s.referenceModeKey,
-      };
+    TranslatorMode.textToMorse => s.referenceModeTextToMorse,
+    TranslatorMode.morseToText => s.referenceModeMorseToText,
+    TranslatorMode.key => s.referenceModeKey,
+  };
 }
 
 /// Two-way Morse translator: text to pattern (with playback), typed pattern
@@ -72,11 +72,12 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
     super.initState();
     _clock = widget.clock ?? SystemClock.shared;
     _settings = widget.settings ?? ReferencePlaybackSettings();
-    final MorsePlayerFactory factory = widget.playerFactory ??
+    final MorsePlayerFactory factory =
+        widget.playerFactory ??
         () => createSidetoneMorsePlayer(
-              frequencyHz: _settings.toneHz,
-              clock: _clock,
-            );
+          frequencyHz: _settings.toneHz,
+          clock: _clock,
+        );
     _controller = ReferencePlaybackController(
       playerFactory: factory,
       settings: _settings,
@@ -101,8 +102,12 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
     final S s = context.s;
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ReferencePlaybackController>.value(value: _controller),
-        ChangeNotifierProvider<ReferencePlaybackSettings>.value(value: _settings),
+        ChangeNotifierProvider<ReferencePlaybackController>.value(
+          value: _controller,
+        ),
+        ChangeNotifierProvider<ReferencePlaybackSettings>.value(
+          value: _settings,
+        ),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -111,14 +116,17 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
             IconButton(
               tooltip: s.referencePlaybackSettings,
               icon: const Icon(Icons.tune),
-              onPressed: () => showReferencePlaybackSettings(context, _settings),
+              onPressed: () =>
+                  showReferencePlaybackSettings(context, _settings),
             ),
           ],
         ),
         body: SafeArea(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-              final bool twoPane = referenceTwoPaneForWidth(constraints.maxWidth);
+              final bool twoPane = referenceTwoPaneForWidth(
+                constraints.maxWidth,
+              );
               return Column(
                 children: <Widget>[
                   Padding(
@@ -132,7 +140,11 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         for (final TranslatorMode m in TranslatorMode.values)
                           ButtonSegment<TranslatorMode>(
                             value: m,
-                            label: Text(m.label(s), maxLines: 1, softWrap: false),
+                            label: Text(
+                              m.label(s),
+                              maxLines: 1,
+                              softWrap: false,
+                            ),
                             icon: twoPane ? Icon(m.icon) : null,
                           ),
                       ],
@@ -146,8 +158,13 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         twoPane: twoPane,
                         initialText: widget.initialText,
                       ),
-                      TranslatorMode.morseToText => MorseToTextView(twoPane: twoPane),
-                      TranslatorMode.key => TapToKeyView(clock: _clock, twoPane: twoPane),
+                      TranslatorMode.morseToText => MorseToTextView(
+                        twoPane: twoPane,
+                      ),
+                      TranslatorMode.key => TapToKeyView(
+                        clock: _clock,
+                        twoPane: twoPane,
+                      ),
                     },
                   ),
                 ],

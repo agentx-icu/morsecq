@@ -91,6 +91,48 @@ final class SessionScore {
     );
   }
 
+  /// Joins separately scored rounds without re-aligning them across round
+  /// boundaries (a copy that runs into the next round cannot borrow its
+  /// symbols).
+  factory SessionScore.combine(
+    List<SessionScore> parts, {
+    DateTime? at,
+    Duration? elapsed,
+    int? lesson,
+    String? drillKind,
+  }) {
+    final alignment = <AlignedPair>[];
+    final stats = <String, CharStats>{};
+    final confusion = ConfusionMatrix();
+    var correct = 0, subs = 0, ins = 0, del = 0;
+    for (final p in parts) {
+      alignment.addAll(p.alignment);
+      correct += p.correctChars;
+      subs += p.substitutions;
+      ins += p.insertions;
+      del += p.deletions;
+      for (final e in p.charStats.entries) {
+        stats[e.key] = (stats[e.key] ?? CharStats.empty) + e.value;
+      }
+      confusion.merge(p.confusion);
+    }
+    return SessionScore._(
+      target: parts.map((p) => p.target).join(' '),
+      answer: parts.map((p) => p.answer).join(' '),
+      alignment: alignment,
+      correctChars: correct,
+      substitutions: subs,
+      insertions: ins,
+      deletions: del,
+      charStats: stats,
+      confusion: confusion,
+      at: at,
+      elapsed: elapsed,
+      lesson: lesson,
+      drillKind: drillKind,
+    );
+  }
+
   final String target;
   final String answer;
 

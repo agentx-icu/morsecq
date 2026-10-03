@@ -13,7 +13,10 @@ enum KeyerMode {
 
   bool get isPaddle => this != KeyerMode.straight;
 
-  static KeyerMode parse(String? name, {KeyerMode fallback = KeyerMode.iambicB}) {
+  static KeyerMode parse(
+    String? name, {
+    KeyerMode fallback = KeyerMode.iambicB,
+  }) {
     for (final mode in values) {
       if (mode.name == name) {
         return mode;
@@ -36,6 +39,7 @@ final class TrainingSettings {
     this.flashEnabled = false,
     this.hapticEnabled = false,
     this.keyerMode = KeyerMode.iambicB,
+    this.planMinutes = 10,
   });
 
   static const TrainingSettings defaults = TrainingSettings();
@@ -65,6 +69,9 @@ final class TrainingSettings {
 
   final KeyerMode keyerMode;
 
+  /// Daily-plan budget in minutes (one of `DailyPlanBuilder.budgets`).
+  final int planMinutes;
+
   /// True when at least one modality renders the key state, so a drill is
   /// perceivable. The receive screen falls back to flash when nothing is on.
   bool get hasFeedback => soundEnabled || flashEnabled || hapticEnabled;
@@ -75,12 +82,14 @@ final class TrainingSettings {
     bool? flashEnabled,
     bool? hapticEnabled,
     KeyerMode? keyerMode,
+    int? planMinutes,
   }) => TrainingSettings(
     trainer: trainer ?? this.trainer,
     soundEnabled: soundEnabled ?? this.soundEnabled,
     flashEnabled: flashEnabled ?? this.flashEnabled,
     hapticEnabled: hapticEnabled ?? this.hapticEnabled,
     keyerMode: keyerMode ?? this.keyerMode,
+    planMinutes: planMinutes ?? this.planMinutes,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -90,6 +99,7 @@ final class TrainingSettings {
     'flashEnabled': flashEnabled,
     'hapticEnabled': hapticEnabled,
     'keyerMode': keyerMode.name,
+    'planMinutes': planMinutes,
   };
 
   /// Reads [toJson] output; missing or malformed keys fall back to defaults.
@@ -104,6 +114,10 @@ final class TrainingSettings {
       flashEnabled: json['flashEnabled'] as bool? ?? d.flashEnabled,
       hapticEnabled: json['hapticEnabled'] as bool? ?? d.hapticEnabled,
       keyerMode: KeyerMode.parse(json['keyerMode'] as String?),
+      planMinutes: switch ((json['planMinutes'] as num?)?.toInt()) {
+        final int m when DailyPlanBuilder.budgets.contains(m) => m,
+        _ => d.planMinutes,
+      },
     );
   }
 
@@ -114,11 +128,18 @@ final class TrainingSettings {
       other.soundEnabled == soundEnabled &&
       other.flashEnabled == flashEnabled &&
       other.hapticEnabled == hapticEnabled &&
-      other.keyerMode == keyerMode;
+      other.keyerMode == keyerMode &&
+      other.planMinutes == planMinutes;
 
   @override
-  int get hashCode =>
-      Object.hash(trainer, soundEnabled, flashEnabled, hapticEnabled, keyerMode);
+  int get hashCode => Object.hash(
+    trainer,
+    soundEnabled,
+    flashEnabled,
+    hapticEnabled,
+    keyerMode,
+    planMinutes,
+  );
 
   @override
   String toString() =>

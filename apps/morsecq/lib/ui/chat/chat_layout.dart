@@ -111,11 +111,7 @@ Future<bool> confirm(
 /// today, month + day for the current year, a short date otherwise. All
 /// three come from [MaterialLocalizations], so `zh` renders `9月30日` and
 /// `en` `Sep 30` without any format string in this file.
-String formatMessageTime(
-  BuildContext context,
-  DateTime time, {
-  DateTime? now,
-}) {
+String formatMessageTime(BuildContext context, DateTime time, {DateTime? now}) {
   final MaterialLocalizations loc = MaterialLocalizations.of(context);
   final DateTime local = time.toLocal();
   final DateTime today = (now ?? DateTime.now()).toLocal();
