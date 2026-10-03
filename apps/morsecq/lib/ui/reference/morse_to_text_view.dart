@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../i18n/l10n_extension.dart';
 import 'morse_keypad.dart';
 import 'pattern_decoder.dart';
+import 'reference_layout.dart';
 
 /// Morse → Text: the user types `.` / `-` / space / `/` (or taps the
 /// keypad) and the decoded text follows. Unknown patterns render as
@@ -188,12 +189,15 @@ class _MorseToTextViewState extends State<MorseToTextView> {
         ],
       );
     }
-    return Column(
-      children: <Widget>[
-        input,
-        const Divider(height: 1),
-        Expanded(child: output),
-      ],
+    return ReferenceMinHeight(
+      minHeight: 460,
+      child: Column(
+        children: <Widget>[
+          input,
+          const Divider(height: 1),
+          Expanded(child: output),
+        ],
+      ),
     );
   }
 }

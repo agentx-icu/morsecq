@@ -2310,4 +2310,19 @@ class SPt extends S {
 
   @override
   String get learnShowFewerChars => 'Mostrar menos caracteres';
+
+  @override
+  String get learnLeaveDrillTitle => 'Sair desta sessão?';
+
+  @override
+  String get learnLeaveDrillBody => 'As rodadas desta sessão não serão salvas.';
+
+  @override
+  String get learnLeaveDrillConfirm => 'Sair';
+
+  @override
+  String get chatScanQrPermissionDenied => 'O MorseCQ precisa de acesso à câmera para ler um código QR. Permita-o nas configurações do sistema.';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'A câmera não está disponível neste dispositivo.';
 }

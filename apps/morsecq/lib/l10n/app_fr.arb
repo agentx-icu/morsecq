@@ -657,5 +657,10 @@
   "chatSelfMe": "Moi",
   "chatSelfLocalOnly": "Enregistré uniquement sur cet appareil",
   "chatSelfContactSubtitle": "Brouillons, exercices et notes · jamais envoyés",
-  "learnShowFewerChars": "Afficher moins de caractères"
+  "learnShowFewerChars": "Afficher moins de caractères",
+  "learnLeaveDrillTitle": "Quitter cette séance ?",
+  "learnLeaveDrillBody": "Les manches de cette séance ne seront pas enregistrées.",
+  "learnLeaveDrillConfirm": "Quitter",
+  "chatScanQrPermissionDenied": "MorseCQ a besoin de la caméra pour scanner un code QR. Autorisez-la dans les réglages du système.",
+  "chatScanQrCameraUnavailable": "La caméra n'est pas disponible sur cet appareil."
 }

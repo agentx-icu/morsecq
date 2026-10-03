@@ -2288,4 +2288,19 @@ class SJa extends S {
 
   @override
   String get learnShowFewerChars => '文字を折りたたむ';
+
+  @override
+  String get learnLeaveDrillTitle => 'このセッションを終了しますか？';
+
+  @override
+  String get learnLeaveDrillBody => 'このセッションで行ったラウンドは保存されません。';
+
+  @override
+  String get learnLeaveDrillConfirm => '終了';
+
+  @override
+  String get chatScanQrPermissionDenied => 'QR コードを読み取るには MorseCQ にカメラへのアクセスが必要です。システム設定で許可してください。';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'このデバイスではカメラを利用できません。';
 }

@@ -355,6 +355,9 @@ class _MessageInputState extends State<MessageInput>
               sink: widget.playback.keyingSink,
               clock: widget.playback.clock,
               onText: _appendDecoded,
+              // Landscape phone: a shorter pad (still well over 48 dp) so
+              // the message list keeps some room.
+              height: MediaQuery.sizeOf(context).height < 500 ? 88 : 132,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 6, 6, 0),
@@ -410,10 +413,13 @@ class _MessageInputState extends State<MessageInput>
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    s.chatBytesLeftCount(left),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: tooLong ? scheme.error : scheme.onSurfaceVariant,
+                  Flexible(
+                    child: Text(
+                      s.chatBytesLeftCount(left),
+                      textAlign: TextAlign.end,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: tooLong ? scheme.error : scheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],

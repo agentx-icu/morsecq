@@ -13,13 +13,32 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- Camera: scanning a friend's Tox ID QR code (ui/contacts, mobile_scanner). -->
     <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- CAMERA implies android.hardware.camera AND camera.autofocus as
+         *required* features, which hides the app on Play for devices with a
+         fixed-focus or front-only camera (many tablets, Chromebooks). QR
+         scanning is optional, so none of the camera features is required. -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <!-- Microphone: decoding Morse from audio (ui/listen, record). -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <!-- Microphone: decoding Morse from audio (ui/listen, record).
+         RECORD_AUDIO implies a required android.hardware.microphone; Listen is
+         one optional tab, so mic-less devices must still see the app. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+    <!-- Platform backup is off (same policy as toxee): the files dir holds the
+         Tox profile (the identity's private key, plaintext when no password is
+         set), chat history and training data. Google Auto Backup / adb backup
+         (allowBackup, fullBackupContent) and the Android 12+ device-to-device
+         transfer (dataExtractionRules) would copy that identity off the device
+         unattended and clone it onto a second phone. The in-app, encrypted
+         .mcqbackup export is the supported way to move an identity. -->
     <application
         android:label="MorseCQ"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

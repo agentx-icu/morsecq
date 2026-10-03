@@ -2288,4 +2288,19 @@ class SKo extends S {
 
   @override
   String get learnShowFewerChars => '문자 접기';
+
+  @override
+  String get learnLeaveDrillTitle => '이 세션을 나가시겠습니까?';
+
+  @override
+  String get learnLeaveDrillBody => '이 세션에서 진행한 라운드는 저장되지 않습니다.';
+
+  @override
+  String get learnLeaveDrillConfirm => '나가기';
+
+  @override
+  String get chatScanQrPermissionDenied => 'QR 코드를 스캔하려면 MorseCQ에 카메라 접근 권한이 필요합니다. 시스템 설정에서 허용하세요.';
+
+  @override
+  String get chatScanQrCameraUnavailable => '이 기기에서는 카메라를 사용할 수 없습니다.';
 }

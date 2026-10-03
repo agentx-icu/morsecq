@@ -68,6 +68,34 @@ void main() {
     expect(find.text(en.accountBackupSaved), findsOneWidget);
   });
 
+  testWidgets('export backup anchors the iPad share popover to the tile', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      identity: identity,
+      backupFiles: files,
+      size: const Size(1024, 1366), // iPad portrait: the rail, not the bar
+    );
+    await tester.tap(
+      find.descendant(
+        of: find.byType(NavigationRail),
+        matching: find.text(MePage.title(en)),
+      ),
+    );
+    await settle(tester);
+    final tile = find.ancestor(
+      of: find.text(en.accountExportBackup),
+      matching: find.byType(ListTile),
+    );
+    await _scrollTo(tester, tile);
+    final tileRect = tester.getRect(tile);
+    await tester.tap(tile);
+    await settle(tester);
+    expect(files.saved, hasLength(1));
+    expect(files.shareOrigins.single, tileRect);
+  });
+
   testWidgets('edit profile updates the card', (tester) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
     await _openMe(tester);

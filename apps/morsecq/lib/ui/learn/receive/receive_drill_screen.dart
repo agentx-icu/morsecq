@@ -6,6 +6,7 @@ import 'package:morse_io/morse_io.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
+import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import 'answer_keypad.dart';
@@ -17,6 +18,10 @@ enum _Phase { listen, result, summary }
 /// Plays each round of a [ReceiveSession], collects the copy (text field on
 /// desktop, restricted keypad everywhere), scores it, and on completion
 /// records the session through the controller.
+///
+/// Leaving after the first answered round asks first (the rounds are only
+/// saved on finish), and the screen is kept on ([screenWake]) until the
+/// summary so a phone's auto-lock cannot background the app mid-drill.
 class ReceiveDrillScreen extends StatefulWidget {
   const ReceiveDrillScreen({
     super.key,
@@ -24,18 +29,21 @@ class ReceiveDrillScreen extends StatefulWidget {
     required this.playback,
     required this.session,
     this.title,
+    this.screenWake = const WakelockScreenWake(),
   });
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
   final ReceiveSession session;
   final String? title;
+  final ScreenWakeApi screenWake;
 
   @override
   State<ReceiveDrillScreen> createState() => _ReceiveDrillScreenState();
 }
 
-class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
+class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
+    with WidgetsBindingObserver {
   final TextEditingController _answer = TextEditingController();
   final FocusNode _answerFocus = FocusNode();
   LearnPlayback? _playback;
@@ -46,14 +54,25 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
   ReceiveRound? _lastRound;
   ReceiveOutcome? _outcome;
   String? _unlockedChar;
+  late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
 
   ReceiveSession get _session => widget.session;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _wake.setActive(true);
     unawaited(_setup());
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) =>
+      _wake.onLifecycle(state);
+
+  /// Answered rounds that leaving now would throw away.
+  bool get _hasUnsavedRounds =>
+      _session.roundCount > 0 && !_recording && _phase != _Phase.summary;
 
   Future<void> _setup() async {
     final playback = await widget.playback.create(widget.controller.settings);
@@ -113,10 +132,12 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
       return;
     }
     _recording = true;
+    setState(() {});
     final outcome = await widget.controller.recordReceiveSession(_session);
     if (!mounted) {
       return;
     }
+    _wake.setActive(false);
     setState(() {
       _outcome = outcome;
       _unlockedChar = outcome.advanced ? widget.controller.newestChar : null;
@@ -146,6 +167,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_playback?.dispose());
     _answer.dispose();
@@ -177,15 +200,21 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen> {
       ),
     );
     final flash = _playback?.flash;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4),
-          child: LinearProgressIndicator(value: _session.progress, minHeight: 4),
+    return DrillLeaveGuard(
+      guard: _hasUnsavedRounds,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(4),
+            child: LinearProgressIndicator(
+              value: _session.progress,
+              minHeight: 4,
+            ),
+          ),
         ),
+        body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
       ),
-      body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
   }
 

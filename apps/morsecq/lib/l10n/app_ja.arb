@@ -657,5 +657,10 @@
   "chatSelfMe": "自分",
   "chatSelfLocalOnly": "このデバイスにのみ保存",
   "chatSelfContactSubtitle": "下書き、練習、メモ · 送信されません",
-  "learnShowFewerChars": "文字を折りたたむ"
+  "learnShowFewerChars": "文字を折りたたむ",
+  "learnLeaveDrillTitle": "このセッションを終了しますか？",
+  "learnLeaveDrillBody": "このセッションで行ったラウンドは保存されません。",
+  "learnLeaveDrillConfirm": "終了",
+  "chatScanQrPermissionDenied": "QR コードを読み取るには MorseCQ にカメラへのアクセスが必要です。システム設定で許可してください。",
+  "chatScanQrCameraUnavailable": "このデバイスではカメラを利用できません。"
 }

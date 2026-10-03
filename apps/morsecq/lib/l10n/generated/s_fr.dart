@@ -2310,4 +2310,19 @@ class SFr extends S {
 
   @override
   String get learnShowFewerChars => 'Afficher moins de caractères';
+
+  @override
+  String get learnLeaveDrillTitle => 'Quitter cette séance ?';
+
+  @override
+  String get learnLeaveDrillBody => 'Les manches de cette séance ne seront pas enregistrées.';
+
+  @override
+  String get learnLeaveDrillConfirm => 'Quitter';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ a besoin de la caméra pour scanner un code QR. Autorisez-la dans les réglages du système.';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'La caméra n\'est pas disponible sur cet appareil.';
 }

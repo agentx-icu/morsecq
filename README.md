@@ -86,7 +86,8 @@ launch and is required for training as well as chat.
   calendar), language, notifications and about (shows which backend is live).
 - **Notifications** — local notifications for chat events (with a Morse
   pattern), unread badge, foreground/background coordination; iOS declares
-  only the `audio` background mode (no ToxAV, so no `voip`).
+  no background mode (nothing plays in the background, no ToxAV so no
+  `voip`) and finishes its flush under a `beginBackgroundTask` assertion.
 - **Desktop shell** — window bounds persistence, close-to-tray, tray menu and
   keyboard shortcuts on macOS / Windows / Linux; all no-ops on mobile.
 - **Multilingual UI** — English, Simplified and Traditional Chinese, Japanese,

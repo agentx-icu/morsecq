@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import 'morse_pattern_text.dart';
+import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
 
 /// Text → Morse: the pattern updates as the user types, can be played with
@@ -241,12 +242,15 @@ class _TextToMorseViewState extends State<TextToMorseView> {
         ],
       );
     }
-    return Column(
-      children: <Widget>[
-        input,
-        const Divider(height: 1),
-        Expanded(child: output),
-      ],
+    return ReferenceMinHeight(
+      minHeight: 360,
+      child: Column(
+        children: <Widget>[
+          input,
+          const Divider(height: 1),
+          Expanded(child: output),
+        ],
+      ),
     );
   }
 }

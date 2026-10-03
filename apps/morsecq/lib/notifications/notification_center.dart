@@ -6,6 +6,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../l10n/generated/s.dart';
 import 'badge_api.dart';
 import 'local_notifications_api.dart';
+import 'message_banner_ledger.dart';
 import 'notification_composer.dart';
 import 'notification_payload.dart';
 import 'notification_platform.dart';
@@ -70,10 +71,15 @@ class NotificationCenter {
   final NotificationPlatform _platform;
   final NotificationComposer _composer;
 
-  final StreamController<String> _openRequests =
-      StreamController<String>.broadcast();
-  final StreamController<NotificationTapTarget> _taps =
-      StreamController<NotificationTapTarget>.broadcast();
+  // A tap that lands with nobody listening (the cold-start payload is read
+  // in start(), while the startup gate - unlock, open - still hides the
+  // shell that subscribes) is parked and handed to the first subscriber.
+  late final StreamController<String> _openRequests =
+      StreamController<String>.broadcast(onListen: _replayOpenRequest);
+  late final StreamController<NotificationTapTarget> _taps =
+      StreamController<NotificationTapTarget>.broadcast(onListen: _replayTap);
+  String? _parkedOpenRequest;
+  NotificationTapTarget? _parkedTap;
 
   StreamSubscription<ChatMessage>? _messageSub;
   StreamSubscription<List<FriendRequest>>? _friendRequestSub;
@@ -82,6 +88,7 @@ class NotificationCenter {
 
   /// Inbox lines per conversation id for the currently visible notification.
   final Map<String, List<String>> _inbox = <String, List<String>>{};
+  final MessageBannerLedger _ledger = MessageBannerLedger();
   final Set<String> _knownFriendRequests = <String>{};
   final Set<String> _knownInvites = <String>{};
 
@@ -93,15 +100,25 @@ class NotificationCenter {
   bool _permissionGranted = false;
   Future<bool>? _permissionRequest;
 
+  /// The one unsolicited prompt per session has been shown.
+  bool _autoPrompted = false;
+
+  /// A post was dropped in the background for want of a permission nobody
+  /// has asked for yet: prompt when the user is back.
+  bool _promptOnForeground = false;
+
   bool? _badgeSupported;
   int? _lastBadge;
   Future<void> _badgeChain = Future<void>.value();
 
   /// Conversation ids the user asked to open by tapping a notification
-  /// (including the one that cold-started the app).
+  /// (including the one that cold-started the app). A request made while
+  /// nobody listens (cold start behind the startup gate) is kept - the
+  /// latest one only - and delivered to the next subscriber.
   Stream<String> get openConversationRequests => _openRequests.stream;
 
   /// Every parsed tap, including friend-request and group-invite targets.
+  /// Same parking rule as [openConversationRequests].
   Stream<NotificationTapTarget> get tapTargets => _taps.stream;
 
   String? get activeConversation => _activeConversation;
@@ -152,6 +169,10 @@ class NotificationCenter {
   /// Requests the OS permission if this platform has one. Safe to call
   /// repeatedly and before [start]; a grant is remembered, a denial is not
   /// (the OS returns a remembered denial instantly without re-prompting).
+  ///
+  /// This may show a system dialog: call it from a user action (a settings
+  /// tile). Posting never prompts from the background and prompts on its
+  /// own at most once per session - see [_mayPost].
   Future<bool> ensurePermission() {
     if (!_platform.needsRuntimePermission) {
       return Future<bool>.value(_platform.supportsOsNotifications);
@@ -194,11 +215,12 @@ class NotificationCenter {
 
     final Conversation? conversation = _conversationFor(id);
     final bool isGroup =
-        (conversation?.kind ?? _kindFromId(id)) == ConversationKind.group;
+        (conversation?.kind ?? NotificationComposer.kindFromId(id)) ==
+        ConversationKind.group;
     final String title =
         conversation?.title ??
         (isGroup
-            ? NotificationComposer.shortKey(_peerFromId(id))
+            ? NotificationComposer.shortKey(NotificationComposer.peerFromId(id))
             : NotificationComposer.senderLabel(message));
 
     final List<String> lines = _inbox.putIfAbsent(id, () => <String>[]);
@@ -206,6 +228,7 @@ class NotificationCenter {
     if (lines.length > NotificationComposer.maxInboxLines) {
       lines.removeRange(0, lines.length - NotificationComposer.maxInboxLines);
     }
+    final int generation = _ledger.posted(id, message);
     unawaited(
       _post(
         _composer.message(
@@ -214,6 +237,7 @@ class NotificationCenter {
           isGroup: isGroup,
           lines: lines,
         ),
+        stillWanted: () => _ledger.isCurrent(id, generation),
       ),
     );
   }
@@ -223,7 +247,13 @@ class NotificationCenter {
     for (final FriendRequest request in requests) {
       current.add(request.publicKey);
       if (_knownFriendRequests.add(request.publicKey) && _prefs.enabled) {
-        unawaited(_post(_composer.friendRequest(request)));
+        final String key = request.publicKey;
+        unawaited(
+          _post(
+            _composer.friendRequest(request),
+            stillWanted: () => _knownFriendRequests.contains(key),
+          ),
+        );
       }
     }
     // Answered (or withdrawn) requests: forget them so a repeat notifies
@@ -241,12 +271,14 @@ class NotificationCenter {
     for (final GroupInvite invite in invites) {
       current.add(invite.inviteId);
       if (_knownInvites.add(invite.inviteId) && _prefs.enabled) {
+        final String inviteId = invite.inviteId;
         unawaited(
           _post(
             _composer.groupInvite(
               invite,
               fromName: _friendName(invite.fromPublicKey),
             ),
+            stillWanted: () => _knownInvites.contains(inviteId),
           ),
         );
       }
@@ -266,45 +298,117 @@ class NotificationCenter {
       live.add(conversation.id);
       total += conversation.unreadCount;
       // Read in-app (markRead) or from another surface: drop the banner.
-      if (conversation.unreadCount == 0 && _inbox.containsKey(conversation.id)) {
+      if (_inbox.containsKey(conversation.id) &&
+          _ledger.showsRead(conversation)) {
         unawaited(_clearConversation(conversation.id));
       }
     }
-    // Deleted conversations: drop their banners. Materialise first —
-    // _clearConversation mutates _inbox synchronously.
-    final List<String> stale = _inbox.keys
-        .where((String k) => !live.contains(k))
-        .toList();
-    for (final String id in stale) {
+    // Deleted conversations: drop their banners (a materialised list:
+    // _clearConversation mutates _inbox synchronously).
+    for (final String id in _ledger.deleted(_inbox.keys, live)) {
       unawaited(_clearConversation(id));
     }
     _updateBadge(total);
   }
 
   void _onForegroundChanged() {
+    if (!_isForeground.value) return;
     final String? id = _activeConversation;
-    if (_isForeground.value && id != null) unawaited(_clearConversation(id));
+    if (id != null) unawaited(_clearConversation(id));
+    if (_promptOnForeground) {
+      _promptOnForeground = false;
+      unawaited(_autoPrompt());
+    }
   }
 
   void _onTap(String payload) {
     final NotificationTapTarget? target = NotificationTapTarget.parse(payload);
     if (target == null || _disposed) return;
-    _taps.add(target);
-    if (target is OpenConversationTarget) {
-      _openRequests.add(target.conversationId);
+    if (_taps.hasListener) {
+      _taps.add(target);
+    } else {
+      _parkedTap = target;
     }
+    // Only the latest tap is replayed, across both streams: an earlier
+    // conversation tap must not reopen behind a later invite / request.
+    if (!_openRequests.hasListener) _parkedOpenRequest = null;
+    if (target is OpenConversationTarget) {
+      if (_openRequests.hasListener) {
+        _openRequests.add(target.conversationId);
+      } else {
+        _parkedOpenRequest = target.conversationId;
+      }
+    }
+  }
+
+  void _replayOpenRequest() {
+    final String? parked = _parkedOpenRequest;
+    _parkedOpenRequest = null;
+    if (parked != null && !_openRequests.isClosed) _openRequests.add(parked);
+  }
+
+  void _replayTap() {
+    final NotificationTapTarget? parked = _parkedTap;
+    _parkedTap = null;
+    if (parked != null && !_taps.isClosed) _taps.add(parked);
   }
 
   // ---- Posting -----------------------------------------------------------------
 
-  Future<void> _post(NotificationRequest request) async {
+  /// Posts [request] once the permission gate allows it. The gate awaits a
+  /// platform call; [stillWanted] is re-checked afterwards so a banner the
+  /// user made moot meanwhile (opened, read, answered) is not shown stale.
+  Future<void> _post(
+    NotificationRequest request, {
+    required bool Function() stillWanted,
+  }) async {
     if (!_ready || _disposed) return;
-    if (_platform.needsRuntimePermission && !await ensurePermission()) return;
-    if (_disposed) return;
+    if (!await _mayPost()) return;
+    if (_disposed || !stillWanted()) return;
     try {
       await _notifications.show(request);
     } catch (error, stack) {
       _report('show(${request.payload})', error, stack);
+    }
+  }
+
+  /// Permission gate for posting. A system prompt is a dialog: shown from
+  /// the background it is lost or refused (Android cannot start the
+  /// permission activity from a stopped one; a cancelled request reads as
+  /// "denied"), and shown on every inbound message it nags. So: check
+  /// silently first (a grant from an earlier run or from Settings), prompt
+  /// only while the app is visible and only once per session, and from the
+  /// background defer that one prompt to the next foreground.
+  Future<bool> _mayPost() async {
+    if (!_platform.needsRuntimePermission || _permissionGranted) return true;
+    if (await _checkPermission()) return true;
+    if (_disposed) return false;
+    // Join a prompt already on screen rather than dropping this post.
+    final Future<bool>? pending = _permissionRequest;
+    if (pending != null) return pending;
+    if (_autoPrompted) return false;
+    if (_isForeground.value) return _autoPrompt();
+    _promptOnForeground = true;
+    return false;
+  }
+
+  Future<bool> _autoPrompt() {
+    if (_disposed || _permissionGranted) {
+      return Future<bool>.value(_permissionGranted);
+    }
+    if (_autoPrompted) return _permissionRequest ?? Future<bool>.value(false);
+    _autoPrompted = true;
+    return ensurePermission();
+  }
+
+  Future<bool> _checkPermission() async {
+    try {
+      final bool granted = await _notifications.isPermissionGranted();
+      if (granted) _permissionGranted = true;
+      return granted;
+    } catch (error, stack) {
+      _report('isPermissionGranted', error, stack);
+      return false;
     }
   }
 
@@ -323,6 +427,7 @@ class NotificationCenter {
 
   Future<void> _clearConversation(String conversationId) async {
     _inbox.remove(conversationId);
+    _ledger.cleared(conversationId);
     await _cancel(OpenConversationTarget(conversationId).encode());
   }
 
@@ -373,14 +478,6 @@ class NotificationCenter {
       }
     }
     return null;
-  }
-
-  static ConversationKind _kindFromId(String id) =>
-      id.startsWith('group_') ? ConversationKind.group : ConversationKind.c2c;
-
-  static String _peerFromId(String id) {
-    final int separator = id.indexOf('_');
-    return separator < 0 ? id : id.substring(separator + 1);
   }
 
   static void _report(String what, Object error, StackTrace stack) {

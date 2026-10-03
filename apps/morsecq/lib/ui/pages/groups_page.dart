@@ -6,6 +6,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
+import '../chat/conversation_route.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
 import '../groups/create_group_sheet.dart';
@@ -33,20 +34,14 @@ class GroupsPage extends StatefulWidget {
 
 class _GroupsPageState extends State<GroupsPage> {
   Group? _selected;
+  final DetailPaneKey _detailKey = DetailPaneKey();
 
   void _open(BuildContext context, Group group) {
     if (isMasterDetail(context)) {
       setState(() => _selected = group);
       return;
     }
-    unawaited(
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) =>
-              ConversationScreen(target: ConversationTarget.fromGroup(group)),
-        ),
-      ),
-    );
+    unawaited(pushConversation(context, ConversationTarget.fromGroup(group)));
   }
 
   Future<void> _create(BuildContext context, ChatService service) async {
@@ -72,7 +67,18 @@ class _GroupsPageState extends State<GroupsPage> {
       );
     }
     final bool twoPane = isMasterDetail(context);
-    if (!twoPane && _selected != null) _selected = null;
+    // Same as the chat page: rotating to portrait keeps the group open.
+    final bool parked =
+        !twoPane &&
+        _selected != null &&
+        !reopenCollapsedDetail(
+          this,
+          selection: () {
+            final Group? group = _selected;
+            return group == null ? null : ConversationTarget.fromGroup(group);
+          },
+          forget: () => setState(() => _selected = null),
+        );
 
     final Widget list = Scaffold(
       appBar: AppBar(
@@ -130,18 +136,18 @@ class _GroupsPageState extends State<GroupsPage> {
       ),
     );
 
-    if (!twoPane) return list;
     final Group? selected = _selected;
-    return MasterDetail(
-      master: list,
-      detail: selected == null
-          ? null
-          : ConversationScreen(
-              key: ValueKey<String>('detail_group_${selected.id}'),
-              target: ConversationTarget.fromGroup(selected),
-              embedded: true,
-              onClosed: () => setState(() => _selected = null),
-            ),
-    );
+    final Widget? detail = selected == null
+        ? null
+        : ConversationScreen(
+            key: _detailKey.of(selected.id),
+            target: ConversationTarget.fromGroup(selected),
+            embedded: true,
+            onClosed: () => setState(() => _selected = null),
+          );
+    if (!twoPane) {
+      return singlePaneLayout(list: list, parkedDetail: parked ? detail : null);
+    }
+    return MasterDetail(master: list, detail: detail);
   }
 }

@@ -2309,4 +2309,19 @@ class SDe extends S {
 
   @override
   String get learnShowFewerChars => 'Weniger Zeichen anzeigen';
+
+  @override
+  String get learnLeaveDrillTitle => 'Diese Übung verlassen?';
+
+  @override
+  String get learnLeaveDrillBody => 'Die Runden dieser Übung werden nicht gespeichert.';
+
+  @override
+  String get learnLeaveDrillConfirm => 'Verlassen';
+
+  @override
+  String get chatScanQrPermissionDenied => 'MorseCQ benötigt Kamerazugriff, um einen QR-Code zu scannen. Erlaube ihn in den Systemeinstellungen.';
+
+  @override
+  String get chatScanQrCameraUnavailable => 'Die Kamera ist auf diesem Gerät nicht verfügbar.';
 }

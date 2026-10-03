@@ -7,6 +7,7 @@ import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
 import '../chat/conversation_list.dart';
+import '../chat/conversation_route.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
 import '../contacts/contacts_page.dart';
@@ -33,19 +34,14 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   ConversationTarget? _selected;
+  final DetailPaneKey _detailKey = DetailPaneKey();
 
   void _open(BuildContext context, ConversationTarget target) {
     if (isMasterDetail(context)) {
       setState(() => _selected = target);
       return;
     }
-    unawaited(
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ConversationScreen(target: target),
-        ),
-      ),
-    );
+    unawaited(pushConversation(context, target));
   }
 
   Future<void> _openContacts(BuildContext context, ChatService service) {
@@ -73,11 +69,17 @@ class _ChatPageState extends State<ChatPage> {
       );
     }
     final bool twoPane = isMasterDetail(context);
-    if (!twoPane && _selected != null) {
-      // Window shrank below the breakpoint: forget the inline selection so
-      // the list is not stuck showing a pane that no longer exists.
-      _selected = null;
-    }
+    // Window shrank below the breakpoint (iPad rotated to portrait): the
+    // pane is gone, the conversation continues as a route - or, while a
+    // dialog covers the page, stays mounted offstage until it can.
+    final bool parked =
+        !twoPane &&
+        _selected != null &&
+        !reopenCollapsedDetail(
+          this,
+          selection: () => _selected,
+          forget: () => setState(() => _selected = null),
+        );
 
     final Widget list = Scaffold(
       appBar: AppBar(
@@ -97,19 +99,19 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
 
-    if (!twoPane) return list;
     final ConversationTarget? selected = _selected;
-    return MasterDetail(
-      master: list,
-      detail: selected == null
-          ? null
-          : ConversationScreen(
-              key: ValueKey<String>('detail_${selected.id}'),
-              target: selected,
-              embedded: true,
-              onClosed: () => setState(() => _selected = null),
-            ),
-    );
+    final Widget? detail = selected == null
+        ? null
+        : ConversationScreen(
+            key: _detailKey.of(selected.id),
+            target: selected,
+            embedded: true,
+            onClosed: () => setState(() => _selected = null),
+          );
+    if (!twoPane) {
+      return singlePaneLayout(list: list, parkedDetail: parked ? detail : null);
+    }
+    return MasterDetail(master: list, detail: detail);
   }
 }
 

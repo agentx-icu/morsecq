@@ -4057,6 +4057,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Show fewer characters'**
   String get learnShowFewerChars;
+
+  /// Title of the dialog shown when backing out of a drill or send practice mid-session
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this session?'**
+  String get learnLeaveDrillTitle;
+
+  /// Body of the leave-drill confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'The rounds you have done in this session will not be saved.'**
+  String get learnLeaveDrillBody;
+
+  /// Confirm button of the leave-drill dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get learnLeaveDrillConfirm;
+
+  /// Shown in the QR scanner when camera permission is denied
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ needs camera access to scan a QR code. Allow it in the system settings.'**
+  String get chatScanQrPermissionDenied;
+
+  /// Shown in the QR scanner when the camera cannot be started
+  ///
+  /// In en, this message translates to:
+  /// **'The camera is not available on this device.'**
+  String get chatScanQrCameraUnavailable;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

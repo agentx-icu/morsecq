@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_soloud/flutter_soloud.dart';
 
+import 'audio_session_api.dart';
 import 'engine_leases.dart';
 
 /// Opaque id of a loaded waveform source (a `flutter_soloud` `AudioSource`).
@@ -33,6 +34,12 @@ abstract interface class SoloudApi {
   /// Ramps the voice volume to [to] over [over] (linear, done by the mixer).
   void fadeVolume(SidetoneVoice voice, double to, Duration over);
 
+  /// Makes sure [voice] is audible: restarts the output device when the OS
+  /// stopped it behind the engine's back (an iOS interruption whose end was
+  /// never signalled, Control Center, a lost route). Cheap when it runs.
+  /// Throws when the device cannot start or [voice] no longer exists.
+  void resumeVoice(SidetoneVoice voice);
+
   Future<void> stop(SidetoneVoice voice);
 
   Future<void> disposeSource(SidetoneSource source);
@@ -57,12 +64,17 @@ final class FlutterSoloudApi implements SoloudApi {
     this.sampleRate = 48000,
     this.bufferSize = 512,
     this.channels = Channels.mono,
+    AudioSessionApi session = const PlatformAudioSessionApi(),
   }) : _injected = engine,
-       _resolveEngine = resolveEngine ?? _sharedEngine;
+       _resolveEngine = resolveEngine ?? _sharedEngine,
+       _session = session;
 
   static SoLoud _sharedEngine() => SoLoud.instance;
 
   final SoLoud? _injected;
+
+  /// Configured right before this adapter starts the engine (iOS category).
+  final AudioSessionApi _session;
 
   /// How [_engine] is found when no `engine` was injected; tests pass one
   /// that throws to stand in for a native library that cannot be loaded.
@@ -128,13 +140,14 @@ final class FlutterSoloudApi implements SoloudApi {
 
   Future<void> _acquire() async {
     try {
-      await _leases.acquire(
-        () => _engine.init(
+      await _leases.acquire(() async {
+        await _session.configureForPlayback();
+        await _engine.init(
           sampleRate: sampleRate,
           bufferSize: bufferSize,
           channels: channels,
-        ),
-      );
+        );
+      });
       _holdsLease = true;
     } finally {
       _acquiring = null;
@@ -170,6 +183,13 @@ final class FlutterSoloudApi implements SoloudApi {
   @override
   void fadeVolume(SidetoneVoice voice, double to, Duration over) {
     _engine.fadeVolume(SoundHandle(voice.id), to, over);
+  }
+
+  /// `setPause(false)` on a running voice changes nothing but first runs
+  /// the engine's `ensureAudioDeviceStarted`; plain volume changes never do.
+  @override
+  void resumeVoice(SidetoneVoice voice) {
+    _engine.setPause(SoundHandle(voice.id), false);
   }
 
   @override

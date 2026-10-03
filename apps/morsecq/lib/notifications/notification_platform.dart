@@ -51,9 +51,9 @@ enum NotificationPlatform {
   /// How long a backgrounded app can expect to keep running its Tox loop
   /// before the OS suspends it. Null means "not suspended" (desktop).
   ///
-  /// iOS gives ~30 s via `beginBackgroundTask` unless a background mode keeps
-  /// the process alive (morsecq has no `voip`; `audio` helps only while
-  /// playback is actually running). Android is OEM-dependent — Doze and
+  /// iOS gives ~30 s via `beginBackgroundTask`; morsecq declares no
+  /// background mode that would keep the process alive longer (no `voip`,
+  /// and no `audio` since nothing plays in the background). Android is OEM-dependent — Doze and
   /// vendor battery savers freeze processes anywhere from one to several
   /// minutes in; 60 s is a conservative "may be gone" hint, not a guarantee.
   Duration? get backgroundBudget => switch (this) {

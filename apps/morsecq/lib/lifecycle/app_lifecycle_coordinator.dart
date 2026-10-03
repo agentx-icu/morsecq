@@ -6,6 +6,7 @@ import 'package:morse_io/morse_io.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../notifications/notification_platform.dart';
+import 'background_task_api.dart';
 import 'lifecycle_hint.dart';
 
 /// Tracks foreground / background and drives the mobile background policy.
@@ -18,10 +19,18 @@ import 'lifecycle_hint.dart';
 ///   [LifecycleHint.mayBeDisconnected]. Desktop never suspends, so no
 ///   countdown runs there.
 /// - On resume after any background period, `IdentityService.connect()` is
-///   called (the contract guarantees idempotency) so a suspended node
-///   re-bootstraps without the user tapping the connection chip.
+///   called (the contract guarantees idempotency) so a node that is not
+///   running (a failed start, a teardown) comes back without the user
+///   tapping the connection chip. A node that is still running is left to
+///   toxcore, which re-pings its known DHT nodes once it is thawed; the
+///   Tim2Tox backend does not re-bootstrap it here.
 /// - [onBackground] lets the app orchestrator flush the optional durable
 ///   identity capability, compose drafts, learning data and app settings.
+/// - For the length of that budget a [BackgroundTaskApi] task is held (iOS
+///   `beginBackgroundTask`): without it iOS suspends the app ~5 s after
+///   backgrounding, cutting the flush and any in-flight send short, and the
+///   30 s budget above would be fiction. Released on resume, at the end of
+///   the budget, or on dispose, whichever comes first.
 ///
 /// `inactive` is ignored on purpose: it fires for transient overlays
 /// (control centre, an incoming call banner, a permission dialog) and for a
@@ -35,17 +44,24 @@ class AppLifecycleCoordinator with WidgetsBindingObserver {
     NotificationPlatform? platform,
     Duration? backgroundBudget,
     Future<void> Function()? onBackground,
+    BackgroundTaskApi backgroundTasks = const NoopBackgroundTaskApi(),
   }) : _identity = identity,
        _clock = clock ?? SystemClock.shared,
        _platform = platform ?? NotificationPlatform.detect(),
        _budgetOverride = backgroundBudget,
-       _onBackground = onBackground;
+       _onBackground = onBackground,
+       _backgroundTasks = backgroundTasks;
 
   final IdentityService _identity;
   final Clock _clock;
   final NotificationPlatform _platform;
   final Duration? _budgetOverride;
   final Future<void> Function()? _onBackground;
+  final BackgroundTaskApi _backgroundTasks;
+
+  /// The pending or granted background-task token of the current background
+  /// period; null while in the foreground.
+  Future<int?>? _backgroundTask;
 
   final ValueNotifier<bool> _foreground = ValueNotifier<bool>(true);
   final ValueNotifier<bool> _mayBeDisconnected = ValueNotifier<bool>(false);
@@ -107,6 +123,7 @@ class AppLifecycleCoordinator with WidgetsBindingObserver {
     detach();
     _budgetTimer?.cancel();
     _budgetTimer = null;
+    _releaseBackgroundTask();
     await _hints.close();
     _foreground.dispose();
     _mayBeDisconnected.dispose();
@@ -115,25 +132,61 @@ class AppLifecycleCoordinator with WidgetsBindingObserver {
   void _enterBackground() {
     if (_inBackground) return;
     _inBackground = true;
+    // Asked for first so the flush below runs under the extended grace time,
+    // and owned (with the countdown) before any listener runs: a listener
+    // that resumes or disposes re-entrantly must find something to release.
+    final Future<int?> task = _backgroundTask = _beginBackgroundTask();
+    final Duration? budget = backgroundBudget;
+    _budgetTimer?.cancel();
+    _budgetTimer = budget == null
+        ? null
+        : _clock.schedule(budget, _onBudgetExpired);
     _foreground.value = false;
+    if (_disposed || !_inBackground) return;
     _emit(LifecycleHint.background);
     final Future<void> Function()? hook = _onBackground;
+    Future<void> flushed = Future<void>.value();
     if (hook != null) {
-      unawaited(
-        hook().catchError(
-          (Object error, StackTrace stack) =>
-              _report('onBackground', error, stack),
-        ),
+      flushed = hook().catchError(
+        (Object error, StackTrace stack) =>
+            _report('onBackground', error, stack),
       );
     }
-    final Duration? budget = backgroundBudget;
-    if (budget == null) return;
-    _budgetTimer?.cancel();
-    _budgetTimer = _clock.schedule(budget, _onBudgetExpired);
+    if (budget == null) {
+      // No suspension to outlast: hold the task only until the flush ends.
+      unawaited(
+        flushed.whenComplete(() {
+          if (identical(_backgroundTask, task)) _releaseBackgroundTask();
+        }),
+      );
+    }
+  }
+
+  Future<int?> _beginBackgroundTask() =>
+      _backgroundTasks.begin().catchError((Object error, StackTrace stack) {
+        _report('backgroundTask.begin', error, stack);
+        return null;
+      });
+
+  /// Ends the current background period's task (once it has been granted).
+  void _releaseBackgroundTask() {
+    final Future<int?>? task = _backgroundTask;
+    _backgroundTask = null;
+    if (task != null) unawaited(_endBackgroundTask(task));
+  }
+
+  Future<void> _endBackgroundTask(Future<int?> task) async {
+    try {
+      final int? token = await task;
+      if (token != null) await _backgroundTasks.end(token);
+    } catch (error, stack) {
+      _report('backgroundTask.end', error, stack);
+    }
   }
 
   void _onBudgetExpired() {
     _budgetTimer = null;
+    _releaseBackgroundTask();
     if (_disposed || !_inBackground) return;
     _mayBeDisconnected.value = true;
     _emit(LifecycleHint.mayBeDisconnected);
@@ -142,6 +195,7 @@ class AppLifecycleCoordinator with WidgetsBindingObserver {
   void _enterForeground() {
     _budgetTimer?.cancel();
     _budgetTimer = null;
+    _releaseBackgroundTask();
     if (!_inBackground) {
       // Initial resume (or a spurious repeat): nothing to recover from; the
       // startup controller owns the first connect().

@@ -66,7 +66,9 @@ extension _IdentityBackup on Tim2ToxIdentityService {
           hasPassword: encrypted,
         );
     final root = Directory(_paths.root);
-    await root.parent.create(recursive: true);
+    // Also creates root.parent; the staged tree below must not land in a
+    // directory iOS would back up.
+    await _paths.excludeFromBackup();
     final stage = await root.parent.createTemp('.morsecq-import-');
     final previous = Directory(p.join(stage.path, 'previous'));
     final staged = IdentityPaths(p.join(stage.path, 'identity'));

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
@@ -16,9 +17,16 @@ import 'record_pcm_source.dart';
 ///
 /// Pass a [PcmSource] to inject audio (tests use a fake); by default the
 /// screen creates a [RecordPcmSource] and owns it. Capture stops when the
-/// app goes to the background and never resumes on its own.
+/// app goes to the background and never resumes on its own; while it runs
+/// the screen is kept on ([screenWake]) so the phone's auto-lock does not
+/// background the app in the middle of a hands-free session.
 class ListenScreen extends StatefulWidget {
-  const ListenScreen({super.key, this.source, this.sampleRate = 48000});
+  const ListenScreen({
+    super.key,
+    this.source,
+    this.sampleRate = 48000,
+    this.screenWake = const WakelockScreenWake(),
+  });
 
   static const String routeName = '/listen';
 
@@ -32,6 +40,7 @@ class ListenScreen extends StatefulWidget {
 
   final PcmSource? source;
   final int sampleRate;
+  final ScreenWakeApi screenWake;
 
   @override
   State<ListenScreen> createState() => _ListenScreenState();
@@ -43,6 +52,7 @@ class _ListenScreenState extends State<ListenScreen>
   final ScrollController _scroll = ScrollController();
   int _shownTextLength = 0;
   ListenPreferences? _preferences;
+  bool _keepingAwake = false;
 
   @override
   void initState() {
@@ -67,6 +77,7 @@ class _ListenScreenState extends State<ListenScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller.removeListener(_onControllerChanged);
+    if (_keepingAwake) unawaited(widget.screenWake.keepOn(false));
     _controller.dispose();
     _scroll.dispose();
     super.dispose();
@@ -88,6 +99,11 @@ class _ListenScreenState extends State<ListenScreen>
   void _onControllerChanged() {
     if (!mounted) return;
     _preferences?.update(_controller.settings);
+    final bool awake = _controller.isListening;
+    if (awake != _keepingAwake) {
+      _keepingAwake = awake;
+      unawaited(widget.screenWake.keepOn(awake));
+    }
     setState(() {});
     final length = _controller.text.length;
     if (length != _shownTextLength) {

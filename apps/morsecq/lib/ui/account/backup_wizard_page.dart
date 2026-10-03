@@ -32,9 +32,9 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
   bool _saving = false;
   BackupExportResult? _lastExport;
 
-  Future<void> _save() async {
+  Future<void> _save(BuildContext button) async {
     setState(() => _saving = true);
-    final result = await exportBackupWithFeedback(context);
+    final result = await exportBackupWithFeedback(context, anchor: button);
     if (!mounted) return;
     setState(() {
       _saving = false;
@@ -68,12 +68,15 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
           const SizedBox(height: 12),
           Text(s.accountBackupWhatIsInside, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 24),
-          FilledButton.tonalIcon(
-            key: BackupWizardPage.saveButtonKey,
-            onPressed: _saving ? null : _save,
-            icon: Icon(isMobile ? Icons.ios_share : Icons.save_alt),
-            label: Text(
-              isMobile ? s.accountBackupShareFile : s.accountBackupSaveFile,
+          Builder(
+            // The button's own context anchors the iPad share popover.
+            builder: (button) => FilledButton.tonalIcon(
+              key: BackupWizardPage.saveButtonKey,
+              onPressed: _saving ? null : () => _save(button),
+              icon: Icon(isMobile ? Icons.ios_share : Icons.save_alt),
+              label: Text(
+                isMobile ? s.accountBackupShareFile : s.accountBackupSaveFile,
+              ),
             ),
           ),
           if (_lastExport == BackupExportResult.saved) ...[

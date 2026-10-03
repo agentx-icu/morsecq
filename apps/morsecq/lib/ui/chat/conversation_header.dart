@@ -57,9 +57,13 @@ class ConversationTitle extends StatelessWidget {
                         : scheme.outlineVariant,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    online ? s.connectionOnline : s.connectionOffline,
-                    style: text.labelSmall,
+                  Flexible(
+                    child: Text(
+                      online ? s.connectionOnline : s.connectionOffline,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: text.labelSmall,
+                    ),
                   ),
                 ],
               );
@@ -79,6 +83,8 @@ class ConversationTitle extends StatelessWidget {
                   s.chatMemberCount(group.memberCount),
                   if (group.kind == GroupKind.conference) s.chatConferenceBadge,
                 ].join(' · '),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: text.labelSmall,
               );
             },
