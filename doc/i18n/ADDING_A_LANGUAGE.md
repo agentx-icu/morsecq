@@ -2,23 +2,15 @@
 
 # Adding a UI language to MorseCQ
 
-MorseCQ ships English (`en`, template) and Simplified Chinese (`zh`) through
-Flutter's `gen-l10n`. This page explains how localisation is wired end to end
-and gives the exact steps for adding a third language, modelled on how the
-sibling project toxee ships `ar` / `en` / `ja` / `ko` / `zh_Hans` / `zh_Hant`
-(`/home/user/toxee/l10n.yaml`, `lib/util/locale_controller.dart`,
-`test/l10n/arb_completeness_test.dart` there).
+MorseCQ ships English (`en`, template), Simplified Chinese (`zh`), Traditional
+Chinese (`zh_Hant`), Japanese (`ja`), Korean (`ko`), German (`de`), French (`fr`),
+Spanish (`es`), Portuguese (`pt`) and Russian (`ru`) through Flutter gen-l10n.
+Each translation contains all 562 template messages (2026-10-03).
+Documentation remains English and Simplified Chinese only.
 
-For day-to-day string work (adding a key, migrating a `*_strings.dart` const,
-ham vocabulary) see [`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l10n/README.md).
-
-> **Status note (2026-09-30).** The locale resolution layer
-> (`lib/i18n/locale_resolution.dart`), the language catalog
-> (`lib/i18n/language_catalog.dart`) and the context-free resolver
-> (`lib/i18n/current_strings.dart`, `strings_resolver.dart`) were landed while
-> this page was written. Where the text below says "target" it describes the
-> agreed design that a piece of code has not fully caught up with yet; each
-> such spot is marked.
+This page explains the shared localisation pipeline and how to extend it.
+For daily string work and Morse vocabulary, see
+[`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l10n/README.md).
 
 ## 1. How localisation works
 
@@ -28,8 +20,8 @@ ham vocabulary) see [`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l
 |---|---|---|
 | gen-l10n config | `apps/morsecq/l10n.yaml` | `arb-dir: lib/l10n`, `template-arb-file: app_en.arb`, `output-class: S`, `output-dir: lib/l10n/generated`, `output-localization-file: s.dart`, `nullable-getter: false`, `format: false`. No `synthetic-package` (removed in Flutter 3.41; the key only warns). |
 | Auto-generation | `apps/morsecq/pubspec.yaml` → `flutter: generate: true` | `flutter run` / `flutter build` regenerate; `flutter gen-l10n` does it explicitly. |
-| ARB files | `apps/morsecq/lib/l10n/app_<tag>.arb` | One per locale. `app_en.arb` is the template and the only file that needs `@key` metadata (description, placeholders). 500 message keys as of 2026-09-30. |
-| Generated code | `apps/morsecq/lib/l10n/generated/s.dart`, `s_en.dart`, `s_zh.dart` | Committed, never edited. Exempt from the 500-LOC gate via the `**/l10n/**` pattern. |
+| ARB files | `apps/morsecq/lib/l10n/app_<tag>.arb` | One per locale. `app_en.arb` is the template and the only file that needs `@key` metadata (description, placeholders). 562 message keys as of 2026-10-03. |
+| Generated code | `apps/morsecq/lib/l10n/generated/s.dart`, `s_<language>.dart` | Committed, never edited. Exempt from the 500-LOC gate via the `**/l10n/**` pattern. |
 | Access | `context.s` (`lib/i18n/l10n_extension.dart`) or `S.of(context)` | Below `MaterialApp` only; tests pump `localizationsDelegates: S.localizationsDelegates`. |
 | Supported set | `S.supportedLocales` | Derived from the ARB files. `LocaleController.supportedLocales` and the language picker read it, so **no Dart list has to be edited to add a language**. |
 
@@ -116,20 +108,23 @@ additions need no catalog edit at all.
   when the user changes the setting or, while following the system, when the
   OS locale changes (`PlatformDispatcher.onLocaleChanged`).
 
-**Target vs. today:** `lib/notifications/notification_strings.dart` still
-holds English `static const` text (Android channel names, "New message",
-offline banner) and `main.dart` still uses `AccountStrings.appName` for the
-window title. The agreed design is that those callers move to `currentS()` /
-`StringsResolver` and the consts are deleted; that swap is tracked in the
-"Follow-up" section of `lib/l10n/README.md`. Until it lands, a new language
-translates the widgets but not those few OS-facing strings.
+Notifications resolve through an `S Function()` at post time. The desktop shell
+receives `DesktopShellController.updateStrings(strings.s)` on every language
+change. A new ARB therefore translates those OS-facing strings too. Already
+visible notifications keep their text, and Android channel names retain the
+language used at first creation.
+
+Reference meanings and mnemonics are separate data tables, currently English
+and Simplified Chinese. Traditional Chinese uses the Chinese table; other added
+UI languages use the existing English fallback. Translating those data tables
+is separate from adding interface messages.
 
 ### 1.6 What CI checks
 
 | Check | Where | What it guards |
 |---|---|---|
 | `dart run tool/strings_to_arb.dart --check` | `.github/workflows/analyze.yml` ("Localisation strings in sync") | Every `static const` in `apps/morsecq/lib/ui/**/*_strings.dart` has an ARB key in the template **and** every other `app_*.arb` in the ARB dir (the tool lists `app_*.arb` itself, so a new file is covered automatically). Exit 1 if anything is missing. |
-| `test/i18n/arb_consistency_test.dart` | `flutter test apps/morsecq` | Identical key sets, `@@locale` declared, non-empty values, every template placeholder present in the translation, every plural has `other{…}`, `appName` untranslated, one `error*` key per `ChatException` code. **Today it compares `app_en.arb` with `app_zh.arb` only** — see step 6 below. |
+| `test/i18n/arb_consistency_test.dart` | `flutter test apps/morsecq` | Identical key sets, `@@locale` declared, non-empty values, every template placeholder present in the translation, every plural has `other{…}`, `appName` untranslated, one `error*` key per `ChatException` code. It discovers every `app_*.arb` automatically. |
 | `test/i18n/locale_resolution_test.dart`, `locale_controller_test.dart`, `language_settings_tile_test.dart` | same | Resolution rules, persistence tags, picker behaviour. |
 | `flutter analyze apps/morsecq` | CI analyze step | Generated code compiles; strict lints. |
 
@@ -141,13 +136,13 @@ test here must cover every shipped ARB.
 
 ## 2. Adding a language, step by step
 
-Example: Japanese (`ja`). Replace the tag as needed.
+Example: Italian (`it`), which is not shipped yet. Replace the tag as needed.
 
 ### Step 1 — create the ARB
 
 ```bash
 cd apps/morsecq/lib/l10n
-cp app_en.arb app_ja.arb
+cp app_en.arb app_it.arb
 ```
 
 File name = `app_` + the locale tag gen-l10n expects:
@@ -156,7 +151,7 @@ File name = `app_` + the locale tag gen-l10n expects:
 
 ```json
 {
-  "@@locale": "ja",
+  "@@locale": "it",
   "appName": "MorseCQ",
   ...
 }
@@ -171,11 +166,13 @@ File name = `app_` + the locale tag gen-l10n expects:
   plural forms (ja, zh, ko) usually collapse to
   `{count, plural, other{{count} 回}}` — keep any `=0` special case the
   template has.
+- European languages generally use `one` / `other`. Russian needs `one` /
+  `few` / `many` / `other`; exact `=1` alone misses 21, 31 and similar counts.
 - Leave `appName` as `MorseCQ` (product name, tested to be identical).
 - The `@key` metadata blocks are optional outside the template; keeping them
   is harmless, deleting them keeps the file short. The migration tool marks
   untranslated entries it adds with `"description": "@@TODO(l10n): …"`;
-  `grep -n '@@TODO' apps/morsecq/lib/l10n/app_ja.arb` lists open work.
+  `grep -n '@@TODO' apps/morsecq/lib/l10n/app_it.arb` lists open work.
 - Reuse the ham/Morse vocabulary consistently within the language (the zh
   glossary in `lib/l10n/README.md` is the model: dit/dah, character speed,
   Farnsworth spacing, sidetone, straight key, paddles, callsign, copy, send).
@@ -183,8 +180,8 @@ File name = `app_` + the locale tag gen-l10n expects:
 ### Step 3 — display name in the language catalog
 
 Open `apps/morsecq/lib/i18n/language_catalog.dart`. If your tag (or its
-language code) is already in `LanguageCatalog._names`, nothing to do — `ja` →
-`日本語` is there. Otherwise add one line with the **endonym** (the name in that
+language code) is already in `LanguageCatalog._names`, nothing to do — `it` →
+`Italiano` is there. Otherwise add one line with the **endonym** (the name in that
 language, never translated):
 
 ```dart
@@ -198,10 +195,10 @@ catalog entry the picker still works but shows the raw tag (`cy`).
 
 ```bash
 cd apps/morsecq
-flutter gen-l10n          # writes lib/l10n/generated/s_ja.dart, updates s.dart
+flutter gen-l10n          # writes lib/l10n/generated/s_it.dart, updates s.dart
 ```
 
-`S.supportedLocales` now contains `Locale('ja')`; the delegate's
+`S.supportedLocales` now contains `Locale('it')`; the delegate's
 `isSupported`, the picker and the resolver pick it up with no further edits.
 Commit the regenerated files.
 
@@ -209,35 +206,31 @@ Commit the regenerated files.
 
 ```bash
 # repo root
-dart run tool/strings_to_arb.dart --check     # every *_strings.dart const present in app_ja.arb
+dart run tool/strings_to_arb.dart --check     # every *_strings.dart const present in app_it.arb
 flutter analyze apps/morsecq
 cd apps/morsecq && flutter test test/i18n
 ```
 
-Then run the app (`MORSECQ_FAKE_BACKEND=1` is enough), open **Me → Language**,
-pick 日本語, and confirm the shell relabels immediately. Switch back to
-"System default" and set the device language to Japanese to exercise the
+Then run the app with `--dart-define=MORSECQ_FAKE_BACKEND=true`, open **Me → Language**,
+pick Italiano, and confirm the shell relabels immediately. Switch back to
+"System default" and set the device language to Italian to exercise the
 resolver path.
 
-### Step 6 — extend the consistency test (target)
+### Step 6 — test completeness and selection
 
-`test/i18n/arb_consistency_test.dart` currently reads exactly `app_en.arb`
-and `app_zh.arb`. The target shape (and what to do when you add the third
-file) is toxee's `_completeLocales` pattern: iterate every `app_*.arb` in
-`lib/l10n/`, and for each non-template file assert the same key set,
-placeholders and `other{}` branches against the template. Do this in the same
-change as the new ARB so the "silent English fallback" failure mode described
-in §1.6 cannot recur.
+`test/i18n/arb_consistency_test.dart` discovers every `app_*.arb` and checks key
+sets, placeholders and plural branches against the English template. Extend
+`shipped_locales_test.dart` when the shipped set changes, and add the new native
+name to the small-phone picker cases in `language_settings_tile_test.dart`.
+Verify persistence, service strings, system resolution and grammatical counts.
 
 ### Step 7 — platform manifests
 
-- **iOS / macOS**: Flutter reads the device locale from `NSLocale`, but iOS
-  only offers a per-app language switch in Settings when
-  `CFBundleLocalizations` lists the languages. toxee declares
-  `en`, `zh-Hans`, `zh-Hant` in `ios/Runner/Info.plist`; MorseCQ's
-  `apps/morsecq/ios/Runner/Info.plist` has no such array yet — add one with
-  every shipped tag (BCP-47 form: `ja`, `zh-Hans`, `zh-Hant`) when you add a
-  language. Same for `macos/Runner/Info.plist`.
+- **iOS / macOS**: keep `CFBundleLocalizations` in both
+  `apps/morsecq/ios/Runner/Info.plist` and `macos/Runner/Info.plist` in sync with
+  every shipped locale. Use BCP-47 tags (`it`, `zh-Hans`, `zh-Hant`), mapping
+  the Simplified `zh` ARB to `zh-Hans`. The shipped-locale tests check both
+  declarations. This also lets Apple Settings expose the supported app languages.
 - **Android**: nothing required. If you later use `resourceConfigurations` /
   `resConfigs` to shrink the APK, keep the new language in the list.
 - **Windows / Linux**: nothing; the locale comes from the OS user profile.
@@ -276,7 +269,7 @@ Follow toxee's precedent but keep it minimal:
 - [ ] Endonym present in `LanguageCatalog._names` (and `isRtl` if applicable)
 - [ ] `flutter gen-l10n` run; `lib/l10n/generated/` committed
 - [ ] `dart run tool/strings_to_arb.dart --check` green
-- [ ] `test/i18n/arb_consistency_test.dart` covers the new file (extend it if it still hard-codes `en`/`zh`)
+- [ ] `test/i18n/arb_consistency_test.dart` discovers the new file; shipped-locale and picker tests updated
 - [ ] `flutter analyze apps/morsecq` and `flutter test apps/morsecq` green
 - [ ] `CFBundleLocalizations` updated in the iOS and macOS `Info.plist`
 - [ ] Manual check: Me → Language switch, and system-follow with the device set to the new language

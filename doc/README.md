@@ -32,6 +32,9 @@ top (today that is the Chinese original of the plan document and the English
 
 ## Plans (方案)
 
+- [plans/2026-10-03-interface-languages.md](plans/2026-10-03-interface-languages.md) /
+  [zh-CN](plans/2026-10-03-interface-languages.zh-CN.md) — Eight additional interface
+  languages, complete ARB translations and mobile/desktop verification.
 - [plans/2026-09-30-morsecq-plan.md](plans/2026-09-30-morsecq-plan.md) /
   [zh-CN](plans/2026-09-30-morsecq-plan.zh-CN.md) — Founding product and
   architecture plan: naming, product definition, Tim2Tox facts, the four

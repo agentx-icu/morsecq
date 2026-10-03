@@ -1,0 +1,2064 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 's.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Russian (`ru`).
+class SRu extends S {
+  SRu([String locale = 'ru']) : super(locale);
+
+  @override
+  String get appName => 'MorseCQ';
+
+  @override
+  String get navLearn => 'Обучение';
+
+  @override
+  String get navChat => 'Чаты';
+
+  @override
+  String get navGroups => 'Группы';
+
+  @override
+  String get navMe => 'Профиль';
+
+  @override
+  String get navReference => 'Справочник';
+
+  @override
+  String get navLearnDescription => 'Уроки по методу Коха, упражнения по передаче и приёму на слух.';
+
+  @override
+  String get navChatDescription => 'Личные беседы азбукой Морзе без сервера через Tox P2P.';
+
+  @override
+  String get navGroupsDescription => 'Групповые сети: несколько операторов передают в одном общем канале.';
+
+  @override
+  String get navReferenceDescription => 'Алфавит, служебные сигналы, Q-коды, сокращения и двусторонний переводчик.';
+
+  @override
+  String get navMeDescription => 'Ваш позывной, идентификатор Tox, прогресс и настройки.';
+
+  @override
+  String get shellOfflineBanner => 'Нет подключения к сети Tox. Сообщения будут отправлены после восстановления подключения.';
+
+  @override
+  String get actionOk => 'ОК';
+
+  @override
+  String get actionCancel => 'Отмена';
+
+  @override
+  String get actionSave => 'Сохранить';
+
+  @override
+  String get actionDelete => 'Удалить';
+
+  @override
+  String get actionCopy => 'Копировать';
+
+  @override
+  String get actionShare => 'Поделиться';
+
+  @override
+  String get actionRetry => 'Повторить';
+
+  @override
+  String get actionClose => 'Закрыть';
+
+  @override
+  String get actionSearch => 'Поиск';
+
+  @override
+  String get actionSettings => 'Настройки';
+
+  @override
+  String get connectionConnecting => 'Подключение…';
+
+  @override
+  String get connectionOnline => 'В сети';
+
+  @override
+  String get connectionOffline => 'Не в сети';
+
+  @override
+  String get messageStatusPending => 'В очереди: собеседник не в сети';
+
+  @override
+  String get messageStatusPendingDetail => 'У Tox нет сервера: сообщение будет доставлено, когда собеседник появится в сети.';
+
+  @override
+  String get messageStatusSending => 'Отправка';
+
+  @override
+  String get messageStatusSent => 'Отправлено';
+
+  @override
+  String get messageStatusFailed => 'Не удалось отправить';
+
+  @override
+  String get errorWrongPassword => 'Неверный пароль. Попробуйте ещё раз.';
+
+  @override
+  String get errorPeerOffline => 'Этот контакт не в сети. У Tox нет сервера, поэтому сообщение ждёт, пока контакт снова подключится.';
+
+  @override
+  String get errorInvalidToxId => 'Недопустимый Tox ID (должно быть 76 шестнадцатеричных символов).';
+
+  @override
+  String get errorAlreadyFriend => 'Этот Tox ID уже есть в вашем списке друзей.';
+
+  @override
+  String get errorOwnId => 'Это ваш собственный Tox ID.';
+
+  @override
+  String get errorGroupNotFound => 'Группа не найдена.';
+
+  @override
+  String get errorMessageTooLong => 'Текст превышает предел длины одного сообщения Tox.';
+
+  @override
+  String get errorUnknown => 'Произошла ошибка';
+
+  @override
+  String get languageTitle => 'Язык';
+
+  @override
+  String get languageSystemDefault => 'Как в системе';
+
+  @override
+  String learnLessonOf(int lesson, int total) {
+    return 'Урок $lesson из $total';
+  }
+
+  @override
+  String learnCharsLearned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Изучено $count символа',
+      many: 'Изучено $count символов',
+      few: 'Изучено $count символа',
+      one: 'Изучен $count символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnDailyGoalProgress(int done, int goal) {
+    return '$done / $goal символов';
+  }
+
+  @override
+  String learnStreakDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days дня подряд',
+      many: '$days дней подряд',
+      few: '$days дня подряд',
+      one: '$days день подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnReviewDueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count символа для повторения',
+      many: '$count символов для повторения',
+      few: '$count символа для повторения',
+      one: '$count символ для повторения',
+      zero: 'Нет символов для повторения',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnRoundScore(int correct, int total) {
+    return 'Верно: $correct из $total';
+  }
+
+  @override
+  String learnRoundOf(int round) {
+    return 'Раунд $round';
+  }
+
+  @override
+  String learnAccuracyPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String learnCharsSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Передано $count символа',
+      many: 'Передано $count символов',
+      few: 'Передано $count символа',
+      one: 'Передан $count символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String learnLessonUnlocked(String char) {
+    return 'Открыт новый символ: $char';
+  }
+
+  @override
+  String learnConfusedMissed(String target) {
+    return '$target пропущен';
+  }
+
+  @override
+  String learnConfusedAs(String target, String answered) {
+    return '$target принят как $answered';
+  }
+
+  @override
+  String learnWpmValue(String wpm) {
+    return '$wpm wpm';
+  }
+
+  @override
+  String learnHzValue(String hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String learnCharsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count символа',
+      many: '$count символов',
+      few: '$count символа',
+      one: '$count символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsLessonOf(int lesson, int total) {
+    return '$lesson / $total';
+  }
+
+  @override
+  String statsCharsLearned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Изучено $count символа',
+      many: 'Изучено $count символов',
+      few: 'Изучено $count символа',
+      one: 'Изучен $count символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPercent(String percent) {
+    return '$percent%';
+  }
+
+  @override
+  String statsCharsCopied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Принято $count символа',
+      many: 'Принято $count символов',
+      few: 'Принято $count символа',
+      one: 'Принят $count символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsSessions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count занятия',
+      many: '$count занятий',
+      few: '$count занятия',
+      one: '$count занятие',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsBestStreak(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Рекорд: $count дня',
+      many: 'Рекорд: $count дней',
+      few: 'Рекорд: $count дня',
+      one: 'Рекорд: $count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsGoalProgress(int done, int goal) {
+    return '$done / $goal символов';
+  }
+
+  @override
+  String statsGoalRemaining(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'Осталось $remaining символа',
+      many: 'Осталось $remaining символов',
+      few: 'Осталось $remaining символа',
+      one: 'Остался $remaining символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTrendSubtitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Последние $count занятия',
+      many: 'Последние $count занятий',
+      few: 'Последние $count занятия',
+      one: 'Последнее $count занятие',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTooltipSession(int index, int total) {
+    return 'Занятие $index из $total';
+  }
+
+  @override
+  String statsTooltipCopied(int correct, int total) {
+    return 'Верно: $correct / $total';
+  }
+
+  @override
+  String statsTooltipLesson(int lesson) {
+    return 'Урок $lesson';
+  }
+
+  @override
+  String statsAttempts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count попытки',
+      many: '$count попыток',
+      few: '$count попытки',
+      one: '$count попытка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsCorrectOf(int correct, int attempts) {
+    return 'Верно: $correct из $attempts';
+  }
+
+  @override
+  String statsLessonIntroduced(int lesson) {
+    return 'Вводится в уроке $lesson';
+  }
+
+  @override
+  String statsSrsBox(int box, int maxBox) {
+    return 'Коробка $box из $maxBox';
+  }
+
+  @override
+  String statsSrsDueIn(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Повторить через $days дня',
+      many: 'Повторить через $days дней',
+      few: 'Повторить через $days дня',
+      one: 'Повторить через $days день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раза',
+      many: '$count раз',
+      few: '$count раза',
+      one: '$count раз',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsHeatmapCell(String target, String answered, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раза',
+      many: '$count раз',
+      few: '$count раза',
+      one: '$count раз',
+    );
+    return '$target принят как $answered, $_temp0';
+  }
+
+  @override
+  String statsCalendarDay(String date, int chars) {
+    String _temp0 = intl.Intl.pluralLogic(
+      chars,
+      locale: localeName,
+      other: '$chars символа',
+      many: '$chars символов',
+      few: '$chars символа',
+      one: '$chars символ',
+      zero: 'без занятий',
+    );
+    return '$date: $_temp0';
+  }
+
+  @override
+  String statsActiveDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня занятий',
+      many: '$count дней занятий',
+      few: '$count дня занятий',
+      one: '$count день занятий',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referenceEntryCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count записи',
+      many: '$count записей',
+      few: '$count записи',
+      one: '$count запись',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String referenceWpmValue(String wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String referenceHzValue(String hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String referenceSkippedChars(String chars) {
+    return 'Пропущены (нет кода Морзе): $chars';
+  }
+
+  @override
+  String referenceKochPositionValue(int position) {
+    return 'Номер по методу Коха: $position';
+  }
+
+  @override
+  String referenceEstimatedSpeed(String wpm) {
+    return 'Примерно $wpm WPM';
+  }
+
+  @override
+  String get accountCopied => 'Tox ID скопирован в буфер обмена';
+
+  @override
+  String get accountShowQr => 'Показать QR-код';
+
+  @override
+  String get accountToxId => 'Tox ID';
+
+  @override
+  String get accountDisplayName => 'Отображаемое имя';
+
+  @override
+  String get accountDisplayNameHint => 'Ваш позывной или псевдоним';
+
+  @override
+  String get accountDisplayNameRequired => 'Введите отображаемое имя';
+
+  @override
+  String get accountStatusMessage => 'Статус';
+
+  @override
+  String get accountPassword => 'Пароль';
+
+  @override
+  String get accountPasswordOptional => 'Пароль (необязательно)';
+
+  @override
+  String get accountConfirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get accountPasswordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get accountShowPassword => 'Показать пароль';
+
+  @override
+  String get accountHidePassword => 'Скрыть пароль';
+
+  @override
+  String get accountStrengthWeak => 'Слабый: используйте не менее 8 символов';
+
+  @override
+  String get accountStrengthFair => 'Средний: лучше использовать от 12 символов разных типов';
+
+  @override
+  String get accountStrengthStrong => 'Надёжный';
+
+  @override
+  String get accountStartupInspecting => 'Проверка ваших ключей…';
+
+  @override
+  String get accountStartupOpening => 'Загрузка ваших ключей…';
+
+  @override
+  String get accountStartupFailedTitle => 'Не удалось запустить';
+
+  @override
+  String get accountStartupFailedBody => 'MorseCQ не удалось прочитать ваши ключи. Ничего не изменено; можно попробовать ещё раз.';
+
+  @override
+  String get accountConnectionTapToReconnect => 'Нажмите для повторного подключения';
+
+  @override
+  String get accountWelcomeTitle => 'Ваши ключи хранятся на этом устройстве';
+
+  @override
+  String get accountWelcomeIntro => 'MorseCQ использует одноранговую сеть Tox. Здесь нет сервера и не нужно регистрироваться: ваша учётная запись — это пара ключей, которая хранится только на этом устройстве.';
+
+  @override
+  String get accountWelcomePointNoServer => 'Нет сервера, номера телефона или электронной почты. Операторы общаются напрямую азбукой Морзе.';
+
+  @override
+  String get accountWelcomePointTraining => 'Прогресс обучения сохраняется вместе с ключами, поэтому его можно включить в резервную копию и перенести на другое устройство.';
+
+  @override
+  String get accountWelcomePointBackup => 'Никто не сможет восстановить ваши ключи за вас. Создайте резервную копию сразу после создания учётной записи, иначе вы потеряете её вместе с устройством.';
+
+  @override
+  String get accountCreateIdentity => 'Создать учётную запись';
+
+  @override
+  String get accountRestoreFromBackup => 'Восстановить из резервной копии';
+
+  @override
+  String get accountCreateTitle => 'Создайте учётную запись';
+
+  @override
+  String get accountCreateBody => 'Выберите имя, которое будут видеть другие. Пароль шифрует файл ключей на этом устройстве; оставьте поле пустым, если хотите открывать приложение без пароля.';
+
+  @override
+  String get accountCreateButton => 'Создать';
+
+  @override
+  String get accountCreating => 'Создание…';
+
+  @override
+  String get accountBackupTitle => 'Создайте резервную копию сейчас';
+
+  @override
+  String get accountBackupBody => 'Ваши ключи существуют только на этом устройстве. При его потере, сбросе или краже восстановить их не получится: контакты не узнают новую учётную запись, а прогресс обучения будет потерян.';
+
+  @override
+  String get accountBackupWhatIsInside => 'Резервная копия содержит зашифрованные ключи и прогресс обучения. Храните её в безопасном месте вне этого устройства.';
+
+  @override
+  String get accountBackupSaveFile => 'Сохранить резервную копию';
+
+  @override
+  String get accountBackupShareFile => 'Поделиться резервной копией';
+
+  @override
+  String get accountBackupSaved => 'Резервная копия сохранена';
+
+  @override
+  String get accountBackupNotSaved => 'Резервная копия не сохранена';
+
+  @override
+  String get accountBackupFailed => 'Не удалось записать резервную копию';
+
+  @override
+  String get accountBackupAcknowledge => 'Я понимаю, что без этой резервной копии моя учётная запись не может быть восстановлена.';
+
+  @override
+  String get accountBackupContinue => 'Перейти в MorseCQ';
+
+  @override
+  String get accountBackupShowQrHint => 'Друзья добавляют вас по Tox ID. Поделитесь им в виде текста или QR-кода.';
+
+  @override
+  String get accountRestoreTitle => 'Восстановить из резервной копии';
+
+  @override
+  String get accountRestoreBody => 'Выберите резервную копию, экспортированную из MorseCQ. Если ключи защищены паролем, здесь нужно будет его ввести.';
+
+  @override
+  String get accountRestoreChooseFile => 'Выбрать резервную копию';
+
+  @override
+  String get accountRestoreNoFile => 'Сначала выберите резервную копию';
+
+  @override
+  String get accountRestoreButton => 'Восстановить';
+
+  @override
+  String get accountRestoring => 'Восстановление…';
+
+  @override
+  String get accountRestoreInvalidFile => 'Этот файл не является резервной копией MorseCQ.';
+
+  @override
+  String get accountRestoreReplacesWarning => 'Восстановление заменит текущую учётную запись на этом устройстве.';
+
+  @override
+  String get accountUnlockTitle => 'Разблокируйте учётную запись';
+
+  @override
+  String get accountUnlockBody => 'Файл ваших ключей зашифрован. Введите пароль, чтобы продолжить.';
+
+  @override
+  String get accountUnlockButton => 'Разблокировать';
+
+  @override
+  String get accountUnlocking => 'Разблокировка…';
+
+  @override
+  String get accountUnlockRestoreInstead => 'Восстановить из резервной копии';
+
+  @override
+  String get accountMeNoIdentity => 'Учётная запись не загружена';
+
+  @override
+  String get accountSectionAccount => 'Учётная запись';
+
+  @override
+  String get accountSectionTraining => 'Обучение';
+
+  @override
+  String get accountSectionAbout => 'О приложении';
+
+  @override
+  String get accountSectionDanger => 'Опасные действия';
+
+  @override
+  String get accountEditProfile => 'Редактировать профиль';
+
+  @override
+  String get accountEditProfileBody => 'Виден вашим контактам в сети Tox.';
+
+  @override
+  String get accountSetPassword => 'Установить пароль';
+
+  @override
+  String get accountChangePassword => 'Изменить пароль';
+
+  @override
+  String get accountRemovePassword => 'Удалить пароль';
+
+  @override
+  String get accountCurrentPassword => 'Текущий пароль';
+
+  @override
+  String get accountNewPassword => 'Новый пароль';
+
+  @override
+  String get accountPasswordUpdated => 'Пароль обновлён';
+
+  @override
+  String get accountPasswordRemoved => 'Пароль удалён';
+
+  @override
+  String get accountProfileUpdated => 'Профиль обновлён';
+
+  @override
+  String get accountExportBackup => 'Экспортировать резервную копию';
+
+  @override
+  String get accountExportBackupSubtitle => 'Сохраните ключи и прогресс обучения в файл';
+
+  @override
+  String get accountTrainingDefaults => 'Параметры воспроизведения и обучения';
+
+  @override
+  String get accountTrainingDefaultsSubtitle => 'Скорость, тон и интервалы Фарнсворта';
+
+  @override
+  String get accountTrainingDefaultsPlaceholder => 'Здесь будут параметры скорости, тона и интервалов Фарнсворта по умолчанию.';
+
+  @override
+  String get accountAboutLicence => 'Лицензия';
+
+  @override
+  String get accountAboutLicenceValue => 'GPL-3.0';
+
+  @override
+  String get accountAboutSource => 'Исходный код';
+
+  @override
+  String get accountAboutSourceCopied => 'Ссылка на исходный код скопирована';
+
+  @override
+  String get accountAboutBackend => 'Внутренний модуль';
+
+  @override
+  String get accountDeleteIdentity => 'Удалить учётную запись';
+
+  @override
+  String get accountDeleteIdentitySubtitle => 'Удалить ключи, историю и прогресс с этого устройства';
+
+  @override
+  String get accountDeleteDialogTitle => 'Удалить эту учётную запись?';
+
+  @override
+  String get accountDeleteDialogBody => 'С этого устройства будут удалены ваши ключи, история чатов и прогресс обучения. Без резервной копии восстановление невозможно. Введите DELETE для подтверждения.';
+
+  @override
+  String get accountDeleteConfirmWord => 'DELETE';
+
+  @override
+  String get accountDeleteConfirmHint => 'Введите DELETE';
+
+  @override
+  String get accountDeleteButton => 'Удалить';
+
+  @override
+  String accountRestoreFileChosenSize(int bytes) {
+    return 'Выбрана резервная копия ($bytes байт)';
+  }
+
+  @override
+  String get chatSearchConversations => 'Поиск бесед';
+
+  @override
+  String get chatNoConversations => 'Пока нет бесед';
+
+  @override
+  String get chatNoSearchResults => 'Подходящих бесед нет';
+
+  @override
+  String get chatPin => 'Закрепить';
+
+  @override
+  String get chatUnpin => 'Открепить';
+
+  @override
+  String get chatMarkRead => 'Отметить прочитанным';
+
+  @override
+  String get chatDelete => 'Удалить';
+
+  @override
+  String get chatDeleteConversationTitle => 'Удалить беседу?';
+
+  @override
+  String get chatDeleteConversationBody => 'Локальная история этой беседы будет удалена. Tox не хранит копий.';
+
+  @override
+  String get chatDraftPrefix => 'Черновик: ';
+
+  @override
+  String get chatSelectConversation => 'Выберите беседу';
+
+  @override
+  String get chatContacts => 'Контакты';
+
+  @override
+  String get chatNoMessages => 'Сообщений пока нет: передайте CQ, чтобы начать.';
+
+  @override
+  String get chatTrainingMode => 'Режим обучения';
+
+  @override
+  String get chatTrainingModeOn => 'Режим обучения включён: текст скрыт';
+
+  @override
+  String get chatTrainingModeOff => 'Режим обучения выключен';
+
+  @override
+  String get chatReveal => 'Показать';
+
+  @override
+  String get chatHiddenText => 'Сначала прослушайте, затем откройте текст';
+
+  @override
+  String get chatPlay => 'Прослушать Морзе';
+
+  @override
+  String get chatStop => 'Остановить';
+
+  @override
+  String get chatPlaybackSettings => 'Настройки воспроизведения';
+
+  @override
+  String get chatCharacterSpeed => 'Скорость символов';
+
+  @override
+  String get chatFarnsworthSpeed => 'Скорость Фарнсворта';
+
+  @override
+  String get chatTone => 'Тон';
+
+  @override
+  String get chatWpm => 'WPM';
+
+  @override
+  String get chatHz => 'Hz';
+
+  @override
+  String get chatMembers => 'Участники';
+
+  @override
+  String get chatLeaveGroup => 'Покинуть группу';
+
+  @override
+  String get chatLeaveGroupTitle => 'Покинуть эту группу?';
+
+  @override
+  String get chatLeaveGroupBody => 'Вы перестанете получать сообщения. Позже можно будет вернуться по ID чата.';
+
+  @override
+  String get chatLeave => 'Выйти';
+
+  @override
+  String get chatConferenceNote => 'Устаревшая конференция: здесь недоступны метаданные передачи Морзе (v2). Текстовые сообщения работают.';
+
+  @override
+  String get chatClearHistory => 'Очистить историю';
+
+  @override
+  String get chatModeKeyboard => 'Клавиатура';
+
+  @override
+  String get chatModeStraightKey => 'Вертикальный ключ';
+
+  @override
+  String get chatModePaddles => 'Двухрычажный манипулятор';
+
+  @override
+  String get chatTypeMessage => 'Введите сообщение';
+
+  @override
+  String get chatSend => 'Отправить';
+
+  @override
+  String get chatTooLong => 'Превышен предел длины сообщения Tox';
+
+  @override
+  String get chatKeyHint => 'Нажимайте на область ключа или клавишу пробела';
+
+  @override
+  String get chatPaddleHint => 'Нажимайте на рычаги или удерживайте Ctrl (левый — точка, правый — тире)';
+
+  @override
+  String get chatDeleteLast => 'Удалить последний символ';
+
+  @override
+  String get chatNoFriends => 'Друзей пока нет. Добавьте друга по его Tox ID.';
+
+  @override
+  String get chatNoRequests => 'Нет ожидающих запросов';
+
+  @override
+  String get chatAddFriend => 'Добавить друга';
+
+  @override
+  String get chatMyToxId => 'Мой Tox ID';
+
+  @override
+  String get chatToxIdLabel => 'Tox ID (76 шестнадцатеричных символов)';
+
+  @override
+  String get chatToxIdInvalid => 'Tox ID должен содержать ровно 76 шестнадцатеричных символов';
+
+  @override
+  String get chatToxIdOwn => 'Это ваш собственный Tox ID';
+
+  @override
+  String get chatToxIdAlreadyFriend => 'Уже в списке друзей';
+
+  @override
+  String get chatRequestMessage => 'Сообщение';
+
+  @override
+  String get chatDefaultRequestMessage => 'MorseCQ CQ';
+
+  @override
+  String get chatSendRequest => 'Отправить запрос';
+
+  @override
+  String get chatRequestSent => 'Запрос дружбы отправлен';
+
+  @override
+  String get chatScanQr => 'Сканировать QR';
+
+  @override
+  String get chatScanQrDesktopHint => 'Для сканирования QR нужна камера телефона';
+
+  @override
+  String get chatScanQrTitle => 'Сканировать Tox ID';
+
+  @override
+  String get chatScanQrNotToxId => 'Этот QR-код не содержит Tox ID';
+
+  @override
+  String get chatAccept => 'Принять';
+
+  @override
+  String get chatReject => 'Отклонить';
+
+  @override
+  String get chatCopied => 'Скопировано в буфер обмена';
+
+  @override
+  String get chatNoIdentity => 'Учётная запись не загружена';
+
+  @override
+  String get chatRemoveFriend => 'Удалить друга';
+
+  @override
+  String get chatRemoveFriendTitle => 'Удалить этого друга?';
+
+  @override
+  String get chatRemoveFriendBody => 'Этот контакт больше не сможет отправлять вам сообщения.';
+
+  @override
+  String get chatRemove => 'Удалить';
+
+  @override
+  String get chatNoGroups => 'Групп пока нет. Создайте группу или присоединитесь по ID чата.';
+
+  @override
+  String get chatCreateGroup => 'Создать группу';
+
+  @override
+  String get chatJoinGroup => 'Вступить в группу';
+
+  @override
+  String get chatGroupName => 'Название группы';
+
+  @override
+  String get chatGroupNameRequired => 'Введите название группы';
+
+  @override
+  String get chatAdvanced => 'Дополнительно';
+
+  @override
+  String get chatLegacyConference => 'Устаревшая конференция (для старых клиентов)';
+
+  @override
+  String get chatLegacyConferenceHint => 'Не рекомендуется: нет постоянного ID чата и метаданных Морзе.';
+
+  @override
+  String get chatCreate => 'Создать';
+
+  @override
+  String get chatChatIdLabel => 'ID чата (64 шестнадцатеричных символа)';
+
+  @override
+  String get chatChatIdInvalid => 'ID чата должен содержать ровно 64 шестнадцатеричных символа';
+
+  @override
+  String get chatPassword => 'Пароль (необязательно)';
+
+  @override
+  String get chatJoin => 'Вступить';
+
+  @override
+  String get chatJoinRequested => 'Подключение: группа появится после обнаружения участника.';
+
+  @override
+  String get chatConferenceBadge => 'Конференция';
+
+  @override
+  String get chatCopyChatId => 'Копировать ID чата';
+
+  @override
+  String get learnLessonCardTitle => 'Урок по методу Коха';
+
+  @override
+  String get learnCourseComplete => 'Курс завершён — продолжайте совершенствоваться!';
+
+  @override
+  String get learnDailyGoalTitle => 'Сегодня';
+
+  @override
+  String get learnDailyGoalMet => 'Дневная цель достигнута';
+
+  @override
+  String get learnNoStreak => 'Начните серию занятий сегодня';
+
+  @override
+  String get learnContinueLesson => 'Продолжить урок';
+
+  @override
+  String get learnReceivePractice => 'Практика приёма';
+
+  @override
+  String get learnSendPractice => 'Практика передачи';
+
+  @override
+  String get learnReviewDue => 'Повторить назначенные символы';
+
+  @override
+  String get learnSettings => 'Настройки обучения';
+
+  @override
+  String get learnLoading => 'Загрузка прогресса...';
+
+  @override
+  String get learnIdentityRequired => 'Создайте или разблокируйте учётную запись, чтобы начать обучение. Прогресс сохраняется вместе с ключами и входит в резервную копию.';
+
+  @override
+  String get learnLoadFailed => 'Не удалось прочитать сохранённый прогресс. Обучение начнётся заново; старый файл сохранён с расширением .corrupt.';
+
+  @override
+  String get learnChooseDrill => 'Выберите упражнение';
+
+  @override
+  String get learnDrillGroups => 'Случайные группы';
+
+  @override
+  String get learnDrillWords => 'Слова';
+
+  @override
+  String get learnDrillCallsigns => 'Позывные';
+
+  @override
+  String get learnDrillQso => 'QSO';
+
+  @override
+  String get learnReceiveTitle => 'Приём';
+
+  @override
+  String get learnReviewTitle => 'Повторение';
+
+  @override
+  String get learnListen => 'Слушайте...';
+
+  @override
+  String get learnReady => 'Готово';
+
+  @override
+  String get learnReplay => 'Прослушать снова';
+
+  @override
+  String get learnAnswerHint => 'Введите услышанное';
+
+  @override
+  String get learnSubmit => 'Проверить';
+
+  @override
+  String get learnNext => 'Далее';
+
+  @override
+  String get learnFinish => 'Завершить';
+
+  @override
+  String get learnDone => 'Готово';
+
+  @override
+  String get learnBackspace => 'Удалить';
+
+  @override
+  String get learnSpace => 'Пробел';
+
+  @override
+  String get learnSent => 'Передано';
+
+  @override
+  String get learnYourCopy => 'Ваш приём';
+
+  @override
+  String get learnRoundPerfect => 'Всё принято верно!';
+
+  @override
+  String get learnSessionSummary => 'Итоги занятия';
+
+  @override
+  String get learnLessonPassed => 'Урок пройден';
+
+  @override
+  String get learnLessonNotPassed => 'Продолжайте: точность 90% откроет следующий символ';
+
+  @override
+  String get learnReviewRecorded => 'Повторение записано';
+
+  @override
+  String get learnWeakChars => 'Нужно улучшить';
+
+  @override
+  String get learnConfusions => 'Путаете';
+
+  @override
+  String get learnNoFeedbackWarning => 'Звук, вспышки и вибрация отключены — вместо них будет мигать экран.';
+
+  @override
+  String get learnSendTitle => 'Передача';
+
+  @override
+  String get learnSendThis => 'Передайте это';
+
+  @override
+  String get learnCopyFromMemory => 'По памяти';
+
+  @override
+  String get learnHiddenTarget => 'Скрыто — передайте по памяти';
+
+  @override
+  String get learnDecoded => 'Расшифровано';
+
+  @override
+  String get learnWaitingForKey => 'Начните передачу, когда будете готовы';
+
+  @override
+  String get learnRestart => 'Начать заново';
+
+  @override
+  String get learnTryAnother => 'Другой пример';
+
+  @override
+  String get learnKeyerStraight => 'Вертикальный';
+
+  @override
+  String get learnKeyerIambicA => 'Ямбический A';
+
+  @override
+  String get learnKeyerIambicB => 'Ямбический B';
+
+  @override
+  String get learnLegendStraight => 'Пробел = ключ';
+
+  @override
+  String get learnLegendPaddles => 'Левый Ctrl = точка, правый Ctrl = тире';
+
+  @override
+  String get learnSendClean => 'Чёткая передача — исправлять нечего.';
+
+  @override
+  String get learnSendIssues => 'Подсказки по ритму';
+
+  @override
+  String get learnYourSending => 'Расшифровано как';
+
+  @override
+  String get learnStraightKeyLabel => 'КЛЮЧ';
+
+  @override
+  String get learnDitLabel => 'ТОЧКА';
+
+  @override
+  String get learnDahLabel => 'ТИРЕ';
+
+  @override
+  String get learnSettingsTitle => 'Настройки обучения';
+
+  @override
+  String get learnCharacterSpeed => 'Скорость символов';
+
+  @override
+  String get learnFarnsworth => 'Интервалы Фарнсворта';
+
+  @override
+  String get learnFarnsworthHelp => 'Символы передаются быстро, а интервалы между ними увеличиваются до этой скорости.';
+
+  @override
+  String get learnEffectiveSpeed => 'Эффективная скорость';
+
+  @override
+  String get learnTone => 'Тон';
+
+  @override
+  String get learnPlaySample => 'Прослушать пример';
+
+  @override
+  String get learnSessionLength => 'Символов за занятие';
+
+  @override
+  String get learnFeedback => 'Обратная связь';
+
+  @override
+  String get learnSound => 'Звук';
+
+  @override
+  String get learnFlash => 'Вспышка экрана';
+
+  @override
+  String get learnHaptic => 'Вибрация';
+
+  @override
+  String get learnKeyer => 'Тип ключа';
+
+  @override
+  String get learnDailyGoal => 'Дневная цель';
+
+  @override
+  String get referenceReferenceTitle => 'Справочник азбуки Морзе';
+
+  @override
+  String get referenceTranslatorTitle => 'Переводчик';
+
+  @override
+  String get referencePlay => 'Воспроизвести';
+
+  @override
+  String get referenceStop => 'Остановить';
+
+  @override
+  String get referenceClear => 'Очистить';
+
+  @override
+  String get referenceClose => 'Закрыть';
+
+  @override
+  String get referenceEmptyOutput => '—';
+
+  @override
+  String get referenceSearchHint => 'Поиск символов, служебных сигналов, Q-кодов…';
+
+  @override
+  String get referenceClearSearch => 'Очистить поиск';
+
+  @override
+  String get referenceNoResults => 'По вашему запросу ничего не найдено.';
+
+  @override
+  String get referenceSectionAlphabet => 'Алфавит';
+
+  @override
+  String get referenceSectionPunctuation => 'Знаки препинания';
+
+  @override
+  String get referenceSectionProsigns => 'Служебные сигналы';
+
+  @override
+  String get referenceSectionQCodes => 'Q-коды';
+
+  @override
+  String get referenceSectionAbbreviations => 'Сокращения CW';
+
+  @override
+  String get referenceSectionKoch => 'Порядок Коха';
+
+  @override
+  String get referenceAlphabetHint => 'Нажмите на карточку, чтобы прослушать. Удерживайте её, чтобы увидеть подсказку для запоминания.';
+
+  @override
+  String get referenceKochHint => 'Порядок введения символов по методу Коха (последовательность LCWO). Начните с K и M; добавляйте символ, когда точность приёма достигнет 90%.';
+
+  @override
+  String get referenceMnemonicTitle => 'Подсказка для запоминания';
+
+  @override
+  String get referenceMeaningLabel => 'Значение';
+
+  @override
+  String get referencePlaybackSettings => 'Настройки воспроизведения';
+
+  @override
+  String get referenceCharacterSpeed => 'Скорость символов';
+
+  @override
+  String get referenceFarnsworth => 'Интервалы Фарнсворта';
+
+  @override
+  String get referenceFarnsworthHelp => 'Символы передаются на полной скорости, а интервалы увеличиваются до эффективной скорости.';
+
+  @override
+  String get referenceEffectiveSpeed => 'Эффективная скорость';
+
+  @override
+  String get referenceTone => 'Тон';
+
+  @override
+  String get referenceModeTextToMorse => 'Текст → Морзе';
+
+  @override
+  String get referenceModeMorseToText => 'Морзе → Текст';
+
+  @override
+  String get referenceModeKey => 'Передача';
+
+  @override
+  String get referenceTextInputLabel => 'Текст';
+
+  @override
+  String get referenceTextInputHint => 'Введите текст для кодирования…';
+
+  @override
+  String get referencePatternOutputLabel => 'Морзе';
+
+  @override
+  String get referenceCopyPattern => 'Копировать код';
+
+  @override
+  String get referencePatternCopied => 'Код скопирован';
+
+  @override
+  String get referencePatternInputLabel => 'Морзе';
+
+  @override
+  String get referencePatternInputHint => 'Введите . и -, пробел между буквами и / между словами';
+
+  @override
+  String get referenceTextOutputLabel => 'Текст';
+
+  @override
+  String get referenceCopyText => 'Копировать текст';
+
+  @override
+  String get referenceTextCopied => 'Текст скопирован';
+
+  @override
+  String get referenceUnknownPatternHelp => 'Коды без соответствующего символа отображаются как <код>.';
+
+  @override
+  String get referenceKeypadDit => 'Точка';
+
+  @override
+  String get referenceKeypadDah => 'Тире';
+
+  @override
+  String get referenceKeypadCharGap => 'Интервал между буквами';
+
+  @override
+  String get referenceKeypadWordGap => 'Интервал между словами';
+
+  @override
+  String get referenceKeypadBackspace => 'Удалить символ';
+
+  @override
+  String get referenceKeyHint => 'Удерживайте ключ для передачи. На клавиатуре удерживайте пробел.';
+
+  @override
+  String get referenceKeyLabel => 'КЛЮЧ';
+
+  @override
+  String get referenceKeyDecodedLabel => 'Расшифровано';
+
+  @override
+  String get referenceKeyPendingLabel => 'Передача';
+
+  @override
+  String get statsTitle => 'Статистика';
+
+  @override
+  String get statsLoading => 'Загрузка статистики...';
+
+  @override
+  String get statsLoadFailed => 'Не удалось загрузить прогресс. Потяните вниз или откройте снова для повторной попытки.';
+
+  @override
+  String get statsRetry => 'Повторить';
+
+  @override
+  String get statsEmptyTitle => 'Занятий пока нет';
+
+  @override
+  String get statsEmptyBody => 'Завершите первое занятие по приёму или передаче, и здесь появятся график точности, данные по каждому символу и календарь занятий.';
+
+  @override
+  String get statsEmptyCallToAction => 'Перейдите в «Обучение» и нажмите «Продолжить урок».';
+
+  @override
+  String get statsOverviewTitle => 'Обзор';
+
+  @override
+  String get statsTileLesson => 'Урок по методу Коха';
+
+  @override
+  String get statsTileAccuracy => 'Точность';
+
+  @override
+  String get statsNoData => '--';
+
+  @override
+  String get statsTilePractice => 'Практика';
+
+  @override
+  String get statsTileStreak => 'Серия занятий';
+
+  @override
+  String get statsTileDailyGoal => 'Дневная цель';
+
+  @override
+  String get statsGoalMet => 'Достигнута сегодня';
+
+  @override
+  String get statsSummaryTitle => 'Ваша статистика';
+
+  @override
+  String get statsSummaryOpen => 'Просмотреть статистику';
+
+  @override
+  String get statsTrendTitle => 'Динамика точности';
+
+  @override
+  String get statsTrendHint => 'Нажмите на точку, чтобы посмотреть занятие.';
+
+  @override
+  String get statsSeriesReceive => 'Приём';
+
+  @override
+  String get statsSeriesSend => 'Передача';
+
+  @override
+  String get statsAxisSessions => 'Занятие';
+
+  @override
+  String get statsCharsTitle => 'Символы';
+
+  @override
+  String get statsCharsSubtitle => 'В порядке Коха. Нажмите на символ для подробностей.';
+
+  @override
+  String get statsCharsNotStarted => 'Ещё не изучался';
+
+  @override
+  String get statsNotInCourse => 'Не входит в курс Коха';
+
+  @override
+  String get statsSrsTitle => 'Интервальное повторение';
+
+  @override
+  String get statsSrsNotTracked => 'Повторение ещё не назначено';
+
+  @override
+  String get statsSrsDueNow => 'Пора повторить';
+
+  @override
+  String get statsConfusionsTitle => 'Чаще всего путается с';
+
+  @override
+  String get statsConfusionsNone => 'Ошибок распознавания не записано';
+
+  @override
+  String get statsConfusionMissed => 'пропущен';
+
+  @override
+  String get statsBucketLegendTitle => 'Точность';
+
+  @override
+  String get statsBucketNone => 'Нет';
+
+  @override
+  String get statsBucketWeak => '< 70%';
+
+  @override
+  String get statsBucketFair => '70-89%';
+
+  @override
+  String get statsBucketGood => '90-97%';
+
+  @override
+  String get statsBucketStrong => '>= 98%';
+
+  @override
+  String get statsHeatmapTitle => 'Ошибки распознавания';
+
+  @override
+  String get statsHeatmapSubtitle => 'В строках — переданные символы, в столбцах — ваши ответы. Чем темнее цвет, тем чаще ошибка.';
+
+  @override
+  String get statsHeatmapEmpty => 'Ошибок пока нет. Неверные ответы будут показаны здесь.';
+
+  @override
+  String get statsHeatmapLegendLow => 'Редко';
+
+  @override
+  String get statsHeatmapLegendHigh => 'Часто';
+
+  @override
+  String get statsHeatmapAxisTarget => 'Передано';
+
+  @override
+  String get statsHeatmapAxisAnswered => 'Ответ';
+
+  @override
+  String get statsCalendarTitle => 'Календарь занятий';
+
+  @override
+  String get statsCalendarSubtitle => 'Последние 12 недель';
+
+  @override
+  String get statsCalendarLegendLess => 'Меньше';
+
+  @override
+  String get statsCalendarLegendMore => 'Больше';
+
+  @override
+  String get statsStreakExplanation => 'Серия — это последовательные календарные дни хотя бы с одним занятием. Пропуск целого дня обнуляет её; два занятия в один день засчитываются как один день.';
+
+  @override
+  String get learnStatistics => 'Статистика';
+
+  @override
+  String get listenTitle => 'Прослушивание';
+
+  @override
+  String get listenStart => 'Начать';
+
+  @override
+  String get listenStop => 'Остановить';
+
+  @override
+  String get listenStarting => 'Запуск микрофона...';
+
+  @override
+  String get listenClear => 'Очистить текст';
+
+  @override
+  String get listenCopy => 'Копировать текст';
+
+  @override
+  String get listenCopied => 'Расшифрованный текст скопирован';
+
+  @override
+  String get listenSettings => 'Настройки прослушивания';
+
+  @override
+  String get listenDecoded => 'Расшифровано';
+
+  @override
+  String get listenEmptyHint => 'Направьте микрофон на источник сигнала Морзе. Здесь появится расшифрованный текст.';
+
+  @override
+  String get listenIdleHint => 'Нажмите «Начать», чтобы принимать сигнал Морзе.';
+
+  @override
+  String get listenPending => 'Приём';
+
+  @override
+  String get listenSpeed => 'Скорость';
+
+  @override
+  String get listenSpeedUnknown => '-- WPM';
+
+  @override
+  String get listenLevel => 'Сигнал';
+
+  @override
+  String get listenToneOn => 'Есть тон';
+
+  @override
+  String get listenTone => 'Частота тона';
+
+  @override
+  String get listenToneLocked => 'Частота найдена';
+
+  @override
+  String get listenToneSearching => 'Поиск';
+
+  @override
+  String get listenToneManual => 'Вручную';
+
+  @override
+  String get listenAutoTune => 'Автонастройка';
+
+  @override
+  String get listenAutoTuneHelp => 'Следить за самым сильным тоном в диапазоне 400–1000 Hz. Для ручной настройки переместите ползунок.';
+
+  @override
+  String get listenRetune => 'Авто';
+
+  @override
+  String get listenBlockSize => 'Блок анализа';
+
+  @override
+  String get listenBlockSizeHelp => 'Меньшие блоки точнее определяют границы точек и тире, но сильнее реагируют на шум. 256 отсчётов (5,3 ms) подходят для 5–40 WPM.';
+
+  @override
+  String get listenMinElement => 'Минимальная длительность';
+
+  @override
+  String get listenMinElementHelp => 'Более короткие тоны и паузы считаются щелчками и провалами сигнала и игнорируются.';
+
+  @override
+  String get listenPermissionDenied => 'Доступ к микрофону запрещён. Разрешите его в настройках системы и попробуйте ещё раз.';
+
+  @override
+  String get listenPermissionRetry => 'Повторить';
+
+  @override
+  String get listenStartFailed => 'Не удалось запустить микрофон.';
+
+  @override
+  String get listenNoInput => 'Микрофон не найден. Подключите его и попробуйте ещё раз.';
+
+  @override
+  String listenWpmValue(int wpm) {
+    return '$wpm WPM';
+  }
+
+  @override
+  String listenHzValue(int hz) {
+    return '$hz Hz';
+  }
+
+  @override
+  String listenBlockSamples(int samples, String ms) {
+    return '$samples отсчётов ($ms ms)';
+  }
+
+  @override
+  String listenMsValue(int ms) {
+    return '$ms ms';
+  }
+
+  @override
+  String get listenStoppedInBackground => 'Прослушивание остановлено после перехода приложения в фоновый режим.';
+
+  @override
+  String get learnWpmUnknown => '- wpm';
+
+  @override
+  String get learnTipDitTooLongTitle => 'Слишком длинные точки';
+
+  @override
+  String get learnTipDahTooShortTitle => 'Слишком короткие тире';
+
+  @override
+  String get learnTipIntraGapTooLongTitle => 'Элементы слишком разнесены';
+
+  @override
+  String get learnTipCharGapTooShortTitle => 'Символы сливаются';
+
+  @override
+  String get learnTipWordGapTooShortTitle => 'Слова сливаются';
+
+  @override
+  String get learnTipSpeedUnsteadyTitle => 'Неровная скорость';
+
+  @override
+  String get learnSeverityMinor => 'незначительно';
+
+  @override
+  String get learnSeverityModerate => 'заметно';
+
+  @override
+  String get learnSeveritySevere => 'сильно';
+
+  @override
+  String get notificationOpen => 'Открыть';
+
+  @override
+  String get notificationChannelMessages => 'Сообщения';
+
+  @override
+  String get notificationChannelMessagesDescription => 'Новые сообщения Морзе от друзей и групп';
+
+  @override
+  String get notificationChannelFriendRequests => 'Запросы дружбы';
+
+  @override
+  String get notificationChannelFriendRequestsDescription => 'Кто-то хочет добавить вас в друзья';
+
+  @override
+  String get notificationChannelGroupInvites => 'Приглашения в группы';
+
+  @override
+  String get notificationChannelGroupInvitesDescription => 'Друг пригласил вас в группу';
+
+  @override
+  String get notificationNewMessage => 'Новое сообщение';
+
+  @override
+  String get notificationFriendRequestTitle => 'Новый запрос дружбы';
+
+  @override
+  String learnNewestCharIs(String char) {
+    return 'Новый символ в уроке: $char';
+  }
+
+  @override
+  String learnCharNewSemantics(String char) {
+    return '$char, новый символ';
+  }
+
+  @override
+  String learnPendingPattern(String pattern) {
+    return 'Передача: $pattern';
+  }
+
+  @override
+  String learnIssueHeadline(String title, String severity) {
+    return '$title ($severity)';
+  }
+
+  @override
+  String learnRatioTimes(String ratio) {
+    return '$ratio×';
+  }
+
+  @override
+  String learnTipDitTooLong(String ratio) {
+    return 'Ваши точки слишком длинные (примерно $ratio длительности точки). Думайте «ди», а не «даа»: точка — это короткое нажатие, без удержания.';
+  }
+
+  @override
+  String learnTipDahTooShort(String ratio) {
+    return 'Ваши тире слишком короткие (примерно $ratio длительности точки; цель — 3). Удерживайте тире в течение трёх точек.';
+  }
+
+  @override
+  String learnTipIntraGapTooLong(String ratio) {
+    return 'Паузы внутри символов слишком длинные (примерно $ratio длительности точки). Передавайте элементы одного символа компактно.';
+  }
+
+  @override
+  String learnTipCharGapTooShort(String ratio) {
+    return 'Символы сливаются (паузы примерно $ratio длительности точки; цель — 3). Делайте отчётливую паузу после каждого символа.';
+  }
+
+  @override
+  String learnTipWordGapTooShort(String ratio) {
+    return 'Слова слишком близко друг к другу (паузы примерно $ratio длительности точки; цель — 7). Выдерживайте длинную паузу между словами.';
+  }
+
+  @override
+  String learnTipSpeedUnsteady(int percent) {
+    return 'Ваша скорость меняется (разброс $percent%). Выберите один темп и придерживайтесь его на протяжении всей строки.';
+  }
+
+  @override
+  String learnIssueDetailDitTooLong(int offending, int total, String ratio) {
+    return 'Слишком длинных точек: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String learnIssueDetailDahTooShort(int offending, int total, String ratio) {
+    return 'Слишком коротких тире: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String learnIssueDetailIntraGapTooLong(int offending, int total, String ratio) {
+    return 'Слишком длинных пауз внутри символов: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String learnIssueDetailCharGapTooShort(int offending, int total, String ratio) {
+    return 'Слишком коротких пауз между символами: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String learnIssueDetailWordGapTooShort(int offending, int total, String ratio) {
+    return 'Слишком коротких пауз между словами: $offending из $total (в среднем $ratio длительности точки)';
+  }
+
+  @override
+  String learnIssueDetailSpeedUnsteady(String cv) {
+    return 'Неровная скорость передачи (коэффициент вариации $cv)';
+  }
+
+  @override
+  String statsAccuracyDetail(String allTime) {
+    return 'Последние 7 дней / за всё время: $allTime';
+  }
+
+  @override
+  String statsDurationHoursMinutes(int hours, int minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String statsDurationMinutes(int minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String statsDurationSeconds(int seconds) {
+    return '$seconds с';
+  }
+
+  @override
+  String get accountNewPasswordRequired => 'Введите новый пароль';
+
+  @override
+  String get accountToxIdQrSemantics => 'QR-код Tox ID';
+
+  @override
+  String get accountBackupSaveDialogTitle => 'Сохранить резервную копию MorseCQ';
+
+  @override
+  String get accountBackupShareSubject => 'Резервная копия учётной записи MorseCQ';
+
+  @override
+  String get accountBackupChooseDialogTitle => 'Выбрать резервную копию MorseCQ';
+
+  @override
+  String notificationNewMessages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count нового сообщения',
+      many: '$count новых сообщений',
+      few: '$count новых сообщения',
+      one: '$count новое сообщение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationFriendRequestFrom(String name) {
+    return 'Запрос дружбы от $name';
+  }
+
+  @override
+  String notificationFriendRequestBody(String name, String message) {
+    return '$name: $message';
+  }
+
+  @override
+  String notificationGroupInviteTitle(String group) {
+    return 'Приглашение в $group';
+  }
+
+  @override
+  String notificationGroupInviteBody(String name) {
+    return '$name приглашает вас';
+  }
+
+  @override
+  String desktopTrayShow(String app) {
+    return 'Показать $app';
+  }
+
+  @override
+  String desktopTrayHide(String app) {
+    return 'Скрыть $app';
+  }
+
+  @override
+  String get desktopTraySoundOn => 'Звук включён';
+
+  @override
+  String get desktopTraySoundOff => 'Звук выключен';
+
+  @override
+  String desktopTrayQuit(String app) {
+    return 'Закрыть $app';
+  }
+
+  @override
+  String desktopTrayTooltipUnread(String app, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count непрочитанного сообщения',
+      many: '$count непрочитанных сообщений',
+      few: '$count непрочитанных сообщения',
+      one: '$count непрочитанное сообщение',
+    );
+    return '$app — $_temp0';
+  }
+
+  @override
+  String desktopWindowTitleUnread(String badge, String app) {
+    return '($badge) $app';
+  }
+
+  @override
+  String get listenStateOn => 'Вкл.';
+
+  @override
+  String get listenStateOff => 'Выкл.';
+
+  @override
+  String chatBytesLeftCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Осталось $count байта',
+      many: 'Осталось $count байт',
+      few: 'Осталось $count байта',
+      one: 'Остался $count байт',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatMemberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участника',
+      many: '$count участников',
+      few: '$count участника',
+      one: '$count участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chatFriendsCount(int count) {
+    return 'Друзья ($count)';
+  }
+
+  @override
+  String chatFriendRequestsCount(int count) {
+    return 'Запросы дружбы ($count)';
+  }
+
+  @override
+  String chatGroupInvitesCount(int count) {
+    return 'Приглашения в группы ($count)';
+  }
+
+  @override
+  String chatMembersTitleCount(int count) {
+    return 'Участники · $count';
+  }
+
+  @override
+  String chatInvitedByName(String name) {
+    return 'Приглашение от $name';
+  }
+
+  @override
+  String chatMemberSelf(String name) {
+    return '$name (вы)';
+  }
+
+  @override
+  String chatSliderValue(String label, int value, String unit) {
+    return '$label: $value $unit';
+  }
+
+  @override
+  String referenceTelegraphCodes(String codes) {
+    return 'Китайский телеграфный код: $codes';
+  }
+
+  @override
+  String get referenceTelegraphMainland => 'Материковый Китай, 1983';
+
+  @override
+  String get referenceTelegraphTaiwan => 'Тайвань / Гонконг';
+
+  @override
+  String get referenceTelegraphNone => 'Нет в этом справочнике кодов';
+
+  @override
+  String get appearanceTitle => 'Внешний вид';
+
+  @override
+  String get appearanceStyles => 'Стиль интерфейса';
+
+  @override
+  String get appearanceChoose => 'Выберите стиль, просмотрите и примените';
+
+  @override
+  String get appearanceMode => 'Светлый или тёмный режим';
+
+  @override
+  String get appearancePreview => 'Предпросмотр';
+
+  @override
+  String get appearanceApply => 'Применить стиль';
+
+  @override
+  String get appearanceRestore => 'Восстановить настройки по умолчанию';
+
+  @override
+  String get appearanceApplied => 'Внешний вид сохранён';
+
+  @override
+  String get appearanceSaveFailed => 'Не удалось сохранить внешний вид. Попробуйте ещё раз.';
+
+  @override
+  String get appearanceClassic => 'Классическая латунь';
+
+  @override
+  String get appearanceModern => 'Современное спокойствие';
+
+  @override
+  String get appearanceRadio => 'Ночное радио';
+
+  @override
+  String get appearancePaper => 'Бумажный справочник';
+
+  @override
+  String get appearanceCartoon => 'Яркий мультфильм';
+
+  @override
+  String get appearanceLight => 'Светлый';
+
+  @override
+  String get appearanceDark => 'Тёмный';
+
+  @override
+  String get appearanceSubtitle => 'Пять стилей со светлым и тёмным режимами';
+
+  @override
+  String get chatClearHistoryBody => 'Удалить историю этой беседы на этом устройстве? Копии на других устройствах сохранятся. Это действие нельзя отменить.';
+
+  @override
+  String get chatLoadEarlier => 'Загрузить более ранние сообщения';
+
+  @override
+  String get chatHistoryLoadFailed => 'Не удалось загрузить более ранние сообщения. Нажмите для повторной попытки.';
+
+  @override
+  String get chatRetryHistory => 'Повторить';
+
+  @override
+  String chatNewMessages(int count) {
+    return 'Новых сообщений: $count';
+  }
+
+  @override
+  String learnShowAllChars(int count) {
+    return 'Показать все символы ($count)';
+  }
+
+  @override
+  String get chatSelfMe => 'Я';
+
+  @override
+  String get chatSelfLocalOnly => 'Сохранено только на этом устройстве';
+
+  @override
+  String get chatSelfContactSubtitle => 'Черновики, практика и заметки · без отправки';
+
+  @override
+  String get learnShowFewerChars => 'Свернуть символы';
+}

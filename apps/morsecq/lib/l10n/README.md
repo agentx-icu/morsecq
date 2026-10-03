@@ -2,15 +2,18 @@
 
 # Localisation (l10n) for the MorseCQ app
 
-English (`en`, template) and Simplified Chinese (`zh`) via Flutter's gen-l10n.
+Flutter's gen-l10n ships English (`en`, template), Simplified Chinese (`zh`),
+Traditional Chinese (`zh_Hant`), Japanese (`ja`), Korean (`ko`), German (`de`),
+French (`fr`), Spanish (`es`), Portuguese (`pt`) and Russian (`ru`).
+Documentation is maintained in English and Simplified Chinese only.
 
 | Path | What |
 |------|------|
 | `apps/morsecq/l10n.yaml` | gen-l10n config: output class `S`, non-nullable getter, output in `lib/l10n/generated/` |
 | `lib/l10n/app_en.arb` | **Template.** Every key lives here first, with `@key` metadata (description, placeholders) |
-| `lib/l10n/app_zh.arb` | Simplified Chinese. Same key set as the template (enforced by `test/i18n/arb_consistency_test.dart`) |
+| `lib/l10n/app_<locale>.arb` | Complete translations. Every file has the template key set (enforced by `test/i18n/arb_consistency_test.dart`) |
 | `lib/l10n/generated/s*.dart` | Generated; never edit. Exempt from the 500-LOC gate by the `**/l10n/**` pattern |
-| `lib/i18n/locale_controller.dart` | `LocaleController` (system / en / zh) persisted through a `KeyValueStore` |
+| `lib/i18n/locale_controller.dart` | `LocaleController` (system / every shipped locale) persisted through a `KeyValueStore` |
 | `lib/i18n/key_value_store.dart` | `KeyValueStore` interface + `InMemoryKeyValueStore` + `JsonFileKeyValueStore` |
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`; re-exports `S` |
 | `lib/i18n/language_settings_tile.dart` | `LanguageSettingsTile` for the Me page (+ `showLanguageDialog`) |
@@ -31,12 +34,19 @@ MaterialApp(
   localizationsDelegates: S.localizationsDelegates,
   supportedLocales: S.supportedLocales,
   locale: context.watch<LocaleController>().locale, // null = follow system
+  localeResolutionCallback: LocaleController.resolve,
   ...
 )
 ```
 
-`locale: null` lets Flutter resolve the device language against
-`supportedLocales` (any `zh-*` → Simplified Chinese, everything else → English).
+`locale: null` follows the device language using the shared resolver. Chinese
+with an explicit `Hant` script or TW/HK/MO region without a script maps to
+Traditional Chinese; other Chinese maps to Simplified Chinese. Other shipped
+languages match their language code; unsupported languages fall back to English.
+
+Reference meanings and mnemonics are separate data tables, currently in English
+and Simplified Chinese. Traditional Chinese uses the Chinese table; other added
+interface languages use the existing English fallback.
 
 ## Using a string
 
@@ -70,7 +80,7 @@ relying on the host locale.
 
 ## Adding a string
 
-1. Add the key to `app_en.arb` **and** `app_zh.arb`. Namespace it by area
+1. Add the key to `app_en.arb` **and every translation ARB**. Namespace it by area
    (`chatSendHint`, `learnLessonOf`, `statsTitle`, `accountBackupTitle`,
    `referenceSearchHint`; `action*`, `nav*`, `connection*`,
    `messageStatus*`, `error*`, `language*` for shared strings).
@@ -79,6 +89,9 @@ relying on the host locale.
    Counts use ICU plurals: `{count, plural, =1{1 session} other{{count} sessions}}`;
    Chinese has no plural forms, so its branch is usually just
    `{count, plural, other{{count} 次练习}}` (keep any `=0` special cases).
+   Use grammatical categories such as `one` / `other` for European languages
+   and `one` / `few` / `many` / `other` for Russian; an exact `=1` alone would
+   miss Russian numbers such as 21.
 3. From `apps/morsecq`: `flutter gen-l10n` (also runs on build/run because
    `pubspec.yaml` has `generate: true`). Commit the regenerated files.
 4. `flutter analyze apps/morsecq` and `flutter test test/i18n` must stay green.
@@ -107,7 +120,7 @@ What it does:
 * `ChatStrings.sendHint = 'Type a message'` → `"chatSendHint": "Type a message"`
   in `app_en.arb` plus `"@chatSendHint": {"description": "From ChatStrings.sendHint (…/chat_strings.dart)"}`.
 * Adds only; never overwrites or removes an existing key or its metadata.
-* Adds every template key missing from `app_zh.arb` with the **English text**
+* Adds every template key missing from any translation ARB with the **English text**
   and `"description": "@@TODO(l10n): translate from en — …"`. Translate the
   value, then delete the `@key` entry (or replace the description).
   `grep -n '@@TODO' apps/morsecq/lib/l10n/app_zh.arb` lists open work.
@@ -118,32 +131,22 @@ What it does:
 
 Then `flutter gen-l10n` and replace the const references with `S` calls.
 
-## Follow-up: consts still to replace with `S` calls
+## Completed UI migration
 
-All 389 consts (plus the 32 function strings) present on 2026-09-30 are in
-both ARB files and translated. The widgets still read the const classes; the
-owning agents replace them file by file (`AccountStrings.x` → `context.s.accountX`,
-`LearnStrings.lessonOf(a, b)` → `context.s.learnLessonOf(a, b)`, …):
+The old UI string constant classes were removed on 2026-09-30. All interface
+areas now use `context.s` or receive an `S` instance explicitly. New translations
+cover these same callers automatically:
 
-| Const class | ARB prefix | Files that reference it |
-|-------------|-----------|-------------------------|
-| ~~`AccountStrings`~~ (deleted 2026-09-30) | `account*` (+ shared `action*`, `connection*`, `error*`, `appName`) | **Done.** `main.dart`, `startup/**`, `ui/account/**`, `ui/pages/me_page.dart` read `context.s`. Routes/URLs live in `ui/account/account_routes.dart` (`kTrainingSettingsRoute`, `kAboutSourceUrl`). `StartupController` holds no text: `error` / `connectionError` are the thrown objects and widgets call `describeChatError(s, e)`; `PasswordStrength.label(S s)`; the backup gateway's native dialog titles use `currentS()` (no context). `invalid_backup` is mapped in `restore_backup_page.dart` only (not part of `chat_error_messages.dart`) |
-| ~~`ChatStrings`~~ (deleted 2026-09-30) | `chat*` (+ shared `action*`, `connection*`, `messageStatus*`, `error*`, `nav*`; placeholder keys `chatBytesLeftCount`, `chatMemberCount`, `chatFriendsCount`, `chatFriendRequestsCount`, `chatGroupInvitesCount`, `chatMembersTitleCount`, `chatInvitedByName`, `chatMemberSelf`, `chatSliderValue` added) | **Done.** `ui/chat/**`, `ui/contacts/**`, `ui/groups/**` and the bodies of `ui/pages/{chat,groups}_page.dart` read `context.s`. The duplicates below were collapsed on the way (`chatCancel`→`actionCancel`, `chatCopy`→`actionCopy`, `chatOnline/Offline`→`connection*`, `chatStatus*`→`messageStatus*`; the old `chat*` twins stay in the ARB unused). Errors: widgets keep the thrown object / `ChatException.code` and call `describeChatError(s, e)` in `build`; the add-friend sheet maps `invalid_tox_id`/`own_id`/`already_friend` to the short field texts `chatToxId*`. Validators: `ui/contacts/tox_id.dart` exposes locale-free `validateToxId(...) → ToxIdError?` / `isValidChatIdInput` plus `validateToxIdInput(S, …)` / `validateChatIdInput(S, …)` wrappers. Timestamps: `formatMessageTime(context, time)` in `chat_layout.dart` uses `MaterialLocalizations` (`formatTimeOfDay` / `formatShortMonthDay` / `formatShortDate`), no format string. Count strings are ICU (`chatBytesLeftCount` accepts a negative count for over-budget drafts). `ConversationList.emptyText` / `MasterDetail.emptyDetailText` are nullable and fall back to `chatNoConversations` / `chatSelectConversation`. Tests: `test/chat/test_support.dart` pins `Locale('en')` and exports `final S s = lookupS(const Locale('en'))` |
-| ~~`LearnStrings`~~ (deleted 2026-09-30) | `learn*` | **Done.** `ui/learn/**` reads `context.s`; helpers that need an `S` take it as a parameter (`send/send_tips.dart`: `tipFor/titleFor/severityLabel/detailFor/formatWpm(S, …)`, `receive/receive_widgets.dart`: `formatAccuracy/confusedAs(S, …)`). `LearnScope.title` is nullable and falls back to `navLearn`. Tests pump `l10nApp(...)` from `test/learn/helpers/l10n.dart` and compare against `en.learn*` |
-| ~~`StatsStrings`~~ (deleted 2026-09-30) | `stats*` | **Done.** `ui/stats/**` reads `context.s`; `formatPercent/formatPercentOrNoData/formatPracticeDuration(S, …)` live in `stats_widgets.dart`; painters receive pre-localised labels (`TrendPainter.axisLabel/percentLabel`, `CalendarPainter.locale`); dates via `DateFormat.yMd(locale)`, weekday/month labels via `weekdayInitial/monthAbbreviation(…, locale:)` in `stats_math.dart` |
-| ~~`ReferenceStrings`~~ (deleted 2026-09-30) | `reference*` (`referenceKochPositionValue` added) | **Done.** `ui/reference/**` reads `context.s` / `S s`; `ReferenceSection.label(S)` and `TranslatorMode.label(S)` replace the enum const labels. Reference *content* (Q-code / CW-abbreviation / prosign / punctuation meanings, mnemonics) is data, not ARB: each row is a `Map<String, String>` keyed by language code (`'en'`, `'zh'`), read through `ReferenceEntry.meaning(Locale)` / `mnemonic(Locale)` with English fallback (`ui/reference/reference_localized_text.dart`, `kReferenceLanguages`). A new language adds one entry per row there (plus a `ReferenceMnemonics.spokenRhythm` reading if it voices dit/dah differently); search matches every language's text |
-| ~~`ListenStrings`~~ (deleted 2026-09-30) | `listen*` (`listenWpmValue`, `listenHzValue`, `listenMsValue`, `listenBlockSamples`, `listenStateOn/Off` added) | **Done.** `ui/listen/**` reads `context.s`; `ListenController` holds no text (it exposes `ListenStatus` + the raw platform `errorMessage`; `ListenStatusBanner._failureText(S, detail)` maps them). Units are ICU placeholders; tests pin `Locale('en')` and compare against `lookupS(...)` |
-| ~~Hard-coded page titles~~ | `nav*` (`navReference` added) | **Done.** Every `ui/pages/*_page.dart` exposes `static String title(S s)`; `ShellDestination.label` is a `String Function(S s)` resolved in `AppShell.build`, so a language switch relabels the bar/rail. Tests: `LearnPage.title(lookupS(const Locale('en')))` |
-| ~~Hard-coded page descriptions~~ | `nav*Description`, `shellOfflineBanner` | **Done.** `static String description(S s)` on the same pages (`navLearnDescription`, `navChatDescription`, `navGroupsDescription`, `navReferenceDescription`, `navMeDescription`); the offline strip in `ui/shell/app_shell.dart` reads `shellOfflineBanner` |
+| Area | ARB prefix | Callers |
+|------|------------|---------|
+| Account and startup | `account*`, `action*`, `connection*`, `error*` | `startup/**`, `ui/account/**`, `ui/pages/me_page.dart`; backup dialogs use `currentS()` |
+| Chat, contacts and groups | `chat*`, `messageStatus*` | `ui/chat/**`, `ui/contacts/**`, `ui/groups/**`; timestamp formatting uses `MaterialLocalizations` |
+| Learning | `learn*` | `ui/learn/**`; send-feedback helpers take `S` explicitly |
+| Statistics | `stats*` | `ui/stats/**`; date formatting uses the current locale |
+| Reference and translator | `reference*` | `ui/reference/**`; meanings and mnemonics remain separate data tables |
+| Microphone decoding | `listen*` | `ui/listen/**`; controllers expose state/errors, widgets resolve text |
+| Navigation and shell | `nav*`, `shellOfflineBanner` | `ui/pages/**`, `ui/shell/app_shell.dart` |
+| Notifications and desktop | `notification*`, `desktop*` | Services resolve strings at event time or on language changes |
 
-Duplicates worth collapsing during the swap: `accountCancel`/`chatCancel` →
-`actionCancel`; `accountCopy`/`chatCopy` → `actionCopy`; `accountRetry`/
-`statsRetry` → `actionRetry`; `accountConnection*`/`chatOnline`/`chatOffline`
-→ `connection*`; `chatStatus*` → `messageStatus*`; `accountWrongPassword` →
-`errorWrongPassword`; `chatError`/`accountGenericError` → `errorUnknown`;
-`learnLearnTitle`/`chatChatTitle`/`chatGroupsTitle`/`accountMeTitle` → `nav*`.
-Once a const class has no remaining references, delete it and the ARB keeps
-the keys (nothing depends on the const file any more).
-
-The Listen screen (`listen*`) was migrated on 2026-09-30 together with the
-reference; its const file is gone (see the table above).
+`dart run tool/strings_to_arb.dart --check` is a no-op when no old string files
+remain. The ARB consistency tests continue to enforce completeness in all locales.

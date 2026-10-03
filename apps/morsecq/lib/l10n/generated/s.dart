@@ -5,7 +5,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 's_de.dart';
 import 's_en.dart';
+import 's_es.dart';
+import 's_fr.dart';
+import 's_ja.dart';
+import 's_ko.dart';
+import 's_pt.dart';
+import 's_ru.dart';
 import 's_zh.dart';
 
 // ignore_for_file: type=lint
@@ -91,8 +98,16 @@ abstract class S {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
     Locale('en'),
-    Locale('zh')
+    Locale('es'),
+    Locale('fr'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('pt'),
+    Locale('ru'),
+    Locale('zh'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')
   ];
 
   /// Product name; never translated
@@ -2015,7 +2030,7 @@ abstract class S {
   /// **'Play sample'**
   String get learnPlaySample;
 
-  /// From LearnStrings.sessionLength (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: practice length in characters, not time; labels the per-session character count slider
   ///
   /// In en, this message translates to:
   /// **'Session length'**
@@ -3477,7 +3492,7 @@ class _SDelegate extends LocalizationsDelegate<S> {
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'ja', 'ko', 'pt', 'ru', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_SDelegate old) => false;
@@ -3485,10 +3500,26 @@ class _SDelegate extends LocalizationsDelegate<S> {
 
 S lookupS(Locale locale) {
 
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh': {
+  switch (locale.scriptCode) {
+    case 'Hant': return SZhHant();
+   }
+  break;
+   }
+  }
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de': return SDe();
     case 'en': return SEn();
+    case 'es': return SEs();
+    case 'fr': return SFr();
+    case 'ja': return SJa();
+    case 'ko': return SKo();
+    case 'pt': return SPt();
+    case 'ru': return SRu();
     case 'zh': return SZh();
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/i18n/key_value_store.dart';
+import 'package:morsecq/i18n/locale_controller.dart';
+import 'package:morsecq/i18n/locale_resolution.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
@@ -43,7 +46,11 @@ final Map<String, Finder> _pageMarkers = {
 
 /// The shell renders only behind the startup gate, so every test boots the
 /// app with a ready (plain, already-created) fake identity.
-Future<void> _pumpAt(WidgetTester tester, Size logicalSize) async {
+Future<void> _pumpAt(
+  WidgetTester tester,
+  Size logicalSize, {
+  String? localeTag,
+}) async {
   tester.view.physicalSize = logicalSize;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
@@ -60,6 +67,9 @@ Future<void> _pumpAt(WidgetTester tester, Size logicalSize) async {
     MorsecqApp(
       backend: FakeBackendFactory(identityService: identity),
       backupFiles: FakeBackupFileGateway(),
+      localeStore: localeTag == null
+          ? null
+          : InMemoryKeyValueStore({LocaleController.storageKey: localeTag}),
     ),
   );
   await settle(tester);
@@ -75,6 +85,36 @@ void _expectSelected(String label) {
 }
 
 void main() {
+  for (final tag in ['zh_Hant', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'ru']) {
+    for (final size in [const Size(390, 844), kDesktopSize]) {
+      testWidgets('$tag renders all destinations at $size', (tester) async {
+        await _pumpAt(tester, size, localeTag: tag);
+        final s = lookupS(parseLocaleTag(tag)!);
+        final navigation = find.byType(
+          size.width < 600 ? NavigationBar : NavigationRail,
+        );
+        final markers = {
+          s.navLearn: find.text(s.navLearnDescription),
+          s.navChat: find.byType(ConversationList),
+          s.navGroups: find.text(s.navGroupsDescription),
+          s.navReference: find.byType(ReferenceScreen),
+          s.navMe: find.byType(IdentityCard),
+        };
+        for (final entry in markers.entries) {
+          final label = find.descendant(
+            of: navigation,
+            matching: find.text(entry.key),
+          );
+          expect(label, findsOneWidget);
+          await tester.tap(label);
+          await settle(tester);
+          expect(entry.value, findsOneWidget);
+          expect(tester.takeException(), isNull);
+        }
+      });
+    }
+  }
+
   group('AppShell at phone width', () {
     testWidgets('renders a bottom NavigationBar with five destinations', (
       tester,

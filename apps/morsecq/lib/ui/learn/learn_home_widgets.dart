@@ -416,10 +416,19 @@ class _ActionTile extends StatelessWidget {
       child: ListTile(
         minTileHeight: 56,
         leading: Icon(icon, color: theme.colorScheme.primary),
-        title: Text(label),
-        trailing: trailing == null
-            ? const Icon(Icons.chevron_right)
-            : Text(trailing!, style: theme.textTheme.labelLarge),
+        title: trailing == null
+            ? Text(label)
+            : Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 16,
+                runSpacing: 4,
+                children: [
+                  Text(label),
+                  Text(trailing!, style: theme.textTheme.labelLarge),
+                ],
+              ),
+        trailing: trailing == null ? const Icon(Icons.chevron_right) : null,
         onTap: onTap,
       ),
     );
