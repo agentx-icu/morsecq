@@ -2850,6 +2850,388 @@ class SZh extends S {
 
   @override
   String get chatSendControlFailed => '操作未完成，消息保持原状态，请重试。';
+
+  @override
+  String get workbenchTitle => '录音工作台';
+
+  @override
+  String get workbenchOpen => '录音';
+
+  @override
+  String get workbenchImport => '导入录音';
+
+  @override
+  String get workbenchEmpty => '导入 WAV 录音，即可循环播放、解码并自己抄收。无需麦克风。';
+
+  @override
+  String get workbenchFormats => 'WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。';
+
+  @override
+  String get workbenchBackupNote => '录音只保存在本机，不包含在身份备份中；已保存的片段只备份标题、备注和位置。';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '单声道';
+
+  @override
+  String get workbenchStereo => '立体声';
+
+  @override
+  String get workbenchTruncated => '文件提前结束，只使用已有的音频。';
+
+  @override
+  String get workbenchErrorNotWav => '这不是 WAV 文件。';
+
+  @override
+  String get workbenchErrorFormat => '目前只支持 16 位 PCM WAV（不支持 MP3、AAC 或浮点 WAV）。';
+
+  @override
+  String get workbenchErrorChannels => '只支持单声道或立体声录音。';
+
+  @override
+  String get workbenchErrorRate => '不支持该采样率。请使用 8、16、44.1 或 48 kHz。';
+
+  @override
+  String get workbenchErrorDamaged => '文件已损坏或不完整。';
+
+  @override
+  String get workbenchErrorTooLarge => '文件超过 50 MB。';
+
+  @override
+  String get workbenchErrorTooLong => '录音超过 20 分钟。';
+
+  @override
+  String get workbenchErrorIo => '无法读取该文件。';
+
+  @override
+  String get workbenchErrorMissing => '录音文件不见了。';
+
+  @override
+  String get workbenchStart => '开始（秒）';
+
+  @override
+  String get workbenchEnd => '结束（秒）';
+
+  @override
+  String get workbenchSelectAll => '全选';
+
+  @override
+  String get workbenchPlay => '播放所选片段';
+
+  @override
+  String get workbenchStop => '停止';
+
+  @override
+  String get workbenchLoop => '循环';
+
+  @override
+  String get workbenchPlayLimit => '较长的片段只播放前 5 分钟。';
+
+  @override
+  String get workbenchAutoTune => '自动寻找音调';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '音调：$hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '解码所选片段';
+
+  @override
+  String get workbenchCancel => '取消';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '正在解码……$percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '音调 $hz Hz · 约 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '没有找到稳定的音调，请尝试手动调谐。';
+
+  @override
+  String get workbenchNoText => '该片段没有解出内容。';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '无法识别的码型：$patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '片段边缘的字符被截断，可能不准确。';
+
+  @override
+  String get workbenchToneNote => '锁定音调不代表结果可信，请用耳朵核对文本。';
+
+  @override
+  String get workbenchModeDecoder => '解码器';
+
+  @override
+  String get workbenchModeCopy => '我自己抄收';
+
+  @override
+  String get workbenchDecoderHidden => '抄收时解码文本会隐藏。';
+
+  @override
+  String get workbenchShowDecoder => '显示解码文本';
+
+  @override
+  String get workbenchReference => '参考答案（可选）';
+
+  @override
+  String get workbenchReferenceHelp => '粘贴实际发送的文本；否则会与解码结果比较。';
+
+  @override
+  String get workbenchAgainstDecoder => '已与解码结果比较，而解码结果本身也可能有误。';
+
+  @override
+  String get workbenchSave => '保存片段';
+
+  @override
+  String get workbenchSaveTitle => '标题';
+
+  @override
+  String get workbenchSaveNote => '备注';
+
+  @override
+  String get workbenchSaved => '片段已保存';
+
+  @override
+  String get workbenchSaveFailed => '无法保存片段。';
+
+  @override
+  String get workbenchLibrary => '已保存的片段';
+
+  @override
+  String get workbenchLibraryEmpty => '还没有保存的片段。';
+
+  @override
+  String get workbenchMissing => '录音文件不见了——请重新选择文件或删除此项。';
+
+  @override
+  String get workbenchRelink => '重新选择文件';
+
+  @override
+  String get workbenchDelete => '删除';
+
+  @override
+  String get materialsTitle => '我的素材';
+
+  @override
+  String get materialsNew => '新建素材';
+
+  @override
+  String get materialsEdit => '编辑';
+
+  @override
+  String get materialsSave => '保存';
+
+  @override
+  String get materialsSaveFailed => '无法保存素材。';
+
+  @override
+  String get materialsTitleField => '标题';
+
+  @override
+  String get materialsTagsField => '标签（用逗号分隔）';
+
+  @override
+  String get materialsTextField => '文本';
+
+  @override
+  String get materialsListField => '每行一项';
+
+  @override
+  String get materialsKindText => '文本';
+
+  @override
+  String get materialsKindWords => '单词表';
+
+  @override
+  String get materialsKindCallsigns => '呼号';
+
+  @override
+  String get materialsPreview => '预览';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items 项 · $symbols 个字符 · $prosigns 个程序信号';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '无莫尔斯码，练习时略过：$chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count 个重复项只保留一次';
+  }
+
+  @override
+  String get materialsProblemEmpty => '请先输入文本。';
+
+  @override
+  String get materialsProblemTooLarge => '过大：素材上限为 1 MiB。';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '条目过多：最多 $count 条。';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '某个条目过长：每条最多 $count 个字符。';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '这里没有可以用莫尔斯码练习的内容。';
+
+  @override
+  String get materialsSearch => '搜索素材';
+
+  @override
+  String get materialsFavoritesOnly => '收藏';
+
+  @override
+  String get materialsFavorite => '加入收藏';
+
+  @override
+  String get materialsUnfavorite => '取消收藏';
+
+  @override
+  String get materialsEmpty => '还没有素材。添加你自己的文本、单词表或呼号，或保存一条聊天消息。';
+
+  @override
+  String materialsItems(int count) {
+    return '$count 项';
+  }
+
+  @override
+  String get materialsFromChat => '来自聊天';
+
+  @override
+  String get materialsActions => '素材操作';
+
+  @override
+  String get materialsPractise => '练习';
+
+  @override
+  String get materialsDelete => '删除';
+
+  @override
+  String get materialsDeleteTitle => '删除素材？';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '“$title”将从本设备删除，练习记录会保留。';
+  }
+
+  @override
+  String get materialsImport => '导入 TXT 或 JSON';
+
+  @override
+  String get materialsImportDialogTitle => '选择素材文件';
+
+  @override
+  String get materialsSaveDialogTitle => '保存素材';
+
+  @override
+  String get materialsImportFailed => '导入失败，素材库未改变。';
+
+  @override
+  String get materialsImportNotUtf8 => '只能导入 UTF-8 文本文件。';
+
+  @override
+  String get materialsImportInvalid => '不是有效的 MorseCQ 素材文件，未导入任何内容。';
+
+  @override
+  String materialsImported(int count) {
+    return '已导入 $count 个素材。';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '部分素材已存在';
+
+  @override
+  String get materialsDuplicateOverwrite => '替换';
+
+  @override
+  String get materialsDuplicateKeepCopy => '两者都保留（作为副本导入）';
+
+  @override
+  String get materialsDuplicateSkip => '跳过';
+
+  @override
+  String get materialsExportJson => '导出为 JSON';
+
+  @override
+  String materialsExported(int count) {
+    return '已导出 $count 个素材。';
+  }
+
+  @override
+  String get materialsExportFailed => '导出失败。';
+
+  @override
+  String get materialsExportWav => '导出音频（WAV）';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '字符速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '有效速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '音调：$hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '附带答案文本（.txt）';
+
+  @override
+  String get materialsWavFormat => '16 位单声道 WAV，48 kHz。';
+
+  @override
+  String materialsWavParts(int count) {
+    return '超过 10 分钟：将导出为 $count 个文件。';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '已保存 $count 个音频文件。';
+  }
+
+  @override
+  String get materialsPracticeMode => '练习范围';
+
+  @override
+  String get materialsPracticeLearned => '仅已学字符';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '仅已学字符（$count 项不可用：含尚未学习的字符）';
+  }
+
+  @override
+  String get materialsPracticeAll => '所有莫尔斯字符';
+
+  @override
+  String get materialsPracticeNothing => '此模式下没有可练习的条目。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -5698,4 +6080,386 @@ class SZhHant extends SZh {
 
   @override
   String get chatSendControlFailed => '操作未完成，訊息保持原狀態，請重試。';
+
+  @override
+  String get workbenchTitle => '錄音工作台';
+
+  @override
+  String get workbenchOpen => '錄音';
+
+  @override
+  String get workbenchImport => '匯入錄音';
+
+  @override
+  String get workbenchEmpty => '匯入 WAV 錄音，即可循環播放、解碼並自己抄收。不需要麥克風。';
+
+  @override
+  String get workbenchFormats => 'WAV，16 位元 PCM，單聲道或立體聲，8/16/44.1/48 kHz；最大 50 MB、20 分鐘。';
+
+  @override
+  String get workbenchBackupNote => '錄音只保存在本機，不包含在身分備份中；已儲存的片段只備份標題、備註和位置。';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '單聲道';
+
+  @override
+  String get workbenchStereo => '立體聲';
+
+  @override
+  String get workbenchTruncated => '檔案提前結束，只使用已有的音訊。';
+
+  @override
+  String get workbenchErrorNotWav => '這不是 WAV 檔案。';
+
+  @override
+  String get workbenchErrorFormat => '目前只支援 16 位元 PCM WAV（不支援 MP3、AAC 或浮點 WAV）。';
+
+  @override
+  String get workbenchErrorChannels => '只支援單聲道或立體聲錄音。';
+
+  @override
+  String get workbenchErrorRate => '不支援該取樣率。請使用 8、16、44.1 或 48 kHz。';
+
+  @override
+  String get workbenchErrorDamaged => '檔案已損毀或不完整。';
+
+  @override
+  String get workbenchErrorTooLarge => '檔案超過 50 MB。';
+
+  @override
+  String get workbenchErrorTooLong => '錄音超過 20 分鐘。';
+
+  @override
+  String get workbenchErrorIo => '無法讀取該檔案。';
+
+  @override
+  String get workbenchErrorMissing => '錄音檔案不見了。';
+
+  @override
+  String get workbenchStart => '開始（秒）';
+
+  @override
+  String get workbenchEnd => '結束（秒）';
+
+  @override
+  String get workbenchSelectAll => '全選';
+
+  @override
+  String get workbenchPlay => '播放所選片段';
+
+  @override
+  String get workbenchStop => '停止';
+
+  @override
+  String get workbenchLoop => '循環';
+
+  @override
+  String get workbenchPlayLimit => '較長的片段只播放前 5 分鐘。';
+
+  @override
+  String get workbenchAutoTune => '自動尋找音調';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '音調：$hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '解碼所選片段';
+
+  @override
+  String get workbenchCancel => '取消';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '正在解碼……$percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '音調 $hz Hz · 約 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '沒有找到穩定的音調，請嘗試手動調諧。';
+
+  @override
+  String get workbenchNoText => '該片段沒有解出內容。';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '無法識別的碼型：$patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '片段邊緣的字元被截斷，可能不準確。';
+
+  @override
+  String get workbenchToneNote => '鎖定音調不代表結果可信，請用耳朵核對文字。';
+
+  @override
+  String get workbenchModeDecoder => '解碼器';
+
+  @override
+  String get workbenchModeCopy => '我自己抄收';
+
+  @override
+  String get workbenchDecoderHidden => '抄收時解碼文字會隱藏。';
+
+  @override
+  String get workbenchShowDecoder => '顯示解碼文字';
+
+  @override
+  String get workbenchReference => '參考答案（選填）';
+
+  @override
+  String get workbenchReferenceHelp => '貼上實際發送的文字；否則會與解碼結果比較。';
+
+  @override
+  String get workbenchAgainstDecoder => '已與解碼結果比較，而解碼結果本身也可能有誤。';
+
+  @override
+  String get workbenchSave => '儲存片段';
+
+  @override
+  String get workbenchSaveTitle => '標題';
+
+  @override
+  String get workbenchSaveNote => '備註';
+
+  @override
+  String get workbenchSaved => '片段已儲存';
+
+  @override
+  String get workbenchSaveFailed => '無法儲存片段。';
+
+  @override
+  String get workbenchLibrary => '已儲存的片段';
+
+  @override
+  String get workbenchLibraryEmpty => '還沒有儲存的片段。';
+
+  @override
+  String get workbenchMissing => '錄音檔案不見了——請重新選擇檔案或刪除此項。';
+
+  @override
+  String get workbenchRelink => '重新選擇檔案';
+
+  @override
+  String get workbenchDelete => '刪除';
+
+  @override
+  String get materialsTitle => '我的素材';
+
+  @override
+  String get materialsNew => '新增素材';
+
+  @override
+  String get materialsEdit => '編輯';
+
+  @override
+  String get materialsSave => '儲存';
+
+  @override
+  String get materialsSaveFailed => '無法儲存素材。';
+
+  @override
+  String get materialsTitleField => '標題';
+
+  @override
+  String get materialsTagsField => '標籤（以逗號分隔）';
+
+  @override
+  String get materialsTextField => '文字';
+
+  @override
+  String get materialsListField => '每行一項';
+
+  @override
+  String get materialsKindText => '文字';
+
+  @override
+  String get materialsKindWords => '單字表';
+
+  @override
+  String get materialsKindCallsigns => '呼號';
+
+  @override
+  String get materialsPreview => '預覽';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items 項 · $symbols 個字元 · $prosigns 個程序信號';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '無摩斯碼，練習時略過：$chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count 個重複項只保留一次';
+  }
+
+  @override
+  String get materialsProblemEmpty => '請先輸入文字。';
+
+  @override
+  String get materialsProblemTooLarge => '過大：素材上限為 1 MiB。';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '條目過多：最多 $count 條。';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '某個條目過長：每條最多 $count 個字元。';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '這裡沒有可以用摩斯碼練習的內容。';
+
+  @override
+  String get materialsSearch => '搜尋素材';
+
+  @override
+  String get materialsFavoritesOnly => '收藏';
+
+  @override
+  String get materialsFavorite => '加入收藏';
+
+  @override
+  String get materialsUnfavorite => '取消收藏';
+
+  @override
+  String get materialsEmpty => '還沒有素材。新增你自己的文字、單字表或呼號，或儲存一則聊天訊息。';
+
+  @override
+  String materialsItems(int count) {
+    return '$count 項';
+  }
+
+  @override
+  String get materialsFromChat => '來自聊天';
+
+  @override
+  String get materialsActions => '素材操作';
+
+  @override
+  String get materialsPractise => '練習';
+
+  @override
+  String get materialsDelete => '刪除';
+
+  @override
+  String get materialsDeleteTitle => '刪除素材？';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '「$title」將從本裝置刪除，練習紀錄會保留。';
+  }
+
+  @override
+  String get materialsImport => '匯入 TXT 或 JSON';
+
+  @override
+  String get materialsImportDialogTitle => '選擇素材檔案';
+
+  @override
+  String get materialsSaveDialogTitle => '儲存素材';
+
+  @override
+  String get materialsImportFailed => '匯入失敗，素材庫未變更。';
+
+  @override
+  String get materialsImportNotUtf8 => '只能匯入 UTF-8 文字檔。';
+
+  @override
+  String get materialsImportInvalid => '不是有效的 MorseCQ 素材檔，未匯入任何內容。';
+
+  @override
+  String materialsImported(int count) {
+    return '已匯入 $count 個素材。';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '部分素材已存在';
+
+  @override
+  String get materialsDuplicateOverwrite => '取代';
+
+  @override
+  String get materialsDuplicateKeepCopy => '兩者都保留（作為副本匯入）';
+
+  @override
+  String get materialsDuplicateSkip => '略過';
+
+  @override
+  String get materialsExportJson => '匯出為 JSON';
+
+  @override
+  String materialsExported(int count) {
+    return '已匯出 $count 個素材。';
+  }
+
+  @override
+  String get materialsExportFailed => '匯出失敗。';
+
+  @override
+  String get materialsExportWav => '匯出音訊（WAV）';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '字元速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '有效速度：$wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '音調：$hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '附帶答案文字（.txt）';
+
+  @override
+  String get materialsWavFormat => '16 位元單聲道 WAV，48 kHz。';
+
+  @override
+  String materialsWavParts(int count) {
+    return '超過 10 分鐘：將匯出為 $count 個檔案。';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '已儲存 $count 個音訊檔。';
+  }
+
+  @override
+  String get materialsPracticeMode => '練習範圍';
+
+  @override
+  String get materialsPracticeLearned => '僅已學字元';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '僅已學字元（$count 項不可用：含尚未學習的字元）';
+  }
+
+  @override
+  String get materialsPracticeAll => '所有摩斯字元';
+
+  @override
+  String get materialsPracticeNothing => '此模式下沒有可練習的條目。';
 }

@@ -2878,4 +2878,386 @@ class SPt extends S {
 
   @override
   String get chatSendControlFailed => 'Não funcionou. A mensagem mantém o estado; tente novamente.';
+
+  @override
+  String get workbenchTitle => 'Bancada de gravações';
+
+  @override
+  String get workbenchOpen => 'Gravações';
+
+  @override
+  String get workbenchImport => 'Importar gravação';
+
+  @override
+  String get workbenchEmpty => 'Importe uma gravação WAV para repetir, decodificar e copiar. Não precisa de microfone.';
+
+  @override
+  String get workbenchFormats => 'WAV, PCM de 16 bits, mono ou estéreo, 8/16/44,1/48 kHz; até 50 MB e 20 minutos.';
+
+  @override
+  String get workbenchBackupNote => 'As gravações ficam neste dispositivo e não entram nos backups de identidade; seleções salvas só guardam título, notas e posições.';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => 'mono';
+
+  @override
+  String get workbenchStereo => 'estéreo';
+
+  @override
+  String get workbenchTruncated => 'O arquivo termina antes; só o áudio presente é usado.';
+
+  @override
+  String get workbenchErrorNotWav => 'Este não é um arquivo WAV.';
+
+  @override
+  String get workbenchErrorFormat => 'Por enquanto só WAV PCM de 16 bits é suportado (sem MP3, AAC ou WAV float).';
+
+  @override
+  String get workbenchErrorChannels => 'Só gravações mono ou estéreo são suportadas.';
+
+  @override
+  String get workbenchErrorRate => 'Taxa de amostragem não suportada. Use 8, 16, 44,1 ou 48 kHz.';
+
+  @override
+  String get workbenchErrorDamaged => 'O arquivo está danificado ou incompleto.';
+
+  @override
+  String get workbenchErrorTooLarge => 'O arquivo tem mais de 50 MB.';
+
+  @override
+  String get workbenchErrorTooLong => 'A gravação tem mais de 20 minutos.';
+
+  @override
+  String get workbenchErrorIo => 'Não foi possível ler o arquivo.';
+
+  @override
+  String get workbenchErrorMissing => 'O arquivo da gravação está faltando.';
+
+  @override
+  String get workbenchStart => 'Início (s)';
+
+  @override
+  String get workbenchEnd => 'Fim (s)';
+
+  @override
+  String get workbenchSelectAll => 'Selecionar tudo';
+
+  @override
+  String get workbenchPlay => 'Tocar seleção';
+
+  @override
+  String get workbenchStop => 'Parar';
+
+  @override
+  String get workbenchLoop => 'Repetir';
+
+  @override
+  String get workbenchPlayLimit => 'Só os primeiros 5 minutos de uma seleção maior são tocados.';
+
+  @override
+  String get workbenchAutoTune => 'Encontrar o tom automaticamente';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return 'Tom: $hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => 'Decodificar seleção';
+
+  @override
+  String get workbenchCancel => 'Cancelar';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return 'Decodificando… $percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return 'Tom $hz Hz · cerca de $wpm PPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => 'Nenhum tom estável; tente o ajuste manual.';
+
+  @override
+  String get workbenchNoText => 'Nada decodificado nesta seleção.';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return 'Padrões desconhecidos: $patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => 'Um símbolo na borda da seleção está cortado e pode estar errado.';
+
+  @override
+  String get workbenchToneNote => 'Travar o tom não é uma medida de confiança; confira o texto de ouvido.';
+
+  @override
+  String get workbenchModeDecoder => 'Decodificador';
+
+  @override
+  String get workbenchModeCopy => 'Copiar eu mesmo';
+
+  @override
+  String get workbenchDecoderHidden => 'O texto do decodificador fica oculto enquanto você copia.';
+
+  @override
+  String get workbenchShowDecoder => 'Mostrar texto do decodificador';
+
+  @override
+  String get workbenchReference => 'Texto de referência (opcional)';
+
+  @override
+  String get workbenchReferenceHelp => 'Cole o texto enviado; caso contrário, sua cópia é comparada com a saída do decodificador.';
+
+  @override
+  String get workbenchAgainstDecoder => 'Comparado com a saída do decodificador, que também pode estar errada.';
+
+  @override
+  String get workbenchSave => 'Salvar seleção';
+
+  @override
+  String get workbenchSaveTitle => 'Título';
+
+  @override
+  String get workbenchSaveNote => 'Nota';
+
+  @override
+  String get workbenchSaved => 'Seleção salva';
+
+  @override
+  String get workbenchSaveFailed => 'Não foi possível salvar a seleção.';
+
+  @override
+  String get workbenchLibrary => 'Seleções salvas';
+
+  @override
+  String get workbenchLibraryEmpty => 'Nenhuma seleção salva ainda.';
+
+  @override
+  String get workbenchMissing => 'Arquivo faltando — escolha-o de novo ou exclua a entrada.';
+
+  @override
+  String get workbenchRelink => 'Escolher o arquivo de novo';
+
+  @override
+  String get workbenchDelete => 'Excluir';
+
+  @override
+  String get materialsTitle => 'Meus materiais';
+
+  @override
+  String get materialsNew => 'Novo material';
+
+  @override
+  String get materialsEdit => 'Editar';
+
+  @override
+  String get materialsSave => 'Salvar';
+
+  @override
+  String get materialsSaveFailed => 'Não foi possível salvar o material.';
+
+  @override
+  String get materialsTitleField => 'Título';
+
+  @override
+  String get materialsTagsField => 'Tags (separadas por vírgulas)';
+
+  @override
+  String get materialsTextField => 'Texto';
+
+  @override
+  String get materialsListField => 'Uma entrada por linha';
+
+  @override
+  String get materialsKindText => 'Texto';
+
+  @override
+  String get materialsKindWords => 'Lista de palavras';
+
+  @override
+  String get materialsKindCallsigns => 'Indicativos';
+
+  @override
+  String get materialsPreview => 'Prévia';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items itens · $symbols símbolos · $prosigns prossinais';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return 'Sem código Morse, omitidos na prática: $chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '$count entradas duplicadas são mantidas uma vez';
+  }
+
+  @override
+  String get materialsProblemEmpty => 'Digite algum texto primeiro.';
+
+  @override
+  String get materialsProblemTooLarge => 'Grande demais: o limite é 1 MiB.';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return 'Entradas demais: no máximo $count.';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return 'Uma entrada é longa demais: no máximo $count símbolos.';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => 'Nada aqui pode ser praticado em Morse.';
+
+  @override
+  String get materialsSearch => 'Pesquisar materiais';
+
+  @override
+  String get materialsFavoritesOnly => 'Favoritos';
+
+  @override
+  String get materialsFavorite => 'Adicionar aos favoritos';
+
+  @override
+  String get materialsUnfavorite => 'Remover dos favoritos';
+
+  @override
+  String get materialsEmpty => 'Ainda não há materiais. Adicione seus textos, listas ou indicativos, ou salve uma mensagem do chat.';
+
+  @override
+  String materialsItems(int count) {
+    return '$count itens';
+  }
+
+  @override
+  String get materialsFromChat => 'Do chat';
+
+  @override
+  String get materialsActions => 'Ações';
+
+  @override
+  String get materialsPractise => 'Praticar';
+
+  @override
+  String get materialsDelete => 'Excluir';
+
+  @override
+  String get materialsDeleteTitle => 'Excluir material?';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '“$title” será removido deste dispositivo. Seu histórico permanece.';
+  }
+
+  @override
+  String get materialsImport => 'Importar TXT ou JSON';
+
+  @override
+  String get materialsImportDialogTitle => 'Escolha um arquivo';
+
+  @override
+  String get materialsSaveDialogTitle => 'Salvar material';
+
+  @override
+  String get materialsImportFailed => 'Falha na importação. Sua biblioteca não mudou.';
+
+  @override
+  String get materialsImportNotUtf8 => 'Somente arquivos de texto UTF-8 podem ser importados.';
+
+  @override
+  String get materialsImportInvalid => 'Não é um arquivo de materiais do MorseCQ válido. Nada foi importado.';
+
+  @override
+  String materialsImported(int count) {
+    return '$count materiais importados.';
+  }
+
+  @override
+  String get materialsDuplicateTitle => 'Alguns materiais já existem';
+
+  @override
+  String get materialsDuplicateOverwrite => 'Substituir';
+
+  @override
+  String get materialsDuplicateKeepCopy => 'Manter ambos (como cópia)';
+
+  @override
+  String get materialsDuplicateSkip => 'Ignorar';
+
+  @override
+  String get materialsExportJson => 'Exportar como JSON';
+
+  @override
+  String materialsExported(int count) {
+    return '$count materiais exportados.';
+  }
+
+  @override
+  String get materialsExportFailed => 'Falha na exportação.';
+
+  @override
+  String get materialsExportWav => 'Exportar áudio (WAV)';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return 'Velocidade dos caracteres: $wpm PPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return 'Velocidade efetiva: $wpm PPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return 'Tom: $hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => 'Incluir o texto da resposta (.txt)';
+
+  @override
+  String get materialsWavFormat => 'WAV mono de 16 bits, 48 kHz.';
+
+  @override
+  String materialsWavParts(int count) {
+    return 'Mais de 10 minutos: exportado em $count arquivos.';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '$count arquivos de áudio salvos.';
+  }
+
+  @override
+  String get materialsPracticeMode => 'Praticar com';
+
+  @override
+  String get materialsPracticeLearned => 'Somente símbolos aprendidos';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return 'Somente símbolos aprendidos ($count entradas indisponíveis: usam símbolos ainda não aprendidos)';
+  }
+
+  @override
+  String get materialsPracticeAll => 'Todos os símbolos Morse';
+
+  @override
+  String get materialsPracticeNothing => 'Nenhuma entrada pode ser praticada neste modo.';
 }

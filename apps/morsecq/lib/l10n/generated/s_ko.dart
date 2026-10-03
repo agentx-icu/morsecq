@@ -2850,4 +2850,386 @@ class SKo extends S {
 
   @override
   String get chatSendControlFailed => '실패했습니다. 메시지 상태는 그대로입니다. 다시 시도하세요.';
+
+  @override
+  String get workbenchTitle => '녹음 작업대';
+
+  @override
+  String get workbenchOpen => '녹음';
+
+  @override
+  String get workbenchImport => '녹음 가져오기';
+
+  @override
+  String get workbenchEmpty => 'WAV 녹음을 가져와 반복 재생, 해독, 직접 받아 적기를 할 수 있습니다. 마이크는 필요 없습니다.';
+
+  @override
+  String get workbenchFormats => 'WAV, 16비트 PCM, 모노 또는 스테레오, 8/16/44.1/48 kHz, 최대 50MB·20분.';
+
+  @override
+  String get workbenchBackupNote => '녹음은 이 기기에만 남고 신원 백업에는 포함되지 않습니다. 저장한 구간은 제목·메모·위치만 백업됩니다.';
+
+  @override
+  String workbenchInfo(String rate, String channels, String duration) {
+    return '$rate kHz · $channels · $duration';
+  }
+
+  @override
+  String get workbenchMono => '모노';
+
+  @override
+  String get workbenchStereo => '스테레오';
+
+  @override
+  String get workbenchTruncated => '파일이 일찍 끝납니다. 있는 오디오만 사용합니다.';
+
+  @override
+  String get workbenchErrorNotWav => 'WAV 파일이 아닙니다.';
+
+  @override
+  String get workbenchErrorFormat => '현재는 16비트 PCM WAV만 지원합니다(MP3, AAC, 부동소수점 WAV 불가).';
+
+  @override
+  String get workbenchErrorChannels => '모노 또는 스테레오 녹음만 지원합니다.';
+
+  @override
+  String get workbenchErrorRate => '지원하지 않는 샘플레이트입니다. 8, 16, 44.1, 48kHz를 사용하세요.';
+
+  @override
+  String get workbenchErrorDamaged => '파일이 손상되었거나 불완전합니다.';
+
+  @override
+  String get workbenchErrorTooLarge => '파일이 50MB를 넘습니다.';
+
+  @override
+  String get workbenchErrorTooLong => '녹음이 20분을 넘습니다.';
+
+  @override
+  String get workbenchErrorIo => '파일을 읽을 수 없습니다.';
+
+  @override
+  String get workbenchErrorMissing => '녹음 파일이 없습니다.';
+
+  @override
+  String get workbenchStart => '시작(초)';
+
+  @override
+  String get workbenchEnd => '끝(초)';
+
+  @override
+  String get workbenchSelectAll => '전체 선택';
+
+  @override
+  String get workbenchPlay => '선택 구간 재생';
+
+  @override
+  String get workbenchStop => '정지';
+
+  @override
+  String get workbenchLoop => '반복';
+
+  @override
+  String get workbenchPlayLimit => '긴 구간은 처음 5분만 재생합니다.';
+
+  @override
+  String get workbenchAutoTune => '톤 자동 찾기';
+
+  @override
+  String workbenchManualTone(int hz) {
+    return '톤: $hz Hz';
+  }
+
+  @override
+  String get workbenchDecode => '선택 구간 해독';
+
+  @override
+  String get workbenchCancel => '취소';
+
+  @override
+  String workbenchDecoding(int percent) {
+    return '해독 중… $percent%';
+  }
+
+  @override
+  String workbenchResultStats(int hz, int wpm) {
+    return '톤 ${hz}Hz · 약 $wpm WPM';
+  }
+
+  @override
+  String get workbenchToneNotLocked => '안정된 톤을 찾지 못했습니다. 수동 조정을 해 보세요.';
+
+  @override
+  String get workbenchNoText => '이 구간에서 해독된 내용이 없습니다.';
+
+  @override
+  String workbenchUnknown(String patterns) {
+    return '알 수 없는 패턴: $patterns';
+  }
+
+  @override
+  String get workbenchEdgeCut => '구간 가장자리의 문자가 잘려 틀릴 수 있습니다.';
+
+  @override
+  String get workbenchToneNote => '톤 고정은 신뢰도가 아닙니다. 귀로 텍스트를 확인하세요.';
+
+  @override
+  String get workbenchModeDecoder => '디코더';
+
+  @override
+  String get workbenchModeCopy => '직접 받아 적기';
+
+  @override
+  String get workbenchDecoderHidden => '받아 적는 동안 디코더 텍스트는 숨겨집니다.';
+
+  @override
+  String get workbenchShowDecoder => '디코더 텍스트 보기';
+
+  @override
+  String get workbenchReference => '기준 텍스트(선택)';
+
+  @override
+  String get workbenchReferenceHelp => '보낸 텍스트를 붙여 넣으세요. 없으면 디코더 출력과 비교합니다.';
+
+  @override
+  String get workbenchAgainstDecoder => '디코더 출력과 비교했으며, 출력 자체가 틀릴 수 있습니다.';
+
+  @override
+  String get workbenchSave => '구간 저장';
+
+  @override
+  String get workbenchSaveTitle => '제목';
+
+  @override
+  String get workbenchSaveNote => '메모';
+
+  @override
+  String get workbenchSaved => '구간을 저장했습니다';
+
+  @override
+  String get workbenchSaveFailed => '구간을 저장할 수 없습니다.';
+
+  @override
+  String get workbenchLibrary => '저장한 구간';
+
+  @override
+  String get workbenchLibraryEmpty => '아직 저장한 구간이 없습니다.';
+
+  @override
+  String get workbenchMissing => '녹음 파일이 없습니다. 다시 선택하거나 항목을 삭제하세요.';
+
+  @override
+  String get workbenchRelink => '파일 다시 선택';
+
+  @override
+  String get workbenchDelete => '삭제';
+
+  @override
+  String get materialsTitle => '내 자료';
+
+  @override
+  String get materialsNew => '새 자료';
+
+  @override
+  String get materialsEdit => '편집';
+
+  @override
+  String get materialsSave => '저장';
+
+  @override
+  String get materialsSaveFailed => '자료를 저장하지 못했습니다.';
+
+  @override
+  String get materialsTitleField => '제목';
+
+  @override
+  String get materialsTagsField => '태그(쉼표로 구분)';
+
+  @override
+  String get materialsTextField => '텍스트';
+
+  @override
+  String get materialsListField => '한 줄에 한 항목';
+
+  @override
+  String get materialsKindText => '텍스트';
+
+  @override
+  String get materialsKindWords => '단어 목록';
+
+  @override
+  String get materialsKindCallsigns => '호출부호';
+
+  @override
+  String get materialsPreview => '미리 보기';
+
+  @override
+  String materialsPreviewCounts(int items, int symbols, int prosigns) {
+    return '$items개 항목 · $symbols자 · 절차 신호 $prosigns개';
+  }
+
+  @override
+  String materialsPreviewUnsupported(String chars) {
+    return '모스 부호가 없어 연습에서 제외: $chars';
+  }
+
+  @override
+  String materialsPreviewDuplicates(int count) {
+    return '중복 항목 $count개는 한 번만 유지';
+  }
+
+  @override
+  String get materialsProblemEmpty => '먼저 텍스트를 입력하세요.';
+
+  @override
+  String get materialsProblemTooLarge => '너무 큽니다. 자료는 1 MiB까지입니다.';
+
+  @override
+  String materialsProblemTooManyEntries(int count) {
+    return '항목이 너무 많습니다(최대 $count).';
+  }
+
+  @override
+  String materialsProblemEntryTooLong(int count) {
+    return '너무 긴 항목이 있습니다(항목당 $count자까지).';
+  }
+
+  @override
+  String get materialsProblemNothingTrainable => '모스로 연습할 내용이 없습니다.';
+
+  @override
+  String get materialsSearch => '자료 검색';
+
+  @override
+  String get materialsFavoritesOnly => '즐겨찾기';
+
+  @override
+  String get materialsFavorite => '즐겨찾기에 추가';
+
+  @override
+  String get materialsUnfavorite => '즐겨찾기에서 제거';
+
+  @override
+  String get materialsEmpty => '아직 자료가 없습니다. 직접 텍스트, 단어 목록, 호출부호를 추가하거나 채팅 메시지를 저장하세요.';
+
+  @override
+  String materialsItems(int count) {
+    return '$count개 항목';
+  }
+
+  @override
+  String get materialsFromChat => '채팅에서';
+
+  @override
+  String get materialsActions => '자료 작업';
+
+  @override
+  String get materialsPractise => '연습';
+
+  @override
+  String get materialsDelete => '삭제';
+
+  @override
+  String get materialsDeleteTitle => '자료를 삭제할까요?';
+
+  @override
+  String materialsDeleteBody(String title) {
+    return '‘$title’을(를) 이 기기에서 삭제합니다. 연습 기록은 남습니다.';
+  }
+
+  @override
+  String get materialsImport => 'TXT 또는 JSON 가져오기';
+
+  @override
+  String get materialsImportDialogTitle => '자료 파일 선택';
+
+  @override
+  String get materialsSaveDialogTitle => '자료 저장';
+
+  @override
+  String get materialsImportFailed => '가져오기에 실패했습니다. 자료 목록은 그대로입니다.';
+
+  @override
+  String get materialsImportNotUtf8 => 'UTF-8 텍스트 파일만 가져올 수 있습니다.';
+
+  @override
+  String get materialsImportInvalid => '올바른 MorseCQ 자료 파일이 아닙니다. 아무것도 가져오지 않았습니다.';
+
+  @override
+  String materialsImported(int count) {
+    return '자료 $count개를 가져왔습니다.';
+  }
+
+  @override
+  String get materialsDuplicateTitle => '일부 자료가 이미 있습니다';
+
+  @override
+  String get materialsDuplicateOverwrite => '바꾸기';
+
+  @override
+  String get materialsDuplicateKeepCopy => '둘 다 유지(사본으로)';
+
+  @override
+  String get materialsDuplicateSkip => '건너뛰기';
+
+  @override
+  String get materialsExportJson => 'JSON으로 내보내기';
+
+  @override
+  String materialsExported(int count) {
+    return '자료 $count개를 내보냈습니다.';
+  }
+
+  @override
+  String get materialsExportFailed => '내보내기에 실패했습니다.';
+
+  @override
+  String get materialsExportWav => '오디오 내보내기(WAV)';
+
+  @override
+  String materialsWavCharSpeed(int wpm) {
+    return '문자 속도: $wpm WPM';
+  }
+
+  @override
+  String materialsWavEffSpeed(int wpm) {
+    return '유효 속도: $wpm WPM';
+  }
+
+  @override
+  String materialsWavTone(int hz) {
+    return '톤: $hz Hz';
+  }
+
+  @override
+  String get materialsWavWithAnswer => '정답 텍스트 포함(.txt)';
+
+  @override
+  String get materialsWavFormat => '16비트 모노 WAV, 48kHz.';
+
+  @override
+  String materialsWavParts(int count) {
+    return '10분이 넘어 파일 $count개로 내보냅니다.';
+  }
+
+  @override
+  String materialsWavExported(int count) {
+    return '오디오 파일 $count개를 저장했습니다.';
+  }
+
+  @override
+  String get materialsPracticeMode => '연습 범위';
+
+  @override
+  String get materialsPracticeLearned => '배운 문자만';
+
+  @override
+  String materialsPracticeLearnedPartial(int count) {
+    return '배운 문자만(아직 배우지 않은 문자가 있어 $count개 항목 제외)';
+  }
+
+  @override
+  String get materialsPracticeAll => '모든 모스 문자';
+
+  @override
+  String get materialsPracticeNothing => '이 모드에서 연습할 항목이 없습니다.';
 }

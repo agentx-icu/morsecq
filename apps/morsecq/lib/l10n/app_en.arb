@@ -4303,5 +4303,326 @@
   "workbenchDelete": "Delete",
   "@workbenchDelete": {
     "description": "Recording workbench: delete a saved selection"
+  },
+  "materialsTitle": "My materials",
+  "@materialsTitle": {
+    "description": "My materials: screen title / Learn entry"
+  },
+  "materialsNew": "New material",
+  "@materialsNew": {
+    "description": "My materials: create a material"
+  },
+  "materialsEdit": "Edit",
+  "@materialsEdit": {
+    "description": "My materials: edit a material"
+  },
+  "materialsSave": "Save",
+  "@materialsSave": {
+    "description": "Material editor: save"
+  },
+  "materialsSaveFailed": "Couldn't save the material.",
+  "@materialsSaveFailed": {
+    "description": "Material editor: saving failed"
+  },
+  "materialsTitleField": "Title",
+  "@materialsTitleField": {
+    "description": "Material editor: title field"
+  },
+  "materialsTagsField": "Tags (comma separated)",
+  "@materialsTagsField": {
+    "description": "Material editor: tags field (comma separated)"
+  },
+  "materialsTextField": "Text",
+  "@materialsTextField": {
+    "description": "Material editor: running text field"
+  },
+  "materialsListField": "One entry per line",
+  "@materialsListField": {
+    "description": "Material editor: one entry per line field"
+  },
+  "materialsKindText": "Text",
+  "@materialsKindText": {
+    "description": "Material kind: running text"
+  },
+  "materialsKindWords": "Word list",
+  "@materialsKindWords": {
+    "description": "Material kind: word list"
+  },
+  "materialsKindCallsigns": "Callsigns",
+  "@materialsKindCallsigns": {
+    "description": "Material kind: callsign list"
+  },
+  "materialsPreview": "Preview",
+  "@materialsPreview": {
+    "description": "Material editor: preview heading"
+  },
+  "materialsPreviewCounts": "{items} items · {symbols} symbols · {prosigns} prosigns",
+  "@materialsPreviewCounts": {
+    "description": "Material preview: item/symbol/prosign counts",
+    "placeholders": {
+      "items": {
+        "type": "int"
+      },
+      "symbols": {
+        "type": "int"
+      },
+      "prosigns": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPreviewUnsupported": "No Morse code, left out of practice: {chars}",
+  "@materialsPreviewUnsupported": {
+    "description": "Material preview: characters without Morse code (left out of practice)",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
+  },
+  "materialsPreviewDuplicates": "{count} duplicate entries are kept once",
+  "@materialsPreviewDuplicates": {
+    "description": "Material preview: duplicate list entries kept once",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemEmpty": "Enter some text first.",
+  "@materialsProblemEmpty": {
+    "description": "Material problem"
+  },
+  "materialsProblemTooLarge": "Too large: materials are limited to 1 MiB.",
+  "@materialsProblemTooLarge": {
+    "description": "Material problem: over 1 MiB"
+  },
+  "materialsProblemTooManyEntries": "Too many entries: at most {count}.",
+  "@materialsProblemTooManyEntries": {
+    "description": "Material problem: too many entries",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemEntryTooLong": "An entry is too long: at most {count} symbols each.",
+  "@materialsProblemEntryTooLong": {
+    "description": "Material problem: an entry is too long",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsProblemNothingTrainable": "Nothing here can be practised in Morse.",
+  "@materialsProblemNothingTrainable": {
+    "description": "Material problem: nothing can be keyed"
+  },
+  "materialsSearch": "Search materials",
+  "@materialsSearch": {
+    "description": "My materials: search field"
+  },
+  "materialsFavoritesOnly": "Favourites",
+  "@materialsFavoritesOnly": {
+    "description": "My materials: favourites filter"
+  },
+  "materialsFavorite": "Add to favourites",
+  "@materialsFavorite": {
+    "description": "My materials: mark favourite"
+  },
+  "materialsUnfavorite": "Remove from favourites",
+  "@materialsUnfavorite": {
+    "description": "My materials: unmark favourite"
+  },
+  "materialsEmpty": "No materials yet. Add your own texts, word lists or callsigns, or save a chat message.",
+  "@materialsEmpty": {
+    "description": "My materials: empty library"
+  },
+  "materialsItems": "{count} items",
+  "@materialsItems": {
+    "description": "My materials: number of items",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsFromChat": "From chat",
+  "@materialsFromChat": {
+    "description": "My materials: saved from a chat message"
+  },
+  "materialsActions": "Material actions",
+  "@materialsActions": {
+    "description": "My materials: per-material menu"
+  },
+  "materialsPractise": "Practise",
+  "@materialsPractise": {
+    "description": "My materials: start practice"
+  },
+  "materialsDelete": "Delete",
+  "@materialsDelete": {
+    "description": "My materials: delete"
+  },
+  "materialsDeleteTitle": "Delete material?",
+  "@materialsDeleteTitle": {
+    "description": "My materials: delete confirmation title"
+  },
+  "materialsDeleteBody": "“{title}” will be removed from this device. Your practice history stays.",
+  "@materialsDeleteBody": {
+    "description": "My materials: delete confirmation body",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "materialsImport": "Import TXT or JSON",
+  "@materialsImport": {
+    "description": "My materials: import a TXT or JSON file"
+  },
+  "materialsImportDialogTitle": "Choose a material file",
+  "@materialsImportDialogTitle": {
+    "description": "Native file picker title for material import"
+  },
+  "materialsSaveDialogTitle": "Save material",
+  "@materialsSaveDialogTitle": {
+    "description": "Native save dialog title for material export"
+  },
+  "materialsImportFailed": "Import failed. Your library is unchanged.",
+  "@materialsImportFailed": {
+    "description": "My materials: import failed, library unchanged"
+  },
+  "materialsImportNotUtf8": "Only UTF-8 text files can be imported.",
+  "@materialsImportNotUtf8": {
+    "description": "My materials: file is not UTF-8 text"
+  },
+  "materialsImportInvalid": "Not a valid MorseCQ material file. Nothing was imported.",
+  "@materialsImportInvalid": {
+    "description": "My materials: JSON library invalid, nothing imported"
+  },
+  "materialsImported": "Imported {count} materials.",
+  "@materialsImported": {
+    "description": "My materials: import done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsDuplicateTitle": "Some materials already exist",
+  "@materialsDuplicateTitle": {
+    "description": "Import: some ids already exist"
+  },
+  "materialsDuplicateOverwrite": "Replace them",
+  "@materialsDuplicateOverwrite": {
+    "description": "Import duplicate policy"
+  },
+  "materialsDuplicateKeepCopy": "Keep both (import as copies)",
+  "@materialsDuplicateKeepCopy": {
+    "description": "Import duplicate policy"
+  },
+  "materialsDuplicateSkip": "Skip them",
+  "@materialsDuplicateSkip": {
+    "description": "Import duplicate policy"
+  },
+  "materialsExportJson": "Export as JSON",
+  "@materialsExportJson": {
+    "description": "My materials: export the (filtered) library as JSON"
+  },
+  "materialsExported": "Exported {count} materials.",
+  "@materialsExported": {
+    "description": "My materials: export done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsExportFailed": "Export failed.",
+  "@materialsExportFailed": {
+    "description": "My materials: export failed"
+  },
+  "materialsExportWav": "Export audio (WAV)",
+  "@materialsExportWav": {
+    "description": "My materials: export audio"
+  },
+  "materialsWavCharSpeed": "Character speed: {wpm} WPM",
+  "@materialsWavCharSpeed": {
+    "description": "WAV export: character speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavEffSpeed": "Effective speed: {wpm} WPM",
+  "@materialsWavEffSpeed": {
+    "description": "WAV export: effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavTone": "Tone: {hz} Hz",
+  "@materialsWavTone": {
+    "description": "WAV export: tone",
+    "placeholders": {
+      "hz": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavWithAnswer": "Include the answer text (.txt)",
+  "@materialsWavWithAnswer": {
+    "description": "WAV export: also save the answer text"
+  },
+  "materialsWavFormat": "16-bit mono WAV, 48 kHz.",
+  "@materialsWavFormat": {
+    "description": "WAV export: file format note"
+  },
+  "materialsWavParts": "Longer than 10 minutes: exported as {count} files.",
+  "@materialsWavParts": {
+    "description": "WAV export: split into parts of at most 10 minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsWavExported": "Saved {count} audio files.",
+  "@materialsWavExported": {
+    "description": "WAV export: done",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPracticeMode": "Practise with",
+  "@materialsPracticeMode": {
+    "description": "Material practice: choose symbol set"
+  },
+  "materialsPracticeLearned": "Learned symbols only",
+  "@materialsPracticeLearned": {
+    "description": "Material practice: learned symbols only"
+  },
+  "materialsPracticeLearnedPartial": "Learned symbols only ({count} entries unavailable: they use symbols not learned yet)",
+  "@materialsPracticeLearnedPartial": {
+    "description": "Material practice: learned-only leaves some entries out",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "materialsPracticeAll": "All Morse symbols",
+  "@materialsPracticeAll": {
+    "description": "Material practice: every supported symbol"
+  },
+  "materialsPracticeNothing": "No entries can be practised in this mode.",
+  "@materialsPracticeNothing": {
+    "description": "Material practice: no usable entries in this mode"
   }
 }

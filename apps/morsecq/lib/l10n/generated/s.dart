@@ -5029,6 +5029,690 @@ abstract class S {
   /// In en, this message translates to:
   /// **'That didn\'t work. The message keeps its current state; try again.'**
   String get chatSendControlFailed;
+
+  /// Recording workbench: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Recording workbench'**
+  String get workbenchTitle;
+
+  /// Listen screen: open the recorded-audio workbench
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings'**
+  String get workbenchOpen;
+
+  /// Recording workbench: pick a WAV file
+  ///
+  /// In en, this message translates to:
+  /// **'Import recording'**
+  String get workbenchImport;
+
+  /// Recording workbench: empty state
+  ///
+  /// In en, this message translates to:
+  /// **'Import a WAV recording to loop, decode and copy it. No microphone needed.'**
+  String get workbenchEmpty;
+
+  /// Recording workbench: supported formats and limits
+  ///
+  /// In en, this message translates to:
+  /// **'WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.'**
+  String get workbenchFormats;
+
+  /// Recording workbench: recordings are not part of identity backups
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings stay on this device and are not included in identity backups; saved selections back up only their titles, notes and positions.'**
+  String get workbenchBackupNote;
+
+  /// Recording workbench: recording format line
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} kHz · {channels} · {duration}'**
+  String workbenchInfo(String rate, String channels, String duration);
+
+  /// Recording workbench: one channel
+  ///
+  /// In en, this message translates to:
+  /// **'mono'**
+  String get workbenchMono;
+
+  /// Recording workbench: two channels
+  ///
+  /// In en, this message translates to:
+  /// **'stereo'**
+  String get workbenchStereo;
+
+  /// Recording workbench: data chunk shorter than declared
+  ///
+  /// In en, this message translates to:
+  /// **'The file ends early; only the audio present is used.'**
+  String get workbenchTruncated;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a WAV file.'**
+  String get workbenchErrorNotWav;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Only 16-bit PCM WAV is supported for now (no MP3, AAC or float WAV).'**
+  String get workbenchErrorFormat;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Only mono or stereo recordings are supported.'**
+  String get workbenchErrorChannels;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate not supported. Use 8, 16, 44.1 or 48 kHz.'**
+  String get workbenchErrorRate;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The file is damaged or incomplete.'**
+  String get workbenchErrorDamaged;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The file is larger than 50 MB.'**
+  String get workbenchErrorTooLarge;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'The recording is longer than 20 minutes.'**
+  String get workbenchErrorTooLong;
+
+  /// Recording workbench: import error
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the file.'**
+  String get workbenchErrorIo;
+
+  /// Recording workbench: saved recording file not found
+  ///
+  /// In en, this message translates to:
+  /// **'The recording file is missing.'**
+  String get workbenchErrorMissing;
+
+  /// Recording workbench: selection start field (seconds)
+  ///
+  /// In en, this message translates to:
+  /// **'Start (s)'**
+  String get workbenchStart;
+
+  /// Recording workbench: selection end field (seconds)
+  ///
+  /// In en, this message translates to:
+  /// **'End (s)'**
+  String get workbenchEnd;
+
+  /// Recording workbench: select the whole recording
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get workbenchSelectAll;
+
+  /// Recording workbench: play the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Play selection'**
+  String get workbenchPlay;
+
+  /// Recording workbench: stop playback
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get workbenchStop;
+
+  /// Recording workbench: loop the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Loop'**
+  String get workbenchLoop;
+
+  /// Recording workbench: long selections play partly
+  ///
+  /// In en, this message translates to:
+  /// **'Only the first 5 minutes of a longer selection are played.'**
+  String get workbenchPlayLimit;
+
+  /// Recording workbench: automatic tone search
+  ///
+  /// In en, this message translates to:
+  /// **'Find the tone automatically'**
+  String get workbenchAutoTune;
+
+  /// Recording workbench: manual tone frequency
+  ///
+  /// In en, this message translates to:
+  /// **'Tone: {hz} Hz'**
+  String workbenchManualTone(int hz);
+
+  /// Recording workbench: decode the selection
+  ///
+  /// In en, this message translates to:
+  /// **'Decode selection'**
+  String get workbenchDecode;
+
+  /// Recording workbench: cancel decoding
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get workbenchCancel;
+
+  /// Recording workbench: decoding progress
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding… {percent}%'**
+  String workbenchDecoding(int percent);
+
+  /// Recording workbench: decoder tone and speed
+  ///
+  /// In en, this message translates to:
+  /// **'Tone {hz} Hz · about {wpm} WPM'**
+  String workbenchResultStats(int hz, int wpm);
+
+  /// Recording workbench: no steady tone
+  ///
+  /// In en, this message translates to:
+  /// **'No steady tone found; try manual tuning.'**
+  String get workbenchToneNotLocked;
+
+  /// Recording workbench: nothing decoded
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing decoded in this selection.'**
+  String get workbenchNoText;
+
+  /// Recording workbench: patterns that match no symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown patterns: {patterns}'**
+  String workbenchUnknown(String patterns);
+
+  /// Recording workbench: symbol cut by the selection boundary
+  ///
+  /// In en, this message translates to:
+  /// **'A symbol at the edge of the selection is cut off and may be wrong.'**
+  String get workbenchEdgeCut;
+
+  /// Recording workbench: tone lock is not a confidence score
+  ///
+  /// In en, this message translates to:
+  /// **'Tone lock is not a confidence score; check the text by ear.'**
+  String get workbenchToneNote;
+
+  /// Recording workbench: show decoder output
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder'**
+  String get workbenchModeDecoder;
+
+  /// Recording workbench: copy the selection yourself
+  ///
+  /// In en, this message translates to:
+  /// **'Copy it myself'**
+  String get workbenchModeCopy;
+
+  /// Recording workbench: decoder output hidden in copy mode
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder text is hidden while you copy.'**
+  String get workbenchDecoderHidden;
+
+  /// Recording workbench: reveal decoder output (assisted)
+  ///
+  /// In en, this message translates to:
+  /// **'Show decoder text'**
+  String get workbenchShowDecoder;
+
+  /// Recording workbench: optional answer text field
+  ///
+  /// In en, this message translates to:
+  /// **'Reference text (optional)'**
+  String get workbenchReference;
+
+  /// Recording workbench: reference text help
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the text that was sent; otherwise your copy is compared with the decoder output.'**
+  String get workbenchReferenceHelp;
+
+  /// Recording workbench: scored against decoder output
+  ///
+  /// In en, this message translates to:
+  /// **'Compared with the decoder output, which can itself be wrong.'**
+  String get workbenchAgainstDecoder;
+
+  /// Recording workbench: save the selection as an audio material
+  ///
+  /// In en, this message translates to:
+  /// **'Save selection'**
+  String get workbenchSave;
+
+  /// Recording workbench: title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get workbenchSaveTitle;
+
+  /// Recording workbench: note field
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get workbenchSaveNote;
+
+  /// Recording workbench: selection saved
+  ///
+  /// In en, this message translates to:
+  /// **'Selection saved'**
+  String get workbenchSaved;
+
+  /// Recording workbench: saving failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the selection.'**
+  String get workbenchSaveFailed;
+
+  /// Recording workbench: saved selections list
+  ///
+  /// In en, this message translates to:
+  /// **'Saved selections'**
+  String get workbenchLibrary;
+
+  /// Recording workbench: no saved selections
+  ///
+  /// In en, this message translates to:
+  /// **'No saved selections yet.'**
+  String get workbenchLibraryEmpty;
+
+  /// Recording workbench: saved selection whose media file is gone
+  ///
+  /// In en, this message translates to:
+  /// **'Recording file missing — choose it again or delete the entry.'**
+  String get workbenchMissing;
+
+  /// Recording workbench: choose the missing file again
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the file again'**
+  String get workbenchRelink;
+
+  /// Recording workbench: delete a saved selection
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get workbenchDelete;
+
+  /// My materials: screen title / Learn entry
+  ///
+  /// In en, this message translates to:
+  /// **'My materials'**
+  String get materialsTitle;
+
+  /// My materials: create a material
+  ///
+  /// In en, this message translates to:
+  /// **'New material'**
+  String get materialsNew;
+
+  /// My materials: edit a material
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get materialsEdit;
+
+  /// Material editor: save
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get materialsSave;
+
+  /// Material editor: saving failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the material.'**
+  String get materialsSaveFailed;
+
+  /// Material editor: title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get materialsTitleField;
+
+  /// Material editor: tags field (comma separated)
+  ///
+  /// In en, this message translates to:
+  /// **'Tags (comma separated)'**
+  String get materialsTagsField;
+
+  /// Material editor: running text field
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get materialsTextField;
+
+  /// Material editor: one entry per line field
+  ///
+  /// In en, this message translates to:
+  /// **'One entry per line'**
+  String get materialsListField;
+
+  /// Material kind: running text
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get materialsKindText;
+
+  /// Material kind: word list
+  ///
+  /// In en, this message translates to:
+  /// **'Word list'**
+  String get materialsKindWords;
+
+  /// Material kind: callsign list
+  ///
+  /// In en, this message translates to:
+  /// **'Callsigns'**
+  String get materialsKindCallsigns;
+
+  /// Material editor: preview heading
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get materialsPreview;
+
+  /// Material preview: item/symbol/prosign counts
+  ///
+  /// In en, this message translates to:
+  /// **'{items} items · {symbols} symbols · {prosigns} prosigns'**
+  String materialsPreviewCounts(int items, int symbols, int prosigns);
+
+  /// Material preview: characters without Morse code (left out of practice)
+  ///
+  /// In en, this message translates to:
+  /// **'No Morse code, left out of practice: {chars}'**
+  String materialsPreviewUnsupported(String chars);
+
+  /// Material preview: duplicate list entries kept once
+  ///
+  /// In en, this message translates to:
+  /// **'{count} duplicate entries are kept once'**
+  String materialsPreviewDuplicates(int count);
+
+  /// Material problem
+  ///
+  /// In en, this message translates to:
+  /// **'Enter some text first.'**
+  String get materialsProblemEmpty;
+
+  /// Material problem: over 1 MiB
+  ///
+  /// In en, this message translates to:
+  /// **'Too large: materials are limited to 1 MiB.'**
+  String get materialsProblemTooLarge;
+
+  /// Material problem: too many entries
+  ///
+  /// In en, this message translates to:
+  /// **'Too many entries: at most {count}.'**
+  String materialsProblemTooManyEntries(int count);
+
+  /// Material problem: an entry is too long
+  ///
+  /// In en, this message translates to:
+  /// **'An entry is too long: at most {count} symbols each.'**
+  String materialsProblemEntryTooLong(int count);
+
+  /// Material problem: nothing can be keyed
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here can be practised in Morse.'**
+  String get materialsProblemNothingTrainable;
+
+  /// My materials: search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search materials'**
+  String get materialsSearch;
+
+  /// My materials: favourites filter
+  ///
+  /// In en, this message translates to:
+  /// **'Favourites'**
+  String get materialsFavoritesOnly;
+
+  /// My materials: mark favourite
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favourites'**
+  String get materialsFavorite;
+
+  /// My materials: unmark favourite
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favourites'**
+  String get materialsUnfavorite;
+
+  /// My materials: empty library
+  ///
+  /// In en, this message translates to:
+  /// **'No materials yet. Add your own texts, word lists or callsigns, or save a chat message.'**
+  String get materialsEmpty;
+
+  /// My materials: number of items
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String materialsItems(int count);
+
+  /// My materials: saved from a chat message
+  ///
+  /// In en, this message translates to:
+  /// **'From chat'**
+  String get materialsFromChat;
+
+  /// My materials: per-material menu
+  ///
+  /// In en, this message translates to:
+  /// **'Material actions'**
+  String get materialsActions;
+
+  /// My materials: start practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practise'**
+  String get materialsPractise;
+
+  /// My materials: delete
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get materialsDelete;
+
+  /// My materials: delete confirmation title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete material?'**
+  String get materialsDeleteTitle;
+
+  /// My materials: delete confirmation body
+  ///
+  /// In en, this message translates to:
+  /// **'“{title}” will be removed from this device. Your practice history stays.'**
+  String materialsDeleteBody(String title);
+
+  /// My materials: import a TXT or JSON file
+  ///
+  /// In en, this message translates to:
+  /// **'Import TXT or JSON'**
+  String get materialsImport;
+
+  /// Native file picker title for material import
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a material file'**
+  String get materialsImportDialogTitle;
+
+  /// Native save dialog title for material export
+  ///
+  /// In en, this message translates to:
+  /// **'Save material'**
+  String get materialsSaveDialogTitle;
+
+  /// My materials: import failed, library unchanged
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed. Your library is unchanged.'**
+  String get materialsImportFailed;
+
+  /// My materials: file is not UTF-8 text
+  ///
+  /// In en, this message translates to:
+  /// **'Only UTF-8 text files can be imported.'**
+  String get materialsImportNotUtf8;
+
+  /// My materials: JSON library invalid, nothing imported
+  ///
+  /// In en, this message translates to:
+  /// **'Not a valid MorseCQ material file. Nothing was imported.'**
+  String get materialsImportInvalid;
+
+  /// My materials: import done
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} materials.'**
+  String materialsImported(int count);
+
+  /// Import: some ids already exist
+  ///
+  /// In en, this message translates to:
+  /// **'Some materials already exist'**
+  String get materialsDuplicateTitle;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Replace them'**
+  String get materialsDuplicateOverwrite;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Keep both (import as copies)'**
+  String get materialsDuplicateKeepCopy;
+
+  /// Import duplicate policy
+  ///
+  /// In en, this message translates to:
+  /// **'Skip them'**
+  String get materialsDuplicateSkip;
+
+  /// My materials: export the (filtered) library as JSON
+  ///
+  /// In en, this message translates to:
+  /// **'Export as JSON'**
+  String get materialsExportJson;
+
+  /// My materials: export done
+  ///
+  /// In en, this message translates to:
+  /// **'Exported {count} materials.'**
+  String materialsExported(int count);
+
+  /// My materials: export failed
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed.'**
+  String get materialsExportFailed;
+
+  /// My materials: export audio
+  ///
+  /// In en, this message translates to:
+  /// **'Export audio (WAV)'**
+  String get materialsExportWav;
+
+  /// WAV export: character speed
+  ///
+  /// In en, this message translates to:
+  /// **'Character speed: {wpm} WPM'**
+  String materialsWavCharSpeed(int wpm);
+
+  /// WAV export: effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Effective speed: {wpm} WPM'**
+  String materialsWavEffSpeed(int wpm);
+
+  /// WAV export: tone
+  ///
+  /// In en, this message translates to:
+  /// **'Tone: {hz} Hz'**
+  String materialsWavTone(int hz);
+
+  /// WAV export: also save the answer text
+  ///
+  /// In en, this message translates to:
+  /// **'Include the answer text (.txt)'**
+  String get materialsWavWithAnswer;
+
+  /// WAV export: file format note
+  ///
+  /// In en, this message translates to:
+  /// **'16-bit mono WAV, 48 kHz.'**
+  String get materialsWavFormat;
+
+  /// WAV export: split into parts of at most 10 minutes
+  ///
+  /// In en, this message translates to:
+  /// **'Longer than 10 minutes: exported as {count} files.'**
+  String materialsWavParts(int count);
+
+  /// WAV export: done
+  ///
+  /// In en, this message translates to:
+  /// **'Saved {count} audio files.'**
+  String materialsWavExported(int count);
+
+  /// Material practice: choose symbol set
+  ///
+  /// In en, this message translates to:
+  /// **'Practise with'**
+  String get materialsPracticeMode;
+
+  /// Material practice: learned symbols only
+  ///
+  /// In en, this message translates to:
+  /// **'Learned symbols only'**
+  String get materialsPracticeLearned;
+
+  /// Material practice: learned-only leaves some entries out
+  ///
+  /// In en, this message translates to:
+  /// **'Learned symbols only ({count} entries unavailable: they use symbols not learned yet)'**
+  String materialsPracticeLearnedPartial(int count);
+
+  /// Material practice: every supported symbol
+  ///
+  /// In en, this message translates to:
+  /// **'All Morse symbols'**
+  String get materialsPracticeAll;
+
+  /// Material practice: no usable entries in this mode
+  ///
+  /// In en, this message translates to:
+  /// **'No entries can be practised in this mode.'**
+  String get materialsPracticeNothing;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

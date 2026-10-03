@@ -10,6 +10,7 @@ import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'materials/materials_screen.dart';
 import 'plan/speed_advice_card.dart';
 import 'qso/qso_setup_screen.dart';
 import 'plan/today_plan_card.dart';
@@ -198,6 +199,12 @@ class LearnHome extends StatelessWidget {
     onReview: () => _review(context),
     onQso: _qsoAction(context),
     qsoFromLesson: TrainingController.qsoFromLesson,
+    onMaterials: () => _materials(context),
+  );
+
+  void _materials(BuildContext context) => _push(
+    context,
+    MaterialsScreen(controller: controller, playback: playback),
   );
 
   VoidCallback? _qsoAction(BuildContext context) => controller.qsoUnlocked
@@ -246,6 +253,7 @@ class LearnHome extends StatelessWidget {
       onReview: () => _review(context),
       onQso: _qsoAction(context),
       qsoFromLesson: TrainingController.qsoFromLesson,
+      onMaterials: () => _materials(context),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

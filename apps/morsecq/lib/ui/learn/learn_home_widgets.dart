@@ -346,7 +346,11 @@ class QuickActions extends StatelessWidget {
     this.showContinue = true,
     this.onQso,
     this.qsoFromLesson,
+    this.onMaterials,
   });
+
+  /// Opens My materials.
+  final VoidCallback? onMaterials;
 
   /// Opens the QSO simulator; null while it is locked.
   final VoidCallback? onQso;
@@ -395,6 +399,12 @@ class QuickActions extends StatelessWidget {
           trailing: s.learnReviewDueCount(dueCount),
           onTap: onReview,
         ),
+        if (onMaterials != null)
+          _ActionTile(
+            icon: Icons.library_books_outlined,
+            label: s.materialsTitle,
+            onTap: onMaterials,
+          ),
         _ActionTile(
           icon: Icons.cell_tower,
           label: s.learnQsoAction,
