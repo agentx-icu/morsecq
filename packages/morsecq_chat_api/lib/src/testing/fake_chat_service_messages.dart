@@ -8,7 +8,11 @@ mixin _FakeMessageManagement implements ChatService {
   Map<String, List<ChatMessage>> get _messages;
   Map<String, Conversation> get _conversations;
   Map<String, Friend> get _friends;
+  Set<String> get _disconnectedGroups;
   void _applyStatus(String messageId, MessageStatus status);
+
+  /// Like history, every operation here needs a live session.
+  void _requireSession();
 
   @override
   Future<MessageSearchPage> searchMessages(
@@ -18,6 +22,7 @@ mixin _FakeMessageManagement implements ChatService {
     int limit = 20,
     MessageSearchCancel? cancel,
   }) async {
+    _requireSession();
     if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
     return MessageOrder.page(
       _messages[conversationId] ?? const <ChatMessage>[],
@@ -33,12 +38,15 @@ mixin _FakeMessageManagement implements ChatService {
     String messageId, {
     int before = 25,
     int after = 25,
-  }) async => MessageOrder.around(
-    _messages[conversationId] ?? const <ChatMessage>[],
-    messageId,
-    before: before,
-    after: after,
-  );
+  }) async {
+    _requireSession();
+    return MessageOrder.around(
+      _messages[conversationId] ?? const <ChatMessage>[],
+      messageId,
+      before: before,
+      after: after,
+    );
+  }
 
   @override
   bool get supportsSendControl => true;
@@ -55,6 +63,7 @@ mixin _FakeMessageManagement implements ChatService {
     String conversationId,
     String messageId,
   ) async {
+    _requireSession();
     final m = _ownRow(conversationId, messageId);
     if (m == null || !m.isMine || conversationId == selfConversationId) {
       return MessageActionResult.unavailable;
@@ -66,8 +75,11 @@ mixin _FakeMessageManagement implements ChatService {
       return MessageActionResult.stateChanged;
     }
     final conversation = _conversations[conversationId];
+    // The same delivery rule as sendText: a group whose transport is down
+    // keeps the retry pending.
     final deliverable =
-        conversation?.kind == ConversationKind.group ||
+        (conversation?.kind == ConversationKind.group &&
+            !_disconnectedGroups.contains(conversation?.peerId)) ||
         (_friends[conversation?.peerId]?.online ?? false);
     _applyStatus(messageId, MessageStatus.pending);
     if (deliverable) _applyStatus(messageId, MessageStatus.sent);
@@ -79,6 +91,7 @@ mixin _FakeMessageManagement implements ChatService {
     String conversationId,
     String messageId,
   ) async {
+    _requireSession();
     final m = _ownRow(conversationId, messageId);
     if (m == null || !m.isMine || conversationId == selfConversationId) {
       return MessageActionResult.unavailable;

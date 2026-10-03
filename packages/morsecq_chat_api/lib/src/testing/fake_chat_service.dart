@@ -63,8 +63,8 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
   /// the next message, even for a friend.
   final Set<String> _hidden = <String>{};
 
-  /// Groups whose transport is down (see `setGroupConnected`): sends to
-  /// them stay pending.
+  /// Groups whose transport is down (`setGroupConnected`): sends stay pending.
+  @override
   final Set<String> _disconnectedGroups = <String>{};
 
   /// When set, friend-request and group-invite answers wait for it (lets a
@@ -347,8 +347,10 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
     }
   }
 
-  /// The status write the message-management mixin needs (the row
-  /// bookkeeping itself lives in `fake_chat_service_rows.dart`).
+  /// The session check and status write the message-management mixin
+  /// needs (row bookkeeping lives in `fake_chat_service_rows.dart`).
+  @override
+  void _requireSession() => _FakeSession(this)._requireSession();
   @override
   void _applyStatus(String messageId, MessageStatus status) =>
       _FakeConversationRows(this)._setStatus(messageId, status);

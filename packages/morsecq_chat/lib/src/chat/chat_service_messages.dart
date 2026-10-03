@@ -34,7 +34,10 @@ mixin _MessageManagement implements ChatService {
     final mapper = _mapper;
     final out = <ChatMessage>[];
     for (var i = 0; i < rows.length; i++) {
-      out.add(mapper.map(rows[i], conversationId: conversationId));
+      // Files, media and custom rows are not chat messages (as in history).
+      if (MessageMapper.isChatText(rows[i])) {
+        out.add(mapper.map(rows[i], conversationId: conversationId));
+      }
       if (i % _scanChunk == _scanChunk - 1) {
         await Future<void>.delayed(Duration.zero);
         _ensureCurrent(svc);

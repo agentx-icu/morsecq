@@ -172,6 +172,44 @@ void main() {
       expect(rows.single.status, MessageStatus.sent);
     });
 
+    test('a retry to a disconnected group stays pending', () async {
+      final g = chat.addFakeGroup(
+        const Group(id: 'tox_9', name: 'Net', kind: GroupKind.group),
+      );
+      final gid = 'group_${g.id}';
+      chat.setGroupConnected(g.id, false);
+      final m = await chat.sendText(gid, 'QRL?');
+      chat.failMessage(m.id);
+      expect(await chat.retryMessage(gid, m.id), MessageActionResult.success);
+      expect(
+        (await chat.loadHistory(gid)).single.status,
+        MessageStatus.pending,
+      );
+      chat.setGroupConnected(g.id, true);
+      expect((await chat.loadHistory(gid)).single.status, MessageStatus.sent);
+    });
+
+    test('every operation needs a session, like history', () async {
+      final identity = FakeIdentityService();
+      await identity.create(displayName: 'Me');
+      final own = FakeChatService(identity: identity)
+        ..addFakeFriend(const Friend(publicKey: peer, displayName: 'Bob'));
+      addTearDown(own.dispose);
+      await identity.connect();
+      final m = await own.sendText(cid, 'queued');
+      await identity.disconnect();
+      final notConnected = throwsA(
+        isA<ChatException>().having((e) => e.code, 'code', 'not_connected'),
+      );
+      await expectLater(
+        own.searchMessages(cid, const MessageSearchQuery()),
+        notConnected,
+      );
+      await expectLater(own.loadAround(cid, m.id), notConnected);
+      await expectLater(own.retryMessage(cid, m.id), notConnected);
+      await expectLater(own.cancelPendingMessage(cid, m.id), notConnected);
+    });
+
     test('note-to-self rows have no send control', () async {
       final identity = FakeIdentityService();
       await identity.create(displayName: 'Me');
