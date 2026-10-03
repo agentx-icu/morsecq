@@ -79,6 +79,10 @@ abstract interface class LocalNotificationsApi {
 
   Future<void> cancelAll();
 
+  /// Payloads of this app's notifications still on screen (posted by this
+  /// or an earlier run). Empty where the platform cannot tell.
+  Future<List<String>> activePayloads();
+
   /// Re-applies language-dependent OS metadata after a language change:
   /// on Android the channel names/descriptions shown in Settings (Android
   /// freezes importance and sound at creation but takes a new name on

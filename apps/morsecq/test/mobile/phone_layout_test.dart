@@ -2,12 +2,17 @@
 // landscape (~375-390 px tall, notch + home-indicator insets), the soft
 // keyboard covering half the screen, and a 2.0 text scale. Each case here
 // overflowed (or lost state) before the fix it guards.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/training/training_settings.dart';
+import 'package:morsecq/training/training_controller.dart';
+import 'package:morsecq/ui/learn/learn_scope.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
@@ -116,9 +121,7 @@ void main() {
       expect(find.byType(IdentityCard), findsOneWidget);
     });
 
-    testWidgets('identity card fits a 320 px phone at 2x text', (
-      tester,
-    ) async {
+    testWidgets('identity card fits a 320 px phone at 2x text', (tester) async {
       setPhone(tester, kSmallPhone, textScale: 2);
       await bootApp(tester);
       await tester.tap(navLabel(en.navMe));
@@ -126,6 +129,37 @@ void main() {
       expect(find.byType(IdentityCard), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+  });
+
+  group('learn placeholder', () {
+    // Regression: the loading / identity-required placeholder was a fixed
+    // Column and overflowed by 181 px on a 320 pt phone at 2x text; CI only
+    // caught it when the controller load was slow enough to paint a frame.
+    for (final bool loading in <bool>[true, false]) {
+      testWidgets('${loading ? 'loading' : 'identity required'} fits a '
+          '320 px phone at 2x text', (tester) async {
+        setPhone(tester, kSmallPhone, textScale: 2);
+        final Completer<TrainingController> never =
+            Completer<TrainingController>();
+        await tester.pumpWidget(
+          l10nApp(
+            home: LearnScope(
+              controllerFactory: loading
+                  ? (_) => never.future
+                  : (_) => Future<TrainingController>.error('no identity'),
+              description: en.learnIdentityRequired,
+              builder: (_, _, _) => const SizedBox(),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+        expect(
+          find.text(en.learnIdentityRequired),
+          loading ? findsOneWidget : findsNWidgets(2),
+        );
+      });
+    }
   });
 
   group('send practice', () {
@@ -167,6 +201,51 @@ void main() {
         await tester.tap(find.byType(Switch));
         await tester.pumpAndSettle();
         expect(find.text(en.learnHiddenTarget), findsOneWidget);
+      });
+    }
+  });
+
+  group('send practice label', () {
+    // Widget tests render Ahem (every glyph 1 em wide), so the cases keep a
+    // clear margin; real-font frames come from tool/screenshots.
+    final cases = <(String, Size, double, bool)>[
+      // Regression: the fixed 420 threshold dropped the label on a 402 pt
+      // iPhone although it fit.
+      ('zh', const Size(402, 874), 1, true),
+      ('en', const Size(600, 874), 1, true),
+      ('de', kSmallPhone, 1.3, false),
+      // Landscape: setPhone adds 47 pt notch insets per side; the label must
+      // fit what is left, not the full width (else the title ellipsizes).
+      ('en', const Size(560, 375), 1, true),
+      ('en', const Size(450, 375), 1, false),
+      ('en', kSmallPhone, 2, false),
+    ];
+    for (final (String lang, Size size, double scale, bool label) in cases) {
+      testWidgets('$lang $size at ${scale}x shows '
+          '${label ? 'the label' : 'the icon'}', (tester) async {
+        setPhone(tester, size, textScale: scale);
+        final t = await TestTraining.create();
+        addTearDown(t.controller.dispose);
+        await tester.pumpWidget(
+          l10nApp(
+            locale: Locale(lang),
+            home: SendPracticeScreen(
+              controller: t.controller,
+              playback: FakeLearnPlaybackFactory(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        final s = lookupS(Locale(lang));
+        expect(
+          find.text(s.learnCopyFromMemory),
+          label ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byIcon(Icons.visibility_off_outlined),
+          label ? findsNothing : findsOneWidget,
+        );
       });
     }
   });

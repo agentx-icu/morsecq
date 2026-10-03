@@ -3,6 +3,26 @@ import 'package:morsecq/notifications/notification_payload.dart';
 
 void main() {
   group('NotificationTapTarget', () {
+    test('an account tag round-trips; untagged payloads still parse', () {
+      final String account = 'F' * 16;
+      for (final NotificationTapTarget t in [
+        OpenConversationTarget('c2c_${'A' * 64}', account: account),
+        FriendRequestTarget('B' * 64, account: account),
+        GroupInviteTarget('inv_1', account: account),
+      ]) {
+        expect(NotificationTapTarget.parse(t.encode()), t);
+        expect(t.encode(), endsWith('#$account'));
+      }
+      expect(
+        NotificationTapTarget.parse('conv:c2c_X'),
+        const OpenConversationTarget('c2c_X'),
+      );
+      expect(
+        const OpenConversationTarget('c2c_X', account: 'A'),
+        isNot(const OpenConversationTarget('c2c_X')),
+      );
+    });
+
     test('round-trips every kind', () {
       const List<NotificationTapTarget> targets = <NotificationTapTarget>[
         OpenConversationTarget('c2c_ABC'),
@@ -16,10 +36,7 @@ void main() {
     });
 
     test('conversation ids are carried verbatim', () {
-      expect(
-        const OpenConversationTarget('c2c_ABC').encode(),
-        'conv:c2c_ABC',
-      );
+      expect(const OpenConversationTarget('c2c_ABC').encode(), 'conv:c2c_ABC');
       expect(
         NotificationTapTarget.parse(' conv:group_tox_9 '),
         const OpenConversationTarget('group_tox_9'),
@@ -35,13 +52,16 @@ void main() {
     });
 
     test('equality is by kind and id', () {
-      expect(const FriendRequestTarget('X'), isNot(const GroupInviteTarget('X')));
+      expect(
+        const FriendRequestTarget('X'),
+        isNot(const GroupInviteTarget('X')),
+      );
       expect(
         const OpenConversationTarget('a').hashCode,
         const OpenConversationTarget('a').hashCode,
       );
     });
-    test('hashes are per kind and toString names the kind', () {
+    test('hashes are per kind and toString names the kind and payload', () {
       expect(
         const FriendRequestTarget('X').hashCode,
         const FriendRequestTarget('X').hashCode,
@@ -52,24 +72,21 @@ void main() {
       );
       expect(
         const OpenConversationTarget('c2c_A').toString(),
-        'OpenConversationTarget(c2c_A)',
+        'OpenConversationTarget(${const OpenConversationTarget('c2c_A').encode()})',
       );
       expect(
         const FriendRequestTarget('ABC').toString(),
-        'FriendRequestTarget(ABC)',
+        'FriendRequestTarget(${const FriendRequestTarget('ABC').encode()})',
       );
       expect(
         const GroupInviteTarget('inv_1').toString(),
-        'GroupInviteTarget(inv_1)',
+        'GroupInviteTarget(${const GroupInviteTarget('inv_1').encode()})',
       );
-      expect(
-        <NotificationTapTarget>{
-          const FriendRequestTarget('X'),
-          const GroupInviteTarget('X'),
-          const OpenConversationTarget('X'),
-        },
-        hasLength(3),
-      );
+      expect(<NotificationTapTarget>{
+        const FriendRequestTarget('X'),
+        const GroupInviteTarget('X'),
+        const OpenConversationTarget('X'),
+      }, hasLength(3));
     });
   });
 

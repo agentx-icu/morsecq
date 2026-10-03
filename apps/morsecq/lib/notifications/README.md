@@ -29,10 +29,10 @@ lists android/ios/macos only). Plugin READMEs are in the pub cache.
 | | Android | iOS | macOS | Windows | Linux |
 |---|---|---|---|---|---|
 | OS notification backend | NotificationCompat, 3 channels (`morsecq_messages`, `morsecq_friend_requests`, `morsecq_group_invites`) | UNUserNotificationCenter | UNUserNotificationCenter | WinRT toast (`flutter_local_notifications_windows`, AUMID `icu.agentx.morsecq`, fixed CLSID) | `org.freedesktop.Notifications` over D-Bus |
-| Runtime permission | `POST_NOTIFICATIONS` on 13+: a post checks silently (`isPermissionGranted`), prompts only while the app is visible and at most once per session; a post dropped in the background defers that prompt to the next foreground. `ensurePermission()` prompts on demand | Alert + badge + sound authorization (same rules) | Same as iOS | None | None |
+| Runtime permission | `POST_NOTIFICATIONS` on 13+: asked once, in the foreground, when the plugin is ready (or on the next resume if the app was in the background then); a post never prompts, it checks silently (`isPermissionGranted`) and drops the banner when not granted. `ensurePermission()` asks on demand | Alert + badge + sound authorization (same rules) | Same as iOS | None | None |
 | Shown while app is in the foreground | Yes (only for conversations not on screen) | Yes — `presentBanner/List` on | Yes | Yes | Yes |
 | Grouping per conversation | `groupKey` + `InboxStyle` (last 5 lines, "N new messages" summary) | `threadIdentifier` stack | `threadIdentifier` stack | None (one toast per conversation, replaced by id) | None (replaced by id) |
-| Tap → `openConversationRequests` | Yes, incl. cold start (`getNotificationAppLaunchDetails`; a tap heard before the shell subscribes - startup gate, unlock - is parked and replayed to the first subscriber) | Yes, incl. cold start | Yes | Yes while running; **cold-start payload only when packaged as MSIX** | Yes while running |
+| Tap → `takePendingTap()` (signalled on `tapTargets`) | Yes, incl. cold start (`getNotificationAppLaunchDetails`; a tap stays pending until the shell takes it - startup gate, unlock) | Yes, incl. cold start | Yes | Yes while running; **cold-start payload only when packaged as MSIX** | Yes while running |
 | Cancel on open / read | Yes | Yes | Yes | **No-op unless MSIX-packaged** (plugin limitation, README) | Yes |
 | Unread badge | Launcher-dependent (Samsung, Xiaomi/HyperOS, Huawei, OPPO, vivo, Sony, HTC…; stock Pixel shows a dot only) | Exact | Exact (Dock) | Not supported → no-op | Not supported → no-op |
 | Sound | Channel default, `playSound` per prefs | `presentSound` per prefs | Same | Default toast sound; `WindowsNotificationAudio.silent()` when off | `suppressSound` when off |
@@ -153,22 +153,28 @@ final center = NotificationCenter(
 final banner = ConnectionBannerPolicy(identity: identity)..start();
 unawaited(center.start());
 
-// Route taps into the chat UI (ChatPage._open / GroupsPage equivalent):
-final tapSub = center.openConversationRequests.listen((conversationId) {
-  final c = chat.conversations.where((c) => c.id == conversationId).firstOrNull;
-  if (c != null) openConversation(ConversationTarget.fromConversation(c));
-});
+// Route taps (AppShell): the centre keeps the newest tap until the router
+// takes it, so a cold-start tap or one that came while the unlock screen
+// showed is not lost. AppShell drains it after its first frame and on every
+// signal, then hands conversations to ChatPage / GroupsPage via ShellRouter
+// (inline pane on wide layouts, a route on phones; an already open
+// conversation is reused), friend requests to contacts, invites to Groups.
+final tapSub = center.tapTargets.listen((_) => route(center.takePendingTap()));
+WidgetsBinding.instance.addPostFrameCallback((_) => route(center.takePendingTap()));
 
-// ConversationScreen.initState / dispose:
-center.setActiveConversation(widget.target.id);   // initState
-center.setActiveConversation(null);               // dispose
+// ConversationScreen (ConversationAttention): claim while the user actually
+// looks at it (visible tab, route on top, app in the foreground) with an
+// owner token, release otherwise. Messages are marked read only then.
+center.claimActiveConversation(widget.target.id, owner);
+center.releaseActiveConversation(owner);
 
 // Banner: ValueListenableBuilder(valueListenable: banner.offlineBannerVisible, ...)
 // with context.s.shellOfflineBanner and a Reconnect action calling
 // StartupController.reconnect(). The policy exposes state only, no text.
 
-// Settings page: a "Notifications" tile calling center.ensurePermission()
-// and toggles bound to prefs.enabled / showText / showPattern / sound;
+// Me page: NotificationSettingsSection — prefs.enabled, one "message
+// content" switch driving both showText and showPattern (a pattern reveals
+// the text too), and "Allow notifications" calling center.ensurePermission();
 // per-conversation "Mute" in the conversation menu via prefs.setMuted(id, v).
 
 // Dispose order: tapSub.cancel(); center.dispose(); banner.dispose();

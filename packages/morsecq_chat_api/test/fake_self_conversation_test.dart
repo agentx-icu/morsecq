@@ -31,6 +31,7 @@ void main() {
 
   test('seeded from an identity that already exists', () async {
     final Identity me = await identity.create(displayName: 'Alice');
+    await identity.connect();
     chat = FakeChatService(identity: identity);
     expect(chat.selfPublicKey, me.publicKey);
     expect(chat.selfConversationId, 'c2c_${me.publicKey}');
@@ -45,6 +46,7 @@ void main() {
     expect(chat.selfConversationId, isNull, reason: 'first run: no profile');
 
     final Identity first = await identity.create(displayName: 'Alice');
+    await identity.connect();
     await pumpEventQueue();
     expect(chat.selfConversationId, 'c2c_${first.publicKey}');
     expect(selfRow()!.title, 'Alice');
@@ -54,7 +56,10 @@ void main() {
     expect(selfRow()!.title, 'Alice K');
     expect(chat.conversations.where((c) => c.isSelf), hasLength(1));
 
+    await identity.deleteIdentity();
+    await pumpEventQueue();
     final Identity second = await identity.create(displayName: 'Bob');
+    await identity.connect();
     await pumpEventQueue();
     expect(second.publicKey, isNot(first.publicKey));
     expect(chat.selfConversationId, 'c2c_${second.publicKey}');
@@ -74,6 +79,7 @@ void main() {
     'deleting the identity erases its notes; a restore starts empty',
     () async {
       await identity.create(displayName: 'Alice');
+      await identity.connect();
       final backup = await identity.exportBackup();
       chat = FakeChatService(identity: identity);
       final String id = chat.selfConversationId!;
@@ -81,9 +87,10 @@ void main() {
 
       await identity.deleteIdentity();
       await pumpEventQueue();
-      expect(await chat.loadHistory(id), isEmpty);
+      expect(chat.selfConversationId, isNull);
 
       await identity.importBackup(backup);
+      await identity.connect();
       await pumpEventQueue();
       expect(chat.selfConversationId, id, reason: 'same key restored');
       expect(await chat.loadHistory(id), isEmpty);
@@ -93,6 +100,7 @@ void main() {
 
   test('sending to self is delivered at once and never pending', () async {
     await identity.create(displayName: 'Alice');
+    await identity.connect();
     chat = FakeChatService(identity: identity);
     final String id = chat.selfConversationId!;
     final List<ChatMessage> events = [];
@@ -113,6 +121,7 @@ void main() {
 
   test('deleting it is refused and changes nothing', () async {
     await identity.create(displayName: 'Alice');
+    await identity.connect();
     chat = FakeChatService(identity: identity);
     final String id = chat.selfConversationId!;
     await chat.sendText(id, 'note');
@@ -144,6 +153,7 @@ void main() {
 
   test('clearHistory still empties it explicitly; the row stays', () async {
     await identity.create(displayName: 'Alice');
+    await identity.connect();
     chat = FakeChatService(identity: identity);
     final String id = chat.selfConversationId!;
     await chat.sendText(id, 'note');

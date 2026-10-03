@@ -5,6 +5,7 @@ part of 'conversation_screen.dart';
 /// and provided by `_ConversationScreenState`.
 mixin _ConversationMenuActions on State<ConversationScreen> {
   ChatService get _service;
+  MorsePlaybackController get _playback;
   LocalMessageSends get _localSends;
   ScrollController get _scroll;
   List<ChatMessage> get _older;
@@ -272,6 +273,8 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       _loading = false;
       _loadingOlder = false;
     });
+    // A message being deleted must not keep sounding or wait in the queue.
+    _playback.cancelMessages(ids);
     try {
       await _service.clearHistory(_id);
       _localSends.recordClear(_id, ids);
@@ -326,6 +329,8 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
         }
       case 'leave':
         await _leaveGroup();
+      case 'search':
+        await _search();
       case 'clear':
         await _clearHistory();
       case 'listenOnly':

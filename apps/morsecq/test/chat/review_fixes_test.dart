@@ -42,7 +42,9 @@ ChatHarness _seeded() {
 }
 
 Future<void> _jumpToNeedle(WidgetTester tester) async {
-  await tester.tap(find.byTooltip(s.chatSearchMessages));
+  await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(s.chatSearchMessages));
   await tester.pumpAndSettle();
   await tester.enterText(find.byType(TextField).first, 'needle');
   await tester.pump(const Duration(milliseconds: 400));

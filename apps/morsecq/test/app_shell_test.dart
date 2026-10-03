@@ -16,6 +16,7 @@ import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/conversation_list.dart';
+import 'package:morsecq/ui/contacts/contacts_page.dart';
 import 'package:morsecq/ui/learn/drill_session_guard.dart';
 import 'package:morsecq/ui/pages/chat_page.dart';
 import 'package:morsecq/ui/pages/groups_page.dart';
@@ -248,7 +249,11 @@ void main() {
       expect(screens, findsNothing);
       _expectSelected(GroupsPage.title(en));
 
+      // A friend request opens contacts above the Chat tab.
       api.tapTarget(FriendRequestTarget('A' * 64));
+      await settle(tester);
+      expect(find.byType(ContactsPage), findsOneWidget);
+      await tester.tap(find.byType(BackButton));
       await settle(tester);
       _expectSelected(ChatPage.title(en));
     });
@@ -272,7 +277,7 @@ void main() {
       expect(screens, findsOneWidget);
     });
 
-    testWidgets('A, B, A before the first frame opens A once', (tester) async {
+    testWidgets('A, B, A before the first frame opens only A', (tester) async {
       final (api, a) = await openChat(tester);
       final chat =
           tester.element(find.byType(ConversationList)).read<ChatService>()
@@ -286,7 +291,9 @@ void main() {
       api.tapTarget(OpenConversationTarget('c2c_$bob'));
       api.tapTarget(OpenConversationTarget(a));
       await settle(tester);
-      expect(screens, findsNWidgets(2));
+      // Only the latest tap is routed: the earlier two were superseded.
+      expect(screens, findsOneWidget);
+      expect(tester.widget<ConversationScreen>(screens).target.id, a);
     });
 
     testWidgets('an invite tap right after a conversation tap', (tester) async {
@@ -322,14 +329,18 @@ void main() {
 
       api.tapTarget(FriendRequestTarget('A' * 64));
       await settle(tester);
-      // The guard was asked, not bypassed.
-      expect(find.text('drill in progress'), findsOneWidget);
-      expect(find.byType(AlertDialog), findsOneWidget);
+      // Contacts open above the drill; nothing was popped, so the guard is
+      // never bypassed (and not even asked).
+      expect(find.byType(ContactsPage), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(
+        find.text('drill in progress', skipOffstage: false),
+        findsOneWidget,
+      );
 
-      await tester.tap(find.text(en.actionCancel));
+      await tester.tap(find.byType(BackButton));
       await settle(tester);
       expect(find.text('drill in progress'), findsOneWidget);
-      expect(find.byType(AlertDialog), findsNothing);
     });
   });
 

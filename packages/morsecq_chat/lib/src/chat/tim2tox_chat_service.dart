@@ -14,6 +14,7 @@ import '../util/value_stream.dart';
 import 'conversation_meta_store.dart';
 import 'friend_request_store.dart';
 import 'group_bindings.dart';
+import 'history_page.dart';
 import 'message_mapper.dart';
 import 'pending_message_status.dart';
 
@@ -21,6 +22,7 @@ part 'chat_service_conversations.dart';
 part 'chat_service_friends.dart';
 part 'chat_service_groups.dart';
 part 'chat_service_messages.dart';
+part 'chat_service_session.dart';
 
 /// [ChatService] over one live `FfiChatService` (Tim2Tox), following the
 /// [ChatEngine]'s session: bound while the identity is connected, detached
@@ -104,6 +106,14 @@ class Tim2ToxChatService
   final StreamController<ChatMessage> _messageEvents =
       StreamController<ChatMessage>.broadcast();
 
+  final ValueStream<bool> _session = ValueStream(false);
+
+  @override
+  bool get hasSession => _session.value;
+
+  @override
+  Stream<bool> get sessionChanges => _session.stream;
+
   // ---- session binding ------------------------------------------------------
 
   String get _accountPrefix {
@@ -181,77 +191,6 @@ class Tim2ToxChatService
       );
     }
     return svc;
-  }
-
-  void _bindSession(FfiChatService? svc) {
-    _unbindSession();
-    _service = svc;
-    if (svc == null) {
-      _friendsPart.reset();
-      _groupsPart.reset();
-      _conversationsPart.reset();
-      return;
-    }
-    _serviceSubs.addAll([
-      svc.messages.listen(_onEngineMessage),
-      svc.nicknameUpdated.listen((_) => _friendsPart.refresh(svc)),
-      svc.pendingGroupInvitesChanged.listen(
-        (_) => _groupsPart.refreshInvites(svc),
-      ),
-      svc.groupJoinFailures.listen(_groupsPart.onJoinFailure),
-    ]);
-    _poll = Timer.periodic(_pollInterval, (_) => _tick());
-    unawaited(_tick());
-  }
-
-  void _unbindSession() {
-    _poll?.cancel();
-    _poll = null;
-    for (final s in _serviceSubs) {
-      unawaited(s.cancel());
-    }
-    _serviceSubs.clear();
-    _service = null;
-  }
-
-  /// One refresh round: presence, requests, groups, invites, conversations.
-  /// Serialised: a slow FFI round never overlaps the next.
-  Future<void> _tick() async {
-    final svc = _service;
-    if (svc == null || _disposed || identical(_ticking, svc)) return;
-    _ticking = svc;
-    try {
-      await _friendsPart.refresh(svc);
-      if (!_isCurrent(svc)) return;
-      await _friendsPart.refreshRequests(svc);
-      if (!_isCurrent(svc)) return;
-      await _groupsPart.refresh(svc);
-      if (!_isCurrent(svc)) return;
-      await _groupsPart.refreshInvites(svc);
-      if (!_isCurrent(svc)) return;
-      _conversationsPart.rebuild(svc);
-    } catch (e, st) {
-      _logger.error('[Chat] refresh tick failed', e, st);
-    } finally {
-      if (identical(_ticking, svc)) _ticking = null;
-    }
-  }
-
-  void _onEngineMessage(t2t.ChatMessage m) {
-    final svc = _service;
-    if (svc == null) return;
-    var conversationId = MessageMapper.conversationOf(m);
-    if (conversationId == null) {
-      // Our own C2C row: Tim2Tox stamps the login alias, not the peer.
-      final peer = m.msgID == null ? null : svc.c2cPeerOfSelfRow(m.msgID!);
-      if (peer == null) return;
-      conversationId = ConversationIds.c2c(peer);
-    }
-    if (_meta.hidden.contains(conversationId)) {
-      unawaited(_meta.unhide(conversationId));
-    }
-    _messageEvents.add(_mapper.map(m, conversationId: conversationId));
-    _conversationsPart.rebuild(svc);
   }
 
   // ---- Friends (delegated) -------------------------------------------------
@@ -340,18 +279,22 @@ class Tim2ToxChatService
   }) async {
     final svc = _requireService();
     final peer = ConversationIds.peerOf(conversationId);
-    final rows = List<t2t.ChatMessage>.of(svc.getHistory(peer));
-    if (rows.length < limit + 1 && await svc.hasArchivedHistory(peer)) {
-      final archived = await svc.getArchivedHistory(peer);
-      _ensureCurrent(svc);
-      final seen = rows.map((r) => r.msgID).toSet();
-      rows.addAll(archived.where((r) => !seen.contains(r.msgID)));
-    }
-    t2t.sortChatMessagesChronologically(rows);
-    var page = before == null
-        ? rows
-        : rows.where((r) => r.timestamp.isBefore(before)).toList();
-    if (page.length > limit) page = page.sublist(page.length - limit);
+    final page = await readHistoryPage(
+      svc.getHistory(peer),
+      limit: limit,
+      before: before,
+      archive: () async {
+        final hasArchive = await svc.hasArchivedHistory(peer);
+        _ensureCurrent(svc);
+        if (!hasArchive) return null;
+        final archived = await svc.getArchivedHistory(peer);
+        _ensureCurrent(svc);
+        return archived;
+      },
+    );
+    // Rows of a detached session must not be mapped with the next one's
+    // self key and names.
+    _ensureCurrent(svc);
     final mapper = _mapper;
     return [
       for (final r in page) mapper.map(r, conversationId: conversationId),
@@ -449,14 +392,20 @@ class Tim2ToxChatService
 
   // ---- lifecycle --------------------------------------------------------------
 
+  /// Durable writes are what must not be lost; the request refresh in front
+  /// of them is a best-effort cache update and never fails the flush (a
+  /// failing FFI read must not abort an identity delete or import).
   @override
   Future<void> flush() async {
     final svc = _service;
-    try {
-      if (svc != null) await _friendsPart.refreshRequests(svc);
-    } finally {
-      await _store.flush();
+    if (svc != null) {
+      try {
+        await _friendsPart.refreshRequests(svc);
+      } catch (e, st) {
+        _logger.error('[Chat] request refresh before flush failed', e, st);
+      }
     }
+    await _store.flush();
   }
 
   @override
@@ -490,6 +439,7 @@ class Tim2ToxChatService
       ?identityCancelled,
       _store.flush(),
       _messageEvents.close(),
+      _session.close(),
       _friendsPart.close(),
       _groupsPart.close(),
       _conversationsPart.close(),

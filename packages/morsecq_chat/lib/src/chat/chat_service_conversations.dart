@@ -53,7 +53,8 @@ class _ConversationsPart {
       final title = isSelf
           ? (_owner._identity.current?.displayName ?? '')
           : isGroup
-          ? (groupById[peer]?.name ?? svc.sharedGroupName(peer) ?? peer)
+          ? (groupById[peer]?.name ??
+                PeerText.singleLine(svc.sharedGroupName(peer) ?? peer))
           : (friendById[peer]?.displayName ??
                 _owner._friendsPart.nameOf(peer) ??
                 ConversationIds.shortKey(peer));
@@ -65,7 +66,7 @@ class _ConversationsPart {
           lastMessage: last == null
               ? null
               : mapper.map(last, conversationId: id),
-          unreadCount: svc.getUnreadOf(peer),
+          unreadCount: visibleUnread(svc.getUnreadOf(peer), svc.getHistory(peer)),
           pinned: pinned.contains(id),
           draft: meta.draft(id),
           isSelf: isSelf,
@@ -78,14 +79,16 @@ class _ConversationsPart {
     }
   }
 
+  /// Newest text row: a file row a toxee peer pushed is not a preview.
   static t2t.ChatMessage? _lastMessage(FfiChatService svc, String peer) {
     final cached = svc.lastMessages[peer];
-    if (cached != null) return cached;
-    final history = svc.getHistory(peer);
-    if (history.isEmpty) return null;
-    t2t.ChatMessage newest = history.first;
-    for (final m in history) {
-      if (!m.timestamp.isBefore(newest.timestamp)) newest = m;
+    if (cached != null && MessageMapper.isChatText(cached)) return cached;
+    t2t.ChatMessage? newest;
+    for (final m in svc.getHistory(peer)) {
+      if (!MessageMapper.isChatText(m)) continue;
+      if (newest == null || !m.timestamp.isBefore(newest.timestamp)) {
+        newest = m;
+      }
     }
     return newest;
   }

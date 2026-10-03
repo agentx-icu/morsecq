@@ -67,6 +67,7 @@ final class IambicKeyer implements PaddleInput {
 
   _Phase _phase = _Phase.idle;
   MorseElementKind? _current;
+  Duration _markEnd = Duration.zero;
   MorseElementKind _last = MorseElementKind.dah;
   Timer? _timer;
   bool _ditDown = false;
@@ -102,6 +103,22 @@ final class IambicKeyer implements PaddleInput {
     if (_phase == _Phase.mark) {
       _key(false, at);
     }
+    _phase = _Phase.idle;
+    _current = null;
+    _ditDown = _dahDown = false;
+    _ditMemory = _dahMemory = false;
+    _squeezed = false;
+  }
+
+  /// Ends the keying now without cutting the element in flight short: a
+  /// sounding mark is reported to the target as ending at its full length
+  /// (so a dah stays a dah for the decoder), and nothing further is keyed
+  /// (paddle memory and held paddles are dropped). Use before acting on what
+  /// was keyed, e.g. sending it.
+  void finish() {
+    _timer?.cancel();
+    _timer = null;
+    if (_phase == _Phase.mark) _key(false, _markEnd);
     _phase = _Phase.idle;
     _current = null;
     _ditDown = _dahDown = false;
@@ -156,6 +173,7 @@ final class IambicKeyer implements PaddleInput {
     }
     _key(true, at);
     final end = at + timing.durationOf(kind);
+    _markEnd = end;
     _scheduleAt(end, () => _endMark(end));
   }
 

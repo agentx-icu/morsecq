@@ -34,6 +34,13 @@ final class MessageBannerLedger {
     _generation.remove(id);
   }
 
+  /// Another identity: nothing tracked so far belongs to it.
+  void reset() {
+    _latest.clear();
+    _generation.clear();
+    _live = <String>{};
+  }
+
   /// Whether a post captured at [generation] is still the newest for [id].
   bool isCurrent(String id, int generation) => _generation[id] == generation;
 

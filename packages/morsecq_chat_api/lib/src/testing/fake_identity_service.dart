@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import '../identity_service.dart';
 import '../models.dart';
+import '../tox_address.dart';
 
 /// In-memory [IdentityService] for widget tests and UI development.
 ///
@@ -77,17 +78,18 @@ final class FakeIdentityService implements IdentityService {
   /// Whether a profile exists on the simulated disk.
   bool get hasStoredProfile => _disk != null;
 
-  /// Deterministic 76-hex Tox ID for [seed]: 64 hex public key, 8 hex nospam,
-  /// 4 hex checksum, all derived from a small LCG so IDs differ per seed but
-  /// never depend on wall-clock time.
+  /// Deterministic 76-hex Tox ID for [seed]: 64 hex public key and 8 hex
+  /// nospam from a small LCG (IDs differ per seed but never depend on
+  /// wall-clock time), then the real 4 hex checksum, so the ID passes the
+  /// same validation a real Tox address does.
   static String toxIdForSeed(int seed) {
     var state = 0x9E3779B9 ^ (seed * 0x85EBCA6B);
     final buffer = StringBuffer();
-    while (buffer.length < 76) {
+    while (buffer.length < 72) {
       state = (state * 1103515245 + 12345) & 0x7FFFFFFF;
       buffer.write(((state >> 16) & 0xF).toRadixString(16).toUpperCase());
     }
-    return buffer.toString();
+    return ToxAddress.withChecksum(buffer.toString());
   }
 
   // ---- IdentityService -----------------------------------------------------
@@ -123,6 +125,10 @@ final class FakeIdentityService implements IdentityService {
     required String displayName,
     String? password,
   }) async {
+    if (_disk != null) {
+      // Like the backend: delete (or import over) the existing one first.
+      throw const ChatException('identity_exists', 'An identity already exists');
+    }
     final name = displayName.trim();
     if (name.isEmpty) {
       throw const ChatException('invalid_name', 'Display name is required.');
@@ -143,7 +149,9 @@ final class FakeIdentityService implements IdentityService {
   @override
   Future<Identity> unlock(String password) async {
     final disk = _requireDisk();
-    if (disk.password == null) return open();
+    if (disk.password == null) {
+      throw const ChatException('not_locked', 'Identity has no password');
+    }
     if (password != disk.password) {
       throw const ChatException('wrong_password', 'Wrong password.');
     }
@@ -238,6 +246,9 @@ final class FakeIdentityService implements IdentityService {
       throw const ChatException('wrong_password', 'Wrong password.');
     }
     await disconnect();
+    // The replacement boundary the backend has too: observers see the old
+    // identity end before the restored one (even with the same key) begins.
+    _setCurrent(null);
     final identity = Identity(
       toxId: map['toxId']! as String,
       displayName: (map['displayName'] as String?) ?? 'Restored',

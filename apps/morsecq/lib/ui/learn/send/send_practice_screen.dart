@@ -18,6 +18,7 @@ import 'copy_from_memory_switch.dart';
 import 'keyer_legend.dart';
 import 'send_live_view.dart';
 import 'send_result_view.dart';
+import 'send_targeted_practice.dart';
 import 'send_timeline_view.dart';
 
 /// Send practice: a target to key, an on-screen straight key or paddles (also
@@ -257,24 +258,14 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
 
   /// Three new attempts at [text] (one symbol or the whole target); the
   /// standard can be heard first and playback never counts as an attempt.
-  Future<void> _practisePart(String text) async {
+  Future<void> _practisePart(String text) {
     _playback?.player.stop();
-    SendSession make() => SendSession(
-      target: text,
-      timing: _session.nominalTiming,
-      now: widget.controller.now,
-      lesson: _session.lesson,
-    );
-    await Navigator.of(context).push(
-      MaterialPageRoute<Object?>(
-        builder: (_) => SendPracticeScreen(
-          controller: widget.controller,
-          playback: widget.playback,
-          session: make(),
-          nextSession: () async => make(),
-          maxAttempts: 3,
-        ),
-      ),
+    return openTargetedSendPractice(
+      context,
+      controller: widget.controller,
+      playback: widget.playback,
+      template: _session,
+      text: text,
     );
   }
 
@@ -330,6 +321,12 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
               ),
             ),
           CopyFromMemorySwitch(
+            showLabel: CopyFromMemorySwitch.labelFits(
+              context,
+              title: s.learnSendTitle,
+              // The "hear the standard" button takes room too.
+              extraActions: _result == null && _playback != null ? 1 : 0,
+            ),
             value: _hideTarget,
             onChanged: _result == null
                 ? (v) => setState(() => _hideTarget = v)

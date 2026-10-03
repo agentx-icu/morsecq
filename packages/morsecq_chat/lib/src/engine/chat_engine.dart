@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:tim2tox_dart/service/ffi_chat_service.dart';
 
 import '../adapters/bootstrap_adapter.dart';
@@ -20,12 +20,19 @@ class EngineSessionConfig {
     required this.toxId,
     required this.displayName,
     required this.statusMessage,
+    this.profilePassphrase,
   });
 
   final IdentityPaths paths;
   final String toxId;
   final String displayName;
   final String statusMessage;
+
+  /// The identity's password, or null for an unprotected one. Native
+  /// Tim2Tox opens the encrypted profile with it and encrypts every save, so
+  /// `tox_profile.tox` is never plaintext on disk — not while running, not
+  /// while backgrounded, not after a crash.
+  final String? profilePassphrase;
 
   /// First 16 hex chars of the Tox ID: the preferences scope (toxee's
   /// convention).
@@ -53,12 +60,19 @@ abstract class ChatEngine {
   /// Generates a fresh Tox profile in `paths.profileDirectory`, applies the
   /// name/status, saves it, and returns the 76-hex Tox ID. Leaves no running
   /// instance behind (the same "bootstrap instance" trick toxee's
-  /// `registerNewAccount` uses).
+  /// `registerNewAccount` uses). With a [passphrase] the profile is written
+  /// encrypted from its very first save.
   Future<String> createProfile({
     required IdentityPaths paths,
     required String displayName,
     required String statusMessage,
+    String? passphrase,
   });
+
+  /// Re-keys the running profile to [passphrase] (null: plaintext) and
+  /// writes it. False when nothing runs or the write failed; the profile on
+  /// disk then still carries the previous passphrase.
+  bool rekeyProfilePassphrase(String? passphrase);
 
   /// init → login → self profile → startPolling → group identity sync.
   Future<void> start(EngineSessionConfig config);
@@ -94,11 +108,9 @@ class Tim2ToxEngine extends ChatEngine {
     required KeyValueStore store,
     required ChatLogger logger,
     String? libraryPathOverride,
-    bool? isMobile,
   }) : _store = store,
        _logger = logger,
-       _libraryPathOverride = libraryPathOverride,
-       _isMobile = isMobile ?? (Platform.isAndroid || Platform.isIOS);
+       _libraryPathOverride = libraryPathOverride;
 
   /// V2TIM login alias Tim2Tox stamps on our own rows (`fromUserId`,
   /// `isSelf`). Never leaves the device; the wire identity is the Tox key.
@@ -107,7 +119,6 @@ class Tim2ToxEngine extends ChatEngine {
   final KeyValueStore _store;
   final ChatLogger _logger;
   final String? _libraryPathOverride;
-  final bool _isMobile;
 
   /// morsecq's owner of the SDK's process-global custom-callback hook.
   late final NativeCustomCallbacks _callbacks = NativeCustomCallbacks(_logger);
@@ -139,7 +150,6 @@ class Tim2ToxEngine extends ChatEngine {
       preferencesService: Tim2ToxPreferencesAdapter(
         _store,
         accountPrefix: accountPrefix,
-        isMobile: _isMobile,
       ),
       loggerService: Tim2ToxLoggerAdapter(_logger),
       bootstrapService: Tim2ToxBootstrapAdapter(_store),
@@ -151,17 +161,31 @@ class Tim2ToxEngine extends ChatEngine {
     );
   }
 
+  /// Stages [passphrase] for the next native init (single use; null clears
+  /// whatever an abandoned start may have staged).
+  void _stagePassphrase(FfiChatService svc, String? passphrase) {
+    final staged = svc.setProfilePassphrase(passphrase);
+    if (!staged && passphrase != null && passphrase.isNotEmpty) {
+      throw const ChatException(
+        'encryption_unavailable',
+        'The native library cannot encrypt the profile',
+      );
+    }
+  }
+
   @override
   Future<String> createProfile({
     required IdentityPaths paths,
     required String displayName,
     required String statusMessage,
+    String? passphrase,
   }) async {
     await paths.ensureDirectories();
     // No Tox ID yet, so no scope: this instance persists nothing but the
     // savedata and is torn down before the real session opens.
     final svc = _build(paths, '');
     try {
+      _stagePassphrase(svc, passphrase);
       await svc.init(profileDirectory: paths.profileDirectory);
       await svc.login(userId: loginAlias, userSig: 'dummy_sig');
       final toxId = svc.getSelfToxId();
@@ -191,7 +215,20 @@ class Tim2ToxEngine extends ChatEngine {
       ..install()
       ..target = svc;
     try {
+      _stagePassphrase(svc, config.profilePassphrase);
       await svc.init(profileDirectory: config.paths.profileDirectory);
+      // Tim2Tox may fall back onto a native instance it could not detach;
+      // never publish (or rename) a session that is not this identity's.
+      final loaded = svc.getSelfToxId()?.toUpperCase() ?? '';
+      final expected = config.toxId.toUpperCase();
+      if (loaded.length < 64 ||
+          expected.length < 64 ||
+          loaded.substring(0, 64) != expected.substring(0, 64)) {
+        throw const ChatException(
+          'identity_mismatch',
+          'The native session is not this identity',
+        );
+      }
       await svc.login(userId: loginAlias, userSig: 'dummy_sig');
       await svc.updateSelfProfile(
         nickname: config.displayName,
@@ -272,6 +309,10 @@ class Tim2ToxEngine extends ChatEngine {
 
   @override
   void saveProfileNow() => _service?.saveToxProfileNow();
+
+  @override
+  bool rekeyProfilePassphrase(String? passphrase) =>
+      _service?.rekeyLiveProfilePassphrase(passphrase) ?? false;
 
   @override
   Future<void> dispose() async {

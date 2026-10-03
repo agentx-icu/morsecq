@@ -56,34 +56,40 @@ void main() {
       ]);
     });
 
-    test('avatar, notification and introduction clear on null or empty', () async {
-      await a.setGroupAvatar('g', '/p/a.png');
-      await a.setGroupNotification('g', 'net at 8');
-      await a.setGroupIntroduction('g', 'CW only');
-      expect(await a.getGroupAvatar('g'), '/p/a.png');
-      expect(await a.getGroupNotification('g'), 'net at 8');
-      expect(await a.getGroupIntroduction('g'), 'CW only');
-      expect(await b.getGroupAvatar('g'), isNull);
+    test(
+      'avatar, notification and introduction clear on null or empty',
+      () async {
+        await a.setGroupAvatar('g', '/p/a.png');
+        await a.setGroupNotification('g', 'net at 8');
+        await a.setGroupIntroduction('g', 'CW only');
+        expect(await a.getGroupAvatar('g'), '/p/a.png');
+        expect(await a.getGroupNotification('g'), 'net at 8');
+        expect(await a.getGroupIntroduction('g'), 'CW only');
+        expect(await b.getGroupAvatar('g'), isNull);
 
-      await a.setGroupAvatar('g', null);
-      await a.setGroupNotification('g', '');
-      await a.setGroupIntroduction('g', null);
-      expect(await a.getGroupAvatar('g'), isNull);
-      expect(await a.getGroupNotification('g'), isNull);
-      expect(await a.getGroupIntroduction('g'), isNull);
-      expect(store.keys(), isEmpty, reason: 'cleared slots are removed');
-    });
+        await a.setGroupAvatar('g', null);
+        await a.setGroupNotification('g', '');
+        await a.setGroupIntroduction('g', null);
+        expect(await a.getGroupAvatar('g'), isNull);
+        expect(await a.getGroupNotification('g'), isNull);
+        expect(await a.getGroupIntroduction('g'), isNull);
+        expect(store.keys(), isEmpty, reason: 'cleared slots are removed');
+      },
+    );
 
-    test('owner and chat id are scoped; an empty chat id removes the slot', () async {
-      await a.setGroupOwner('g', 'OWNER');
-      await a.setGroupChatId('g', 'C' * 64);
-      expect(await a.getGroupOwner('g'), 'OWNER');
-      expect(await a.getGroupChatId('g'), 'C' * 64);
-      expect(await b.getGroupOwner('g'), isNull);
-      await a.setGroupChatId('g', '');
-      expect(await a.getGroupChatId('g'), isNull);
-      expect(store.keys(), {'group_owner_g_$prefixA'});
-    });
+    test(
+      'owner and chat id are scoped; an empty chat id removes the slot',
+      () async {
+        await a.setGroupOwner('g', 'OWNER');
+        await a.setGroupChatId('g', 'C' * 64);
+        expect(await a.getGroupOwner('g'), 'OWNER');
+        expect(await a.getGroupChatId('g'), 'C' * 64);
+        expect(await b.getGroupOwner('g'), isNull);
+        await a.setGroupChatId('g', '');
+        expect(await a.getGroupChatId('g'), isNull);
+        expect(store.keys(), {'group_owner_g_$prefixA'});
+      },
+    );
   });
 
   group('self profile', () {
@@ -139,18 +145,13 @@ void main() {
   });
 
   group('network-level settings', () {
-    test('auto-download limit defaults by form factor and is global', () async {
-      final mobile = Tim2ToxPreferencesAdapter(
-        store,
-        accountPrefix: prefixA,
-        isMobile: true,
-      );
-      expect(await a.getAutoDownloadSizeLimit(), 50);
-      expect(await mobile.getAutoDownloadSizeLimit(), 5);
+    test('auto-download is always off and never stored', () async {
+      // MorseCQ has no file feature: 0 makes Tim2Tox refuse every transfer.
+      expect(await a.getAutoDownloadSizeLimit(), 0);
       await a.setAutoDownloadSizeLimit(12);
-      expect(await mobile.getAutoDownloadSizeLimit(), 12);
-      expect(await b.getAutoDownloadSizeLimit(), 12);
-      expect(store.keys(), {'auto_download_size_limit'});
+      expect(await a.getAutoDownloadSizeLimit(), 0);
+      expect(await b.getAutoDownloadSizeLimit(), 0);
+      expect(store.keys(), isEmpty);
     });
 
     test('downloads directory is global and clears on null', () async {
@@ -163,11 +164,9 @@ void main() {
 
     test('clear never touches the global settings', () async {
       await a.setDownloadsDirectory('/dl');
-      await a.setAutoDownloadSizeLimit(3);
       await a.setCurrentBootstrapNode('node.tox', 33445, 'PK');
       await a.clear();
       expect(await a.getDownloadsDirectory(), '/dl');
-      expect(await a.getAutoDownloadSizeLimit(), 3);
       expect((await a.getCurrentBootstrapNode())?.host, 'node.tox');
     });
 

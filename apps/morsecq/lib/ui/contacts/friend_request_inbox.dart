@@ -9,8 +9,10 @@ import '../chat/chat_layout.dart';
 import 'tox_id.dart';
 
 /// Pending inbound friend requests with accept / reject. Renders nothing
-/// when the inbox is empty and [showWhenEmpty] is false.
-class FriendRequestInbox extends StatelessWidget {
+/// when the inbox is empty and [showWhenEmpty] is false. A request's buttons
+/// stay disabled while an answer to it is in flight, so a double tap cannot
+/// send a second accept (or race an accept against a reject).
+class FriendRequestInbox extends StatefulWidget {
   const FriendRequestInbox({
     super.key,
     required this.service,
@@ -20,12 +22,25 @@ class FriendRequestInbox extends StatelessWidget {
   final ChatService service;
   final bool showWhenEmpty;
 
-  Future<void> _run(BuildContext context, Future<void> Function() op) async {
+  @override
+  State<FriendRequestInbox> createState() => _FriendRequestInboxState();
+}
+
+class _FriendRequestInboxState extends State<FriendRequestInbox> {
+  final Set<String> _busy = <String>{};
+
+  ChatService get service => widget.service;
+
+  Future<void> _run(String key, Future<void> Function() op) async {
+    if (!_busy.add(key)) return;
+    setState(() {});
     final S s = context.s;
     try {
       await op();
     } on Object catch (e) {
-      if (context.mounted) showSnack(context, describeChatError(s, e));
+      if (mounted) showSnack(context, describeChatError(s, e));
+    } finally {
+      if (mounted) setState(() => _busy.remove(key));
     }
   }
 
@@ -39,7 +54,7 @@ class FriendRequestInbox extends StatelessWidget {
       builder: (context, snapshot) {
         final List<FriendRequest> requests =
             snapshot.data ?? const <FriendRequest>[];
-        if (requests.isEmpty && !showWhenEmpty) return const SizedBox.shrink();
+        if (requests.isEmpty && !widget.showWhenEmpty) return const SizedBox.shrink();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -73,22 +88,26 @@ class FriendRequestInbox extends StatelessWidget {
                     IconButton(
                       tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),
-                      onPressed: () => unawaited(
-                        _run(
-                          context,
-                          () => service.rejectFriendRequest(r.publicKey),
-                        ),
-                      ),
+                      onPressed: _busy.contains(r.publicKey)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                r.publicKey,
+                                () => service.rejectFriendRequest(r.publicKey),
+                              ),
+                            ),
                     ),
                     IconButton.filled(
                       tooltip: s.chatAccept,
                       icon: const Icon(Icons.check),
-                      onPressed: () => unawaited(
-                        _run(
-                          context,
-                          () => service.acceptFriendRequest(r.publicKey),
-                        ),
-                      ),
+                      onPressed: _busy.contains(r.publicKey)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                r.publicKey,
+                                () => service.acceptFriendRequest(r.publicKey),
+                              ),
+                            ),
                     ),
                   ],
                 ),

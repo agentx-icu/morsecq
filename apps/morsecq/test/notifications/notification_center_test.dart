@@ -10,6 +10,8 @@ import 'package:morsecq/notifications/testing/fake_local_notifications_api.dart'
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
 
+import 'support/stub_identity_service.dart';
+
 final String kAnn = 'A' * 64;
 final String kAnnConv = 'c2c_$kAnn';
 final String kBob = 'C' * 64;
@@ -31,36 +33,42 @@ final class Harness {
     bool foreground = false,
     bool badgeSupported = true,
     S Function()? strings,
-  }) : chat = FakeChatService(
-         selfPublicKey: 'F' * 64,
-         clock: () => DateTime(2026, 9, 30, 12),
-       ),
-       api = FakeLocalNotificationsApi(),
+    this.identity,
+  }) : api = FakeLocalNotificationsApi(),
        badge = FakeBadgeApi(supported: badgeSupported),
        prefs = NotificationPrefs(),
        foreground = ValueNotifier<bool>(foreground) {
+    chat = FakeChatService(selfPublicKey: 'F' * 64, clock: () => now);
     center = NotificationCenter(
       chat: chat,
       notifications: api,
       badge: badge,
       prefs: prefs,
       isForeground: this.foreground,
+      identity: identity,
       platform: platform,
       strings: strings ?? () => en,
+      clock: () => now,
     );
   }
 
-  final FakeChatService chat;
+  /// One clock for the backend's timestamps and the centre's start time.
+  DateTime now = DateTime(2026, 9, 30, 12);
+
+  final StubIdentityService? identity;
+  late final FakeChatService chat;
   final FakeLocalNotificationsApi api;
   final FakeBadgeApi badge;
   final NotificationPrefs prefs;
   final ValueNotifier<bool> foreground;
   late final NotificationCenter center;
 
-  /// Adds Ann as a friend and starts the center.
-  Future<void> start() async {
+  /// Adds Ann as a friend and starts the center. [grant] stands for a
+  /// permission the user granted earlier (the foreground ask the app makes).
+  Future<void> start({bool grant = true}) async {
     chat.addFakeFriend(Friend(publicKey: kAnn, displayName: 'Ann'));
     await center.start();
+    if (grant) await center.ensurePermission();
     await pumpEventQueue();
   }
 
@@ -72,6 +80,7 @@ final class Harness {
   Future<void> dispose() async {
     await center.dispose();
     await chat.dispose();
+    await identity?.dispose();
     prefs.dispose();
     foreground.dispose();
   }
@@ -82,17 +91,23 @@ Future<Harness> harness({
   bool foreground = false,
   bool badgeSupported = true,
   S Function()? strings,
+  StubIdentityService? identity,
 }) async {
   final Harness h = Harness(
     platform: platform,
     foreground: foreground,
     badgeSupported: badgeSupported,
     strings: strings,
+    identity: identity,
   );
   addTearDown(h.dispose);
   await h.start();
   return h;
 }
+
+/// The owner token a conversation screen claims with.
+final Object screenA = Object();
+final Object screenB = Object();
 
 void main() {
   group('inbound messages', () {
@@ -114,13 +129,25 @@ void main() {
 
     test('foreground with the conversation open: no notification', () async {
       final Harness h = await harness(foreground: true);
-      h.center.setActiveConversation(kAnnConv);
+      h.center.claimActiveConversation(kAnnConv, screenA);
       await h.receive('CQ');
       expect(h.api.shown, isEmpty);
 
       // Leaving the conversation re-arms it.
-      h.center.setActiveConversation(null);
+      h.center.releaseActiveConversation(screenA);
       await h.receive('CQ');
+      expect(h.api.shown, hasLength(1));
+    });
+
+    test('an older screen going away keeps a newer claim', () async {
+      final Harness h = await harness(foreground: true);
+      h.center.claimActiveConversation(kAnnConv, screenA);
+      h.center.claimActiveConversation(kAnnConv, screenB);
+      h.center.releaseActiveConversation(screenA);
+      await h.receive('CQ');
+      expect(h.api.shown, isEmpty);
+      h.center.releaseActiveConversation(screenB);
+      await h.receive('K');
       expect(h.api.shown, hasLength(1));
     });
 
@@ -128,7 +155,7 @@ void main() {
       'foreground with a different conversation open still notifies',
       () async {
         final Harness h = await harness(foreground: true);
-        h.center.setActiveConversation(kBobConv);
+        h.center.claimActiveConversation(kBobConv, screenA);
         await h.receive('CQ');
         expect(h.api.shown, hasLength(1));
       },
@@ -138,7 +165,7 @@ void main() {
       // The screen may still be mounted while the app is paused; the user
       // cannot see it, so the OS banner is the only way to reach them.
       final Harness h = await harness(foreground: false);
-      h.center.setActiveConversation(kAnnConv);
+      h.center.claimActiveConversation(kAnnConv, screenA);
       await h.receive('CQ');
       expect(h.api.shown, hasLength(1));
     });
@@ -365,7 +392,7 @@ void main() {
         expect(h.api.active, hasLength(1));
 
         h.foreground.value = true;
-        h.center.setActiveConversation(kAnnConv);
+        h.center.claimActiveConversation(kAnnConv, screenA);
         await pumpEventQueue();
         expect(h.api.active, isEmpty);
       },
@@ -375,7 +402,7 @@ void main() {
       'returning to the foreground on an open conversation dismisses it',
       () async {
         final Harness h = await harness();
-        h.center.setActiveConversation(kAnnConv);
+        h.center.claimActiveConversation(kAnnConv, screenA);
         await h.receive('CQ');
         expect(h.api.active, hasLength(1));
 
@@ -386,13 +413,17 @@ void main() {
     );
   });
 
+  // No grant cached yet, so each post first runs the silent OS check: the
+  // window in which the user can open or read the conversation.
   group('a post overtaken by the user reading the conversation', () {
     test('android: resumed and read while the permission check runs', () async {
-      final Harness h = await harness();
+      final Harness h = Harness();
+      addTearDown(h.dispose);
+      await h.start(grant: false);
       final Completer<bool> check = Completer<bool>();
       h.api.permissionCheckAnswer = check.future;
       // The screen stays mounted while the app is paused.
-      h.center.setActiveConversation(kAnnConv);
+      h.center.claimActiveConversation(kAnnConv, screenA);
       await h.receive('CQ');
       expect(h.api.shown, isEmpty);
 
@@ -413,13 +444,19 @@ void main() {
     test(
       'foreground: opened and read while the permission check runs',
       () async {
-        final Harness h = await harness(foreground: true);
+        final Harness h = Harness(foreground: true);
+        addTearDown(h.dispose);
+        // The start-up ask was declined; the check later finds a grant.
+        h.api
+          ..permissionGranted = false
+          ..grantOnRequest = false;
+        await h.start(grant: false);
         final Completer<bool> check = Completer<bool>();
         h.api.permissionCheckAnswer = check.future;
         await h.receive('CQ');
         expect(h.api.shown, isEmpty);
 
-        h.center.setActiveConversation(kAnnConv);
+        h.center.claimActiveConversation(kAnnConv, screenA);
         await h.chat.markRead(kAnnConv);
         await pumpEventQueue();
         check.complete(true);
@@ -432,7 +469,9 @@ void main() {
     test(
       'a delayed post read meanwhile never replaces a newer banner',
       () async {
-        final Harness h = await harness();
+        final Harness h = Harness();
+        addTearDown(h.dispose);
+        await h.start(grant: false);
         final Completer<bool> check = Completer<bool>();
         h.api.permissionCheckAnswer = check.future;
         await h.receive('M1');
@@ -456,7 +495,7 @@ void main() {
       final StreamSubscription<ChatMessage> sub = h.chat.messageEvents.listen((
         ChatMessage m,
       ) {
-        h.center.setActiveConversation(m.conversationId);
+        h.center.claimActiveConversation(m.conversationId, screenA);
         unawaited(h.chat.markRead(m.conversationId));
       });
       addTearDown(sub.cancel);
@@ -488,8 +527,33 @@ void main() {
       final Harness h = Harness();
       addTearDown(h.dispose);
       h.chat.receiveFriendRequest(kBob);
+      h.now = h.now.add(const Duration(minutes: 1));
       await h.start();
       expect(h.api.shown, isEmpty);
+    });
+
+    test(
+      'requests the backend restores after start are not announced',
+      () async {
+        // The real backend publishes requests persisted by an earlier run only
+        // after connecting, with their original arrival time.
+        final Harness h = await harness();
+        h.now = h.now.subtract(const Duration(days: 1));
+        h.chat.receiveFriendRequest(kBob);
+        await pumpEventQueue();
+        expect(h.api.shown, isEmpty);
+      },
+    );
+
+    test('with message text hidden, a request shows no wording', () async {
+      final Harness h = await harness();
+      h.prefs.showText = false;
+      h.chat.receiveFriendRequest(kBob, message: 'click http://evil');
+      await pumpEventQueue();
+      expect(
+        h.api.shown.single.body,
+        en.notificationFriendRequestFrom('C' * 8),
+      );
     });
 
     test('a friend request without a message names the requester', () async {
@@ -521,90 +585,209 @@ void main() {
   });
 
   group('taps', () {
+    test('a tap is kept until the router takes it, then signalled', () async {
+      final Harness h = await harness();
+      final Future<NotificationTapTarget> signalled = h.center.tapTargets.first;
+      h.api.tapTarget(OpenConversationTarget(kAnnConv));
+      expect(await signalled, OpenConversationTarget(kAnnConv));
+      expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
+      expect(h.center.takePendingTap(), isNull);
+    });
+
+    test('a newer tap supersedes one nobody routed yet', () async {
+      final Harness h = await harness();
+      h.api.tapTarget(FriendRequestTarget(kBob));
+      h.api.tap('garbage');
+      h.api.tapTarget(OpenConversationTarget(kAnnConv));
+      expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
+    });
+
+    test('a cold-start payload waits for a router mounted later', () async {
+      // Nobody listens while the centre starts (the shell is built only once
+      // the identity is ready): the tap must still be there afterwards.
+      final Harness h = Harness();
+      addTearDown(h.dispose);
+      h.api.launchPayload = OpenConversationTarget(kAnnConv).encode();
+      await h.start();
+      expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
+    });
+  });
+
+  group('review regressions', () {
     test(
-      'tapping a message notification asks to open the conversation',
+      'hiding message content also hides lines already in the inbox',
       () async {
         final Harness h = await harness();
-        final Future<String> opened = h.center.openConversationRequests.first;
-        final Future<NotificationTapTarget> tapped = h.center.tapTargets.first;
-        h.api.tapTarget(OpenConversationTarget(kAnnConv));
-        expect(await opened, kAnnConv);
-        expect(await tapped, OpenConversationTarget(kAnnConv));
+        await h.receive('SECRET ONE');
+        h.prefs
+          ..showText = false
+          ..showPattern = false;
+        await h.receive('SECRET TWO');
+        final NotificationRequest n = h.api.last!;
+        expect(n.lines.join(' '), isNot(contains('SECRET')));
+        expect(n.body, isNot(contains('SECRET')));
       },
     );
 
-    test('friend-request taps reach tapTargets only', () async {
-      final Harness h = await harness();
-      final List<String> opened = <String>[];
-      final List<NotificationTapTarget> targets = <NotificationTapTarget>[];
-      h.center.openConversationRequests.listen(opened.add);
-      h.center.tapTargets.listen(targets.add);
-      h.api.tapTarget(FriendRequestTarget(kBob));
-      h.api.tap('garbage');
-      await pumpEventQueue();
-      expect(opened, isEmpty);
-      expect(targets, <NotificationTapTarget>[FriendRequestTarget(kBob)]);
-    });
+    test(
+      'a tap during the launch-payload read wins over the launch payload',
+      () async {
+        final Harness h = Harness();
+        addTearDown(h.dispose);
+        h.api
+          ..launchPayload = FriendRequestTarget(kBob).encode()
+          ..onTakeLaunchPayload = () =>
+              h.api.tapTarget(OpenConversationTarget(kAnnConv));
+        await h.start();
+        expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
+      },
+    );
 
-    test('a cold-start tap waits for the shell to subscribe', () async {
-      // start() reads the launch payload while the startup gate (unlock /
-      // open) still hides the AppShell that listens: it must not be lost.
+    test('a tap during plugin start-up wins over the launch payload', () async {
       final Harness h = Harness();
       addTearDown(h.dispose);
-      h.api.launchPayload = OpenConversationTarget(kAnnConv).encode();
+      h.api
+        ..launchPayload = FriendRequestTarget(kBob).encode()
+        ..onInitialize = () =>
+            h.api.tapTarget(OpenConversationTarget(kAnnConv));
       await h.start();
-
-      final List<String> opened = <String>[];
-      final List<NotificationTapTarget> targets = <NotificationTapTarget>[];
-      h.center.tapTargets.listen(targets.add);
-      h.center.openConversationRequests.listen(opened.add);
-      await pumpEventQueue();
-      expect(opened, <String>[kAnnConv]);
-      expect(targets, <NotificationTapTarget>[
-        OpenConversationTarget(kAnnConv),
-      ]);
-
-      // Delivered once: a later subscriber (the shell rebuilt after a
-      // lock/unlock) does not reopen it.
-      final List<String> late = <String>[];
-      h.center.openConversationRequests.listen(late.add);
-      await pumpEventQueue();
-      expect(late, isEmpty);
+      expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
     });
 
-    test('only the latest unheard tap is kept', () async {
-      final Harness h = await harness();
-      h.api.tapTarget(OpenConversationTarget(kBobConv));
+    test(
+      'a stale cleanup does not withdraw the next identity\'s banners',
+      () async {
+        final StubIdentityService me = StubIdentityService(
+          identity: Identity(toxId: 'A' * 76, displayName: 'A'),
+        );
+        final Harness h = Harness(identity: me);
+        addTearDown(h.dispose);
+        final Completer<void> hold = Completer<void>();
+        h.api.holdActivePayloads = hold;
+        await h.start(); // cleanup for A is waiting on the active list
+        me.setIdentity(Identity(toxId: 'F' * 76, displayName: 'B'));
+        await pumpEventQueue();
+        await h.receive('CQ'); // B's banner
+        hold.complete();
+        await pumpEventQueue();
+        expect(h.api.active, hasLength(1));
+      },
+    );
+
+    test(
+      'an identity already open at start withdraws foreign banners',
+      () async {
+        final StubIdentityService me = StubIdentityService();
+        final Harness h = Harness(identity: me);
+        addTearDown(h.dispose);
+        final String other = 'A' * 16;
+        final NotificationTapTarget t = OpenConversationTarget(
+          kAnnConv,
+          account: other,
+        );
+        await h.api.show(
+          NotificationRequest(
+            id: stableNotificationId(t.encode()),
+            channel: NotificationChannelKind.messages,
+            title: 't',
+            body: 'b',
+            payload: t.encode(),
+          ),
+        );
+        await h.start();
+        expect(h.api.active, isEmpty);
+      },
+    );
+
+    test(
+      'the first identity of a run withdraws another identity\'s banners',
+      () async {
+        final StubIdentityService me = StubIdentityService()..clearIdentity();
+        final Harness h = Harness(identity: me);
+        addTearDown(h.dispose);
+        // Left over from an earlier run: one of A's, one untagged, one of B's.
+        final String a = 'A' * 16;
+        final String b = 'F' * 16;
+        for (final NotificationTapTarget t in [
+          OpenConversationTarget(kAnnConv, account: a),
+          const OpenConversationTarget('c2c_x'),
+          OpenConversationTarget(kBobConv, account: b),
+        ]) {
+          await h.api.show(
+            NotificationRequest(
+              id: stableNotificationId(t.encode()),
+              channel: NotificationChannelKind.messages,
+              title: 't',
+              body: 'b',
+              payload: t.encode(),
+            ),
+          );
+        }
+        await h.start();
+        me.setIdentity(Identity(toxId: 'F' * 76, displayName: 'B'));
+        await pumpEventQueue();
+        final List<String> left = h.api.active.map((n) => n.payload).toList();
+        expect(left, hasLength(2));
+        expect(left.any((p) => p.endsWith('#$a')), isFalse);
+      },
+    );
+  });
+
+  group('identity scoping', () {
+    test('payloads carry the account; a foreign one is ignored', () async {
+      final StubIdentityService me = StubIdentityService();
+      final Harness h = await harness(identity: me);
+      await h.receive('CQ');
+      final String account = 'F' * 16;
+      expect(
+        h.api.shown.single.payload,
+        OpenConversationTarget(kAnnConv, account: account).encode(),
+      );
+      h.api.tapTarget(OpenConversationTarget(kAnnConv, account: 'E' * 16));
+      expect(h.center.takePendingTap(), isNull);
+      h.api.tapTarget(OpenConversationTarget(kAnnConv, account: account));
+      expect(h.center.takePendingTap()?.account, account);
+      // Payloads from before account tags are still accepted.
+      h.api.tap('conv:$kAnnConv');
+      expect(h.center.takePendingTap(), OpenConversationTarget(kAnnConv));
+    });
+
+    test('a new identity withdraws everything the old one posted', () async {
+      final StubIdentityService me = StubIdentityService();
+      final Harness h = await harness(identity: me);
+      await h.receive('CQ');
       h.api.tapTarget(OpenConversationTarget(kAnnConv));
-      final List<String> opened = <String>[];
-      h.center.openConversationRequests.listen(opened.add);
+      me.setIdentity(Identity(toxId: 'E' * 76, displayName: 'Next'));
       await pumpEventQueue();
-      expect(opened, <String>[kAnnConv]);
+      expect(h.api.cancelAllCalls, 1);
+      expect(h.center.takePendingTap(), isNull);
     });
 
-    test('the latest unheard tap wins across both streams', () async {
-      final Harness h = await harness();
-      h.api.tapTarget(OpenConversationTarget(kAnnConv));
-      h.api.tapTarget(const GroupInviteTarget('invite-1'));
-      final List<String> opened = <String>[];
-      final List<NotificationTapTarget> targets = <NotificationTapTarget>[];
-      h.center.openConversationRequests.listen(opened.add);
-      h.center.tapTargets.listen(targets.add);
-      await pumpEventQueue();
-      expect(opened, isEmpty);
-      expect(targets, <NotificationTapTarget>[
-        const GroupInviteTarget('invite-1'),
-      ]);
-    });
-
-    test('a cold-start payload is replayed on start', () async {
-      final Harness h = Harness();
+    test('a post held across an identity switch is dropped', () async {
+      final StubIdentityService me = StubIdentityService();
+      final Harness h = Harness(identity: me);
       addTearDown(h.dispose);
-      h.api.launchPayload = OpenConversationTarget(kAnnConv).encode();
-      final List<String> opened = <String>[];
-      h.center.openConversationRequests.listen(opened.add);
-      await h.start();
-      expect(opened, <String>[kAnnConv]);
+      await h.start(grant: false);
+      final Completer<bool> check = Completer<bool>();
+      h.api.permissionCheckAnswer = check.future;
+      h.chat.receiveFriendRequest(kBob, message: 'for the old identity');
+      await pumpEventQueue();
+      expect(h.api.shown, isEmpty);
+
+      // The old identity's request goes away with it (the fake service is
+      // shared, so drop it by hand), then the new identity gets one from
+      // the same peer: the held post's key is "known" again.
+      await h.chat.rejectFriendRequest(kBob);
+      me.setIdentity(Identity(toxId: 'E' * 76, displayName: 'Next'));
+      await pumpEventQueue();
+      h.chat.receiveFriendRequest(kBob, message: 'for the new identity');
+      await pumpEventQueue();
+      check.complete(true);
+      await pumpEventQueue();
+      expect(
+        h.api.shown.map((n) => n.body),
+        isNot(contains(contains('for the old identity'))),
+      );
     });
   });
 
@@ -625,7 +808,6 @@ void main() {
         expect(h.api.shown, hasLength(1));
         // Both outbound controllers were closed synchronously.
         expect(await h.center.tapTargets.isEmpty, isTrue);
-        expect(await h.center.openConversationRequests.isEmpty, isTrue);
         await done;
         await h.center.dispose(); // idempotent
       },
@@ -633,35 +815,44 @@ void main() {
   });
 
   group('permission', () {
-    test(
-      'a background post never prompts; the prompt waits for foreground',
-      () async {
-        // Android 13+ cannot show the permission dialog from a stopped
-        // activity (the request comes back as "denied"), iOS queues it out of
-        // context. The post is dropped and the user is asked once they return.
-        final Harness h = await harness();
-        h.api.permissionGranted = false;
-        await h.receive('CQ');
-        expect(h.api.shown, isEmpty);
-        expect(h.api.permissionRequests, 0);
-        expect(h.api.permissionChecks, 1);
+    test('asked once in the foreground, never by a post', () async {
+      final Harness h = Harness(foreground: true);
+      addTearDown(h.dispose);
+      await h.start(grant: false);
+      expect(h.api.permissionRequests, 1);
+      await h.receive('CQ');
+      await h.receive('K');
+      expect(h.api.permissionRequests, 1);
+      expect(h.api.shown, hasLength(2));
+    });
 
-        h.api.grantOnRequest = true;
-        h.foreground.value = true;
-        await pumpEventQueue();
-        expect(h.api.permissionRequests, 1);
-
-        h.foreground.value = false;
-        await h.receive('K');
-        expect(h.api.shown, hasLength(1));
-        expect(h.api.permissionRequests, 1);
-      },
-    );
+    test('started in the background: asked on the next resume', () async {
+      // Android 13+ cannot show the dialog from a stopped activity, iOS
+      // queues it out of context: the post is dropped after a silent check.
+      final Harness h = Harness();
+      addTearDown(h.dispose);
+      h.api.permissionGranted = false;
+      await h.start(grant: false);
+      await h.receive('CQ');
+      expect(h.api.permissionRequests, 0);
+      expect(h.api.permissionChecks, 1);
+      expect(h.api.shown, isEmpty);
+      h.api.grantOnRequest = true;
+      h.foreground.value = true;
+      await pumpEventQueue();
+      expect(h.api.permissionRequests, 1);
+      h.foreground.value = false;
+      await h.receive('K');
+      expect(h.api.shown, hasLength(1));
+      expect(h.api.permissionRequests, 1);
+    });
 
     test(
       'a grant from an earlier run posts from the background silently',
       () async {
-        final Harness h = await harness();
+        final Harness h = Harness();
+        addTearDown(h.dispose);
+        await h.start(grant: false);
         await h.receive('CQ');
         await h.receive('K');
         expect(h.api.shown, hasLength(2));
@@ -674,60 +865,39 @@ void main() {
     );
 
     test(
-      'in the foreground posting prompts once per session, not per message',
+      'denied permission suppresses posting; an explicit ask retries',
       () async {
-        final Harness h = await harness(foreground: true);
+        final Harness h = Harness(foreground: true);
+        addTearDown(h.dispose);
+        h.api.permissionGranted = false;
+        await h.start(grant: false);
+        await h.receive('CQ');
+        expect(h.api.shown, isEmpty);
+        expect(h.api.permissionRequests, 1);
+
+        // The settings entry asks again (denials are not cached).
+        h.api.permissionGranted = true;
+        expect(await h.center.ensurePermission(), isTrue);
+        await h.receive('K');
+        expect(h.api.shown, hasLength(1));
+      },
+    );
+
+    test(
+      'a denial is not cached: a grant made in Settings is picked up',
+      () async {
+        final Harness h = Harness(foreground: true);
+        addTearDown(h.dispose);
         h.api
           ..permissionGranted = false
           ..grantOnRequest = false;
-        // Two at once share the one prompt; later ones never re-prompt.
-        h.chat.receiveMessage(kAnnConv, 'CQ');
-        h.chat.receiveMessage(kAnnConv, 'CQ CQ');
-        await pumpEventQueue();
-        await h.receive('K');
-        expect(h.api.permissionRequests, 1);
+        await h.start(grant: false);
+        await h.receive('CQ');
         expect(h.api.shown, isEmpty);
-
-        // A denial is not cached: enabling it in Settings is picked up.
         h.api.permissionGranted = true;
         await h.receive('73');
         expect(h.api.shown, hasLength(1));
         expect(h.api.permissionRequests, 1);
-      },
-    );
-
-    test(
-      'posts that arrive while the prompt is open wait for its answer',
-      () async {
-        final Harness h = await harness(foreground: true);
-        h.chat.addFakeFriend(Friend(publicKey: kBob, displayName: 'Bob'));
-        final Completer<bool> answer = Completer<bool>();
-        h.api
-          ..permissionGranted = false
-          ..promptAnswer = answer.future;
-        await h.receive('CQ');
-        await h.receive('DE BOB', conversationId: kBobConv);
-        expect(h.api.permissionRequests, 1);
-        expect(h.api.shown, isEmpty);
-
-        answer.complete(true);
-        await pumpEventQueue();
-        expect(h.api.shown, hasLength(2));
-        expect(h.api.permissionRequests, 1);
-      },
-    );
-
-    test(
-      'ensurePermission prompts on demand even after the session prompt',
-      () async {
-        final Harness h = await harness(foreground: true);
-        h.api
-          ..permissionGranted = false
-          ..grantOnRequest = false;
-        await h.receive('CQ');
-        expect(h.api.permissionRequests, 1);
-        expect(await h.center.ensurePermission(), isFalse);
-        expect(h.api.permissionRequests, 2);
       },
     );
 

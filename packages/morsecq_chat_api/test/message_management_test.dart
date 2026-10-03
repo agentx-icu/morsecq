@@ -176,6 +176,7 @@ void main() {
       final identity = FakeIdentityService();
       await identity.create(displayName: 'Me');
       final own = FakeChatService(identity: identity);
+      await identity.connect();
       addTearDown(own.dispose);
       final m = await own.sendText(own.selfConversationId!, 'note');
       expect(

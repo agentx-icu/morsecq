@@ -38,6 +38,24 @@ extension FakeChatServiceTestHooks on FakeChatService {
     }
   }
 
+  /// Toggles a group's transport; while down, sends stay pending, and
+  /// coming back flushes them to `sent` (Tim2Tox's group outbox).
+  void setGroupConnected(String groupId, bool connected) {
+    if (!connected) {
+      _disconnectedGroups.add(groupId);
+      return;
+    }
+    if (!_disconnectedGroups.remove(groupId)) return;
+    final List<ChatMessage> pending =
+        (_messages[FakeChatService.groupConversationId(groupId)] ??
+                const <ChatMessage>[])
+            .where((m) => m.isMine && m.status == MessageStatus.pending)
+            .toList();
+    for (final ChatMessage m in pending) {
+      _setStatus(m.id, MessageStatus.sent);
+    }
+  }
+
   /// Marks one of our messages as failed (emits a status event).
   void failMessage(String messageId) =>
       _setStatus(messageId, MessageStatus.failed);

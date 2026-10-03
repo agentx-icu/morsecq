@@ -51,7 +51,9 @@ void main() {
       harness: h,
     );
     expect(find.text('NEEDLE QTH PARIS'), findsNothing, reason: 'not loaded');
-    await tester.tap(find.byTooltip(s.chatSearchMessages));
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(s.chatSearchMessages));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'needle');
     await tester.pump(const Duration(milliseconds: 400));
@@ -102,7 +104,9 @@ void main() {
       (_) => ConversationScreen(target: _ann()),
       harness: h,
     );
-    await tester.tap(find.byTooltip(s.chatSearchMessages));
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(s.chatSearchMessages));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'needle');
     await tester.pump(const Duration(milliseconds: 400));
@@ -130,7 +134,9 @@ void main() {
     });
     await _menu(tester, 'CQ CQ DE ANN', s.chatAddBookmark);
     expect(find.byIcon(Icons.bookmark), findsOneWidget);
-    await tester.tap(find.byTooltip(s.chatSearchMessages));
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(s.chatSearchMessages));
     await tester.pumpAndSettle();
     await tester.tap(find.text(s.chatSearchBookmarked));
     await tester.pumpAndSettle();

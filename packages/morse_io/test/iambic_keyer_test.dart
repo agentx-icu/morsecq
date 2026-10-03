@@ -50,6 +50,21 @@ void main() {
     expect(clock.pendingTimers, 0);
   });
 
+  test('finish keeps the element in flight whole and keys nothing more',
+      () async {
+    final k = keyer(IambicMode.b);
+    addTearDown(k.dispose);
+    k.dahPaddle(true, clock.now()); // held: would repeat dahs
+    clock.advance(_ms * 60);
+    k.finish();
+    // The dah reports its full 300 ms, not the 60 ms that had passed.
+    expect(target.log, <(bool, int)>[(true, 0), (false, 300)]);
+    expect(k.isKeying, isFalse);
+    clock.advance(_ms * 2000);
+    expect(target.log, hasLength(2));
+    expect(clock.pendingTimers, 0);
+  });
+
   test('squeezing both paddles alternates dit / dah', () async {
     final k = keyer(IambicMode.b);
     addTearDown(k.dispose);

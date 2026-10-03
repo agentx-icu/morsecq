@@ -8,6 +8,7 @@ import 'package:morsecq/ui/account/restore_backup_page.dart';
 import 'package:morsecq/ui/account/tox_id_qr_dialog.dart';
 import 'package:morsecq/ui/account/welcome_page.dart';
 import 'package:morsecq/ui/shell/app_shell.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
 
 import 'test_app.dart';
@@ -46,6 +47,9 @@ void main() {
 
     expect(identity.current?.displayName, 'Ann');
     expect(identity.current?.hasPassword, isFalse);
+    // No password: the wizard must not claim the file is encrypted.
+    expect(find.text(en.accountBackupWhatIsInsidePlain), findsOneWidget);
+    expect(find.text(en.accountBackupWhatIsInside), findsNothing);
     expect(find.byType(BackupWizardPage), findsOneWidget);
     expect(find.byType(CreateIdentityPage), findsNothing);
     expect(find.byType(AppShell), findsNothing);
@@ -119,6 +123,7 @@ void main() {
     expect(identity.current?.hasPassword, isTrue);
     expect(identity.storedPassword, 'correct horse');
     expect(find.byType(BackupWizardPage), findsOneWidget);
+    expect(find.text(en.accountBackupWhatIsInside), findsOneWidget);
   });
 
   testWidgets('restore from backup skips the wizard and opens the shell', (
@@ -166,5 +171,15 @@ void main() {
     expect(find.byType(WelcomePage), findsOneWidget);
     expect(find.text(en.accountWelcomePointNoServer), findsOneWidget);
     expect(find.text(en.accountWelcomePointBackup), findsOneWidget);
+  });
+
+  testWidgets('a file too large to be a backup says so at pick time', (
+    tester,
+  ) async {
+    files.pickError = const ChatException('invalid_backup', 'too large');
+    await pumpApp(tester, identity: identity, backupFiles: files);
+    await tapVisible(tester, find.text(en.accountRestoreFromBackup));
+    await tapVisible(tester, find.text(en.accountRestoreChooseFile));
+    expect(find.text(en.accountRestoreInvalidFile), findsOneWidget);
   });
 }

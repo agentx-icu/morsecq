@@ -548,7 +548,37 @@ class SJa extends S {
   String get accountBackupBody => 'ID 情報はこのデバイスにしか存在しません。デバイスの紛失、初期化、盗難があった場合は復元できません。新しい ID 情報では連絡先に本人だと認識されず、学習の進捗も失われます。';
 
   @override
-  String get accountBackupWhatIsInside => 'バックアップファイルには、暗号化された ID 情報と学習の進捗が含まれます。このデバイス以外の安全な場所に保管してください。';
+  String get accountBackupWhatIsInside => 'バックアップファイルには、パスワードで暗号化された ID 鍵と学習の進捗が含まれます。このデバイス以外の安全な場所に保管してください。';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'バックアップファイルには、暗号化されていない ID 鍵と学習の進捗が含まれます。このファイルを手に入れた人は誰でもあなたの ID を使えます。鍵を暗号化するには先にパスワードを設定し、ファイルは安全な場所に保管してください。';
+
+  @override
+  String get accountPasswordScope => 'パスワードは ID 鍵を暗号化します。メッセージ履歴はディスク上で暗号化されないままですが、デバイスの暗号化で保護できます。';
+
+  @override
+  String get accountSectionNotifications => '通知';
+
+  @override
+  String get accountNotificationsEnable => '通知を表示';
+
+  @override
+  String get accountNotificationsEnableSubtitle => '新しいメッセージ、友だちリクエスト、グループ招待';
+
+  @override
+  String get accountNotificationsContent => 'メッセージの内容を表示';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'バナーとロック画面にテキストとモールスを表示します。オフにすると、メッセージが届いたことだけを知らせます。';
+
+  @override
+  String get accountNotificationsAllow => '通知を許可';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'システムに通知の許可を求めます';
+
+  @override
+  String get accountNotificationsDenied => 'MorseCQ の通知はシステム設定でオフになっています。';
 
   @override
   String get accountBackupSaveFile => 'バックアップファイルを保存';

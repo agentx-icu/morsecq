@@ -8,7 +8,7 @@ mixin _FakeMessageManagement implements ChatService {
   Map<String, List<ChatMessage>> get _messages;
   Map<String, Conversation> get _conversations;
   Map<String, Friend> get _friends;
-  void _setStatus(String messageId, MessageStatus status);
+  void _applyStatus(String messageId, MessageStatus status);
 
   @override
   Future<MessageSearchPage> searchMessages(
@@ -69,8 +69,8 @@ mixin _FakeMessageManagement implements ChatService {
     final deliverable =
         conversation?.kind == ConversationKind.group ||
         (_friends[conversation?.peerId]?.online ?? false);
-    _setStatus(messageId, MessageStatus.pending);
-    if (deliverable) _setStatus(messageId, MessageStatus.sent);
+    _applyStatus(messageId, MessageStatus.pending);
+    if (deliverable) _applyStatus(messageId, MessageStatus.sent);
     return MessageActionResult.success;
   }
 
@@ -86,7 +86,7 @@ mixin _FakeMessageManagement implements ChatService {
     if (m.status != MessageStatus.pending) {
       return MessageActionResult.stateChanged;
     }
-    _setStatus(messageId, MessageStatus.cancelled);
+    _applyStatus(messageId, MessageStatus.cancelled);
     return MessageActionResult.success;
   }
 }

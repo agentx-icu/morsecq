@@ -8,18 +8,32 @@ import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../contacts/tox_id.dart';
 
-/// Pending group invites with accept / reject; hidden when empty.
-class GroupInvitesInbox extends StatelessWidget {
+/// Pending group invites with accept / reject; hidden when empty. An
+/// invite's buttons stay disabled while an answer to it is in flight.
+class GroupInvitesInbox extends StatefulWidget {
   const GroupInvitesInbox({super.key, required this.service});
 
   final ChatService service;
 
-  Future<void> _run(BuildContext context, Future<void> Function() op) async {
+  @override
+  State<GroupInvitesInbox> createState() => _GroupInvitesInboxState();
+}
+
+class _GroupInvitesInboxState extends State<GroupInvitesInbox> {
+  final Set<String> _busy = <String>{};
+
+  ChatService get service => widget.service;
+
+  Future<void> _run(String id, Future<void> Function() op) async {
+    if (!_busy.add(id)) return;
+    setState(() {});
     final S s = context.s;
     try {
       await op();
     } on Object catch (e) {
-      if (context.mounted) showSnack(context, describeChatError(s, e));
+      if (mounted) showSnack(context, describeChatError(s, e));
+    } finally {
+      if (mounted) setState(() => _busy.remove(id));
     }
   }
 
@@ -65,22 +79,26 @@ class GroupInvitesInbox extends StatelessWidget {
                     IconButton(
                       tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),
-                      onPressed: () => unawaited(
-                        _run(
-                          context,
-                          () => service.rejectGroupInvite(i.inviteId),
-                        ),
-                      ),
+                      onPressed: _busy.contains(i.inviteId)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                i.inviteId,
+                                () => service.rejectGroupInvite(i.inviteId),
+                              ),
+                            ),
                     ),
                     IconButton.filled(
                       tooltip: s.chatAccept,
                       icon: const Icon(Icons.check),
-                      onPressed: () => unawaited(
-                        _run(
-                          context,
-                          () => service.acceptGroupInvite(i.inviteId),
-                        ),
-                      ),
+                      onPressed: _busy.contains(i.inviteId)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                i.inviteId,
+                                () => service.acceptGroupInvite(i.inviteId),
+                              ),
+                            ),
                     ),
                   ],
                 ),

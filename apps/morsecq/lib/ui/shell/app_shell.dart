@@ -7,9 +7,11 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../notifications/connection_banner_policy.dart';
 import '../../notifications/notification_center.dart';
+import '../../notifications/notification_composer.dart';
 import '../../notifications/notification_payload.dart';
 import '../chat/conversation_route.dart';
 import '../chat/conversation_target.dart';
+import '../groups/group_invites_page.dart';
 import '../pages/chat_page.dart';
 import '../pages/groups_page.dart';
 import '../pages/learn_page.dart';
@@ -17,6 +19,7 @@ import '../pages/me_page.dart';
 import '../pages/reference_page.dart';
 import '../account/guest_widgets.dart';
 import '../responsive.dart';
+import 'shell_router.dart';
 
 /// One top-level destination. Kept as data so the bar and the rail render the
 /// same list and cannot drift apart. The label is resolved against the
@@ -95,18 +98,9 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
-  StreamSubscription<String>? _openRequests;
-  StreamSubscription<NotificationTapTarget>? _taps;
+  final ShellRouter _router = ShellRouter();
   NotificationCenter? _center;
-
-  /// Notification-opened conversations whose routes are pushed but may not
-  /// have built yet (so they are not [NotificationCenter.activeConversation]
-  /// yet): reserved synchronously, each released once its route has had a
-  /// frame (from then on the screen reports itself) or has gone.
-  final Set<String> _opening = <String>{};
-
-  /// Bumped per routing tap, so an older tap's pop loop stops.
-  int _tapGeneration = 0;
+  StreamSubscription<NotificationTapTarget>? _taps;
 
   /// Keeps the page stack mounted when the layout class flips. Rotating a
   /// phone to landscape (or unfolding a foldable) crosses the 600 px
@@ -114,6 +108,9 @@ class _AppShellState extends State<AppShell> {
   /// `Row`; without a global key every tab's state (open chat pane, scroll
   /// positions, reference/translator input) was thrown away on rotation.
   final GlobalKey _bodyKey = GlobalKey(debugLabel: 'shell-body');
+
+  static int _tabOf(Type page) =>
+      kShellDestinations.indexWhere((d) => d.page.runtimeType == page);
 
   void _select(int index) {
     if (index == _selectedIndex) return;
@@ -123,95 +120,76 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
-    // Notification taps (and cold-start payloads) open the conversation.
+    // Notification taps open what they point at. The centre keeps the
+    // newest tap until it is routed here, so a tap that cold-started the
+    // app (or came while the unlock screen showed) is not lost.
     // NotificationCenter is null in tests and where notifications are off.
-    final center = _center = context.read<NotificationCenter?>();
-    _openRequests = center?.openConversationRequests.listen(_openConversation);
-    // Friend requests and group invites land on the area that answers them.
-    _taps = center?.tapTargets.listen(_onTap);
+    _center = context.read<NotificationCenter?>();
+    _taps = _center?.tapTargets.listen((_) => _routePendingTap());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _routePendingTap());
   }
 
   @override
   void dispose() {
-    _openRequests?.cancel();
-    _taps?.cancel();
+    unawaited(_taps?.cancel());
+    unawaited(_router.dispose());
     super.dispose();
   }
 
-  void _onTap(NotificationTapTarget target) {
-    final Type? page = switch (target) {
-      FriendRequestTarget() => ChatPage, // contacts badge on the Chat bar
-      GroupInviteTarget() => GroupsPage, // invites head the group list
-      OpenConversationTarget() => null, // see openConversationRequests
-    };
-    if (page == null || !mounted) return;
-    final int generation = ++_tapGeneration;
-    unawaited(
-      _popToShell(generation).then((bool atShell) {
-        if (!atShell || !mounted || generation != _tapGeneration) return;
+  void _routePendingTap() {
+    if (!mounted) return;
+    final NotificationTapTarget? tap = _center?.takePendingTap();
+    switch (tap) {
+      case null:
+        return;
+      case OpenConversationTarget(:final conversationId):
+        final ConversationTarget target = _targetFor(conversationId);
         _select(
-          kShellDestinations.indexWhere((d) => d.page.runtimeType == page),
+          _tabOf(target.kind == ConversationKind.group ? GroupsPage : ChatPage),
         );
-      }),
-    );
+        _router.openConversation(target);
+      case FriendRequestTarget():
+        _select(_tabOf(ChatPage));
+        _router.openContacts();
+      case GroupInviteTarget():
+        _showGroupInvites();
+    }
   }
 
-  /// Pops the routes above the shell one at a time through `maybePop`, so a
-  /// route that refuses (a [PopScope] such as the drill leave guard, which
-  /// asks first) keeps its say instead of being torn down by `popUntil`.
-  /// Resolves to whether the shell's route is on top again.
-  Future<bool> _popToShell(int generation) async {
+  /// The invite inbox is inline on the groups page: uncover it by leaving
+  /// conversations only. When another flow (settings, contacts, …) still
+  /// covers the shell, open the invites on a page above it instead.
+  void _showGroupInvites() {
+    _select(_tabOf(GroupsPage));
     final NavigatorState navigator = Navigator.of(context);
-    while (mounted && generation == _tapGeneration) {
-      // A route pushed this frame (a conversation tap just before) has no
-      // scope yet and asserts in maybePop: let it build first.
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted || generation != _tapGeneration) return false;
-      final Route<dynamic>? top = _topRoute(navigator);
-      if (top == null || top.isFirst) return true;
-      await navigator.maybePop();
-      // Not popped: it refused, and may be asking the user (a dialog now on
-      // top, not built yet - never maybePop that one). Stop here.
-      if (top.isActive) return false;
+    navigator.popUntil(
+      (route) => route.settings.name != kConversationRouteName,
+    );
+    final ChatService chat = context.read<ChatService>();
+    final bool covered = !identical(
+      topRoute(navigator),
+      ModalRoute.of(context),
+    );
+    if (covered && chat.groupInvites.isNotEmpty) {
+      unawaited(navigator.push(GroupInvitesPage.route(chat)));
     }
-    return false;
   }
 
-  static Route<dynamic>? _topRoute(NavigatorState navigator) {
-    Route<dynamic>? top;
-    navigator.popUntil((Route<dynamic> route) {
-      top = route; // never pops: the predicate accepts the top route
-      return true;
-    });
-    return top;
-  }
-
-  void _openConversation(String conversationId) {
-    // Already on screen (a pushed route on top, or the selected tab's
-    // detail pane), or pushed and about to build: a second copy would only
-    // stack a duplicate route.
-    if (!mounted ||
-        _opening.contains(conversationId) ||
-        _center?.activeConversation == conversationId) {
-      return;
-    }
+  ConversationTarget _targetFor(String conversationId) {
     final chat = context.read<ChatService>();
     final existing = chat.conversations
         .where((c) => c.id == conversationId)
         .firstOrNull;
-    final target = existing != null
-        ? ConversationTarget.fromConversation(existing)
-        : ConversationTarget(
-            id: conversationId,
-            title: conversationId,
-            kind: conversationId.startsWith('group_')
-                ? ConversationKind.group
-                : ConversationKind.c2c,
-          );
-    _opening.add(conversationId);
-    void release() => _opening.remove(conversationId);
-    unawaited(pushConversation(context, target).whenComplete(release));
-    WidgetsBinding.instance.addPostFrameCallback((_) => release());
+    if (existing != null) return ConversationTarget.fromConversation(existing);
+    final bool group = conversationId.startsWith('group_');
+    final String peer = conversationId.substring(
+      conversationId.indexOf('_') + 1,
+    );
+    return ConversationTarget(
+      id: conversationId,
+      title: NotificationComposer.shortKey(peer),
+      kind: group ? ConversationKind.group : ConversationKind.c2c,
+    );
   }
 
   /// Body plus the "offline for a while" strip; the policy decides when the
@@ -236,20 +214,23 @@ class _AppShellState extends State<AppShell> {
     final layout = layoutClassOf(context);
     final body = KeyedSubtree(
       key: _bodyKey,
-      child: _withBanner(
-        IndexedStack(
-          index: _selectedIndex,
-          // Hidden tabs keep their state but stop animating; a conversation
-          // left open on another tab reads this to stay silent.
-          children: [
-            for (final (i, d) in kShellDestinations.indexed)
-              TickerMode(
-                enabled: i == _selectedIndex,
-                child: d.requiresIdentity
-                    ? IdentityRequiredGate(isMe: d.isMe, child: d.page)
-                    : d.page,
-              ),
-          ],
+      child: Provider<ShellRouter>.value(
+        value: _router,
+        child: _withBanner(
+          IndexedStack(
+            index: _selectedIndex,
+            // Hidden tabs keep their state but stop animating; a conversation
+            // left open on another tab reads this to stay silent.
+            children: [
+              for (final (i, d) in kShellDestinations.indexed)
+                TickerMode(
+                  enabled: i == _selectedIndex,
+                  child: d.requiresIdentity
+                      ? IdentityRequiredGate(isMe: d.isMe, child: d.page)
+                      : d.page,
+                ),
+            ],
+          ),
         ),
       ),
     );

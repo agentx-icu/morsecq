@@ -32,6 +32,9 @@ class ContactsPage extends StatelessWidget {
   /// Test override for the QR-scan affordance; defaults to the platform.
   final bool? canScan;
 
+  /// [RouteSettings.name] of the route [open] pushes.
+  static const String routeName = 'contacts';
+
   static Future<void> open(
     BuildContext context, {
     required ChatService service,
@@ -39,6 +42,7 @@ class ContactsPage extends StatelessWidget {
     required ValueChanged<ConversationTarget> onOpenConversation,
   }) => Navigator.of(context).push(
     MaterialPageRoute<void>(
+      settings: const RouteSettings(name: routeName),
       builder: (_) => ContactsPage(
         service: service,
         identity: identity,

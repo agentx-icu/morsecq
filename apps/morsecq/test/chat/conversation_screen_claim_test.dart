@@ -121,7 +121,7 @@ void main() {
   ) async {
     final _Env env = await _env();
     await env.pump(tester, ConversationScreen(target: _ann()));
-    env.center.setActiveConversation('c2c_${'C' * 64}');
+    env.center.claimActiveConversation('c2c_${'C' * 64}', Object());
     await tester.pumpWidget(env.wrap(const SizedBox()));
     await tester.pumpAndSettle();
     expect(env.center.activeConversation, 'c2c_${'C' * 64}');

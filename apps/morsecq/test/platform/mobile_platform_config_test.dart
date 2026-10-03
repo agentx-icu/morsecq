@@ -32,7 +32,18 @@ void main() {
           dotAll: true,
         ).firstMatch(xml);
         expect(body, isNotNull, reason: section);
-        for (final domain in ['root', 'file', 'database', 'sharedpref']) {
+        for (final domain in [
+          'root',
+          'file',
+          'database',
+          'sharedpref',
+          'external',
+          // Device-protected storage (direct boot) too.
+          'device_root',
+          'device_file',
+          'device_database',
+          'device_sharedpref',
+        ]) {
           expect(
             body!.group(1),
             contains('<exclude domain="$domain"/>'),

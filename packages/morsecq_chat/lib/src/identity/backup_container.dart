@@ -78,9 +78,12 @@ class BackupContainer {
     return out.toBytes();
   }
 
+  /// Largest archive [decode] accepts; real ones are a few hundred KB.
+  static const int maxBytes = 64 * 1024 * 1024;
+
   static BackupContainer decode(Uint8List bytes) {
     const invalid = ChatException('invalid_backup', 'Not a morsecq backup');
-    if (bytes.length < 10) throw invalid;
+    if (bytes.length < 10 || bytes.length > maxBytes) throw invalid;
     for (var i = 0; i < 4; i++) {
       if (bytes[i] != magic[i]) throw invalid;
     }
@@ -101,11 +104,18 @@ class BackupContainer {
       final pathLen = data.getUint16(offset, Endian.big);
       offset += 2;
       if (offset + pathLen + 8 > bytes.length) throw invalid;
-      final path = utf8.decode(bytes.sublist(offset, offset + pathLen));
+      final String path;
+      try {
+        path = utf8.decode(bytes.sublist(offset, offset + pathLen));
+      } on FormatException {
+        throw invalid;
+      }
       offset += pathLen;
       final size = data.getUint64(offset, Endian.big);
       offset += 8;
-      if (size < 0 || offset + size > bytes.length) throw invalid;
+      // Compared against what is left, never `offset + size`: a size near
+      // 2^63 would overflow the sum and slip past the bound.
+      if (size < 0 || size > bytes.length - offset) throw invalid;
       if (!isSafeArchivePath(path)) {
         throw ChatException('invalid_backup', 'Unsafe entry path: $path');
       }

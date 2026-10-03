@@ -29,20 +29,16 @@ class _FriendsPart {
   Future<void> refresh(FfiChatService svc) async {
     final raw = await svc.getFriendList();
     if (!_owner._isCurrent(svc)) return;
-    final cameOnline = <String>[];
     final next = <Friend>[];
     final onlineNow = <String>{};
     for (final f in raw) {
       final key = ConversationIds.normalizeKey(f.userId);
       if (key.isEmpty) continue;
-      final name = f.nickName.isNotEmpty
-          ? f.nickName
-          : ConversationIds.shortKey(key);
+      // Peer-chosen: no bidi overrides or control characters in a label.
+      final nick = PeerText.singleLine(f.nickName);
+      final name = nick.isNotEmpty ? nick : ConversationIds.shortKey(key);
       _names[key] = name;
-      if (f.online) {
-        onlineNow.add(key);
-        if (!_online.contains(key)) cameOnline.add(key);
-      }
+      if (f.online) onlineNow.add(key);
       next.add(
         Friend(
           publicKey: key,
@@ -60,10 +56,10 @@ class _FriendsPart {
       return a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase());
     });
     if (!listEqualsBy(friends.value, next, _sameFriend)) friends.force(next);
-    for (final key in cameOnline) {
-      if (!_owner._isCurrent(svc)) return;
-      await _owner._groupsPart.flushQueuedInvites(svc, key);
-    }
+    // Never awaited here: an invite waits on a native callback, and the
+    // refresh round (presence, requests, add/accept/remove) must not stall
+    // behind it.
+    _owner._groupsPart.scheduleInviteFlush(svc, onlineNow);
   }
 
   static bool _sameFriend(Friend a, Friend b) =>
@@ -73,14 +69,26 @@ class _FriendsPart {
       a.online == b.online;
 
   Future<void> refreshRequests(FfiChatService svc) =>
-      _serializeRequests(svc, () => _refreshRequests(svc));
+      _serializeRequests(svc, () => _refreshRequests(svc), strict: false);
 
+  /// Runs [action] after every earlier request operation. When the session
+  /// detached while it waited, a [strict] action (an answer the user gave)
+  /// throws `not_connected` instead of silently reporting success; a
+  /// background refresh just stops.
   Future<void> _serializeRequests(
     FfiChatService svc,
-    Future<void> Function() action,
-  ) {
+    Future<void> Function() action, {
+    bool strict = true,
+  }) {
     final run = _requestTail.then((_) async {
-      if (_owner._isCurrent(svc)) await action();
+      if (_owner._isCurrent(svc)) {
+        await action();
+      } else if (strict) {
+        throw const ChatException(
+          'not_connected',
+          'Chat disconnected before the request could be answered',
+        );
+      }
     });
     _requestTail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return run;
@@ -93,35 +101,60 @@ class _FriendsPart {
     final nextByKey = {
       for (final request in store.pending) request.publicKey: request,
     };
+    final nativeKeys = <String>{};
     for (final a in apps) {
       final key = ConversationIds.normalizeKey(a.userId);
       if (!ConversationIds.publicKey.hasMatch(key)) continue;
+      nativeKeys.add(key);
       final old = nextByKey[key];
+      final wording = PeerText.clean(a.wording);
       nextByKey[key] = FriendRequest(
         publicKey: key,
-        message: a.wording,
-        receivedAt: old?.message == a.wording
+        message: wording,
+        receivedAt: old?.message == wording
             ? old!.receivedAt
             : DateTime.now(),
       );
     }
-    final dismissed =
+    final fingerprints =
         await _owner._prefs.getStringList('dismissed_friend_applications') ??
         [];
     if (!_owner._isCurrent(svc)) return;
+    final dismissed = await store.dismissedKeys(fingerprints);
+    if (!_owner._isCurrent(svc)) return;
     final friendKeys = friends.value.map((friend) => friend.publicKey).toSet();
     nextByKey.removeWhere(
-      (key, request) =>
-          friendKeys.contains(key) ||
-          dismissed.contains('$key|${request.message}'),
+      (key, _) => friendKeys.contains(key) || dismissed.contains(key),
     );
-    final next = nextByKey.values.toList();
+    final next = _bounded(nextByKey.values, nativeKeys);
     next.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
     if (!listEqualsBy(store.pending, next, _sameRequest)) {
       await store.save(next);
     }
     if (!_owner._isCurrent(svc)) return;
     if (!listEqualsBy(requests.value, next, _sameRequest)) requests.force(next);
+  }
+
+  /// Requests come from anyone who knows the address. Everything native
+  /// still holds is kept (Tim2Tox bounds that queue itself, and dropping one
+  /// here would make it reappear with a fresh arrival time on the next
+  /// poll); requests only we remember fill the rest, newest first.
+  static const int maxPendingRequests = 100;
+
+  static List<FriendRequest> _bounded(
+    Iterable<FriendRequest> all,
+    Set<String> nativeKeys,
+  ) {
+    final live = [
+      for (final r in all)
+        if (nativeKeys.contains(r.publicKey)) r,
+    ];
+    final remembered = [
+      for (final r in all)
+        if (!nativeKeys.contains(r.publicKey)) r,
+    ]..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+    final room = maxPendingRequests - live.length;
+    return [...live, ...remembered.take(room < 0 ? 0 : room)];
   }
 
   static bool _sameRequest(FriendRequest a, FriendRequest b) =>
@@ -135,10 +168,10 @@ class _FriendsPart {
     String message,
   ) async {
     final id = toxId.trim().toUpperCase();
-    if (!ConversationIds.toxAddress.hasMatch(id)) {
+    if (!ToxAddress.isValid(id)) {
       throw const ChatException(
         'invalid_tox_id',
-        'A Tox ID is 76 hexadecimal characters',
+        'A Tox ID is 76 hexadecimal characters with a valid checksum',
       );
     }
     final key = ConversationIds.normalizeKey(id);
@@ -200,17 +233,13 @@ class _FriendsPart {
   Future<void> _reject(FfiChatService svc, String publicKey) async {
     final key = ConversationIds.normalizeKey(publicKey);
     final store = _owner._requestStore;
-    final prefs = _owner._prefs;
-    final dismissed =
-        (await prefs.getStringList('dismissed_friend_applications') ?? [])
-            .toSet();
-    _owner._ensureCurrent(svc);
-    for (final request in store.pending.where((r) => r.publicKey == key)) {
-      dismissed.add('$key|${request.message}');
-    }
-    await prefs.setStringList(
-      'dismissed_friend_applications',
-      dismissed.toList(),
+    // Keyed by sender alone: rewording the request must not bring a
+    // rejected sender back into the inbox.
+    await store.dismiss(
+      key,
+      tim2toxFingerprints:
+          await _owner._prefs.getStringList('dismissed_friend_applications') ??
+          const [],
     );
     _owner._ensureCurrent(svc);
     await svc.refuseFriendApplication(key);

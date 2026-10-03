@@ -603,7 +603,37 @@ class SRu extends S {
   String get accountBackupBody => 'Ваши ключи существуют только на этом устройстве. При его потере, сбросе или краже восстановить их не получится: контакты не узнают новую учётную запись, а прогресс обучения будет потерян.';
 
   @override
-  String get accountBackupWhatIsInside => 'Резервная копия содержит зашифрованные ключи и прогресс обучения. Храните её в безопасном месте вне этого устройства.';
+  String get accountBackupWhatIsInside => 'Резервная копия содержит ключ личности, зашифрованный вашим паролем, и прогресс обучения. Храните её в безопасном месте вне этого устройства.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'Резервная копия содержит ключ личности без шифрования и прогресс обучения. Любой, кто получит этот файл, сможет пользоваться вашей личностью: чтобы ключ был зашифрован, сначала задайте пароль, и храните файл в безопасном месте.';
+
+  @override
+  String get accountPasswordScope => 'Пароль шифрует ключ вашей личности. История сообщений остаётся на диске незашифрованной; её может защитить шифрование устройства.';
+
+  @override
+  String get accountSectionNotifications => 'Уведомления';
+
+  @override
+  String get accountNotificationsEnable => 'Показывать уведомления';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'Новые сообщения, запросы в друзья и приглашения в группы';
+
+  @override
+  String get accountNotificationsContent => 'Показывать содержимое сообщений';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Текст и морзе в баннерах и на экране блокировки. Выключено: только сам факт сообщения.';
+
+  @override
+  String get accountNotificationsAllow => 'Разрешить уведомления';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Запросить разрешение у системы';
+
+  @override
+  String get accountNotificationsDenied => 'Уведомления MorseCQ выключены в системных настройках.';
 
   @override
   String get accountBackupSaveFile => 'Сохранить резервную копию';

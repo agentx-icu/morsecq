@@ -821,8 +821,68 @@ abstract class S {
   /// Backup wizard: what the backup file contains and where to keep it
   ///
   /// In en, this message translates to:
-  /// **'The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.'**
+  /// **'The backup file contains your identity key, encrypted with your password, and your training progress. Keep it somewhere safe, outside this device.'**
   String get accountBackupWhatIsInside;
+
+  /// Backup wizard: what the file holds when the identity has no password (the key is NOT encrypted)
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file contains your identity key unencrypted, and your training progress. Anyone who gets this file can use your identity: set a password first if you want the key encrypted, and keep the file somewhere safe.'**
+  String get accountBackupWhatIsInsidePlain;
+
+  /// Create identity / change password: what the password protects and what it does not
+  ///
+  /// In en, this message translates to:
+  /// **'Your password encrypts your identity key. Message history remains unencrypted on disk; device encryption can protect it.'**
+  String get accountPasswordScope;
+
+  /// Me page: section header for the notification settings
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get accountSectionNotifications;
+
+  /// Me page: switch for all notifications
+  ///
+  /// In en, this message translates to:
+  /// **'Show notifications'**
+  String get accountNotificationsEnable;
+
+  /// Me page: subtitle of the notifications switch
+  ///
+  /// In en, this message translates to:
+  /// **'New messages, friend requests and group invites'**
+  String get accountNotificationsEnableSubtitle;
+
+  /// Me page: switch for showing message text and Morse in notifications
+  ///
+  /// In en, this message translates to:
+  /// **'Show message content'**
+  String get accountNotificationsContent;
+
+  /// Me page: subtitle of the message-content switch
+  ///
+  /// In en, this message translates to:
+  /// **'Text and Morse in banners and on the lock screen. Off: only that a message arrived.'**
+  String get accountNotificationsContentSubtitle;
+
+  /// Me page: button asking the OS for notification permission
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications'**
+  String get accountNotificationsAllow;
+
+  /// Me page: subtitle of the permission button
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the system for permission'**
+  String get accountNotificationsAllowSubtitle;
+
+  /// Me page: snack bar when the OS denied notification permission
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off for MorseCQ in the system settings.'**
+  String get accountNotificationsDenied;
 
   /// Backup wizard: button that saves the backup file (desktop)
   ///

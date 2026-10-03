@@ -21,8 +21,11 @@ enum PlaybackOrigin { manual, auto }
 /// bubble, so the keyer and the player never fight over the sink; an
 /// interrupted auto-played message goes back to the head of the queue. Tests inject a [NullSink] and a `FakeClock`.
 class MorsePlaybackController extends ChangeNotifier {
-  MorsePlaybackController({MorseSink? sink, Clock? clock})
-    : _sidetone = sink == null ? SidetoneSink() : null,
+  MorsePlaybackController({
+    MorseSink? sink,
+    Clock? clock,
+    @visibleForTesting SidetoneSink? sidetone,
+  }) : _sidetone = sidetone ?? (sink == null ? SidetoneSink() : null),
       clock = clock ?? SystemClock.shared {
     this.sink = sink ?? CompositeSink(<MorseSink>[_sidetone!, HapticSink()]);
     keyingSink = _KeyingSink(this);
@@ -32,6 +35,19 @@ class MorsePlaybackController extends ChangeNotifier {
 
   /// Quiet time after the last hand-keyed element before playback resumes.
   static const Duration keyingHoldoff = Duration(milliseconds: 1500);
+
+  /// Auto-play skips a received message longer than this to sound (a tap on
+  /// its bubble still plays it): one peer must not tie up the speaker for
+  /// tens of minutes with a single maximum-size message.
+  static const Duration maxAutoClip = Duration(minutes: 2);
+
+  /// At most this many received messages wait for auto-play; when a busy
+  /// net sends more, the oldest waiting one is dropped for the newest.
+  static const int maxQueuedAuto = 8;
+
+  /// Tone for hand keying through [keyingSink] (the listener's setting);
+  /// playback clips carry their own. Null keeps the sink's current tone.
+  double? keyingToneHz;
 
   /// Created here only when the caller did not inject a sink; lets
   /// [play] retune the tone to the listener's settings.
@@ -141,7 +157,13 @@ class MorsePlaybackController extends ChangeNotifier {
   }) {
     if (_disposed || MorseEncoder.toPattern(text).isEmpty) return;
     if (playingId == messageId || _queue.any((c) => c.id == messageId)) return;
+    final Duration length = MorseEncoder.encode(
+      text,
+      timing,
+    ).fold(Duration.zero, (sum, e) => sum + e.duration);
+    if (length > maxAutoClip) return;
     _queue.add(_Clip(messageId, text, timing, toneHz, PlaybackOrigin.auto));
+    _trimAuto();
     unawaited(_advance());
   }
 
@@ -152,6 +174,18 @@ class MorsePlaybackController extends ChangeNotifier {
     _queue.removeWhere((c) => c.origin == origin);
     if (_queue.isEmpty) _cancelHold();
     if (includeCurrent && _current?.origin == origin) {
+      _halt();
+      unawaited(_advance());
+    }
+  }
+
+  /// Drops every queued or sounding clip whose message id is in [ids] (their
+  /// messages were deleted); other clips keep their place.
+  void cancelMessages(Set<String> ids) {
+    if (_disposed) return;
+    _queue.removeWhere((c) => ids.contains(c.id));
+    if (_queue.isEmpty) _cancelHold();
+    if (ids.contains(_current?.id)) {
       _halt();
       unawaited(_advance());
     }
@@ -175,6 +209,20 @@ class MorsePlaybackController extends ChangeNotifier {
       return Future<void>.value();
     }
     return _start(_queue.removeFirst());
+  }
+
+  /// Enforces [maxQueuedAuto] on every insertion: drops the oldest waiting
+  /// auto clip other than [keep] (an interrupted message going back to the
+  /// head). Manual clips are never dropped.
+  void _trimAuto({_Clip? keep}) {
+    while (_queue.where((c) => c.origin == PlaybackOrigin.auto).length >
+        maxQueuedAuto) {
+      _queue.remove(
+        _queue.firstWhere(
+          (c) => c.origin == PlaybackOrigin.auto && !identical(c, keep),
+        ),
+      );
+    }
   }
 
   void _cancelHold() {
@@ -237,9 +285,14 @@ class MorsePlaybackController extends ChangeNotifier {
     final _Clip? current = _current;
     if (current != null) {
       // The operator takes the key: put an automatic clip back.
-      if (current.origin == PlaybackOrigin.auto) _queue.addFirst(current);
+      if (current.origin == PlaybackOrigin.auto) {
+        _queue.addFirst(current);
+        _trimAuto(keep: current);
+      }
       _halt();
     }
+    final double? toneHz = keyingToneHz;
+    if (toneHz != null && _sidetone != null) _sidetone.frequencyHz = toneHz;
     sink.on();
   }
 

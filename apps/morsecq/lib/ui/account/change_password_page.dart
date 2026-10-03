@@ -120,7 +120,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => _apply(remove: false),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 12),
+          Text(
+            s.accountPasswordScope,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 20),
           FilledButton(
             onPressed: _busy ? null : () => _apply(remove: false),
             child: Text(s.actionSave),

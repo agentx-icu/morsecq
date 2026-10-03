@@ -5,10 +5,39 @@ import 'models.dart';
 ///
 /// All lists are exposed as broadcast streams that replay the current value
 /// to new listeners (BehaviorSubject semantics), plus a synchronous getter.
-/// Implementations must be safe to use before [IdentityService.connect];
-/// sends while offline are queued (status [MessageStatus.pending]) and
-/// flushed automatically when the peer comes online.
+///
+/// **Session.** Chat works on a *session*: it exists from
+/// [IdentityService.connect] until [IdentityService.disconnect], whatever the
+/// network does meanwhile (DHT drop-outs do not end it). Without a session
+/// every getter and stream still works (lists are empty), [setPinned] and
+/// [setDraft] still work for the open identity, and every other operation —
+/// including [loadHistory], [markRead], [sendText] and [clearHistory] —
+/// throws `ChatException('not_connected', ...)`. The UI should retry such a
+/// read when [IdentityService.connectionChanges] reports a change.
+///
+/// **Peers offline.** Within a session, a send to a friend (or group) that is
+/// not reachable right now is queued and returned as [MessageStatus.pending];
+/// it is delivered automatically when the peer comes back.
+///
+/// **Error codes** ([ChatException.code]) used by the implementations:
+/// `not_connected`, `invalid_tox_id`, `own_id`, `already_friend`,
+/// `add_friend_failed`, `accept_failed`, `message_too_long`,
+/// `empty_message`, `invalid_message`, `send_failed`, `self_conversation`,
+/// `invalid_name`, `invalid_chat_id`, `already_joined`, `join_failed`,
+/// `group_not_found`, `invite_failed`, `create_group_failed`,
+/// `leave_failed`, `timeout`.
 abstract interface class ChatService {
+  // ---- Session -------------------------------------------------------------
+
+  /// Whether a chat session is up (see the class docs). Not the same as the
+  /// network being online: a session exists while Tox is still connecting.
+  bool get hasSession;
+
+  /// [hasSession] changes; replays the current value to new listeners. A
+  /// read that failed with `not_connected` should be retried when this
+  /// turns true.
+  Stream<bool> get sessionChanges;
+
   // ---- Friends -------------------------------------------------------------
 
   List<Friend> get friends;
@@ -17,8 +46,8 @@ abstract interface class ChatService {
   List<FriendRequest> get friendRequests;
   Stream<List<FriendRequest>> get friendRequestChanges;
 
-  /// Send a friend request to a 76-hex Tox ID. Throws `invalid_tox_id`,
-  /// `already_friend`, `own_id`.
+  /// Send a friend request to a Tox ID ([ToxAddress.isValid]: 76 hex with a
+  /// valid checksum). Throws `invalid_tox_id`, `already_friend`, `own_id`.
   Future<void> addFriend(String toxId, {String message = 'morsecq CQ'});
 
   Future<void> acceptFriendRequest(String publicKey);
@@ -61,7 +90,8 @@ abstract interface class ChatService {
   });
 
   /// Live message events: new inbound messages and status updates for our
-  /// own messages (pending → sent / failed), for every conversation.
+  /// own messages (pending → sent, or pending → failed when a queued send
+  /// could not be delivered), for every conversation.
   Stream<ChatMessage> get messageEvents;
 
   /// Send plain text. Returns the local row immediately (status pending or

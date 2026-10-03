@@ -107,27 +107,138 @@ void main() {
       expect(await second.inspect(), IdentityState.ready);
 
       await second.connect();
-      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse,
-          reason: 'decrypted right before init');
-      await second.disconnect();
+      expect(engine.startCalls.single.profilePassphrase, 'pw');
       expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isTrue,
-          reason: 're-encrypted right after uninit');
+          reason: 'native encrypts every save: never plaintext while running');
+      await second.disconnect();
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isTrue);
       await second.dispose();
     });
 
-    test('verifier is authoritative when the file was left plaintext', () async {
+    test('a crash while running leaves the profile encrypted', () async {
       final first = newService();
       await first.create(displayName: 'N0CALL', password: 'pw');
-      await first.connect(); // plaintext while running
-      await first.dispose(); // simulate a crash: no disconnect, no re-encrypt
-      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse);
+      await first.connect();
+      await first.dispose(); // simulate a crash: no disconnect
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isTrue);
+    });
+
+    test('creation hands the password to the engine (no plaintext write)', () async {
+      final svc = newService();
+      await svc.create(displayName: 'N0CALL', password: 'pw');
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'pw'),
+          isNotEmpty);
+      await svc.dispose();
+    });
+
+    test('a plaintext file from an older build: verifier unlocks, connect '
+        'migrates it', () async {
+      final first = newService();
+      await first.create(displayName: 'N0CALL', password: 'pw');
+      await first.dispose();
+      // What an older build left after a crash: plaintext while it ran.
+      final file = File(paths.profileFile);
+      file.writeAsBytesSync(crypto.decrypt(file.readAsBytesSync(), 'pw'));
 
       final second = newService();
       expect(await second.inspect(), IdentityState.locked);
       expect(() => second.unlock('bad'), throwsCode('wrong_password'));
       await second.unlock('pw');
-      expect(await second.inspect(), IdentityState.ready);
+      await second.connect();
+      expect(crypto.isEncrypted(file.readAsBytesSync()), isTrue);
+      await second.disconnect();
       await second.dispose();
+    });
+
+    test('disconnect encrypts a plaintext file even when not started '
+        '(retry after a failed earlier attempt)', () async {
+      final first = newService();
+      await first.create(displayName: 'N0CALL', password: 'pw');
+      await first.dispose();
+      final file = File(paths.profileFile);
+      file.writeAsBytesSync(crypto.decrypt(file.readAsBytesSync(), 'pw'));
+      final second = newService();
+      await second.unlock('pw');
+      await second.disconnect(); // never connected in this process
+      expect(crypto.isEncrypted(file.readAsBytesSync()), isTrue);
+      await second.dispose();
+    });
+
+    test('changing the password while connected re-keys the live profile',
+        () async {
+      final svc = newService();
+      await svc.create(displayName: 'A', password: 'one');
+      await svc.connect();
+      await svc.changePassword(oldPassword: 'one', newPassword: 'two');
+      expect(engine.rekeyCalls, ['two']);
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'two'),
+          isNotEmpty);
+      await svc.changePassword(oldPassword: 'two');
+      expect(engine.rekeyCalls, ['two', null]);
+      expect(crypto.isEncrypted(File(paths.profileFile).readAsBytesSync()), isFalse);
+      await svc.disconnect();
+      await svc.dispose();
+    });
+
+    test('a failed live re-key keeps the old password everywhere', () async {
+      final svc = newService();
+      await svc.create(displayName: 'A', password: 'one');
+      await svc.connect();
+      engine.rekeyResults.add(false);
+      await expectLater(
+        svc.changePassword(oldPassword: 'one', newPassword: 'two'),
+        throwsCode('rekey_failed'),
+      );
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'one'),
+          isNotEmpty);
+      await svc.disconnect();
+      await svc.dispose();
+      final again = newService();
+      await again.unlock('one');
+      await again.dispose();
+    });
+
+    test('a failure after the re-key rolls the live profile back', () async {
+      final svc = newService();
+      await svc.create(displayName: 'A', password: 'one');
+      await svc.connect();
+      // Removing the password: the re-key succeeds, then identity.json
+      // cannot be written (its directory is gone and replaced by a file).
+      final identity = File(paths.identityFile);
+      identity.deleteSync();
+      Directory(paths.identityFile).createSync();
+      await expectLater(
+        svc.changePassword(oldPassword: 'one'),
+        throwsA(anything),
+      );
+      expect(engine.rekeyCalls, [null, 'one']);
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'one'),
+          isNotEmpty);
+      Directory(paths.identityFile).deleteSync();
+      await svc.disconnect();
+      await svc.dispose();
+    });
+
+    test('if even the roll-back re-key fails, memory follows the file', () async {
+      final svc = newService();
+      await svc.create(displayName: 'A', password: 'one');
+      await svc.connect();
+      engine.rekeyResults.addAll([true, false]);
+      final identity = File(paths.identityFile);
+      final saved = identity.readAsBytesSync();
+      identity.deleteSync();
+      Directory(paths.identityFile).createSync();
+      await expectLater(
+        svc.changePassword(oldPassword: 'one', newPassword: 'two'),
+        throwsCode('rekey_rollback_failed'),
+      );
+      Directory(paths.identityFile).deleteSync();
+      identity.writeAsBytesSync(saved);
+      // The running profile carries 'two'; disconnect must not mis-encrypt.
+      await svc.disconnect();
+      expect(crypto.decrypt(File(paths.profileFile).readAsBytesSync(), 'two'),
+          isNotEmpty);
+      await svc.dispose();
     });
 
     test('changePassword: add, change, remove', () async {
@@ -151,6 +262,29 @@ void main() {
       expect(await svc.inspect(), IdentityState.ready);
       await svc.dispose();
     });
+  });
+
+  test('deleting the identity also removes leftover import staging', () async {
+    final svc = newService();
+    await svc.create(displayName: 'A', password: 'pw');
+    // What a failed import's rollback leaves behind: the previous identity.
+    final leftover = Directory(
+      p.join(tempRoot.path, '.morsecq-import-x', 'previous'),
+    )..createSync(recursive: true);
+    File(p.join(leftover.path, 'tox_profile.tox')).writeAsStringSync('old');
+    final unrelated = Directory(p.join(tempRoot.path, 'keep'))..createSync();
+    await svc.deleteIdentity();
+    expect(leftover.parent.existsSync(), isFalse);
+    expect(unrelated.existsSync(), isTrue);
+    await svc.dispose();
+  });
+
+  test('leftover staging goes even when the identity root is already gone',
+      () async {
+    final leftover = Directory(p.join(tempRoot.path, '.morsecq-import-y'))
+      ..createSync(recursive: true);
+    await paths.deleteAll();
+    expect(leftover.existsSync(), isFalse);
   });
 
   group('backup', () {

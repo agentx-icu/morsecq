@@ -12,6 +12,11 @@ extension _FakeSelfConversation on FakeChatService {
 
   void _bindSelf(Identity? identity) {
     if (_disposed) return;
+    // Deleted (null) or replaced by another key: the old chat state goes.
+    if (_selfBound &&
+        (identity == null || identity.publicKey != _selfKey)) {
+      _resetForReplacement();
+    }
     final String? previous = selfConversationId;
     _selfBound = identity != null;
     if (identity != null) {

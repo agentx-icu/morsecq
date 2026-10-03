@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
 import 'package:morsecq/ui/chat/morse_playback_controller.dart';
 
@@ -188,6 +189,63 @@ void main() {
     expect(c.playingId, isNull);
     clock.advance(_ms);
     expect(c.playingId, 'a');
+  });
+
+  test('hand keying sounds at keyingToneHz', () {
+    final SidetoneSink tone = SidetoneSink(frequencyHz: 700);
+    final MorsePlaybackController owned = MorsePlaybackController(
+      sink: sink,
+      clock: clock,
+      sidetone: tone,
+    );
+    addTearDown(owned.dispose);
+    owned.keyingToneHz = 550;
+    owned.keyingSink.on();
+    expect(tone.frequencyHz, 550);
+    owned.keyingSink.off();
+  });
+
+  test('auto-play skips a clip longer than maxAutoClip', () async {
+    // 0 is five dahs: at 5 wpm (dit 240 ms) 200 of them run far past 2 min.
+    c.enqueue('long', '0' * 200, const MorseTiming(wpm: 5));
+    expect(c.playingId, isNull);
+    expect(c.queuedIds, isEmpty);
+    // A tap still plays it.
+    await c.play('long', '0' * 200, const MorseTiming(wpm: 5));
+    expect(c.playingId, 'long');
+  });
+
+  test('the auto-play queue keeps the newest maxQueuedAuto clips', () async {
+    c.enqueue('first', 'E', _t); // becomes current
+    for (var i = 0; i < MorsePlaybackController.maxQueuedAuto + 2; i++) {
+      c.enqueue('q$i', 'E', _t);
+    }
+    expect(c.queuedIds, hasLength(MorsePlaybackController.maxQueuedAuto));
+    expect(c.queuedIds.first, 'q2');
+    expect(c.queuedIds.last, 'q${MorsePlaybackController.maxQueuedAuto + 1}');
+  });
+
+  test('an interrupted clip going back to the queue keeps the cap', () async {
+    c.enqueue('first', 'TEST', _t);
+    await _settle();
+    for (var i = 0; i < MorsePlaybackController.maxQueuedAuto; i++) {
+      c.enqueue('q$i', 'E', _t);
+    }
+    c.keyingSink.on(); // 'first' is cut and goes back to the head
+    expect(c.queuedIds, hasLength(MorsePlaybackController.maxQueuedAuto));
+    expect(c.queuedIds.first, 'first');
+    expect(c.queuedIds, isNot(contains('q0')));
+    c.keyingSink.off();
+  });
+
+  test('cancelMessages drops deleted clips, current included', () async {
+    c.enqueue('a', 'TEST', _t);
+    c.enqueue('b', 'E', _t);
+    c.enqueue('c', 'E', _t);
+    await _settle();
+    c.cancelMessages({'a', 'c'});
+    expect(c.queuedIds, isEmpty);
+    expect(c.playingId, 'b');
   });
 
   test('keyers prepare the shared sink', () async {
