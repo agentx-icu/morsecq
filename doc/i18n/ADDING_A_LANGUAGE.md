@@ -157,26 +157,52 @@ so their names follow the language. A new language therefore reaches these
 OS-facing strings with no extra work; only notifications already on screen
 keep their old text.
 
-Reference meanings and mnemonics are separate data tables, currently English
-and Simplified Chinese (§1.6). Traditional Chinese reads the `zh` rows; the
-other added UI languages read the English rows. Translating those data
-tables is separate from adding interface messages.
+Reference meanings and mnemonics are not ARB messages; they live in one
+Dart file per language (§1.6). Every shipped UI language ships them too, and
+a new language must add its file in the same change as its ARB (Step 7).
 
 ### 1.6 Reference content (Q-codes, abbreviations, mnemonics)
 
-Reference *content* is data, not UI chrome, so it is not in the ARB files.
-Each row of a reference table carries its text per language
-(`lib/ui/reference/reference_localized_text.dart`). The lookup for a UI
-locale tries, most specific first:
+Reference *content* is data, not UI chrome, so it is not in the ARB files:
+Q-code and CW-abbreviation meanings, prosign meanings, punctuation names,
+the translated digit mnemonics, the note appended to the English phonetic
+letter mnemonics, and how dits and dahs are voiced. Each language keeps all
+of it in one file:
+
+- `lib/ui/reference/text/reference_text.dart` — the types: `ReferenceText`
+  (tables `qCodes`, `abbreviations`, `prosigns`, `punctuation`, plus
+  `digitPhrases`, `phraseNote`, `rhythm`) and `ReferenceRhythm` (`dit`,
+  `finalDit`, `dah`, `joiner`; `ReferenceRhythm.english` is the default
+  `di-DAH`).
+- `lib/ui/reference/text/reference_text_<tag>.dart` — one `const
+  ReferenceText` per language (`reference_text_en.dart`,
+  `reference_text_zh_hant.dart`, …). **English defines the rows and their
+  display order**; every other language translates exactly those rows.
+- `lib/ui/reference/text/reference_texts.dart` — `kReferenceTexts`, the
+  registry keyed like the ARB files (`en`, `zh`, `zh_Hant`, `ja`, `ko`,
+  `de`, `fr`, `es`, `pt`, `ru` — all ten shipped UI languages), English
+  first.
+
+`lib/ui/reference/reference_localized_text.dart` holds the lookup helpers.
+`kReferenceLanguages` is derived from `kReferenceTexts.keys` (never edit it
+by hand); `referenceRows()` pivots the per-language tables back into one
+map per row for `ReferenceQCodes.meanings`, `ReferenceAbbreviations.meanings`
+and the catalog's prosign and punctuation tables; `referenceTextFor(tag)`
+returns a language's `ReferenceText`, whose `rhythm` drives
+`ReferenceMnemonics.spokenRhythm`. Letter mnemonics stay the English
+phonetic phrase in every language (their stress *is* the rhythm), followed
+by the language's `phraseNote`; digit mnemonics are descriptive, so each
+language translates them in `digitPhrases`. The lookup for a UI locale
+tries, most specific first:
 
 `lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` → `en`
 
-So a `zh-Hant-TW` UI reads a `zh_Hant` row once one exists and the `zh`
-(Simplified) text until then, instead of dropping to English.
-`kReferenceLanguages` lists the languages the tables carry (`en`, `zh`
-today); `test/reference/reference_catalog_test.dart` requires every row to
-have every listed language. Label separators use the full-width colon for
-`zh` / `ja`.
+So a `zh-Hant-TW` UI reads `zh_Hant`, and a region variant nobody ships
+(`de-AT`) reads its language (`de`). English is the last tier only for a
+locale with no registered language at all; it is not a fallback for an
+incomplete translation, because `test/reference/reference_texts_test.dart`
+(§1.7) rejects one. Label separators use the full-width colon for `zh` /
+`ja`.
 
 ### 1.7 What CI checks
 
@@ -187,6 +213,7 @@ have every listed language. Label separators use the full-width colon for
 | `test/i18n/platform_locales_test.dart` | same | Native language declarations equal the ARB set exactly: Android `res/xml/locale_config.xml` (and `android:localeConfig` in the manifest), iOS/macOS `CFBundleLocalizations`, the iOS/macOS `*.lproj/InfoPlist.strings` set and their Xcode registration; every `NS*UsageDescription` translated in every language. ARB `zh` maps to `zh-Hans`, `zh_Hant` to `zh-Hant`, `pt_BR` to `pt-BR`. |
 | `test/i18n/shipped_locales_test.dart` | same | The exact set of ten shipped locales, `CFBundleLocalizations` in both Apple `Info.plist` files, Chinese script/region selection, per-locale persistence and context-free service strings, Russian one/few/many and Portuguese zero-count wording. Update it whenever the shipped set changes. |
 | `test/i18n/locale_resolution_test.dart`, `locale_list_resolution_test.dart`, `locale_controller_test.dart`, `language_settings_tile_test.dart`, `language_dialog_save_test.dart`, `strings_resolver_test.dart` | same | Resolution rules (single locale and preference list), persistence tags, picker behaviour (every choice on a 320 × 568 phone), OS-locale relabelling. |
+| `test/reference/reference_texts_test.dart` | same | `kReferenceTexts` keys equal the shipped ARB locales exactly (English first), so an `app_<tag>.arb` without a registered `reference_text_<tag>.dart` fails. Each language carries exactly the English rows of `qCodes` / `abbreviations` / `prosigns` / `punctuation`, in the same order, none blank; every non-English language has `digitPhrases` for `0`–`9` and a non-empty `phraseNote`; fewer than 10 % of its rows may be identical to English ("actually translated"); the voiced rhythm is never empty. |
 | `flutter analyze apps/morsecq` | CI analyze step | Generated code compiles; strict lints. |
 
 gen-l10n itself **never fails on a missing translation**; it silently falls
@@ -291,15 +318,36 @@ sets, placeholders and plural branches against the English template. Extend
 name to the small-phone picker cases in `language_settings_tile_test.dart`.
 Verify persistence, service strings, system resolution and grammatical counts.
 
-### Step 7 — reference content rows (optional)
+### Step 7 — reference content (required)
 
-Add the language to `kReferenceLanguages` in
-`apps/morsecq/lib/ui/reference/reference_localized_text.dart` and give every
-row of the reference tables (Q-code meanings, abbreviations, prosigns,
-mnemonics) a text for it; `test/reference/reference_catalog_test.dart` fails
-on any row that lacks a listed language. Until you do, the lookup in §1.6
-shows English (or, for a script/region variant, the parent language's text).
-None of the eight languages added on 2026-10-03 has reference rows yet.
+Reference content is part of adding a language, not a follow-up:
+`test/reference/reference_texts_test.dart` fails as soon as `app_it.arb`
+exists without a registered Italian reference text (§1.7).
+
+1. Copy `apps/morsecq/lib/ui/reference/text/reference_text_en.dart` to
+   `reference_text_it.dart` (file name: the ARB tag in lower case,
+   `reference_text_zh_hant.dart` for `zh_Hant`) and rename the constant
+   (`referenceTextIt`).
+2. Translate every value of `qCodes`, `abbreviations`, `prosigns` and
+   `punctuation`. Keep the keys and their order exactly as in English —
+   English defines the rows; never add, drop or reorder one here. Q-codes,
+   abbreviations and prosigns are international and stay as keys; only the
+   meanings are translated.
+3. Add `digitPhrases` for `'0'`–`'9'` (the English digit phrases describe
+   the pattern — "one dit, then four dahs" — so translate the description)
+   and a `phraseNote`, appended in the UI after the English phonetic letter
+   phrase to explain that its stressed syllables are dahs (see
+   `reference_text_zh.dart`: `（英文口诀中重读音节为划）`).
+4. Decide the `rhythm`. Leave it out (the default `ReferenceRhythm.english`,
+   `di-DAH`) unless the language has a **widely established national
+   convention** for voicing Morse that its operators actually use — Chinese
+   `嘀嗒` is the example. Do not invent a transliteration of `di-DAH`; when in
+   doubt, keep the English default.
+5. Import the file in `apps/morsecq/lib/ui/reference/text/reference_texts.dart`
+   and add `'it': referenceTextIt` to `kReferenceTexts` under the ARB tag.
+   `kReferenceLanguages` follows automatically.
+
+Then run `flutter test test/reference`.
 
 ### Step 8 — platform locale manifests
 
@@ -354,8 +402,9 @@ Follow toxee's precedent but keep it minimal:
   routes `zh-Hant-*`, `zh-TW`, `zh-HK`, `zh-MO` to `zh_Hant` and everything
   else Chinese to `zh` with no Chinese-specific list to edit. `LanguageCatalog` labels
   `zh_Hant` as `繁體中文`. Its native tag is `zh-Hant` (Info.plist,
-  `InfoPlist.strings`, `locale_config.xml`); reference content shows the `zh`
-  (Simplified) text until `zh_Hant` rows are added (§1.6). gen-l10n emits the variant as a subclass
+  `InfoPlist.strings`, `locale_config.xml`); its reference content is a full
+  Traditional file of its own, `reference_text_zh_hant.dart` registered as
+  `zh_Hant` (§1.6), with its own rhythm (`滴答`). gen-l10n emits the variant as a subclass
   (`SZhHant` inside `s_zh.dart`) that overrides only the keys its file
   contains; that is exactly why a partial file would leak Simplified text.
   It is written as Taiwan Mandarin (Morse is 摩斯 there), not Cantonese
@@ -380,7 +429,7 @@ Follow toxee's precedent but keep it minimal:
 - [ ] Endonym present in `LanguageCatalog._names` (and `isRtl` if applicable)
 - [ ] `flutter gen-l10n` run; `lib/l10n/generated/` committed
 - [ ] `shipped_locales_test.dart` and the small-phone picker cases in `language_settings_tile_test.dart` updated for the new locale
-- [ ] Optional: reference content — language added to `kReferenceLanguages` and every reference row translated (otherwise English rows are shown)
+- [ ] Reference content: `lib/ui/reference/text/reference_text_<tag>.dart` with every English row translated (same rows, same order), `digitPhrases` `0`–`9`, `phraseNote`, `rhythm` only for an established national convention; registered in `kReferenceTexts` (`reference_texts.dart`); `test/reference/reference_texts_test.dart` green
 - [ ] `CFBundleLocalizations` updated in the iOS and macOS `Info.plist`
 - [ ] `<tag>.lproj/InfoPlist.strings` added for iOS and macOS (every `NS*UsageDescription`) and registered in both Xcode projects
 - [ ] `<locale android:name="<tag>"/>` added to `android/app/src/main/res/xml/locale_config.xml`

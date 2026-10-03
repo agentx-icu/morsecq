@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/i18n/locale_resolution.dart';
 import 'package:morsecq/ui/reference/reference_catalog.dart';
 import 'package:morsecq/ui/reference/reference_localized_text.dart';
 import 'package:morsecq/ui/reference/reference_mnemonics.dart';
@@ -14,6 +15,14 @@ const Locale _zhHantTw = Locale.fromSubtags(
   scriptCode: 'Hant',
   countryCode: 'TW',
 );
+const Locale _zhHansSg = Locale.fromSubtags(
+  languageCode: 'zh',
+  scriptCode: 'Hans',
+  countryCode: 'SG',
+);
+
+/// Italian ships no reference text.
+const Locale _itIt = Locale('it', 'IT');
 
 void main() {
   group('referenceLanguageKeys', () {
@@ -34,10 +43,13 @@ void main() {
     });
 
     test('referenceLanguageFor picks the shipped column', () {
-      expect(referenceLanguageFor(_zhHantTw), 'zh');
-      expect(referenceLanguageFor(_zhHant), 'zh');
+      expect(referenceLanguageFor(_zhHantTw), 'zh_Hant');
+      expect(referenceLanguageFor(_zhHant), 'zh_Hant');
+      // No script: the UI resolves zh-HK to zh_Hant before it gets here;
+      // the raw tag alone only knows the language.
       expect(referenceLanguageFor(const Locale('zh', 'HK')), 'zh');
-      expect(referenceLanguageFor(const Locale('fr', 'FR')), 'en');
+      expect(referenceLanguageFor(const Locale('fr', 'FR')), 'fr');
+      expect(referenceLanguageFor(_itIt), 'en', reason: 'not shipped');
     });
   });
 
@@ -56,16 +68,28 @@ void main() {
       expect(localizedReferenceText(const <String, String>{}, _zhHant), isNull);
     });
 
-    test('Traditional Chinese UI reads the zh tables, not English', () {
-      expect(ReferenceQCodes.meaning('QRZ', _zhHantTw), '谁在呼叫我？');
+    test('each UI reads its own language, unshipped ones fall back', () {
+      for (final String tag in kReferenceTexts.keys) {
+        expect(
+          ReferenceQCodes.meaning('QRZ', parseLocaleTag(tag)!),
+          kReferenceTexts[tag]!.qCodes['QRZ'],
+          reason: tag,
+        );
+      }
       expect(
-        ReferenceQCodes.meaning('QRZ', const Locale('ko')),
-        'Who is calling me?',
+        ReferenceQCodes.meaning('QRZ', _zhHantTw),
+        kReferenceTexts['zh_Hant']!.qCodes['QRZ'],
       );
+      // A Chinese variant nobody ships still reads Chinese, not English.
+      expect(
+        ReferenceQCodes.meaning('QRZ', _zhHansSg),
+        kReferenceTexts['zh']!.qCodes['QRZ'],
+      );
+      expect(ReferenceQCodes.meaning('QRZ', _itIt), 'Who is calling me?');
       final ReferenceEntry a = ReferenceCatalog.alphabet.first;
-      expect(a.mnemonic(_zhHant), startsWith('A：嘀嗒'));
-      expect(a.mnemonic(_zhHantTw), a.mnemonic(const Locale('zh')));
-      expect(a.mnemonic(const Locale('fr')), startsWith('A: di-DAH'));
+      expect(a.mnemonic(_zhHant), startsWith('A：'));
+      expect(a.mnemonic(_zhHantTw), a.mnemonic(_zhHant));
+      expect(a.mnemonic(_itIt), startsWith('A: di-DAH'));
     });
   });
 
@@ -79,29 +103,34 @@ void main() {
       expect(referenceLabelSeparator('fr_FR'), ': ');
     });
 
-    test('a zh_Hant UI hears the Chinese rhythm', () {
-      expect(ReferenceMnemonics.spokenRhythm('.-', language: 'zh_Hant'), '嘀嗒');
+    test('the rhythm follows the most specific shipped language', () {
+      final String zhHant = kReferenceTexts['zh_Hant']!.rhythm.voice('.-');
+      expect(
+        ReferenceMnemonics.spokenRhythm('.-', language: 'zh_Hant'),
+        zhHant,
+      );
       expect(
         ReferenceMnemonics.spokenRhythm(
           '.-',
           language: referenceLanguageFor(_zhHantTw),
         ),
-        '嘀嗒',
+        zhHant,
       );
-      expect(ReferenceMnemonics.spokenRhythm('.-', language: 'de'), 'di-DAH');
+      expect(ReferenceMnemonics.spokenRhythm('.-', language: 'zh'), '嘀嗒');
+      expect(ReferenceMnemonics.spokenRhythm('.-', language: 'it'), 'di-DAH');
     });
 
     test('forCharacter accepts tiered tags for phrases and notes', () {
       expect(
         ReferenceMnemonics.forCharacter('1', '.----', language: 'zh_Hant_TW'),
-        ReferenceMnemonics.forCharacter('1', '.----', language: 'zh'),
+        ReferenceMnemonics.forCharacter('1', '.----', language: 'zh_Hant'),
       );
       expect(
-        ReferenceMnemonics.forCharacter('A', '.-', language: 'zh_Hant'),
+        ReferenceMnemonics.forCharacter('A', '.-', language: 'zh_Hans_SG'),
         'A：嘀嗒 — "a-PART"（英文口诀中重读音节为划）',
       );
       expect(
-        ReferenceMnemonics.forCharacter('A', '.-', language: 'fr'),
+        ReferenceMnemonics.forCharacter('A', '.-', language: 'it'),
         'A: di-DAH — "a-PART"',
       );
     });

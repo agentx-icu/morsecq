@@ -585,7 +585,7 @@
   "learnPendingPattern": "送信中：{pattern}",
   "learnIssueHeadline": "{title}（{severity}）",
   "learnRatioTimes": "{ratio} 倍",
-  "learnTipDitTooLong": "短点が長すぎます（短点の約 {ratio}）。「ダー」ではなく「ト」と短く、押し続けずに軽くたたく感覚で送信してください。",
+  "learnTipDitTooLong": "短点が長すぎます（短点の約 {ratio}）。「ツー」ではなく「トン」と短く、押し続けずに軽くたたく感覚で送信してください。",
   "learnTipDahTooShort": "長点が短すぎます（短点の約 {ratio}、目標は 3 倍）。短点 3 つ分の長さで押し続けてください。",
   "learnTipIntraGapTooLong": "文字内の間隔が広すぎます（短点の約 {ratio}）。1 文字の符号要素は間隔を詰めて送信してください。",
   "learnTipCharGapTooShort": "文字同士がつながっています（間隔は短点の約 {ratio}、目標は 3 倍）。文字の後に明確な休止を入れてください。",

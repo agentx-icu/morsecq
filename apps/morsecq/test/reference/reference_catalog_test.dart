@@ -10,7 +10,8 @@ import 'package:morsecq/ui/reference/reference_qcodes.dart';
 
 const Locale en = Locale('en');
 const Locale zh = Locale('zh');
-const Locale fr = Locale('fr');
+// Italian ships no reference text, so it falls back to English.
+const Locale it = Locale('it');
 
 void main() {
   group('ReferenceCatalog', () {
@@ -57,7 +58,7 @@ void main() {
       // Digit phrases are descriptive, so they are translated.
       final one = ReferenceCatalog.alphabet.firstWhere((e) => e.label == '1');
       expect(one.mnemonic(zh), isNot(contains('one dit')));
-      expect(one.mnemonic(fr), one.mnemonic(en), reason: 'falls back to en');
+      expect(one.mnemonic(it), one.mnemonic(en), reason: 'falls back to en');
     });
 
     test('prosigns are bracketed, playable and explained', () {
@@ -82,7 +83,7 @@ void main() {
       for (final entry in ReferenceCatalog.qCodes) {
         expect(entry.meaning(en), isNotEmpty, reason: entry.label);
         expect(entry.meaning(zh), isNotEmpty, reason: entry.label);
-        expect(entry.meaning(fr), entry.meaning(en), reason: entry.label);
+        expect(entry.meaning(it), entry.meaning(en), reason: entry.label);
         expect(entry.pattern, MorseEncoder.toPattern(entry.label));
       }
       expect(ReferenceQCodes.meaning('QRZ', en), 'Who is calling me?');
