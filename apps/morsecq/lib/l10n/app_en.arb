@@ -3214,5 +3214,263 @@
   "chatScanQrCameraUnavailable": "The camera is not available on this device.",
   "@chatScanQrCameraUnavailable": {
     "description": "Shown in the QR scanner when the camera cannot be started"
+  },
+  "learnReplayAssistedNote": "Replayed: this session counts as practice but won't unlock a lesson or update reviews.",
+  "@learnReplayAssistedNote": {
+    "description": "Receive drill: shown after the learner replayed a round; replays make the session assisted"
+  },
+  "learnPlanTitle": "Today's plan",
+  "@learnPlanTitle": {
+    "description": "Learn home: title of the daily plan card"
+  },
+  "learnPlanSummary": "About {minutes} min · {done} of {total} steps",
+  "@learnPlanSummary": {
+    "description": "Daily plan card: estimated minutes and completed steps",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanBudget": "Plan length",
+  "@learnPlanBudget": {
+    "description": "Daily plan card: label of the plan-length selector"
+  },
+  "learnPlanBudgetMinutes": "{minutes} min",
+  "@learnPlanBudgetMinutes": {
+    "description": "Daily plan card: one plan-length choice in minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStart": "Start plan",
+  "@learnPlanStart": {
+    "description": "Daily plan card: start the first step"
+  },
+  "learnPlanContinue": "Continue plan",
+  "@learnPlanContinue": {
+    "description": "Daily plan card: continue with the next step"
+  },
+  "learnPlanStepReview": "Review due symbols",
+  "@learnPlanStepReview": {
+    "description": "Daily plan step title: spaced review"
+  },
+  "learnPlanStepFocus": "Focused practice",
+  "@learnPlanStepFocus": {
+    "description": "Daily plan step title: focused drill on weak symbols"
+  },
+  "learnPlanStepCourse": "Lesson {lesson}",
+  "@learnPlanStepCourse": {
+    "description": "Daily plan step title: Koch course copying of a lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepSend": "Sending practice",
+  "@learnPlanStepSend": {
+    "description": "Daily plan step title: short sending practice"
+  },
+  "learnPlanReasonDueReview": "Due for review: {symbols}",
+  "@learnPlanReasonDueReview": {
+    "description": "Daily plan reason: symbols due for spaced review",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonConfusions": "Often mixed up: {symbols}",
+  "@learnPlanReasonConfusions": {
+    "description": "Daily plan reason: symbols often confused with each other",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonWeak": "Below 90%: {symbols}",
+  "@learnPlanReasonWeak": {
+    "description": "Daily plan reason: symbols copied below 90 percent",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonChallenge": "{count} symbols: can unlock the next lesson",
+  "@learnPlanReasonChallenge": {
+    "description": "Daily plan reason: course step long enough to unlock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonExtended": "Lengthened to {count} symbols so it can unlock the next lesson",
+  "@learnPlanReasonExtended": {
+    "description": "Daily plan reason: course step lengthened beyond its time share so it can unlock",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonConsolidate": "Short session: consolidates this lesson, cannot unlock the next",
+  "@learnPlanReasonConsolidate": {
+    "description": "Daily plan reason: course step too short to unlock"
+  },
+  "learnPlanReasonOutdated": "Your course moved on: practises lesson {lesson} without unlocking",
+  "@learnPlanReasonOutdated": {
+    "description": "Daily plan reason: the course moved on after the plan was made",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonSend": "{count} short targets to key",
+  "@learnPlanReasonSend": {
+    "description": "Daily plan reason: number of short sending targets",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepDonePercent": "Done · {percent}%",
+  "@learnPlanStepDonePercent": {
+    "description": "Daily plan step: completed with strict accuracy",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStepDone": "Done",
+  "@learnPlanStepDone": {
+    "description": "Daily plan step: completed (no accuracy, e.g. sending)"
+  },
+  "learnPlanSendProgress": "{done} of {total} keyed",
+  "@learnPlanSendProgress": {
+    "description": "Daily plan send step: keyed targets so far",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanStale": "Your lesson or speed changed. Update the steps you haven't started?",
+  "@learnPlanStale": {
+    "description": "Daily plan card: lesson or speed changed after planning"
+  },
+  "learnPlanUpdate": "Update steps",
+  "@learnPlanUpdate": {
+    "description": "Daily plan card: regenerate steps that have not started"
+  },
+  "learnPlanComplete": "Plan complete for today",
+  "@learnPlanComplete": {
+    "description": "Daily plan card: every step done today"
+  },
+  "learnPlanNeedsWork": "Needs work: {symbols}",
+  "@learnPlanNeedsWork": {
+    "description": "Daily plan card: symbols that need work after today's plan",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanAllGood": "No weak symbols today.",
+  "@learnPlanAllGood": {
+    "description": "Daily plan card: no weak symbols after today's plan"
+  },
+  "learnPlanTomorrow": "A new plan arrives tomorrow. Free practice is always open.",
+  "@learnPlanTomorrow": {
+    "description": "Daily plan card: after completing the plan"
+  },
+  "learnPlanNext": "Next: {step}",
+  "@learnPlanNext": {
+    "description": "Daily plan card: the next step to do",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanEarlier": "Yesterday's plan stopped at {done} of {total} steps; it no longer counts for today.",
+  "@learnPlanEarlier": {
+    "description": "Daily plan card: an earlier day's unfinished plan (inspect only)",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceRaise": "Ready for {wpm} WPM effective speed",
+  "@learnSpeedAdviceRaise": {
+    "description": "Speed advice: raise the effective (Farnsworth) speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceRaiseBoth": "Ready for {wpm} WPM",
+  "@learnSpeedAdviceRaiseBoth": {
+    "description": "Speed advice: raise character and effective speed together",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceLower": "Copying is hard at this speed. Try {wpm} WPM effective, or a focused drill.",
+  "@learnSpeedAdviceLower": {
+    "description": "Speed advice: suggest lowering the effective speed",
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceBody": "Based on your last {count} unassisted sessions ({percent}%). Nothing changes until you apply it.",
+  "@learnSpeedAdviceBody": {
+    "description": "Speed advice: evidence behind the recommendation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "learnSpeedAdviceApply": "Apply",
+  "@learnSpeedAdviceApply": {
+    "description": "Speed advice: apply the proposed speed"
+  },
+  "learnSpeedAdviceDismiss": "Not now",
+  "@learnSpeedAdviceDismiss": {
+    "description": "Speed advice: dismiss for this evidence batch"
+  },
+  "learnSpeedAdviceInsufficient": "Speed advice needs 3 unassisted sessions of 50+ symbols at your current speed.",
+  "@learnSpeedAdviceInsufficient": {
+    "description": "Daily plan card: why there is no speed advice yet"
   }
 }

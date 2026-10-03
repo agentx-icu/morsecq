@@ -193,7 +193,8 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
                         TrainingSettings.minCharacterWpm)
                     .round(),
             label: _wpm(s, _t.characterWpm),
-            onChanged: (v) => _setCharacterWpm(v.roundToDouble(), persist: false),
+            onChanged: (v) =>
+                _setCharacterWpm(v.roundToDouble(), persist: false),
             onChangeEnd: (v) => _setCharacterWpm(v.roundToDouble()),
           ),
         ),
@@ -338,7 +339,9 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         builder: (context, _) => Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
-            child: flash == null ? body : FlashOverlay(isOn: flash, child: body),
+            child: flash == null
+                ? body
+                : FlashOverlay(isOn: flash, child: body),
           ),
         ),
       ),

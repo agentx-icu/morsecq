@@ -1,49 +1,18 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
+import 'drill_catalog.dart';
+import 'exercise_outcome.dart';
 import 'receive_session.dart';
 import 'send_session.dart';
 import 'training_settings.dart';
 import 'training_settings_store.dart';
 
-/// What recording a receive session did to the learner's state.
-final class ReceiveOutcome {
-  const ReceiveOutcome({
-    required this.score,
-    required this.passed,
-    required this.advanced,
-    required this.lesson,
-    this.saved = true,
-  });
-
-  final SessionScore score;
-
-  /// False when writing progress failed. The session still counts in memory
-  /// and is written by [TrainingController.retryProgressSave] or the next
-  /// successful save.
-  final bool saved;
-
-  /// Whether the Koch unlock rule was met (regardless of [advanced]).
-  final bool passed;
-
-  /// Whether the current lesson moved forward.
-  final bool advanced;
-
-  /// Lesson after recording.
-  final int lesson;
-}
-
-/// What recording a send session did.
-final class SendOutcome {
-  const SendOutcome({required this.score, this.saved = true});
-
-  final SessionScore score;
-
-  /// See [ReceiveOutcome.saved].
-  final bool saved;
-}
+export 'exercise_outcome.dart';
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
 /// Koch position, SRS due list and streak, starts sessions and records their
@@ -56,6 +25,7 @@ final class TrainingController extends ChangeNotifier {
     KochCourse? course,
     DateTime Function()? now,
     Random? random,
+    this.profileKey = '',
   }) : _progressStore = progressStore,
        _settingsStore = settingsStore,
        course = course ?? KochCourse(),
@@ -66,14 +36,18 @@ final class TrainingController extends ChangeNotifier {
   static const int sendTargetChars = 5;
 
   /// Lesson from which QSO drills are offered (they need most letters).
-  static const int qsoFromLesson = 30;
+  static const int qsoFromLesson = DrillCatalog.qsoFromLesson;
 
   /// Abbreviations / Q-codes needed before that drill is offered.
-  static const int minShorthandWords = 3;
+  static const int minShorthandWords = DrillCatalog.minShorthandWords;
 
   final TrainerStore _progressStore;
   final TrainingSettingsStore _settingsStore;
   final KochCourse course;
+
+  /// The learning profile this controller belongs to (identity public key,
+  /// or `guest`); plans are only executed by their own profile.
+  final String profileKey;
   final DateTime Function() _now;
   final Random _random;
 
@@ -97,6 +71,15 @@ final class TrainingController extends ChangeNotifier {
   TrainerSettings get trainerSettings => _settings.trainer;
 
   DateTime now() => _now();
+
+  /// The injected randomness (plans and simulators seed from it).
+  Random get random => _random;
+
+  DrillCatalog get _catalog => DrillCatalog(
+    course: course,
+    progress: _progress,
+    settings: trainerSettings,
+  );
 
   // ---------------------------------------------------------------------------
   // Lifecycle
@@ -126,7 +109,11 @@ final class TrainingController extends ChangeNotifier {
     if (settings == _settings) {
       return;
     }
+    final speedChanged =
+        settings.trainer.characterWpm != _settings.trainer.characterWpm ||
+        settings.trainer.farnsworthWpm != _settings.trainer.farnsworthWpm;
     _settings = settings;
+    if (speedChanged) _markPlanStale();
     final save = _persist(_settingsStore, () async {
       await _settingsStore.save(settings);
       _savedSettings = settings;
@@ -147,8 +134,20 @@ final class TrainingController extends ChangeNotifier {
       _commit(_progress.copyWith(dailyGoalChars: chars));
 
   /// Jumps to [lesson] (clamped); for the lesson picker.
-  Future<void> setLesson(int lesson) =>
-      _commit(_progress.withLesson(course.clampLesson(lesson)));
+  Future<void> setLesson(int lesson) {
+    final clamped = course.clampLesson(lesson);
+    var next = _progress.withLesson(clamped);
+    final plan = next.dailyPlan;
+    if (clamped != _progress.currentLesson && plan != null) {
+      next = next.copyWith(dailyPlan: plan.markPendingStale());
+    }
+    return _commit(next);
+  }
+
+  /// Commits [update] of the current progress (plans, advice keys).
+  Future<void> commitProgress(
+    TrainerProgress Function(TrainerProgress progress) update,
+  ) => _commit(update(_progress));
 
   Future<void> resetProgress() async {
     _ensureActive();
@@ -203,9 +202,11 @@ final class TrainingController extends ChangeNotifier {
   /// Drill kinds the learned set can support right now.
   List<ReceiveDrillKind> get availableReceiveKinds {
     final chars = learnedChars;
+    final catalog = _catalog;
     return <ReceiveDrillKind>[
       for (final kind in ReceiveDrillKind.values)
-        if (kind != ReceiveDrillKind.review && _drillFor(kind, chars) != null)
+        if (kind != ReceiveDrillKind.review &&
+            catalog.drillFor(kind, chars) != null)
           kind,
     ];
   }
@@ -223,7 +224,7 @@ final class TrainingController extends ChangeNotifier {
     }
     final chars = learnedChars;
     final t = trainerSettings;
-    final generator = _generatorFor(kind, chars);
+    final generator = _catalog.generatorFor(kind, chars);
     return ReceiveSession(
       kind: kind,
       generator: generator,
@@ -254,7 +255,7 @@ final class TrainingController extends ChangeNotifier {
         chars: pool,
         groupCount: 1,
         groupSize: t.groupSize,
-        weights: _weights(),
+        weights: _catalog.weights(),
       ),
       chars: pool,
       timing: t.toTiming(),
@@ -281,7 +282,7 @@ final class TrainingController extends ChangeNotifier {
             chars: chars,
             groupCount: 1,
             groupSize: sendTargetChars,
-            weights: _weights(),
+            weights: _catalog.weights(),
           );
     return SendSession(
       target: generator.generate(_random).text,
@@ -293,16 +294,94 @@ final class TrainingController extends ChangeNotifier {
 
   /// Folds a finished receive session into progress (stats, streak, SRS,
   /// confusion) and, for lesson sessions, applies the Koch unlock rule.
-  Future<ReceiveOutcome> recordReceiveSession(ReceiveSession session) async {
+  Future<ReceiveOutcome> recordReceiveSession(ReceiveSession session) {
     final score = session.finish();
-    var next = _progress.recordSession(
-      score,
-      now: _now(),
+    return recordExercise(
+      score: score,
+      id: session.id,
+      source: session.source,
+      assistance: session.assistance,
+      answered: session.roundCount > 0,
       lesson: session.lesson,
+      timing: session.timing,
+      active: session.activeElapsed,
+      planStepId: session.planStepId,
+      sourceRef: session.sourceRef,
+      learned: session.learnedChars,
+      countsTowardLesson: session.countsTowardLesson,
+    );
+  }
+
+  /// The one commit path for every scored exercise (spec §3): builds the
+  /// exercise record, applies [CreditPolicy], completes the daily-plan step
+  /// in the same write and, for course sessions with unlock credit, the
+  /// Koch rule. A repeated [id] credits nothing (`duplicate`).
+  Future<ReceiveOutcome> recordExercise({
+    required SessionScore score,
+    required String id,
+    required ExerciseSource source,
+    required Set<Assistance> assistance,
+    bool answered = true,
+    bool completed = true,
+    int? lesson,
+    MorseTiming? timing,
+    Duration? active,
+    String? planStepId,
+    String? sourceRef,
+    String? detailRef,
+    Set<String>? learned,
+    bool countsTowardLesson = false,
+  }) async {
+    final now = _now();
+    if (_progress.hasCommitted(id)) {
+      return ReceiveOutcome(
+        score: score,
+        passed: false,
+        advanced: false,
+        lesson: currentLesson,
+        duplicate: true,
+        exerciseId: id,
+      );
+    }
+    final credit = CreditPolicy.decide(
+      source: source,
+      completed: completed,
+      answered: answered,
+      assistance: assistance,
+    );
+    final t = timing ?? trainerSettings.toTiming();
+    final summary = SessionSummary.exercise(
+      score,
+      id: id,
+      source: source,
+      at: score.at ?? now,
+      assistance: assistance,
+      lesson: lesson ?? score.lesson ?? currentLesson,
+      characterWpm: t.wpm,
+      effectiveWpm: t.isFarnsworth ? t.farnsworthWpm : t.wpm,
+      toneHz: _settings.trainer.toneHz,
+      completed: completed,
+      active: active,
+      planStepId: planStepId,
+      sourceRef: sourceRef,
+      detailRef: detailRef,
+    );
+    var next = _progress.recordExercise(
+      score,
+      summary,
+      credit: credit,
+      now: now,
+      learned: learned ?? learnedChars.toSet(),
     );
     final before = next.currentLesson;
-    if (session.countsTowardLesson) {
-      next = next.advanceIfPassed(course, score);
+    final mayUnlock =
+        credit.unlock &&
+        countsTowardLesson &&
+        (lesson == null || lesson == before);
+    if (mayUnlock) next = next.advanceIfPassed(course, score);
+    next = completePlanStep(next, planStepId, id, score);
+    if (next.currentLesson != before && next.dailyPlan != null) {
+      next = next.copyWith(dailyPlan: next.dailyPlan!.markPendingStale());
     }
     final saved = await _commitKeepingResult(next);
     return ReceiveOutcome(
@@ -311,6 +390,21 @@ final class TrainingController extends ChangeNotifier {
       advanced: next.currentLesson != before,
       lesson: next.currentLesson,
       saved: saved,
+      credit: credit,
+      exerciseId: id,
+    );
+  }
+
+  void _markPlanStale() {
+    final plan = _progress.dailyPlan;
+    if (plan == null || !plan.isFor(_now())) return;
+    _progress = _progress.copyWith(dailyPlan: plan.markPendingStale());
+    final next = _progress;
+    unawaited(
+      _persist(
+        _progressStore,
+        () => _progressStore.save(next),
+      ).then((_) {}, onError: (Object _) {}),
     );
   }
 
@@ -321,14 +415,18 @@ final class TrainingController extends ChangeNotifier {
   /// only the history entry (and the streak derived from it) is added.
   Future<SendOutcome> recordSendSession(SendSession session) async {
     final score = session.scoreForHistory();
-    final now = _now();
-    final saved = await _commitKeepingResult(
-      _progress.recordPractice(
-        SessionSummary.fromScore(score, at: now),
-        now: now,
-      ),
+    final outcome = await recordExercise(
+      score: score,
+      id: session.id,
+      source: ExerciseSource.send,
+      assistance: const <Assistance>{},
+      answered: session.hasInput,
+      lesson: session.lesson,
+      timing: session.nominalTiming,
+      active: session.elapsed,
+      planStepId: session.planStepId,
     );
-    return SendOutcome(score: score, saved: saved);
+    return SendOutcome(score: score, saved: outcome.saved);
   }
 
   /// Writes the current in-memory progress again after a failed save. Never
@@ -347,78 +445,6 @@ final class TrainingController extends ChangeNotifier {
 
   // ---------------------------------------------------------------------------
   // Internals
-
-  /// The drill for [kind], falling back to lesson groups when the learned
-  /// set cannot support it yet.
-  DrillGenerator _generatorFor(ReceiveDrillKind kind, List<String> chars) =>
-      _drillFor(kind, chars) ?? _drillFor(ReceiveDrillKind.groups, chars)!;
-
-  /// The drill for [kind] over [chars], or null when [chars] (or the
-  /// current lesson) cannot support it. Single source of truth for both
-  /// [availableReceiveKinds] and the sessions that are started.
-  DrillGenerator? _drillFor(ReceiveDrillKind kind, List<String> chars) {
-    final allowed = chars.toSet();
-    final t = trainerSettings;
-    final lateLessons = currentLesson >= qsoFromLesson;
-    switch (kind) {
-      case ReceiveDrillKind.groups:
-      case ReceiveDrillKind.review:
-        return RandomGroupsDrill(
-          chars: chars,
-          groupCount: 1,
-          groupSize: t.groupSize,
-          weights: _weights(),
-        );
-      case ReceiveDrillKind.characters:
-        return RandomGroupsDrill(
-          chars: chars,
-          groupCount: 1,
-          groupSize: 1,
-          weights: _weights(),
-        );
-      case ReceiveDrillKind.words:
-        final words = WordDrill.commonWords(
-          allowedChars: allowed,
-          wordCount: 2,
-        );
-        return words.hasCandidates ? words : null;
-      case ReceiveDrillKind.abbreviations:
-        final shorthand = WordDrill.radioShorthand(
-          allowedChars: allowed,
-          wordCount: 2,
-        );
-        // `K` alone is an abbreviation; a drill of only `K K` is not one.
-        return shorthand.candidates.length >= minShorthandWords
-            ? shorthand
-            : null;
-      case ReceiveDrillKind.numbers:
-        final numbers = NumberGroupsDrill(
-          groupSize: t.groupSize,
-          allowedChars: allowed,
-        );
-        return numbers.canGenerate ? numbers : null;
-      case ReceiveDrillKind.callsigns:
-        final calls = CallsignDrill(count: 1, allowedChars: allowed);
-        return calls.canGenerate ? calls : null;
-      case ReceiveDrillKind.confusables:
-        final pairs = ConfusableDrill(
-          chars: chars,
-          confusion: _progress.confusion,
-          groupSize: t.groupSize,
-        );
-        return pairs.canGenerate ? pairs : null;
-      case ReceiveDrillKind.qso:
-        return lateLessons ? QsoDrill() : null;
-      case ReceiveDrillKind.contest:
-        final contest = ContestExchangeDrill(allowedChars: allowed);
-        return lateLessons && contest.canGenerate ? contest : null;
-    }
-  }
-
-  CharWeights _weights() => CharWeights.fromStats(
-    _progress.charStats,
-    recent: course.recentCharsForLesson(currentLesson),
-  );
 
   TrainerProgress _clampLesson(TrainerProgress progress) {
     final clamped = course.clampLesson(progress.currentLesson);

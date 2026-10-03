@@ -29,8 +29,13 @@ class SendPracticeScreen extends StatefulWidget {
     required this.controller,
     required this.playback,
     this.session,
+    this.nextSession,
     this.screenWake = const WakelockScreenWake(),
   });
+
+  /// Makes the session for "Try another" (daily-plan send steps); defaults
+  /// to `controller.startSendSession()`.
+  final Future<SendSession> Function()? nextSession;
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
@@ -196,9 +201,17 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     setState(() {});
   }
 
-  void _another() {
+  Future<void> _another() async {
+    final factory = widget.nextSession;
+    final next = factory == null
+        ? widget.controller.startSendSession()
+        : await factory();
+    if (_disposed) {
+      next.dispose();
+      return;
+    }
     _session.dispose();
-    _session = widget.controller.startSendSession();
+    _session = next;
     _watchSession();
     _result = null;
     _recording = false;

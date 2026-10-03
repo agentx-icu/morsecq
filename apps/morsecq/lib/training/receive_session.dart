@@ -85,13 +85,79 @@ final class ReceiveSession {
     this.lesson,
     this.countsTowardLesson = false,
     this.timeBudget,
+    ExerciseSource? source,
+    this.planStepId,
+    this.sourceRef,
+    this.learnedChars,
+    String? id,
   }) : assert(charBudget > 0, 'charBudget must be positive'),
        _generator = generator,
        _random = random,
        _now = now,
        chars = List<String>.unmodifiable(chars),
+       source =
+           source ??
+           (countsTowardLesson
+               ? ExerciseSource.course
+               : kind == ReceiveDrillKind.review
+               ? ExerciseSource.review
+               : ExerciseSource.focus),
        startedAt = now() {
+    // Not from the drill random: ids must not shift a seeded drill.
+    this.id = id ?? ExerciseIds.next(startedAt, Random());
     _current = _generator.generate(_random);
+  }
+
+  /// Stable exercise id: saving again (retry) keeps it, a new session gets
+  /// a new one.
+  late final String id;
+
+  final ExerciseSource source;
+
+  /// Daily-plan step this session executes, if any.
+  final String? planStepId;
+
+  /// Local origin reference (chat message, material entry).
+  final String? sourceRef;
+
+  /// Symbols that may enter learned-symbol statistics; null = the
+  /// controller's learned set.
+  final Set<String>? learnedChars;
+
+  final Set<Assistance> _assistance = <Assistance>{};
+  Duration _paused = Duration.zero;
+  DateTime? _pausedAt;
+
+  /// Help used so far. Revealing can never be taken back: once assisted,
+  /// the attempt stays assisted.
+  Set<Assistance> get assistance => Set<Assistance>.unmodifiable(_assistance);
+
+  bool get isAssisted => _assistance.isNotEmpty;
+
+  void markAssistance(Assistance kind) {
+    if (!isFinished) _assistance.add(kind);
+  }
+
+  /// A replay of the current round after its first playback.
+  void markReplay() => markAssistance(Assistance.replay);
+
+  /// Background / pause: excluded from [activeElapsed].
+  void pause() => _pausedAt ??= _now();
+
+  void resume() {
+    final at = _pausedAt;
+    if (at == null) return;
+    _paused += _now().difference(at);
+    _pausedAt = null;
+  }
+
+  /// Time spent practising (pauses and background excluded).
+  Duration get activeElapsed {
+    final pausedNow = _pausedAt == null
+        ? Duration.zero
+        : _now().difference(_pausedAt!);
+    final active = elapsed - _paused - pausedNow;
+    return active.isNegative ? Duration.zero : active;
   }
 
   final ReceiveDrillKind kind;

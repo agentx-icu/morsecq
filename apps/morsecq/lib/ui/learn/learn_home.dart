@@ -9,6 +9,8 @@ import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'plan/speed_advice_card.dart';
+import 'plan/today_plan_card.dart';
 import 'receive/drill_picker_sheet.dart';
 import 'receive/receive_drill_screen.dart';
 import 'review/review_screen.dart';
@@ -174,8 +176,16 @@ class LearnHome extends StatelessWidget {
       ),
       const SizedBox(height: 12),
       DailyGoalCard(controller: controller),
+      ..._planCards(),
     ],
   );
+
+  /// Today's plan and any pending speed advice, under the goal card.
+  List<Widget> _planCards() => <Widget>[
+    const SizedBox(height: 12),
+    SpeedAdviceCard(controller: controller),
+    TodayPlanCard(controller: controller, playback: playback),
+  ];
 
   Widget _actions(BuildContext context) => QuickActions(
     showContinue: false,
@@ -239,13 +249,22 @@ class LearnHome extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              Expanded(flex: 2, child: DailyGoalCard(controller: controller)),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    DailyGoalCard(controller: controller),
+                    ..._planCards(),
+                  ],
+                ),
+              ),
             ],
           )
         else ...[
           lesson,
           const SizedBox(height: 8),
           DailyGoalCard(controller: controller),
+          ..._planCards(),
           const SizedBox(height: 12),
           actions,
         ],

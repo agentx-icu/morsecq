@@ -54,9 +54,20 @@ class LearnScope extends StatefulWidget {
     final controller = TrainingController(
       progressStore: FileTrainerStore.inDataDirectory(dir),
       settingsStore: FileTrainingSettingsStore.inDataDirectory(dir),
+      profileKey: _profileKeyOf(identity),
     );
     await controller.load();
     return controller;
+  }
+
+  /// The identity's public key; '' when the service cannot tell (minimal
+  /// test stubs only implement `dataDirectory`).
+  static String _profileKeyOf(IdentityService identity) {
+    try {
+      return identity.current?.publicKey ?? '';
+    } on Object {
+      return '';
+    }
   }
 
   @override

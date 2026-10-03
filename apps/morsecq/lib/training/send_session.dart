@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
@@ -18,10 +19,20 @@ final class SendSession implements KeyTarget {
     required DateTime Function() now,
     this.lesson,
     this.drillKind = 'send',
+    this.planStepId,
+    String? id,
   }) : decoder = MorseDecoder(config: DecoderConfig(initialDit: timing.dit)),
        nominalTiming = timing,
        _now = now,
-       startedAt = now();
+       startedAt = now() {
+    this.id = id ?? ExerciseIds.next(startedAt, Random());
+  }
+
+  /// Stable exercise id of this attempt (see `ReceiveSession.id`).
+  late final String id;
+
+  /// Daily-plan step this attempt belongs to, if any.
+  final String? planStepId;
 
   /// Text the operator is asked to send.
   final String target;
@@ -74,7 +85,9 @@ final class SendSession implements KeyTarget {
       final pattern = symbol.startsWith('<')
           ? MorseAlphabet.encodeProsign(symbol)
           : null;
-      final mark = pattern == null ? null : MorseAlphabet.decodePattern(pattern);
+      final mark = pattern == null
+          ? null
+          : MorseAlphabet.decodePattern(pattern);
       if (mark != null && !wanted.contains(mark)) {
         aliases[mark] = symbol;
       }
