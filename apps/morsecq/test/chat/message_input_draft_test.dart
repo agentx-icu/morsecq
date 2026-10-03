@@ -72,10 +72,10 @@ void main() {
 
   testWidgets('a delayed send preserves and persists a newer draft', (t) async {
     final (h, service, id) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
-    await t.enterText(find.byType(TextField), 'SECOND DRAFT');
+    await keyIn(t, 'SECOND DRAFT');
     service.sent.complete();
     await t.pump();
     await t.pump(const Duration(milliseconds: 450));
@@ -90,11 +90,11 @@ void main() {
     t,
   ) async {
     final (_, service, _) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
-    await t.enterText(find.byType(TextField), 'SECOND');
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'SECOND');
+    await keyIn(t, 'FIRST');
     service.sent.complete();
     await t.pump();
     expect(
@@ -106,7 +106,7 @@ void main() {
 
   testWidgets('an unchanged draft clears after success', (t) async {
     final (h, service, id) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
     service.sent.complete();
@@ -118,10 +118,10 @@ void main() {
 
   testWidgets('a failed send leaves the edited draft intact', (t) async {
     final (h, service, id) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
-    await t.enterText(find.byType(TextField), 'SECOND');
+    await keyIn(t, 'SECOND');
     service.sent.completeError(StateError('offline'));
     await t.pump();
     await t.pump(const Duration(milliseconds: 450));
@@ -136,10 +136,10 @@ void main() {
     t,
   ) async {
     final (h, service, id) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
-    await t.enterText(find.byType(TextField), 'SECOND');
+    await keyIn(t, 'SECOND');
     await t.pumpWidget(h.wrap(const SizedBox()));
     await h.service.setDraft(id, 'REOPENED');
     service.sent.complete();
@@ -153,9 +153,9 @@ void main() {
   ) async {
     final (h, service, id) = await setup(t);
     service.delayWrites = true;
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump(const Duration(milliseconds: 450));
-    await t.enterText(find.byType(TextField), 'SECOND');
+    await keyIn(t, 'SECOND');
     await t.pump(const Duration(milliseconds: 450));
     expect(service.writes, ['FIRST']);
     service.writeGates.first.complete();
@@ -171,9 +171,9 @@ void main() {
     (t) async {
       final (h, service, id) = await setup(t);
       service.delayWrites = true;
-      await t.enterText(find.byType(TextField), 'FIRST');
+      await keyIn(t, 'FIRST');
       await t.pump(const Duration(milliseconds: 450));
-      await t.enterText(find.byType(TextField), 'SECOND');
+      await keyIn(t, 'SECOND');
       await t.pumpWidget(h.wrap(const SizedBox()));
       await t.pumpWidget(
         h.wrap(
@@ -193,7 +193,7 @@ void main() {
         t.widget<TextField>(find.byType(TextField)).controller!.text,
         'SECOND',
       );
-      await t.enterText(find.byType(TextField), 'REOPENED');
+      await keyIn(t, 'REOPENED');
       await t.pump(const Duration(milliseconds: 450));
       for (var i = 0; i < 3; i++) {
         service.writeGates[i].complete();
@@ -233,7 +233,7 @@ void main() {
   ) async {
     final (h, service, id) = await setup(t);
     service.delayWrites = true;
-    await t.enterText(find.byType(TextField), 'PENDING CQ');
+    await keyIn(t, 'PENDING CQ');
     await t.pump(const Duration(milliseconds: 450));
     await t.pumpWidget(h.wrap(const SizedBox()));
     final participant = await reopen(t, h, service, id);
@@ -256,9 +256,9 @@ void main() {
   ) async {
     final (h, service, id) = await setup(t);
     service.delayWrites = true;
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump(const Duration(milliseconds: 450));
-    await t.enterText(find.byType(TextField), 'SECOND');
+    await keyIn(t, 'SECOND');
     await t.pumpWidget(h.wrap(const SizedBox()));
     final participant = await reopen(t, h, service, id);
     service.writeGates.first.complete();
@@ -283,12 +283,12 @@ void main() {
     'editing back to saved text supersedes a pending different draft',
     (t) async {
       final (h, service, id) = await setup(t);
-      await t.enterText(find.byType(TextField), 'FIRST');
+      await keyIn(t, 'FIRST');
       await t.pump(const Duration(milliseconds: 450));
       service.delayWrites = true;
-      await t.enterText(find.byType(TextField), 'SECOND');
+      await keyIn(t, 'SECOND');
       await t.pump(const Duration(milliseconds: 450));
-      await t.enterText(find.byType(TextField), 'FIRST');
+      await keyIn(t, 'FIRST');
       await t.pump(const Duration(milliseconds: 450));
       service.writeGates.first.complete();
       await t.pump();
@@ -303,7 +303,7 @@ void main() {
   testWidgets('a failed disposed draft stays recoverable for retry', (t) async {
     final (h, service, id) = await setup(t);
     service.failDraftWrites = true;
-    await t.enterText(find.byType(TextField), 'FAILED CQ');
+    await keyIn(t, 'FAILED CQ');
     await t.pump(const Duration(milliseconds: 450));
     await t.pumpWidget(h.wrap(const SizedBox()));
     await t.pump();
@@ -322,7 +322,7 @@ void main() {
     t,
   ) async {
     final (h, service, id) = await setup(t);
-    await t.enterText(find.byType(TextField), 'FIRST');
+    await keyIn(t, 'FIRST');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
     final nav = t.state<NavigatorState>(find.byType(Navigator));
@@ -344,7 +344,7 @@ void main() {
       ),
     );
     await t.pumpAndSettle();
-    await t.enterText(find.byType(TextField), 'SECOND DRAFT');
+    await keyIn(t, 'SECOND DRAFT');
     await t.pump(const Duration(milliseconds: 450));
     service.sent.complete();
     await t.pumpAndSettle();

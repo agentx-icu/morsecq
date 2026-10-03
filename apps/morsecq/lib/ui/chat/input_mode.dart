@@ -1,2 +1,3 @@
 /// Compose modes remembered as a user preference across conversations.
-enum InputMode { keyboard, straightKey, paddles }
+/// Chat is keyed only; there is no typed-text mode.
+enum InputMode { straightKey, paddles }

@@ -340,6 +340,7 @@ void main() {
       playback.toneHz = 550;
       playback.trainingMode = true;
       playback.inputMode = InputMode.paddles;
+      playback.autoPlay = true;
       await pumpEventQueue(times: 30);
     });
     await restart(tester);
@@ -348,5 +349,6 @@ void main() {
     expect(playback.toneHz, 550);
     expect(playback.trainingMode, isTrue);
     expect(playback.inputMode, InputMode.paddles);
+    expect(playback.autoPlay, isTrue);
   });
 }

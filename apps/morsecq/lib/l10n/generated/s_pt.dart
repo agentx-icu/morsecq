@@ -778,6 +778,15 @@ class SPt extends S {
   String get chatTrainingModeOff => 'Treinamento desativado';
 
   @override
+  String get chatAutoPlay => 'Reproduzir automaticamente o Morse recebido';
+
+  @override
+  String get chatAutoPlayOn => 'Reprodução automática ativada: novas mensagens tocam ao chegar';
+
+  @override
+  String get chatAutoPlayOff => 'Reprodução automática desativada';
+
+  @override
   String get chatReveal => 'Mostrar';
 
   @override
@@ -829,16 +838,13 @@ class SPt extends S {
   String get chatClearHistory => 'Limpar histórico';
 
   @override
-  String get chatModeKeyboard => 'Teclado';
-
-  @override
   String get chatModeStraightKey => 'Chave manual';
 
   @override
   String get chatModePaddles => 'Palhetas';
 
   @override
-  String get chatTypeMessage => 'Digite uma mensagem';
+  String get chatKeyMessage => 'Transmita sua mensagem em Morse';
 
   @override
   String get chatSend => 'Enviar';

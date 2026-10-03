@@ -760,6 +760,15 @@ class SZh extends S {
   String get chatTrainingModeOff => '训练模式已关';
 
   @override
+  String get chatAutoPlay => '自动播放收到的电码';
+
+  @override
+  String get chatAutoPlayOn => '自动播放已开：新消息到达即播放';
+
+  @override
+  String get chatAutoPlayOff => '自动播放已关';
+
+  @override
   String get chatReveal => '显示';
 
   @override
@@ -811,16 +820,13 @@ class SZh extends S {
   String get chatClearHistory => '清空历史记录';
 
   @override
-  String get chatModeKeyboard => '键盘';
-
-  @override
   String get chatModeStraightKey => '直键';
 
   @override
   String get chatModePaddles => '双桨';
 
   @override
-  String get chatTypeMessage => '输入消息';
+  String get chatKeyMessage => '用电键拍发消息';
 
   @override
   String get chatSend => '发送';
@@ -3040,6 +3046,15 @@ class SZhHant extends SZh {
   String get chatTrainingModeOff => '訓練模式已關';
 
   @override
+  String get chatAutoPlay => '自動播放收到的電碼';
+
+  @override
+  String get chatAutoPlayOn => '自動播放已開啟：新訊息到達即播放';
+
+  @override
+  String get chatAutoPlayOff => '自動播放已關閉';
+
+  @override
   String get chatReveal => '顯示';
 
   @override
@@ -3091,16 +3106,13 @@ class SZhHant extends SZh {
   String get chatClearHistory => '清空歷史紀錄';
 
   @override
-  String get chatModeKeyboard => '鍵盤';
-
-  @override
   String get chatModeStraightKey => '直鍵';
 
   @override
   String get chatModePaddles => '雙槳';
 
   @override
-  String get chatTypeMessage => '輸入訊息';
+  String get chatKeyMessage => '用電鍵拍發訊息';
 
   @override
   String get chatSend => '傳送';

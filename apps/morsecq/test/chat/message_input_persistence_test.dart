@@ -55,7 +55,7 @@ void main() {
     tester,
   ) async {
     final participant = await mount(tester);
-    await tester.enterText(find.byType(TextField), 'CQ');
+    await keyIn(tester, 'CQ');
     await expectLater(participant.flush(), throwsStateError);
     store.fail = false;
     await participant.flush();
@@ -73,7 +73,7 @@ void main() {
     await identity.deleteIdentity();
     await identity.importBackup(backup);
     await tester.pump();
-    await tester.enterText(find.byType(TextField), 'STALE CQ');
+    await keyIn(tester, 'STALE CQ');
     await participant.flush();
     expect(store.saved, isEmpty);
     await tester.pumpWidget(const SizedBox());
@@ -84,7 +84,7 @@ void main() {
   ) async {
     final participant = await mount(tester);
     store.fail = false;
-    await tester.enterText(find.byType(TextField), 'OLD CQ');
+    await keyIn(tester, 'OLD CQ');
     await participant.flush();
     final backup = await identity.exportBackup();
     await participant.prepareForReplacement();
@@ -114,7 +114,7 @@ void main() {
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       'RESTORED CQ',
     );
-    await tester.enterText(find.byType(TextField), 'NEW CQ');
+    await keyIn(tester, 'NEW CQ');
     final restored =
         tester.state(find.byType(MessageInput)) as IdentityDataStore;
     await restored.flush();
@@ -131,7 +131,7 @@ void main() {
   ) async {
     final participant = await mount(tester);
     final backup = await identity.exportBackup();
-    await tester.enterText(find.byType(TextField), 'FAILED OLD CQ');
+    await keyIn(tester, 'FAILED OLD CQ');
     await expectLater(participant.flush(), throwsStateError);
     await tester.pumpWidget(harness.wrap(const SizedBox()));
     await tester.pump();
@@ -169,7 +169,7 @@ void main() {
   ) async {
     final participant = await mount(tester);
     store.fail = false;
-    await tester.enterText(find.byType(TextField), 'QUEUED CQ');
+    await keyIn(tester, 'QUEUED CQ');
     final saving = participant.flush();
     final preparing = participant.prepareForReplacement();
     await Future.wait([saving, preparing]);
@@ -188,7 +188,7 @@ void main() {
     await participant.prepareForReplacement();
     await identity.updateProfile(displayName: 'Old identity republished');
     await tester.pump();
-    await tester.enterText(find.byType(TextField), 'STILL HERE');
+    await keyIn(tester, 'STILL HERE');
     await participant.flush();
     expect(store.saved, 'STILL HERE');
     await tester.pumpWidget(const SizedBox());

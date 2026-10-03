@@ -777,6 +777,15 @@ class SEs extends S {
   String get chatTrainingModeOff => 'Entrenamiento desactivado';
 
   @override
+  String get chatAutoPlay => 'Reproducir automáticamente el Morse recibido';
+
+  @override
+  String get chatAutoPlayOn => 'Reproducción automática activada: los mensajes nuevos suenan al llegar';
+
+  @override
+  String get chatAutoPlayOff => 'Reproducción automática desactivada';
+
+  @override
   String get chatReveal => 'Mostrar';
 
   @override
@@ -828,16 +837,13 @@ class SEs extends S {
   String get chatClearHistory => 'Borrar historial';
 
   @override
-  String get chatModeKeyboard => 'Teclado';
-
-  @override
   String get chatModeStraightKey => 'Llave vertical';
 
   @override
   String get chatModePaddles => 'Paletas';
 
   @override
-  String get chatTypeMessage => 'Escribe un mensaje';
+  String get chatKeyMessage => 'Transmite tu mensaje en Morse';
 
   @override
   String get chatSend => 'Enviar';

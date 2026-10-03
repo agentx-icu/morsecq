@@ -760,6 +760,15 @@ class SJa extends S {
   String get chatTrainingModeOff => '練習モード無効';
 
   @override
+  String get chatAutoPlay => '受信したモールスを自動再生';
+
+  @override
+  String get chatAutoPlayOn => '自動再生オン：新着メッセージを受信時に再生します';
+
+  @override
+  String get chatAutoPlayOff => '自動再生オフ';
+
+  @override
   String get chatReveal => '表示';
 
   @override
@@ -811,16 +820,13 @@ class SJa extends S {
   String get chatClearHistory => '履歴を消去';
 
   @override
-  String get chatModeKeyboard => 'キーボード';
-
-  @override
   String get chatModeStraightKey => '縦振れ電鍵';
 
   @override
   String get chatModePaddles => 'パドル';
 
   @override
-  String get chatTypeMessage => 'メッセージを入力';
+  String get chatKeyMessage => '電鍵でメッセージを打鍵';
 
   @override
   String get chatSend => '送信';

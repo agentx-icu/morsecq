@@ -760,6 +760,15 @@ class SKo extends S {
   String get chatTrainingModeOff => '훈련 모드 꺼짐';
 
   @override
+  String get chatAutoPlay => '받은 모스 부호 자동 재생';
+
+  @override
+  String get chatAutoPlayOn => '자동 재생 켜짐: 새 메시지가 도착하면 재생됩니다';
+
+  @override
+  String get chatAutoPlayOff => '자동 재생 꺼짐';
+
+  @override
   String get chatReveal => '보기';
 
   @override
@@ -811,16 +820,13 @@ class SKo extends S {
   String get chatClearHistory => '기록 지우기';
 
   @override
-  String get chatModeKeyboard => '키보드';
-
-  @override
   String get chatModeStraightKey => '수동 전건';
 
   @override
   String get chatModePaddles => '패들';
 
   @override
-  String get chatTypeMessage => '메시지 입력';
+  String get chatKeyMessage => '전건으로 메시지를 입력하세요';
 
   @override
   String get chatSend => '보내기';

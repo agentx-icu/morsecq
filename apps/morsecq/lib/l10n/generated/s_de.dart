@@ -777,6 +777,15 @@ class SDe extends S {
   String get chatTrainingModeOff => 'Trainingsmodus aus';
 
   @override
+  String get chatAutoPlay => 'Empfangene Morsezeichen automatisch abspielen';
+
+  @override
+  String get chatAutoPlayOn => 'Automatische Wiedergabe an: neue Nachrichten werden beim Eintreffen abgespielt';
+
+  @override
+  String get chatAutoPlayOff => 'Automatische Wiedergabe aus';
+
+  @override
   String get chatReveal => 'Einblenden';
 
   @override
@@ -828,16 +837,13 @@ class SDe extends S {
   String get chatClearHistory => 'Verlauf löschen';
 
   @override
-  String get chatModeKeyboard => 'Tastatur';
-
-  @override
   String get chatModeStraightKey => 'Handtaste';
 
   @override
   String get chatModePaddles => 'Paddles';
 
   @override
-  String get chatTypeMessage => 'Nachricht eingeben';
+  String get chatKeyMessage => 'Nachricht morsen';
 
   @override
   String get chatSend => 'Senden';

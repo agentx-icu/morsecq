@@ -142,7 +142,7 @@ void main() {
       return ConversationScreen(target: ConversationTarget.fromGroup(g));
     });
     expect(find.text('Ann'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'K');
+    await keyIn(tester, 'K');
     await tester.pump();
     await tester.tap(find.byTooltip(s.chatSend));
     await tester.pumpAndSettle();

@@ -778,6 +778,15 @@ class SFr extends S {
   String get chatTrainingModeOff => 'Mode entraînement désactivé';
 
   @override
+  String get chatAutoPlay => 'Lire automatiquement le morse reçu';
+
+  @override
+  String get chatAutoPlayOn => 'Lecture auto activée : les nouveaux messages sont lus à leur arrivée';
+
+  @override
+  String get chatAutoPlayOff => 'Lecture auto désactivée';
+
+  @override
   String get chatReveal => 'Révéler';
 
   @override
@@ -829,16 +838,13 @@ class SFr extends S {
   String get chatClearHistory => 'Effacer l’historique';
 
   @override
-  String get chatModeKeyboard => 'Clavier';
-
-  @override
   String get chatModeStraightKey => 'Pioche';
 
   @override
   String get chatModePaddles => 'Palettes';
 
   @override
-  String get chatTypeMessage => 'Saisissez un message';
+  String get chatKeyMessage => 'Manipulez votre message';
 
   @override
   String get chatSend => 'Envoyer';

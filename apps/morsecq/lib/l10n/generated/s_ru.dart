@@ -815,6 +815,15 @@ class SRu extends S {
   String get chatTrainingModeOff => 'Режим обучения выключен';
 
   @override
+  String get chatAutoPlay => 'Автоматически воспроизводить принятую морзянку';
+
+  @override
+  String get chatAutoPlayOn => 'Автовоспроизведение включено: новые сообщения звучат по мере поступления';
+
+  @override
+  String get chatAutoPlayOff => 'Автовоспроизведение выключено';
+
+  @override
   String get chatReveal => 'Показать';
 
   @override
@@ -866,16 +875,13 @@ class SRu extends S {
   String get chatClearHistory => 'Очистить историю';
 
   @override
-  String get chatModeKeyboard => 'Клавиатура';
-
-  @override
   String get chatModeStraightKey => 'Вертикальный ключ';
 
   @override
   String get chatModePaddles => 'Двухрычажный манипулятор';
 
   @override
-  String get chatTypeMessage => 'Введите сообщение';
+  String get chatKeyMessage => 'Передайте сообщение ключом';
 
   @override
   String get chatSend => 'Отправить';
