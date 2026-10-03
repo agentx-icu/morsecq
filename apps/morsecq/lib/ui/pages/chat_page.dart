@@ -2,14 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
 import '../chat/conversation_list.dart';
+import '../chat/conversation_route.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
 import '../contacts/contacts_page.dart';
+import '../shell/shell_router.dart';
 import 'placeholder_page.dart';
 
 /// One-to-one Morse conversations over Tox.
@@ -33,19 +36,54 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   ConversationTarget? _selected;
+  StreamSubscription<ConversationTarget>? _shellConversations;
+  StreamSubscription<void>? _shellContacts;
+
+  @override
+  void initState() {
+    super.initState();
+    final ShellRouter? router = context.read<ShellRouter?>();
+    _shellConversations = router?.conversationRequests
+        .where((t) => t.kind == ConversationKind.c2c)
+        .listen(_openFromShell);
+    _shellContacts = router?.contactsRequests.listen((_) => _contactsFromShell());
+  }
+
+  @override
+  void dispose() {
+    unawaited(_shellConversations?.cancel());
+    unawaited(_shellContacts?.cancel());
+    super.dispose();
+  }
 
   void _open(BuildContext context, ConversationTarget target) {
     if (isMasterDetail(context)) {
       setState(() => _selected = target);
       return;
     }
-    unawaited(
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ConversationScreen(target: target),
-        ),
-      ),
-    );
+    unawaited(Navigator.of(context).push(conversationRoute(target)));
+  }
+
+  /// A notification asked for [target]: the inline pane when this page is
+  /// actually exposed on a wide layout, otherwise a route above whatever is
+  /// open (reusing the conversation if it is already on top).
+  void _openFromShell(ConversationTarget target) {
+    if (!mounted) return;
+    final bool exposed = ModalRoute.of(context)?.isCurrent ?? true;
+    if (isMasterDetail(context) && exposed) {
+      setState(() => _selected = target);
+      return;
+    }
+    openConversationRoute(Navigator.of(context), target);
+  }
+
+  void _contactsFromShell() {
+    if (!mounted) return;
+    final ChatService? service = maybeChatService(context);
+    if (service == null) return;
+    final NavigatorState navigator = Navigator.of(context);
+    if (topRoute(navigator)?.settings.name == ContactsPage.routeName) return;
+    unawaited(_openContacts(context, service));
   }
 
   Future<void> _openContacts(BuildContext context, ChatService service) {

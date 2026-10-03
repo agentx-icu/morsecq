@@ -27,6 +27,12 @@ void main() {
     expect(a.accountScopedKey('k'), 'k_AAAAAAAAAAAAAAAA');
   });
 
+  test('files are never auto-downloaded, whatever was stored', () async {
+    await store.setInt('auto_download_size_limit', 50);
+    await a.setAutoDownloadSizeLimit(30);
+    expect(await a.getAutoDownloadSizeLimit(), 0);
+  });
+
   test('network-level keys are global', () async {
     await a.setCurrentBootstrapNode('node.tox', 33445, 'PK');
     final node = await b.getCurrentBootstrapNode();

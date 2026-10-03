@@ -10,6 +10,7 @@ import '../adapters/prefs_adapter.dart';
 import '../engine/chat_engine.dart';
 import '../logging/chat_logger.dart';
 import '../util/atomic_file.dart';
+import '../util/posix_permissions.dart';
 import '../util/value_stream.dart';
 import 'backup_container.dart';
 import 'identity_paths.dart';
@@ -24,13 +25,16 @@ part 'identity_profile.dart';
 /// `locked` (the verifier holds a password or the file is encrypted, and this
 /// process has not unlocked it), `ready` (plain, or unlocked this run).
 ///
-/// Encryption at rest mirrors toxee's `AccountService` teardown: with a
-/// password set the profile is encrypted whenever the engine is STOPPED and
-/// plaintext while it RUNS (Tox rewrites it as it runs). [connect] decrypts
-/// right before `init`, [disconnect] re-encrypts right after `uninit`; the
-/// session password lives in memory only. The PBKDF2 verifier gates a
-/// plaintext running profile. An encrypted profile proves its own password
-/// and repairs a verifier interrupted during a password change or restore.
+/// Encryption at rest: with a password set, `tox_profile.tox` is encrypted
+/// on disk at all times. [connect] hands the session password to native
+/// Tim2Tox, which opens the encrypted profile and encrypts every save, so a
+/// running, backgrounded or killed app never leaves a plaintext profile
+/// behind (an older build's plaintext file is migrated by the first save).
+/// [disconnect] still encrypts a plaintext file it finds, as a safety net,
+/// and keeps retrying on later disconnects until that succeeds. The session
+/// password lives in memory only. An encrypted profile proves its own
+/// password and repairs a verifier interrupted during a password change or
+/// restore.
 class Tim2ToxIdentityService implements PersistentIdentityService {
   Tim2ToxIdentityService({
     required IdentityPaths paths,
@@ -227,13 +231,20 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
     _connecting = true;
     _status.add(ConnectionStatus.connecting);
     try {
-      await _decryptProfileAtRest(_sessionPassword);
+      final password = _sessionPassword;
+      if (password == null && await _profileIsEncrypted()) {
+        throw const ChatException(
+          'wrong_password',
+          'Profile is encrypted and no password is available',
+        );
+      }
       await _engine.start(
         EngineSessionConfig(
           paths: _paths,
           toxId: record.toxId,
           displayName: record.displayName,
           statusMessage: record.statusMessage,
+          profilePassphrase: password,
         ),
       );
     } catch (e) {
@@ -254,10 +265,13 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
   Future<void> disconnect() => _runMutation(_disconnectImpl);
 
   Future<void> _disconnectImpl() async {
-    if (!_started) return;
-    _started = false;
-    await _engine.stop();
-    _status.add(ConnectionStatus.offline);
+    if (_started) {
+      _started = false;
+      await _engine.stop();
+      _status.add(ConnectionStatus.offline);
+    }
+    // Also when already stopped: an encryption that failed on an earlier
+    // disconnect is retried (a no-op once the file is encrypted).
     await _encryptProfileAtRest();
   }
 
@@ -382,22 +396,6 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
     final bytes = await file.readAsBytes();
     if (bytes.isEmpty || _crypto.isEncrypted(bytes)) return;
     await _writeAtomic(file, _crypto.encrypt(bytes, password));
-  }
-
-  /// Decrypts `tox_profile.tox` in place when it is encrypted. Throws
-  /// `wrong_password` when no usable password is available.
-  Future<void> _decryptProfileAtRest(String? password) async {
-    final file = File(_paths.profileFile);
-    if (!await file.exists()) return;
-    final bytes = await file.readAsBytes();
-    if (bytes.isEmpty || !_crypto.isEncrypted(bytes)) return;
-    if (password == null || password.isEmpty) {
-      throw const ChatException(
-        'wrong_password',
-        'Profile is encrypted and no password is available',
-      );
-    }
-    await _writeAtomic(file, _crypto.decrypt(bytes, password));
   }
 
   static Future<void> _writeAtomic(File target, Uint8List bytes) =>

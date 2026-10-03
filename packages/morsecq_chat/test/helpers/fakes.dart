@@ -14,7 +14,8 @@ import 'package:tim2tox_dart/service/ffi_chat_service.dart';
 /// A Tox public key / address pair for tests.
 const String kSelfKey =
     '1111111111111111111111111111111111111111111111111111111111111111';
-const String kSelfToxId = '${kSelfKey}00000000AAAA';
+// 0x11 x 32 and a zero nospam cancel out: checksum 0000.
+const String kSelfToxId = '${kSelfKey}000000000000';
 const String kPeerKey =
     '2222222222222222222222222222222222222222222222222222222222222222';
 // Tox address = key + nospam + checksum (XOR of the 36 bytes in two lanes);
@@ -75,9 +76,14 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
         return _writeString(lines, buf, cap);
       };
 
+  /// When set, reading the pending friend applications throws (a failing
+  /// FFI read).
+  bool failApplications = false;
+
   @override
   int Function(int, ffi.Pointer<ffi.Int8>, int)
       get getFriendApplicationsForInstance => (_, buf, cap) {
+            if (failApplications) throw StateError('applications read failed');
             if (applications.isEmpty) return 0;
             final lines = [
               for (final a in applications) '${a.userId}\t${a.wording}',
@@ -151,8 +157,23 @@ class FakeTim2ToxFfi extends Tim2ToxFfi {
 
 /// `ChatEngine` stand-in: never touches the native library. Tests hand it the
 /// `FfiChatService` (built on a [FakeTim2ToxFfi]) that `start` should expose.
+///
+/// Models native profile persistence the way Tim2Tox does it: with a
+/// passphrase, `start` opens an encrypted profile (refusing a wrong or
+/// missing one) and writes the profile back encrypted (migrating a plaintext
+/// file), `createProfile` writes it encrypted, and a re-key rewrites it.
 class FakeChatEngine extends ChatEngine {
-  FakeChatEngine({this.serviceToStart});
+  FakeChatEngine({this.serviceToStart, FakeProfileCrypto? crypto})
+    : crypto = crypto ?? FakeProfileCrypto();
+
+  final FakeProfileCrypto crypto;
+
+  /// What the next [rekeyProfilePassphrase] calls answer (false: the native
+  /// write failed and the file keeps the old passphrase).
+  final List<bool> rekeyResults = [];
+  final List<String?> rekeyCalls = [];
+  EngineSessionConfig? _running;
+  String? _livePassphrase;
 
   FfiChatService? serviceToStart;
   FfiChatService? _service;
@@ -196,10 +217,15 @@ class FakeChatEngine extends ChatEngine {
     required IdentityPaths paths,
     required String displayName,
     required String statusMessage,
+    String? passphrase,
   }) async {
     await paths.ensureDirectories();
+    final plain = FakeProfileCrypto.plainProfile(
+      nextToxId.substring(0, 64),
+      displayName,
+    );
     await File(paths.profileFile).writeAsBytes(
-      FakeProfileCrypto.plainProfile(nextToxId.substring(0, 64), displayName),
+      passphrase == null ? plain : crypto.encrypt(plain, passphrase),
     );
     return nextToxId;
   }
@@ -207,13 +233,49 @@ class FakeChatEngine extends ChatEngine {
   @override
   Future<void> start(EngineSessionConfig config) async {
     startCalls.add(config);
+    final file = File(config.paths.profileFile);
+    final pass = config.profilePassphrase;
+    if (file.existsSync()) {
+      var bytes = file.readAsBytesSync();
+      if (crypto.isEncrypted(bytes)) {
+        if (pass == null) {
+          throw const ChatException('needs_passphrase', 'fake: encrypted');
+        }
+        bytes = crypto.decrypt(bytes, pass); // throws on a wrong one
+      }
+      // The first native save after load: encrypted when a passphrase is set.
+      file.writeAsBytesSync(pass == null ? bytes : crypto.encrypt(bytes, pass));
+    }
+    _running = config;
+    _livePassphrase = pass;
     _service = serviceToStart;
     _sessions.add(_service);
   }
 
   @override
+  bool rekeyProfilePassphrase(String? passphrase) {
+    rekeyCalls.add(passphrase);
+    final config = _running;
+    if (config == null) return false;
+    if (rekeyResults.isNotEmpty && !rekeyResults.removeAt(0)) return false;
+    final file = File(config.paths.profileFile);
+    var bytes = file.readAsBytesSync();
+    final live = _livePassphrase;
+    if (crypto.isEncrypted(bytes) && live != null) {
+      bytes = crypto.decrypt(bytes, live);
+    }
+    file.writeAsBytesSync(
+      passphrase == null ? bytes : crypto.encrypt(bytes, passphrase),
+    );
+    _livePassphrase = passphrase;
+    return true;
+  }
+
+  @override
   Future<void> stop() async {
     stopCalls++;
+    _running = null;
+    _livePassphrase = null;
     _service = null;
     _sessions.add(null);
     setConnected(false);

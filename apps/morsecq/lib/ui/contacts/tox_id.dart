@@ -1,7 +1,9 @@
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+
 import '../../i18n/l10n_extension.dart';
 
 /// Tox ID = 32-byte public key + 4-byte nospam + 2-byte checksum, hex.
-const int kToxIdLength = 76;
+const int kToxIdLength = ToxAddress.length;
 
 /// NGC chat id = 32-byte public key, hex.
 const int kChatIdLength = 64;
@@ -15,8 +17,8 @@ String normalizeToxId(String raw) {
   return s.replaceAll(RegExp(r'\s+'), '').toUpperCase();
 }
 
-bool isValidToxId(String value) =>
-    value.length == kToxIdLength && _hex.hasMatch(value);
+/// See [ToxAddress.isValid] (length, hex and checksum).
+bool isValidToxId(String value) => ToxAddress.isValid(value);
 
 bool isValidChatId(String value) =>
     value.length == kChatIdLength && _hex.hasMatch(value);
@@ -24,7 +26,7 @@ bool isValidChatId(String value) =>
 /// Why a typed Tox ID is not acceptable; widgets translate it with
 /// [describeToxIdError] so this file holds no user-facing text.
 enum ToxIdError {
-  /// Not 76 hex characters after [normalizeToxId].
+  /// Not 76 hex characters after [normalizeToxId], or a bad checksum.
   invalid,
 
   /// The public-key half matches the local identity's own Tox ID.

@@ -13,6 +13,11 @@ import '../straight_key.dart';
 /// * Keyboard: when the widget has focus, keys bound to
 ///   [KeyerAction.straight] in [binding] press/release it. Repeat events are
 ///   ignored. Pass `binding: null` explicitly to disable the keyboard.
+///   Losing focus while a key is held releases it (the key-up goes to
+///   whatever took focus), and touching the key takes focus back.
+/// * Leaving the foreground (backgrounded, window deactivated) releases the
+///   key: on mobile Flutter keeps focus across that, but the key-up and
+///   pointer-up never arrive.
 /// * Timestamps come from [clock] (default [SystemClock.shared]); use the same
 ///   clock for the decoder's `tick`.
 class StraightKeyButton extends StatefulWidget {
@@ -46,7 +51,9 @@ class StraightKeyButton extends StatefulWidget {
   State<StraightKeyButton> createState() => _StraightKeyButtonState();
 }
 
-class _StraightKeyButtonState extends State<StraightKeyButton> {
+class _StraightKeyButtonState extends State<StraightKeyButton>
+    with WidgetsBindingObserver {
+  final FocusNode _focus = FocusNode(debugLabel: 'StraightKeyButton');
   final Set<int> _pointers = <int>{};
   bool _keyboardDown = false;
   bool _reportedDown = false;
@@ -69,7 +76,28 @@ class _StraightKeyButtonState extends State<StraightKeyButton> {
   }
 
   void _pointerDown(PointerDownEvent event) {
+    if (widget.binding != null && !_focus.hasFocus) _focus.requestFocus();
     _pointers.add(event.pointer);
+    _sync();
+  }
+
+  void _focusChanged(bool focused) {
+    if (focused || !_keyboardDown) return;
+    _keyboardDown = false;
+    _sync();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed || !_isDown) return;
+    _keyboardDown = false;
+    _pointers.clear();
     _sync();
   }
 
@@ -99,6 +127,8 @@ class _StraightKeyButtonState extends State<StraightKeyButton> {
     if (_reportedDown) {
       widget.input.release(widget.clock.now());
     }
+    WidgetsBinding.instance.removeObserver(this);
+    _focus.dispose();
     super.dispose();
   }
 
@@ -116,7 +146,9 @@ class _StraightKeyButtonState extends State<StraightKeyButton> {
     final foreground = down ? scheme.onPrimary : scheme.onPrimaryContainer;
 
     return Focus(
+      focusNode: _focus,
       autofocus: widget.autofocus,
+      onFocusChange: _focusChanged,
       onKeyEvent: widget.binding == null ? null : _onKey,
       child: Semantics(
         button: true,

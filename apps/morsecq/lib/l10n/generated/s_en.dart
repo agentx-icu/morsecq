@@ -564,7 +564,37 @@ class SEn extends S {
   String get accountBackupBody => 'Your identity exists only on this device. If it is lost, reset or stolen, there is no way to recover it: your contacts will not recognise a new identity and your training progress is gone.';
 
   @override
-  String get accountBackupWhatIsInside => 'The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.';
+  String get accountBackupWhatIsInside => 'The backup file contains your identity key, encrypted with your password, and your training progress. Keep it somewhere safe, outside this device.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'The backup file contains your identity key unencrypted, and your training progress. Anyone who gets this file can use your identity: set a password first if you want the key encrypted, and keep the file somewhere safe.';
+
+  @override
+  String get accountPasswordScope => 'Your password encrypts your identity key. Message history remains unencrypted on disk; device encryption can protect it.';
+
+  @override
+  String get accountSectionNotifications => 'Notifications';
+
+  @override
+  String get accountNotificationsEnable => 'Show notifications';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'New messages, friend requests and group invites';
+
+  @override
+  String get accountNotificationsContent => 'Show message content';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Text and Morse in banners and on the lock screen. Off: only that a message arrived.';
+
+  @override
+  String get accountNotificationsAllow => 'Allow notifications';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Ask the system for permission';
+
+  @override
+  String get accountNotificationsDenied => 'Notifications are off for MorseCQ in the system settings.';
 
   @override
   String get accountBackupSaveFile => 'Save backup file';

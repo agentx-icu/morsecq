@@ -4,10 +4,13 @@ import 'dart:convert';
 import '../chat_service.dart';
 import '../identity_service.dart';
 import '../models.dart';
+import '../tox_address.dart';
 import 'replay_stream.dart';
 
 part 'fake_chat_service_hooks.dart';
+part 'fake_chat_service_rows.dart';
 part 'fake_chat_service_self.dart';
+part 'fake_chat_service_session.dart';
 
 /// In-memory [ChatService] for widget tests and UI development without a
 /// Tox node. Mirrors the Tox transport where the UI can tell: deterministic
@@ -15,8 +18,13 @@ part 'fake_chat_service_self.dart';
 /// [MessageStatus.pending] until `setFriendOnline` flips it to `sent` (Tox has
 /// no server); [addFriend] adds the friend immediately, offline, like
 /// `tox_friend_add`; a `c2c_<pk>` / `group_<id>` conversation not yet in
-/// [conversations] is created on first send / draft. Given an [identity],
-/// the note-to-self conversation follows it (`fake_chat_service_self.dart`).
+/// [conversations] is created on first send / draft; every friend and group
+/// has a row, like the Tox backend lists them. Given an [identity], the fake
+/// also follows its session the way the backend does
+/// (`fake_chat_service_session.dart`): without one (`connect` not called)
+/// operations other than pin / draft throw `not_connected` and the
+/// note-to-self row is not listed; replacing or deleting the identity
+/// empties everything. A fake without an identity is always "connected".
 /// Test hooks live in [FakeChatServiceTestHooks] (`fake_chat_service_hooks.dart`).
 final class FakeChatService implements ChatService {
   FakeChatService({
@@ -26,8 +34,40 @@ final class FakeChatService implements ChatService {
     this.maxMessageBytes = 1322,
   }) : _selfKey = selfPublicKey ?? identity?.current?.publicKey ?? 'F' * 64,
        _clock = clock ?? DateTime.now {
-    if (identity != null) _followIdentity(identity);
+    if (identity != null) {
+      _identityService = identity;
+      _followIdentity(identity);
+      _followSession(identity);
+    }
   }
+
+  IdentityService? _identityService;
+  StreamSubscription<ConnectionStatus>? _connectionSub;
+
+  /// Bumped when a session ends or the identity is replaced.
+  int _sessionGeneration = 0;
+
+  late final ReplaySubject<bool> _sessionChanges = ReplaySubject<bool>(
+    _sessionUp,
+  );
+
+  @override
+  bool get hasSession => _sessionUp;
+
+  @override
+  Stream<bool> get sessionChanges => _sessionChanges.stream;
+
+  /// Conversations removed by [deleteConversation]: not listed again until
+  /// the next message, even for a friend.
+  final Set<String> _hidden = <String>{};
+
+  /// Groups whose transport is down (see `setGroupConnected`): sends to
+  /// them stay pending.
+  final Set<String> _disconnectedGroups = <String>{};
+
+  /// When set, friend-request and group-invite answers wait for it (lets a
+  /// test catch the UI while an answer is in flight).
+  Completer<void>? holdAnswers;
 
   /// Our own 64-hex public key; `addFriend(<own id>)` throws `own_id`.
   String get selfPublicKey => _selfKey;
@@ -87,14 +127,17 @@ final class FakeChatService implements ChatService {
   // ---- Friends -------------------------------------------------------------
 
   @override
-  List<Friend> get friends => List<Friend>.unmodifiable(_friends.values);
+  List<Friend> get friends => _sessionUp
+      ? List<Friend>.unmodifiable(_friends.values)
+      : const <Friend>[];
 
   @override
   Stream<List<Friend>> get friendChanges => _friendChanges.stream;
 
   @override
-  List<FriendRequest> get friendRequests =>
-      List<FriendRequest>.unmodifiable(_friendRequests);
+  List<FriendRequest> get friendRequests => _sessionUp
+      ? List<FriendRequest>.unmodifiable(_friendRequests)
+      : const <FriendRequest>[];
 
   @override
   Stream<List<FriendRequest>> get friendRequestChanges =>
@@ -102,6 +145,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> addFriend(String toxId, {String message = 'morsecq CQ'}) async {
+    _requireSession();
     final String id = toxId.trim().toUpperCase();
     if (!isValidToxId(id)) {
       throw const ChatException(
@@ -123,9 +167,11 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> acceptFriendRequest(String publicKey) async {
+    _requireSession();
+    await _holdAnswer();
     final FriendRequest? request = _takeFriendRequest(publicKey);
     if (request == null) {
-      throw const ChatException('request_not_found', 'No such friend request');
+      throw const ChatException('accept_failed', 'No such friend request');
     }
     _friends[publicKey] = Friend(
       publicKey: publicKey,
@@ -136,13 +182,15 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> rejectFriendRequest(String publicKey) async {
-    if (_takeFriendRequest(publicKey) == null) {
-      throw const ChatException('request_not_found', 'No such friend request');
-    }
+    _requireSession();
+    await _holdAnswer();
+    // Like the backend: rejecting an unknown request is a no-op.
+    _takeFriendRequest(publicKey);
   }
 
   @override
   Future<void> removeFriend(String publicKey) async {
+    _requireSession();
     if (_friends.remove(publicKey) == null) {
       throw const ChatException('friend_not_found', 'No such friend');
     }
@@ -160,13 +208,16 @@ final class FakeChatService implements ChatService {
     return request;
   }
 
-  void _publishFriends() => _friendChanges.add(friends);
+  /// Friends change the conversation list too (every friend has a row).
+  void _publishFriends() {
+    _friendChanges.add(friends);
+    _publishConversations();
+  }
 
   // ---- Conversations -------------------------------------------------------
 
   @override
-  List<Conversation> get conversations =>
-      List<Conversation>.unmodifiable(_conversations.values);
+  List<Conversation> get conversations => _listedConversations();
 
   @override
   Stream<List<Conversation>> get conversationChanges =>
@@ -174,6 +225,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> markRead(String conversationId) async {
+    _requireSession();
     _updateConversation(
       conversationId,
       (c) => _copyConversation(c, unreadCount: 0),
@@ -204,48 +256,11 @@ final class FakeChatService implements ChatService {
         'The note-to-self conversation cannot be deleted',
       );
     }
+    _requireSession();
     _messages.remove(conversationId);
-    if (_conversations.remove(conversationId) != null) {
-      _publishConversations();
-    }
-  }
-
-  void _updateConversation(
-    String id,
-    Conversation Function(Conversation) change,
-  ) {
-    final Conversation? existing = _conversations[id] ?? _materialize(id);
-    if (existing == null) {
-      throw ChatException('conversation_not_found', 'No conversation $id');
-    }
-    _conversations[id] = change(existing);
+    _conversations.remove(conversationId);
+    _hidden.add(conversationId);
     _publishConversations();
-  }
-
-  /// Builds the conversation row for a known friend / group that has no row
-  /// yet (first message, first draft). Returns null for unknown peers.
-  Conversation? _materialize(String id) {
-    final String peer = id.substring(id.indexOf('_') + 1);
-    if (_isSelfConversation(id)) return _selfConversation();
-    if (id.startsWith('c2c_')) {
-      final Friend? friend = _friends[peer];
-      if (friend == null) return null;
-      return Conversation(
-        id: id,
-        kind: ConversationKind.c2c,
-        title: friend.displayName,
-      );
-    }
-    if (id.startsWith('group_')) {
-      final Group? group = _groups[peer];
-      if (group == null) return null;
-      return Conversation(
-        id: id,
-        kind: ConversationKind.group,
-        title: group.name,
-      );
-    }
-    return null;
   }
 
   void _publishConversations() => _conversationChanges.add(conversations);
@@ -258,6 +273,7 @@ final class FakeChatService implements ChatService {
     int limit = 50,
     DateTime? before,
   }) async {
+    _requireSession();
     final List<ChatMessage> all =
         _messages[conversationId] ?? const <ChatMessage>[];
     final List<ChatMessage> eligible = before == null
@@ -272,11 +288,15 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<ChatMessage> sendText(String conversationId, String text) async {
+    _requireSession();
     if (utf8.encode(text).length > maxMessageBytes) {
       throw ChatException(
         'message_too_long',
         'Message exceeds $maxMessageBytes bytes',
       );
+    }
+    if (text.trim().isEmpty) {
+      throw const ChatException('empty_message', 'Message is empty');
     }
     final Conversation? conversation =
         _conversations[conversationId] ?? _materialize(conversationId);
@@ -288,7 +308,8 @@ final class FakeChatService implements ChatService {
     }
     final bool delivered =
         conversation.isSelf || // local only: stored, never sent
-        conversation.kind == ConversationKind.group ||
+        (conversation.kind == ConversationKind.group &&
+            !_disconnectedGroups.contains(conversation.peerId)) ||
         (_friends[conversation.peerId]?.online ?? false);
     final ChatMessage message = ChatMessage(
       id: _nextId('msg'),
@@ -305,6 +326,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> clearHistory(String conversationId) async {
+    _requireSession();
     _messages.remove(conversationId);
     final Conversation? existing = _conversations[conversationId];
     if (existing != null) {
@@ -320,52 +342,19 @@ final class FakeChatService implements ChatService {
     }
   }
 
-  void _append(
-    Conversation conversation,
-    ChatMessage message, {
-    required int unreadDelta,
-  }) {
-    _messages.putIfAbsent(message.conversationId, () => <ChatMessage>[]);
-    _messages[message.conversationId]!.add(message);
-    _conversations[conversation.id] = _copyConversation(
-      conversation,
-      lastMessage: message,
-      unreadCount: conversation.unreadCount + unreadDelta,
-    );
-    _publishConversations();
-    _messageEvents.add(message);
-  }
-
-  void _setStatus(String messageId, MessageStatus status) {
-    for (final List<ChatMessage> list in _messages.values) {
-      final int index = list.indexWhere((m) => m.id == messageId);
-      if (index < 0) continue;
-      final ChatMessage updated = list[index].copyWith(status: status);
-      list[index] = updated;
-      final Conversation? conversation = _conversations[updated.conversationId];
-      if (conversation != null && conversation.lastMessage?.id == messageId) {
-        _conversations[conversation.id] = _copyConversation(
-          conversation,
-          lastMessage: updated,
-        );
-        _publishConversations();
-      }
-      _messageEvents.add(updated);
-      return;
-    }
-  }
-
   // ---- Groups --------------------------------------------------------------
 
   @override
-  List<Group> get groups => List<Group>.unmodifiable(_groups.values);
+  List<Group> get groups =>
+      _sessionUp ? List<Group>.unmodifiable(_groups.values) : const <Group>[];
 
   @override
   Stream<List<Group>> get groupChanges => _groupChanges.stream;
 
   @override
-  List<GroupInvite> get groupInvites =>
-      List<GroupInvite>.unmodifiable(_groupInvites);
+  List<GroupInvite> get groupInvites => _sessionUp
+      ? List<GroupInvite>.unmodifiable(_groupInvites)
+      : const <GroupInvite>[];
 
   @override
   Stream<List<GroupInvite>> get groupInviteChanges =>
@@ -376,9 +365,10 @@ final class FakeChatService implements ChatService {
     String name, {
     GroupKind kind = GroupKind.group,
   }) async {
+    _requireSession();
     final String trimmed = name.trim();
     if (trimmed.isEmpty) {
-      throw const ChatException('invalid_group_name', 'Group name is empty');
+      throw const ChatException('invalid_name', 'Group name is empty');
     }
     final String id = _nextId('tox');
     return _installGroup(
@@ -394,6 +384,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> joinGroup(String chatId, {String? password}) async {
+    _requireSession();
     final String id = chatId.trim().toUpperCase();
     if (!isValidChatId(id)) {
       throw const ChatException(
@@ -402,7 +393,7 @@ final class FakeChatService implements ChatService {
       );
     }
     if (_groups.values.any((g) => g.chatId == id)) {
-      throw const ChatException('already_member', 'Already in that group');
+      throw const ChatException('already_joined', 'Already in that group');
     }
     _installGroup(
       Group(
@@ -416,15 +407,17 @@ final class FakeChatService implements ChatService {
   }
 
   @override
+  /// Like the backend, an invite to someone not online (or not a friend)
+  /// is queued rather than refused.
   Future<void> inviteToGroup(String groupId, String friendPublicKey) async {
+    _requireSession();
     _requireGroup(groupId);
-    if (!_friends.containsKey(friendPublicKey)) {
-      throw const ChatException('friend_not_found', 'No such friend');
-    }
   }
 
   @override
   Future<void> acceptGroupInvite(String inviteId, {String? password}) async {
+    _requireSession();
+    await _holdAnswer();
     final GroupInvite invite = _takeInvite(inviteId);
     final String id = _nextId('tox');
     _installGroup(
@@ -440,11 +433,14 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> rejectGroupInvite(String inviteId) async {
+    _requireSession();
+    await _holdAnswer();
     _takeInvite(inviteId);
   }
 
   @override
   Future<List<GroupMember>> groupMembers(String groupId) async {
+    _requireSession();
     _requireGroup(groupId);
     return List<GroupMember>.unmodifiable(
       _members[groupId] ?? <GroupMember>[_selfMember()],
@@ -453,6 +449,7 @@ final class FakeChatService implements ChatService {
 
   @override
   Future<void> leaveGroup(String groupId) async {
+    _requireSession();
     _requireGroup(groupId);
     _groups.remove(groupId);
     _members.remove(groupId);
@@ -465,8 +462,11 @@ final class FakeChatService implements ChatService {
     if (_disposed) return;
     _disposed = true;
     final Future<void>? identityCancelled = _identitySub?.cancel();
+    final Future<void>? connectionCancelled = _connectionSub?.cancel();
     await Future.wait(<Future<void>>[
       ?identityCancelled,
+      ?connectionCancelled,
+      _sessionChanges.close(),
       for (final ReplaySubject<Object> s in _subjects) s.close(),
       _messageEvents.close(),
     ]);
@@ -476,8 +476,8 @@ final class FakeChatService implements ChatService {
 
   static String groupConversationId(String groupId) => 'group_$groupId';
 
-  static bool isValidToxId(String value) =>
-      RegExp(r'^[0-9A-Fa-f]{76}$').hasMatch(value);
+  /// Same rule as the Tox backend: length, hex and checksum.
+  static bool isValidToxId(String value) => ToxAddress.isValid(value);
 
   static bool isValidChatId(String value) =>
       RegExp(r'^[0-9A-Fa-f]{64}$').hasMatch(value);

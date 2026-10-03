@@ -726,9 +726,49 @@
   "@accountBackupBody": {
     "description": "Backup wizard: explanation that a lost device means a lost identity without a backup"
   },
-  "accountBackupWhatIsInside": "The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.",
+  "accountBackupWhatIsInside": "The backup file contains your identity key, encrypted with your password, and your training progress. Keep it somewhere safe, outside this device.",
   "@accountBackupWhatIsInside": {
     "description": "Backup wizard: what the backup file contains and where to keep it"
+  },
+  "accountBackupWhatIsInsidePlain": "The backup file contains your identity key unencrypted, and your training progress. Anyone who gets this file can use your identity: set a password first if you want the key encrypted, and keep the file somewhere safe.",
+  "@accountBackupWhatIsInsidePlain": {
+    "description": "Backup wizard: what the file holds when the identity has no password (the key is NOT encrypted)"
+  },
+  "accountPasswordScope": "Your password encrypts your identity key. Message history remains unencrypted on disk; device encryption can protect it.",
+  "@accountPasswordScope": {
+    "description": "Create identity / change password: what the password protects and what it does not"
+  },
+  "accountSectionNotifications": "Notifications",
+  "@accountSectionNotifications": {
+    "description": "Me page: section header for the notification settings"
+  },
+  "accountNotificationsEnable": "Show notifications",
+  "@accountNotificationsEnable": {
+    "description": "Me page: switch for all notifications"
+  },
+  "accountNotificationsEnableSubtitle": "New messages, friend requests and group invites",
+  "@accountNotificationsEnableSubtitle": {
+    "description": "Me page: subtitle of the notifications switch"
+  },
+  "accountNotificationsContent": "Show message content",
+  "@accountNotificationsContent": {
+    "description": "Me page: switch for showing message text and Morse in notifications"
+  },
+  "accountNotificationsContentSubtitle": "Text and Morse in banners and on the lock screen. Off: only that a message arrived.",
+  "@accountNotificationsContentSubtitle": {
+    "description": "Me page: subtitle of the message-content switch"
+  },
+  "accountNotificationsAllow": "Allow notifications",
+  "@accountNotificationsAllow": {
+    "description": "Me page: button asking the OS for notification permission"
+  },
+  "accountNotificationsAllowSubtitle": "Ask the system for permission",
+  "@accountNotificationsAllowSubtitle": {
+    "description": "Me page: subtitle of the permission button"
+  },
+  "accountNotificationsDenied": "Notifications are off for MorseCQ in the system settings.",
+  "@accountNotificationsDenied": {
+    "description": "Me page: snack bar when the OS denied notification permission"
   },
   "accountBackupSaveFile": "Save backup file",
   "@accountBackupSaveFile": {

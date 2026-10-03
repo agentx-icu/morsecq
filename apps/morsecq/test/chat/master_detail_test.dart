@@ -69,12 +69,13 @@ void main() {
       h.service.receiveFriendRequest('D' * 64);
       return const ChatPage();
     }, size: kDesktop);
-    expect(find.text(ChatPage.description(s)), findsOneWidget); // empty state
+    // A friend has a row before any message, like the Tox backend lists it.
+    expect(find.text('Ann'), findsOneWidget);
     expect(find.text('1'), findsOneWidget); // requests badge
     await tester.tap(find.byTooltip(s.chatContacts));
     await tester.pumpAndSettle();
     expect(find.text(s.chatFriendRequestsCount(1)), findsOneWidget);
-    await tester.tap(find.text('Ann'));
+    await tester.tap(find.text('Ann').last);
     await tester.pumpAndSettle();
     // Back on the chat page, Ann is open in the detail pane.
     expect(find.byType(ConversationScreen), findsOneWidget);

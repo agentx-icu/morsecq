@@ -6,9 +6,11 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
+import '../../notifications/notification_center.dart';
 import '../groups/group_members_sheet.dart';
 import 'chat_layout.dart';
 import 'conversation_actions.dart';
+import 'conversation_attention.dart';
 import 'conversation_auto_play.dart';
 import 'conversation_target.dart';
 import 'conversation_header.dart';
@@ -19,6 +21,8 @@ import 'message_input.dart';
 import 'local_message_sends.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
+
+part 'conversation_screen_actions.dart';
 
 /// One conversation (c2c or group): history + live events, Morse bubbles,
 /// training mode, auto-play, playback settings and the keyed input.
@@ -47,6 +51,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
   late final MorsePlaybackController _playback;
   bool _ownsPlayback = false;
   late final ConversationAutoPlay _autoPlay = ConversationAutoPlay(_playback);
+  late final ConversationAttention _attention;
+  bool _sessionStartedWhileLoading = false;
   late final StreamSubscription<ChatMessage> _events;
   late final LocalMessageSends _localSends;
   final ScrollController _scroll = ScrollController();
@@ -80,6 +86,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _playback = MorsePlaybackController();
       _ownsPlayback = true;
     }
+    _attention = ConversationAttention(
+      service: _service,
+      conversationId: _id,
+      center: context.read<NotificationCenter?>(),
+      onSessionStarted: _onSessionStarted,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _attention.start();
+    });
     _events = _service.messageEvents.listen(_onEvent);
     _localSends = LocalMessageSends.forService(_service)
       ..addListener(_onLocalSend);
@@ -91,11 +106,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _autoPlay.update(context);
+    _attention.update(context);
   }
 
   @override
   void dispose() {
     _autoPlay.dispose();
+    _attention.dispose();
     unawaited(_events.cancel());
     _localSends.removeListener(_onLocalSend);
     _scroll.dispose();
@@ -110,8 +127,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
     super.dispose();
   }
 
+  /// Opening a chat before its session exists fails with not_connected;
+  /// the session starting (seen even mid-load) retries a failed load.
+  void _onSessionStarted() {
+    if (_loading) {
+      _sessionStartedWhileLoading = true;
+    } else if (_error != null) {
+      unawaited(_load());
+    }
+  }
+
   Future<void> _load() async {
     final int generation = _generation;
+    _sessionStartedWhileLoading = false;
     setState(() {
       _loading = true;
       _error = null;
@@ -133,13 +161,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
         _hasMore = history.length == _historyLimit;
       });
       _scrollToEnd();
-      await _markRead();
+      _attention.markRead();
     } on Object catch (e) {
       if (mounted && generation == _generation) {
         setState(() {
           _error = e;
           _loading = false;
         });
+        if (_sessionStartedWhileLoading) unawaited(_load());
       }
     }
   }
@@ -197,14 +226,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
-  Future<void> _markRead() async {
-    try {
-      await _service.markRead(_id);
-    } on Object {
-      // A conversation with no row yet has nothing to mark.
-    }
-  }
-
   void _onEvent(ChatMessage message, {bool ownSend = false}) {
     if (!mounted || message.conversationId != _id) return;
     final int index = _messages.indexWhere((m) => m.id == message.id);
@@ -230,7 +251,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (added && !message.isMine) _autoPlay.incoming(message);
     if (added && follow) {
       _scrollToEnd();
-      if (!message.isMine) unawaited(_markRead());
+      if (!message.isMine) _attention.markRead();
     }
   }
 
@@ -240,7 +261,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _onScroll() {
     if (_newMessages > 0 && _nearBottom) {
       setState(() => _newMessages = 0);
-      unawaited(_markRead());
+      _attention.markRead();
     }
     if (!_following &&
         _scroll.hasClients &&
@@ -277,44 +298,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void _showLatest() {
     setState(() => _newMessages = 0);
     _scrollToEnd();
-    unawaited(_markRead());
+    _attention.markRead();
   }
 
   void _onLocalSend() {
     final message = _localSends.latest!;
     if (message.conversationId != _id) return;
     _onEvent(_pendingStatuses.remove(message.id) ?? message, ownSend: true);
-  }
-
-  Group? _group() {
-    if (!_isGroup) return null;
-    for (final Group g in _service.groups) {
-      if (g.id == widget.target.peerId) return g;
-    }
-    return null;
-  }
-
-  Future<void> _leaveGroup() async {
-    final S s = context.s;
-    final bool ok = await confirm(
-      context,
-      title: s.chatLeaveGroupTitle,
-      body: s.chatLeaveGroupBody,
-      confirmLabel: s.chatLeave,
-    );
-    if (!ok || !mounted) return;
-    try {
-      await _service.leaveGroup(widget.target.peerId);
-    } on Object catch (e) {
-      if (mounted) showSnack(context, describeChatError(s, e));
-      return;
-    }
-    if (!mounted) return;
-    if (widget.embedded) {
-      widget.onClosed?.call();
-    } else {
-      Navigator.of(context).pop();
-    }
   }
 
   Future<void> _clearHistory() async {
@@ -338,6 +328,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _loading = false;
       _loadingOlder = false;
     });
+    // A message being deleted must not keep sounding or wait in the queue.
+    _playback.cancelMessages(ids);
     try {
       await _service.clearHistory(_id);
       _localSends.recordClear(_id, ids);
@@ -360,20 +352,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
       }
     } finally {
       if (mounted) setState(() => _clearing = false);
-    }
-  }
-
-  Future<void> _onMenu(String action) async {
-    switch (action) {
-      case 'members':
-        final Group? group = _group();
-        if (group != null) {
-          await showGroupMembersSheet(context, service: _service, group: group);
-        }
-      case 'leave':
-        await _leaveGroup();
-      case 'clear':
-        await _clearHistory();
     }
   }
 

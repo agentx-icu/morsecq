@@ -3,6 +3,7 @@ import 'package:morsecq_chat/morsecq_chat.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import 'backend_factory.dart';
+import 'backup_exclusion.dart';
 
 /// Tox-backed services from `packages/morsecq_chat`.
 ///
@@ -32,6 +33,8 @@ final class RealBackendFactory extends BackendFactory {
   @override
   Future<void> prepare() async {
     if (_backend != null) return;
+    // Before the backend writes anything under application support.
+    await BackupExclusion.excludeAppData();
     try {
       _backend = await MorsecqChatBackend.create(logger: _logger);
     } catch (error, stack) {

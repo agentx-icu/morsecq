@@ -66,7 +66,13 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
           const SizedBox(height: 16),
           Text(s.accountBackupBody, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 12),
-          Text(s.accountBackupWhatIsInside, style: theme.textTheme.bodyMedium),
+          // Only a password-protected identity's key is encrypted in the file.
+          Text(
+            identity?.hasPassword ?? false
+                ? s.accountBackupWhatIsInside
+                : s.accountBackupWhatIsInsidePlain,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 24),
           FilledButton.tonalIcon(
             key: BackupWizardPage.saveButtonKey,

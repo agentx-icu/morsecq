@@ -21,10 +21,14 @@ final class NotificationComposer {
     required NotificationPlatform platform,
     String Function(String text)? patternOf,
     S Function()? strings,
+    String? Function()? account,
   }) : _prefs = prefs,
        _platform = platform,
        _patternOf = patternOf ?? MorseEncoder.toPattern,
-       _strings = strings ?? currentS;
+       _strings = strings ?? currentS,
+       _account = account ?? _noAccount;
+
+  static String? _noAccount() => null;
 
   /// Android inbox style shows at most this many lines; older ones roll off.
   static const int maxInboxLines = 5;
@@ -33,6 +37,9 @@ final class NotificationComposer {
   final NotificationPlatform _platform;
   final String Function(String text) _patternOf;
   final S Function() _strings;
+
+  /// The identity payloads are tagged with ([NotificationTapTarget.account]).
+  final String? Function() _account;
 
   /// One inbox line: `text  pattern` (either part optional per prefs), with
   /// a `Sender: ` prefix inside groups where the title is the group name.
@@ -54,12 +61,15 @@ final class NotificationComposer {
     required List<String> lines,
   }) {
     final String conversationId = message.conversationId;
-    final String payload = OpenConversationTarget(conversationId).encode();
+    final String payload = OpenConversationTarget(
+      conversationId,
+      account: _account(),
+    ).encode();
     final bool grouped = lines.length > 1;
     return NotificationRequest(
       id: stableNotificationId(payload),
       channel: NotificationChannelKind.messages,
-      title: title,
+      title: PeerText.singleLine(title),
       body: body(message, isGroup: isGroup),
       payload: payload,
       groupKey: _platform.supportsGrouping
@@ -73,9 +83,16 @@ final class NotificationComposer {
 
   NotificationRequest friendRequest(FriendRequest request) {
     final S s = _strings();
-    final String payload = FriendRequestTarget(request.publicKey).encode();
+    final String payload = FriendRequestTarget(
+      request.publicKey,
+      account: _account(),
+    ).encode();
     final String who = shortKey(request.publicKey);
-    final String text = request.message.trim();
+    // The wording is a stranger's text: shown only when the user lets
+    // notifications carry message text at all.
+    final String text = _prefs.showText
+        ? PeerText.singleLine(request.message)
+        : '';
     return NotificationRequest(
       id: stableNotificationId(payload),
       channel: NotificationChannelKind.friendRequests,
@@ -91,13 +108,18 @@ final class NotificationComposer {
 
   NotificationRequest groupInvite(GroupInvite invite, {String? fromName}) {
     final S s = _strings();
-    final String payload = GroupInviteTarget(invite.inviteId).encode();
+    final String payload = GroupInviteTarget(
+      invite.inviteId,
+      account: _account(),
+    ).encode();
     return NotificationRequest(
       id: stableNotificationId(payload),
       channel: NotificationChannelKind.groupInvites,
-      title: s.notificationGroupInviteTitle(invite.groupName),
+      title: s.notificationGroupInviteTitle(
+        PeerText.singleLine(invite.groupName),
+      ),
       body: s.notificationGroupInviteBody(
-        fromName ?? shortKey(invite.fromPublicKey),
+        PeerText.singleLine(fromName ?? shortKey(invite.fromPublicKey)),
       ),
       payload: payload,
       groupKey: _platform.supportsGrouping ? 'morsecq.group_invites' : null,
@@ -107,7 +129,7 @@ final class NotificationComposer {
 
   List<String> _parts(ChatMessage message) {
     final List<String> parts = <String>[];
-    final String text = message.text.trim();
+    final String text = PeerText.clean(message.text).trim();
     if (_prefs.showText && text.isNotEmpty) parts.add(text);
     if (_prefs.showPattern) {
       final String pattern = _patternOf(text);
@@ -118,8 +140,9 @@ final class NotificationComposer {
   }
 
   static String senderLabel(ChatMessage message) {
-    final String? name = message.senderName?.trim();
-    return (name == null || name.isEmpty) ? shortKey(message.senderId) : name;
+    final String? raw = message.senderName;
+    final String name = raw == null ? '' : PeerText.singleLine(raw);
+    return name.isEmpty ? shortKey(message.senderId) : name;
   }
 
   /// First 8 hex chars of a public key, the same abbreviation the fake

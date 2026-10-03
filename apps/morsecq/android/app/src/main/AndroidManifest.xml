@@ -19,11 +19,17 @@
     <!-- android:localeConfig: lists MorseCQ under Android 13+ App languages
          (parity with CFBundleLocalizations on iOS/macOS); see
          res/xml/locale_config.xml for why it is hand-written. -->
+    <!-- No OS backup or device transfer of app data: it holds the Tox
+         identity; see res/xml/data_extraction_rules.xml (Android 12+) and
+         res/xml/backup_rules.xml (older). -->
     <application
         android:label="MorseCQ"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:localeConfig="@xml/locale_config">
+        android:localeConfig="@xml/locale_config"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

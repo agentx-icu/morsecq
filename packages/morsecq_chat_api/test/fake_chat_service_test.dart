@@ -3,7 +3,8 @@ import 'package:morsecq_chat_api/testing.dart';
 import 'package:test/test.dart';
 
 final String kPeer = 'A' * 64;
-final String kPeerToxId = '${'A' * 64}${'1' * 12}';
+// AA..AA and nospam 11111111 cancel out in both checksum lanes: 0000.
+final String kPeerToxId = '${'A' * 64}${'1' * 8}0000';
 final String kSelf = 'F' * 64;
 
 void main() {
@@ -236,7 +237,7 @@ void main() {
       await expectLater(
         service.joinGroup('C' * 64),
         throwsA(
-          isA<ChatException>().having((e) => e.code, 'code', 'already_member'),
+          isA<ChatException>().having((e) => e.code, 'code', 'already_joined'),
         ),
       );
     });

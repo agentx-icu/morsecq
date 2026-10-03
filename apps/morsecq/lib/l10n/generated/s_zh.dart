@@ -548,7 +548,37 @@ class SZh extends S {
   String get accountBackupBody => '你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：好友不会认出新的身份，训练进度也会丢失。';
 
   @override
-  String get accountBackupWhatIsInside => '备份文件包含加密后的身份和你的训练进度。请把它保存在本机以外的安全位置。';
+  String get accountBackupWhatIsInside => '备份文件包含用密码加密的身份密钥和你的训练进度。请把它保存在本机以外的安全位置。';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => '备份文件包含未加密的身份密钥和你的训练进度。拿到这个文件的人都能使用你的身份：如需加密密钥，请先设置密码，并把文件保存在安全位置。';
+
+  @override
+  String get accountPasswordScope => '密码用于加密你的身份密钥。消息记录在磁盘上仍未加密，可借助设备加密来保护。';
+
+  @override
+  String get accountSectionNotifications => '通知';
+
+  @override
+  String get accountNotificationsEnable => '显示通知';
+
+  @override
+  String get accountNotificationsEnableSubtitle => '新消息、好友请求和群组邀请';
+
+  @override
+  String get accountNotificationsContent => '显示消息内容';
+
+  @override
+  String get accountNotificationsContentSubtitle => '在横幅和锁屏上显示文字和摩尔斯码。关闭后只提示收到了消息。';
+
+  @override
+  String get accountNotificationsAllow => '允许通知';
+
+  @override
+  String get accountNotificationsAllowSubtitle => '向系统请求通知权限';
+
+  @override
+  String get accountNotificationsDenied => 'MorseCQ 的通知已在系统设置中关闭。';
 
   @override
   String get accountBackupSaveFile => '保存备份文件';
@@ -2840,7 +2870,37 @@ class SZhHant extends SZh {
   String get accountBackupBody => '你的身分只存在於這台裝置上。若裝置遺失、重設或遭竊，身分將無法找回：聯絡人不會認出新的身分，訓練進度也會遺失。';
 
   @override
-  String get accountBackupWhatIsInside => '備份檔案包含加密後的身分和你的訓練進度。請把它儲存在本機以外的安全位置。';
+  String get accountBackupWhatIsInside => '備份檔案包含以密碼加密的身分金鑰和你的訓練進度。請把它儲存在本機以外的安全位置。';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => '備份檔案包含未加密的身分金鑰和你的訓練進度。取得這個檔案的人都能使用你的身分：如需加密金鑰，請先設定密碼，並把檔案儲存在安全位置。';
+
+  @override
+  String get accountPasswordScope => '密碼用於加密你的身分金鑰。訊息記錄在磁碟上仍未加密，可藉由裝置加密來保護。';
+
+  @override
+  String get accountSectionNotifications => '通知';
+
+  @override
+  String get accountNotificationsEnable => '顯示通知';
+
+  @override
+  String get accountNotificationsEnableSubtitle => '新訊息、好友請求和群組邀請';
+
+  @override
+  String get accountNotificationsContent => '顯示訊息內容';
+
+  @override
+  String get accountNotificationsContentSubtitle => '在橫幅和鎖定畫面上顯示文字和摩斯碼。關閉後只提示收到了訊息。';
+
+  @override
+  String get accountNotificationsAllow => '允許通知';
+
+  @override
+  String get accountNotificationsAllowSubtitle => '向系統請求通知權限';
+
+  @override
+  String get accountNotificationsDenied => 'MorseCQ 的通知已在系統設定中關閉。';
 
   @override
   String get accountBackupSaveFile => '儲存備份檔案';

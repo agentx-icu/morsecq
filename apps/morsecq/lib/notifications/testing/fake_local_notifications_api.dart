@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../local_notifications_api.dart';
@@ -43,17 +45,28 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
 
   void tapTarget(NotificationTapTarget target) => tap(target.encode());
 
+  /// Runs while [initialize] is in progress (after the tap callback is
+  /// registered), e.g. to simulate a tap during plugin start-up.
+  void Function()? onInitialize;
+
   @override
   Future<bool> initialize({required ValueChanged<String> onTap}) async {
     _onTap = onTap;
+    onInitialize?.call();
     initialized = initializeResult;
     return initializeResult;
   }
+
+  /// Runs while [takeLaunchPayload] is being answered (simulates a tap
+  /// that arrives during that await).
+  void Function()? onTakeLaunchPayload;
 
   @override
   Future<String?> takeLaunchPayload() async {
     final String? payload = launchPayload;
     launchPayload = null;
+    await Future<void>.delayed(Duration.zero);
+    onTakeLaunchPayload?.call();
     return payload;
   }
 
@@ -78,6 +91,15 @@ final class FakeLocalNotificationsApi implements LocalNotificationsApi {
   @override
   Future<void> refreshStrings() async {
     refreshStringsCalls++;
+  }
+
+  /// When set, [activePayloads] waits for it before answering.
+  Completer<void>? holdActivePayloads;
+
+  @override
+  Future<List<String>> activePayloads() async {
+    await holdActivePayloads?.future;
+    return [for (final NotificationRequest n in _active.values) n.payload];
   }
 
   @override

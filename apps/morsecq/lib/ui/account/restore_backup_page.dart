@@ -43,6 +43,15 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
         _fileError = null;
         _passwordError = null;
       });
+    } on ChatException catch (e) {
+      if (!mounted) return;
+      // invalid_backup (e.g. a file far too large to be a backup) is
+      // backup-only and not in the shared chat error table.
+      setState(
+        () => _fileError = e.code == 'invalid_backup'
+            ? s.accountRestoreInvalidFile
+            : describeChatError(s, e),
+      );
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _fileError = describeChatError(s, e));

@@ -48,6 +48,41 @@ void main() {
     );
   });
 
+  test('a crafted entry size or path is invalid_backup, not a crash', () {
+    Matcher invalidBackup() => throwsA(
+      isA<ChatException>().having((e) => e.code, 'code', 'invalid_backup'),
+    );
+    // Header: magic, version 1, flags 0, one entry.
+    Uint8List archive({required List<int> path, required int size}) {
+      final good = BackupContainer(
+        entries: {'x': Uint8List(0)},
+        profileEncrypted: false,
+      ).encode();
+      final out = BytesBuilder()
+        ..add(good.sublist(0, 10))
+        ..add([0, path.length])
+        ..add(path);
+      final sizeBytes = ByteData(8)..setUint64(0, size, Endian.big);
+      out
+        ..add(sizeBytes.buffer.asUint8List())
+        ..add(List<int>.filled(16, 0));
+      return out.toBytes();
+    }
+
+    // 2^63 - 1: `offset + size` would overflow past the bounds check.
+    expect(
+      () => BackupContainer.decode(
+        archive(path: utf8.encode('profile'), size: 0x7fffffffffffffff),
+      ),
+      invalidBackup(),
+    );
+    // Malformed UTF-8 in the entry path.
+    expect(
+      () => BackupContainer.decode(archive(path: [0xff, 0xfe], size: 0)),
+      invalidBackup(),
+    );
+  });
+
   test('rejects entry paths that could escape the identity root', () {
     for (final bad in [
       '../x',

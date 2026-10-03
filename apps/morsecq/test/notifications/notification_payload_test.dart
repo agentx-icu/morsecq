@@ -3,6 +3,26 @@ import 'package:morsecq/notifications/notification_payload.dart';
 
 void main() {
   group('NotificationTapTarget', () {
+    test('an account tag round-trips; untagged payloads still parse', () {
+      final String account = 'F' * 16;
+      for (final NotificationTapTarget t in [
+        OpenConversationTarget('c2c_${'A' * 64}', account: account),
+        FriendRequestTarget('B' * 64, account: account),
+        GroupInviteTarget('inv_1', account: account),
+      ]) {
+        expect(NotificationTapTarget.parse(t.encode()), t);
+        expect(t.encode(), endsWith('#$account'));
+      }
+      expect(
+        NotificationTapTarget.parse('conv:c2c_X'),
+        const OpenConversationTarget('c2c_X'),
+      );
+      expect(
+        const OpenConversationTarget('c2c_X', account: 'A'),
+        isNot(const OpenConversationTarget('c2c_X')),
+      );
+    });
+
     test('round-trips every kind', () {
       const List<NotificationTapTarget> targets = <NotificationTapTarget>[
         OpenConversationTarget('c2c_ABC'),

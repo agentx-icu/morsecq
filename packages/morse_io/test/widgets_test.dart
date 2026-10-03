@@ -84,6 +84,77 @@ void main() {
       expect(key.log, <(bool, int)>[(true, 0), (false, 0)]);
     });
 
+    testWidgets('losing focus while the space bar is held releases the key',
+        (tester) async {
+      final key = _FakeStraightKey();
+      final other = FocusNode();
+      addTearDown(other.dispose);
+      await tester.pumpWidget(
+        _host(Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StraightKeyButton(input: key, clock: FakeClock(), autofocus: true),
+            Focus(focusNode: other, child: const SizedBox(width: 10, height: 10)),
+          ],
+        )),
+      );
+      await tester.pump();
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+      expect(key.log, <(bool, int)>[(true, 0)]);
+      // A menu or sheet takes focus; its key-up never reaches the key.
+      other.requestFocus();
+      await tester.pump();
+      expect(key.log, <(bool, int)>[(true, 0), (false, 0)]);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+      expect(key.log, hasLength(2));
+    });
+
+    testWidgets('backgrounding releases a held key (touch or keyboard)',
+        (tester) async {
+      final key = _FakeStraightKey();
+      await tester.pumpWidget(
+        _host(StraightKeyButton(input: key, clock: FakeClock(), autofocus: true)),
+      );
+      await tester.pump();
+      final gesture = await tester.press(find.byType(StraightKeyButton));
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+      expect(key.log, <(bool, int)>[(true, 0)]);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+      expect(key.log, <(bool, int)>[(true, 0), (false, 0)]);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await gesture.up();
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(key.log, hasLength(2));
+    });
+
+    testWidgets('a touch takes keyboard focus back', (tester) async {
+      final key = _FakeStraightKey();
+      final other = FocusNode();
+      addTearDown(other.dispose);
+      await tester.pumpWidget(
+        _host(Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StraightKeyButton(input: key, clock: FakeClock()),
+            Focus(focusNode: other, child: const SizedBox(width: 10, height: 10)),
+          ],
+        )),
+      );
+      other.requestFocus();
+      await tester.pump();
+      await tester.tap(find.byType(StraightKeyButton));
+      await tester.pump();
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.space);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.space);
+      expect(key.log, hasLength(4));
+    });
+
     testWidgets('respects the minimum touch target', (tester) async {
       await tester.pumpWidget(
         _host(StraightKeyButton(input: _FakeStraightKey(), size: 10)),
@@ -172,6 +243,35 @@ void main() {
         'dit up @0',
         'dah up @0',
       ]);
+    });
+
+    testWidgets('losing focus releases keyboard-held paddles', (tester) async {
+      final paddles = _FakePaddles();
+      final other = FocusNode();
+      addTearDown(other.dispose);
+      await tester.pumpWidget(
+        _host(Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 400,
+              child: PaddleButtons(
+                input: paddles,
+                clock: FakeClock(),
+                autofocus: true,
+              ),
+            ),
+            Focus(focusNode: other, child: const SizedBox(width: 10, height: 10)),
+          ],
+        )),
+      );
+      await tester.pump();
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+      other.requestFocus();
+      await tester.pump();
+      expect(paddles.log, <String>['dit down @0', 'dit up @0']);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      expect(paddles.log, hasLength(2));
     });
   });
 

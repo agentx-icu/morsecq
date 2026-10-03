@@ -13,9 +13,18 @@ class _GroupsPart {
   final ValueStream<List<GroupInvite>> invites = ValueStream(const []);
   final Map<String, int> _memberCounts = {};
 
+  /// After a failed queued invite, the pair is not retried before this.
+  static const Duration inviteRetryBackoff = Duration(seconds: 30);
+  final Map<(String, String), DateTime> _inviteRetryAt = {};
+  FfiChatService? _flushing;
+
   void reset() {
     groups.add(const []);
     invites.add(const []);
+    // Identity-scoped caches: a new identity must not see these.
+    _memberCounts.clear();
+    _inviteRetryAt.clear();
+    _flushing = null;
   }
 
   static GroupKind _kindOf(String? type) =>
@@ -24,8 +33,9 @@ class _GroupsPart {
           : GroupKind.group;
 
   Future<String> _nameOf(FfiChatService svc, String id) async {
-    final shared = svc.sharedGroupName(id);
-    if (shared != null && shared.trim().isNotEmpty) return shared.trim();
+    // The network name is chosen by whoever created the group.
+    final shared = PeerText.singleLine(svc.sharedGroupName(id) ?? '');
+    if (shared.isNotEmpty) return shared;
     final local = await _owner._prefs.getGroupName(id);
     if (local != null && local.trim().isNotEmpty) return local.trim();
     return id;
@@ -63,7 +73,7 @@ class _GroupsPart {
         GroupInvite(
           inviteId: i.id,
           fromPublicKey: ConversationIds.normalizeKey(i.inviterUserId),
-          groupName: i.groupName,
+          groupName: PeerText.singleLine(i.groupName),
           kind: _kindOf(i.kind),
         ),
     ];
@@ -81,7 +91,12 @@ class _GroupsPart {
       '[Chat] group join refused: ${f.groupId} (${f.reason.name})',
     );
     final svc = _owner._service;
-    if (svc != null) unawaited(refresh(svc));
+    if (svc == null) return;
+    unawaited(
+      refresh(svc).catchError((Object e, StackTrace st) {
+        _owner._logger.error('[Chat] group refresh after join failure', e, st);
+      }),
+    );
   }
 
   Future<Group> create(FfiChatService svc, String name, GroupKind kind) async {
@@ -143,8 +158,37 @@ class _GroupsPart {
     }
   }
 
+  /// Sends the invites queued for any of [onlineKeys] in the background,
+  /// one flush at a time. Called on every refresh round (not only when a
+  /// friend comes online), so an invite that failed is retried while the
+  /// friend stays online, after [inviteRetryBackoff].
+  void scheduleInviteFlush(FfiChatService svc, Set<String> onlineKeys) {
+    if (identical(_flushing, svc)) return;
+    final due = [
+      for (final key in onlineKeys)
+        if (_owner._meta.queuedGroupsFor(key).isNotEmpty) key,
+    ];
+    if (due.isEmpty) return;
+    _flushing = svc;
+    unawaited(() async {
+      try {
+        for (final key in due) {
+          if (!_owner._isCurrent(svc)) return;
+          await flushQueuedInvites(svc, key);
+        }
+      } catch (e, st) {
+        _owner._logger.error('[Chat] queued invite flush failed', e, st);
+      } finally {
+        if (identical(_flushing, svc)) _flushing = null;
+      }
+    }());
+  }
+
   Future<void> flushQueuedInvites(FfiChatService svc, String friendKey) async {
+    final now = DateTime.now();
     for (final groupId in _owner._meta.queuedGroupsFor(friendKey)) {
+      final retryAt = _inviteRetryAt[(groupId, friendKey)];
+      if (retryAt != null && now.isBefore(retryAt)) continue;
       // Re-checked every iteration: after a detach the loop must neither
       // keep inviting through the native bindings nor edit the queue, which
       // by then may belong to a newly selected identity.
@@ -153,14 +197,21 @@ class _GroupsPart {
         await _owner._meta.dequeueInvite(groupId, friendKey);
         continue;
       }
+      var invited = false;
       try {
-        final invited = await GroupBindings.invite(groupId, friendKey);
+        invited = await GroupBindings.invite(groupId, friendKey);
         if (!_owner._isCurrent(svc)) return;
         if (invited) {
+          _inviteRetryAt.remove((groupId, friendKey));
           await _owner._meta.dequeueInvite(groupId, friendKey);
         }
       } catch (e, st) {
         _owner._logger.error('[Chat] queued group invite failed', e, st);
+      }
+      if (!invited) {
+        _inviteRetryAt[(groupId, friendKey)] = DateTime.now().add(
+          inviteRetryBackoff,
+        );
       }
     }
   }

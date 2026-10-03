@@ -67,6 +67,10 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
   bool _initialized = false;
   bool _refreshPending = false;
 
+  /// Whether the Linux notification server parses the body as markup
+  /// (`body-markup` capability); only then must peer text be escaped.
+  bool _linuxBodyMarkup = false;
+
   @override
   Future<bool> initialize({required ValueChanged<String> onTap}) async {
     if (_initialized) return true;
@@ -100,6 +104,9 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
         },
       );
       if (ok == false) return false;
+      if (_platform == NotificationPlatform.linux) {
+        _linuxBodyMarkup = await _linuxSupportsBodyMarkup();
+      }
       if (_platform == NotificationPlatform.android) {
         // A language change that arrives while the channels are being
         // written sets _refreshPending; loop until a pass ran with the
@@ -186,11 +193,35 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
     await _plugin.show(
       id: request.id,
       title: request.title,
-      body: request.body,
+      // Freedesktop servers that advertise `body-markup` parse the body as
+      // markup; peer text must not inject links or formatting there.
+      body: _linuxBodyMarkup ? escapeLinuxBodyMarkup(request.body) : request.body,
       payload: request.payload,
       notificationDetails: _details(request),
     );
   }
+
+  Future<bool> _linuxSupportsBodyMarkup() async {
+    try {
+      final LinuxFlutterLocalNotificationsPlugin? linux = _plugin
+          .resolvePlatformSpecificImplementation<
+            LinuxFlutterLocalNotificationsPlugin
+          >();
+      final LinuxServerCapabilities? caps = await linux?.getCapabilities();
+      // Unknown: escape. Visible entities beat injected links.
+      return caps?.bodyMarkup ?? true;
+    } catch (error, stack) {
+      _report('getCapabilities', error, stack);
+      return true;
+    }
+  }
+
+  /// Escapes the characters the freedesktop body markup subset reacts to.
+  @visibleForTesting
+  static String escapeLinuxBodyMarkup(String body) => body
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
 
   @override
   Future<void> cancel(int id) async {
@@ -204,6 +235,24 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
     await _plugin.cancelAll();
   }
 
+  @override
+  Future<List<String>> activePayloads() async {
+    if (!_initialized) return const <String>[];
+    try {
+      final List<ActiveNotification> active = await _plugin
+          .getActiveNotifications();
+      return [
+        for (final ActiveNotification n in active)
+          if (n.payload case final String payload when payload.isNotEmpty)
+            payload,
+      ];
+    } catch (error, stack) {
+      // Not supported here (e.g. Linux): nothing to report.
+      _report('activePayloads', error, stack);
+      return const <String>[];
+    }
+  }
+
   NotificationDetails _details(NotificationRequest request) {
     final S s = _strings();
     final bool grouped = request.lines.length > 1;
@@ -215,6 +264,9 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
       importance: Importance.high,
       priority: Priority.high,
       category: channel.androidCategory,
+      // Explicit, not the platform default: on a secure lock screen only the
+      // app name shows until the device is unlocked.
+      visibility: NotificationVisibility.private,
       groupKey: request.groupKey,
       playSound: request.sound,
       enableVibration: request.sound,

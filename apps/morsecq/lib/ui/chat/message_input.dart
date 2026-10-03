@@ -132,6 +132,9 @@ class _MessageInputState extends State<MessageInput>
     implements IdentityDataStore {
   static const Duration _draftDebounce = Duration(milliseconds: 400);
 
+  /// Below this window height the composer switches to its compact layout.
+  static const double compactHeight = 520;
+
   late final _DraftWriter _writer = _writerFor(
     widget.service,
     widget.conversationId,
@@ -143,6 +146,8 @@ class _MessageInputState extends State<MessageInput>
     _identity,
   );
   final FocusNode _focus = FocusNode();
+  final KeyingInputController _keying = KeyingInputController();
+  bool _keyingPending = false;
   InputMode _mode = InputMode.straightKey;
   Timer? _draftTimer;
   late String _lastDraft;
@@ -269,7 +274,15 @@ class _MessageInputState extends State<MessageInput>
   bool get _canSend =>
       !_sending && _text.text.trim().isNotEmpty && _bytesLeft >= 0;
 
+  /// Send is offered while a character is still being keyed: pressing it
+  /// commits that character first.
+  bool get _sendEnabled =>
+      _canSend || (!_sending && _keyingPending && _bytesLeft >= 0);
+
   Future<void> _send() async {
+    // Finish the character being keyed so it ends THIS message instead of
+    // starting the next one; then re-check text and byte budget.
+    _keying.complete();
     if (!_canSend) return;
     final String text = _text.text.trim();
     final int revision = _editRevision;
@@ -291,6 +304,13 @@ class _MessageInputState extends State<MessageInput>
     } finally {
       if (mounted) setState(() => _sending = false);
     }
+  }
+
+  void _changeMode(InputMode mode, MorsePlaybackSettings settings) {
+    // The keyer is replaced: commit what it was keying first.
+    _keying.complete();
+    setState(() => _mode = mode);
+    settings.inputMode = mode;
   }
 
   void _appendDecoded(String text) {
@@ -319,9 +339,86 @@ class _MessageInputState extends State<MessageInput>
     final ColorScheme scheme = theme.colorScheme;
     final S s = context.s;
     final MorsePlaybackSettings settings = MorsePlaybackSettings.of(context);
+    // Live keying sounds at the listener's tone, not the sink's default.
+    widget.playback.keyingToneHz = settings.toneHz;
     final String pattern = MorseEncoder.toPattern(_text.text);
     final int left = _bytesLeft;
     final bool tooLong = left < 0;
+
+    // Short screens (a phone in landscape): the pad shrinks, the mode switch
+    // joins the draft row and the preview row goes, so the conversation
+    // keeps most of the height.
+    final bool compact = MediaQuery.sizeOf(context).height < compactHeight;
+    final Widget selector = LayoutBuilder(
+      builder: (context, constraints) => InputModeSelector(
+        mode: _mode,
+        // Icon-only below ~420 px so the segments fit a phone.
+        showLabels: !compact && constraints.maxWidth >= 420,
+        onChanged: (m) => _changeMode(m, settings),
+      ),
+    );
+    final Widget keyer = KeyingInput(
+      key: ValueKey<InputMode>(_mode),
+      mode: _mode == InputMode.straightKey
+          ? KeyingMode.straightKey
+          : KeyingMode.paddles,
+      timing: settings.timing,
+      // Keyers take the sink from playback, which yields to them.
+      sink: widget.playback.keyingSink,
+      clock: widget.playback.clock,
+      onText: _appendDecoded,
+      controller: _keying,
+      onPendingChanged: (pending) {
+        if (mounted) setState(() => _keyingPending = pending);
+      },
+      height: compact ? 64 : 132,
+      showHint: !compact,
+    );
+    final Widget draftRow = Padding(
+      padding: EdgeInsets.fromLTRB(compact ? 6 : 12, 6, 6, compact ? 6 : 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (compact) ...[
+            SizedBox(width: 120, child: selector),
+            const SizedBox(width: 6),
+          ],
+          Expanded(
+            // Keyed, not typed: no soft keyboard, and focus stays
+            // on the key so desktop keying keeps working.
+            child: TextField(
+              controller: _text,
+              focusNode: _focus,
+              readOnly: true,
+              canRequestFocus: false,
+              minLines: 1,
+              maxLines: compact ? 2 : 4,
+              decoration: InputDecoration(
+                hintText: s.chatKeyMessage,
+                border: const OutlineInputBorder(),
+                isDense: true,
+                errorText: tooLong ? s.chatTooLong : null,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: s.chatDeleteLast,
+            onPressed: _text.text.isEmpty ? null : _deleteLast,
+            icon: const Icon(Icons.backspace_outlined),
+          ),
+          IconButton.filled(
+            tooltip: s.chatSend,
+            onPressed: _sendEnabled ? () => unawaited(_send()) : null,
+            icon: _sending
+                ? const SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.send),
+          ),
+        ],
+      ),
+    );
 
     return Material(
       color: scheme.surfaceContainerLow,
@@ -331,94 +428,36 @@ class _MessageInputState extends State<MessageInput>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-              child: LayoutBuilder(
-                builder: (context, constraints) => InputModeSelector(
-                  mode: _mode,
-                  // Icon-only below ~420 px so the segments fit a phone.
-                  showLabels: constraints.maxWidth >= 420,
-                  onChanged: (m) {
-                    setState(() => _mode = m);
-                    settings.inputMode = m;
-                  },
-                ),
+            if (!compact)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: selector,
               ),
-            ),
-            KeyingInput(
-              key: ValueKey<InputMode>(_mode),
-              mode: _mode == InputMode.straightKey
-                  ? KeyingMode.straightKey
-                  : KeyingMode.paddles,
-              timing: settings.timing,
-              // Keyers take the sink from playback, which yields to them.
-              sink: widget.playback.keyingSink,
-              clock: widget.playback.clock,
-              onText: _appendDecoded,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 6, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    // Keyed, not typed: no soft keyboard, and focus stays
-                    // on the key so desktop keying keeps working.
-                    child: TextField(
-                      controller: _text,
-                      focusNode: _focus,
-                      readOnly: true,
-                      canRequestFocus: false,
-                      minLines: 1,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: s.chatKeyMessage,
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                        errorText: tooLong ? s.chatTooLong : null,
+            keyer,
+            draftRow,
+            if (!compact)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: MorsePatternText(
+                        pattern.isEmpty ? ' ' : pattern,
+                        maxLines: 2,
+                        style: theme.textTheme.bodySmall,
                       ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: s.chatDeleteLast,
-                    onPressed: _text.text.isEmpty ? null : _deleteLast,
-                    icon: const Icon(Icons.backspace_outlined),
-                  ),
-                  IconButton.filled(
-                    tooltip: s.chatSend,
-                    onPressed: _canSend ? () => unawaited(_send()) : null,
-                    icon: _sending
-                        ? const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.send),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: MorsePatternText(
-                      pattern.isEmpty ? ' ' : pattern,
-                      maxLines: 2,
-                      style: theme.textTheme.bodySmall,
+                    const SizedBox(width: 8),
+                    Text(
+                      s.chatBytesLeftCount(left),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: tooLong ? scheme.error : scheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    s.chatBytesLeftCount(left),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: tooLong ? scheme.error : scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),

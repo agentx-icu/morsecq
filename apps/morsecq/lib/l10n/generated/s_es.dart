@@ -565,7 +565,37 @@ class SEs extends S {
   String get accountBackupBody => 'Tu identidad solo existe en este dispositivo. Si lo pierdes, lo restableces o te lo roban, no podrás recuperarla: tus contactos no reconocerán una identidad nueva y perderás tu progreso.';
 
   @override
-  String get accountBackupWhatIsInside => 'La copia contiene tu identidad cifrada y tu progreso. Guárdala en un lugar seguro fuera de este dispositivo.';
+  String get accountBackupWhatIsInside => 'La copia contiene tu clave de identidad, cifrada con tu contraseña, y tu progreso. Guárdala en un lugar seguro fuera de este dispositivo.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'La copia contiene tu clave de identidad sin cifrar y tu progreso. Cualquiera que obtenga este archivo puede usar tu identidad: establece primero una contraseña si quieres cifrar la clave y guarda el archivo en un lugar seguro.';
+
+  @override
+  String get accountPasswordScope => 'Tu contraseña cifra tu clave de identidad. El historial de mensajes queda sin cifrar en el disco; el cifrado del dispositivo puede protegerlo.';
+
+  @override
+  String get accountSectionNotifications => 'Notificaciones';
+
+  @override
+  String get accountNotificationsEnable => 'Mostrar notificaciones';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'Mensajes nuevos, solicitudes de amistad e invitaciones a grupos';
+
+  @override
+  String get accountNotificationsContent => 'Mostrar el contenido de los mensajes';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Texto y Morse en los avisos y en la pantalla de bloqueo. Desactivado: solo que llegó un mensaje.';
+
+  @override
+  String get accountNotificationsAllow => 'Permitir notificaciones';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Pedir permiso al sistema';
+
+  @override
+  String get accountNotificationsDenied => 'Las notificaciones de MorseCQ están desactivadas en los ajustes del sistema.';
 
   @override
   String get accountBackupSaveFile => 'Guardar copia de seguridad';

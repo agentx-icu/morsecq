@@ -66,8 +66,8 @@ extension _IdentityBackup on Tim2ToxIdentityService {
           hasPassword: encrypted,
         );
     final root = Directory(_paths.root);
-    await root.parent.create(recursive: true);
-    final stage = await root.parent.createTemp('.morsecq-import-');
+    await PosixPermissions.createPrivateDirectory(root.parent.path);
+    final stage = await root.parent.createTemp(IdentityPaths.importStagePrefix);
     final previous = Directory(p.join(stage.path, 'previous'));
     final staged = IdentityPaths(p.join(stage.path, 'identity'));
     var replaced = false;
@@ -76,7 +76,8 @@ extension _IdentityBackup on Tim2ToxIdentityService {
     try {
       // Finish every archive write before touching the existing account.
       await staged.ensureDirectories();
-      await File(staged.profileFile).writeAsBytes(profile, flush: true);
+      // Owner-only from the first byte (writeBytesAtomic stages at 0600).
+      await writeBytesAtomic(File(staged.profileFile), profile);
       await record.write(staged.identityFile);
       for (final entry in backup.trainingFiles) {
         final rel = entry.key.substring(BackupContainer.trainingPrefix.length);

@@ -96,6 +96,13 @@ class _CreateIdentityPageState extends State<CreateIdentityPage> {
             textInputAction: TextInputAction.next,
             onChanged: (_) => setState(() {}),
           ),
+          const SizedBox(height: 8),
+          Text(
+            s.accountPasswordScope,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
           if (_wantsPassword) ...[
             const SizedBox(height: 16),
             PasswordField(

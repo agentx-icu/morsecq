@@ -565,7 +565,37 @@ class SDe extends S {
   String get accountBackupBody => 'Deine Identität existiert nur auf diesem Gerät. Geht das Gerät verloren, wird es zurückgesetzt oder gestohlen, kannst du sie nicht wiederherstellen: Deine Kontakte erkennen eine neue Identität nicht und dein Lernfortschritt geht verloren.';
 
   @override
-  String get accountBackupWhatIsInside => 'Die Sicherungsdatei enthält deine verschlüsselte Identität und deinen Lernfortschritt. Bewahre sie an einem sicheren Ort außerhalb dieses Geräts auf.';
+  String get accountBackupWhatIsInside => 'Die Sicherungsdatei enthält deinen mit dem Passwort verschlüsselten Identitätsschlüssel und deinen Lernfortschritt. Bewahre sie an einem sicheren Ort außerhalb dieses Geräts auf.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'Die Sicherungsdatei enthält deinen Identitätsschlüssel unverschlüsselt sowie deinen Lernfortschritt. Wer die Datei bekommt, kann deine Identität benutzen: Lege zuerst ein Passwort fest, wenn der Schlüssel verschlüsselt sein soll, und bewahre die Datei sicher auf.';
+
+  @override
+  String get accountPasswordScope => 'Dein Passwort verschlüsselt deinen Identitätsschlüssel. Der Nachrichtenverlauf bleibt auf dem Datenträger unverschlüsselt; eine Geräteverschlüsselung kann ihn schützen.';
+
+  @override
+  String get accountSectionNotifications => 'Benachrichtigungen';
+
+  @override
+  String get accountNotificationsEnable => 'Benachrichtigungen anzeigen';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'Neue Nachrichten, Freundschaftsanfragen und Gruppeneinladungen';
+
+  @override
+  String get accountNotificationsContent => 'Nachrichteninhalt anzeigen';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Text und Morse in Bannern und auf dem Sperrbildschirm. Aus: nur der Hinweis, dass eine Nachricht kam.';
+
+  @override
+  String get accountNotificationsAllow => 'Benachrichtigungen erlauben';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Das System um Erlaubnis bitten';
+
+  @override
+  String get accountNotificationsDenied => 'Benachrichtigungen für MorseCQ sind in den Systemeinstellungen ausgeschaltet.';
 
   @override
   String get accountBackupSaveFile => 'Sicherungsdatei speichern';

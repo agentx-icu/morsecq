@@ -2,15 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
+import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../chat/chat_scope.dart';
+import '../chat/conversation_route.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
 import '../groups/create_group_sheet.dart';
 import '../groups/group_list.dart';
 import '../groups/join_group_sheet.dart';
+import '../shell/shell_router.dart';
 import 'placeholder_page.dart';
 
 /// Group nets: many operators on one shared Morse channel.
@@ -32,21 +35,43 @@ class GroupsPage extends StatefulWidget {
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  Group? _selected;
+  ConversationTarget? _selected;
+  StreamSubscription<ConversationTarget>? _shellConversations;
+
+  @override
+  void initState() {
+    super.initState();
+    _shellConversations = context
+        .read<ShellRouter?>()
+        ?.conversationRequests
+        .where((t) => t.kind == ConversationKind.group)
+        .listen(_openFromShell);
+  }
+
+  @override
+  void dispose() {
+    unawaited(_shellConversations?.cancel());
+    super.dispose();
+  }
 
   void _open(BuildContext context, Group group) {
+    final ConversationTarget target = ConversationTarget.fromGroup(group);
     if (isMasterDetail(context)) {
-      setState(() => _selected = group);
+      setState(() => _selected = target);
       return;
     }
-    unawaited(
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) =>
-              ConversationScreen(target: ConversationTarget.fromGroup(group)),
-        ),
-      ),
-    );
+    unawaited(Navigator.of(context).push(conversationRoute(target)));
+  }
+
+  /// A notification asked for [target]; see `ChatPage._openFromShell`.
+  void _openFromShell(ConversationTarget target) {
+    if (!mounted) return;
+    final bool exposed = ModalRoute.of(context)?.isCurrent ?? true;
+    if (isMasterDetail(context) && exposed) {
+      setState(() => _selected = target);
+      return;
+    }
+    openConversationRoute(Navigator.of(context), target);
   }
 
   Future<void> _create(BuildContext context, ChatService service) async {
@@ -95,8 +120,9 @@ class _GroupsPageState extends State<GroupsPage> {
         initialData: service.groups,
         builder: (context, snapshot) {
           final List<Group> groups = snapshot.data ?? const <Group>[];
-          final Group? selected = _selected;
-          if (selected != null && !groups.any((g) => g.id == selected.id)) {
+          final ConversationTarget? selected = _selected;
+          if (selected != null &&
+              !groups.any((g) => g.id == selected.peerId)) {
             // Left (or was removed from) the open group: drop the pane.
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted && _selected?.id == selected.id) {
@@ -120,7 +146,7 @@ class _GroupsPageState extends State<GroupsPage> {
               Expanded(
                 child: GroupList(
                   service: service,
-                  selectedId: _selected?.id,
+                  selectedId: _selected?.peerId,
                   onOpen: (g) => _open(context, g),
                 ),
               ),
@@ -131,14 +157,14 @@ class _GroupsPageState extends State<GroupsPage> {
     );
 
     if (!twoPane) return list;
-    final Group? selected = _selected;
+    final ConversationTarget? selected = _selected;
     return MasterDetail(
       master: list,
       detail: selected == null
           ? null
           : ConversationScreen(
-              key: ValueKey<String>('detail_group_${selected.id}'),
-              target: ConversationTarget.fromGroup(selected),
+              key: ValueKey<String>('detail_group_${selected.peerId}'),
+              target: selected,
               embedded: true,
               onClosed: () => setState(() => _selected = null),
             ),

@@ -22,6 +22,36 @@ void main() {
       expect(validateToxId(kSelfToxId, ownToxId: kSelfToxId), ToxIdError.own);
     });
 
+    test('rejects a typo through the Tox address checksum', () {
+      // A real address: key 0x01..0x20, nospam DEADBEEF, checksum over all.
+      final String key = [
+        for (var i = 1; i <= 32; i++) i.toRadixString(16).padLeft(2, '0'),
+      ].join().toUpperCase();
+      const String nospam = 'DEADBEEF';
+      var even = 0;
+      var odd = 0;
+      final String body = '$key$nospam';
+      for (var i = 0; i < body.length; i += 2) {
+        final int b = int.parse(body.substring(i, i + 2), radix: 16);
+        if ((i ~/ 2).isEven) {
+          even ^= b;
+        } else {
+          odd ^= b;
+        }
+      }
+      final String checksum =
+          '${even.toRadixString(16).padLeft(2, '0')}'
+                  '${odd.toRadixString(16).padLeft(2, '0')}'
+              .toUpperCase();
+      final String valid = '$body$checksum';
+      expect(validateToxId(valid), isNull);
+      // One flipped character anywhere breaks the checksum.
+      final String typo = '${valid.substring(0, 10)}'
+          '${valid[10] == '0' ? '1' : '0'}${valid.substring(11)}';
+      expect(validateToxId(typo), ToxIdError.invalid);
+      expect(validateToxId('${body}0000'), ToxIdError.invalid);
+    });
+
     test('the form validator renders the codes in the given locale', () {
       expect(validateToxIdInput(s, 'A' * 75), s.chatToxIdInvalid);
       expect(

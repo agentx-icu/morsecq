@@ -566,7 +566,37 @@ class SPt extends S {
   String get accountBackupBody => 'Sua identidade existe apenas neste dispositivo. Se ele for perdido, redefinido ou roubado, não será possível recuperá-la: seus contatos não reconhecerão uma nova identidade e seu progresso será perdido.';
 
   @override
-  String get accountBackupWhatIsInside => 'O arquivo de backup contém sua identidade criptografada e seu progresso. Guarde-o em um local seguro fora deste dispositivo.';
+  String get accountBackupWhatIsInside => 'O arquivo de backup contém sua chave de identidade, criptografada com sua senha, e seu progresso. Guarde-o em um local seguro fora deste dispositivo.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'O arquivo de backup contém sua chave de identidade sem criptografia e seu progresso. Qualquer pessoa que obtiver este arquivo pode usar sua identidade: defina uma senha antes se quiser a chave criptografada e guarde o arquivo em um local seguro.';
+
+  @override
+  String get accountPasswordScope => 'Sua senha criptografa sua chave de identidade. O histórico de mensagens fica sem criptografia no disco; a criptografia do dispositivo pode protegê-lo.';
+
+  @override
+  String get accountSectionNotifications => 'Notificações';
+
+  @override
+  String get accountNotificationsEnable => 'Mostrar notificações';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'Novas mensagens, pedidos de amizade e convites de grupo';
+
+  @override
+  String get accountNotificationsContent => 'Mostrar o conteúdo das mensagens';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Texto e Morse nos avisos e na tela de bloqueio. Desligado: só que chegou uma mensagem.';
+
+  @override
+  String get accountNotificationsAllow => 'Permitir notificações';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Pedir permissão ao sistema';
+
+  @override
+  String get accountNotificationsDenied => 'As notificações do MorseCQ estão desligadas nas configurações do sistema.';
 
   @override
   String get accountBackupSaveFile => 'Salvar arquivo de backup';

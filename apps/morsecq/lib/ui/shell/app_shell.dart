@@ -7,14 +7,18 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../notifications/connection_banner_policy.dart';
 import '../../notifications/notification_center.dart';
-import '../chat/conversation_screen.dart';
+import '../../notifications/notification_composer.dart';
+import '../../notifications/notification_payload.dart';
+import '../chat/conversation_route.dart';
 import '../chat/conversation_target.dart';
+import '../groups/group_invites_page.dart';
 import '../pages/chat_page.dart';
 import '../pages/groups_page.dart';
 import '../pages/learn_page.dart';
 import '../pages/me_page.dart';
 import '../pages/reference_page.dart';
 import '../responsive.dart';
+import 'shell_router.dart';
 
 /// One top-level destination. Kept as data so the bar and the rail render the
 /// same list and cannot drift apart. The label is resolved against the
@@ -81,7 +85,12 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
-  StreamSubscription<String>? _openRequests;
+  final ShellRouter _router = ShellRouter();
+  NotificationCenter? _center;
+  StreamSubscription<NotificationTapTarget>? _taps;
+
+  static int _tabOf(Type page) =>
+      kShellDestinations.indexWhere((d) => d.page.runtimeType == page);
 
   void _select(int index) {
     if (index == _selectedIndex) return;
@@ -91,36 +100,72 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
-    // Notification taps (and cold-start payloads) open the conversation.
+    // Notification taps open what they point at. The centre keeps the
+    // newest tap until it is routed here, so a tap that cold-started the
+    // app (or came while the unlock screen showed) is not lost.
     // NotificationCenter is null in tests and where notifications are off.
-    final center = context.read<NotificationCenter?>();
-    _openRequests = center?.openConversationRequests.listen(_openConversation);
+    _center = context.read<NotificationCenter?>();
+    _taps = _center?.tapTargets.listen((_) => _routePendingTap());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _routePendingTap());
   }
 
   @override
   void dispose() {
-    _openRequests?.cancel();
+    unawaited(_taps?.cancel());
+    unawaited(_router.dispose());
     super.dispose();
   }
 
-  void _openConversation(String conversationId) {
+  void _routePendingTap() {
+    if (!mounted) return;
+    final NotificationTapTarget? tap = _center?.takePendingTap();
+    switch (tap) {
+      case null:
+        return;
+      case OpenConversationTarget(:final conversationId):
+        final ConversationTarget target = _targetFor(conversationId);
+        _select(
+          _tabOf(
+            target.kind == ConversationKind.group ? GroupsPage : ChatPage,
+          ),
+        );
+        _router.openConversation(target);
+      case FriendRequestTarget():
+        _select(_tabOf(ChatPage));
+        _router.openContacts();
+      case GroupInviteTarget():
+        _showGroupInvites();
+    }
+  }
+
+  /// The invite inbox is inline on the groups page: uncover it by leaving
+  /// conversations only. When another flow (settings, contacts, …) still
+  /// covers the shell, open the invites on a page above it instead.
+  void _showGroupInvites() {
+    _select(_tabOf(GroupsPage));
+    final NavigatorState navigator = Navigator.of(context);
+    navigator.popUntil(
+      (route) => route.settings.name != kConversationRouteName,
+    );
+    final ChatService chat = context.read<ChatService>();
+    final bool covered = !identical(topRoute(navigator), ModalRoute.of(context));
+    if (covered && chat.groupInvites.isNotEmpty) {
+      unawaited(navigator.push(GroupInvitesPage.route(chat)));
+    }
+  }
+
+  ConversationTarget _targetFor(String conversationId) {
     final chat = context.read<ChatService>();
     final existing = chat.conversations
         .where((c) => c.id == conversationId)
         .firstOrNull;
-    final target = existing != null
-        ? ConversationTarget.fromConversation(existing)
-        : ConversationTarget(
-            id: conversationId,
-            title: conversationId,
-            kind: conversationId.startsWith('group_')
-                ? ConversationKind.group
-                : ConversationKind.c2c,
-          );
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ConversationScreen(target: target),
-      ),
+    if (existing != null) return ConversationTarget.fromConversation(existing);
+    final bool group = conversationId.startsWith('group_');
+    final String peer = conversationId.substring(conversationId.indexOf('_') + 1);
+    return ConversationTarget(
+      id: conversationId,
+      title: NotificationComposer.shortKey(peer),
+      kind: group ? ConversationKind.group : ConversationKind.c2c,
     );
   }
 
@@ -145,7 +190,9 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final s = context.s;
     final layout = layoutClassOf(context);
-    final body = _withBanner(
+    final body = Provider<ShellRouter>.value(
+      value: _router,
+      child: _withBanner(
       IndexedStack(
         index: _selectedIndex,
         // Hidden tabs keep their state but stop animating; a conversation
@@ -154,6 +201,7 @@ class _AppShellState extends State<AppShell> {
           for (final (i, d) in kShellDestinations.indexed)
             TickerMode(enabled: i == _selectedIndex, child: d.page),
         ],
+      ),
       ),
     );
 

@@ -18,5 +18,36 @@ import UserNotifications
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MorsecqBackupExclusion") {
+      BackupExclusion.register(messenger: registrar.messenger())
+    }
+  }
+}
+
+/// lib/di/backup_exclusion.dart: keeps the identity data out of iCloud /
+/// iTunes device backups (it holds the Tox identity; the user moves it with
+/// the in-app backup file instead).
+enum BackupExclusion {
+  static func register(messenger: FlutterBinaryMessenger) {
+    let channel = FlutterMethodChannel(
+      name: "icu.agentx.morsecq/backup_exclusion", binaryMessenger: messenger)
+    channel.setMethodCallHandler { call, result in
+      guard call.method == "exclude",
+        let path = (call.arguments as? [String: Any])?["path"] as? String
+      else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      var url = URL(fileURLWithPath: path, isDirectory: true)
+      var values = URLResourceValues()
+      values.isExcludedFromBackup = true
+      do {
+        try url.setResourceValues(values)
+        result(true)
+      } catch {
+        result(FlutterError(
+          code: "exclude_failed", message: error.localizedDescription, details: nil))
+      }
+    }
   }
 }
