@@ -132,6 +132,7 @@ class _KeyingInputState extends State<KeyingInput> {
           clock: widget.clock,
           size: widget.height - 12,
           autofocus: true,
+          label: context.s.learnStraightKeyLabel,
         ),
       ),
       KeyingMode.paddles => PaddleButtons(
@@ -139,6 +140,8 @@ class _KeyingInputState extends State<KeyingInput> {
         clock: widget.clock,
         height: widget.height - 12,
         autofocus: true,
+        ditLabel: context.s.learnDitLabel,
+        dahLabel: context.s.learnDahLabel,
       ),
     };
     return Padding(

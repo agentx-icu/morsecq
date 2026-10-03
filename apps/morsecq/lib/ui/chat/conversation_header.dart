@@ -4,6 +4,11 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/l10n_extension.dart';
 import 'conversation_target.dart';
 
+/// The app-bar title of [target]: the peer or group name, or "Me" for an
+/// unnamed note to self.
+String conversationTitleText(S s, ConversationTarget target) =>
+    target.isSelf && target.title.isEmpty ? s.chatSelfMe : target.title;
+
 /// Title plus a live subtitle: online/offline for a friend, member count for
 /// a group, "saved on this device only" for the note to self.
 class ConversationTitle extends StatelessWidget {
@@ -94,7 +99,7 @@ class ConversationTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          target.isSelf && target.title.isEmpty ? s.chatSelfMe : target.title,
+          conversationTitleText(s, target),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

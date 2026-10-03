@@ -17,3 +17,12 @@ LayoutClass layoutClassForWidth(double width) =>
 /// place that inspects width so the breakpoint cannot drift between widgets.
 LayoutClass layoutClassOf(BuildContext context) =>
     layoutClassForWidth(MediaQuery.sizeOf(context).width);
+
+/// The text scale Material's AppBar clamps its title to (Flutter's private
+/// `_kMaxTitleTextScaleFactor`). Code that measures whether a title fits the
+/// bar must clamp the same way, or large text over-estimates the title.
+const double kAppBarTitleMaxTextScale = 1.34;
+
+/// [scaler] as an AppBar applies it to the title.
+TextScaler appBarTitleTextScaler(TextScaler scaler) =>
+    scaler.clamp(maxScaleFactor: kAppBarTitleMaxTextScale);

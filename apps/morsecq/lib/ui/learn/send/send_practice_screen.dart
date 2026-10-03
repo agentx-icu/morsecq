@@ -8,6 +8,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../../responsive.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
@@ -270,11 +271,14 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   bool _appBarFits(String title, String label) {
     final media = MediaQuery.of(context);
     final theme = Theme.of(context);
-    double width(String text, TextStyle? style) {
+    // The AppBar clamps the title's text scale; actions scale freely.
+    double width(String text, TextStyle? style, {bool title = false}) {
       final painter = TextPainter(
         text: TextSpan(text: text, style: style),
         textDirection: Directionality.of(context),
-        textScaler: media.textScaler,
+        textScaler: title
+            ? appBarTitleTextScaler(media.textScaler)
+            : media.textScaler,
         maxLines: 1,
       )..layout();
       final w = painter.width;
@@ -288,6 +292,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
         width(
           title,
           theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
+          title: true,
         ) +
         width(
           label,
