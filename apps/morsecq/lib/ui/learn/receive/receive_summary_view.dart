@@ -58,8 +58,10 @@ class ReceiveSummaryView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
+        // The strict figure is what the Koch unlock rule uses, so the number
+        // shown always agrees with the pass/fail colour.
         Text(
-          formatAccuracy(s, score.accuracy),
+          formatAccuracy(s, score.strictAccuracy),
           style: theme.textTheme.displayMedium?.copyWith(
             color: outcome.passed || isReview ? scheme.primary : scheme.error,
             fontWeight: FontWeight.bold,

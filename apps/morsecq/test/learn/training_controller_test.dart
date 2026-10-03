@@ -178,7 +178,7 @@ void main() {
       expect(session.target, isNotEmpty);
       expect(session.target.split(''), everyElement(isIn(<String>['K', 'M'])));
       // Key nothing at all: an empty attempt.
-      final score = await c.recordSendSession(session);
+      final score = (await c.recordSendSession(session)).score;
       expect(score.drillKind, 'send');
       expect(c.progress.history.single.drillKind, 'send');
       expect(c.streak, 1);

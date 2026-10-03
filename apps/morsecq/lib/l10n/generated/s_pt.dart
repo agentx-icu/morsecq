@@ -1024,6 +1024,9 @@ class SPt extends S {
   String get learnLoadFailed => 'Não foi possível ler seu progresso salvo. Você começará do zero; o arquivo antigo foi preservado como .corrupt.';
 
   @override
+  String get learnProgressSaveFailed => 'Não foi possível salvar seu progresso. O resultado vale enquanto o MorseCQ estiver aberto.';
+
+  @override
   String get learnChooseDrill => 'Escolha um exercício';
 
   @override

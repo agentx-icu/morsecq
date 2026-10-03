@@ -12,13 +12,18 @@ final class KochCourse {
   KochCourse({
     List<String>? order,
     this.passAccuracy = 0.90,
-    this.minCharsPerSession = 50,
+    this.minCharsPerSession = defaultMinCharsPerSession,
   }) : assert(
          passAccuracy > 0 && passAccuracy <= 1,
          'passAccuracy must be in (0, 1]',
        ),
        assert(minCharsPerSession >= 0, 'minCharsPerSession must be >= 0'),
        order = List<String>.unmodifiable(order ?? MorseAlphabet.kochOrder);
+
+  /// Default for [minCharsPerSession]. Apps that let the learner pick a
+  /// session length should not offer anything shorter, or lesson sessions
+  /// could never unlock the next lesson.
+  static const int defaultMinCharsPerSession = 50;
 
   /// Teaching order. Defaults to [MorseAlphabet.kochOrder].
   final List<String> order;
@@ -69,11 +74,11 @@ final class KochCourse {
   /// [lesson]; used to give recently unlocked symbols extra drill weight.
   Set<String> recentCharsForLesson(int lesson, {int count = 2}) {
     _checkLesson(lesson);
-    final recent = <String>{};
-    for (var l = lesson; l >= 1 && recent.length < count; l--) {
-      recent.add(order[l]);
-    }
-    if (lesson == 1) {
+    final first = lesson - count + 1 < 1 ? 1 : lesson - count + 1;
+    final recent = <String>{for (var l = first; l <= lesson; l++) order[l]};
+    // Lesson 1 introduces both order[0] and order[1]; order[0] counts as
+    // recent whenever the window of [count] lessons reaches lesson 1.
+    if (first == 1) {
       recent.add(order[0]);
     }
     return recent;
@@ -90,9 +95,15 @@ final class KochCourse {
 
   bool isLastLesson(int lesson) => lesson >= lessonCount;
 
-  /// Unlock rule: accuracy >= [passAccuracy] and enough symbols in the session.
+  /// Unlock rule: [SessionScore.strictAccuracy] >= [passAccuracy] and enough
+  /// symbols in the session.
+  ///
+  /// The strict figure counts inserted symbols against the copy, so typing
+  /// every candidate for a symbol the trainee cannot tell apart does not
+  /// pass the lesson.
   bool passes(SessionScore score) =>
-      score.totalChars >= minCharsPerSession && score.accuracy >= passAccuracy;
+      score.totalChars >= minCharsPerSession &&
+      score.strictAccuracy >= passAccuracy;
 
   /// The lesson to continue with after [score] was recorded at [lesson]:
   /// one higher when [passes] and not already at the end.

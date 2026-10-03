@@ -1061,6 +1061,9 @@ class SRu extends S {
   String get learnLoadFailed => 'Не удалось прочитать сохранённый прогресс. Обучение начнётся заново; старый файл сохранён с расширением .corrupt.';
 
   @override
+  String get learnProgressSaveFailed => 'Не удалось сохранить прогресс. Результат учитывается, пока MorseCQ открыт.';
+
+  @override
   String get learnChooseDrill => 'Выберите упражнение';
 
   @override

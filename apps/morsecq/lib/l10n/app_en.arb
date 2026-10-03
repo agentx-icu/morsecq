@@ -1339,6 +1339,10 @@
   "@learnLoadFailed": {
     "description": "Learn home: error line shown when saved progress was unreadable and training restarted fresh"
   },
+  "learnProgressSaveFailed": "Couldn't save your progress. The result still counts while MorseCQ stays open.",
+  "@learnProgressSaveFailed": {
+    "description": "Learn drills: snack bar when a finished session could not be written to disk; the action retries the save"
+  },
   "learnChooseDrill": "Choose a drill",
   "@learnChooseDrill": {
     "description": "Receive drill picker sheet: title"

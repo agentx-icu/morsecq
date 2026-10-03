@@ -50,7 +50,32 @@ final class FileTrainingSettingsStore implements TrainingSettingsStore {
         trainer.groupSize <= 0) {
       throw const FormatException('Invalid training settings');
     }
-    return settings;
+    // Keep every value inside what the settings screen can set: a positive
+    // but absurd speed (say 1e300 WPM) would round the dit to zero and break
+    // playback and keying. Older builds also offered sessions down to 20
+    // symbols, too short for a lesson session to ever unlock the next
+    // lesson; those are lifted to the floor.
+    final wpm = trainer.characterWpm.clamp(
+      TrainingSettings.minCharacterWpm,
+      TrainingSettings.maxCharacterWpm,
+    );
+    final farnsworth = trainer.farnsworthWpm?.clamp(
+      TrainingSettings.minFarnsworthWpm,
+      wpm,
+    );
+    final bounded = trainer.copyWith(
+      characterWpm: wpm,
+      farnsworthWpm: farnsworth,
+      toneHz: trainer.toneHz.clamp(
+        TrainingSettings.minToneHz,
+        TrainingSettings.maxToneHz,
+      ),
+      sessionLengthChars: trainer.sessionLengthChars.clamp(
+        TrainingSettings.minSessionChars,
+        TrainingSettings.maxSessionChars,
+      ),
+    );
+    return bounded == trainer ? settings : settings.copyWith(trainer: bounded);
   }
 
   @override
