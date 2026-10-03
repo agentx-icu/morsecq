@@ -25,7 +25,7 @@ Future<LocaleController> pumpTile(
           localizationsDelegates: S.localizationsDelegates,
           supportedLocales: S.supportedLocales,
           locale: context.watch<LocaleController>().locale,
-          localeResolutionCallback: LocaleController.resolve,
+          localeListResolutionCallback: LocaleController.resolve,
           home: const Scaffold(body: LanguageSettingsTile()),
         ),
       ),
@@ -72,7 +72,7 @@ void main() {
       expect(store.getString(LocaleController.storageKey), entry.key);
       expect(find.text(lookupS(locale).languageTitle), findsOneWidget);
       expect(find.text(entry.value), findsOneWidget);
-      expect(find.byType(SimpleDialog), findsNothing);
+      expect(find.byType(AlertDialog), findsNothing);
       expect(tester.takeException(), isNull);
 
       await tester.tap(find.byType(LanguageSettingsTile));
@@ -103,7 +103,7 @@ void main() {
 
     await tester.tap(find.byType(LanguageSettingsTile));
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
 
     await tester.ensureVisible(find.text('简体中文'));
@@ -113,7 +113,7 @@ void main() {
 
     expect(controller.locale, const Locale('zh'));
     expect(store.getString(LocaleController.storageKey), 'zh');
-    expect(find.byType(SimpleDialog), findsNothing, reason: 'dialog closed');
+    expect(find.byType(AlertDialog), findsNothing, reason: 'dialog closed');
     // The tile itself re-rendered in Chinese.
     expect(find.text('语言'), findsOneWidget);
     expect(find.text('简体中文'), findsOneWidget);

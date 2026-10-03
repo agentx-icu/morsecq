@@ -97,7 +97,7 @@ void main() {
       // Sidetone followed every press and release.
       expect(playback.sink.events.length, 6);
       expect(playback.sink.isOn, isFalse);
-      expect(find.textContaining('wpm'), findsWidgets);
+      expect(find.textContaining('WPM'), findsWidgets);
 
       await tester.tap(find.text(en.learnDone));
       await tester.pumpAndSettle();

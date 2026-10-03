@@ -25,7 +25,7 @@ Read it before changing scope; keep it in sync when scope changes.
 | `packages/radio_tools` | **Pure Dart** operator maths for the radio tools: Maidenhead locators, great-circle distance / heading, IARU band edges and antenna lengths, `CwSpeed`, `RstReport` | never imports Flutter |
 | `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity is required before training too). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,tools}`, `lib/training` (per-identity progress store), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
 | `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — to be added with `morsecq_chat` | never edit in place |
-| `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`; `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too |
+| `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`, `ui_literal_guard.dart` (tests in `apps/morsecq/test/i18n/`); `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too; analyzed with `dart analyze --fatal-infos tool` (deps from the root `pubspec.yaml` `dev_dependencies`) |
 | `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
 | `doc/screenshots/` | committed frames per platform × locale, published only by `tool/screenshots/capture.sh` | never edit PNGs by hand; regenerate after UI changes |
 | `doc/plans/` | 方案 / plan documents | every edit appends to the doc's change-log section |
@@ -45,6 +45,7 @@ dart pub get                                   # workspace-wide resolution (root
 flutter analyze packages/morse_core
 flutter analyze apps/morsecq
 for d in packages/* apps/*; do flutter analyze "$d"; done
+dart analyze --fatal-infos tool                # the repo-root scripts
 
 # Tests — per package/app (any that has a test/ dir)
 (cd packages/morse_core && dart test)
@@ -59,9 +60,10 @@ tool/test_pyramid.sh --level e2e --device macos
 # Product screenshots (tool/screenshots/README.md) -> doc/screenshots/<platform>/<locale>/
 tool/screenshots/capture.sh --platforms macos            # ios, ipad, android, linux, windows too
 
-# Repo gates (both HARD: exit 1 on violation)
+# Repo gates (all HARD: exit 1 on violation)
 dart run tool/check_complexity.dart            # .dart files > 500 LOC vs tool/.complexity_baseline.txt
 dart run tool/import_guard.dart                # layering: Tim2Tox/Tencent only in morsecq_chat; core/trainer stay pure Dart
+dart run tool/ui_literal_guard.dart            # no hard-coded user-visible prose in apps/morsecq/lib (use the ARBs)
 
 # Run the app
 (cd apps/morsecq && flutter run -d macos)      # or linux / windows / an attached device
@@ -84,6 +86,17 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   `package:tencent_cloud_chat*` or `package:tencent_im`, or if `morse_core` /
   `morse_trainer` import `package:flutter/`. The rule table is at the top of the
   file; extend it there, not in the scanner.
+- **UI literal guard.** `tool/ui_literal_guard.dart` parses every file under
+  `apps/morsecq/lib` (generated `l10n/generated/`, `*.g.dart`, `*.freezed.dart`
+  excepted) and fails on a string literal containing a letter that flows into a
+  user-visible sink: `Text` / `SelectableText`, `TextSpan(text:)`,
+  `Tooltip(message:)`, `Semantics(value:)`, and `tooltip`, `label*`, `hint*`,
+  `helperText`, `errorText`, `title`, `subtitle`, `content`, ... on any call.
+  Interpolations do not count (`Text('$n')` passes, `'$n items'` fails). User
+  text goes in `lib/l10n/app_*.arb`. Only non-translatable content (callsigns,
+  Q-codes, locator examples, unit symbols) may be exempted, with
+  `// ui-literal-ok: <reason>` on the line or the line above; a missing reason
+  or an unused exemption fails too. The sink table is at the top of the file.
 - **Strict lints.** Root `analysis_options.yaml` (`avoid_print`, `unawaited_futures`,
   `use_build_context_synchronously`, `cancel_subscriptions`, `close_sinks`,
   `always_declare_return_types`, `prefer_final_locals`, …) applies to every

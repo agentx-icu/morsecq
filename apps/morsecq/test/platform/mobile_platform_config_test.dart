@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -71,68 +70,14 @@ void main() {
     });
   });
 
-  group('iOS permission prompts', () {
+  group('iOS Info.plist', () {
     final plist = File('ios/Runner/Info.plist').readAsStringSync();
-
-    test('every usage description is localized in every app language', () {
-      final usage = <String, String>{
-        for (final m in RegExp(
-          r'<key>(NS\w+UsageDescription)</key>\s*<string>([^<]*)</string>',
-        ).allMatches(plist))
-          m.group(1)!: m.group(2)!.replaceAll('&apos;', "'"),
-      };
-      expect(usage, isNotEmpty);
-      final languages = RegExp(r'<string>([^<]+)</string>')
-          .allMatches(
-            RegExp(
-              r'<key>CFBundleLocalizations</key>\s*<array>(.*?)</array>',
-              dotAll: true,
-            ).firstMatch(plist)!.group(1)!,
-          )
-          .map((m) => m.group(1)!)
-          .toList();
-      final catalog =
-          jsonDecode(File('ios/Runner/InfoPlist.xcstrings').readAsStringSync())
-              as Map<String, Object?>;
-      final strings = catalog['strings']! as Map<String, Object?>;
-      usage.forEach((key, english) {
-        final entry = strings[key] as Map<String, Object?>?;
-        expect(entry, isNotNull, reason: key);
-        final localizations = entry!['localizations']! as Map<String, Object?>;
-        for (final lang in languages) {
-          final unit =
-              (localizations[lang] as Map<String, Object?>?)?['stringUnit']
-                  as Map<String, Object?>?;
-          expect(unit?['state'], 'translated', reason: '$key/$lang');
-          expect(unit?['value'], isNotEmpty, reason: '$key/$lang');
-        }
-        final en =
-            (localizations['en']! as Map<String, Object?>)['stringUnit']!
-                as Map<String, Object?>;
-        expect(en['value'], english, reason: '$key: en must match Info.plist');
-      });
-    });
 
     test('no background mode is declared', () {
       // Nothing plays in the background (SidetoneSink stops its voice) and
       // there is no ToxAV, so `audio` / `voip` would be unused modes (App
       // Review 2.5.4); the flush runs under beginBackgroundTask instead.
       expect(plist, isNot(contains('<key>UIBackgroundModes</key>')));
-    });
-
-    test('the string catalog is built into the app bundle', () {
-      final pbxproj = File(
-        'ios/Runner.xcodeproj/project.pbxproj',
-      ).readAsStringSync();
-      expect(pbxproj, contains('/* InfoPlist.xcstrings in Resources */ = '));
-      final resources = RegExp(
-        r'/\* Resources \*/ = \{\s*isa = PBXResourcesBuildPhase;.*?\};',
-        dotAll: true,
-      ).allMatches(pbxproj).map((m) => m.group(0)!);
-      expect(
-        resources.any((p) => p.contains('InfoPlist.xcstrings in Resources')),
-        isTrue,
-      );
     });
   });
 }

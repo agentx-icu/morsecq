@@ -72,7 +72,8 @@
 	     beginBackgroundTask assertion AppLifecycleCoordinator holds
 	     (AppDelegate.swift, icu.agentx.morsecq/background_task). -->
 	<!-- Permission prompts: these English values are the fallback; every UI
-	     language is in Runner/InfoPlist.xcstrings (keep both in sync). -->
+	     language is in Runner/<lang>.lproj/InfoPlist.strings (keep both in sync;
+	     test/i18n/platform_locales_test.dart checks every key). -->
 	<key>NSCameraUsageDescription</key>
 	<string>MorseCQ uses the camera only to scan a friend's Tox ID QR code.</string>
 	<key>NSMicrophoneUsageDescription</key>

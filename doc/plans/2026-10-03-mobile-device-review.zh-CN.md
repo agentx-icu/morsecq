@@ -46,7 +46,7 @@
 | Tox 身份被 Android 云备份 / 设备迁移复制 | 默认 `allowBackup` | `allowBackup="false"`、`fullBackupContent="false"`、`data_extraction_rules.xml`（同 toxee） |
 | Tox 身份进入 iCloud/iTunes 备份 | Application Support 默认被备份 | 每次建目录以及恢复前，经通道把 `<appSupport>/morsecq` 标为 `isExcludedFromBackup` |
 | Play 过滤掉无自动对焦相机或无麦克风的设备 | CAMERA / RECORD_AUDIO 隐含必需特性 | `uses-feature … required="false"` |
-| 权限弹窗只有英文 | Info.plist 文案未本地化 | `InfoPlist.xcstrings` 覆盖全部十种语言 |
+| 权限弹窗只有英文 | Info.plist 文案未本地化 | master 已由 i18n 评审以 `<lang>.lproj/InfoPlist.strings` 覆盖全部十种语言；本分支重复的字符串目录在合并时删除 |
 | `UIBackgroundModes=audio` 无正当理由（App Review 2.5.4） | 后台不播放任何声音 | 移除该键，不声明任何后台模式 |
 | iPad 分享弹窗与按钮脱节 | 从向导和 Me 页导出备份 | 用被点击控件计算 `sharePositionOrigin` |
 | 拒绝相机权限显示英文错误码 | mobile_scanner 默认错误视图 | 本地化 `errorBuilder`（`chatScanQrPermissionDenied` / `chatScanQrCameraUnavailable`） |

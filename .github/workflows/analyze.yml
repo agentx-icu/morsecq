@@ -55,15 +55,22 @@ jobs:
             echo "::endgroup::"
           done
 
+      # The repo-root scripts under tool/ resolve against the workspace root
+      # pubspec; same lint set, infos are fatal too.
+      - name: Dart analyze tool/ (hard gate)
+        run: dart analyze --fatal-infos tool
+
       - name: Complexity guard (500 LOC, baseline ratchet)
         run: dart run tool/check_complexity.dart
 
       - name: Import guard (layering)
         run: dart run tool/import_guard.dart
 
-      # Every `*_strings.dart` const must have an ARB entry (en + zh).
-      - name: Localisation strings in sync
-        run: dart run tool/strings_to_arb.dart --check
+      # No hard-coded user-visible prose in apps/morsecq/lib: text sinks
+      # (Text, tooltip, labelText, ...) must read from the ARBs. Its own
+      # tests run with the app tests (apps/morsecq/test/i18n/).
+      - name: UI literal guard (localisation)
+        run: dart run tool/ui_literal_guard.dart
 
       - name: Screenshot import regression tests
         run: python3 tool/screenshots/capture_import_test.py

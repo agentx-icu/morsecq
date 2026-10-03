@@ -39,7 +39,7 @@ dart pub get                        # pub workspace：根目录一次解析全�
 for d in packages/* apps/*; do flutter analyze "$d"; done
 dart run tool/check_complexity.dart     # 任何 .dart > 500 行即失败（生成文件、l10n 例外）
 dart run tool/import_guard.dart         # 分层：只有 packages/morsecq_chat 可 import tim2tox_dart / tencent_*；纯 Dart 包不得 import Flutter
-dart run tool/strings_to_arb.dart --check
+dart run tool/ui_literal_guard.dart     # apps/morsecq/lib 中不得有硬编码的用户可见字符串（例外写 // ui-literal-ok: <理由>）
 (cd apps/morsecq && flutter gen-l10n)   # 改 ARB 后重新生成 lib/l10n/generated/
 
 # 测试（尚未整体跑过！）
@@ -65,7 +65,7 @@ packages/morsecq_chat      Flutter  契约的 Tim2Tox 实现（唯一允许 impo
 apps/morsecq               应用     lib/di（后端工厂、AppScope、AppServices）、lib/startup、lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,shell}、
                                     lib/training（按身份的进度存储、TrainingControllerHost）、lib/notifications、lib/lifecycle、lib/desktop、lib/i18n + lib/l10n
 third_party/tim2tox        子模块   不要就地修改；third_party/stubs 是腾讯 UIKit common 包的空桩
-tool/                      门禁与脚本：check_complexity、import_guard、strings_to_arb、bootstrap_deps、ci/build_tim2tox.sh、gen_tray_icons
+tool/                      门禁与脚本：check_complexity、import_guard、ui_literal_guard、bootstrap_deps、ci/build_tim2tox.sh、gen_tray_icons
 doc/                       文档（英文默认 + zh-CN）
 ```
 

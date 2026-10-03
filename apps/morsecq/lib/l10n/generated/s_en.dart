@@ -129,6 +129,9 @@ class SEn extends S {
   String get languageSystemDefault => 'System default';
 
   @override
+  String get languageSaveFailed => 'Couldn\'t save the language setting. Try again.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Lesson $lesson of $total';
   }
@@ -215,7 +218,7 @@ class SEn extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1880,6 +1883,9 @@ class SEn extends S {
   String get listenNoInput => 'No microphone was found. Connect one and try again.';
 
   @override
+  String get listenStreamFailed => 'The microphone stopped unexpectedly. Try again.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1903,7 +1909,7 @@ class SEn extends S {
   String get listenStoppedInBackground => 'Listening stopped while the app was in the background.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Dits too long';

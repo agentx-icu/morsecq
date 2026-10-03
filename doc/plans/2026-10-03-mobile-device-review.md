@@ -46,7 +46,7 @@ Touch keying itself needed no change: the paddles and straight key use raw `List
 | Tox identity copied by Android cloud backup / device transfer | Default `allowBackup` | `allowBackup="false"`, `fullBackupContent="false"`, `data_extraction_rules.xml` (as toxee) |
 | Tox identity in iCloud/iTunes backups | Application Support is backed up | `<appSupport>/morsecq` marked `isExcludedFromBackup` via a channel on every directory setup and before a restore |
 | Play filters out devices without autofocus camera or mic | CAMERA / RECORD_AUDIO imply required features | `uses-feature … required="false"` |
-| Permission prompts English only | Info.plist strings not localised | `InfoPlist.xcstrings` with all ten languages |
+| Permission prompts English only | Info.plist strings not localised | Covered on master by `<lang>.lproj/InfoPlist.strings` for all ten languages (the i18n review); this branch's duplicate catalog was dropped in the merge |
 | `UIBackgroundModes=audio` unjustified (App Review 2.5.4) | Nothing plays in the background | Key removed; no background mode declared |
 | iPad share popover detached from the button | Backup export from the wizard and the Me page | `sharePositionOrigin` from the tapped widget |
 | Camera permission denied shows an English error code | mobile_scanner default error view | Localised `errorBuilder` (`chatScanQrPermissionDenied` / `chatScanQrCameraUnavailable`) |

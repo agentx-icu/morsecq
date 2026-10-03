@@ -46,6 +46,9 @@ final class _FakeRecorder implements AudioRecorder {
   Completer<void>? stopGate;
 
   @override
+  Stream<RecordState> onStateChanged() => const Stream<RecordState>.empty();
+
+  @override
   Future<Stream<Uint8List>> startStream(RecordConfig config) async {
     log.add('start');
     return const Stream<Uint8List>.empty();
@@ -124,7 +127,7 @@ void main() {
     final log = <String>[];
     final source = RecordPcmSource(
       recorder: _FakeRecorder(log),
-      session: _FakeSession(log),
+      audioSession: _FakeSession(log),
     );
     await source.stop();
     expect(log, <String>['stop'], reason: 'nothing was captured');
@@ -146,7 +149,7 @@ void main() {
     final session = _FakeSession(log)..gate = Completer<void>();
     final source = RecordPcmSource(
       recorder: _FakeRecorder(log),
-      session: session,
+      audioSession: session,
     );
     await source.start(sampleRate: 48000, channels: 1);
     final stopping = source.stop();
@@ -170,7 +173,7 @@ void main() {
     final recorder = _FakeRecorder(log)..stopGate = Completer<void>();
     final source = RecordPcmSource(
       recorder: recorder,
-      session: _FakeSession(log),
+      audioSession: _FakeSession(log),
     );
     await source.start(sampleRate: 48000, channels: 1);
     final stopping = source.stop();

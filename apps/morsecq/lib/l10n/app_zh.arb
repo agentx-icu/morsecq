@@ -31,7 +31,7 @@
   "messageStatusSent": "已发送",
   "messageStatusFailed": "发送失败",
   "errorWrongPassword": "密码错误，请重试。",
-  "errorPeerOffline": "该联系人离线。Tox 没有服务器，消息会等到对方上线后再送达。",
+  "errorPeerOffline": "该好友离线。Tox 没有服务器，消息会等到对方上线后再送达。",
   "errorInvalidToxId": "这不是有效的 Tox ID（应为 76 位十六进制字符）。",
   "errorAlreadyFriend": "这个 Tox ID 已在你的好友列表中。",
   "errorOwnId": "这是你自己的 Tox ID。",
@@ -40,6 +40,7 @@
   "errorUnknown": "出了点问题",
   "languageTitle": "语言",
   "languageSystemDefault": "跟随系统",
+  "languageSaveFailed": "无法保存语言设置，请重试。",
   "learnLessonOf": "第 {lesson} 课 / 共 {total} 课",
   "learnCharsLearned": "{count, plural, other{已学 {count} 个字符}}",
   "learnDailyGoalProgress": "{done} / {goal} 字符",
@@ -52,7 +53,7 @@
   "learnLessonUnlocked": "已解锁新字符：{char}",
   "learnConfusedMissed": "{target} 漏抄",
   "learnConfusedAs": "{target} 听成了 {answered}",
-  "learnWpmValue": "{wpm} wpm",
+  "learnWpmValue": "{wpm} WPM",
   "learnHzValue": "{hz} Hz",
   "learnCharsCount": "{count, plural, other{{count} 个字符}}",
   "statsLessonOf": "{lesson} / {total}",
@@ -116,7 +117,7 @@
   "accountCreateButton": "创建",
   "accountCreating": "创建中…",
   "accountBackupTitle": "现在就备份你的身份",
-  "accountBackupBody": "你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：联系人不会认出新的身份，训练进度也会丢失。",
+  "accountBackupBody": "你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：好友不会认出新的身份，训练进度也会丢失。",
   "accountBackupWhatIsInside": "备份文件包含加密后的身份和你的训练进度。请把它保存在本机以外的安全位置。",
   "accountBackupSaveFile": "保存备份文件",
   "accountBackupShareFile": "分享备份文件",
@@ -145,7 +146,7 @@
   "accountSectionAbout": "关于",
   "accountSectionDanger": "危险操作",
   "accountEditProfile": "编辑资料",
-  "accountEditProfileBody": "会显示给 Tox 网络上的联系人。",
+  "accountEditProfileBody": "会显示给 Tox 网络上的好友。",
   "accountSetPassword": "设置密码",
   "accountChangePassword": "修改密码",
   "accountRemovePassword": "移除密码",
@@ -523,142 +524,44 @@
   "statsCalendarLegendMore": "多",
   "statsStreakExplanation": "连续天数按至少有一次练习的连续日历日计算。整天未练习会重置；一天内练习两次只算一天。",
   "learnStatistics": "统计",
-  "@learnStatistics": {
-    "description": ": translate from en — From LearnStrings.statistics (apps/morsecq/lib/ui/learn/learn_strings.dart)"
-  },
   "listenTitle": "收听",
-  "@listenTitle": {
-    "description": ": translate from en — From ListenStrings.title (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenStart": "开始",
-  "@listenStart": {
-    "description": ": translate from en — From ListenStrings.start (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenStop": "停止",
-  "@listenStop": {
-    "description": ": translate from en — From ListenStrings.stop (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenStarting": "正在启动麦克风…",
-  "@listenStarting": {
-    "description": ": translate from en — From ListenStrings.starting (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenClear": "清空文本",
-  "@listenClear": {
-    "description": ": translate from en — From ListenStrings.clear (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenCopy": "复制文本",
-  "@listenCopy": {
-    "description": ": translate from en — From ListenStrings.copy (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenCopied": "已复制解码文本",
-  "@listenCopied": {
-    "description": ": translate from en — From ListenStrings.copied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenSettings": "收听设置",
-  "@listenSettings": {
-    "description": ": translate from en — From ListenStrings.settings (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenDecoded": "解码结果",
-  "@listenDecoded": {
-    "description": ": translate from en — From ListenStrings.decoded (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
-  "listenEmptyHint": "把麦克风对准莫斯电码音，解码文本会显示在这里。",
-  "@listenEmptyHint": {
-    "description": ": translate from en — From ListenStrings.emptyHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
-  "listenIdleHint": "点击「开始」以收听莫斯电码音。",
-  "@listenIdleHint": {
-    "description": ": translate from en — From ListenStrings.idleHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
+  "listenEmptyHint": "把麦克风对准莫尔斯电码音，解码文本会显示在这里。",
+  "listenIdleHint": "点击「开始」以收听莫尔斯电码音。",
   "listenPending": "接收中",
-  "@listenPending": {
-    "description": ": translate from en — From ListenStrings.pending (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenSpeed": "速度",
-  "@listenSpeed": {
-    "description": ": translate from en — From ListenStrings.speed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenSpeedUnknown": "-- WPM",
-  "@listenSpeedUnknown": {
-    "description": ": translate from en — From ListenStrings.speedUnknown (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenLevel": "信号",
-  "@listenLevel": {
-    "description": ": translate from en — From ListenStrings.level (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenToneOn": "有音",
-  "@listenToneOn": {
-    "description": ": translate from en — From ListenStrings.toneOn (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenTone": "音调频率",
-  "@listenTone": {
-    "description": ": translate from en — From ListenStrings.tone (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenToneLocked": "已锁定",
-  "@listenToneLocked": {
-    "description": ": translate from en — From ListenStrings.toneLocked (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenToneSearching": "搜索中",
-  "@listenToneSearching": {
-    "description": ": translate from en — From ListenStrings.toneSearching (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenToneManual": "手动",
-  "@listenToneManual": {
-    "description": ": translate from en — From ListenStrings.toneManual (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenAutoTune": "自动调谐",
-  "@listenAutoTune": {
-    "description": ": translate from en — From ListenStrings.autoTune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenAutoTuneHelp": "跟踪 400–1000 Hz 之间最强的音调；拖动滑块可改为手动调谐。",
-  "@listenAutoTuneHelp": {
-    "description": ": translate from en — From ListenStrings.autoTuneHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenRetune": "自动",
-  "@listenRetune": {
-    "description": ": translate from en — From ListenStrings.retune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenBlockSize": "分析块长",
-  "@listenBlockSize": {
-    "description": ": translate from en — From ListenStrings.blockSize (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenBlockSizeHelp": "块越小，点划边沿定位越精确，但更容易受噪声影响。256 采样（5.3 ms）适合 5–40 WPM。",
-  "@listenBlockSizeHelp": {
-    "description": ": translate from en — From ListenStrings.blockSizeHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenMinElement": "最短元素",
-  "@listenMinElement": {
-    "description": ": translate from en — From ListenStrings.minElement (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenMinElementHelp": "短于此时长的音与间隔将被视为杂音或断续而忽略。",
-  "@listenMinElementHelp": {
-    "description": ": translate from en — From ListenStrings.minElementHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenPermissionDenied": "麦克风权限被拒绝。请在系统设置中允许后重试。",
-  "@listenPermissionDenied": {
-    "description": ": translate from en — From ListenStrings.permissionDenied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenPermissionRetry": "重试",
-  "@listenPermissionRetry": {
-    "description": ": translate from en — From ListenStrings.permissionRetry (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenStartFailed": "无法启动麦克风。",
-  "@listenStartFailed": {
-    "description": ": translate from en — From ListenStrings.startFailed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
   "listenNoInput": "未找到麦克风。请连接后重试。",
-  "@listenNoInput": {
-    "description": ": translate from en — From ListenStrings.noInput (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
+  "listenStreamFailed": "麦克风意外中断，请重试。",
   "listenWpmValue": "{wpm} WPM",
   "listenHzValue": "{hz} Hz",
   "listenBlockSamples": "{samples} 采样（{ms} ms）",
   "listenMsValue": "{ms} ms",
   "listenStoppedInBackground": "应用进入后台，已停止收听。",
-  "@listenStoppedInBackground": {
-    "description": ": translate from en — From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)"
-  },
-  "learnWpmUnknown": "- wpm",
+  "learnWpmUnknown": "-- WPM",
   "learnTipDitTooLongTitle": "点太长",
   "learnTipDahTooShortTitle": "划太短",
   "learnTipIntraGapTooLongTitle": "码元过于分散",
@@ -670,7 +573,7 @@
   "learnSeveritySevere": "严重",
   "notificationOpen": "打开",
   "notificationChannelMessages": "消息",
-  "notificationChannelMessagesDescription": "来自好友和群组的新摩尔斯电码消息",
+  "notificationChannelMessagesDescription": "来自好友和群组的新莫尔斯电码消息",
   "notificationChannelFriendRequests": "好友请求",
   "notificationChannelFriendRequestsDescription": "有人想添加你为好友",
   "notificationChannelGroupInvites": "群组邀请",

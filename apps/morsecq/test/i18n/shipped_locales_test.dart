@@ -44,7 +44,7 @@ void main() {
     for (final region in ['TW', 'HK', 'MO']) {
       final controller = LocaleController(
         InMemoryKeyValueStore(),
-        systemLocale: () => Locale('zh', region),
+        systemLocales: () => [Locale('zh', region)],
       );
       addTearDown(controller.dispose);
       expect(controller.effectiveLocale, _traditional, reason: region);
@@ -52,11 +52,13 @@ void main() {
     }
     final controller = LocaleController(
       InMemoryKeyValueStore(),
-      systemLocale: () => const Locale.fromSubtags(
-        languageCode: 'zh',
-        scriptCode: 'Hans',
-        countryCode: 'TW',
-      ),
+      systemLocales: () => const [
+        Locale.fromSubtags(
+          languageCode: 'zh',
+          scriptCode: 'Hans',
+          countryCode: 'TW',
+        ),
+      ],
     );
     addTearDown(controller.dispose);
     expect(controller.effectiveLocale, const Locale('zh'));

@@ -129,6 +129,9 @@ class SPt extends S {
   String get languageSystemDefault => 'Padrão do sistema';
 
   @override
+  String get languageSaveFailed => 'Não foi possível salvar o idioma. Tente novamente.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Lição $lesson de $total';
   }
@@ -215,7 +218,7 @@ class SPt extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1882,6 +1885,9 @@ class SPt extends S {
   String get listenNoInput => 'Nenhum microfone foi encontrado. Conecte um e tente novamente.';
 
   @override
+  String get listenStreamFailed => 'O microfone parou inesperadamente. Tente novamente.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1905,7 +1911,7 @@ class SPt extends S {
   String get listenStoppedInBackground => 'A escuta parou enquanto o aplicativo estava em segundo plano.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Pontos longos demais';

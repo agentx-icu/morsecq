@@ -8,13 +8,31 @@ import 'package:morsecq/ui/listen/pcm_source.dart';
 /// The stream is synchronous so a `push` is decoded before the call
 /// returns, which keeps widget tests free of timing.
 final class FakePcmSource implements PcmSource {
-  FakePcmSource({this.permissionGranted = true, this.startError});
+  FakePcmSource({
+    this.permissionGranted = true,
+    this.permissionError,
+    this.startError,
+    this.inputDevicePresent = true,
+  });
 
   /// Answer for [hasPermission].
   bool permissionGranted;
 
-  /// When set, [start] throws it (simulates "no input device").
+  /// When set, [hasPermission] throws it (the permission query failed).
+  Object? permissionError;
+
+  /// When set, [start] throws it.
   Object? startError;
+
+  /// Answer for [hasInputDevice]; `null` means the platform cannot tell.
+  bool? inputDevicePresent;
+  int hasInputDeviceCalls = 0;
+
+  /// When set, the next call of the matching method waits for the gate
+  /// (consumed by that call), to model a slow platform round trip.
+  Completer<void>? permissionGate;
+  Completer<void>? startGate;
+  Completer<void>? inputDeviceGate;
 
   StreamController<Uint8List>? _controller;
   int startCalls = 0;
@@ -26,7 +44,20 @@ final class FakePcmSource implements PcmSource {
   bool get isStreaming => _controller != null;
 
   @override
-  Future<bool> hasPermission() async => permissionGranted;
+  Future<bool> hasPermission() async {
+    await _pass(permissionGate, () => permissionGate = null);
+    final error = permissionError;
+    if (error != null) throw error;
+    return permissionGranted;
+  }
+
+  @override
+  Future<bool?> hasInputDevice() async {
+    hasInputDeviceCalls++;
+    final answer = inputDevicePresent;
+    await _pass(inputDeviceGate, () => inputDeviceGate = null);
+    return answer;
+  }
 
   @override
   Future<Stream<Uint8List>> start({
@@ -37,6 +68,7 @@ final class FakePcmSource implements PcmSource {
     lastSampleRate = sampleRate;
     lastChannels = channels;
     final error = startError;
+    await _pass(startGate, () => startGate = null);
     if (error != null) throw error;
     _controller = StreamController<Uint8List>(sync: true);
     return _controller!.stream;
@@ -58,6 +90,12 @@ final class FakePcmSource implements PcmSource {
     await stop();
   }
 
+  static Future<void> _pass(Completer<void>? gate, void Function() consume) {
+    if (gate == null) return Future<void>.value();
+    consume();
+    return gate.future;
+  }
+
   /// Delivers one chunk of little-endian PCM16 bytes to the listener.
   void push(Uint8List bytes) {
     final controller = _controller;
@@ -65,6 +103,15 @@ final class FakePcmSource implements PcmSource {
       throw StateError('FakePcmSource.push called while not streaming');
     }
     controller.add(bytes);
+  }
+
+  /// Reports an error on the PCM stream, as a platform would mid-capture.
+  void failStream(Object error) {
+    final controller = _controller;
+    if (controller == null) {
+      throw StateError('FakePcmSource.failStream called while not streaming');
+    }
+    controller.addError(error);
   }
 
   /// Ends the stream as the OS would when the device disappears.

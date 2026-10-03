@@ -261,16 +261,17 @@ class ListenStatusBanner extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final S s = context.s;
     final String? message = switch (controller.status) {
-      ListenStatus.permissionDenied => s.listenPermissionDenied,
-      ListenStatus.failed => _failureText(s, controller.errorMessage),
+      ListenStatus.failed => failureText(
+          s,
+          controller.failure?.kind ?? ListenFailureKind.startFailed,
+        ),
       ListenStatus.starting => s.listenStarting,
       ListenStatus.idle when controller.stoppedInBackground =>
         s.listenStoppedInBackground,
       _ => null,
     };
     if (message == null) return const SizedBox.shrink();
-    final bool isError = controller.status == ListenStatus.permissionDenied ||
-        controller.status == ListenStatus.failed;
+    final bool isError = controller.status == ListenStatus.failed;
     return MaterialBanner(
       backgroundColor:
           isError ? scheme.errorContainer : scheme.surfaceContainerHighest,
@@ -296,17 +297,13 @@ class ListenStatusBanner extends StatelessWidget {
     );
   }
 
-  /// [detail] is the platform's own error text (not localised); the known
-  /// "no microphone" shapes map to a friendly message, anything else is
-  /// appended verbatim under the generic one.
-  static String _failureText(S s, String? detail) {
-    if (detail == null || detail.isEmpty) return s.listenStartFailed;
-    final lower = detail.toLowerCase();
-    if (lower.contains('no input') ||
-        lower.contains('no device') ||
-        lower.contains('not found')) {
-      return s.listenNoInput;
-    }
-    return '${s.listenStartFailed}\n$detail';
-  }
+  /// The localised message for [kind]. The platform's error detail is
+  /// diagnostics only and deliberately not a parameter here.
+  @visibleForTesting
+  static String failureText(S s, ListenFailureKind kind) => switch (kind) {
+        ListenFailureKind.permissionDenied => s.listenPermissionDenied,
+        ListenFailureKind.noInputDevice => s.listenNoInput,
+        ListenFailureKind.startFailed => s.listenStartFailed,
+        ListenFailureKind.streamFailed => s.listenStreamFailed,
+      };
 }

@@ -97,10 +97,11 @@ counterpart sits next to it).
 - [lib/desktop](../apps/morsecq/lib/desktop/README.md) — Window management,
   system tray and shortcuts on macOS / Windows / Linux (no-ops on mobile).
 - [lib/l10n](../apps/morsecq/lib/l10n/README.md) — gen-l10n setup, ARB
-  files (`app_en.arb` template, `app_zh.arb`), the `S` class and the
-  `strings_to_arb` migration tool.
+  files (`app_en.arb` template, `app_zh.arb`), the `S` class, the
+  translator glossary and the UI literal guard.
 - [doc/i18n/ADDING_A_LANGUAGE.md](./i18n/ADDING_A_LANGUAGE.md) — how UI
-  localisation works and the steps to add a language (ARB, catalog, plist).
+  localisation works and the steps to add a language (ARB, catalog,
+  reference rows, platform locale manifests).
 
 ## Cross-project references
 

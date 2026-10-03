@@ -129,6 +129,9 @@ class SKo extends S {
   String get languageSystemDefault => '시스템 기본값';
 
   @override
+  String get languageSaveFailed => '언어 설정을 저장할 수 없습니다. 다시 시도하세요.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return '강의 $lesson / $total';
   }
@@ -211,7 +214,7 @@ class SKo extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1864,6 +1867,9 @@ class SKo extends S {
   String get listenNoInput => '마이크를 찾을 수 없습니다. 연결한 후 다시 시도하세요.';
 
   @override
+  String get listenStreamFailed => '마이크가 예기치 않게 중지되었습니다. 다시 시도하세요.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1887,7 +1893,7 @@ class SKo extends S {
   String get listenStoppedInBackground => '앱이 백그라운드로 이동하여 듣기를 중지했습니다.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => '단점이 너무 깁니다';

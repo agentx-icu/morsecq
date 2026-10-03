@@ -23,13 +23,13 @@ enum ReferenceSection {
 
   /// Localised tab / rail title.
   String label(S s) => switch (this) {
-        ReferenceSection.alphabet => s.referenceSectionAlphabet,
-        ReferenceSection.punctuation => s.referenceSectionPunctuation,
-        ReferenceSection.prosigns => s.referenceSectionProsigns,
-        ReferenceSection.qCodes => s.referenceSectionQCodes,
-        ReferenceSection.abbreviations => s.referenceSectionAbbreviations,
-        ReferenceSection.koch => s.referenceSectionKoch,
-      };
+    ReferenceSection.alphabet => s.referenceSectionAlphabet,
+    ReferenceSection.punctuation => s.referenceSectionPunctuation,
+    ReferenceSection.prosigns => s.referenceSectionProsigns,
+    ReferenceSection.qCodes => s.referenceSectionQCodes,
+    ReferenceSection.abbreviations => s.referenceSectionAbbreviations,
+    ReferenceSection.koch => s.referenceSectionKoch,
+  };
 }
 
 /// One playable row of the reference.
@@ -98,46 +98,15 @@ final class ReferenceEntry {
 abstract final class ReferenceCatalog {
   static final RegExp _alnum = RegExp(r'^[A-Z0-9]$');
 
-  static const Map<String, Map<String, String>> _prosignMeanings =
-      <String, Map<String, String>>{
-    'AR': {'en': 'End of message.', 'zh': '报文结束。'},
-    'SK': {'en': 'End of contact (silent key).', 'zh': '通联结束（silent key）。'},
-    'BT': {'en': 'Break / new paragraph.', 'zh': '分隔 / 另起一段。'},
-    'KN': {'en': 'Go ahead, named station only.', 'zh': '请讲，仅限被呼叫的电台。'},
-    'AS': {'en': 'Wait / stand by.', 'zh': '请等待 / 稍候。'},
-    'SN': {'en': 'Understood.', 'zh': '已明白。'},
-    'SOS': {'en': 'Distress.', 'zh': '遇险求救。'},
-    'CT': {'en': 'Start of transmission (attention).', 'zh': '发报开始（注意）。'},
-    'HH': {
-      'en': 'Error; the last word will be repeated.',
-      'zh': '发错；将重发上一个词。',
-    },
-  };
+  static final Map<String, Map<String, String>> _prosignMeanings =
+      referenceRows((ReferenceText t) => t.prosigns);
 
-  static const Map<String, Map<String, String>> _punctuationNames =
-      <String, Map<String, String>>{
-    '.': {'en': 'Period (full stop)', 'zh': '句号'},
-    ',': {'en': 'Comma', 'zh': '逗号'},
-    '?': {'en': 'Question mark', 'zh': '问号'},
-    "'": {'en': 'Apostrophe', 'zh': '撇号'},
-    '!': {'en': 'Exclamation mark', 'zh': '感叹号'},
-    '/': {'en': 'Slash (fraction bar)', 'zh': '斜杠（分数线）'},
-    '(': {'en': 'Open parenthesis', 'zh': '左括号'},
-    ')': {'en': 'Close parenthesis', 'zh': '右括号'},
-    '&': {'en': 'Ampersand (wait)', 'zh': '和号（等待）'},
-    ':': {'en': 'Colon', 'zh': '冒号'},
-    ';': {'en': 'Semicolon', 'zh': '分号'},
-    '=': {'en': 'Equals (break, BT)', 'zh': '等号（分隔，BT）'},
-    '+': {'en': 'Plus (end of message, AR)', 'zh': '加号（报文结束，AR）'},
-    '-': {'en': 'Hyphen / minus', 'zh': '连字符 / 减号'},
-    '_': {'en': 'Underscore', 'zh': '下划线'},
-    '"': {'en': 'Quotation mark', 'zh': '引号'},
-    r'$': {'en': 'Dollar sign', 'zh': '美元符号'},
-    '@': {'en': 'At sign', 'zh': '@ 符号'},
-  };
+  static final Map<String, Map<String, String>> _punctuationNames =
+      referenceRows((ReferenceText t) => t.punctuation);
 
   static final List<ReferenceEntry> alphabet = <ReferenceEntry>[
-    for (final MapEntry<String, String> e in MorseAlphabet.international.entries)
+    for (final MapEntry<String, String> e
+        in MorseAlphabet.international.entries)
       if (_alnum.hasMatch(e.key))
         ReferenceEntry(
           section: ReferenceSection.alphabet,
@@ -149,7 +118,8 @@ abstract final class ReferenceCatalog {
   ];
 
   static final List<ReferenceEntry> punctuation = <ReferenceEntry>[
-    for (final MapEntry<String, String> e in MorseAlphabet.international.entries)
+    for (final MapEntry<String, String> e
+        in MorseAlphabet.international.entries)
       if (!_alnum.hasMatch(e.key))
         ReferenceEntry(
           section: ReferenceSection.punctuation,
@@ -210,7 +180,8 @@ abstract final class ReferenceCatalog {
       pattern: pattern,
       playText: symbol,
       position: position,
-      meanings: (isProsign
+      meanings:
+          (isProsign
               ? _prosignMeanings[symbol.substring(1, symbol.length - 1)]
               : _punctuationNames[symbol]) ??
           const <String, String>{},
@@ -241,9 +212,9 @@ abstract final class ReferenceCatalog {
     final Map<ReferenceSection, List<ReferenceEntry>> out =
         <ReferenceSection, List<ReferenceEntry>>{};
     for (final ReferenceSection s in ReferenceSection.values) {
-      final List<ReferenceEntry> hits = entriesFor(s)
-          .where((ReferenceEntry e) => e.matches(query))
-          .toList(growable: false);
+      final List<ReferenceEntry> hits = entriesFor(
+        s,
+      ).where((ReferenceEntry e) => e.matches(query)).toList(growable: false);
       if (hits.isNotEmpty) out[s] = hits;
     }
     return out;

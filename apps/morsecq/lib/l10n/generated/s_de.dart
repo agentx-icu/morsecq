@@ -129,6 +129,9 @@ class SDe extends S {
   String get languageSystemDefault => 'Systemsprache';
 
   @override
+  String get languageSaveFailed => 'Die Spracheinstellung konnte nicht gespeichert werden. Versuche es erneut.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Lektion $lesson von $total';
   }
@@ -215,7 +218,7 @@ class SDe extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1881,6 +1884,9 @@ class SDe extends S {
   String get listenNoInput => 'Kein Mikrofon gefunden. Schließe eines an und versuche es erneut.';
 
   @override
+  String get listenStreamFailed => 'Das Mikrofon wurde unerwartet beendet. Versuche es erneut.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1904,7 +1910,7 @@ class SDe extends S {
   String get listenStoppedInBackground => 'Das Mithören wurde gestoppt, während die App im Hintergrund war.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Punkte zu lang';
