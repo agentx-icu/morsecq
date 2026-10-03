@@ -44,6 +44,18 @@ final class WordDrill implements DrillGenerator {
     kind: 'abbreviations',
   );
 
+  /// On-air shorthand: CW abbreviations plus Q-codes, filtered to
+  /// [allowedChars].
+  factory WordDrill.radioShorthand({
+    Set<String>? allowedChars,
+    int wordCount = 5,
+  }) => WordDrill(
+    words: <String>[...WordLists.cwAbbreviations, ...WordLists.qCodes],
+    allowedChars: allowedChars,
+    wordCount: wordCount,
+    kind: 'abbreviations',
+  );
+
   /// Returns the upper-cased, de-duplicated entries of [words] whose symbols
   /// are all in [allowed] (everything when [allowed] is null). Blank entries
   /// are dropped.

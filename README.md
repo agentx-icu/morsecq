@@ -57,10 +57,16 @@ behind a single startup gate: a Tox identity is created (or unlocked) on first
 launch and is required for training as well as chat.
 
 - **Learn** — Koch-method character course with Farnsworth spacing, copy
-  drills (character groups, words, callsigns, short QSOs), send practice on an
+  drills (character groups, single characters, words, abbreviations and
+  Q-codes, number groups, callsigns, look-alike pairs, short QSOs, contest
+  exchanges), send practice on an
   on-screen straight key or iambic paddle **and** on the desktop keyboard,
   real-time decoding with rhythm diagnostics, confusion matrix, spaced
   repetition and daily goals. Progress is stored per identity.
+- **Radio tools** — from the Reference tab: Maidenhead locator with distance
+  and beam heading, band edges per IARU region with wavelength and antenna
+  lengths, CW speed calculator, RST report builder and a UTC clock
+  (`radio_tools`, pure Dart).
 - **Listen by microphone** — decode Morse from live audio (`morse_dsp`:
   Goertzel tone detection, auto-tune, envelope gate) with the `record` plugin
   feeding PCM into `AudioMorseDecoder`.
@@ -108,6 +114,7 @@ This is a pub workspace (one `dart pub get` at the root resolves everything).
 | `packages/morse_core` | Pure-Dart Morse engine: alphabet, PARIS/Farnsworth timing, encoder, streaming key decoder |
 | `packages/morse_trainer` | Pure-Dart pedagogy: Koch lesson progression, scoring, spaced practice |
 | `packages/morse_dsp` | Pure-Dart audio decoding: Goertzel tone detection, auto-tune, envelope gate, `AudioMorseDecoder` |
+| `packages/radio_tools` | Pure-Dart operator maths: Maidenhead locators, great-circle distance and heading, IARU band edges, CW speed, RST |
 | `packages/morse_io` | Flutter I/O: audio sidetone, haptics, flash, touch + keyboard keying input |
 | `packages/morsecq_chat_api` | Pure-Dart contract between UI and backend (`IdentityService`, `ChatService`, models, in-memory fakes) |
 | `packages/morsecq_chat` | Tox transport implementing the contract on Tim2Tox (the only package that touches Tim2Tox / the Tencent SDK) |

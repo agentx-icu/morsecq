@@ -1308,6 +1308,385 @@
   "@learnDrillQso": {
     "description": "From LearnStrings.drillQso (apps/morsecq/lib/ui/learn/learn_strings.dart)"
   },
+  "learnDrillCharacters": "Single characters",
+  "@learnDrillCharacters": {
+    "description": "Receive drill: one symbol per round"
+  },
+  "learnDrillAbbreviations": "Abbreviations & Q-codes",
+  "@learnDrillAbbreviations": {
+    "description": "Receive drill: CW abbreviations and Q-codes"
+  },
+  "learnDrillNumbers": "Number groups",
+  "@learnDrillNumbers": {
+    "description": "Receive drill: groups of digits"
+  },
+  "learnDrillConfusables": "Look-alike characters",
+  "@learnDrillConfusables": {
+    "description": "Receive drill: confusable pairs drilled against each other"
+  },
+  "learnDrillContest": "Contest exchanges",
+  "@learnDrillContest": {
+    "description": "Receive drill: contest exchanges with cut numbers"
+  },
+  "learnDrillGroupsHint": "Random groups from every letter you know",
+  "@learnDrillGroupsHint": {
+    "description": "Drill picker subtitle for random groups"
+  },
+  "learnDrillCharactersHint": "One character at a time - name it instantly",
+  "@learnDrillCharactersHint": {
+    "description": "Drill picker subtitle for single characters"
+  },
+  "learnDrillWordsHint": "Common English words",
+  "@learnDrillWordsHint": {
+    "description": "Drill picker subtitle for words"
+  },
+  "learnDrillAbbreviationsHint": "TNX, FB, QTH, QSL - the shorthand of the air",
+  "@learnDrillAbbreviationsHint": {
+    "description": "Drill picker subtitle for abbreviations"
+  },
+  "learnDrillNumbersHint": "Five-digit groups, as in traffic and serials",
+  "@learnDrillNumbersHint": {
+    "description": "Drill picker subtitle for number groups"
+  },
+  "learnDrillCallsignsHint": "Amateur callsigns from around the world",
+  "@learnDrillCallsignsHint": {
+    "description": "Drill picker subtitle for callsigns"
+  },
+  "learnDrillConfusablesHint": "Pairs you mix up, like S/H or U/V, side by side",
+  "@learnDrillConfusablesHint": {
+    "description": "Drill picker subtitle for confusables"
+  },
+  "learnDrillQsoHint": "Lines from a full contact",
+  "@learnDrillQsoHint": {
+    "description": "Drill picker subtitle for QSO"
+  },
+  "learnDrillContestHint": "Call, 5NN and a serial or zone, at contest pace",
+  "@learnDrillContestHint": {
+    "description": "Drill picker subtitle for contest exchanges"
+  },
+  "learnDrillReviewHint": "Characters that are due for review",
+  "@learnDrillReviewHint": {
+    "description": "Drill picker subtitle for review"
+  },
+  "toolsTitle": "Radio tools",
+  "@toolsTitle": {
+    "description": "Title of the radio tools screen and its entry button"
+  },
+  "toolsGridTitle": "Grid locator",
+  "@toolsGridTitle": {
+    "description": "Maidenhead locator tool title"
+  },
+  "toolsGridHint": "Locator from coordinates, distance and beam heading",
+  "@toolsGridHint": {
+    "description": "Maidenhead tool subtitle"
+  },
+  "toolsBandsTitle": "Bands & antennas",
+  "@toolsBandsTitle": {
+    "description": "Band tool title"
+  },
+  "toolsBandsHint": "Which band a frequency is in, wavelength, dipole length",
+  "@toolsBandsHint": {
+    "description": "Band tool subtitle"
+  },
+  "toolsSpeedTitle": "CW speed",
+  "@toolsSpeedTitle": {
+    "description": "CW speed tool title"
+  },
+  "toolsSpeedHint": "WPM to dit length, gaps and characters per minute",
+  "@toolsSpeedHint": {
+    "description": "CW speed tool subtitle"
+  },
+  "toolsRstTitle": "RST report",
+  "@toolsRstTitle": {
+    "description": "RST tool title"
+  },
+  "toolsRstHint": "Build a signal report and see what each digit means",
+  "@toolsRstHint": {
+    "description": "RST tool subtitle"
+  },
+  "toolsClockTitle": "UTC clock",
+  "@toolsClockTitle": {
+    "description": "UTC clock tool title"
+  },
+  "toolsClockHint": "Log time in UTC, next to your local time",
+  "@toolsClockHint": {
+    "description": "UTC clock tool subtitle"
+  },
+  "toolsGridFromCoordinates": "From coordinates",
+  "@toolsGridFromCoordinates": {
+    "description": "Section header: coordinates to locator"
+  },
+  "toolsGridLatitude": "Latitude",
+  "@toolsGridLatitude": {
+    "description": "Latitude field label"
+  },
+  "toolsGridLongitude": "Longitude",
+  "@toolsGridLongitude": {
+    "description": "Longitude field label"
+  },
+  "toolsGridCoordinatesHelp": "Decimal degrees; south and west are negative",
+  "@toolsGridCoordinatesHelp": {
+    "description": "Helper text under the coordinate fields"
+  },
+  "toolsGridInvalidCoordinates": "Latitude -90 to 90, longitude -180 to 180",
+  "@toolsGridInvalidCoordinates": {
+    "description": "Error for out-of-range coordinates"
+  },
+  "toolsGridLocator": "Locator",
+  "@toolsGridLocator": {
+    "description": "Result label: the computed locator"
+  },
+  "toolsGridDistanceSection": "Distance and heading",
+  "@toolsGridDistanceSection": {
+    "description": "Section header: distance between two locators"
+  },
+  "toolsGridMine": "My locator",
+  "@toolsGridMine": {
+    "description": "Field label: own locator"
+  },
+  "toolsGridTheirs": "Their locator",
+  "@toolsGridTheirs": {
+    "description": "Field label: other station's locator"
+  },
+  "toolsGridInvalidLocator": "Use 2, 4, 6 or 8 characters, e.g. OM89ex",
+  "@toolsGridInvalidLocator": {
+    "description": "Error for a malformed locator"
+  },
+  "toolsGridCenter": "Square centre",
+  "@toolsGridCenter": {
+    "description": "Result label: centre of a locator square"
+  },
+  "toolsGridDistance": "Distance",
+  "@toolsGridDistance": {
+    "description": "Result label: great-circle distance"
+  },
+  "toolsGridShortPath": "Short-path heading",
+  "@toolsGridShortPath": {
+    "description": "Result label: short-path bearing"
+  },
+  "toolsGridLongPath": "Long-path heading",
+  "@toolsGridLongPath": {
+    "description": "Result label: long-path bearing"
+  },
+  "toolsBandsFrequency": "Frequency (MHz)",
+  "@toolsBandsFrequency": {
+    "description": "Frequency field label"
+  },
+  "toolsBandsInvalidFrequency": "Enter a frequency above 0",
+  "@toolsBandsInvalidFrequency": {
+    "description": "Error for a non-positive frequency"
+  },
+  "toolsBandsRegionLabel": "Region {number}",
+  "@toolsBandsRegionLabel": {
+    "description": "IARU region segment label",
+    "placeholders": {"number": {"type": "int"}}
+  },
+  "toolsBandsRegionHelp": "1: Europe, Africa, Middle East - 2: the Americas - 3: Asia-Pacific",
+  "@toolsBandsRegionHelp": {
+    "description": "Explains the three IARU regions"
+  },
+  "toolsBandsInBand": "In the {band} amateur band",
+  "@toolsBandsInBand": {
+    "description": "Result when the frequency is inside a band",
+    "placeholders": {"band": {"type": "String"}}
+  },
+  "toolsBandsOutOfBand": "Outside the amateur bands",
+  "@toolsBandsOutOfBand": {
+    "description": "Result when the frequency is in no band"
+  },
+  "toolsBandsWavelength": "Wavelength",
+  "@toolsBandsWavelength": {
+    "description": "Result label: free-space wavelength"
+  },
+  "toolsBandsDipole": "Half-wave dipole (total)",
+  "@toolsBandsDipole": {
+    "description": "Result label: dipole cut length"
+  },
+  "toolsBandsQuarterWave": "Quarter-wave vertical",
+  "@toolsBandsQuarterWave": {
+    "description": "Result label: quarter-wave length"
+  },
+  "toolsBandsAntennaNote": "Lengths include a 0.95 end factor; trim to resonance.",
+  "@toolsBandsAntennaNote": {
+    "description": "Note under the antenna lengths"
+  },
+  "toolsBandsTable": "Band edges",
+  "@toolsBandsTable": {
+    "description": "Header of the band table"
+  },
+  "toolsBandsQrp": "QRP CW {frequency}",
+  "@toolsBandsQrp": {
+    "description": "QRP calling frequency in the band table",
+    "placeholders": {"frequency": {"type": "String"}}
+  },
+  "toolsBandsDisclaimer": "ITU allocations. Your licence and national band plan may be narrower.",
+  "@toolsBandsDisclaimer": {
+    "description": "Disclaimer under the band table"
+  },
+  "toolsSpeedCharacter": "Character speed",
+  "@toolsSpeedCharacter": {
+    "description": "Slider label: character WPM"
+  },
+  "toolsSpeedFarnsworth": "Farnsworth spacing",
+  "@toolsSpeedFarnsworth": {
+    "description": "Switch: enable Farnsworth spacing"
+  },
+  "toolsSpeedOverall": "Overall speed",
+  "@toolsSpeedOverall": {
+    "description": "Slider label: Farnsworth overall WPM"
+  },
+  "toolsSpeedDit": "Dit",
+  "@toolsSpeedDit": {
+    "description": "Result label: dit length"
+  },
+  "toolsSpeedDah": "Dah",
+  "@toolsSpeedDah": {
+    "description": "Result label: dah length"
+  },
+  "toolsSpeedCharGap": "Gap between characters",
+  "@toolsSpeedCharGap": {
+    "description": "Result label: character gap"
+  },
+  "toolsSpeedWordGap": "Gap between words",
+  "@toolsSpeedWordGap": {
+    "description": "Result label: word gap"
+  },
+  "toolsSpeedCpm": "Characters per minute",
+  "@toolsSpeedCpm": {
+    "description": "Result label: characters per minute"
+  },
+  "toolsSpeedParis": "One PARIS word",
+  "@toolsSpeedParis": {
+    "description": "Result label: time for one PARIS word"
+  },
+  "toolsRstReadability": "Readability (R)",
+  "@toolsRstReadability": {
+    "description": "RST: readability scale"
+  },
+  "toolsRstStrength": "Strength (S)",
+  "@toolsRstStrength": {
+    "description": "RST: strength scale"
+  },
+  "toolsRstTone": "Tone (T)",
+  "@toolsRstTone": {
+    "description": "RST: tone scale"
+  },
+  "toolsRstReport": "Report",
+  "@toolsRstReport": {
+    "description": "RST: the composed report"
+  },
+  "toolsRstCut": "Contest form",
+  "@toolsRstCut": {
+    "description": "RST: cut-number form"
+  },
+  "toolsRstPhone": "On voice (no tone)",
+  "@toolsRstPhone": {
+    "description": "RST: two-digit RS report"
+  },
+  "toolsRstR1": "Unreadable",
+  "@toolsRstR1": {
+    "description": "RST readability 1"
+  },
+  "toolsRstR2": "Barely readable, occasional words",
+  "@toolsRstR2": {
+    "description": "RST readability 2"
+  },
+  "toolsRstR3": "Readable with considerable difficulty",
+  "@toolsRstR3": {
+    "description": "RST readability 3"
+  },
+  "toolsRstR4": "Readable with practically no difficulty",
+  "@toolsRstR4": {
+    "description": "RST readability 4"
+  },
+  "toolsRstR5": "Perfectly readable",
+  "@toolsRstR5": {
+    "description": "RST readability 5"
+  },
+  "toolsRstS1": "Faint, barely perceptible",
+  "@toolsRstS1": {
+    "description": "RST strength 1"
+  },
+  "toolsRstS2": "Very weak",
+  "@toolsRstS2": {
+    "description": "RST strength 2"
+  },
+  "toolsRstS3": "Weak",
+  "@toolsRstS3": {
+    "description": "RST strength 3"
+  },
+  "toolsRstS4": "Fair",
+  "@toolsRstS4": {
+    "description": "RST strength 4"
+  },
+  "toolsRstS5": "Fairly good",
+  "@toolsRstS5": {
+    "description": "RST strength 5"
+  },
+  "toolsRstS6": "Good",
+  "@toolsRstS6": {
+    "description": "RST strength 6"
+  },
+  "toolsRstS7": "Moderately strong",
+  "@toolsRstS7": {
+    "description": "RST strength 7"
+  },
+  "toolsRstS8": "Strong",
+  "@toolsRstS8": {
+    "description": "RST strength 8"
+  },
+  "toolsRstS9": "Extremely strong",
+  "@toolsRstS9": {
+    "description": "RST strength 9"
+  },
+  "toolsRstT1": "Very rough and broad, raw AC",
+  "@toolsRstT1": {
+    "description": "RST tone 1"
+  },
+  "toolsRstT2": "Very rough AC, harsh and broad",
+  "@toolsRstT2": {
+    "description": "RST tone 2"
+  },
+  "toolsRstT3": "Rough, rectified but not filtered",
+  "@toolsRstT3": {
+    "description": "RST tone 3"
+  },
+  "toolsRstT4": "Rough, some trace of filtering",
+  "@toolsRstT4": {
+    "description": "RST tone 4"
+  },
+  "toolsRstT5": "Filtered but strongly ripple-modulated",
+  "@toolsRstT5": {
+    "description": "RST tone 5"
+  },
+  "toolsRstT6": "Filtered, definite trace of ripple",
+  "@toolsRstT6": {
+    "description": "RST tone 6"
+  },
+  "toolsRstT7": "Near pure, trace of ripple",
+  "@toolsRstT7": {
+    "description": "RST tone 7"
+  },
+  "toolsRstT8": "Near perfect, slight trace of modulation",
+  "@toolsRstT8": {
+    "description": "RST tone 8"
+  },
+  "toolsRstT9": "Perfect tone, no ripple at all",
+  "@toolsRstT9": {
+    "description": "RST tone 9"
+  },
+  "toolsClockUtc": "UTC",
+  "@toolsClockUtc": {
+    "description": "UTC clock label"
+  },
+  "toolsClockLocal": "Local time",
+  "@toolsClockLocal": {
+    "description": "Local clock label"
+  },
+  "toolsClockNote": "Logs and QSL cards use UTC.",
+  "@toolsClockNote": {
+    "description": "Note under the UTC clock"
+  },
   "learnReceiveTitle": "Receive",
   "@learnReceiveTitle": {
     "description": "From LearnStrings.receiveTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"

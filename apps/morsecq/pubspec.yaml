@@ -24,6 +24,8 @@ dependencies:
   # stream. record 6.2.x is the newest line that resolves on Dart 3.11 /
   # Flutter 3.41 (7.x needs Dart ^3.12, Flutter >=3.44).
   morse_dsp: ^0.1.0
+  # Radio tools (lib/ui/tools/): locator, bands, CW speed, RST maths.
+  radio_tools: ^0.1.0
   record: ^6.2.1
   path: ^1.9.0
   path_provider: ^2.1.3

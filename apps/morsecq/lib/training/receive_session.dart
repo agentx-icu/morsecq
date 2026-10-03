@@ -8,14 +8,30 @@ enum ReceiveDrillKind {
   /// Koch random groups from the learned set (the lesson drill).
   groups,
 
-  /// Common words / CW abbreviations that fit the learned set.
+  /// One symbol per round: instant character recognition.
+  characters,
+
+  /// Common words that fit the learned set.
   words,
+
+  /// CW abbreviations and Q-codes that fit the learned set.
+  abbreviations,
+
+  /// Digit groups from the learned digits.
+  numbers,
 
   /// Amateur callsigns built from the learned set.
   callsigns,
 
+  /// Minimal pairs: the trainee's most confused symbols and pattern
+  /// neighbours (S/H, U/V) drilled against each other.
+  confusables,
+
   /// Templated QSO lines (needs most of the alphabet).
   qso,
+
+  /// Contest exchanges with cut numbers (needs most of the alphabet).
+  contest,
 
   /// SRS review: symbols that are due, weighted by weakness.
   review;

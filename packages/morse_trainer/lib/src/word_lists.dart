@@ -130,6 +130,12 @@ abstract final class WordLists {
     'RIG', 'RST', 'SRI', 'TNX', 'UR', 'WX', 'XYL', 'YL',
   ];
 
+  /// The Q-codes heard on the air every day (meanings in the app reference).
+  static const List<String> qCodes = <String>[
+    'QRG', 'QRL', 'QRM', 'QRN', 'QRO', 'QRP', 'QRQ', 'QRS', 'QRT', 'QRU', //
+    'QRV', 'QRX', 'QRZ', 'QSB', 'QSK', 'QSL', 'QSO', 'QSY', 'QTH', 'QTR',
+  ];
+
   /// Short operator names as used in QSO exchanges.
   static const List<String> operatorNames = <String>[
     'BOB', 'TOM', 'JIM', 'JOE', 'DAN', 'RON', 'KEN', 'DON', 'RAY', 'SAM', //

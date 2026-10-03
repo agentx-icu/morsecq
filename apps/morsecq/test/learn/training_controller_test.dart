@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/receive_session.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_settings.dart';
 
 import 'helpers/test_controller.dart';
@@ -203,20 +204,110 @@ void main() {
 
   test('available drill kinds grow with the learned set', () async {
     final early = await TestTraining.create();
+    // Lesson 1 is K and M: single characters, and the K/M pattern pair.
     expect(early.controller.availableReceiveKinds, <ReceiveDrillKind>[
       ReceiveDrillKind.groups,
+      ReceiveDrillKind.characters,
+      ReceiveDrillKind.confusables,
     ]);
     final late = await TestTraining.create(
       progress: TrainerProgress(currentLesson: 42),
     );
     expect(
       late.controller.availableReceiveKinds,
+      ReceiveDrillKind.values.where((k) => k != ReceiveDrillKind.review),
+    );
+  });
+
+  test('digit and late-lesson drills unlock at their lessons', () async {
+    Future<List<ReceiveDrillKind>> kindsAt(int lesson) async =>
+        (await TestTraining.create(
+          progress: TrainerProgress(currentLesson: lesson),
+        )).controller.availableReceiveKinds;
+    // Lesson 17 adds 0, lesson 22 adds 5 (Koch order).
+    expect(await kindsAt(17), isNot(contains(ReceiveDrillKind.numbers)));
+    expect(await kindsAt(22), contains(ReceiveDrillKind.numbers));
+    final beforeQso = await kindsAt(TrainingController.qsoFromLesson - 1);
+    expect(beforeQso, isNot(contains(ReceiveDrillKind.qso)));
+    expect(beforeQso, isNot(contains(ReceiveDrillKind.contest)));
+    expect(
+      await kindsAt(TrainingController.qsoFromLesson),
       containsAll(<ReceiveDrillKind>[
-        ReceiveDrillKind.words,
-        ReceiveDrillKind.callsigns,
         ReceiveDrillKind.qso,
+        ReceiveDrillKind.contest,
       ]),
     );
+  });
+
+  test(
+    'every offered drill can be typed on its keypad, at every lesson',
+    () async {
+      for (var lesson = 1; lesson <= 42; lesson++) {
+        final t = await TestTraining.create(
+          progress: TrainerProgress(currentLesson: lesson),
+          seed: lesson,
+        );
+        for (final kind in t.controller.availableReceiveKinds) {
+          // Several sessions per kind so rare symbols get a chance to show.
+          for (var i = 0; i < 5; i++) {
+            final session = t.controller.startReceiveSession(kind);
+            final drill = session.currentDrill;
+            expect(session.kind, kind);
+            expect(drill.isEmpty, isFalse, reason: '$kind at $lesson');
+            expect(
+              drill.chars,
+              everyElement(isIn(session.chars)),
+              reason: '$kind at lesson $lesson: "${drill.text}"',
+            );
+          }
+        }
+      }
+    },
+  );
+
+  test('single characters play one symbol per round', () async {
+    final t = await TestTraining.create(
+      progress: TrainerProgress(currentLesson: 5),
+    );
+    final session = t.controller.startReceiveSession(
+      ReceiveDrillKind.characters,
+    );
+    expect(session.currentDrill.charCount, 1);
+    expect(session.currentDrill.chars, everyElement(isIn(session.chars)));
+  });
+
+  test('number groups use only learned digits', () async {
+    final t = await TestTraining.create(
+      progress: TrainerProgress(currentLesson: 22),
+    );
+    final drill = t.controller
+        .startReceiveSession(ReceiveDrillKind.numbers)
+        .currentDrill;
+    expect(drill.chars, everyElement(isIn(<String>{'0', '5'})));
+  });
+
+  test('confusables follow the recorded confusion', () async {
+    final confusion = ConfusionMatrix()..record('R', 'K', times: 6);
+    final t = await TestTraining.create(
+      progress: TrainerProgress(currentLesson: 5, confusion: confusion),
+    );
+    // R/K weighs 1 + 6 against 1 for each of the three neighbour pairs.
+    var kr = 0;
+    for (var i = 0; i < 40; i++) {
+      final drill = t.controller
+          .startReceiveSession(ReceiveDrillKind.confusables)
+          .currentDrill;
+      expect(drill.chars, hasLength(2));
+      if (drill.chars.containsAll(<String>{'K', 'R'})) kr++;
+    }
+    expect(kr, greaterThan(20));
+  });
+
+  test('an unsupported kind falls back to lesson groups', () async {
+    final t = await TestTraining.create();
+    final session = t.controller.startReceiveSession(ReceiveDrillKind.qso);
+    expect(session.kind, ReceiveDrillKind.qso);
+    expect(session.currentDrill.chars, everyElement(isIn(<String>{'K', 'M'})));
   });
 
   test('daily goal fraction tracks characters practised today', () async {

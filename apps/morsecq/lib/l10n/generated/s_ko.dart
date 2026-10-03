@@ -1012,6 +1012,294 @@ class SKo extends S {
   String get learnDrillQso => '교신(QSO)';
 
   @override
+  String get learnDrillCharacters => '한 문자씩';
+
+  @override
+  String get learnDrillAbbreviations => '약어와 Q 부호';
+
+  @override
+  String get learnDrillNumbers => '숫자 묶음';
+
+  @override
+  String get learnDrillConfusables => '혼동하기 쉬운 문자';
+
+  @override
+  String get learnDrillContest => '대회 교환 정보';
+
+  @override
+  String get learnDrillGroupsHint => '학습한 문자로 구성한 무작위 문자 묶음';
+
+  @override
+  String get learnDrillCharactersHint => '한 번에 한 문자씩 듣고 바로 답하세요';
+
+  @override
+  String get learnDrillWordsHint => '자주 쓰는 영어 단어';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX, FB, QTH, QSL 등 무선 교신 약어';
+
+  @override
+  String get learnDrillNumbersHint => '전문과 일련번호에 쓰이는 다섯 자리 숫자 묶음';
+
+  @override
+  String get learnDrillCallsignsHint => '전 세계 아마추어 무선 콜사인';
+
+  @override
+  String get learnDrillConfusablesHint => 'S/H, U/V 등 혼동하기 쉬운 문자를 짝지어 연습';
+
+  @override
+  String get learnDrillQsoHint => '전체 교신에 쓰이는 문장';
+
+  @override
+  String get learnDrillContestHint => '대회 속도로 콜사인, 5NN과 일련번호 또는 구역 번호 수신';
+
+  @override
+  String get learnDrillReviewHint => '복습할 때가 된 문자';
+
+  @override
+  String get toolsTitle => '무선 도구';
+
+  @override
+  String get toolsGridTitle => '그리드 로케이터';
+
+  @override
+  String get toolsGridHint => '좌표를 로케이터로 변환하고 거리와 안테나 방위각 확인';
+
+  @override
+  String get toolsBandsTitle => '주파수 대역과 안테나';
+
+  @override
+  String get toolsBandsHint => '주파수가 속한 대역, 파장과 다이폴 길이 확인';
+
+  @override
+  String get toolsSpeedTitle => 'CW 속도';
+
+  @override
+  String get toolsSpeedHint => 'WPM을 단점 길이, 간격과 분당 문자 수로 변환';
+
+  @override
+  String get toolsRstTitle => 'RST 신호 보고';
+
+  @override
+  String get toolsRstHint => '신호 보고를 구성하고 각 숫자의 의미 확인';
+
+  @override
+  String get toolsClockTitle => 'UTC 시계';
+
+  @override
+  String get toolsClockHint => '로그에 쓰는 UTC 시간과 현지 시간을 함께 표시';
+
+  @override
+  String get toolsGridFromCoordinates => '좌표로 계산';
+
+  @override
+  String get toolsGridLatitude => '위도';
+
+  @override
+  String get toolsGridLongitude => '경도';
+
+  @override
+  String get toolsGridCoordinatesHelp => '십진수 도 단위로 입력하세요. 남위와 서경은 음수입니다';
+
+  @override
+  String get toolsGridInvalidCoordinates => '위도는 -90~90, 경도는 -180~180';
+
+  @override
+  String get toolsGridLocator => '로케이터';
+
+  @override
+  String get toolsGridDistanceSection => '거리와 방위각';
+
+  @override
+  String get toolsGridMine => '내 로케이터';
+
+  @override
+  String get toolsGridTheirs => '상대방 로케이터';
+
+  @override
+  String get toolsGridInvalidLocator => '2, 4, 6 또는 8자로 입력하세요. 예: OM89ex';
+
+  @override
+  String get toolsGridCenter => '그리드 중심';
+
+  @override
+  String get toolsGridDistance => '거리';
+
+  @override
+  String get toolsGridShortPath => '단경로 방위각';
+
+  @override
+  String get toolsGridLongPath => '장경로 방위각';
+
+  @override
+  String get toolsBandsFrequency => '주파수(MHz)';
+
+  @override
+  String get toolsBandsInvalidFrequency => '0보다 큰 주파수를 입력하세요';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return '제$number지역';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1: 유럽, 아프리카, 중동 — 2: 아메리카 — 3: 아시아·태평양';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return '$band 아마추어 무선 대역에 포함';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => '아마추어 무선 대역 밖';
+
+  @override
+  String get toolsBandsWavelength => '파장';
+
+  @override
+  String get toolsBandsDipole => '반파장 다이폴(전체 길이)';
+
+  @override
+  String get toolsBandsQuarterWave => '1/4파장 수직 안테나';
+
+  @override
+  String get toolsBandsAntennaNote => '길이에 0.95 단축 계수가 반영되어 있습니다. 공진하도록 길이를 조정하세요.';
+
+  @override
+  String get toolsBandsTable => '주파수 대역 경계';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => 'ITU의 주파수 분배입니다. 면허와 국가별 주파수 계획에 따라 허용 범위가 더 좁을 수 있습니다.';
+
+  @override
+  String get toolsSpeedCharacter => '문자 속도';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Farnsworth 간격';
+
+  @override
+  String get toolsSpeedOverall => '전체 속도';
+
+  @override
+  String get toolsSpeedDit => '단점';
+
+  @override
+  String get toolsSpeedDah => '장점';
+
+  @override
+  String get toolsSpeedCharGap => '문자 사이 간격';
+
+  @override
+  String get toolsSpeedWordGap => '단어 사이 간격';
+
+  @override
+  String get toolsSpeedCpm => '분당 문자 수';
+
+  @override
+  String get toolsSpeedParis => 'PARIS 한 단어 송신 시간';
+
+  @override
+  String get toolsRstReadability => '명료도(R)';
+
+  @override
+  String get toolsRstStrength => '신호 강도(S)';
+
+  @override
+  String get toolsRstTone => '음질(T)';
+
+  @override
+  String get toolsRstReport => '보고';
+
+  @override
+  String get toolsRstCut => '대회용 약식 표기';
+
+  @override
+  String get toolsRstPhone => '음성 통신(음질 항목 없음)';
+
+  @override
+  String get toolsRstR1 => '알아들을 수 없음';
+
+  @override
+  String get toolsRstR2 => '겨우 알아들을 수 있으며 가끔 단어가 들림';
+
+  @override
+  String get toolsRstR3 => '상당히 어렵지만 알아들을 수 있음';
+
+  @override
+  String get toolsRstR4 => '거의 어려움 없이 알아들을 수 있음';
+
+  @override
+  String get toolsRstR5 => '완전히 알아들을 수 있음';
+
+  @override
+  String get toolsRstS1 => '미약하여 겨우 감지됨';
+
+  @override
+  String get toolsRstS2 => '매우 약함';
+
+  @override
+  String get toolsRstS3 => '약함';
+
+  @override
+  String get toolsRstS4 => '보통';
+
+  @override
+  String get toolsRstS5 => '비교적 양호함';
+
+  @override
+  String get toolsRstS6 => '양호함';
+
+  @override
+  String get toolsRstS7 => '비교적 강함';
+
+  @override
+  String get toolsRstS8 => '강함';
+
+  @override
+  String get toolsRstS9 => '매우 강함';
+
+  @override
+  String get toolsRstT1 => '매우 거칠고 폭이 넓은 미정류 교류음';
+
+  @override
+  String get toolsRstT2 => '매우 거칠고 날카로우며 폭이 넓은 교류음';
+
+  @override
+  String get toolsRstT3 => '거친 음, 정류되었으나 평활화되지 않음';
+
+  @override
+  String get toolsRstT4 => '거친 음이나 약간의 평활화 흔적이 있음';
+
+  @override
+  String get toolsRstT5 => '평활화되었으나 리플 변조가 심함';
+
+  @override
+  String get toolsRstT6 => '평활화되었으나 뚜렷한 리플이 있음';
+
+  @override
+  String get toolsRstT7 => '거의 순수한 음이나 약간의 리플이 있음';
+
+  @override
+  String get toolsRstT8 => '거의 완벽한 음으로 아주 약한 변조 흔적이 있음';
+
+  @override
+  String get toolsRstT9 => '완벽한 음으로 리플이 전혀 없음';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => '현지 시간';
+
+  @override
+  String get toolsClockNote => '로그와 QSL 카드에는 UTC를 사용합니다.';
+
+  @override
   String get learnReceiveTitle => '수신';
 
   @override

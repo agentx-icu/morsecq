@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../listen/listen_screen.dart';
+import '../tools/radio_tools_screen.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_catalog.dart';
 import 'reference_layout.dart';
@@ -37,6 +38,9 @@ class ReferenceScreen extends StatefulWidget {
 
   /// Key of the search field, for tests and driving harnesses.
   static const Key searchFieldKey = Key('reference-search');
+
+  /// Key of the app-bar button that opens the radio tools.
+  static const Key radioToolsKey = Key('reference-radio-tools');
 
   @override
   State<ReferenceScreen> createState() => _ReferenceScreenState();
@@ -105,6 +109,15 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
           onPressed: () {
             _controller.stop();
             Navigator.of(context).push(ListenScreen.route());
+          },
+        ),
+        IconButton(
+          key: ReferenceScreen.radioToolsKey,
+          tooltip: s.toolsTitle,
+          icon: const Icon(Icons.handyman_outlined),
+          onPressed: () {
+            _controller.stop();
+            Navigator.of(context).push(RadioToolsScreen.route());
           },
         ),
         IconButton(

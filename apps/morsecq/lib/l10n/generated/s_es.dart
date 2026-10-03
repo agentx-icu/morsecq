@@ -1029,6 +1029,294 @@ class SEs extends S {
   String get learnDrillQso => 'QSO';
 
   @override
+  String get learnDrillCharacters => 'Caracteres sueltos';
+
+  @override
+  String get learnDrillAbbreviations => 'Abreviaturas y códigos Q';
+
+  @override
+  String get learnDrillNumbers => 'Grupos de números';
+
+  @override
+  String get learnDrillConfusables => 'Caracteres similares';
+
+  @override
+  String get learnDrillContest => 'Intercambio de concurso';
+
+  @override
+  String get learnDrillGroupsHint => 'Grupos aleatorios con todos los caracteres que conoces';
+
+  @override
+  String get learnDrillCharactersHint => 'Un carácter cada vez: reconócelo al instante';
+
+  @override
+  String get learnDrillWordsHint => 'Palabras habituales en inglés';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX, FB, QTH, QSL: abreviaturas usadas en radio';
+
+  @override
+  String get learnDrillNumbersHint => 'Grupos de cinco dígitos, como en mensajes y números de serie';
+
+  @override
+  String get learnDrillCallsignsHint => 'Indicativos de radioaficionados de todo el mundo';
+
+  @override
+  String get learnDrillConfusablesHint => 'Pares que confundes, como S/H o U/V, uno junto al otro';
+
+  @override
+  String get learnDrillQsoHint => 'Frases de un contacto completo';
+
+  @override
+  String get learnDrillContestHint => 'Indicativo, 5NN y número de serie o zona, al ritmo de un concurso';
+
+  @override
+  String get learnDrillReviewHint => 'Caracteres pendientes de repaso';
+
+  @override
+  String get toolsTitle => 'Herramientas de radio';
+
+  @override
+  String get toolsGridTitle => 'Localizador';
+
+  @override
+  String get toolsGridHint => 'Localizador por coordenadas, distancia y rumbo de antena';
+
+  @override
+  String get toolsBandsTitle => 'Bandas y antenas';
+
+  @override
+  String get toolsBandsHint => 'Banda de una frecuencia, longitud de onda y longitud del dipolo';
+
+  @override
+  String get toolsSpeedTitle => 'Velocidad CW';
+
+  @override
+  String get toolsSpeedHint => 'De WPM a duración del punto, intervalos y caracteres por minuto';
+
+  @override
+  String get toolsRstTitle => 'Reporte RST';
+
+  @override
+  String get toolsRstHint => 'Crea un reporte de señal y consulta el significado de cada dígito';
+
+  @override
+  String get toolsClockTitle => 'Reloj UTC';
+
+  @override
+  String get toolsClockHint => 'Hora UTC para el registro, junto a tu hora local';
+
+  @override
+  String get toolsGridFromCoordinates => 'Desde coordenadas';
+
+  @override
+  String get toolsGridLatitude => 'Latitud';
+
+  @override
+  String get toolsGridLongitude => 'Longitud';
+
+  @override
+  String get toolsGridCoordinatesHelp => 'Grados decimales; sur y oeste son negativos';
+
+  @override
+  String get toolsGridInvalidCoordinates => 'Latitud de -90 a 90, longitud de -180 a 180';
+
+  @override
+  String get toolsGridLocator => 'Localizador';
+
+  @override
+  String get toolsGridDistanceSection => 'Distancia y rumbo';
+
+  @override
+  String get toolsGridMine => 'Mi localizador';
+
+  @override
+  String get toolsGridTheirs => 'Localizador remoto';
+
+  @override
+  String get toolsGridInvalidLocator => 'Usa 2, 4, 6 u 8 caracteres, p. ej., OM89ex';
+
+  @override
+  String get toolsGridCenter => 'Centro de la cuadrícula';
+
+  @override
+  String get toolsGridDistance => 'Distancia';
+
+  @override
+  String get toolsGridShortPath => 'Rumbo por vía corta';
+
+  @override
+  String get toolsGridLongPath => 'Rumbo por vía larga';
+
+  @override
+  String get toolsBandsFrequency => 'Frecuencia (MHz)';
+
+  @override
+  String get toolsBandsInvalidFrequency => 'Introduce una frecuencia mayor que 0';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return 'Región $number';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1: Europa, África, Oriente Medio · 2: América · 3: Asia-Pacífico';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return 'En la banda de radioaficionados de $band';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => 'Fuera de las bandas de radioaficionados';
+
+  @override
+  String get toolsBandsWavelength => 'Longitud de onda';
+
+  @override
+  String get toolsBandsDipole => 'Dipolo de media onda (total)';
+
+  @override
+  String get toolsBandsQuarterWave => 'Vertical de cuarto de onda';
+
+  @override
+  String get toolsBandsAntennaNote => 'Las longitudes incluyen un factor de acortamiento de 0,95; recorta hasta la resonancia.';
+
+  @override
+  String get toolsBandsTable => 'Límites de banda';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => 'Asignaciones de la ITU. Tu licencia y el plan nacional de bandas pueden ser más restrictivos.';
+
+  @override
+  String get toolsSpeedCharacter => 'Velocidad de los caracteres';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Espaciado Farnsworth';
+
+  @override
+  String get toolsSpeedOverall => 'Velocidad global';
+
+  @override
+  String get toolsSpeedDit => 'Punto';
+
+  @override
+  String get toolsSpeedDah => 'Raya';
+
+  @override
+  String get toolsSpeedCharGap => 'Intervalo entre caracteres';
+
+  @override
+  String get toolsSpeedWordGap => 'Intervalo entre palabras';
+
+  @override
+  String get toolsSpeedCpm => 'Caracteres por minuto';
+
+  @override
+  String get toolsSpeedParis => 'Una palabra PARIS';
+
+  @override
+  String get toolsRstReadability => 'Legibilidad (R)';
+
+  @override
+  String get toolsRstStrength => 'Intensidad (S)';
+
+  @override
+  String get toolsRstTone => 'Tono (T)';
+
+  @override
+  String get toolsRstReport => 'Reporte';
+
+  @override
+  String get toolsRstCut => 'Forma de concurso';
+
+  @override
+  String get toolsRstPhone => 'En voz (sin tono)';
+
+  @override
+  String get toolsRstR1 => 'Ilegible';
+
+  @override
+  String get toolsRstR2 => 'Apenas legible, palabras sueltas';
+
+  @override
+  String get toolsRstR3 => 'Legible con mucha dificultad';
+
+  @override
+  String get toolsRstR4 => 'Legible casi sin dificultad';
+
+  @override
+  String get toolsRstR5 => 'Perfectamente legible';
+
+  @override
+  String get toolsRstS1 => 'Tenue, apenas perceptible';
+
+  @override
+  String get toolsRstS2 => 'Muy débil';
+
+  @override
+  String get toolsRstS3 => 'Débil';
+
+  @override
+  String get toolsRstS4 => 'Aceptable';
+
+  @override
+  String get toolsRstS5 => 'Bastante buena';
+
+  @override
+  String get toolsRstS6 => 'Buena';
+
+  @override
+  String get toolsRstS7 => 'Moderadamente fuerte';
+
+  @override
+  String get toolsRstS8 => 'Fuerte';
+
+  @override
+  String get toolsRstS9 => 'Extremadamente fuerte';
+
+  @override
+  String get toolsRstT1 => 'Muy áspero y ancho, AC sin rectificar';
+
+  @override
+  String get toolsRstT2 => 'AC muy áspera, estridente y ancha';
+
+  @override
+  String get toolsRstT3 => 'Áspero, rectificado sin filtrar';
+
+  @override
+  String get toolsRstT4 => 'Áspero, con algo de filtrado';
+
+  @override
+  String get toolsRstT5 => 'Filtrado, con fuerte modulación de rizado';
+
+  @override
+  String get toolsRstT6 => 'Filtrado, con rizado evidente';
+
+  @override
+  String get toolsRstT7 => 'Casi puro, con algo de rizado';
+
+  @override
+  String get toolsRstT8 => 'Casi perfecto, con leve modulación';
+
+  @override
+  String get toolsRstT9 => 'Tono perfecto, sin rizado';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => 'Hora local';
+
+  @override
+  String get toolsClockNote => 'Los registros de contactos y las tarjetas QSL usan UTC.';
+
+  @override
   String get learnReceiveTitle => 'Recepción';
 
   @override

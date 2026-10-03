@@ -1012,6 +1012,294 @@ class SZh extends S {
   String get learnDrillQso => '通联（QSO）';
 
   @override
+  String get learnDrillCharacters => '单字速认';
+
+  @override
+  String get learnDrillAbbreviations => '缩语与 Q 简语';
+
+  @override
+  String get learnDrillNumbers => '数字组';
+
+  @override
+  String get learnDrillConfusables => '易混字符';
+
+  @override
+  String get learnDrillContest => '竞赛交换';
+
+  @override
+  String get learnDrillGroupsHint => '用已学字符组成的随机字组';
+
+  @override
+  String get learnDrillCharactersHint => '每次一个字符，听到即答';
+
+  @override
+  String get learnDrillWordsHint => '常用英文单词';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX、FB、QTH、QSL 等通联常用语';
+
+  @override
+  String get learnDrillNumbersHint => '五位数字组，如电报与序号';
+
+  @override
+  String get learnDrillCallsignsHint => '世界各地的业余电台呼号';
+
+  @override
+  String get learnDrillConfusablesHint => '成对练习容易听混的字符，如 S/H、U/V';
+
+  @override
+  String get learnDrillQsoHint => '完整通联中的句子';
+
+  @override
+  String get learnDrillContestHint => '呼号 + 5NN + 序号或分区，含缩略数字';
+
+  @override
+  String get learnDrillReviewHint => '到期需要复习的字符';
+
+  @override
+  String get toolsTitle => '无线电工具';
+
+  @override
+  String get toolsGridTitle => '网格定位';
+
+  @override
+  String get toolsGridHint => '坐标换算网格、两地距离与天线方位';
+
+  @override
+  String get toolsBandsTitle => '频段与天线';
+
+  @override
+  String get toolsBandsHint => '频率所在频段、波长与偶极天线长度';
+
+  @override
+  String get toolsSpeedTitle => '报速换算';
+
+  @override
+  String get toolsSpeedHint => 'WPM 换算点长、间隔与每分钟字符数';
+
+  @override
+  String get toolsRstTitle => 'RST 信号报告';
+
+  @override
+  String get toolsRstHint => '组合信号报告并查看每一位的含义';
+
+  @override
+  String get toolsClockTitle => 'UTC 时钟';
+
+  @override
+  String get toolsClockHint => '日志使用的 UTC 时间与本地时间';
+
+  @override
+  String get toolsGridFromCoordinates => '由坐标求网格';
+
+  @override
+  String get toolsGridLatitude => '纬度';
+
+  @override
+  String get toolsGridLongitude => '经度';
+
+  @override
+  String get toolsGridCoordinatesHelp => '十进制度数；南纬、西经为负';
+
+  @override
+  String get toolsGridInvalidCoordinates => '纬度 -90 至 90，经度 -180 至 180';
+
+  @override
+  String get toolsGridLocator => '网格';
+
+  @override
+  String get toolsGridDistanceSection => '距离与方位';
+
+  @override
+  String get toolsGridMine => '我的网格';
+
+  @override
+  String get toolsGridTheirs => '对方网格';
+
+  @override
+  String get toolsGridInvalidLocator => '需 2、4、6 或 8 位，如 OM89ex';
+
+  @override
+  String get toolsGridCenter => '网格中心';
+
+  @override
+  String get toolsGridDistance => '距离';
+
+  @override
+  String get toolsGridShortPath => '短程方位';
+
+  @override
+  String get toolsGridLongPath => '长程方位';
+
+  @override
+  String get toolsBandsFrequency => '频率（MHz）';
+
+  @override
+  String get toolsBandsInvalidFrequency => '请输入大于 0 的频率';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return '$number 区';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1 区：欧洲、非洲、中东 · 2 区：美洲 · 3 区：亚太（含中国）';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return '位于 $band 业余频段';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => '不在业余频段内';
+
+  @override
+  String get toolsBandsWavelength => '波长';
+
+  @override
+  String get toolsBandsDipole => '半波偶极天线（全长）';
+
+  @override
+  String get toolsBandsQuarterWave => '四分之一波长垂直天线';
+
+  @override
+  String get toolsBandsAntennaNote => '长度已乘 0.95 缩短系数，实际需修剪至谐振。';
+
+  @override
+  String get toolsBandsTable => '频段边界';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => '以上为 ITU 划分，请以你的执照与本国频率规划为准（通常更窄）。';
+
+  @override
+  String get toolsSpeedCharacter => '字符速度';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Farnsworth 间隔';
+
+  @override
+  String get toolsSpeedOverall => '整体速度';
+
+  @override
+  String get toolsSpeedDit => '点';
+
+  @override
+  String get toolsSpeedDah => '划';
+
+  @override
+  String get toolsSpeedCharGap => '字符间隔';
+
+  @override
+  String get toolsSpeedWordGap => '单词间隔';
+
+  @override
+  String get toolsSpeedCpm => '每分钟字符数';
+
+  @override
+  String get toolsSpeedParis => '一个 PARIS 单词';
+
+  @override
+  String get toolsRstReadability => '可读度 (R)';
+
+  @override
+  String get toolsRstStrength => '信号强度 (S)';
+
+  @override
+  String get toolsRstTone => '音调 (T)';
+
+  @override
+  String get toolsRstReport => '报告';
+
+  @override
+  String get toolsRstCut => '竞赛简写';
+
+  @override
+  String get toolsRstPhone => '话音（无音调）';
+
+  @override
+  String get toolsRstR1 => '无法辨认';
+
+  @override
+  String get toolsRstR2 => '勉强可辨，偶尔听出个别字';
+
+  @override
+  String get toolsRstR3 => '相当困难才能辨认';
+
+  @override
+  String get toolsRstR4 => '基本没有困难';
+
+  @override
+  String get toolsRstR5 => '完全清晰';
+
+  @override
+  String get toolsRstS1 => '微弱，几乎察觉不到';
+
+  @override
+  String get toolsRstS2 => '很弱';
+
+  @override
+  String get toolsRstS3 => '弱';
+
+  @override
+  String get toolsRstS4 => '尚可';
+
+  @override
+  String get toolsRstS5 => '较好';
+
+  @override
+  String get toolsRstS6 => '好';
+
+  @override
+  String get toolsRstS7 => '较强';
+
+  @override
+  String get toolsRstS8 => '强';
+
+  @override
+  String get toolsRstS9 => '极强';
+
+  @override
+  String get toolsRstT1 => '极粗糙、很宽，像未整流交流';
+
+  @override
+  String get toolsRstT2 => '很粗糙的交流音，刺耳且宽';
+
+  @override
+  String get toolsRstT3 => '粗糙，已整流未滤波';
+
+  @override
+  String get toolsRstT4 => '粗糙，略有滤波痕迹';
+
+  @override
+  String get toolsRstT5 => '已滤波，但纹波调制很重';
+
+  @override
+  String get toolsRstT6 => '已滤波，有明显纹波';
+
+  @override
+  String get toolsRstT7 => '接近纯音，略有纹波';
+
+  @override
+  String get toolsRstT8 => '近乎完美，仅有轻微调制';
+
+  @override
+  String get toolsRstT9 => '纯净音调，毫无纹波';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => '本地时间';
+
+  @override
+  String get toolsClockNote => '通联日志与 QSL 卡片统一使用 UTC。';
+
+  @override
   String get learnReceiveTitle => '听抄';
 
   @override
@@ -3002,6 +3290,294 @@ class SZhHant extends SZh {
 
   @override
   String get learnDrillQso => '通聯（QSO）';
+
+  @override
+  String get learnDrillCharacters => '單字速認';
+
+  @override
+  String get learnDrillAbbreviations => '縮語與 Q 簡語';
+
+  @override
+  String get learnDrillNumbers => '數字組';
+
+  @override
+  String get learnDrillConfusables => '易混字元';
+
+  @override
+  String get learnDrillContest => '競賽交換';
+
+  @override
+  String get learnDrillGroupsHint => '用已學字元組成的隨機字組';
+
+  @override
+  String get learnDrillCharactersHint => '每次一個字元，聽到即答';
+
+  @override
+  String get learnDrillWordsHint => '常用英文單字';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX、FB、QTH、QSL 等通聯常用語';
+
+  @override
+  String get learnDrillNumbersHint => '五位數字組，如電報與序號';
+
+  @override
+  String get learnDrillCallsignsHint => '世界各地的業餘電台呼號';
+
+  @override
+  String get learnDrillConfusablesHint => '成對練習容易聽混的字元，如 S/H、U/V';
+
+  @override
+  String get learnDrillQsoHint => '完整通聯中的句子';
+
+  @override
+  String get learnDrillContestHint => '呼號 + 5NN + 序號或分區，含縮略數字';
+
+  @override
+  String get learnDrillReviewHint => '到期需要複習的字元';
+
+  @override
+  String get toolsTitle => '無線電工具';
+
+  @override
+  String get toolsGridTitle => '網格定位';
+
+  @override
+  String get toolsGridHint => '座標換算網格、兩地距離與天線方位';
+
+  @override
+  String get toolsBandsTitle => '頻段與天線';
+
+  @override
+  String get toolsBandsHint => '頻率所在頻段、波長與偶極天線長度';
+
+  @override
+  String get toolsSpeedTitle => '報速換算';
+
+  @override
+  String get toolsSpeedHint => 'WPM 換算點長、間隔與每分鐘字元數';
+
+  @override
+  String get toolsRstTitle => 'RST 訊號報告';
+
+  @override
+  String get toolsRstHint => '組合訊號報告並查看每一位的含義';
+
+  @override
+  String get toolsClockTitle => 'UTC 時鐘';
+
+  @override
+  String get toolsClockHint => '日誌使用的 UTC 時間與本地時間';
+
+  @override
+  String get toolsGridFromCoordinates => '由座標求網格';
+
+  @override
+  String get toolsGridLatitude => '緯度';
+
+  @override
+  String get toolsGridLongitude => '經度';
+
+  @override
+  String get toolsGridCoordinatesHelp => '十進位度數；南緯、西經為負';
+
+  @override
+  String get toolsGridInvalidCoordinates => '緯度 -90 至 90，經度 -180 至 180';
+
+  @override
+  String get toolsGridLocator => '網格';
+
+  @override
+  String get toolsGridDistanceSection => '距離與方位';
+
+  @override
+  String get toolsGridMine => '我的網格';
+
+  @override
+  String get toolsGridTheirs => '對方網格';
+
+  @override
+  String get toolsGridInvalidLocator => '需 2、4、6 或 8 位，如 OM89ex';
+
+  @override
+  String get toolsGridCenter => '網格中心';
+
+  @override
+  String get toolsGridDistance => '距離';
+
+  @override
+  String get toolsGridShortPath => '短程方位';
+
+  @override
+  String get toolsGridLongPath => '長程方位';
+
+  @override
+  String get toolsBandsFrequency => '頻率（MHz）';
+
+  @override
+  String get toolsBandsInvalidFrequency => '請輸入大於 0 的頻率';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return '$number 區';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1 區：歐洲、非洲、中東 · 2 區：美洲 · 3 區：亞太';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return '位於 $band 業餘頻段';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => '不在業餘頻段內';
+
+  @override
+  String get toolsBandsWavelength => '波長';
+
+  @override
+  String get toolsBandsDipole => '半波偶極天線（全長）';
+
+  @override
+  String get toolsBandsQuarterWave => '四分之一波長垂直天線';
+
+  @override
+  String get toolsBandsAntennaNote => '長度已乘 0.95 縮短係數，實際需修剪至諧振。';
+
+  @override
+  String get toolsBandsTable => '頻段邊界';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => '以上為 ITU 劃分，請以你的執照與本國頻率規劃為準（可能更窄）。';
+
+  @override
+  String get toolsSpeedCharacter => '字元速度';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Farnsworth 間隔';
+
+  @override
+  String get toolsSpeedOverall => '整體速度';
+
+  @override
+  String get toolsSpeedDit => '點';
+
+  @override
+  String get toolsSpeedDah => '劃';
+
+  @override
+  String get toolsSpeedCharGap => '字元間隔';
+
+  @override
+  String get toolsSpeedWordGap => '單字間隔';
+
+  @override
+  String get toolsSpeedCpm => '每分鐘字元數';
+
+  @override
+  String get toolsSpeedParis => '一個 PARIS 單字';
+
+  @override
+  String get toolsRstReadability => '可讀度 (R)';
+
+  @override
+  String get toolsRstStrength => '訊號強度 (S)';
+
+  @override
+  String get toolsRstTone => '音調 (T)';
+
+  @override
+  String get toolsRstReport => '報告';
+
+  @override
+  String get toolsRstCut => '競賽簡寫';
+
+  @override
+  String get toolsRstPhone => '話音（無音調）';
+
+  @override
+  String get toolsRstR1 => '無法辨認';
+
+  @override
+  String get toolsRstR2 => '勉強可辨，偶爾聽出個別字';
+
+  @override
+  String get toolsRstR3 => '相當困難才能辨認';
+
+  @override
+  String get toolsRstR4 => '基本沒有困難';
+
+  @override
+  String get toolsRstR5 => '完全清晰';
+
+  @override
+  String get toolsRstS1 => '微弱，幾乎察覺不到';
+
+  @override
+  String get toolsRstS2 => '很弱';
+
+  @override
+  String get toolsRstS3 => '弱';
+
+  @override
+  String get toolsRstS4 => '尚可';
+
+  @override
+  String get toolsRstS5 => '較好';
+
+  @override
+  String get toolsRstS6 => '好';
+
+  @override
+  String get toolsRstS7 => '較強';
+
+  @override
+  String get toolsRstS8 => '強';
+
+  @override
+  String get toolsRstS9 => '極強';
+
+  @override
+  String get toolsRstT1 => '極粗糙、很寬，像未整流交流';
+
+  @override
+  String get toolsRstT2 => '很粗糙的交流音，刺耳且寬';
+
+  @override
+  String get toolsRstT3 => '粗糙，已整流未濾波';
+
+  @override
+  String get toolsRstT4 => '粗糙，略有濾波痕跡';
+
+  @override
+  String get toolsRstT5 => '已濾波，但漣波調變很重';
+
+  @override
+  String get toolsRstT6 => '已濾波，有明顯漣波';
+
+  @override
+  String get toolsRstT7 => '接近純音，略有漣波';
+
+  @override
+  String get toolsRstT8 => '近乎完美，僅有輕微調變';
+
+  @override
+  String get toolsRstT9 => '純淨音調，毫無漣波';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => '本地時間';
+
+  @override
+  String get toolsClockNote => '通聯日誌與 QSL 卡片統一使用 UTC。';
 
   @override
   String get learnReceiveTitle => '聽抄';

@@ -1012,6 +1012,294 @@ class SJa extends S {
   String get learnDrillQso => '交信（QSO）';
 
   @override
+  String get learnDrillCharacters => '1 文字ずつ';
+
+  @override
+  String get learnDrillAbbreviations => '略語と Q 符号';
+
+  @override
+  String get learnDrillNumbers => '数字のグループ';
+
+  @override
+  String get learnDrillConfusables => '聞き違えやすい文字';
+
+  @override
+  String get learnDrillContest => 'コンテストの交信';
+
+  @override
+  String get learnDrillGroupsHint => '学習済みの文字から作るランダムな文字列';
+
+  @override
+  String get learnDrillCharactersHint => '1 文字ずつ聞いて、すぐに答えましょう';
+
+  @override
+  String get learnDrillWordsHint => 'よく使う英単語';
+
+  @override
+  String get learnDrillAbbreviationsHint => 'TNX、FB、QTH、QSL など、無線交信で使う略語';
+
+  @override
+  String get learnDrillNumbersHint => '電文や通し番号で使う 5 桁の数字グループ';
+
+  @override
+  String get learnDrillCallsignsHint => '世界各地のアマチュア無線のコールサイン';
+
+  @override
+  String get learnDrillConfusablesHint => 'S/H、U/V など、聞き違えやすい文字をペアで練習';
+
+  @override
+  String get learnDrillQsoHint => '一連の交信で使う文章';
+
+  @override
+  String get learnDrillContestHint => 'コンテストの速度でコールサイン、5NN、通し番号やゾーンを受信';
+
+  @override
+  String get learnDrillReviewHint => '復習の時期が来た文字';
+
+  @override
+  String get toolsTitle => '無線のツール';
+
+  @override
+  String get toolsGridTitle => 'グリッドロケーター';
+
+  @override
+  String get toolsGridHint => '座標からロケーターを算出し、距離とアンテナの方位を確認';
+
+  @override
+  String get toolsBandsTitle => '周波数帯とアンテナ';
+
+  @override
+  String get toolsBandsHint => '周波数が属するバンド、波長、ダイポールの長さを確認';
+
+  @override
+  String get toolsSpeedTitle => 'CW の速度';
+
+  @override
+  String get toolsSpeedHint => 'WPM を短点の長さ、間隔、1 分あたりの文字数に換算';
+
+  @override
+  String get toolsRstTitle => 'RST レポート';
+
+  @override
+  String get toolsRstHint => '信号レポートを作成し、各桁の意味を確認';
+
+  @override
+  String get toolsClockTitle => 'UTC 時計';
+
+  @override
+  String get toolsClockHint => 'ログに記録する UTC と現地時刻を並べて表示';
+
+  @override
+  String get toolsGridFromCoordinates => '座標から算出';
+
+  @override
+  String get toolsGridLatitude => '緯度';
+
+  @override
+  String get toolsGridLongitude => '経度';
+
+  @override
+  String get toolsGridCoordinatesHelp => '十進数の度数で入力。南緯と西経は負の値です';
+
+  @override
+  String get toolsGridInvalidCoordinates => '緯度は -90～90、経度は -180～180';
+
+  @override
+  String get toolsGridLocator => 'ロケーター';
+
+  @override
+  String get toolsGridDistanceSection => '距離と方位';
+
+  @override
+  String get toolsGridMine => '自局のロケーター';
+
+  @override
+  String get toolsGridTheirs => '相手局のロケーター';
+
+  @override
+  String get toolsGridInvalidLocator => '2、4、6、8 文字で入力してください。例：OM89ex';
+
+  @override
+  String get toolsGridCenter => 'グリッドの中心';
+
+  @override
+  String get toolsGridDistance => '距離';
+
+  @override
+  String get toolsGridShortPath => 'ショートパスの方位';
+
+  @override
+  String get toolsGridLongPath => 'ロングパスの方位';
+
+  @override
+  String get toolsBandsFrequency => '周波数（MHz）';
+
+  @override
+  String get toolsBandsInvalidFrequency => '0 より大きい周波数を入力してください';
+
+  @override
+  String toolsBandsRegionLabel(int number) {
+    return '第 $number 地域';
+  }
+
+  @override
+  String get toolsBandsRegionHelp => '1：ヨーロッパ・アフリカ・中東 — 2：南北アメリカ — 3：アジア・太平洋';
+
+  @override
+  String toolsBandsInBand(String band) {
+    return '$band アマチュア無線バンド内';
+  }
+
+  @override
+  String get toolsBandsOutOfBand => 'アマチュア無線バンド外';
+
+  @override
+  String get toolsBandsWavelength => '波長';
+
+  @override
+  String get toolsBandsDipole => '半波長ダイポール（全長）';
+
+  @override
+  String get toolsBandsQuarterWave => '1/4 波長の垂直アンテナ';
+
+  @override
+  String get toolsBandsAntennaNote => '長さには 0.95 の短縮係数を含みます。共振するように長さを調整してください。';
+
+  @override
+  String get toolsBandsTable => '周波数帯の範囲';
+
+  @override
+  String toolsBandsQrp(String frequency) {
+    return 'QRP CW $frequency';
+  }
+
+  @override
+  String get toolsBandsDisclaimer => 'ITU の周波数分配です。免許や各国のバンドプランでは、利用できる範囲が狭い場合があります。';
+
+  @override
+  String get toolsSpeedCharacter => '文字速度';
+
+  @override
+  String get toolsSpeedFarnsworth => 'Farnsworth 間隔';
+
+  @override
+  String get toolsSpeedOverall => '全体の速度';
+
+  @override
+  String get toolsSpeedDit => '短点';
+
+  @override
+  String get toolsSpeedDah => '長点';
+
+  @override
+  String get toolsSpeedCharGap => '文字間の間隔';
+
+  @override
+  String get toolsSpeedWordGap => '単語間の間隔';
+
+  @override
+  String get toolsSpeedCpm => '1 分あたりの文字数';
+
+  @override
+  String get toolsSpeedParis => 'PARIS 1 語の所要時間';
+
+  @override
+  String get toolsRstReadability => '了解度（R）';
+
+  @override
+  String get toolsRstStrength => '信号強度（S）';
+
+  @override
+  String get toolsRstTone => '音調（T）';
+
+  @override
+  String get toolsRstReport => 'レポート';
+
+  @override
+  String get toolsRstCut => 'コンテスト用の略記';
+
+  @override
+  String get toolsRstPhone => '音声通信（T の報告なし）';
+
+  @override
+  String get toolsRstR1 => '了解できない';
+
+  @override
+  String get toolsRstR2 => 'かろうじて了解でき、ときどき単語が聞き取れる';
+
+  @override
+  String get toolsRstR3 => 'かなり困難だが了解できる';
+
+  @override
+  String get toolsRstR4 => 'ほぼ困難なく了解できる';
+
+  @override
+  String get toolsRstR5 => '完全に了解できる';
+
+  @override
+  String get toolsRstS1 => '非常に弱く、かろうじて感じられる';
+
+  @override
+  String get toolsRstS2 => '非常に弱い';
+
+  @override
+  String get toolsRstS3 => '弱い';
+
+  @override
+  String get toolsRstS4 => 'まずまずの強さ';
+
+  @override
+  String get toolsRstS5 => 'やや良好';
+
+  @override
+  String get toolsRstS6 => '良好';
+
+  @override
+  String get toolsRstS7 => 'かなり強い';
+
+  @override
+  String get toolsRstS8 => '強い';
+
+  @override
+  String get toolsRstS9 => '極めて強い';
+
+  @override
+  String get toolsRstT1 => '非常に粗く帯域が広い、未整流の交流音';
+
+  @override
+  String get toolsRstT2 => '非常に粗い交流音で、耳障りかつ帯域が広い';
+
+  @override
+  String get toolsRstT3 => '粗い音。整流されているが、平滑化されていない';
+
+  @override
+  String get toolsRstT4 => '粗い音だが、わずかに平滑化されている';
+
+  @override
+  String get toolsRstT5 => '平滑化されているが、リップル変調が強い';
+
+  @override
+  String get toolsRstT6 => '平滑化されているが、明らかなリップルがある';
+
+  @override
+  String get toolsRstT7 => 'ほぼ純音だが、わずかなリップルがある';
+
+  @override
+  String get toolsRstT8 => 'ほぼ完全な音で、ごくわずかな変調がある';
+
+  @override
+  String get toolsRstT9 => '完全な純音で、リップルがない';
+
+  @override
+  String get toolsClockUtc => 'UTC';
+
+  @override
+  String get toolsClockLocal => '現地時刻';
+
+  @override
+  String get toolsClockNote => 'ログと QSL カードには UTC を使います。';
+
+  @override
   String get learnReceiveTitle => '受信';
 
   @override

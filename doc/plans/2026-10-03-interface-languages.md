@@ -7,7 +7,7 @@ Portuguese and Russian to the existing English and Simplified Chinese UI.
 Documentation continues to be maintained only in English and Simplified Chinese.
 
 **Design:** Use the existing Flutter gen-l10n pipeline. Each new
-`apps/morsecq/lib/l10n/app_<locale>.arb` translates all 562 template messages.
+`apps/morsecq/lib/l10n/app_<locale>.arb` translates all 656 template messages.
 Generated `S.supportedLocales` supplies the language picker, locale controller,
 notifications and desktop shell. Keep product names, placeholder types and
 technical protocol identifiers intact. Russian plurals use one/few/many/other;
@@ -44,3 +44,4 @@ Complete ARBs fit the existing architecture without either cost.
   English documentation only; recorded the implementation and verification plan.
 - 2026-10-03: Small-phone tests exposed an unbounded review-status trailing label in German/Russian. Wrap the title and status together so long translations and large text remain visible on mobile and desktop; add four narrow-screen regression cases.
 - 2026-10-03: Final validation: 667 app tests passed with one existing skip (needs-native excluded); app analysis, formatting, complexity/import guards, ARB migration check, all-locale message validation and both Apple plist checks passed. Independent Codex reviews completed; corrected character-count labels in Spanish/Portuguese/Russian and the Portuguese zero-session subtitle.
+- 2026-10-03: Resolved conflicts with the new drills and radio tools on master, preserving both plan records. Added all 94 new messages to the eight new languages, bringing each catalog to 656 messages; All-locale phone/desktop tool tests and drill-picker tests at 320 × 568 with 1.8× text scale passed. Final merge validation: 714 app tests passed with one existing skip (needs-native excluded), 104 trainer tests and 18 radio-tools tests passed; analysis across all packages, repo guards, ARB consistency, formatting and Apple plist checks passed. Independent Codex reviews found no remaining issues.
