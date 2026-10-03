@@ -11,6 +11,7 @@ import '../notifications/connection_banner_policy.dart';
 import '../notifications/notification_center.dart';
 import '../notifications/notification_prefs.dart';
 import '../startup/startup_controller.dart';
+import '../training/guest_profile.dart';
 import '../training/training_controller_host.dart';
 import '../ui/chat/search/message_bookmarks.dart';
 import '../ui/account/backup_file_gateway.dart';
@@ -37,6 +38,7 @@ class AppScope extends StatefulWidget {
     required this.factory,
     required this.child,
     this.backupFiles,
+    this.guestStore,
     this.localeStore,
     this.notificationApis,
     this.desktopShell,
@@ -48,6 +50,9 @@ class AppScope extends StatefulWidget {
 
   /// Override for the file save/pick gateway; tests pass a fake.
   final BackupFileGateway? backupFiles;
+
+  /// Where guest learning data lives; defaults to app support storage.
+  final GuestStore? guestStore;
 
   /// Where the language choice persists; defaults to memory (tests, fake
   /// backend). `main()` passes a file-backed store.
@@ -79,7 +84,14 @@ class _AppScopeState extends State<AppScope> {
     identity: _identity,
   );
   AppSettings get _settings => _preferences.settings;
-  late final StartupController _startup = StartupController(_identity);
+  late final GuestStore _guest = widget.guestStore ?? GuestStore();
+  late final StartupController _startup = StartupController(
+    _identity,
+    guest: GuestHooks(
+      store: _guest,
+      releaseGuestController: () => _training.releaseGuest(),
+    ),
+  );
   late final BackupFileGateway _backupFiles =
       widget.backupFiles ?? const PlatformBackupFileGateway();
   late final LocaleController _locale = LocaleController(_store);
@@ -97,6 +109,8 @@ class _AppScopeState extends State<AppScope> {
 
   late final TrainingControllerHost _training = TrainingControllerHost(
     _identity,
+    guestMode: _startup.guestMode,
+    guestFactory: _guest.openController,
   );
 
   Future<void> _flushSettings() async {

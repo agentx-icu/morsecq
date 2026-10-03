@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import '../training/guest_profile.dart';
+
 /// Where the app is in its identity lifecycle. The [StartupGate] renders one
 /// screen per phase; everything behind [ready] is the normal shell.
 enum StartupPhase {
@@ -26,6 +28,21 @@ enum StartupPhase {
 
   /// `inspect()` / `open()` threw; retry screen.
   failed,
+
+  /// Learning without an identity (functional spec §8): the shell runs on
+  /// the guest learning profile; chat asks for an identity. No Tox identity
+  /// is created, opened, unlocked or connected in this phase.
+  guest,
+}
+
+/// Guest-data hooks the controller needs; null disables guest learning.
+final class GuestHooks {
+  const GuestHooks({required this.store, required this.releaseGuestController});
+
+  final GuestStore store;
+
+  /// Flushes and closes the guest training controller (before migration).
+  final Future<void> Function() releaseGuestController;
 }
 
 /// Drives the startup sequence (`inspect → onboarding | unlock | open`) and
@@ -40,11 +57,39 @@ enum StartupPhase {
 /// `ChatException` with a stable code, or anything else) and the widgets
 /// translate them with `describeChatError(s, error)`.
 class StartupController extends ChangeNotifier {
-  StartupController(this._identity) {
+  StartupController(
+    this._identity, {
+    GuestHooks? guest,
+    DateTime Function()? now,
+  }) : _guest = guest,
+       _now = now ?? DateTime.now {
     _identitySub = _identity.identityChanges.listen(_onIdentityChanged);
   }
 
   final IdentityService _identity;
+  final GuestHooks? _guest;
+  final DateTime Function() _now;
+
+  /// True while the guest learning profile is in use; the training host
+  /// listens to it.
+  final ValueNotifier<bool> guestMode = ValueNotifier<bool>(false);
+
+  /// Phase to return to when leaving guest mode (onboarding or locked).
+  StartupPhase _beforeGuest = StartupPhase.onboarding;
+
+  Object? _migrationError;
+
+  /// Moving guest progress to a just-created identity failed; the identity
+  /// exists, the guest data is intact, [retryMigration] tries again.
+  Object? get migrationError => _migrationError;
+
+  bool _guestChoicePending = false;
+
+  /// A backup was restored while guest progress exists: the restored
+  /// progress is used; the learner may switch to the guest progress.
+  bool get guestChoicePending => _guestChoicePending;
+
+  bool get guestAvailable => _guest != null;
   late final StreamSubscription<Identity?> _identitySub;
 
   /// Sentinel for [_set]: "leave the error as it is".
@@ -82,11 +127,14 @@ class StartupController extends ChangeNotifier {
     _set(StartupPhase.inspecting, error: null);
     try {
       final state = await _identity.inspect();
+      final resumeGuest = await _guestWasActive();
       switch (state) {
         case IdentityState.none:
-          _set(StartupPhase.onboarding);
+          _beforeGuest = StartupPhase.onboarding;
+          _set(resumeGuest ? StartupPhase.guest : StartupPhase.onboarding);
         case IdentityState.locked:
-          _set(StartupPhase.locked);
+          _beforeGuest = StartupPhase.locked;
+          _set(resumeGuest ? StartupPhase.guest : StartupPhase.locked);
         case IdentityState.ready:
           _set(StartupPhase.opening);
           await _identity.open();
@@ -97,10 +145,109 @@ class StartupController extends ChangeNotifier {
     }
   }
 
+  Future<bool> _guestWasActive() async {
+    final guest = _guest;
+    if (guest == null) return false;
+    try {
+      final active = await guest.store.isActive();
+      guestMode.value = active;
+      return active;
+    } on Object {
+      return false;
+    }
+  }
+
+  /// "Try learning first": learn on the guest profile. Never touches an
+  /// identity on disk (an encrypted one stays locked).
+  Future<void> enterGuest() async {
+    final guest = _guest;
+    if (guest == null) return;
+    if (_phase == StartupPhase.onboarding || _phase == StartupPhase.locked) {
+      _beforeGuest = _phase;
+    }
+    try {
+      await guest.store.setActive(true);
+    } on Object {
+      // Guest mode still works this session; it just won't be remembered.
+    }
+    guestMode.value = true;
+    _set(StartupPhase.guest);
+  }
+
+  /// Back to creating / restoring / unlocking an identity.
+  Future<void> leaveGuest() async {
+    guestMode.value = false;
+    try {
+      await _guest?.store.setActive(false);
+    } on Object {
+      // Not remembered; the next launch may start in guest mode again.
+    }
+    _set(_beforeGuest);
+  }
+
+  /// Deletes the guest's learning data (the learner asked for it).
+  Future<void> clearGuestData() async {
+    final guest = _guest;
+    if (guest == null) return;
+    await guest.releaseGuestController();
+    await guest.store.clear();
+  }
+
+  /// Moves guest progress to the open identity (after creating it).
+  Future<void> _migrateGuest() async {
+    final guest = _guest;
+    final identity = _identity.current;
+    if (guest == null || identity == null) return;
+    guestMode.value = false;
+    try {
+      if (!await guest.store.hasProgress()) {
+        await guest.store.setActive(false);
+        _migrationError = null;
+        return;
+      }
+      await guest.releaseGuestController();
+      await GuestMigration(
+        guestDirectory: await guest.store.directory(),
+        identityDirectory: await _identity.dataDirectory(),
+      ).run(identityKey: identity.publicKey, now: _now());
+      await guest.store.setActive(false);
+      _migrationError = null;
+    } on Object catch (e) {
+      _migrationError = e;
+    }
+    _notify();
+  }
+
+  /// Retries a failed guest migration; idempotent.
+  Future<void> retryMigration() => _migrateGuest();
+
+  /// After a restore: replace the restored learning data with the guest's
+  /// (the restored data is moved aside, never merged or deleted).
+  Future<void> useGuestProgress() async {
+    _guestChoicePending = false;
+    await _migrateGuest();
+  }
+
+  /// After a restore: keep the restored progress; guest data stays apart.
+  Future<void> keepRestoredProgress() async {
+    _guestChoicePending = false;
+    try {
+      await _guest?.store.setActive(false);
+    } on Object {
+      // Harmless: only the guest-mode resume flag.
+    }
+    _notify();
+  }
+
   /// Decrypts the profile. Throws (typically `ChatException('wrong_password')`)
   /// so the unlock screen can render the error inline.
   Future<void> unlock(String password) async {
     await _identity.unlock(password);
+    final fromGuest = guestMode.value;
+    guestMode.value = false;
+    // Unlocking from guest mode keeps the identity's own progress; the
+    // learner may switch to the guest progress explicitly.
+    _guestChoicePending = fromGuest && await _guestHasProgress();
     _becomeReady();
   }
 
@@ -113,6 +260,8 @@ class StartupController extends ChangeNotifier {
       displayName: displayName,
       password: password,
     );
+    // Guest progress moves with the learner to the new identity by default.
+    await _migrateGuest();
     _set(StartupPhase.backupRequired);
     return identity;
   }
@@ -130,6 +279,10 @@ class StartupController extends ChangeNotifier {
     String? password,
   }) async {
     final identity = await _identity.importBackup(bytes, password: password);
+    final fromGuest = guestMode.value;
+    guestMode.value = false;
+    // Restored progress is used; guest scores are never silently merged.
+    _guestChoicePending = fromGuest && await _guestHasProgress();
     _becomeReady();
     return identity;
   }
@@ -142,6 +295,14 @@ class StartupController extends ChangeNotifier {
   Future<void> deleteIdentity() async {
     await _identity.deleteIdentity();
     if (_phase != StartupPhase.onboarding) _set(StartupPhase.onboarding);
+  }
+
+  Future<bool> _guestHasProgress() async {
+    try {
+      return await _guest?.store.hasProgress() ?? false;
+    } on Object {
+      return false;
+    }
   }
 
   void _becomeReady() {
@@ -186,6 +347,7 @@ class StartupController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _identitySub.cancel().ignore();
+    guestMode.dispose();
     super.dispose();
   }
 }

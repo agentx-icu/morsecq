@@ -4624,5 +4624,158 @@
   "materialsPracticeNothing": "No entries can be practised in this mode.",
   "@materialsPracticeNothing": {
     "description": "Material practice: no usable entries in this mode"
+  },
+  "guestTryLearning": "Try learning first",
+  "@guestTryLearning": {
+    "description": "Welcome/unlock: learn without an identity"
+  },
+  "guestBanner": "Guest learning: progress stays on this device. Chat needs an identity.",
+  "@guestBanner": {
+    "description": "Guest mode banner over the shell"
+  },
+  "guestGetIdentity": "Set up identity",
+  "@guestGetIdentity": {
+    "description": "Guest mode: go to create / restore / unlock an identity"
+  },
+  "guestIdentityTitle": "Identity needed",
+  "@guestIdentityTitle": {
+    "description": "Guest mode: title of a chat destination that needs an identity"
+  },
+  "guestIdentityBody": "Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.",
+  "@guestIdentityBody": {
+    "description": "Guest mode: why chat needs an identity"
+  },
+  "guestClearData": "Clear guest learning data",
+  "@guestClearData": {
+    "description": "Guest Me page: delete guest learning data"
+  },
+  "guestClearDataBody": "Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.",
+  "@guestClearDataBody": {
+    "description": "Guest Me page: what clearing does"
+  },
+  "guestClearConfirm": "Clear",
+  "@guestClearConfirm": {
+    "description": "Guest clear dialog: confirm"
+  },
+  "guestCleared": "Guest learning data cleared.",
+  "@guestCleared": {
+    "description": "Snack: guest data cleared"
+  },
+  "guestClearFailed": "Couldn't clear the guest data.",
+  "@guestClearFailed": {
+    "description": "Snack: clearing guest data failed"
+  },
+  "guestMigrationFailed": "Your identity is ready, but your guest learning progress hasn't moved to it yet. It is safe on this device.",
+  "@guestMigrationFailed": {
+    "description": "Banner: guest progress did not move to the new identity yet"
+  },
+  "guestChoiceBody": "You also have guest learning progress. The restored identity's progress is in use; nothing was merged.",
+  "@guestChoiceBody": {
+    "description": "Banner after restore/unlock from guest mode: choose progress"
+  },
+  "guestChoiceKeep": "Keep restored",
+  "@guestChoiceKeep": {
+    "description": "Banner action: keep restored progress"
+  },
+  "guestChoiceUseGuest": "Use guest progress",
+  "@guestChoiceUseGuest": {
+    "description": "Banner action: replace with guest progress (restored data is kept aside)"
+  },
+  "placementTitle": "Check my level",
+  "@placementTitle": {
+    "description": "Placement assessment: screen title"
+  },
+  "placementCheckLevel": "Check my current level",
+  "@placementCheckLevel": {
+    "description": "Placement offer: start the assessment"
+  },
+  "placementFromZero": "Start from zero",
+  "@placementFromZero": {
+    "description": "Placement: start the course at lesson one"
+  },
+  "placementOfferTitle": "New to Morse, or already copying?",
+  "@placementOfferTitle": {
+    "description": "Learn home: offer for brand-new learners"
+  },
+  "placementOfferBody": "A short check can suggest where to start. It is optional and changes nothing until you choose.",
+  "@placementOfferBody": {
+    "description": "Learn home: placement offer explanation"
+  },
+  "placementIntro": "About 3–5 minutes of copying in five steps: Koch symbols in groups at rising speed, then short words. It is a rough guide from a small sample, not a certificate. Stop whenever you like.",
+  "@placementIntro": {
+    "description": "Placement intro"
+  },
+  "placementStart": "Start",
+  "@placementStart": {
+    "description": "Placement: start"
+  },
+  "placementSkip": "Skip",
+  "@placementSkip": {
+    "description": "Placement: skip"
+  },
+  "placementStop": "Stop",
+  "@placementStop": {
+    "description": "Placement: stop early and see the suggestion"
+  },
+  "placementTierProgress": "Step {step} of {total} · {wpm} WPM effective",
+  "@placementTierProgress": {
+    "description": "Placement: current step and effective speed",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementTierPassed": "Well copied. Next step is faster.",
+  "@placementTierPassed": {
+    "description": "Placement: step passed"
+  },
+  "placementTierStopped": "That step was below 90%, so the check ends here.",
+  "@placementTierStopped": {
+    "description": "Placement: step below 90 percent, check ends"
+  },
+  "placementNextTier": "Next step",
+  "@placementNextTier": {
+    "description": "Placement: continue to the next step"
+  },
+  "placementSuggestion": "Suggested start: lesson {lesson}",
+  "@placementSuggestion": {
+    "description": "Placement result headline",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerified": "{count} of {total} Koch symbols confirmed in order.",
+  "@placementVerified": {
+    "description": "Placement result: verified Koch prefix",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placementLimits": "Based on a short sample: symbols you were not tested on stay untested, and nothing is marked as learned. You can change the lesson any time.",
+  "@placementLimits": {
+    "description": "Placement result: limitations"
+  },
+  "placementAdopt": "Start at lesson {lesson}",
+  "@placementAdopt": {
+    "description": "Placement result: apply the suggested lesson",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
   }
 }

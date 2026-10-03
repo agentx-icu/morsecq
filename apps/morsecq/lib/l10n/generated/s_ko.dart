@@ -3232,4 +3232,105 @@ class SKo extends S {
 
   @override
   String get materialsPracticeNothing => '이 모드에서 연습할 항목이 없습니다.';
+
+  @override
+  String get guestTryLearning => '먼저 학습해 보기';
+
+  @override
+  String get guestBanner => '게스트 학습: 진행 상황은 이 기기에 남습니다. 채팅에는 신원이 필요합니다.';
+
+  @override
+  String get guestGetIdentity => '신원 설정';
+
+  @override
+  String get guestIdentityTitle => '신원 필요';
+
+  @override
+  String get guestIdentityBody => 'Tox 채팅에는 자신의 신원이 필요합니다. 새로 만들거나 백업을 복원하거나 이 기기의 신원을 잠금 해제하세요. 새 신원을 만들면 게스트 학습 진행 상황이 자동으로 옮겨집니다.';
+
+  @override
+  String get guestClearData => '게스트 학습 데이터 삭제';
+
+  @override
+  String get guestClearDataBody => '이 기기에서 게스트로 만든 진행 상황, 계획, 자료를 삭제합니다. 신원에는 영향이 없습니다.';
+
+  @override
+  String get guestClearConfirm => '삭제';
+
+  @override
+  String get guestCleared => '게스트 학습 데이터를 삭제했습니다.';
+
+  @override
+  String get guestClearFailed => '게스트 데이터를 삭제하지 못했습니다.';
+
+  @override
+  String get guestMigrationFailed => '신원은 준비되었지만 게스트 학습 진행 상황이 아직 옮겨지지 않았습니다. 이 기기에 안전하게 남아 있습니다.';
+
+  @override
+  String get guestChoiceBody => '게스트 학습 진행 상황도 있습니다. 복원한 신원의 진행 상황을 사용 중이며 합치지 않았습니다.';
+
+  @override
+  String get guestChoiceKeep => '복원본 유지';
+
+  @override
+  String get guestChoiceUseGuest => '게스트 진행 상황 사용';
+
+  @override
+  String get placementTitle => '내 수준 확인';
+
+  @override
+  String get placementCheckLevel => '현재 수준 확인';
+
+  @override
+  String get placementFromZero => '처음부터 시작';
+
+  @override
+  String get placementOfferTitle => '모스가 처음인가요, 이미 받아 적을 수 있나요?';
+
+  @override
+  String get placementOfferBody => '짧은 확인으로 시작 위치를 제안할 수 있습니다. 선택 사항이며 고르기 전에는 아무것도 바뀌지 않습니다.';
+
+  @override
+  String get placementIntro => '약 3~5분, 5단계로 받아 적습니다. 속도를 높여 가며 코흐 순서 문자 묶음, 마지막에 짧은 단어. 적은 표본에 따른 대략적 안내이며 인증이 아닙니다. 언제든 멈출 수 있습니다.';
+
+  @override
+  String get placementStart => '시작';
+
+  @override
+  String get placementSkip => '건너뛰기';
+
+  @override
+  String get placementStop => '중지';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '$total단계 중 $step · 유효 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '잘 받아 적었습니다. 다음 단계는 더 빠릅니다.';
+
+  @override
+  String get placementTierStopped => '이 단계가 90% 미만이라 확인을 마칩니다.';
+
+  @override
+  String get placementNextTier => '다음 단계';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '추천 시작: 레슨 $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '코흐 순서 문자 $total개 중 $count개를 차례로 확인했습니다.';
+  }
+
+  @override
+  String get placementLimits => '짧은 표본 기준입니다. 확인하지 않은 문자는 미확인으로 남고 습득으로 표시되지 않습니다. 레슨은 언제든 바꿀 수 있습니다.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '레슨 $lesson부터 시작';
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'guest_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/chat_error_messages.dart';
@@ -93,6 +95,9 @@ class _UnlockPageState extends State<UnlockPage> {
             ),
             child: Text(s.accountUnlockRestoreInstead),
           ),
+          const SizedBox(height: 8),
+          // Guest learning never decrypts or touches this profile.
+          const TryLearningFirstButton(),
         ],
       ),
     );

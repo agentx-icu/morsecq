@@ -3260,4 +3260,105 @@ class SPt extends S {
 
   @override
   String get materialsPracticeNothing => 'Nenhuma entrada pode ser praticada neste modo.';
+
+  @override
+  String get guestTryLearning => 'Experimentar aprender primeiro';
+
+  @override
+  String get guestBanner => 'Modo convidado: o progresso fica neste dispositivo. O chat precisa de uma identidade.';
+
+  @override
+  String get guestGetIdentity => 'Configurar identidade';
+
+  @override
+  String get guestIdentityTitle => 'Identidade necessária';
+
+  @override
+  String get guestIdentityBody => 'Conversar pelo Tox requer sua própria identidade. Crie uma nova, restaure um backup ou desbloqueie a deste dispositivo. Seu progresso como convidado passa automaticamente para uma identidade nova.';
+
+  @override
+  String get guestClearData => 'Apagar dados de convidado';
+
+  @override
+  String get guestClearDataBody => 'Apaga o progresso, planos e materiais criados como convidado neste dispositivo. Identidades não são afetadas.';
+
+  @override
+  String get guestClearConfirm => 'Apagar';
+
+  @override
+  String get guestCleared => 'Dados de convidado apagados.';
+
+  @override
+  String get guestClearFailed => 'Não foi possível apagar os dados.';
+
+  @override
+  String get guestMigrationFailed => 'Sua identidade está pronta, mas o progresso de convidado ainda não foi movido. Ele está seguro neste dispositivo.';
+
+  @override
+  String get guestChoiceBody => 'Você também tem progresso de convidado. O progresso da identidade restaurada está em uso; nada foi mesclado.';
+
+  @override
+  String get guestChoiceKeep => 'Manter o restaurado';
+
+  @override
+  String get guestChoiceUseGuest => 'Usar o progresso de convidado';
+
+  @override
+  String get placementTitle => 'Verificar meu nível';
+
+  @override
+  String get placementCheckLevel => 'Verificar meu nível atual';
+
+  @override
+  String get placementFromZero => 'Começar do zero';
+
+  @override
+  String get placementOfferTitle => 'Novo no Morse ou já copia?';
+
+  @override
+  String get placementOfferBody => 'Um teste curto pode sugerir por onde começar. É opcional e nada muda até você escolher.';
+
+  @override
+  String get placementIntro => 'Cerca de 3–5 minutos de cópia em cinco etapas: símbolos Koch em grupos com velocidade crescente e depois palavras curtas. É uma referência aproximada com poucas amostras, não um certificado. Pare quando quiser.';
+
+  @override
+  String get placementStart => 'Começar';
+
+  @override
+  String get placementSkip => 'Pular';
+
+  @override
+  String get placementStop => 'Parar';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Etapa $step de $total · $wpm PPM efetivas';
+  }
+
+  @override
+  String get placementTierPassed => 'Bem copiado. A próxima etapa é mais rápida.';
+
+  @override
+  String get placementTierStopped => 'Essa etapa ficou abaixo de 90%, o teste termina aqui.';
+
+  @override
+  String get placementNextTier => 'Próxima etapa';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Início sugerido: lição $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '$count de $total símbolos Koch confirmados em ordem.';
+  }
+
+  @override
+  String get placementLimits => 'Baseado em uma amostra curta: símbolos não testados continuam não testados e nada é marcado como aprendido. Você pode mudar a lição quando quiser.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Começar na lição $lesson';
+  }
 }

@@ -50,12 +50,21 @@ class LearnScope extends StatefulWidget {
   /// Default factory: file stores under `<dataDirectory>/training/`.
   static Future<TrainingController> controllerForIdentity(
     IdentityService identity,
-  ) async {
-    final dir = await identity.dataDirectory();
+  ) async => controllerForDirectory(
+    await identity.dataDirectory(),
+    profileKey: _profileKeyOf(identity),
+  );
+
+  /// File stores under `<dir>/training/` for any learning profile (an
+  /// identity's data directory, or the guest's).
+  static Future<TrainingController> controllerForDirectory(
+    String dir, {
+    required String profileKey,
+  }) async {
     final controller = TrainingController(
       progressStore: FileTrainerStore.inDataDirectory(dir),
       settingsStore: FileTrainingSettingsStore.inDataDirectory(dir),
-      profileKey: _profileKeyOf(identity),
+      profileKey: profileKey,
       docs: FileTrainingDocStore.inDataDirectory(dir),
     );
     await controller.load();

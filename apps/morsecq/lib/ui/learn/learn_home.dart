@@ -11,6 +11,8 @@ import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
 import 'materials/materials_screen.dart';
+import 'placement/placement_offer_card.dart';
+import 'placement/placement_screen.dart';
 import 'plan/speed_advice_card.dart';
 import 'qso/qso_setup_screen.dart';
 import 'plan/today_plan_card.dart';
@@ -186,6 +188,17 @@ class LearnHome extends StatelessWidget {
   /// Today's plan and any pending speed advice, under the goal card.
   List<Widget> _planCards() => <Widget>[
     const SizedBox(height: 12),
+    if (PlacementOfferCard.shows(controller))
+      Builder(
+        builder: (context) => PlacementOfferCard(
+          controller: controller,
+          onFromZero: () => _continueLesson(context),
+          onCheckLevel: () => _push(
+            context,
+            PlacementScreen(controller: controller, playback: playback),
+          ),
+        ),
+      ),
     SpeedAdviceCard(controller: controller),
     TodayPlanCard(controller: controller, playback: playback),
   ];

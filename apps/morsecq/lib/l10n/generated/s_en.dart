@@ -3258,4 +3258,105 @@ class SEn extends S {
 
   @override
   String get materialsPracticeNothing => 'No entries can be practised in this mode.';
+
+  @override
+  String get guestTryLearning => 'Try learning first';
+
+  @override
+  String get guestBanner => 'Guest learning: progress stays on this device. Chat needs an identity.';
+
+  @override
+  String get guestGetIdentity => 'Set up identity';
+
+  @override
+  String get guestIdentityTitle => 'Identity needed';
+
+  @override
+  String get guestIdentityBody => 'Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.';
+
+  @override
+  String get guestClearData => 'Clear guest learning data';
+
+  @override
+  String get guestClearDataBody => 'Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.';
+
+  @override
+  String get guestClearConfirm => 'Clear';
+
+  @override
+  String get guestCleared => 'Guest learning data cleared.';
+
+  @override
+  String get guestClearFailed => 'Couldn\'t clear the guest data.';
+
+  @override
+  String get guestMigrationFailed => 'Your identity is ready, but your guest learning progress hasn\'t moved to it yet. It is safe on this device.';
+
+  @override
+  String get guestChoiceBody => 'You also have guest learning progress. The restored identity\'s progress is in use; nothing was merged.';
+
+  @override
+  String get guestChoiceKeep => 'Keep restored';
+
+  @override
+  String get guestChoiceUseGuest => 'Use guest progress';
+
+  @override
+  String get placementTitle => 'Check my level';
+
+  @override
+  String get placementCheckLevel => 'Check my current level';
+
+  @override
+  String get placementFromZero => 'Start from zero';
+
+  @override
+  String get placementOfferTitle => 'New to Morse, or already copying?';
+
+  @override
+  String get placementOfferBody => 'A short check can suggest where to start. It is optional and changes nothing until you choose.';
+
+  @override
+  String get placementIntro => 'About 3–5 minutes of copying in five steps: Koch symbols in groups at rising speed, then short words. It is a rough guide from a small sample, not a certificate. Stop whenever you like.';
+
+  @override
+  String get placementStart => 'Start';
+
+  @override
+  String get placementSkip => 'Skip';
+
+  @override
+  String get placementStop => 'Stop';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Step $step of $total · $wpm WPM effective';
+  }
+
+  @override
+  String get placementTierPassed => 'Well copied. Next step is faster.';
+
+  @override
+  String get placementTierStopped => 'That step was below 90%, so the check ends here.';
+
+  @override
+  String get placementNextTier => 'Next step';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Suggested start: lesson $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '$count of $total Koch symbols confirmed in order.';
+  }
+
+  @override
+  String get placementLimits => 'Based on a short sample: symbols you were not tested on stay untested, and nothing is marked as learned. You can change the lesson any time.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Start at lesson $lesson';
+  }
 }

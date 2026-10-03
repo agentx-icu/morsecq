@@ -3307,4 +3307,105 @@ class SRu extends S {
 
   @override
   String get materialsPracticeNothing => 'В этом режиме нет записей для тренировки.';
+
+  @override
+  String get guestTryLearning => 'Сначала попробовать учёбу';
+
+  @override
+  String get guestBanner => 'Гостевой режим: прогресс хранится на устройстве. Для чата нужна личность.';
+
+  @override
+  String get guestGetIdentity => 'Настроить личность';
+
+  @override
+  String get guestIdentityTitle => 'Нужна личность';
+
+  @override
+  String get guestIdentityBody => 'Для чата через Tox нужна своя личность. Создайте новую, восстановите резервную копию или разблокируйте имеющуюся. Гостевой прогресс автоматически перейдёт в новую личность.';
+
+  @override
+  String get guestClearData => 'Удалить гостевые данные';
+
+  @override
+  String get guestClearDataBody => 'Удаляет прогресс, планы и материалы гостевого режима на этом устройстве. Личности не затрагиваются.';
+
+  @override
+  String get guestClearConfirm => 'Удалить';
+
+  @override
+  String get guestCleared => 'Гостевые данные удалены.';
+
+  @override
+  String get guestClearFailed => 'Не удалось удалить гостевые данные.';
+
+  @override
+  String get guestMigrationFailed => 'Личность готова, но гостевой прогресс ещё не перенесён. Он сохранён на устройстве.';
+
+  @override
+  String get guestChoiceBody => 'Есть и гостевой прогресс. Используется прогресс восстановленной личности; ничего не объединялось.';
+
+  @override
+  String get guestChoiceKeep => 'Оставить восстановленный';
+
+  @override
+  String get guestChoiceUseGuest => 'Взять гостевой прогресс';
+
+  @override
+  String get placementTitle => 'Проверить уровень';
+
+  @override
+  String get placementCheckLevel => 'Проверить текущий уровень';
+
+  @override
+  String get placementFromZero => 'Начать с нуля';
+
+  @override
+  String get placementOfferTitle => 'Новичок или уже принимаете?';
+
+  @override
+  String get placementOfferBody => 'Короткая проверка подскажет, с чего начать. Она необязательна и ничего не меняет, пока вы не решите.';
+
+  @override
+  String get placementIntro => 'Около 3–5 минут приёма в пять этапов: знаки Коха группами с ростом скорости, затем короткие слова. Это грубая оценка по малой выборке, а не сертификат. Можно остановиться в любой момент.';
+
+  @override
+  String get placementStart => 'Начать';
+
+  @override
+  String get placementSkip => 'Пропустить';
+
+  @override
+  String get placementStop => 'Стоп';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Этап $step из $total · $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => 'Хорошо принято. Следующий этап быстрее.';
+
+  @override
+  String get placementTierStopped => 'Этап ниже 90 %, проверка завершена.';
+
+  @override
+  String get placementNextTier => 'Следующий этап';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Рекомендуемый старт: урок $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return 'Подтверждено по порядку: $count из $total знаков Коха.';
+  }
+
+  @override
+  String get placementLimits => 'По короткой выборке: непроверенные знаки остаются непроверенными, ничего не отмечается как выученное. Урок можно сменить в любой момент.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Начать с урока $lesson';
+  }
 }

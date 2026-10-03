@@ -3259,4 +3259,105 @@ class SDe extends S {
 
   @override
   String get materialsPracticeNothing => 'In diesem Modus lässt sich kein Eintrag üben.';
+
+  @override
+  String get guestTryLearning => 'Erst einmal lernen';
+
+  @override
+  String get guestBanner => 'Gastmodus: Fortschritt bleibt auf diesem Gerät. Chat braucht eine Identität.';
+
+  @override
+  String get guestGetIdentity => 'Identität einrichten';
+
+  @override
+  String get guestIdentityTitle => 'Identität erforderlich';
+
+  @override
+  String get guestIdentityBody => 'Chatten über Tox braucht deine eigene Identität. Erstelle eine neue, stelle ein Backup wieder her oder entsperre die auf diesem Gerät. Dein Gast-Lernfortschritt zieht automatisch in eine neue Identität um.';
+
+  @override
+  String get guestClearData => 'Gast-Lerndaten löschen';
+
+  @override
+  String get guestClearDataBody => 'Löscht Fortschritt, Pläne und Materialien aus dem Gastmodus auf diesem Gerät. Identitäten bleiben unberührt.';
+
+  @override
+  String get guestClearConfirm => 'Löschen';
+
+  @override
+  String get guestCleared => 'Gast-Lerndaten gelöscht.';
+
+  @override
+  String get guestClearFailed => 'Gastdaten konnten nicht gelöscht werden.';
+
+  @override
+  String get guestMigrationFailed => 'Deine Identität ist bereit, aber dein Gast-Lernfortschritt ist noch nicht umgezogen. Er ist sicher auf diesem Gerät.';
+
+  @override
+  String get guestChoiceBody => 'Du hast auch Gast-Lernfortschritt. Verwendet wird der Fortschritt der wiederhergestellten Identität; nichts wurde zusammengeführt.';
+
+  @override
+  String get guestChoiceKeep => 'Wiederhergestellten behalten';
+
+  @override
+  String get guestChoiceUseGuest => 'Gastfortschritt verwenden';
+
+  @override
+  String get placementTitle => 'Mein Niveau prüfen';
+
+  @override
+  String get placementCheckLevel => 'Mein aktuelles Niveau prüfen';
+
+  @override
+  String get placementFromZero => 'Bei null anfangen';
+
+  @override
+  String get placementOfferTitle => 'Neu bei Morse oder schon geübt?';
+
+  @override
+  String get placementOfferBody => 'Ein kurzer Test kann einen Startpunkt vorschlagen. Er ist freiwillig und ändert nichts, bis du dich entscheidest.';
+
+  @override
+  String get placementIntro => 'Etwa 3–5 Minuten Mitschreiben in fünf Stufen: Koch-Zeichen in Gruppen mit steigendem Tempo, dann kurze Wörter. Eine grobe Orientierung aus wenigen Proben, kein Zertifikat. Jederzeit abbrechbar.';
+
+  @override
+  String get placementStart => 'Starten';
+
+  @override
+  String get placementSkip => 'Überspringen';
+
+  @override
+  String get placementStop => 'Beenden';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Stufe $step von $total · $wpm WpM effektiv';
+  }
+
+  @override
+  String get placementTierPassed => 'Gut mitgeschrieben. Die nächste Stufe ist schneller.';
+
+  @override
+  String get placementTierStopped => 'Diese Stufe lag unter 90 %, der Test endet hier.';
+
+  @override
+  String get placementNextTier => 'Nächste Stufe';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Vorgeschlagener Start: Lektion $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '$count von $total Koch-Zeichen der Reihe nach bestätigt.';
+  }
+
+  @override
+  String get placementLimits => 'Auf Basis einer kleinen Probe: nicht geprüfte Zeichen bleiben ungeprüft, nichts wird als gelernt markiert. Die Lektion lässt sich jederzeit ändern.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Mit Lektion $lesson beginnen';
+  }
 }

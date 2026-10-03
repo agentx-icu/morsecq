@@ -3232,4 +3232,105 @@ class SJa extends S {
 
   @override
   String get materialsPracticeNothing => 'このモードで練習できる項目はありません。';
+
+  @override
+  String get guestTryLearning => 'まず学習を試す';
+
+  @override
+  String get guestBanner => 'ゲスト学習：進捗はこの端末に保存されます。チャットには ID が必要です。';
+
+  @override
+  String get guestGetIdentity => 'ID を設定';
+
+  @override
+  String get guestIdentityTitle => 'ID が必要です';
+
+  @override
+  String get guestIdentityBody => 'Tox でのチャットには自分の ID が必要です。新規作成、バックアップから復元、またはこの端末の ID のロック解除を行ってください。新しい ID を作るとゲストの学習進捗は自動で移ります。';
+
+  @override
+  String get guestClearData => 'ゲストの学習データを消去';
+
+  @override
+  String get guestClearDataBody => 'この端末でゲストとして作った進捗・プラン・素材を削除します。ID には影響しません。';
+
+  @override
+  String get guestClearConfirm => '消去';
+
+  @override
+  String get guestCleared => 'ゲストの学習データを消去しました。';
+
+  @override
+  String get guestClearFailed => 'ゲストデータを消去できませんでした。';
+
+  @override
+  String get guestMigrationFailed => 'ID は準備できましたが、ゲストの学習進捗はまだ移っていません。この端末に安全に残っています。';
+
+  @override
+  String get guestChoiceBody => 'ゲストの学習進捗もあります。現在は復元した ID の進捗を使用しており、統合はしていません。';
+
+  @override
+  String get guestChoiceKeep => '復元した方を使う';
+
+  @override
+  String get guestChoiceUseGuest => 'ゲストの進捗を使う';
+
+  @override
+  String get placementTitle => 'レベルチェック';
+
+  @override
+  String get placementCheckLevel => '今のレベルをチェック';
+
+  @override
+  String get placementFromZero => 'ゼロから始める';
+
+  @override
+  String get placementOfferTitle => 'モールスは初めて？それとも受信できる？';
+
+  @override
+  String get placementOfferBody => '短いチェックで開始位置を提案できます。任意で、選ぶまで何も変わりません。';
+
+  @override
+  String get placementIntro => '約3〜5分、5段階で受信します。速度を上げながらコッホ順の文字グループ、最後に短い単語。少ないサンプルによる目安で、認定ではありません。いつでも中止できます。';
+
+  @override
+  String get placementStart => '開始';
+
+  @override
+  String get placementSkip => 'スキップ';
+
+  @override
+  String get placementStop => '中止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '$total段階中$step · 実効 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => 'よく受信できました。次はもっと速くなります。';
+
+  @override
+  String get placementTierStopped => 'この段階は90%未満だったため、ここで終了します。';
+
+  @override
+  String get placementNextTier => '次の段階';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'おすすめの開始：レッスン$lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return 'コッホ順の$total文字中$count文字を順に確認しました。';
+  }
+
+  @override
+  String get placementLimits => '少ないサンプルに基づきます。テストしていない文字は未テストのままで、習得済みにはなりません。レッスンはいつでも変えられます。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'レッスン$lessonから始める';
+  }
 }

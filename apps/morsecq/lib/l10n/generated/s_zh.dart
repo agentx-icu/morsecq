@@ -3232,6 +3232,107 @@ class SZh extends S {
 
   @override
   String get materialsPracticeNothing => '此模式下没有可练习的条目。';
+
+  @override
+  String get guestTryLearning => '先试试学习';
+
+  @override
+  String get guestBanner => '访客学习：进度保存在本设备。聊天需要身份。';
+
+  @override
+  String get guestGetIdentity => '设置身份';
+
+  @override
+  String get guestIdentityTitle => '需要身份';
+
+  @override
+  String get guestIdentityBody => '通过 Tox 聊天需要你自己的身份。可以新建、从备份恢复，或解锁本设备上的身份。新建身份时，访客学习进度会自动转移过去。';
+
+  @override
+  String get guestClearData => '清除访客学习数据';
+
+  @override
+  String get guestClearDataBody => '删除你在本设备以访客身份产生的进度、计划和素材。不影响任何身份。';
+
+  @override
+  String get guestClearConfirm => '清除';
+
+  @override
+  String get guestCleared => '已清除访客学习数据。';
+
+  @override
+  String get guestClearFailed => '无法清除访客数据。';
+
+  @override
+  String get guestMigrationFailed => '身份已就绪，但访客学习进度尚未转移，数据仍安全保存在本设备。';
+
+  @override
+  String get guestChoiceBody => '你还有访客学习进度。当前使用的是恢复身份的进度，没有合并任何内容。';
+
+  @override
+  String get guestChoiceKeep => '保留恢复的进度';
+
+  @override
+  String get guestChoiceUseGuest => '改用访客进度';
+
+  @override
+  String get placementTitle => '测试我的水平';
+
+  @override
+  String get placementCheckLevel => '测试我现在的水平';
+
+  @override
+  String get placementFromZero => '从零开始';
+
+  @override
+  String get placementOfferTitle => '刚接触莫尔斯码，还是已经会抄收？';
+
+  @override
+  String get placementOfferBody => '简短测试可以建议起点。测试是可选的，在你选择前不会改变任何设置。';
+
+  @override
+  String get placementIntro => '约 3–5 分钟，分五步抄收：先按柯赫顺序分组、速度逐级提高，最后是短单词。这只是基于少量样本的粗略参考，不是认证。随时可以停止。';
+
+  @override
+  String get placementStart => '开始';
+
+  @override
+  String get placementSkip => '跳过';
+
+  @override
+  String get placementStop => '停止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '第 $step/$total 步 · 有效速度 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '抄得很好，下一步更快。';
+
+  @override
+  String get placementTierStopped => '这一步低于 90%，测试到此结束。';
+
+  @override
+  String get placementNextTier => '下一步';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '建议从第 $lesson 课开始';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '按顺序确认了 $total 个柯赫字符中的 $count 个。';
+  }
+
+  @override
+  String get placementLimits => '基于少量样本：未测到的字符仍视为未测试，也不会被标记为已掌握。你可以随时更改课程。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '从第 $lesson 课开始';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6462,4 +6563,105 @@ class SZhHant extends SZh {
 
   @override
   String get materialsPracticeNothing => '此模式下沒有可練習的條目。';
+
+  @override
+  String get guestTryLearning => '先試試學習';
+
+  @override
+  String get guestBanner => '訪客學習：進度儲存在本裝置。聊天需要身分。';
+
+  @override
+  String get guestGetIdentity => '設定身分';
+
+  @override
+  String get guestIdentityTitle => '需要身分';
+
+  @override
+  String get guestIdentityBody => '透過 Tox 聊天需要你自己的身分。可以新建、從備份還原，或解鎖本裝置上的身分。新建身分時，訪客學習進度會自動轉移過去。';
+
+  @override
+  String get guestClearData => '清除訪客學習資料';
+
+  @override
+  String get guestClearDataBody => '刪除你在本裝置以訪客身分產生的進度、計畫和素材。不影響任何身分。';
+
+  @override
+  String get guestClearConfirm => '清除';
+
+  @override
+  String get guestCleared => '已清除訪客學習資料。';
+
+  @override
+  String get guestClearFailed => '無法清除訪客資料。';
+
+  @override
+  String get guestMigrationFailed => '身分已就緒，但訪客學習進度尚未轉移，資料仍安全儲存在本裝置。';
+
+  @override
+  String get guestChoiceBody => '你還有訪客學習進度。目前使用的是還原身分的進度，沒有合併任何內容。';
+
+  @override
+  String get guestChoiceKeep => '保留還原的進度';
+
+  @override
+  String get guestChoiceUseGuest => '改用訪客進度';
+
+  @override
+  String get placementTitle => '測試我的程度';
+
+  @override
+  String get placementCheckLevel => '測試我現在的程度';
+
+  @override
+  String get placementFromZero => '從零開始';
+
+  @override
+  String get placementOfferTitle => '剛接觸摩斯碼，還是已經會抄收？';
+
+  @override
+  String get placementOfferBody => '簡短測試可以建議起點。測試是可選的，在你選擇前不會改變任何設定。';
+
+  @override
+  String get placementIntro => '約 3–5 分鐘，分五步抄收：先按柯赫順序分組、速度逐級提高，最後是短單字。這只是基於少量樣本的粗略參考，不是認證。隨時可以停止。';
+
+  @override
+  String get placementStart => '開始';
+
+  @override
+  String get placementSkip => '略過';
+
+  @override
+  String get placementStop => '停止';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return '第 $step/$total 步 · 有效速度 $wpm WPM';
+  }
+
+  @override
+  String get placementTierPassed => '抄得很好，下一步更快。';
+
+  @override
+  String get placementTierStopped => '這一步低於 90%，測試到此結束。';
+
+  @override
+  String get placementNextTier => '下一步';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return '建議從第 $lesson 課開始';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '依順序確認了 $total 個柯赫字元中的 $count 個。';
+  }
+
+  @override
+  String get placementLimits => '基於少量樣本：未測到的字元仍視為未測試，也不會被標記為已掌握。你可以隨時變更課程。';
+
+  @override
+  String placementAdopt(int lesson) {
+    return '從第 $lesson 課開始';
+  }
 }

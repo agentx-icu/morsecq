@@ -3260,4 +3260,105 @@ class SFr extends S {
 
   @override
   String get materialsPracticeNothing => 'Aucune entrée utilisable dans ce mode.';
+
+  @override
+  String get guestTryLearning => 'Essayer d\'apprendre d\'abord';
+
+  @override
+  String get guestBanner => 'Mode invité : la progression reste sur cet appareil. Le chat demande une identité.';
+
+  @override
+  String get guestGetIdentity => 'Configurer l\'identité';
+
+  @override
+  String get guestIdentityTitle => 'Identité requise';
+
+  @override
+  String get guestIdentityBody => 'Discuter via Tox nécessite votre propre identité. Créez-en une, restaurez une sauvegarde ou déverrouillez celle de l\'appareil. Votre progression d\'invité passe automatiquement à une nouvelle identité.';
+
+  @override
+  String get guestClearData => 'Effacer les données d\'invité';
+
+  @override
+  String get guestClearDataBody => 'Supprime la progression, les programmes et les supports créés en invité sur cet appareil. Les identités ne sont pas touchées.';
+
+  @override
+  String get guestClearConfirm => 'Effacer';
+
+  @override
+  String get guestCleared => 'Données d\'invité effacées.';
+
+  @override
+  String get guestClearFailed => 'Impossible d\'effacer les données.';
+
+  @override
+  String get guestMigrationFailed => 'Votre identité est prête, mais votre progression d\'invité n\'a pas encore été transférée. Elle reste en sécurité sur l\'appareil.';
+
+  @override
+  String get guestChoiceBody => 'Vous avez aussi une progression d\'invité. La progression de l\'identité restaurée est utilisée ; rien n\'a été fusionné.';
+
+  @override
+  String get guestChoiceKeep => 'Garder la restauration';
+
+  @override
+  String get guestChoiceUseGuest => 'Utiliser la progression d\'invité';
+
+  @override
+  String get placementTitle => 'Évaluer mon niveau';
+
+  @override
+  String get placementCheckLevel => 'Évaluer mon niveau actuel';
+
+  @override
+  String get placementFromZero => 'Commencer de zéro';
+
+  @override
+  String get placementOfferTitle => 'Débutant en Morse ou déjà à l\'aise ?';
+
+  @override
+  String get placementOfferBody => 'Un court test peut suggérer un point de départ. Il est facultatif et ne change rien tant que vous ne choisissez pas.';
+
+  @override
+  String get placementIntro => 'Environ 3 à 5 minutes de copie en cinq étapes : signes Koch par groupes à vitesse croissante, puis mots courts. Indication approximative sur peu d\'échantillons, pas un certificat. Arrêtez quand vous voulez.';
+
+  @override
+  String get placementStart => 'Commencer';
+
+  @override
+  String get placementSkip => 'Passer';
+
+  @override
+  String get placementStop => 'Arrêter';
+
+  @override
+  String placementTierProgress(int step, int total, int wpm) {
+    return 'Étape $step sur $total · $wpm mots/min effectifs';
+  }
+
+  @override
+  String get placementTierPassed => 'Bien copié. L\'étape suivante est plus rapide.';
+
+  @override
+  String get placementTierStopped => 'Cette étape était sous 90 %, l\'évaluation s\'arrête ici.';
+
+  @override
+  String get placementNextTier => 'Étape suivante';
+
+  @override
+  String placementSuggestion(int lesson) {
+    return 'Départ suggéré : leçon $lesson';
+  }
+
+  @override
+  String placementVerified(int count, int total) {
+    return '$count signes Koch sur $total confirmés dans l\'ordre.';
+  }
+
+  @override
+  String get placementLimits => 'Sur un court échantillon : les signes non testés restent non testés et rien n\'est marqué comme acquis. Vous pouvez changer de leçon à tout moment.';
+
+  @override
+  String placementAdopt(int lesson) {
+    return 'Commencer à la leçon $lesson';
+  }
 }

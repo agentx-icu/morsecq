@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../i18n/l10n_extension.dart';
 import 'account_widgets.dart';
 import 'create_identity_page.dart';
+import 'guest_widgets.dart';
 import 'restore_backup_page.dart';
 
 /// First screen on a fresh install: what a Tox identity is, why it must be
@@ -62,6 +63,8 @@ class WelcomePage extends StatelessWidget {
             icon: const Icon(Icons.restore),
             label: Text(s.accountRestoreFromBackup),
           ),
+          const SizedBox(height: 16),
+          const TryLearningFirstButton(),
         ],
       ),
     );

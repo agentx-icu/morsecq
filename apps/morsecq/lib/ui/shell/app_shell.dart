@@ -15,6 +15,7 @@ import '../pages/groups_page.dart';
 import '../pages/learn_page.dart';
 import '../pages/me_page.dart';
 import '../pages/reference_page.dart';
+import '../account/guest_widgets.dart';
 import '../responsive.dart';
 
 /// One top-level destination. Kept as data so the bar and the rail render the
@@ -26,7 +27,14 @@ class ShellDestination {
     required this.icon,
     required this.selectedIcon,
     required this.page,
+    this.requiresIdentity = false,
+    this.isMe = false,
   });
+
+  /// Chat-side destinations need a real identity; in guest mode they show
+  /// how to get one instead.
+  final bool requiresIdentity;
+  final bool isMe;
 
   final String Function(S s) label;
   final IconData icon;
@@ -46,12 +54,14 @@ const List<ShellDestination> kShellDestinations = [
     icon: Icons.chat_bubble_outline,
     selectedIcon: Icons.chat_bubble,
     page: ChatPage(),
+    requiresIdentity: true,
   ),
   ShellDestination(
     label: GroupsPage.title,
     icon: Icons.groups_outlined,
     selectedIcon: Icons.groups,
     page: GroupsPage(),
+    requiresIdentity: true,
   ),
   ShellDestination(
     label: ReferencePage.title,
@@ -64,15 +74,18 @@ const List<ShellDestination> kShellDestinations = [
     icon: Icons.person_outline,
     selectedIcon: Icons.person,
     page: MePage(),
+    requiresIdentity: true,
+    isMe: true,
   ),
 ];
 
 /// Responsive root: bottom [NavigationBar] on compact widths, side
 /// [NavigationRail] otherwise. See `responsive.dart` for the breakpoint.
 ///
-/// Rendered only behind `StartupGate`: an identity is required before
-/// training as well as chat (product decision, see
-/// doc/plans/2026-09-30-morsecq-plan.zh-CN.md).
+/// Rendered only behind `StartupGate`: with an identity, or on the guest
+/// learning profile, where Learn, Reference and the tools work and the chat
+/// destinations ask for an identity (functional spec §8,
+/// doc/plans/2026-10-03-functional-improvements.md).
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -230,7 +243,12 @@ class _AppShellState extends State<AppShell> {
           // left open on another tab reads this to stay silent.
           children: [
             for (final (i, d) in kShellDestinations.indexed)
-              TickerMode(enabled: i == _selectedIndex, child: d.page),
+              TickerMode(
+                enabled: i == _selectedIndex,
+                child: d.requiresIdentity
+                    ? IdentityRequiredGate(isMe: d.isMe, child: d.page)
+                    : d.page,
+              ),
           ],
         ),
       ),

@@ -24,6 +24,7 @@ export 'src/material/material_import.dart';
 export 'src/material/training_material.dart';
 export 'src/morse_text.dart';
 export 'src/number_groups_drill.dart';
+export 'src/placement_assessment.dart';
 export 'src/qso/qso_evaluator.dart';
 export 'src/qso/qso_scenario.dart';
 export 'src/qso/qso_session.dart';

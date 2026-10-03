@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morsecq/training/guest_profile.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
@@ -68,6 +69,7 @@ Future<void> pumpApp(
   required FakeIdentityService identity,
   FakeBackupFileGateway? backupFiles,
   Size size = kPhoneSize,
+  GuestStore? guestStore,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
@@ -77,6 +79,7 @@ Future<void> pumpApp(
     MorsecqApp(
       backend: FakeBackendFactory(identityService: identity),
       backupFiles: backupFiles ?? FakeBackupFileGateway(),
+      guestStore: guestStore,
     ),
   );
   await settle(tester);

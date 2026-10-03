@@ -5713,6 +5713,192 @@ abstract class S {
   /// In en, this message translates to:
   /// **'No entries can be practised in this mode.'**
   String get materialsPracticeNothing;
+
+  /// Welcome/unlock: learn without an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Try learning first'**
+  String get guestTryLearning;
+
+  /// Guest mode banner over the shell
+  ///
+  /// In en, this message translates to:
+  /// **'Guest learning: progress stays on this device. Chat needs an identity.'**
+  String get guestBanner;
+
+  /// Guest mode: go to create / restore / unlock an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Set up identity'**
+  String get guestGetIdentity;
+
+  /// Guest mode: title of a chat destination that needs an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Identity needed'**
+  String get guestIdentityTitle;
+
+  /// Guest mode: why chat needs an identity
+  ///
+  /// In en, this message translates to:
+  /// **'Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.'**
+  String get guestIdentityBody;
+
+  /// Guest Me page: delete guest learning data
+  ///
+  /// In en, this message translates to:
+  /// **'Clear guest learning data'**
+  String get guestClearData;
+
+  /// Guest Me page: what clearing does
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.'**
+  String get guestClearDataBody;
+
+  /// Guest clear dialog: confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get guestClearConfirm;
+
+  /// Snack: guest data cleared
+  ///
+  /// In en, this message translates to:
+  /// **'Guest learning data cleared.'**
+  String get guestCleared;
+
+  /// Snack: clearing guest data failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t clear the guest data.'**
+  String get guestClearFailed;
+
+  /// Banner: guest progress did not move to the new identity yet
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity is ready, but your guest learning progress hasn\'t moved to it yet. It is safe on this device.'**
+  String get guestMigrationFailed;
+
+  /// Banner after restore/unlock from guest mode: choose progress
+  ///
+  /// In en, this message translates to:
+  /// **'You also have guest learning progress. The restored identity\'s progress is in use; nothing was merged.'**
+  String get guestChoiceBody;
+
+  /// Banner action: keep restored progress
+  ///
+  /// In en, this message translates to:
+  /// **'Keep restored'**
+  String get guestChoiceKeep;
+
+  /// Banner action: replace with guest progress (restored data is kept aside)
+  ///
+  /// In en, this message translates to:
+  /// **'Use guest progress'**
+  String get guestChoiceUseGuest;
+
+  /// Placement assessment: screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Check my level'**
+  String get placementTitle;
+
+  /// Placement offer: start the assessment
+  ///
+  /// In en, this message translates to:
+  /// **'Check my current level'**
+  String get placementCheckLevel;
+
+  /// Placement: start the course at lesson one
+  ///
+  /// In en, this message translates to:
+  /// **'Start from zero'**
+  String get placementFromZero;
+
+  /// Learn home: offer for brand-new learners
+  ///
+  /// In en, this message translates to:
+  /// **'New to Morse, or already copying?'**
+  String get placementOfferTitle;
+
+  /// Learn home: placement offer explanation
+  ///
+  /// In en, this message translates to:
+  /// **'A short check can suggest where to start. It is optional and changes nothing until you choose.'**
+  String get placementOfferBody;
+
+  /// Placement intro
+  ///
+  /// In en, this message translates to:
+  /// **'About 3–5 minutes of copying in five steps: Koch symbols in groups at rising speed, then short words. It is a rough guide from a small sample, not a certificate. Stop whenever you like.'**
+  String get placementIntro;
+
+  /// Placement: start
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get placementStart;
+
+  /// Placement: skip
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get placementSkip;
+
+  /// Placement: stop early and see the suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get placementStop;
+
+  /// Placement: current step and effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total} · {wpm} WPM effective'**
+  String placementTierProgress(int step, int total, int wpm);
+
+  /// Placement: step passed
+  ///
+  /// In en, this message translates to:
+  /// **'Well copied. Next step is faster.'**
+  String get placementTierPassed;
+
+  /// Placement: step below 90 percent, check ends
+  ///
+  /// In en, this message translates to:
+  /// **'That step was below 90%, so the check ends here.'**
+  String get placementTierStopped;
+
+  /// Placement: continue to the next step
+  ///
+  /// In en, this message translates to:
+  /// **'Next step'**
+  String get placementNextTier;
+
+  /// Placement result headline
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested start: lesson {lesson}'**
+  String placementSuggestion(int lesson);
+
+  /// Placement result: verified Koch prefix
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} Koch symbols confirmed in order.'**
+  String placementVerified(int count, int total);
+
+  /// Placement result: limitations
+  ///
+  /// In en, this message translates to:
+  /// **'Based on a short sample: symbols you were not tested on stay untested, and nothing is marked as learned. You can change the lesson any time.'**
+  String get placementLimits;
+
+  /// Placement result: apply the suggested lesson
+  ///
+  /// In en, this message translates to:
+  /// **'Start at lesson {lesson}'**
+  String placementAdopt(int lesson);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -4,13 +4,15 @@ import 'package:provider/provider.dart';
 import '../i18n/l10n_extension.dart';
 import '../ui/account/backup_wizard_page.dart';
 import '../ui/account/connection_chip.dart';
+import '../ui/account/guest_widgets.dart';
 import '../ui/account/unlock_page.dart';
 import '../ui/account/welcome_page.dart';
 import 'startup_controller.dart';
 import 'startup_screens.dart';
 
 /// Wraps the whole shell: nothing behind it renders until an identity is
-/// loaded (product decision: training needs an identity too). Reads the
+/// loaded — or the learner chose to learn as a guest first (functional spec
+/// §8; Chat, Groups and Me then ask for an identity). Reads the
 /// [StartupController] provided by `AppScope` and kicks it off once.
 ///
 /// While [StartupPhase.ready], [child] is shown below a [ConnectionStrip]
@@ -49,7 +51,11 @@ class _StartupGateState extends State<StartupGate> {
         error: controller.error,
         onRetry: () => controller.retry().ignore(),
       ),
-      StartupPhase.ready => ConnectionStrip(child: widget.child),
+      StartupPhase.ready => ConnectionStrip(
+        child: GuestDataBanner(child: widget.child),
+      ),
+      // Learning on the guest profile: no identity, no connection.
+      StartupPhase.guest => GuestShell(child: widget.child),
     };
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
