@@ -38,59 +38,119 @@ Future<void> showLanguageDialog(BuildContext context) {
   );
 }
 
-class _LanguageDialog extends StatelessWidget {
+/// The chooser itself. Selecting a language saves it and closes the dialog;
+/// while a save is in flight further selections are ignored (one write per
+/// choice). A failed save keeps the dialog open with an inline error (a
+/// SnackBar would sit behind the modal barrier) and the controller has
+/// already rolled back to the previous choice, so the user can retry.
+///
+/// Closing the dialog (Close, Back, barrier tap) while a save is pending is
+/// allowed; the completion then pops nothing, because it only ever closes
+/// this dialog's own route while that route is still the current one.
+class _LanguageDialog extends StatefulWidget {
   const _LanguageDialog({required this.controller});
 
   final LocaleController controller;
 
   @override
+  State<_LanguageDialog> createState() => _LanguageDialogState();
+}
+
+class _LanguageDialogState extends State<_LanguageDialog> {
+  bool _saving = false;
+  bool _failed = false;
+
+  Future<void> _select(String? tag) async {
+    if (_saving) return;
+    setState(() {
+      _saving = true;
+      _failed = false;
+    });
+    try {
+      await widget.controller.setLocale(
+        tag == null || tag == _systemTag
+            ? null
+            : LocaleController.parseLocaleName(tag),
+      );
+    } on Object {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _failed = true;
+        });
+      }
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _saving = false);
+    final route = ModalRoute.of(context);
+    if (route != null && route.isCurrent) Navigator.of(context).pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final controller = widget.controller;
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
         final current = controller.locale;
-        return SimpleDialog(
+        final theme = Theme.of(context);
+        // Only the option list scrolls: with every shipped language it is
+        // taller than a phone screen, and the save error and Close button
+        // must stay in view whichever row was tapped.
+        return AlertDialog(
           title: Text(s.languageTitle),
           contentPadding: const EdgeInsets.only(top: 8, bottom: 8),
-          children: [
-            RadioGroup<String>(
-              groupValue: current == null
-                  ? _systemTag
-                  : LocaleController.localeName(current),
-              onChanged: (tag) async {
-                final navigator = Navigator.of(context);
-                await controller.setLocale(
-                  tag == null || tag == _systemTag
-                      ? null
-                      : LocaleController.parseLocaleName(tag),
-                );
-                if (navigator.mounted) navigator.pop();
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<String>(
-                    value: _systemTag,
-                    title: Text(localeDisplayName(s, null)),
-                  ),
-                  for (final locale in LocaleController.supportedLocales)
-                    RadioListTile<String>(
-                      value: LocaleController.localeName(locale),
-                      title: Text(localeDisplayName(s, locale)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_failed)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                  child: Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      s.languageSaveFailed,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
                     ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(s.actionClose),
+                  ),
+                ),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: RadioGroup<String>(
+                    groupValue: current == null
+                        ? _systemTag
+                        : LocaleController.localeName(current),
+                    onChanged: _select,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RadioListTile<String>(
+                          value: _systemTag,
+                          enabled: !_saving,
+                          title: Text(localeDisplayName(s, null)),
+                        ),
+                        for (final locale in LocaleController.supportedLocales)
+                          RadioListTile<String>(
+                            value: LocaleController.localeName(locale),
+                            enabled: !_saving,
+                            title: Text(localeDisplayName(s, locale)),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(s.actionClose),
             ),
           ],
         );

@@ -49,15 +49,45 @@
     "description": "Strip above the shell content after being offline for a while (ConnectionBannerPolicy)"
   },
   "actionOk": "OK",
+  "@actionOk": {
+    "description": "Generic dialog button that acknowledges and closes a message (currently unused; keep short)"
+  },
   "actionCancel": "Cancel",
+  "@actionCancel": {
+    "description": "Generic button that dismisses a dialog or sheet without changing anything (e.g. delete-identity dialog, chat layout)"
+  },
   "actionSave": "Save",
+  "@actionSave": {
+    "description": "Generic button that saves a form (edit profile, change password pages)"
+  },
   "actionDelete": "Delete",
+  "@actionDelete": {
+    "description": "Generic destructive button that deletes an item (currently unused; keep short)"
+  },
   "actionCopy": "Copy",
+  "@actionCopy": {
+    "description": "Button that copies the user's Tox ID to the clipboard (My Tox ID sheet, Tox ID QR dialog)"
+  },
   "actionShare": "Share",
+  "@actionShare": {
+    "description": "Generic button that opens the system share sheet (currently unused; keep short)"
+  },
   "actionRetry": "Retry",
+  "@actionRetry": {
+    "description": "Button on the startup error screen that retries opening the identity"
+  },
   "actionClose": "Close",
+  "@actionClose": {
+    "description": "Generic button that closes a dialog (Tox ID QR dialog, language picker)"
+  },
   "actionSearch": "Search",
+  "@actionSearch": {
+    "description": "Generic search action label (currently unused; keep short)"
+  },
   "actionSettings": "Settings",
+  "@actionSettings": {
+    "description": "Generic settings action label (currently unused; keep short)"
+  },
   "connectionConnecting": "Connecting…",
   "@connectionConnecting": {
     "description": "Tox DHT bootstrap in progress"
@@ -79,8 +109,17 @@
     "description": "Explains why a message can stay queued (P2P, no store-and-forward server)"
   },
   "messageStatusSending": "Sending",
+  "@messageStatusSending": {
+    "description": "Chat: tooltip/semantics of the status icon on an outgoing message that is being sent"
+  },
   "messageStatusSent": "Sent",
+  "@messageStatusSent": {
+    "description": "Chat: tooltip/semantics of the status icon on an outgoing message that has left the send queue. It does not confirm the peer received it (Tox reports no separate failure here), so avoid words like 'delivered' or 'read'"
+  },
   "messageStatusFailed": "Failed to send",
+  "@messageStatusFailed": {
+    "description": "Chat: tooltip/semantics of the status icon on an outgoing message that could not be delivered"
+  },
   "errorWrongPassword": "Wrong password. Try again.",
   "@errorWrongPassword": {
     "description": "ChatException code wrong_password"
@@ -121,9 +160,13 @@
   "@languageSystemDefault": {
     "description": "Follow the OS language"
   },
+  "languageSaveFailed": "Couldn't save the language setting. Try again.",
+  "@languageSaveFailed": {
+    "description": "Inline error inside the language dialog when persisting the chosen language failed (the previous choice is kept and the dialog stays open)"
+  },
   "learnLessonOf": "Lesson {lesson} of {total}",
   "@learnLessonOf": {
-    "description": "From LearnStrings.lessonOf (Koch lesson progress)",
+    "description": "Learn home, Koch lesson card: which lesson the user is on out of the whole course (e.g. 'Lesson 4 of 42'); also used in the appearance style preview",
     "placeholders": {
       "lesson": {
         "type": "int"
@@ -135,7 +178,7 @@
   },
   "learnCharsLearned": "{count, plural, =1{1 character learned} other{{count} characters learned}}",
   "@learnCharsLearned": {
-    "description": "From LearnStrings.charsLearned",
+    "description": "Learn home, Koch lesson card: how many Morse characters the user has unlocked so far",
     "placeholders": {
       "count": {
         "type": "int"
@@ -144,7 +187,7 @@
   },
   "learnDailyGoalProgress": "{done} / {goal} chars",
   "@learnDailyGoalProgress": {
-    "description": "From LearnStrings.dailyGoalProgress (characters copied today vs goal)",
+    "description": "Learn home, 'Today' card: characters practised today (receive and send practice both count) versus the daily goal (e.g. '120 / 200 chars')",
     "placeholders": {
       "done": {
         "type": "int"
@@ -156,7 +199,7 @@
   },
   "learnStreakDays": "{days, plural, =1{1 day streak} other{{days} day streak}}",
   "@learnStreakDays": {
-    "description": "From LearnStrings.streakDays",
+    "description": "Learn home, 'Today' card: number of consecutive days with practice",
     "placeholders": {
       "days": {
         "type": "int"
@@ -165,7 +208,7 @@
   },
   "learnReviewDueCount": "{count, plural, =0{Nothing due} =1{1 due} other{{count} due}}",
   "@learnReviewDueCount": {
-    "description": "From LearnStrings.reviewDueCount (spaced-repetition characters due)",
+    "description": "Learn home: trailing count on the 'Review due characters' button — how many spaced-repetition characters are due for review",
     "placeholders": {
       "count": {
         "type": "int"
@@ -174,7 +217,7 @@
   },
   "learnRoundScore": "{correct} of {total} correct",
   "@learnRoundScore": {
-    "description": "From LearnStrings.roundScore",
+    "description": "Receive drill: result line for any round that was not a perfect copy (including one where every sent character was right but extra characters were typed); correct and total count characters",
     "placeholders": {
       "correct": {
         "type": "int"
@@ -186,7 +229,7 @@
   },
   "learnRoundOf": "Round {round}",
   "@learnRoundOf": {
-    "description": "From LearnStrings.roundOf",
+    "description": "Receive drill: header showing the number of the current round (1-based)",
     "placeholders": {
       "round": {
         "type": "int"
@@ -195,7 +238,7 @@
   },
   "learnAccuracyPercent": "{percent}%",
   "@learnAccuracyPercent": {
-    "description": "From LearnStrings.accuracyPercent; percent is already rounded (0-100)",
+    "description": "A percentage; percent is already rounded (0-100). Used for the daily-goal completion inside the ring on the Learn home 'Today' card, and for accuracy in receive/send results and their per-character list",
     "placeholders": {
       "percent": {
         "type": "int"
@@ -204,7 +247,7 @@
   },
   "learnCharsSent": "{count, plural, =1{1 character sent} other{{count} characters sent}}",
   "@learnCharsSent": {
-    "description": "From LearnStrings.charsSent",
+    "description": "Receive drill session summary: how many characters were played to the user in the session",
     "placeholders": {
       "count": {
         "type": "int"
@@ -213,7 +256,7 @@
   },
   "learnLessonUnlocked": "Next character unlocked: {char}",
   "@learnLessonUnlocked": {
-    "description": "From LearnStrings.lessonUnlocked",
+    "description": "Receive drill session summary: verdict when the lesson was passed and a new Koch character was unlocked; {char} is that character",
     "placeholders": {
       "char": {
         "type": "String"
@@ -222,7 +265,7 @@
   },
   "learnConfusedMissed": "{target} missed",
   "@learnConfusedMissed": {
-    "description": "From LearnStrings.confusedAs when nothing was answered",
+    "description": "Receive drill: confusion chip when the user typed nothing for the sent character {target}",
     "placeholders": {
       "target": {
         "type": "String"
@@ -231,7 +274,7 @@
   },
   "learnConfusedAs": "{target} heard as {answered}",
   "@learnConfusedAs": {
-    "description": "From LearnStrings.confusedAs when a wrong character was answered",
+    "description": "Receive drill: confusion chip when the user typed {answered} for the sent character {target}",
     "placeholders": {
       "target": {
         "type": "String"
@@ -241,9 +284,9 @@
       }
     }
   },
-  "learnWpmValue": "{wpm} wpm",
+  "learnWpmValue": "{wpm} WPM",
   "@learnWpmValue": {
-    "description": "From LearnStrings.wpm; wpm is pre-formatted (e.g. 18)",
+    "description": "Training settings and send-practice tips: a speed in words per minute; wpm is pre-formatted (e.g. 18).",
     "placeholders": {
       "wpm": {
         "type": "String"
@@ -252,7 +295,7 @@
   },
   "learnHzValue": "{hz} Hz",
   "@learnHzValue": {
-    "description": "From LearnStrings.hz; hz is pre-formatted (e.g. 600)",
+    "description": "Training settings: the sidetone pitch in hertz; hz is pre-formatted (e.g. 600)",
     "placeholders": {
       "hz": {
         "type": "String"
@@ -261,7 +304,7 @@
   },
   "learnCharsCount": "{count, plural, =1{1 character} other{{count} characters}}",
   "@learnCharsCount": {
-    "description": "From LearnStrings.charsCount (session length)",
+    "description": "Training settings: the session length in characters (slider value and label)",
     "placeholders": {
       "count": {
         "type": "int"
@@ -270,7 +313,7 @@
   },
   "statsLessonOf": "{lesson} / {total}",
   "@statsLessonOf": {
-    "description": "From StatsStrings.lessonOf",
+    "description": "Statistics overview, 'Koch lesson' tile: current lesson out of the total (e.g. '4 / 42')",
     "placeholders": {
       "lesson": {
         "type": "int"
@@ -282,7 +325,7 @@
   },
   "statsCharsLearned": "{count, plural, =1{1 character learned} other{{count} characters learned}}",
   "@statsCharsLearned": {
-    "description": "From StatsStrings.charsLearned",
+    "description": "Statistics overview, 'Koch lesson' tile: detail line with the number of unlocked characters",
     "placeholders": {
       "count": {
         "type": "int"
@@ -291,7 +334,7 @@
   },
   "statsPercent": "{percent}%",
   "@statsPercent": {
-    "description": "From StatsStrings.percent; percent is pre-formatted (e.g. 92.5)",
+    "description": "Statistics: a percentage (accuracy tiles, chart axis ticks); percent is pre-formatted (e.g. 92.5)",
     "placeholders": {
       "percent": {
         "type": "String"
@@ -300,7 +343,7 @@
   },
   "statsCharsCopied": "{count, plural, =1{1 char copied} other{{count} chars copied}}",
   "@statsCharsCopied": {
-    "description": "From StatsStrings.charsCopied",
+    "description": "Statistics overview, 'Practice' tile: total characters copied across all sessions",
     "placeholders": {
       "count": {
         "type": "int"
@@ -309,7 +352,7 @@
   },
   "statsSessions": "{count, plural, =1{1 session} other{{count} sessions}}",
   "@statsSessions": {
-    "description": "From StatsStrings.sessions",
+    "description": "Statistics: number of practice sessions (overview 'Practice' tile, statistics summary card)",
     "placeholders": {
       "count": {
         "type": "int"
@@ -318,7 +361,7 @@
   },
   "statsDays": "{count, plural, =1{1 day} other{{count} days}}",
   "@statsDays": {
-    "description": "From StatsStrings.days",
+    "description": "Statistics: the current streak length in days ('Streak' tile)",
     "placeholders": {
       "count": {
         "type": "int"
@@ -327,7 +370,7 @@
   },
   "statsBestStreak": "{count, plural, =1{best 1 day} other{best {count} days}}",
   "@statsBestStreak": {
-    "description": "From StatsStrings.bestStreak",
+    "description": "Statistics, 'Streak' tile: detail line with the longest streak ever reached",
     "placeholders": {
       "count": {
         "type": "int"
@@ -336,7 +379,7 @@
   },
   "statsGoalProgress": "{done} / {goal} chars",
   "@statsGoalProgress": {
-    "description": "From StatsStrings.goalProgress",
+    "description": "Statistics, 'Daily goal' tile: characters practised today (receive and send practice both count) versus the daily goal",
     "placeholders": {
       "done": {
         "type": "int"
@@ -348,7 +391,7 @@
   },
   "statsGoalRemaining": "{remaining, plural, =1{1 char to go} other{{remaining} chars to go}}",
   "@statsGoalRemaining": {
-    "description": "From StatsStrings.goalRemaining",
+    "description": "Statistics, 'Daily goal' tile: how many more characters must be practised to reach today's goal",
     "placeholders": {
       "remaining": {
         "type": "int"
@@ -357,7 +400,7 @@
   },
   "statsTrendSubtitle": "{count, plural, =1{Last session} other{Last {count} sessions}}",
   "@statsTrendSubtitle": {
-    "description": "From StatsStrings.trendSubtitle",
+    "description": "Statistics, accuracy trend chart: subtitle saying how many recent sessions are plotted",
     "placeholders": {
       "count": {
         "type": "int"
@@ -366,7 +409,7 @@
   },
   "statsTooltipSession": "Session {index} of {total}",
   "@statsTooltipSession": {
-    "description": "From StatsStrings.tooltipSession",
+    "description": "Statistics, accuracy trend chart: tooltip heading for a tapped point — which session out of those plotted",
     "placeholders": {
       "index": {
         "type": "int"
@@ -378,7 +421,7 @@
   },
   "statsTooltipCopied": "{correct} / {total} correct",
   "@statsTooltipCopied": {
-    "description": "From StatsStrings.tooltipCopied",
+    "description": "Statistics, accuracy trend chart: tooltip line with correct characters out of characters attempted in that session (copied for a receive session, keyed for a send session)",
     "placeholders": {
       "correct": {
         "type": "int"
@@ -390,7 +433,7 @@
   },
   "statsTooltipLesson": "Lesson {lesson}",
   "@statsTooltipLesson": {
-    "description": "From StatsStrings.tooltipLesson",
+    "description": "Statistics, accuracy trend chart: tooltip line with the Koch lesson the session belonged to",
     "placeholders": {
       "lesson": {
         "type": "int"
@@ -399,7 +442,7 @@
   },
   "statsAttempts": "{count, plural, =1{1 attempt} other{{count} attempts}}",
   "@statsAttempts": {
-    "description": "From StatsStrings.attempts",
+    "description": "Statistics, character grid: semantics label giving how many times a character was played",
     "placeholders": {
       "count": {
         "type": "int"
@@ -408,7 +451,7 @@
   },
   "statsCorrectOf": "{correct} of {attempts} correct",
   "@statsCorrectOf": {
-    "description": "From StatsStrings.correctOf",
+    "description": "Statistics, character detail dialog: how often the character was copied correctly out of all attempts",
     "placeholders": {
       "correct": {
         "type": "int"
@@ -420,7 +463,7 @@
   },
   "statsLessonIntroduced": "Introduced in lesson {lesson}",
   "@statsLessonIntroduced": {
-    "description": "From StatsStrings.lessonIntroduced",
+    "description": "Statistics, character detail dialog: the Koch lesson in which this character was introduced",
     "placeholders": {
       "lesson": {
         "type": "int"
@@ -429,7 +472,7 @@
   },
   "statsSrsBox": "Box {box} of {maxBox}",
   "@statsSrsBox": {
-    "description": "From StatsStrings.srsBox (Leitner box)",
+    "description": "Statistics, character detail dialog: the character's Leitner box in spaced repetition (e.g. 'Box 2 of 5')",
     "placeholders": {
       "box": {
         "type": "int"
@@ -441,7 +484,7 @@
   },
   "statsSrsDueIn": "{days, plural, =1{Due tomorrow} other{Due in {days} days}}",
   "@statsSrsDueIn": {
-    "description": "From StatsStrings.srsDueIn",
+    "description": "Statistics, character detail dialog: when the character is next due for spaced-repetition review",
     "placeholders": {
       "days": {
         "type": "int"
@@ -450,7 +493,7 @@
   },
   "statsTimes": "{count, plural, =1{1 time} other{{count} times}}",
   "@statsTimes": {
-    "description": "From StatsStrings.times",
+    "description": "Statistics, character detail dialog: how many times the character was confused with another one",
     "placeholders": {
       "count": {
         "type": "int"
@@ -459,7 +502,7 @@
   },
   "statsHeatmapCell": "{target} answered as {answered}, {count, plural, =1{1 time} other{{count} times}}",
   "@statsHeatmapCell": {
-    "description": "From StatsStrings.heatmapCell (semantics label of one heatmap cell)",
+    "description": "Statistics, confusion heatmap: screen-reader label of one cell — sent character {target} was answered as {answered} {count} times",
     "placeholders": {
       "target": {
         "type": "String"
@@ -474,7 +517,7 @@
   },
   "statsCalendarDay": "{date}: {chars, plural, =0{no practice} other{{chars} chars}}",
   "@statsCalendarDay": {
-    "description": "From StatsStrings.calendarDay; date is pre-formatted",
+    "description": "Statistics, practice calendar: line under the calendar describing the selected day; date is pre-formatted, chars is the characters practised that day",
     "placeholders": {
       "date": {
         "type": "String"
@@ -486,7 +529,7 @@
   },
   "statsActiveDays": "{count, plural, =1{1 active day} other{{count} active days}}",
   "@statsActiveDays": {
-    "description": "From StatsStrings.activeDays",
+    "description": "Statistics, practice calendar: subtitle with how many days had practice in the shown period",
     "placeholders": {
       "count": {
         "type": "int"
@@ -495,7 +538,7 @@
   },
   "referenceEntryCount": "{count, plural, =1{1 entry} other{{count} entries}}",
   "@referenceEntryCount": {
-    "description": "From ReferenceStrings.entryCount (matches in a reference section)",
+    "description": "Reference: number of entries in a group, shown at the right of the group's header",
     "placeholders": {
       "count": {
         "type": "int"
@@ -504,7 +547,7 @@
   },
   "referenceWpmValue": "{wpm} WPM",
   "@referenceWpmValue": {
-    "description": "From ReferenceStrings.wpm; wpm is pre-rounded (e.g. 18)",
+    "description": "Reference playback settings: a speed in words per minute; wpm is pre-rounded (e.g. 18)",
     "placeholders": {
       "wpm": {
         "type": "String"
@@ -513,7 +556,7 @@
   },
   "referenceHzValue": "{hz} Hz",
   "@referenceHzValue": {
-    "description": "From ReferenceStrings.hz; hz is pre-rounded (e.g. 600)",
+    "description": "Reference playback settings: the tone pitch in hertz; hz is pre-rounded (e.g. 600)",
     "placeholders": {
       "hz": {
         "type": "String"
@@ -522,7 +565,7 @@
   },
   "referenceSkippedChars": "Skipped (no Morse code): {chars}",
   "@referenceSkippedChars": {
-    "description": "From ReferenceStrings.skippedChars; chars lists the characters that have no Morse code",
+    "description": "Reference translator, Text to Morse: note listing input characters that have no Morse code and were skipped; chars is that list",
     "placeholders": {
       "chars": {
         "type": "String"
@@ -540,7 +583,7 @@
   },
   "referenceEstimatedSpeed": "Estimated {wpm} WPM",
   "@referenceEstimatedSpeed": {
-    "description": "From ReferenceStrings.estimatedSpeed; wpm is pre-rounded",
+    "description": "Reference translator, Key mode: the speed estimated from the user's keying; wpm is pre-rounded",
     "placeholders": {
       "wpm": {
         "type": "String"
@@ -549,355 +592,355 @@
   },
   "accountCopied": "Tox ID copied to clipboard",
   "@accountCopied": {
-    "description": "From AccountStrings.copied (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar after the user's Tox ID was copied to the clipboard"
   },
   "accountShowQr": "Show QR code",
   "@accountShowQr": {
-    "description": "From AccountStrings.showQr (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Button / tooltip that shows the user's Tox ID as a QR code (identity card, backup wizard)"
   },
   "accountToxId": "Tox ID",
   "@accountToxId": {
-    "description": "From AccountStrings.toxId (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Label and dialog title for the user's Tox ID (the 76-character Tox address others use to add them)"
   },
   "accountDisplayName": "Display name",
   "@accountDisplayName": {
-    "description": "From AccountStrings.displayName (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Text field label for the name other Tox users see (create identity, edit profile)"
   },
   "accountDisplayNameHint": "Your callsign or nickname",
   "@accountDisplayNameHint": {
-    "description": "From AccountStrings.displayNameHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Hint inside the display-name field on the create-identity page"
   },
   "accountDisplayNameRequired": "Enter a display name",
   "@accountDisplayNameRequired": {
-    "description": "From AccountStrings.displayNameRequired (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Validation error when the display-name field is empty"
   },
   "accountStatusMessage": "Status message",
   "@accountStatusMessage": {
-    "description": "From AccountStrings.statusMessage (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Edit profile page: text field label for the Tox status message shown to friends"
   },
   "accountPassword": "Password",
   "@accountPassword": {
-    "description": "From AccountStrings.password (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page: label of the password field; also the identity card's lock-icon tooltip"
   },
   "accountPasswordOptional": "Password (optional)",
   "@accountPasswordOptional": {
-    "description": "From AccountStrings.passwordOptional (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Label of the optional password field (create identity, restore backup)"
   },
   "accountConfirmPassword": "Confirm password",
   "@accountConfirmPassword": {
-    "description": "From AccountStrings.confirmPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Label of the field where the password is typed a second time"
   },
   "accountPasswordsDoNotMatch": "Passwords do not match",
   "@accountPasswordsDoNotMatch": {
-    "description": "From AccountStrings.passwordsDoNotMatch (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Validation error when the two password fields differ"
   },
   "accountShowPassword": "Show password",
   "@accountShowPassword": {
-    "description": "From AccountStrings.showPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Tooltip of the eye button that reveals the typed password"
   },
   "accountHidePassword": "Hide password",
   "@accountHidePassword": {
-    "description": "From AccountStrings.hidePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Tooltip of the eye button that hides the typed password again"
   },
   "accountStrengthWeak": "Weak: use at least 8 characters",
   "@accountStrengthWeak": {
-    "description": "From AccountStrings.strengthWeak (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Password strength meter: verdict for a weak password, with advice"
   },
   "accountStrengthFair": "Fair: 12+ characters with mixed types is better",
   "@accountStrengthFair": {
-    "description": "From AccountStrings.strengthFair (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Password strength meter: verdict for a fair password, with advice"
   },
   "accountStrengthStrong": "Strong",
   "@accountStrengthStrong": {
-    "description": "From AccountStrings.strengthStrong (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Password strength meter: verdict for a strong password"
   },
   "accountStartupInspecting": "Checking your identity…",
   "@accountStartupInspecting": {
-    "description": "From AccountStrings.startupInspecting (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Startup splash: shown while the app checks whether an identity exists on this device"
   },
   "accountStartupOpening": "Opening your identity…",
   "@accountStartupOpening": {
-    "description": "From AccountStrings.startupOpening (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Startup splash: shown while the identity is being opened"
   },
   "accountStartupFailedTitle": "Could not start",
   "@accountStartupFailedTitle": {
-    "description": "From AccountStrings.startupFailedTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Startup error screen: title when the identity could not be read"
   },
   "accountStartupFailedBody": "MorseCQ could not read your identity. Nothing was changed; you can try again.",
   "@accountStartupFailedBody": {
-    "description": "From AccountStrings.startupFailedBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Startup error screen: explanation under the title; nothing was changed and the user can retry"
   },
   "accountConnectionTapToReconnect": "Tap to reconnect",
   "@accountConnectionTapToReconnect": {
-    "description": "From AccountStrings.connectionTapToReconnect (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Tooltip of the Tox connection chip while offline; tapping it reconnects"
   },
   "accountWelcomeTitle": "Your identity lives on this device",
   "@accountWelcomeTitle": {
-    "description": "From AccountStrings.welcomeTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page (first launch): title explaining the identity is stored locally"
   },
   "accountWelcomeIntro": "MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.",
   "@accountWelcomeIntro": {
-    "description": "From AccountStrings.welcomeIntro (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: introductory paragraph about the serverless Tox identity"
   },
   "accountWelcomePointNoServer": "No server, no phone number, no e-mail. Peers talk to each other directly, in Morse.",
   "@accountWelcomePointNoServer": {
-    "description": "From AccountStrings.welcomePointNoServer (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: bullet point — no server or sign-up, peers talk directly"
   },
   "accountWelcomePointTraining": "Training progress is saved with your identity, so it can be backed up and moved between devices.",
   "@accountWelcomePointTraining": {
-    "description": "From AccountStrings.welcomePointTraining (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: bullet point — training progress is stored with the identity"
   },
   "accountWelcomePointBackup": "Nobody can recover an identity for you. Back it up right after creating it, or you will lose it with the device.",
   "@accountWelcomePointBackup": {
-    "description": "From AccountStrings.welcomePointBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: bullet point warning that only a backup can recover the identity"
   },
   "accountCreateIdentity": "Create identity",
   "@accountCreateIdentity": {
-    "description": "From AccountStrings.createIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: button that starts creating a new identity"
   },
   "accountRestoreFromBackup": "Restore from backup",
   "@accountRestoreFromBackup": {
-    "description": "From AccountStrings.restoreFromBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Welcome page: button that restores an identity from a backup file"
   },
   "accountCreateTitle": "Create your identity",
   "@accountCreateTitle": {
-    "description": "From AccountStrings.createTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Create identity page: app bar title"
   },
   "accountCreateBody": "Pick a name others will see. A password encrypts the identity file on this device; leave it empty if you prefer to open the app without one.",
   "@accountCreateBody": {
-    "description": "From AccountStrings.createBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Create identity page: explanation of the display name and the optional password"
   },
   "accountCreateButton": "Create",
   "@accountCreateButton": {
-    "description": "From AccountStrings.createButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Create identity page: submit button"
   },
   "accountCreating": "Creating…",
   "@accountCreating": {
-    "description": "From AccountStrings.creating (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Create identity page: submit button label while the identity is being created"
   },
   "accountBackupTitle": "Back up your identity now",
   "@accountBackupTitle": {
-    "description": "From AccountStrings.backupTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard (after creating an identity): title urging the user to back up now"
   },
   "accountBackupBody": "Your identity exists only on this device. If it is lost, reset or stolen, there is no way to recover it: your contacts will not recognise a new identity and your training progress is gone.",
   "@accountBackupBody": {
-    "description": "From AccountStrings.backupBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: explanation that a lost device means a lost identity without a backup"
   },
   "accountBackupWhatIsInside": "The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.",
   "@accountBackupWhatIsInside": {
-    "description": "From AccountStrings.backupWhatIsInside (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: what the backup file contains and where to keep it"
   },
   "accountBackupSaveFile": "Save backup file",
   "@accountBackupSaveFile": {
-    "description": "From AccountStrings.backupSaveFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: button that saves the backup file (desktop)"
   },
   "accountBackupShareFile": "Share backup file",
   "@accountBackupShareFile": {
-    "description": "From AccountStrings.backupShareFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: button that shares the backup file via the system share sheet (mobile)"
   },
   "accountBackupSaved": "Backup saved",
   "@accountBackupSaved": {
-    "description": "From AccountStrings.backupSaved (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar / status line after the backup file was saved"
   },
   "accountBackupNotSaved": "Backup was not saved",
   "@accountBackupNotSaved": {
-    "description": "From AccountStrings.backupNotSaved (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar when the user cancelled saving the backup"
   },
   "accountBackupFailed": "Could not write the backup",
   "@accountBackupFailed": {
-    "description": "From AccountStrings.backupFailed (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar prefix when writing the backup failed; followed by ': ' and the error message"
   },
   "accountBackupAcknowledge": "I understand that without this backup my identity cannot be recovered.",
   "@accountBackupAcknowledge": {
-    "description": "From AccountStrings.backupAcknowledge (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: checkbox the user must tick to confirm they understand the risk"
   },
   "accountBackupContinue": "Continue to MorseCQ",
   "@accountBackupContinue": {
-    "description": "From AccountStrings.backupContinue (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: button that leaves the wizard and opens the app"
   },
   "accountBackupShowQrHint": "Your Tox ID is how friends add you. Share it as text or as a QR code.",
   "@accountBackupShowQrHint": {
-    "description": "From AccountStrings.backupShowQrHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Backup wizard: explains that the Tox ID is how friends add the user"
   },
   "accountRestoreTitle": "Restore from backup",
   "@accountRestoreTitle": {
-    "description": "From AccountStrings.restoreTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: app bar title"
   },
   "accountRestoreBody": "Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.",
   "@accountRestoreBody": {
-    "description": "From AccountStrings.restoreBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: explanation of which file to pick and the password"
   },
   "accountRestoreChooseFile": "Choose backup file",
   "@accountRestoreChooseFile": {
-    "description": "From AccountStrings.restoreChooseFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: button that opens the file picker"
   },
   "accountRestoreNoFile": "Choose a backup file first",
   "@accountRestoreNoFile": {
-    "description": "From AccountStrings.restoreNoFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: error when Restore is pressed before choosing a file"
   },
   "accountRestoreButton": "Restore",
   "@accountRestoreButton": {
-    "description": "From AccountStrings.restoreButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: submit button"
   },
   "accountRestoring": "Restoring…",
   "@accountRestoring": {
-    "description": "From AccountStrings.restoring (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: submit button label while restoring"
   },
   "accountRestoreInvalidFile": "This file is not a MorseCQ backup.",
   "@accountRestoreInvalidFile": {
-    "description": "From AccountStrings.restoreInvalidFile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: error when the chosen file is not a MorseCQ backup"
   },
   "accountRestoreReplacesWarning": "Restoring replaces the identity currently on this device.",
   "@accountRestoreReplacesWarning": {
-    "description": "From AccountStrings.restoreReplacesWarning (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Restore backup page: warning that restoring replaces the current identity"
   },
   "accountUnlockTitle": "Unlock your identity",
   "@accountUnlockTitle": {
-    "description": "From AccountStrings.unlockTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page (password-protected identity): title"
   },
   "accountUnlockBody": "Your identity file is encrypted. Enter the password to continue.",
   "@accountUnlockBody": {
-    "description": "From AccountStrings.unlockBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page: explanation that the identity file is encrypted"
   },
   "accountUnlockButton": "Unlock",
   "@accountUnlockButton": {
-    "description": "From AccountStrings.unlockButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page: submit button"
   },
   "accountUnlocking": "Unlocking…",
   "@accountUnlocking": {
-    "description": "From AccountStrings.unlocking (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page: submit button label while unlocking"
   },
   "accountUnlockRestoreInstead": "Restore from backup instead",
   "@accountUnlockRestoreInstead": {
-    "description": "From AccountStrings.unlockRestoreInstead (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Unlock page: text button that switches to restoring from a backup"
   },
   "accountMeNoIdentity": "No identity loaded",
   "@accountMeNoIdentity": {
-    "description": "From AccountStrings.meNoIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page / snackbar: shown when no identity is loaded"
   },
   "accountSectionAccount": "Account",
   "@accountSectionAccount": {
-    "description": "From AccountStrings.sectionAccount (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: section header for account settings"
   },
   "accountSectionTraining": "Training",
   "@accountSectionTraining": {
-    "description": "From AccountStrings.sectionTraining (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: section header for training settings"
   },
   "accountSectionAbout": "About",
   "@accountSectionAbout": {
-    "description": "From AccountStrings.sectionAbout (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: section header for app information (licence, source code, backend)"
   },
   "accountSectionDanger": "Danger zone",
   "@accountSectionDanger": {
-    "description": "From AccountStrings.sectionDanger (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: section header for destructive actions (delete identity)"
   },
   "accountEditProfile": "Edit profile",
   "@accountEditProfile": {
-    "description": "From AccountStrings.editProfile (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page tile and edit profile page title"
   },
   "accountEditProfileBody": "Shown to your contacts on the Tox network.",
   "@accountEditProfileBody": {
-    "description": "From AccountStrings.editProfileBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Edit profile: explains that the name and status are shown to friends on Tox"
   },
   "accountSetPassword": "Set password",
   "@accountSetPassword": {
-    "description": "From AccountStrings.setPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page tile / page title to add a password to an unprotected identity"
   },
   "accountChangePassword": "Change password",
   "@accountChangePassword": {
-    "description": "From AccountStrings.changePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page tile / page title to change the identity password"
   },
   "accountRemovePassword": "Remove password",
   "@accountRemovePassword": {
-    "description": "From AccountStrings.removePassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Change password page: button that removes the password"
   },
   "accountCurrentPassword": "Current password",
   "@accountCurrentPassword": {
-    "description": "From AccountStrings.currentPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Change password page: label of the current password field"
   },
   "accountNewPassword": "New password",
   "@accountNewPassword": {
-    "description": "From AccountStrings.newPassword (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Change password page: label of the new password field"
   },
   "accountPasswordUpdated": "Password updated",
   "@accountPasswordUpdated": {
-    "description": "From AccountStrings.passwordUpdated (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar after the password was set or changed"
   },
   "accountPasswordRemoved": "Password removed",
   "@accountPasswordRemoved": {
-    "description": "From AccountStrings.passwordRemoved (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar after the password was removed"
   },
   "accountProfileUpdated": "Profile updated",
   "@accountProfileUpdated": {
-    "description": "From AccountStrings.profileUpdated (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar after the profile was saved"
   },
   "accountExportBackup": "Export backup",
   "@accountExportBackup": {
-    "description": "From AccountStrings.exportBackup (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: tile that exports an identity backup"
   },
   "accountExportBackupSubtitle": "Save your identity and training progress to a file",
   "@accountExportBackupSubtitle": {
-    "description": "From AccountStrings.exportBackupSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: subtitle of the export-backup tile"
   },
   "accountTrainingDefaults": "Playback & training defaults",
   "@accountTrainingDefaults": {
-    "description": "From AccountStrings.trainingDefaults (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: tile that opens the training / playback settings"
   },
   "accountTrainingDefaultsSubtitle": "Speed, tone, Farnsworth spacing",
   "@accountTrainingDefaultsSubtitle": {
-    "description": "From AccountStrings.trainingDefaultsSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page: subtitle of the training-defaults tile listing what it controls"
   },
   "accountTrainingDefaultsPlaceholder": "Speed, tone and Farnsworth defaults will live here.",
   "@accountTrainingDefaultsPlaceholder": {
-    "description": "From AccountStrings.trainingDefaultsPlaceholder (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Placeholder text for the training-defaults page (currently unused)"
   },
   "accountAboutLicence": "Licence",
   "@accountAboutLicence": {
-    "description": "From AccountStrings.aboutLicence (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, About section: tile title for the software licence"
   },
   "accountAboutLicenceValue": "GPL-3.0",
   "@accountAboutLicenceValue": {
-    "description": "From AccountStrings.aboutLicenceValue (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, About section: the licence identifier; normally kept as is (SPDX id)"
   },
   "accountAboutSource": "Source code",
   "@accountAboutSource": {
-    "description": "From AccountStrings.aboutSource (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, About section: tile that copies the source-code link"
   },
   "accountAboutSourceCopied": "Source link copied",
   "@accountAboutSourceCopied": {
-    "description": "From AccountStrings.aboutSourceCopied (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Snackbar after the source-code link was copied"
   },
   "accountAboutBackend": "Backend",
   "@accountAboutBackend": {
-    "description": "From AccountStrings.aboutBackend (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, About section: tile title naming the chat backend in use (Tox, or the fake backend)"
   },
   "accountDeleteIdentity": "Delete identity",
   "@accountDeleteIdentity": {
-    "description": "From AccountStrings.deleteIdentity (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, danger zone: tile that deletes the identity"
   },
   "accountDeleteIdentitySubtitle": "Erase this identity, history and progress from this device",
   "@accountDeleteIdentitySubtitle": {
-    "description": "From AccountStrings.deleteIdentitySubtitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Me page, danger zone: subtitle explaining what deleting erases"
   },
   "accountDeleteDialogTitle": "Delete this identity?",
   "@accountDeleteDialogTitle": {
-    "description": "From AccountStrings.deleteDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Delete identity dialog: title"
   },
   "accountDeleteDialogBody": "This removes your identity, chat history and training progress from this device. Without a backup it cannot be recovered. Type DELETE to confirm.",
   "@accountDeleteDialogBody": {
-    "description": "From AccountStrings.deleteDialogBody (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Delete identity dialog: warning that the deletion cannot be undone without a backup"
   },
   "accountDeleteConfirmWord": "DELETE",
   "@accountDeleteConfirmWord": {
-    "description": "From AccountStrings.deleteConfirmWord (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Delete identity dialog: the word the user must type to confirm; must match the word quoted in accountDeleteConfirmHint"
   },
   "accountDeleteConfirmHint": "Type DELETE",
   "@accountDeleteConfirmHint": {
-    "description": "From AccountStrings.deleteConfirmHint (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Delete identity dialog: hint telling the user to type the confirmation word (accountDeleteConfirmWord)"
   },
   "accountDeleteButton": "Delete",
   "@accountDeleteButton": {
-    "description": "From AccountStrings.deleteButton (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Delete identity dialog: destructive confirm button"
   },
   "accountRestoreFileChosenSize": "Backup file selected ({bytes} bytes)",
   "@accountRestoreFileChosenSize": {
@@ -910,67 +953,67 @@
   },
   "chatSearchConversations": "Search conversations",
   "@chatSearchConversations": {
-    "description": "From ChatStrings.searchConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: hint inside the search field"
   },
   "chatNoConversations": "No conversations yet",
   "@chatNoConversations": {
-    "description": "From ChatStrings.noConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: empty state when there are no conversations"
   },
   "chatNoSearchResults": "No conversations match",
   "@chatNoSearchResults": {
-    "description": "From ChatStrings.noSearchResults (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: empty state when no conversation matches the search"
   },
   "chatPin": "Pin",
   "@chatPin": {
-    "description": "From ChatStrings.pin (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: action that pins a conversation to the top"
   },
   "chatUnpin": "Unpin",
   "@chatUnpin": {
-    "description": "From ChatStrings.unpin (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: action that unpins a pinned conversation"
   },
   "chatMarkRead": "Mark as read",
   "@chatMarkRead": {
-    "description": "From ChatStrings.markRead (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: context-menu action that marks a conversation as read"
   },
   "chatDelete": "Delete",
   "@chatDelete": {
-    "description": "From ChatStrings.delete (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: action / confirm button that deletes a conversation"
   },
   "chatDeleteConversationTitle": "Delete conversation?",
   "@chatDeleteConversationTitle": {
-    "description": "From ChatStrings.deleteConversationTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: title of the delete-conversation confirmation"
   },
   "chatDeleteConversationBody": "Local history for this conversation is removed. Tox keeps no copy.",
   "@chatDeleteConversationBody": {
-    "description": "From ChatStrings.deleteConversationBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: body of the delete-conversation confirmation (only local history is removed)"
   },
   "chatDraftPrefix": "Draft: ",
   "@chatDraftPrefix": {
-    "description": "From ChatStrings.draftPrefix (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat list: prefix before the unsent draft preview of a conversation; keep the trailing space if the language uses one"
   },
   "chatSelectConversation": "Select a conversation",
   "@chatSelectConversation": {
-    "description": "From ChatStrings.selectConversation (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat (wide layout): placeholder in the detail pane when no conversation is open"
   },
   "chatContacts": "Contacts",
   "@chatContacts": {
-    "description": "From ChatStrings.contacts (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Title of the Contacts screen (friends plus note-to-self) and tooltip of the button that opens it"
   },
   "chatNoMessages": "No messages yet — send CQ to start.",
   "@chatNoMessages": {
-    "description": "From ChatStrings.noMessages (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: empty state before any message; CQ is the radio call 'calling any station' and stays as is"
   },
   "chatTrainingMode": "Training mode",
   "@chatTrainingMode": {
-    "description": "From ChatStrings.trainingMode (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: tooltip of the training-mode toggle; in training mode message text stays hidden until the user taps Reveal (chatReveal) on the message"
   },
   "chatTrainingModeOn": "Training mode on: text hidden",
   "@chatTrainingModeOn": {
-    "description": "From ChatStrings.trainingModeOn (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: snackbar when training mode is switched on"
   },
   "chatTrainingModeOff": "Training mode off",
   "@chatTrainingModeOff": {
-    "description": "From ChatStrings.trainingModeOff (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: snackbar when training mode is switched off"
   },
   "chatAutoPlay": "Auto-play received Morse",
   "@chatAutoPlay": {
@@ -986,79 +1029,79 @@
   },
   "chatReveal": "Reveal",
   "@chatReveal": {
-    "description": "From ChatStrings.reveal (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation, training mode: button on a hidden message that reveals its text"
   },
   "chatHiddenText": "Listen first, then reveal",
   "@chatHiddenText": {
-    "description": "From ChatStrings.hiddenText (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation, training mode: placeholder shown instead of a hidden message's text"
   },
   "chatPlay": "Play Morse",
   "@chatPlay": {
-    "description": "From ChatStrings.play (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: tooltip of the button that plays a message as Morse audio"
   },
   "chatStop": "Stop",
   "@chatStop": {
-    "description": "From ChatStrings.stop (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: tooltip of the button that stops Morse playback"
   },
   "chatPlaybackSettings": "Playback settings",
   "@chatPlaybackSettings": {
-    "description": "From ChatStrings.playbackSettings (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation: title of the playback settings sheet and tooltip of its button"
   },
   "chatCharacterSpeed": "Character speed",
   "@chatCharacterSpeed": {
-    "description": "From ChatStrings.characterSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat playback settings: slider label for the speed of each character"
   },
   "chatFarnsworthSpeed": "Farnsworth speed",
   "@chatFarnsworthSpeed": {
-    "description": "From ChatStrings.farnsworthSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat playback settings: slider label for the Farnsworth (effective, gap-stretched) speed"
   },
   "chatTone": "Tone",
   "@chatTone": {
-    "description": "From ChatStrings.tone (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat playback settings: slider label for the tone pitch"
   },
   "chatWpm": "WPM",
   "@chatWpm": {
-    "description": "From ChatStrings.wpm (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat playback settings: unit shown after speed values (words per minute)"
   },
   "chatHz": "Hz",
   "@chatHz": {
-    "description": "From ChatStrings.hz (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Chat playback settings: unit shown after the tone value (hertz)"
   },
   "chatMembers": "Members",
   "@chatMembers": {
-    "description": "From ChatStrings.members (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Group conversation / group list menu: shows the group's members"
   },
   "chatLeaveGroup": "Leave group",
   "@chatLeaveGroup": {
-    "description": "From ChatStrings.leaveGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Group conversation / group list menu: leaves the group"
   },
   "chatLeaveGroupTitle": "Leave this group?",
   "@chatLeaveGroupTitle": {
-    "description": "From ChatStrings.leaveGroupTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Leave-group confirmation: title"
   },
   "chatLeaveGroupBody": "You will stop receiving messages. Rejoin later with the chat id.",
   "@chatLeaveGroupBody": {
-    "description": "From ChatStrings.leaveGroupBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Leave-group confirmation: body (the chat id lets the user rejoin)"
   },
   "chatLeave": "Leave",
   "@chatLeave": {
-    "description": "From ChatStrings.leave (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Leave-group confirmation: confirm button"
   },
   "chatConferenceNote": "Legacy conference: Morse keying metadata (v2) will not be available here. Text still works.",
   "@chatConferenceNote": {
-    "description": "From ChatStrings.conferenceNote (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Group conversation header: note on legacy Tox conferences, which cannot carry Morse keying metadata"
   },
   "chatClearHistory": "Clear history",
   "@chatClearHistory": {
-    "description": "From ChatStrings.clearHistory (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation menu item and confirm button that clears local message history"
   },
   "chatModeStraightKey": "Straight key",
   "@chatModeStraightKey": {
-    "description": "From ChatStrings.modeStraightKey (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer: input-mode segment for keying with a straight key"
   },
   "chatModePaddles": "Paddles",
   "@chatModePaddles": {
-    "description": "From ChatStrings.modePaddles (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer: input-mode segment for keying with iambic paddles"
   },
   "chatKeyMessage": "Key your message",
   "@chatKeyMessage": {
@@ -1066,255 +1109,255 @@
   },
   "chatSend": "Send",
   "@chatSend": {
-    "description": "From ChatStrings.send (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer: tooltip of the send button"
   },
   "chatTooLong": "Too long for one Tox message",
   "@chatTooLong": {
-    "description": "From ChatStrings.tooLong (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer: error when the message exceeds one Tox message"
   },
   "chatKeyHint": "Key on the pad or press Space",
   "@chatKeyHint": {
-    "description": "From ChatStrings.keyHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer, straight-key mode: hint on how to key"
   },
   "chatPaddleHint": "Tap the paddles or hold Ctrl (left dit, right dah)",
   "@chatPaddleHint": {
-    "description": "From ChatStrings.paddleHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer, paddle mode: hint on how to key (left/right Ctrl)"
   },
   "chatDeleteLast": "Delete last character",
   "@chatDeleteLast": {
-    "description": "From ChatStrings.deleteLast (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Conversation composer: tooltip of the button that deletes the last keyed character"
   },
   "chatNoFriends": "No friends yet. Add one with their Tox ID.",
   "@chatNoFriends": {
-    "description": "From ChatStrings.noFriends (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Contacts screen: empty state when the user has no Tox friends yet"
   },
   "chatNoRequests": "No pending requests",
   "@chatNoRequests": {
-    "description": "From ChatStrings.noRequests (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Friend request inbox: empty state"
   },
   "chatAddFriend": "Add friend",
   "@chatAddFriend": {
-    "description": "From ChatStrings.addFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Contacts screen: title of the add-friend sheet and tooltip of its button"
   },
   "chatMyToxId": "My Tox ID",
   "@chatMyToxId": {
-    "description": "From ChatStrings.myToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Contacts screen: title of the sheet showing the user's own Tox ID and tooltip of its button"
   },
   "chatToxIdLabel": "Tox ID (76 hex characters)",
   "@chatToxIdLabel": {
-    "description": "From ChatStrings.toxIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: label of the Tox ID field"
   },
   "chatToxIdInvalid": "Tox ID must be exactly 76 hex characters",
   "@chatToxIdInvalid": {
-    "description": "From ChatStrings.toxIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: error for a malformed Tox ID"
   },
   "chatToxIdOwn": "That is your own Tox ID",
   "@chatToxIdOwn": {
-    "description": "From ChatStrings.toxIdOwn (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: error when the user enters their own Tox ID"
   },
   "chatToxIdAlreadyFriend": "Already in your friend list",
   "@chatToxIdAlreadyFriend": {
-    "description": "From ChatStrings.toxIdAlreadyFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: error when the Tox ID already belongs to a friend"
   },
   "chatRequestMessage": "Message",
   "@chatRequestMessage": {
-    "description": "From ChatStrings.requestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: label of the message sent with the friend request"
   },
   "chatDefaultRequestMessage": "MorseCQ CQ",
   "@chatDefaultRequestMessage": {
-    "description": "From ChatStrings.defaultRequestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: default friend-request message; CQ is the radio call 'calling any station'"
   },
   "chatSendRequest": "Send request",
   "@chatSendRequest": {
-    "description": "From ChatStrings.sendRequest (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: submit button that sends the friend request"
   },
   "chatRequestSent": "Friend request sent",
   "@chatRequestSent": {
-    "description": "From ChatStrings.requestSent (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Snackbar after a friend request was sent"
   },
   "chatScanQr": "Scan QR",
   "@chatScanQr": {
-    "description": "From ChatStrings.scanQr (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet: button that scans a Tox ID QR code with the camera"
   },
   "chatScanQrDesktopHint": "QR scanning needs a phone camera",
   "@chatScanQrDesktopHint": {
-    "description": "From ChatStrings.scanQrDesktopHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Add friend sheet (desktop): note that QR scanning needs a phone camera"
   },
   "chatScanQrTitle": "Scan a Tox ID",
   "@chatScanQrTitle": {
-    "description": "From ChatStrings.scanQrTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "QR scan page: app bar title"
   },
   "chatScanQrNotToxId": "That QR code is not a Tox ID",
   "@chatScanQrNotToxId": {
-    "description": "From ChatStrings.scanQrNotToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "QR scan page: error when the scanned QR code is not a Tox ID"
   },
   "chatAccept": "Accept",
   "@chatAccept": {
-    "description": "From ChatStrings.accept (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Friend request / group invite inbox: tooltip of the accept button"
   },
   "chatReject": "Reject",
   "@chatReject": {
-    "description": "From ChatStrings.reject (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Friend request / group invite inbox: tooltip of the reject button"
   },
   "chatCopied": "Copied to clipboard",
   "@chatCopied": {
-    "description": "From ChatStrings.copied (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Snackbar after a Tox ID or chat id was copied to the clipboard"
   },
   "chatNoIdentity": "No identity loaded",
   "@chatNoIdentity": {
-    "description": "From ChatStrings.noIdentity (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "My Tox ID sheet: shown when no identity is loaded"
   },
   "chatRemoveFriend": "Remove friend",
   "@chatRemoveFriend": {
-    "description": "From ChatStrings.removeFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Contacts screen: friend context-menu item that removes the friend"
   },
   "chatRemoveFriendTitle": "Remove this friend?",
   "@chatRemoveFriendTitle": {
-    "description": "From ChatStrings.removeFriendTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Remove-friend confirmation: title"
   },
   "chatRemoveFriendBody": "They will no longer be able to message you.",
   "@chatRemoveFriendBody": {
-    "description": "From ChatStrings.removeFriendBody (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Remove-friend confirmation: body"
   },
   "chatRemove": "Remove",
   "@chatRemove": {
-    "description": "From ChatStrings.remove (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Remove-friend confirmation: confirm button"
   },
   "chatNoGroups": "No groups yet. Create one or join by chat id.",
   "@chatNoGroups": {
-    "description": "From ChatStrings.noGroups (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Groups list: empty state"
   },
   "chatCreateGroup": "Create group",
   "@chatCreateGroup": {
-    "description": "From ChatStrings.createGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Groups: title of the create-group sheet and tooltip of its button"
   },
   "chatJoinGroup": "Join group",
   "@chatJoinGroup": {
-    "description": "From ChatStrings.joinGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Groups: title of the join-group sheet and tooltip of its button"
   },
   "chatGroupName": "Group name",
   "@chatGroupName": {
-    "description": "From ChatStrings.groupName (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: label of the group name field"
   },
   "chatGroupNameRequired": "Give the group a name",
   "@chatGroupNameRequired": {
-    "description": "From ChatStrings.groupNameRequired (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: validation error when the name is empty"
   },
   "chatAdvanced": "Advanced",
   "@chatAdvanced": {
-    "description": "From ChatStrings.advanced (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: expander for advanced options"
   },
   "chatLegacyConference": "Legacy conference (old clients)",
   "@chatLegacyConference": {
-    "description": "From ChatStrings.legacyConference (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: switch that creates an old-style Tox conference instead of a group"
   },
   "chatLegacyConferenceHint": "Not recommended: no persistent chat id, no Morse metadata.",
   "@chatLegacyConferenceHint": {
-    "description": "From ChatStrings.legacyConferenceHint (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: subtitle warning against legacy conferences"
   },
   "chatCreate": "Create",
   "@chatCreate": {
-    "description": "From ChatStrings.create (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Create group sheet: submit button"
   },
   "chatChatIdLabel": "Chat id (64 hex characters)",
   "@chatChatIdLabel": {
-    "description": "From ChatStrings.chatIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Join group sheet: label of the group chat id field"
   },
   "chatChatIdInvalid": "Chat id must be exactly 64 hex characters",
   "@chatChatIdInvalid": {
-    "description": "From ChatStrings.chatIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Join group sheet: error for a malformed chat id"
   },
   "chatPassword": "Password (optional)",
   "@chatPassword": {
-    "description": "From ChatStrings.password (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Join group sheet: label of the optional group password field"
   },
   "chatJoin": "Join",
   "@chatJoin": {
-    "description": "From ChatStrings.join (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Join group sheet: submit button"
   },
   "chatJoinRequested": "Joining — the group appears once a peer is found.",
   "@chatJoinRequested": {
-    "description": "From ChatStrings.joinRequested (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Snackbar after a join request; the group shows up once a peer is found"
   },
   "chatConferenceBadge": "Conference",
   "@chatConferenceBadge": {
-    "description": "From ChatStrings.conferenceBadge (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Badge on a group that is a legacy Tox conference (group list, conversation header)"
   },
   "chatCopyChatId": "Copy chat id",
   "@chatCopyChatId": {
-    "description": "From ChatStrings.copyChatId (apps/morsecq/lib/ui/chat/chat_strings.dart)"
+    "description": "Group list menu: copies the group's chat id"
   },
   "learnLessonCardTitle": "Koch lesson",
   "@learnLessonCardTitle": {
-    "description": "From LearnStrings.lessonCardTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: title of the Koch lesson card"
   },
   "learnCourseComplete": "Course complete - keep sharpening!",
   "@learnCourseComplete": {
-    "description": "From LearnStrings.courseComplete (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home, Koch lesson card: shown once every Koch character is unlocked"
   },
   "learnDailyGoalTitle": "Today",
   "@learnDailyGoalTitle": {
-    "description": "From LearnStrings.dailyGoalTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: title of the daily goal card"
   },
   "learnDailyGoalMet": "Daily goal reached",
   "@learnDailyGoalMet": {
-    "description": "From LearnStrings.dailyGoalMet (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home, daily goal card: shown when today's goal is reached"
   },
   "learnNoStreak": "Start a streak today",
   "@learnNoStreak": {
-    "description": "From LearnStrings.noStreak (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home, daily goal card: shown instead of the streak when there is none"
   },
   "learnContinueLesson": "Continue lesson",
   "@learnContinueLesson": {
-    "description": "From LearnStrings.continueLesson (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: primary button that starts the current Koch lesson"
   },
   "learnReceivePractice": "Receive practice",
   "@learnReceivePractice": {
-    "description": "From LearnStrings.receivePractice (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: button that opens the receive (copy) drill picker"
   },
   "learnSendPractice": "Send practice",
   "@learnSendPractice": {
-    "description": "From LearnStrings.sendPractice (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: button that opens send (keying) practice"
   },
   "learnReviewDue": "Review due characters",
   "@learnReviewDue": {
-    "description": "From LearnStrings.reviewDue (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: button that starts a spaced-repetition review of due characters"
   },
   "learnSettings": "Training settings",
   "@learnSettings": {
-    "description": "From LearnStrings.settings (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: tooltip of the training settings button and that page's title"
   },
   "learnLoading": "Loading your progress...",
   "@learnLoading": {
-    "description": "From LearnStrings.loading (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn tab: shown while training progress loads"
   },
   "learnIdentityRequired": "Create or unlock your identity to start training. Progress is stored with your identity so it travels with your backup.",
   "@learnIdentityRequired": {
-    "description": "From LearnStrings.identityRequired (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn tab: shown when no identity is open; training needs one"
   },
   "learnLoadFailed": "Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.",
   "@learnLoadFailed": {
-    "description": "From LearnStrings.loadFailed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: error line shown when saved progress was unreadable and training restarted fresh"
   },
   "learnChooseDrill": "Choose a drill",
   "@learnChooseDrill": {
-    "description": "From LearnStrings.chooseDrill (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker sheet: title"
   },
   "learnDrillGroups": "Random groups",
   "@learnDrillGroups": {
-    "description": "From LearnStrings.drillGroups (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker: drill with random groups of the characters the user already knows"
   },
   "learnDrillWords": "Words",
   "@learnDrillWords": {
-    "description": "From LearnStrings.drillWords (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker: drill with common words"
   },
   "learnDrillCallsigns": "Callsigns",
   "@learnDrillCallsigns": {
-    "description": "From LearnStrings.drillCallsigns (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker: drill with amateur radio callsigns"
   },
   "learnDrillQso": "QSO",
   "@learnDrillQso": {
-    "description": "From LearnStrings.drillQso (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker: drill with short QSO (radio contact) exchanges; QSO is a Q-code, keep as is"
   },
   "learnDrillCharacters": "Single characters",
   "@learnDrillCharacters": {
@@ -1697,195 +1740,195 @@
   },
   "learnReceiveTitle": "Receive",
   "@learnReceiveTitle": {
-    "description": "From LearnStrings.receiveTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill screen: app bar title"
   },
   "learnReviewTitle": "Review",
   "@learnReviewTitle": {
-    "description": "From LearnStrings.reviewTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill picker / screen: title of the spaced-repetition review drill"
   },
   "learnListen": "Listen...",
   "@learnListen": {
-    "description": "From LearnStrings.listen (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: status while Morse is playing"
   },
   "learnReady": "Ready",
   "@learnReady": {
-    "description": "From LearnStrings.ready (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: status when playback finished and an answer is expected"
   },
   "learnReplay": "Replay",
   "@learnReplay": {
-    "description": "From LearnStrings.replay (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: button that plays the round again"
   },
   "learnAnswerHint": "Type what you heard",
   "@learnAnswerHint": {
-    "description": "From LearnStrings.answerHint (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: hint inside the answer field"
   },
   "learnSubmit": "Check",
   "@learnSubmit": {
-    "description": "From LearnStrings.submit (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: button that checks the typed answer"
   },
   "learnNext": "Next",
   "@learnNext": {
-    "description": "From LearnStrings.next (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: button that moves to the next round"
   },
   "learnFinish": "Finish",
   "@learnFinish": {
-    "description": "From LearnStrings.finish (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: button on the last round that ends the session"
   },
   "learnDone": "Done",
   "@learnDone": {
-    "description": "From LearnStrings.done (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: button that closes the screen. Send practice: button that ends the attempt, records it and shows the result"
   },
   "learnBackspace": "Delete",
   "@learnBackspace": {
-    "description": "From LearnStrings.backspace (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill on-screen keypad: screen-reader label of the backspace key"
   },
   "learnSpace": "Space",
   "@learnSpace": {
-    "description": "From LearnStrings.space (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill on-screen keypad: label of the space key"
   },
   "learnSent": "Sent",
   "@learnSent": {
-    "description": "From LearnStrings.sent (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill round result: label of the line with what was sent"
   },
   "learnYourCopy": "Your copy",
   "@learnYourCopy": {
-    "description": "From LearnStrings.yourCopy (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill round result: label of the line with what the user typed"
   },
   "learnRoundPerfect": "Perfect copy!",
   "@learnRoundPerfect": {
-    "description": "From LearnStrings.roundPerfect (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill round result: shown when every character was copied correctly"
   },
   "learnSessionSummary": "Session summary",
   "@learnSessionSummary": {
-    "description": "From LearnStrings.sessionSummary (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: title of the end-of-session summary"
   },
   "learnLessonPassed": "Lesson passed",
   "@learnLessonPassed": {
-    "description": "From LearnStrings.lessonPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: verdict when the lesson was passed"
   },
   "learnLessonNotPassed": "Keep at it: 90% unlocks the next one",
   "@learnLessonNotPassed": {
-    "description": "From LearnStrings.lessonNotPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: verdict when accuracy stayed under the 90% pass mark"
   },
   "learnReviewRecorded": "Review recorded",
   "@learnReviewRecorded": {
-    "description": "From LearnStrings.reviewRecorded (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: verdict after a review session"
   },
   "learnWeakChars": "Needs work",
   "@learnWeakChars": {
-    "description": "From LearnStrings.weakChars (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: heading over characters copied poorly"
   },
   "learnConfusions": "Confused",
   "@learnConfusions": {
-    "description": "From LearnStrings.confusions (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill summary: heading over characters mistaken for others"
   },
   "learnNoFeedbackWarning": "Sound, flash and haptics are all off - the screen will flash instead.",
   "@learnNoFeedbackWarning": {
-    "description": "From LearnStrings.noFeedbackWarning (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Receive drill: warning when sound, flash and haptics are all disabled"
   },
   "learnSendTitle": "Send",
   "@learnSendTitle": {
-    "description": "From LearnStrings.sendTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice screen: app bar title"
   },
   "learnSendThis": "Send this",
   "@learnSendThis": {
-    "description": "From LearnStrings.sendThis (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: label above the text the user should key"
   },
   "learnCopyFromMemory": "From memory",
   "@learnCopyFromMemory": {
-    "description": "From LearnStrings.copyFromMemory (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: app bar switch that hides the target so the user keys it from memory"
   },
   "learnHiddenTarget": "Hidden - key it from memory",
   "@learnHiddenTarget": {
-    "description": "From LearnStrings.hiddenTarget (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: placeholder replacing the hidden target text"
   },
   "learnDecoded": "Decoded",
   "@learnDecoded": {
-    "description": "From LearnStrings.decoded (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: label above the text decoded from the user's keying"
   },
   "learnWaitingForKey": "Start keying when ready",
   "@learnWaitingForKey": {
-    "description": "From LearnStrings.waitingForKey (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: shown before the user has keyed anything"
   },
   "learnRestart": "Restart",
   "@learnRestart": {
-    "description": "From LearnStrings.restart (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: button that clears the attempt and starts over"
   },
   "learnTryAnother": "Try another",
   "@learnTryAnother": {
-    "description": "From LearnStrings.tryAnother (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice result: button that picks a new target"
   },
   "learnKeyerStraight": "Straight",
   "@learnKeyerStraight": {
-    "description": "From LearnStrings.keyerStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Keyer type option: straight key (training settings, send practice)"
   },
   "learnKeyerIambicA": "Iambic A",
   "@learnKeyerIambicA": {
-    "description": "From LearnStrings.keyerIambicA (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Keyer type option: iambic paddles, mode A (technical term, usually kept)"
   },
   "learnKeyerIambicB": "Iambic B",
   "@learnKeyerIambicB": {
-    "description": "From LearnStrings.keyerIambicB (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Keyer type option: iambic paddles, mode B (technical term, usually kept)"
   },
   "learnLegendStraight": "Space = key",
   "@learnLegendStraight": {
-    "description": "From LearnStrings.legendStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: keyboard legend for the straight key"
   },
   "learnLegendPaddles": "Left Ctrl = dit, Right Ctrl = dah",
   "@learnLegendPaddles": {
-    "description": "From LearnStrings.legendPaddles (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: keyboard legend for paddles (left/right Ctrl)"
   },
   "learnSendClean": "Clean fist - nothing to fix.",
   "@learnSendClean": {
-    "description": "From LearnStrings.sendClean (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice result: shown when the keying had no timing issues ('fist' is ham slang for a sender's keying style)"
   },
   "learnSendIssues": "Rhythm notes",
   "@learnSendIssues": {
-    "description": "From LearnStrings.sendIssues (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice result: heading over the list of timing issues"
   },
   "learnYourSending": "Decoded as",
   "@learnYourSending": {
-    "description": "From LearnStrings.yourSending (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice result: label above what the user's keying decoded to"
   },
   "learnStraightKeyLabel": "KEY",
   "@learnStraightKeyLabel": {
-    "description": "From LearnStrings.straightKeyLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: label printed on the on-screen straight key (short, upper case in English)"
   },
   "learnDitLabel": "DIT",
   "@learnDitLabel": {
-    "description": "From LearnStrings.ditLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: label on the on-screen dit (short element) paddle"
   },
   "learnDahLabel": "DAH",
   "@learnDahLabel": {
-    "description": "From LearnStrings.dahLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice: label on the on-screen dah (long element) paddle"
   },
   "learnSettingsTitle": "Training settings",
   "@learnSettingsTitle": {
-    "description": "From LearnStrings.settingsTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings page: app bar title"
   },
   "learnCharacterSpeed": "Character speed",
   "@learnCharacterSpeed": {
-    "description": "From LearnStrings.characterSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: title of the character speed slider"
   },
   "learnFarnsworth": "Farnsworth spacing",
   "@learnFarnsworth": {
-    "description": "From LearnStrings.farnsworth (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: switch for Farnsworth spacing (stretched gaps between characters)"
   },
   "learnFarnsworthHelp": "Characters stay fast; the gaps between them stretch to this speed.",
   "@learnFarnsworthHelp": {
-    "description": "From LearnStrings.farnsworthHelp (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: explanation under the Farnsworth switch"
   },
   "learnEffectiveSpeed": "Effective speed",
   "@learnEffectiveSpeed": {
-    "description": "From LearnStrings.effectiveSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: title of the Farnsworth effective speed slider"
   },
   "learnTone": "Tone",
   "@learnTone": {
-    "description": "From LearnStrings.tone (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: title of the tone pitch slider"
   },
   "learnPlaySample": "Play sample",
   "@learnPlaySample": {
-    "description": "From LearnStrings.playSample (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: tooltip of the button that plays a sample at the chosen settings"
   },
   "learnSessionLength": "Session length",
   "@learnSessionLength": {
@@ -1893,555 +1936,559 @@
   },
   "learnFeedback": "Feedback",
   "@learnFeedback": {
-    "description": "From LearnStrings.feedback (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: section header over the switches that choose how Morse is output during drills (sound, screen flash, vibration) — not right/wrong feedback"
   },
   "learnSound": "Sound",
   "@learnSound": {
-    "description": "From LearnStrings.sound (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings, output section: switch that plays Morse as a sidetone"
   },
   "learnFlash": "Screen flash",
   "@learnFlash": {
-    "description": "From LearnStrings.flash (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings, output section: switch that flashes the screen in time with the Morse"
   },
   "learnHaptic": "Vibration",
   "@learnHaptic": {
-    "description": "From LearnStrings.haptic (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings, output section: switch that vibrates in time with the Morse"
   },
   "learnKeyer": "Keyer",
   "@learnKeyer": {
-    "description": "From LearnStrings.keyer (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: title of the keyer type selector"
   },
   "learnDailyGoal": "Daily goal",
   "@learnDailyGoal": {
-    "description": "From LearnStrings.dailyGoal (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Training settings: title of the daily goal slider (characters per day)"
   },
   "referenceReferenceTitle": "Morse reference",
   "@referenceReferenceTitle": {
-    "description": "From ReferenceStrings.referenceTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference tab: app bar title"
   },
   "referenceTranslatorTitle": "Translator",
   "@referenceTranslatorTitle": {
-    "description": "From ReferenceStrings.translatorTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator screen title and tooltip of the button that opens it"
   },
   "referencePlay": "Play",
   "@referencePlay": {
-    "description": "From ReferenceStrings.play (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference: button / tooltip that plays an entry or translated text as Morse"
   },
   "referenceStop": "Stop",
   "@referenceStop": {
-    "description": "From ReferenceStrings.stop (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference: button / tooltip that stops Morse playback"
   },
   "referenceClear": "Clear",
   "@referenceClear": {
-    "description": "From ReferenceStrings.clear (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference translator: tooltip of the button that clears keyed input"
   },
   "referenceClose": "Close",
   "@referenceClose": {
-    "description": "From ReferenceStrings.close (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference entry dialog: close button"
   },
   "referenceEmptyOutput": "—",
   "@referenceEmptyOutput": {
-    "description": "From ReferenceStrings.emptyOutput (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference translator: placeholder shown when the output is empty (a dash)"
   },
   "referenceSearchHint": "Search characters, prosigns, Q-codes…",
   "@referenceSearchHint": {
-    "description": "From ReferenceStrings.searchHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference tab: hint inside the search field"
   },
   "referenceClearSearch": "Clear search",
   "@referenceClearSearch": {
-    "description": "From ReferenceStrings.clearSearch (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference tab: tooltip of the button that clears the search"
   },
   "referenceNoResults": "Nothing matches your search.",
   "@referenceNoResults": {
-    "description": "From ReferenceStrings.noResults (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference tab: empty state when the search matches nothing"
   },
   "referenceSectionAlphabet": "Alphabet",
   "@referenceSectionAlphabet": {
-    "description": "From ReferenceStrings.sectionAlphabet (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: letters and digits"
   },
   "referenceSectionPunctuation": "Punctuation",
   "@referenceSectionPunctuation": {
-    "description": "From ReferenceStrings.sectionPunctuation (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: punctuation marks"
   },
   "referenceSectionProsigns": "Prosigns",
   "@referenceSectionProsigns": {
-    "description": "From ReferenceStrings.sectionProsigns (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: procedural signals such as AR, SK"
   },
   "referenceSectionQCodes": "Q-codes",
   "@referenceSectionQCodes": {
-    "description": "From ReferenceStrings.sectionQCodes (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: Q-codes such as QTH, QRZ"
   },
   "referenceSectionAbbreviations": "CW abbreviations",
   "@referenceSectionAbbreviations": {
-    "description": "From ReferenceStrings.sectionAbbreviations (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: common CW (Morse) abbreviations"
   },
   "referenceSectionKoch": "Koch order",
   "@referenceSectionKoch": {
-    "description": "From ReferenceStrings.sectionKoch (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference section tab: the Koch teaching order of characters"
   },
   "referenceAlphabetHint": "Tap a card to hear it. Long-press for a mnemonic.",
   "@referenceAlphabetHint": {
-    "description": "From ReferenceStrings.alphabetHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference alphabet: hint above the grid on tapping and long-pressing"
   },
   "referenceKochHint": "The order the Koch method introduces characters (LCWO sequence). Start with K and M; add one when you copy at 90 %.",
   "@referenceKochHint": {
-    "description": "From ReferenceStrings.kochHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference, Koch order section: explanation of the Koch character order"
   },
   "referenceMnemonicTitle": "Mnemonic",
   "@referenceMnemonicTitle": {
-    "description": "From ReferenceStrings.mnemonicTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference entry dialog: heading of the memory aid for a character"
   },
   "referenceMeaningLabel": "Meaning",
   "@referenceMeaningLabel": {
-    "description": "From ReferenceStrings.meaningLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference entry dialog: heading of the meaning of a prosign / Q-code / abbreviation"
   },
   "referencePlaybackSettings": "Playback settings",
   "@referencePlaybackSettings": {
-    "description": "From ReferenceStrings.playbackSettings (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings sheet title and tooltip of its button"
   },
   "referenceCharacterSpeed": "Character speed",
   "@referenceCharacterSpeed": {
-    "description": "From ReferenceStrings.characterSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings: character speed slider label"
   },
   "referenceFarnsworth": "Farnsworth spacing",
   "@referenceFarnsworth": {
-    "description": "From ReferenceStrings.farnsworth (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings: switch for Farnsworth spacing"
   },
   "referenceFarnsworthHelp": "Characters stay at full speed; gaps stretch to the effective speed.",
   "@referenceFarnsworthHelp": {
-    "description": "From ReferenceStrings.farnsworthHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings: explanation under the Farnsworth switch"
   },
   "referenceEffectiveSpeed": "Effective speed",
   "@referenceEffectiveSpeed": {
-    "description": "From ReferenceStrings.effectiveSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings: effective speed slider label"
   },
   "referenceTone": "Tone",
   "@referenceTone": {
-    "description": "From ReferenceStrings.tone (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Reference playback settings: tone pitch slider label"
   },
   "referenceModeTextToMorse": "Text → Morse",
   "@referenceModeTextToMorse": {
-    "description": "From ReferenceStrings.modeTextToMorse (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator: mode segment that converts text to Morse"
   },
   "referenceModeMorseToText": "Morse → Text",
   "@referenceModeMorseToText": {
-    "description": "From ReferenceStrings.modeMorseToText (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator: mode segment that converts Morse to text"
   },
   "referenceModeKey": "Key",
   "@referenceModeKey": {
-    "description": "From ReferenceStrings.modeKey (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator: mode segment where the user keys Morse by hand"
   },
   "referenceTextInputLabel": "Text",
   "@referenceTextInputLabel": {
-    "description": "From ReferenceStrings.textInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Text to Morse: label of the text input"
   },
   "referenceTextInputHint": "Type text to encode…",
   "@referenceTextInputHint": {
-    "description": "From ReferenceStrings.textInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Text to Morse: hint inside the text input"
   },
   "referencePatternOutputLabel": "Morse",
   "@referencePatternOutputLabel": {
-    "description": "From ReferenceStrings.patternOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Text to Morse: label above the dot-dash output"
   },
   "referenceCopyPattern": "Copy pattern",
   "@referenceCopyPattern": {
-    "description": "From ReferenceStrings.copyPattern (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Text to Morse: tooltip of the button that copies the dot-dash pattern"
   },
   "referencePatternCopied": "Pattern copied",
   "@referencePatternCopied": {
-    "description": "From ReferenceStrings.patternCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator: snackbar after the pattern was copied"
   },
   "referencePatternInputLabel": "Morse",
   "@referencePatternInputLabel": {
-    "description": "From ReferenceStrings.patternInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Morse to Text: label of the dot-dash input"
   },
   "referencePatternInputHint": "Type . and -, a space between letters, / between words",
   "@referencePatternInputHint": {
-    "description": "From ReferenceStrings.patternInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Morse to Text: hint explaining the input syntax (. and -, space, /); keep the symbols"
   },
   "referenceTextOutputLabel": "Text",
   "@referenceTextOutputLabel": {
-    "description": "From ReferenceStrings.textOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Morse to Text: label above the decoded text"
   },
   "referenceCopyText": "Copy text",
   "@referenceCopyText": {
-    "description": "From ReferenceStrings.copyText (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Morse to Text: tooltip of the button that copies the decoded text"
   },
   "referenceTextCopied": "Text copied",
   "@referenceTextCopied": {
-    "description": "From ReferenceStrings.textCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator: snackbar after the decoded text was copied"
   },
   "referenceUnknownPatternHelp": "Patterns with no character are shown as <pattern>.",
   "@referenceUnknownPatternHelp": {
-    "description": "From ReferenceStrings.unknownPatternHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Morse to Text: note on how undecodable patterns are shown; keep '<pattern>' as an example"
   },
   "referenceKeypadDit": "Dit",
   "@referenceKeypadDit": {
-    "description": "From ReferenceStrings.keypadDit (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator keypad: tooltip of the dit (short element) key"
   },
   "referenceKeypadDah": "Dah",
   "@referenceKeypadDah": {
-    "description": "From ReferenceStrings.keypadDah (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator keypad: tooltip of the dah (long element) key"
   },
   "referenceKeypadCharGap": "Letter gap",
   "@referenceKeypadCharGap": {
-    "description": "From ReferenceStrings.keypadCharGap (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator keypad: tooltip of the key inserting a gap between letters"
   },
   "referenceKeypadWordGap": "Word gap",
   "@referenceKeypadWordGap": {
-    "description": "From ReferenceStrings.keypadWordGap (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator keypad: tooltip of the key inserting a gap between words"
   },
   "referenceKeypadBackspace": "Backspace",
   "@referenceKeypadBackspace": {
-    "description": "From ReferenceStrings.keypadBackspace (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator keypad: tooltip of the backspace key"
   },
   "referenceKeyHint": "Press and hold the key to send. On a keyboard, hold Space.",
   "@referenceKeyHint": {
-    "description": "From ReferenceStrings.keyHint (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Key mode: hint on how to key (touch or Space bar)"
   },
   "referenceKeyLabel": "KEY",
   "@referenceKeyLabel": {
-    "description": "From ReferenceStrings.keyLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Key mode: label on the on-screen key (short, upper case in English)"
   },
   "referenceKeyDecodedLabel": "Decoded",
   "@referenceKeyDecodedLabel": {
-    "description": "From ReferenceStrings.keyDecodedLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Key mode: label above the decoded text"
   },
   "referenceKeyPendingLabel": "Keying",
   "@referenceKeyPendingLabel": {
-    "description": "From ReferenceStrings.keyPendingLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)"
+    "description": "Translator, Key mode: label above the character currently being keyed"
   },
   "statsTitle": "Statistics",
   "@statsTitle": {
-    "description": "From StatsStrings.title (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics screen: app bar title"
   },
   "statsLoading": "Loading your statistics...",
   "@statsLoading": {
-    "description": "From StatsStrings.loading (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics screen: shown while statistics load"
   },
   "statsLoadFailed": "Your progress could not be loaded. Pull down or reopen to retry.",
   "@statsLoadFailed": {
-    "description": "From StatsStrings.loadFailed (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics screen: error when progress could not be loaded"
   },
   "statsRetry": "Retry",
   "@statsRetry": {
-    "description": "From StatsStrings.retry (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics screen: button that retries loading"
   },
   "statsEmptyTitle": "No sessions yet",
   "@statsEmptyTitle": {
-    "description": "From StatsStrings.emptyTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: empty state title before any session"
   },
   "statsEmptyBody": "Finish your first receive or send session and this page fills up with your accuracy trend, per-character strengths and a practice calendar.",
   "@statsEmptyBody": {
-    "description": "From StatsStrings.emptyBody (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: empty state explanation of what the page will show"
   },
   "statsEmptyCallToAction": "Head to Learn and press \"Continue lesson\" to start.",
   "@statsEmptyCallToAction": {
-    "description": "From StatsStrings.emptyCallToAction (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: empty state call to action; the quoted button name must match learnContinueLesson"
   },
   "statsOverviewTitle": "Overview",
   "@statsOverviewTitle": {
-    "description": "From StatsStrings.overviewTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: title of the overview tiles section"
   },
   "statsTileLesson": "Koch lesson",
   "@statsTileLesson": {
-    "description": "From StatsStrings.tileLesson (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics overview: label of the Koch lesson tile"
   },
   "statsTileAccuracy": "Accuracy",
   "@statsTileAccuracy": {
-    "description": "From StatsStrings.tileAccuracy (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics overview / summary card: label of the accuracy tile"
   },
   "statsNoData": "--",
   "@statsNoData": {
-    "description": "From StatsStrings.noData (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: placeholder shown for a value that has no data yet"
   },
   "statsTilePractice": "Practice",
   "@statsTilePractice": {
-    "description": "From StatsStrings.tilePractice (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics overview: label of the practice totals tile"
   },
   "statsTileStreak": "Streak",
   "@statsTileStreak": {
-    "description": "From StatsStrings.tileStreak (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics overview / summary card: label of the streak tile"
   },
   "statsTileDailyGoal": "Daily goal",
   "@statsTileDailyGoal": {
-    "description": "From StatsStrings.tileDailyGoal (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics overview: label of the daily goal tile"
   },
   "statsGoalMet": "Reached today",
   "@statsGoalMet": {
-    "description": "From StatsStrings.goalMet (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, daily goal tile: detail line when today's goal is reached"
   },
   "statsSummaryTitle": "Your stats",
   "@statsSummaryTitle": {
-    "description": "From StatsStrings.summaryTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics summary card: title (the card is not placed on any screen at the moment)"
   },
   "statsSummaryOpen": "View statistics",
   "@statsSummaryOpen": {
-    "description": "From StatsStrings.summaryOpen (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics summary card: link that opens the statistics screen (the card is not placed on any screen at the moment)"
   },
   "statsTrendTitle": "Accuracy trend",
   "@statsTrendTitle": {
-    "description": "From StatsStrings.trendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: title of the accuracy trend chart"
   },
   "statsTrendHint": "Tap a point to inspect a session.",
   "@statsTrendHint": {
-    "description": "From StatsStrings.trendHint (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, accuracy trend chart: hint below the chart"
   },
   "statsSeriesReceive": "Receive",
   "@statsSeriesReceive": {
-    "description": "From StatsStrings.seriesReceive (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, accuracy trend chart: legend / tooltip for receive (copy) sessions"
   },
   "statsSeriesSend": "Send",
   "@statsSeriesSend": {
-    "description": "From StatsStrings.seriesSend (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, accuracy trend chart: legend / tooltip for send (keying) sessions"
   },
   "statsAxisSessions": "Session",
   "@statsAxisSessions": {
-    "description": "From StatsStrings.axisSessions (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, accuracy trend chart: x-axis label"
   },
   "statsCharsTitle": "Characters",
   "@statsCharsTitle": {
-    "description": "From StatsStrings.charsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: title of the per-character grid"
   },
   "statsCharsSubtitle": "Koch order. Tap a character for detail.",
   "@statsCharsSubtitle": {
-    "description": "From StatsStrings.charsSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid: subtitle"
   },
   "statsCharsNotStarted": "Not practised yet",
   "@statsCharsNotStarted": {
-    "description": "From StatsStrings.charsNotStarted (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid / detail: a character never practised"
   },
   "statsNotInCourse": "Not part of the Koch course",
   "@statsNotInCourse": {
-    "description": "From StatsStrings.notInCourse (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: character outside the Koch course"
   },
   "statsSrsTitle": "Spaced repetition",
   "@statsSrsTitle": {
-    "description": "From StatsStrings.srsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: heading of the spaced-repetition section"
   },
   "statsSrsNotTracked": "Not scheduled yet",
   "@statsSrsNotTracked": {
-    "description": "From StatsStrings.srsNotTracked (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: character not yet scheduled for review"
   },
   "statsSrsDueNow": "Due now",
   "@statsSrsDueNow": {
-    "description": "From StatsStrings.srsDueNow (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: character due for review now"
   },
   "statsConfusionsTitle": "Most often confused with",
   "@statsConfusionsTitle": {
-    "description": "From StatsStrings.confusionsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: heading over the characters it is confused with"
   },
   "statsConfusionsNone": "No confusions recorded",
   "@statsConfusionsNone": {
-    "description": "From StatsStrings.confusionsNone (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character detail: no confusions recorded"
   },
   "statsConfusionMissed": "missed",
   "@statsConfusionMissed": {
-    "description": "From StatsStrings.confusionMissed (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: shown in place of the answered character when nothing was typed (lower case)"
   },
   "statsBucketLegendTitle": "Accuracy",
   "@statsBucketLegendTitle": {
-    "description": "From StatsStrings.bucketLegendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid: title of the accuracy colour legend"
   },
   "statsBucketNone": "None",
   "@statsBucketNone": {
-    "description": "From StatsStrings.bucketNone (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid legend: no data bucket"
   },
   "statsBucketWeak": "< 70%",
   "@statsBucketWeak": {
-    "description": "From StatsStrings.bucketWeak (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid legend: accuracy under 70%"
   },
   "statsBucketFair": "70-89%",
   "@statsBucketFair": {
-    "description": "From StatsStrings.bucketFair (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid legend: accuracy 70 to 89%"
   },
   "statsBucketGood": "90-97%",
   "@statsBucketGood": {
-    "description": "From StatsStrings.bucketGood (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid legend: accuracy 90 to 97%"
   },
   "statsBucketStrong": ">= 98%",
   "@statsBucketStrong": {
-    "description": "From StatsStrings.bucketStrong (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, character grid legend: accuracy 98% or more"
   },
   "statsHeatmapTitle": "Confusions",
   "@statsHeatmapTitle": {
-    "description": "From StatsStrings.heatmapTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: title of the confusion heatmap"
   },
   "statsHeatmapSubtitle": "Rows are the sent character, columns what you answered. Darker means more often.",
   "@statsHeatmapSubtitle": {
-    "description": "From StatsStrings.heatmapSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: how to read rows and columns"
   },
   "statsHeatmapEmpty": "No confusions yet. Wrong answers will show up here.",
   "@statsHeatmapEmpty": {
-    "description": "From StatsStrings.heatmapEmpty (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: empty state"
   },
   "statsHeatmapLegendLow": "Rare",
   "@statsHeatmapLegendLow": {
-    "description": "From StatsStrings.heatmapLegendLow (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: legend end for rare confusions"
   },
   "statsHeatmapLegendHigh": "Frequent",
   "@statsHeatmapLegendHigh": {
-    "description": "From StatsStrings.heatmapLegendHigh (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: legend end for frequent confusions"
   },
   "statsHeatmapAxisTarget": "Sent",
   "@statsHeatmapAxisTarget": {
-    "description": "From StatsStrings.heatmapAxisTarget (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: row axis name (the character that was sent)"
   },
   "statsHeatmapAxisAnswered": "Answered",
   "@statsHeatmapAxisAnswered": {
-    "description": "From StatsStrings.heatmapAxisAnswered (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, confusion heatmap: column axis name (what the user answered)"
   },
   "statsCalendarTitle": "Practice calendar",
   "@statsCalendarTitle": {
-    "description": "From StatsStrings.calendarTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics: title of the practice calendar"
   },
   "statsCalendarSubtitle": "Last 12 weeks",
   "@statsCalendarSubtitle": {
-    "description": "From StatsStrings.calendarSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, practice calendar: the period shown"
   },
   "statsCalendarLegendLess": "Less",
   "@statsCalendarLegendLess": {
-    "description": "From StatsStrings.calendarLegendLess (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, practice calendar: legend end for little practice"
   },
   "statsCalendarLegendMore": "More",
   "@statsCalendarLegendMore": {
-    "description": "From StatsStrings.calendarLegendMore (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, practice calendar: legend end for much practice"
   },
   "statsStreakExplanation": "A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.",
   "@statsStreakExplanation": {
-    "description": "From StatsStrings.streakExplanation (apps/morsecq/lib/ui/stats/stats_strings.dart)"
+    "description": "Statistics, practice calendar: explanation of how a streak is counted"
   },
   "learnStatistics": "Statistics",
   "@learnStatistics": {
-    "description": "From LearnStrings.statistics (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Learn home: tooltip of the button that opens the statistics screen"
   },
   "listenTitle": "Listen",
   "@listenTitle": {
-    "description": "From ListenStrings.title (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen (microphone decoder) screen title and tooltip of the Reference button that opens it"
   },
   "listenStart": "Start",
   "@listenStart": {
-    "description": "From ListenStrings.start (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: button that starts decoding from the microphone"
   },
   "listenStop": "Stop",
   "@listenStop": {
-    "description": "From ListenStrings.stop (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: button that stops decoding"
   },
   "listenStarting": "Starting microphone...",
   "@listenStarting": {
-    "description": "From ListenStrings.starting (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: status while the microphone starts"
   },
   "listenClear": "Clear text",
   "@listenClear": {
-    "description": "From ListenStrings.clear (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: tooltip of the button that clears the decoded text"
   },
   "listenCopy": "Copy text",
   "@listenCopy": {
-    "description": "From ListenStrings.copy (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: tooltip of the button that copies the decoded text"
   },
   "listenCopied": "Decoded text copied",
   "@listenCopied": {
-    "description": "From ListenStrings.copied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: snackbar after the decoded text was copied"
   },
   "listenSettings": "Listen settings",
   "@listenSettings": {
-    "description": "From ListenStrings.settings (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings sheet title and tooltip of its button"
   },
   "listenDecoded": "Decoded",
   "@listenDecoded": {
-    "description": "From ListenStrings.decoded (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: label above the decoded text"
   },
   "listenEmptyHint": "Point the microphone at a Morse tone. Decoded text appears here.",
   "@listenEmptyHint": {
-    "description": "From ListenStrings.emptyHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: placeholder while listening but nothing decoded yet"
   },
   "listenIdleHint": "Tap Start to listen for a Morse tone.",
   "@listenIdleHint": {
-    "description": "From ListenStrings.idleHint (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: placeholder before listening starts; 'Start' refers to listenStart"
   },
   "listenPending": "Receiving",
   "@listenPending": {
-    "description": "From ListenStrings.pending (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: label of the character currently being received"
   },
   "listenSpeed": "Speed",
   "@listenSpeed": {
-    "description": "From ListenStrings.speed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: label of the estimated sending speed"
   },
   "listenSpeedUnknown": "-- WPM",
   "@listenSpeedUnknown": {
-    "description": "From ListenStrings.speedUnknown (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: shown instead of a speed before one can be estimated; same form as learnWpmUnknown"
   },
   "listenLevel": "Signal",
   "@listenLevel": {
-    "description": "From ListenStrings.level (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: label of the input signal level meter"
   },
   "listenToneOn": "Tone",
   "@listenToneOn": {
-    "description": "From ListenStrings.toneOn (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: label of the tone-detected indicator"
   },
   "listenTone": "Tone frequency",
   "@listenTone": {
-    "description": "From ListenStrings.tone (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: title of the tone frequency control"
   },
   "listenToneLocked": "Locked",
   "@listenToneLocked": {
-    "description": "From ListenStrings.toneLocked (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: auto-tune has locked onto a tone"
   },
   "listenToneSearching": "Searching",
   "@listenToneSearching": {
-    "description": "From ListenStrings.toneSearching (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: auto-tune is still searching for a tone"
   },
   "listenToneManual": "Manual",
   "@listenToneManual": {
-    "description": "From ListenStrings.toneManual (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: the frequency is tuned by hand"
   },
   "listenAutoTune": "Auto-tune",
   "@listenAutoTune": {
-    "description": "From ListenStrings.autoTune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: switch for automatic tone tracking"
   },
   "listenAutoTuneHelp": "Follow the strongest tone between 400 and 1000 Hz. Drag the slider to tune by hand instead.",
   "@listenAutoTuneHelp": {
-    "description": "From ListenStrings.autoTuneHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: explanation under the auto-tune switch"
   },
   "listenRetune": "Auto",
   "@listenRetune": {
-    "description": "From ListenStrings.retune (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: button that returns to automatic tuning (short)"
   },
   "listenBlockSize": "Analysis block",
   "@listenBlockSize": {
-    "description": "From ListenStrings.blockSize (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: title of the analysis block size setting"
   },
   "listenBlockSizeHelp": "Smaller blocks place mark edges more precisely but pick up more noise. 256 samples (5.3 ms) suits 5-40 WPM.",
   "@listenBlockSizeHelp": {
-    "description": "From ListenStrings.blockSizeHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: explanation of the analysis block size"
   },
   "listenMinElement": "Shortest element",
   "@listenMinElement": {
-    "description": "From ListenStrings.minElement (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: title of the shortest element (debounce) setting"
   },
   "listenMinElementHelp": "Tones and gaps shorter than this are ignored as clicks and dropouts.",
   "@listenMinElementHelp": {
-    "description": "From ListenStrings.minElementHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen settings: explanation of the shortest element setting"
   },
   "listenPermissionDenied": "Microphone access was denied. Allow it in the system settings, then try again.",
   "@listenPermissionDenied": {
-    "description": "From ListenStrings.permissionDenied (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen banner when microphone permission was denied"
   },
   "listenPermissionRetry": "Try again",
   "@listenPermissionRetry": {
-    "description": "From ListenStrings.permissionRetry (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen banner: button that retries starting the microphone"
   },
   "listenStartFailed": "Could not start the microphone.",
   "@listenStartFailed": {
-    "description": "From ListenStrings.startFailed (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen banner when the microphone could not be started"
   },
   "listenNoInput": "No microphone was found. Connect one and try again.",
   "@listenNoInput": {
-    "description": "From ListenStrings.noInput (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen banner when no microphone input device exists"
+  },
+  "listenStreamFailed": "The microphone stopped unexpectedly. Try again.",
+  "@listenStreamFailed": {
+    "description": "Listen banner shown when the microphone stream fails after capture has started."
   },
   "listenWpmValue": "{wpm} WPM",
   "@listenWpmValue": {
-    "description": "From ListenStrings.wpm; estimated speed, pre-rounded",
+    "description": "Listen screen: estimated sending speed in words per minute; wpm is pre-rounded",
     "placeholders": {
       "wpm": {
         "type": "int"
@@ -2450,7 +2497,7 @@
   },
   "listenHzValue": "{hz} Hz",
   "@listenHzValue": {
-    "description": "From ListenStrings.hz; detected / manual tone frequency, pre-rounded",
+    "description": "Listen screen / settings: detected or manual tone frequency in hertz; hz is pre-rounded",
     "placeholders": {
       "hz": {
         "type": "int"
@@ -2459,7 +2506,7 @@
   },
   "listenBlockSamples": "{samples} samples ({ms} ms)",
   "@listenBlockSamples": {
-    "description": "From ListenStrings.blockSamples; analysis block length, ms pre-formatted with one decimal",
+    "description": "Listen settings: analysis block length in samples and milliseconds; ms is pre-formatted with one decimal",
     "placeholders": {
       "samples": {
         "type": "int"
@@ -2471,7 +2518,7 @@
   },
   "listenMsValue": "{ms} ms",
   "@listenMsValue": {
-    "description": "From ListenStrings.ms; shortest-element debounce in milliseconds",
+    "description": "Listen settings: shortest-element debounce in milliseconds",
     "placeholders": {
       "ms": {
         "type": "int"
@@ -2480,47 +2527,47 @@
   },
   "listenStoppedInBackground": "Listening stopped while the app was in the background.",
   "@listenStoppedInBackground": {
-    "description": "From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: status when listening stopped because the app went to the background"
   },
-  "learnWpmUnknown": "- wpm",
+  "learnWpmUnknown": "-- WPM",
   "@learnWpmUnknown": {
-    "description": "From LearnStrings.wpmUnknown (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tips: shown instead of a speed when it could not be measured; same form as listenSpeedUnknown"
   },
   "learnTipDitTooLongTitle": "Dits too long",
   "@learnTipDitTooLongTitle": {
-    "description": "From LearnStrings.tipDitTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: dits were keyed too long"
   },
   "learnTipDahTooShortTitle": "Dahs too short",
   "@learnTipDahTooShortTitle": {
-    "description": "From LearnStrings.tipDahTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: dahs were keyed too short"
   },
   "learnTipIntraGapTooLongTitle": "Elements spread out",
   "@learnTipIntraGapTooLongTitle": {
-    "description": "From LearnStrings.tipIntraGapTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: gaps inside a character were too long"
   },
   "learnTipCharGapTooShortTitle": "Characters crowded",
   "@learnTipCharGapTooShortTitle": {
-    "description": "From LearnStrings.tipCharGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: gaps between characters were too short"
   },
   "learnTipWordGapTooShortTitle": "Words crowded",
   "@learnTipWordGapTooShortTitle": {
-    "description": "From LearnStrings.tipWordGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: gaps between words were too short"
   },
   "learnTipSpeedUnsteadyTitle": "Speed unsteady",
   "@learnTipSpeedUnsteadyTitle": {
-    "description": "From LearnStrings.tipSpeedUnsteadyTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip title: keying speed varied too much"
   },
   "learnSeverityMinor": "minor",
   "@learnSeverityMinor": {
-    "description": "From LearnStrings.severityMinor (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip: severity tag for a minor issue (lower case, shown next to the tip title)"
   },
   "learnSeverityModerate": "noticeable",
   "@learnSeverityModerate": {
-    "description": "From LearnStrings.severityModerate (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip: severity tag for a noticeable issue"
   },
   "learnSeveritySevere": "major",
   "@learnSeveritySevere": {
-    "description": "From LearnStrings.severitySevere (apps/morsecq/lib/ui/learn/learn_strings.dart)"
+    "description": "Send practice tip: severity tag for a major issue"
   },
   "notificationOpen": "Open",
   "@notificationOpen": {
@@ -2785,23 +2832,23 @@
   },
   "accountNewPasswordRequired": "Enter a new password",
   "@accountNewPasswordRequired": {
-    "description": "From AccountStrings.newPasswordRequired (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Change password page: validation error when the new password field is empty"
   },
   "accountToxIdQrSemantics": "Tox ID QR code",
   "@accountToxIdQrSemantics": {
-    "description": "From AccountStrings.toxIdQrSemantics (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Screen-reader label of the Tox ID QR code image"
   },
   "accountBackupSaveDialogTitle": "Save MorseCQ backup",
   "@accountBackupSaveDialogTitle": {
-    "description": "From AccountStrings.backupSaveDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Title of the system save-file dialog when exporting a backup (desktop)"
   },
   "accountBackupShareSubject": "MorseCQ identity backup",
   "@accountBackupShareSubject": {
-    "description": "From AccountStrings.backupShareSubject (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Subject line passed to the system share sheet when sharing a backup (mobile, e.g. e-mail subject)"
   },
   "accountBackupChooseDialogTitle": "Choose MorseCQ backup",
   "@accountBackupChooseDialogTitle": {
-    "description": "From AccountStrings.backupChooseDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)"
+    "description": "Title of the system open-file dialog when choosing a backup to restore"
   },
   "notificationNewMessages": "{count, plural, =1{1 new message} other{{count} new messages}}",
   "@notificationNewMessages": {
@@ -2912,11 +2959,11 @@
   },
   "listenStateOn": "On",
   "@listenStateOn": {
-    "description": "From ListenStrings.stateOn (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: value of the tone indicator when a tone is present (screen-reader)"
   },
   "listenStateOff": "Off",
   "@listenStateOff": {
-    "description": "From ListenStrings.stateOff (apps/morsecq/lib/ui/listen/listen_strings.dart)"
+    "description": "Listen screen: value of the tone indicator when no tone is present (screen-reader)"
   },
   "chatBytesLeftCount": "{count, plural, =1{1 byte left} other{{count} bytes left}}",
   "@chatBytesLeftCount": {
@@ -3027,28 +3074,92 @@
     "description": "Translator: shown in place of the code groups when the typed Chinese characters exist only in the other codebook"
   },
   "appearanceTitle": "Appearance",
+  "@appearanceTitle": {
+    "description": "Appearance page title and tooltip of the Learn home button that opens it"
+  },
   "appearanceStyles": "Interface style",
+  "@appearanceStyles": {
+    "description": "Appearance page: heading over the interface style choices"
+  },
   "appearanceChoose": "Choose a style, preview, then apply",
+  "@appearanceChoose": {
+    "description": "Appearance page: instruction under the style heading"
+  },
   "appearanceMode": "Brightness",
+  "@appearanceMode": {
+    "description": "Appearance page: heading over the light / dark choice"
+  },
   "appearancePreview": "Preview",
+  "@appearancePreview": {
+    "description": "Appearance page: heading over the live preview"
+  },
   "appearanceApply": "Apply style",
+  "@appearanceApply": {
+    "description": "Appearance page: button that saves the chosen style"
+  },
   "appearanceRestore": "Restore defaults",
+  "@appearanceRestore": {
+    "description": "Appearance page: button that resets style and brightness to defaults"
+  },
   "appearanceApplied": "Appearance saved",
+  "@appearanceApplied": {
+    "description": "Appearance page: snackbar after saving"
+  },
   "appearanceSaveFailed": "Could not save appearance. Try again.",
+  "@appearanceSaveFailed": {
+    "description": "Appearance page: snackbar when saving failed"
+  },
   "appearanceClassic": "Classic Brass",
+  "@appearanceClassic": {
+    "description": "Appearance style name (brass-instrument themed); translate as a name"
+  },
   "appearanceModern": "Modern Calm",
+  "@appearanceModern": {
+    "description": "Appearance style name (calm modern theme); translate as a name"
+  },
   "appearanceRadio": "Night Radio",
+  "@appearanceRadio": {
+    "description": "Appearance style name (dark radio-room theme); translate as a name"
+  },
   "appearancePaper": "Paper Handbook",
+  "@appearancePaper": {
+    "description": "Appearance style name (printed handbook theme); translate as a name"
+  },
   "appearanceCartoon": "Fresh Cartoon",
+  "@appearanceCartoon": {
+    "description": "Appearance style name (bright cartoon theme); translate as a name"
+  },
   "appearanceLight": "Light",
+  "@appearanceLight": {
+    "description": "Appearance page: light brightness option"
+  },
   "appearanceDark": "Dark",
+  "@appearanceDark": {
+    "description": "Appearance page: dark brightness option"
+  },
   "appearanceSubtitle": "Five styles with light and dark modes",
+  "@appearanceSubtitle": {
+    "description": "Subtitle describing the appearance options (currently unused)"
+  },
   "chatClearHistoryBody": "Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.",
+  "@chatClearHistoryBody": {
+    "description": "Conversation: body of the clear-history confirmation"
+  },
   "chatLoadEarlier": "Load earlier messages",
+  "@chatLoadEarlier": {
+    "description": "Conversation timeline: button at the top that loads older messages"
+  },
   "chatHistoryLoadFailed": "Could not load earlier messages. Tap to retry.",
+  "@chatHistoryLoadFailed": {
+    "description": "Conversation timeline: text of the button at the top when loading older messages failed; tapping it retries"
+  },
   "chatRetryHistory": "Retry",
+  "@chatRetryHistory": {
+    "description": "Conversation: button that retries loading the history after a failure"
+  },
   "chatNewMessages": "{count} new messages",
   "@chatNewMessages": {
+    "description": "Conversation: button shown while new messages arrived below the visible part of the timeline; tapping it jumps to the latest message",
     "placeholders": {
       "count": {
         "type": "int"
@@ -3057,6 +3168,7 @@
   },
   "learnShowAllChars": "Show all {count} characters",
   "@learnShowAllChars": {
+    "description": "Learn home, Koch lesson card: button that expands the learned-character list to all {count} characters",
     "placeholders": {
       "count": {
         "type": "int"
@@ -3075,5 +3187,8 @@
   "@chatSelfContactSubtitle": {
     "description": "Subtitle of the note-to-self entry at the top of Contacts"
   },
-  "learnShowFewerChars": "Show fewer characters"
+  "learnShowFewerChars": "Show fewer characters",
+  "@learnShowFewerChars": {
+    "description": "Learn home, Koch lesson card: button that collapses the expanded learned-character list"
+  }
 }

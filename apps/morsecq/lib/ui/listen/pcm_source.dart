@@ -18,6 +18,14 @@ abstract interface class PcmSource {
     required int channels,
   });
 
+  /// Whether the platform reports at least one audio input device: `true`
+  /// or `false` when it can enumerate devices, `null` when it cannot tell
+  /// (unsupported, or the query itself failed). Must not throw.
+  ///
+  /// Only consulted after [start] has thrown, to tell "no microphone" apart
+  /// from other start failures without parsing the platform's error text.
+  Future<bool?> hasInputDevice();
+
   /// Stops capture. Safe to call when not capturing.
   Future<void> stop();
 

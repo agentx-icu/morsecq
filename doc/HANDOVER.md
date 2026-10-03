@@ -39,7 +39,7 @@ dart pub get                        # pub workspace: one resolution at the root 
 for d in packages/* apps/*; do flutter analyze "$d"; done
 dart run tool/check_complexity.dart     # any .dart file > 500 lines fails (generated files and l10n exempt)
 dart run tool/import_guard.dart         # layering: only packages/morsecq_chat may import tim2tox_dart / tencent_*; pure-Dart packages must not import Flutter
-dart run tool/strings_to_arb.dart --check
+dart run tool/ui_literal_guard.dart     # no hard-coded user-visible strings in apps/morsecq/lib (exempt with // ui-literal-ok: <reason>)
 (cd apps/morsecq && flutter gen-l10n)   # after editing ARBs, regenerate lib/l10n/generated/
 
 # Tests (never run as a whole yet!)
@@ -65,7 +65,7 @@ packages/morsecq_chat      Flutter    Tim2Tox implementation of the contract (th
 apps/morsecq               app        lib/di (backend factories, AppScope, AppServices), lib/startup, lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,shell},
                                       lib/training (per-identity stores, TrainingControllerHost), lib/notifications, lib/lifecycle, lib/desktop, lib/i18n + lib/l10n
 third_party/tim2tox        submodule  never edit in place; third_party/stubs holds an empty stub for the Tencent UIKit common package
-tool/                      gates and scripts: check_complexity, import_guard, strings_to_arb, bootstrap_deps, ci/build_tim2tox.sh, gen_tray_icons
+tool/                      gates and scripts: check_complexity, import_guard, ui_literal_guard, bootstrap_deps, ci/build_tim2tox.sh, gen_tray_icons
 doc/                       documentation (English default + zh-CN)
 ```
 

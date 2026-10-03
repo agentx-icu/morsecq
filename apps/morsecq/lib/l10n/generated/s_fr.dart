@@ -129,6 +129,9 @@ class SFr extends S {
   String get languageSystemDefault => 'Langue du système';
 
   @override
+  String get languageSaveFailed => 'Impossible d’enregistrer la langue. Réessayez.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Leçon $lesson sur $total';
   }
@@ -215,7 +218,7 @@ class SFr extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1882,6 +1885,9 @@ class SFr extends S {
   String get listenNoInput => 'Aucun microphone trouvé. Connectez-en un et réessayez.';
 
   @override
+  String get listenStreamFailed => 'Le microphone s’est arrêté de façon inattendue. Réessayez.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1905,7 +1911,7 @@ class SFr extends S {
   String get listenStoppedInBackground => 'L’écoute s’est arrêtée lorsque l’application est passée en arrière-plan.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Points trop longs';

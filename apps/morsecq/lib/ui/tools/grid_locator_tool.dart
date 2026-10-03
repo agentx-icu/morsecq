@@ -146,6 +146,7 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
       onChanged: _changed,
       decoration: InputDecoration(
         labelText: label,
+        // ui-literal-ok: Maidenhead locator example, identical in every locale
         hintText: 'OM89ex',
         errorText: invalid ? s.toolsGridInvalidLocator : null,
         border: const OutlineInputBorder(),

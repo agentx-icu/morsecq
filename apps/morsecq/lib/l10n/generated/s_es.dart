@@ -129,6 +129,9 @@ class SEs extends S {
   String get languageSystemDefault => 'Predeterminado del sistema';
 
   @override
+  String get languageSaveFailed => 'No se pudo guardar el idioma. Inténtalo de nuevo.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Lección $lesson de $total';
   }
@@ -215,7 +218,7 @@ class SEs extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1881,6 +1884,9 @@ class SEs extends S {
   String get listenNoInput => 'No se encontró ningún micrófono. Conecta uno e inténtalo de nuevo.';
 
   @override
+  String get listenStreamFailed => 'El micrófono se detuvo inesperadamente. Inténtalo de nuevo.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1904,7 +1910,7 @@ class SEs extends S {
   String get listenStoppedInBackground => 'La escucha se detuvo mientras la aplicación estaba en segundo plano.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Puntos demasiado largos';

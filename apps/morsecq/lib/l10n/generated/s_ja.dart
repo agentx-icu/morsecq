@@ -129,6 +129,9 @@ class SJa extends S {
   String get languageSystemDefault => 'システムの設定に従う';
 
   @override
+  String get languageSaveFailed => '言語設定を保存できませんでした。もう一度お試しください。';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'レッスン $lesson / $total';
   }
@@ -211,7 +214,7 @@ class SJa extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1864,6 +1867,9 @@ class SJa extends S {
   String get listenNoInput => 'マイクが見つかりません。接続してから再試行してください。';
 
   @override
+  String get listenStreamFailed => 'マイクが予期せず停止しました。もう一度お試しください。';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1887,7 +1893,7 @@ class SJa extends S {
   String get listenStoppedInBackground => 'アプリがバックグラウンドに移ったため、受信を停止しました。';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => '短点が長すぎます';

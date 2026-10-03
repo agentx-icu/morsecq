@@ -129,6 +129,9 @@ class SRu extends S {
   String get languageSystemDefault => 'Как в системе';
 
   @override
+  String get languageSaveFailed => 'Не удалось сохранить язык. Попробуйте ещё раз.';
+
+  @override
   String learnLessonOf(int lesson, int total) {
     return 'Урок $lesson из $total';
   }
@@ -223,7 +226,7 @@ class SRu extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -1919,6 +1922,9 @@ class SRu extends S {
   String get listenNoInput => 'Микрофон не найден. Подключите его и попробуйте ещё раз.';
 
   @override
+  String get listenStreamFailed => 'Микрофон неожиданно отключился. Попробуйте ещё раз.';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1942,7 +1948,7 @@ class SRu extends S {
   String get listenStoppedInBackground => 'Прослушивание остановлено после перехода приложения в фоновый режим.';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => 'Слишком длинные точки';

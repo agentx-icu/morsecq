@@ -16,10 +16,14 @@
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <!-- Microphone: decoding Morse from audio (ui/listen, record). -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- android:localeConfig: lists MorseCQ under Android 13+ App languages
+         (parity with CFBundleLocalizations on iOS/macOS); see
+         res/xml/locale_config.xml for why it is hand-written. -->
     <application
         android:label="MorseCQ"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:localeConfig="@xml/locale_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"
