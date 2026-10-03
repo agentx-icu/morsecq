@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:tim2tox_dart/models/chat_message.dart' as t2t;
+import 'package:tim2tox_dart/models/send_control_result.dart';
 import 'package:tim2tox_dart/service/ffi_chat_service.dart';
 
 import '../adapters/key_value_store.dart';
@@ -19,6 +20,7 @@ import 'pending_message_status.dart';
 part 'chat_service_conversations.dart';
 part 'chat_service_friends.dart';
 part 'chat_service_groups.dart';
+part 'chat_service_messages.dart';
 
 /// [ChatService] over one live `FfiChatService` (Tim2Tox), following the
 /// [ChatEngine]'s session: bound while the identity is connected, detached
@@ -33,7 +35,9 @@ part 'chat_service_groups.dart';
 /// throws [ChatException] `not_connected`. Once connected, a send to a friend
 /// who is offline on the Tox network is queued by Tim2Tox and surfaces as a
 /// `pending` row; it drains when the friend comes back.
-class Tim2ToxChatService implements ChatService, IdentityDataStore {
+class Tim2ToxChatService
+    with _MessageManagement
+    implements ChatService, IdentityDataStore {
   Tim2ToxChatService({
     required ChatEngine engine,
     required IdentityService identity,
@@ -122,6 +126,7 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
     return ConversationIds.normalizeKey(full);
   }
 
+  @override
   MessageMapper get _mapper => MessageMapper(
     selfKey: _selfKey,
     selfName: _identity.current?.displayName ?? '',
@@ -144,6 +149,7 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
   /// so it fails the same way a call made while detached does
   /// ([_requireService]: `not_connected`). Callers place it after every
   /// await; the native side effect already happened and is not undone.
+  @override
   void _ensureCurrent(FfiChatService svc) {
     if (_isCurrent(svc)) return;
     throw const ChatException(
@@ -165,6 +171,7 @@ class Tim2ToxChatService implements ChatService, IdentityDataStore {
     _ensureCurrent(svc);
   }
 
+  @override
   FfiChatService _requireService() {
     final svc = _service;
     if (svc == null) {

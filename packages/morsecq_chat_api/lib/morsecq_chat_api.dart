@@ -11,4 +11,5 @@ library;
 
 export 'src/chat_service.dart';
 export 'src/identity_service.dart';
+export 'src/message_search.dart';
 export 'src/models.dart';

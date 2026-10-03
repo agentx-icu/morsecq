@@ -58,4 +58,35 @@ void main() {
       );
     },
   );
+
+  test('failed and cancelled rows map to their own statuses', () {
+    final now = DateTime.utc(2026);
+    t2t.ChatMessage row({bool failed = false, bool cancelled = false}) =>
+        t2t.ChatMessage(
+          msgID: 'id',
+          fromUserId: 'me',
+          text: 'CQ',
+          timestamp: now,
+          isSelf: true,
+          isFailed: failed,
+          isCancelled: cancelled,
+        );
+    expect(MessageMapper.statusOf(row(failed: true)), MessageStatus.failed);
+    expect(
+      MessageMapper.statusOf(row(cancelled: true)),
+      MessageStatus.cancelled,
+    );
+    // A cancelled row whose queue item outlived it (a crash between the two
+    // writes) is still cancelled: the drain drops that item.
+    final mapper = MessageMapper(
+      selfKey: 'SELF',
+      selfName: 'me',
+      nameOf: (_) => null,
+      isQueued: (_, _) => true,
+    );
+    expect(
+      mapper.map(row(cancelled: true), conversationId: 'c2c_PEER').status,
+      MessageStatus.cancelled,
+    );
+  });
 }

@@ -3,10 +3,12 @@ import 'dart:convert';
 
 import '../chat_service.dart';
 import '../identity_service.dart';
+import '../message_search.dart';
 import '../models.dart';
 import 'replay_stream.dart';
 
 part 'fake_chat_service_hooks.dart';
+part 'fake_chat_service_messages.dart';
 part 'fake_chat_service_self.dart';
 
 /// In-memory [ChatService] for widget tests and UI development without a
@@ -18,7 +20,7 @@ part 'fake_chat_service_self.dart';
 /// [conversations] is created on first send / draft. Given an [identity],
 /// the note-to-self conversation follows it (`fake_chat_service_self.dart`).
 /// Test hooks live in [FakeChatServiceTestHooks] (`fake_chat_service_hooks.dart`).
-final class FakeChatService implements ChatService {
+final class FakeChatService with _FakeMessageManagement implements ChatService {
   FakeChatService({
     String? selfPublicKey,
     IdentityService? identity,
@@ -46,9 +48,12 @@ final class FakeChatService implements ChatService {
   final DateTime Function() _clock;
   int _seq = 0;
 
+  @override
   final Map<String, Friend> _friends = <String, Friend>{};
   final List<FriendRequest> _friendRequests = <FriendRequest>[];
+  @override
   final Map<String, Conversation> _conversations = <String, Conversation>{};
+  @override
   final Map<String, List<ChatMessage>> _messages =
       <String, List<ChatMessage>>{};
   final Map<String, Group> _groups = <String, Group>{};
@@ -336,6 +341,7 @@ final class FakeChatService implements ChatService {
     _messageEvents.add(message);
   }
 
+  @override
   void _setStatus(String messageId, MessageStatus status) {
     for (final List<ChatMessage> list in _messages.values) {
       final int index = list.indexWhere((m) => m.id == messageId);

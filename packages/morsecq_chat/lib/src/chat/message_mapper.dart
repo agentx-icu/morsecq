@@ -70,20 +70,24 @@ class MessageMapper {
       senderName: isMine ? selfName : nameOf(sender),
       text: text,
       timestamp: m.timestamp,
-      status: isMine && (isQueued?.call(m, conversationId) ?? false)
+      // A cancelled row stays cancelled even while its queue item lingers
+      // (the drain drops it); otherwise the durable queue says pending.
+      status:
+          isMine &&
+              !m.isCancelled &&
+              (isQueued?.call(m, conversationId) ?? false)
           ? api.MessageStatus.pending
           : statusOf(m),
       isMine: isMine,
     );
   }
 
-  /// Tim2Tox has no distinct "failed" flag on the poll path: a drained item
-  /// that could not be sent is flipped `isPending: false` just like a
-  /// delivered one (`_markPendingItemFailed`). Until upstream carries the
-  /// failure (tracked for the tim2tox_core split), `sent` is the honest
-  /// mapping of "no longer pending".
+  /// Our rows: cancelled (`isCancelled`), failed (a queued send whose
+  /// drain failed: `isFailed`), still queued (`isPending`), else sent.
   static api.MessageStatus statusOf(t2t.ChatMessage m) {
     if (!m.isSelf) return api.MessageStatus.received;
+    if (m.isCancelled) return api.MessageStatus.cancelled;
+    if (m.isFailed) return api.MessageStatus.failed;
     return m.isPending ? api.MessageStatus.pending : api.MessageStatus.sent;
   }
 
