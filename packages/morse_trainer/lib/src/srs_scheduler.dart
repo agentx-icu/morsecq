@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'char_stats.dart';
 import 'session_score.dart';
 
 /// Leitner box state for one symbol.
@@ -109,11 +110,19 @@ final class SrsScheduler {
     SessionScore score, {
     required DateTime now,
     double passAccuracy = 0.9,
+  }) => applyCharStats(score.charStats, now: now, passAccuracy: passAccuracy);
+
+  /// [applyScore] over explicit per-symbol results (e.g. a score filtered to
+  /// the learned symbols).
+  SrsScheduler applyCharStats(
+    Map<String, CharStats> stats, {
+    required DateTime now,
+    double passAccuracy = 0.9,
   }) {
     var next = this;
-    final chars = score.charStats.keys.toList()..sort();
+    final chars = stats.keys.toList()..sort();
     for (final c in chars) {
-      final correct = score.charStats[c]!.accuracy >= passAccuracy;
+      final correct = stats[c]!.accuracy >= passAccuracy;
       final card = cards[c];
       if (correct && card != null && !card.isDue(now)) {
         continue;
@@ -181,7 +190,6 @@ final class SrsScheduler {
       },
     );
   }
-
 
   @override
   String toString() => 'SrsScheduler(${cards.length} cards, boxes $boxCounts)';
