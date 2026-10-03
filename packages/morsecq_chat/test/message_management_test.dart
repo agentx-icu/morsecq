@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq_chat/morsecq_chat.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
-import 'package:tim2tox_dart/models/chat_message.dart' as t2t;
 import 'package:tim2tox_dart/service/ffi_chat_service.dart';
 
 import 'helpers/fakes.dart';
@@ -89,32 +88,26 @@ void main() {
     expect(seen.last, 'CQ test 0');
   });
 
-  test(
-    'search never returns file rows (as history never shows them)',
-    () async {
-      final sent = await chat.sendText(cid, 'CQ text');
-      // A file a toxee peer pushed: in the engine's history, not a message.
-      final history = engineService.getHistory(kPeerKey);
-      history.add(
-        t2t.ChatMessage(
-          msgID: 'file-1',
-          fromUserId: kPeerKey,
-          text: 'CQ.bin',
-          timestamp: DateTime.now(),
-          isSelf: false,
-          filePath: '/tmp/cq.bin',
-        ),
-      );
-      expect(history.map((m) => m.msgID), contains('file-1'));
-      final page = await chat.searchMessages(
-        cid,
-        const MessageSearchQuery(text: 'cq'),
-      );
-      expect(page.results.map((m) => m.id), [sent.id]);
-      final around = await chat.loadAround(cid, sent.id);
-      expect(around.map((m) => m.id), [sent.id]);
-    },
-  );
+  test('search and jumps skip non-text rows (as history does)', () async {
+    final sent = await chat.sendText(cid, 'CQ text');
+    // A custom payload a toxee peer pushed: stored in the engine's
+    // history, but not a chat message.
+    expect(
+      engineService.ingestInboundC2cCustom(from: kPeerKey, data: 'CQ custom'),
+      isTrue,
+    );
+    expect(
+      engineService.getHistory(kPeerKey).map((m) => m.text),
+      contains('CQ custom'),
+    );
+    final page = await chat.searchMessages(
+      cid,
+      const MessageSearchQuery(text: 'cq'),
+    );
+    expect(page.results.map((m) => m.id), [sent.id]);
+    final around = await chat.loadAround(cid, sent.id);
+    expect(around.map((m) => m.id), [sent.id]);
+  });
 
   test('a cancelled search stops instead of returning results', () async {
     await chat.sendText(cid, 'CQ');
