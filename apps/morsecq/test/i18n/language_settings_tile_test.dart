@@ -97,7 +97,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('morsecq'), findsOneWidget);
+    expect(find.text('MorseCQ'), findsOneWidget);
     expect(identical(captured.s, S.of(captured)), isTrue);
   });
 }

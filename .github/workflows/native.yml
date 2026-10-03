@@ -659,5 +659,5 @@ jobs:
             gh release upload "$GITHUB_REF_NAME" dist/* --clobber -R "$GITHUB_REPOSITORY"
           else
             gh release create "$GITHUB_REF_NAME" dist/* --draft --verify-tag \
-              --title "morsecq $GITHUB_REF_NAME" --generate-notes -R "$GITHUB_REPOSITORY"
+              --title "MorseCQ $GITHUB_REF_NAME" --generate-notes -R "$GITHUB_REPOSITORY"
           fi

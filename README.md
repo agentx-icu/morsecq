@@ -1,8 +1,8 @@
 [简体中文](./README.zh-CN.md)
 
-# morsecq
+# MorseCQ
 
-**Talk in Morse code.** morsecq is a Morse code trainer and a serverless,
+**Talk in Morse code.** MorseCQ is a Morse code trainer and a serverless,
 peer-to-peer Morse chat built on the [Tox](https://tox.chat) network. Learn the
 code with structured lessons and keying drills, then key it to real people —
 one-to-one or in group nets — with no server in the middle. It speaks the same
@@ -65,7 +65,7 @@ launch and is required for training as well as chat.
   Goertzel tone detection, auto-tune, envelope gate) with the `record` plugin
   feeding PCM into `AudioMorseDecoder`.
 - **Chat** — add friends by Tox ID or QR code; messages travel as plain text so
-  any Tim2Tox client (including toxee) can read them, and morsecq replays them
+  any Tim2Tox client (including toxee) can read them, and MorseCQ replays them
   as dits and dahs at the *listener's* chosen speed. Bubbles show dot/dash
   pattern, plain text and a play button; "listen first, then reveal" training
   mode; keyboard / straight-key / paddle input with pre-listen; offline queue
@@ -157,6 +157,6 @@ The product and architecture plan is
 
 ## Licence
 
-morsecq is free software, released under the **GNU General Public License
-v3.0**. See [LICENSE](LICENSE). Copyright the morsecq contributors
+MorseCQ is free software, released under the **GNU General Public License
+v3.0**. See [LICENSE](LICENSE). Copyright the MorseCQ contributors
 (agentx-icu).

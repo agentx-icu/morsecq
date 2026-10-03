@@ -1,8 +1,8 @@
 [English](./ADDING_A_LANGUAGE.md)
 
-# 为 morsecq 添加一种界面语言
+# 为 MorseCQ 添加一种界面语言
 
-morsecq 通过 Flutter 的 `gen-l10n` 提供英语（`en`，模板）和简体中文（`zh`）。本页端到端地说明
+MorseCQ 通过 Flutter 的 `gen-l10n` 提供英语（`en`，模板）和简体中文（`zh`）。本页端到端地说明
 本地化是如何接线的，并给出添加第三种语言的确切步骤；参照对象是姊妹项目 toxee 发布
 `ar` / `en` / `ja` / `ko` / `zh_Hans` / `zh_Hant` 的方式（那边的 `/home/user/toxee/l10n.yaml`、
 `lib/util/locale_controller.dart`、`test/l10n/arb_completeness_test.dart`）。
@@ -132,7 +132,7 @@ cp app_en.arb app_ja.arb
 ```json
 {
   "@@locale": "ja",
-  "appName": "morsecq",
+  "appName": "MorseCQ",
   ...
 }
 ```
@@ -143,7 +143,7 @@ cp app_en.arb app_ja.arb
 - ICU 复数必须保留 `other{…}` 分支：`{count, plural, =1{1 session} other{{count} sessions}}`。
   没有复数形式的语言（ja、zh、ko）通常折叠为 `{count, plural, other{{count} 回}}`——
   保留模板中已有的任何 `=0` 特例。
-- `appName` 保持为 `morsecq`（产品名，测试要求两边相同）。
+- `appName` 保持为 `MorseCQ`（产品名，测试要求两边相同）。
 - `@key` 元数据块在模板之外是可选的；保留无害，删除则让文件更短。迁移工具会给它添加的未翻译条目
   打上 `"description": "@@TODO(l10n): …"`；`grep -n '@@TODO' apps/morsecq/lib/l10n/app_ja.arb`
   可列出待办。
@@ -196,7 +196,7 @@ cd apps/morsecq && flutter test test/i18n
 
 - **iOS / macOS**：Flutter 从 `NSLocale` 读取设备区域设置，但只有当 `CFBundleLocalizations`
   列出了这些语言时，iOS 才会在"设置"中提供按 App 切换语言的选项。toxee 在
-  `ios/Runner/Info.plist` 中声明了 `en`、`zh-Hans`、`zh-Hant`；morsecq 的
+  `ios/Runner/Info.plist` 中声明了 `en`、`zh-Hans`、`zh-Hant`；MorseCQ 的
   `apps/morsecq/ios/Runner/Info.plist` 还没有这个数组——添加语言时请加一个，列出所有已发布的标签
   （BCP-47 形式：`ja`、`zh-Hans`、`zh-Hant`）。`macos/Runner/Info.plist` 同理。
 - **Android**：无需改动。如果以后用 `resourceConfigurations` / `resConfigs` 缩小 APK，

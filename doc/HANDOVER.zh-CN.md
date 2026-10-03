@@ -1,13 +1,13 @@
 [English](./HANDOVER.md)
 
-# morsecq 交接文档
+# MorseCQ 交接文档
 
 > 写给接手的下一位 AI / 工程师。日期 2026-09-30，`master` 最新提交 `3e98693`，共 18 个提交，工作树干净。原稿为中文，与英文版冲突时以本文为准。
 
 ## 1. 三句话说清项目
 
-- **morsecq** 是一款跨平台（Android / iOS / macOS / Windows / Linux）Flutter 应用：学莫斯电码（Koch 法训练）+ 用莫斯电码聊天（单聊、群聊），聊天走 **Tox P2P** 网络，无服务器、无手机号，首启创建一个 Tox 身份，训练进度也按身份保存。
-- 通信栈复用姊妹项目 **toxee**（`agentx-icu/toxee`）打磨过的 **Tim2Tox**（`third_party/tim2tox` 子模块，GPL-3.0）。morsecq 只用 Tim2Tox 的 `FfiChatService`，不装腾讯 UIKit 界面；消息在线路上是纯文本，因此与 toxee 用户互通。
+- **MorseCQ** 是一款跨平台（Android / iOS / macOS / Windows / Linux）Flutter 应用：学莫斯电码（Koch 法训练）+ 用莫斯电码聊天（单聊、群聊），聊天走 **Tox P2P** 网络，无服务器、无手机号，首启创建一个 Tox 身份，训练进度也按身份保存。
+- 通信栈复用姊妹项目 **toxee**（`agentx-icu/toxee`）打磨过的 **Tim2Tox**（`third_party/tim2tox` 子模块，GPL-3.0）。MorseCQ 只用 Tim2Tox 的 `FfiChatService`，不装腾讯 UIKit 界面；消息在线路上是纯文本，因此与 toxee 用户互通。
 - 全部功能代码已写完并推送，**analyzer / 复杂度 / 分层 / ARB 门禁全绿。2026-09-30（第二个会话）：首次跑了全量测试——7 个包/应用共 750 个测试，修掉 32 个失败（9 个产品 bug，其余是过期的测试；见方案变更日志 v0.3.6）后全绿。仍未做真机构建**；macOS arm64 原生库已在真实 Mac 上构建成功，其它平台只在 CI runner 上构建过。
 
 ## 2. 先读什么
@@ -79,7 +79,7 @@ doc/                       文档（英文默认 + zh-CN）
 2. **B 变体运行模式。** 不装 `Tim2ToxSdkPlatform`、不启 FakeUIKit，但**必须调用 `setNativeLibraryName('tim2tox_ffi')`**（`NativeLibrarySetup.ensure()` 在 `MorsecqChatBackend.create` 里做），因为 `quitGroup`、`DartGetGroupMemberList`、`DartInviteUserToGroup` 仍走腾讯绑定。`TIMManager.initSDK` 绝不能调用（会装上第二条入站路径）。SDK 的进程级自定义回调钩子由 `engine/native_callbacks.dart`（`NativeCustomCallbacks`）接管：把 `friendAddResult`（没有它 `addFriend` 要等 30 s 超时才返回）和 `DartNotifyGroup*` 通知路由到当前 session；`groupChatIdStored`/`groupTypeStored` 退回拉取 `syncGroupIdentitiesFromNative()`。
 3. **离线群邀请重放**由 `morsecq_chat` 自己的 `ConversationMetaStore` 维护，不用 Tim2Tox 的（它依赖 initSDK）。
 4. **Tim2Tox 轮询路径分不出 `failed` 与 `sent`**，`MessageStatus.failed` 目前不会出现（上游问题）。
-5. **腾讯 SDK 是隐性编译依赖。** `tim2tox_dart` 声明 `tencent_cloud_chat_sdk: any`，靠 `tool/bootstrap_deps.dart` 生成的 `pubspec_overrides.yaml` pin 到 8.9.7540+3 并打 22 个补丁；`tencent_cloud_chat_common` 用 `third_party/stubs` 空桩满足。`flutter_secure_storage` 必须 `^11`（9.x 的 `win32 ^5` 与 `share_plus` 冲突）。 自 2026-09-30 起 bootstrap 还会叠加 morsecq 的 overlay（`third_party/overlays/tencent_cloud_chat_sdk/`，`tool/vendor_overlay.dart`）：插件的平台半边换成空操作桩，不再链接或打包任何腾讯原生 SDK（`TXIMSDK_Plus_*`、`imsdk-plus` AAR、`libdart_native_imsdk.so`、`ImSDK.dll`）；vendor state 里的 `overlay_sha256` 由 `--offline-check-only` 校验。
+5. **腾讯 SDK 是隐性编译依赖。** `tim2tox_dart` 声明 `tencent_cloud_chat_sdk: any`，靠 `tool/bootstrap_deps.dart` 生成的 `pubspec_overrides.yaml` pin 到 8.9.7540+3 并打 22 个补丁；`tencent_cloud_chat_common` 用 `third_party/stubs` 空桩满足。`flutter_secure_storage` 必须 `^11`（9.x 的 `win32 ^5` 与 `share_plus` 冲突）。 自 2026-09-30 起 bootstrap 还会叠加 MorseCQ 的 overlay（`third_party/overlays/tencent_cloud_chat_sdk/`，`tool/vendor_overlay.dart`）：插件的平台半边换成空操作桩，不再链接或打包任何腾讯原生 SDK（`TXIMSDK_Plus_*`、`imsdk-plus` AAR、`libdart_native_imsdk.so`、`ImSDK.dll`）；vendor state 里的 `overlay_sha256` 由 `--offline-check-only` 校验。
 6. **原生库**：`tool/ci/build_tim2tox.sh` 默认 `--no-toxav`（`--toxav` 直接报错）、`TIM2TOX_DISABLE_SQLITE=ON`、libsodium 1.0.20 静态链接。macOS 以裸 `libtim2tox_ffi.dylib` 放 `Contents/Frameworks`；iOS 为 xcframework 经 CocoaPods 嵌入；Android jniLibs 缺库时 Gradle 直接失败（`-PmorsecqAllowMissingFfi=true` 可放行 UI-only 构建）。已跑过的：macOS（真实 Mac 上 release 构建，应用可启动）、iOS（真实 Mac 上 XCFramework + `pod install`；未做设备构建）、Android / Windows / Linux 原生库在 CI runner 上、Linux / macOS / Windows 应用构建在 CI 上；Mac 上构建过 UI-only 的 Android debug APK（2026-09-30）；Android 与 iOS 应用尚未在设备上运行过。
 7. **iOS 后台**只声明 `audio`（无 ToxAV 故不能声明 `voip`），后台约 30 秒后断连，产品上按「打开即收」预期；`AppLifecycleCoordinator` 在恢复时重连。
 8. **插件版本 pin 的原因**：`flutter_soloud ^4.1.7`（5.x 需要 Flutter 3.41.9 没有的 `meta`）、`record ^6.2.1`（7.x 需 Dart 3.12）、`tray_manager ^0.5.3`（0.6+ 是无平台声明的 FFI 重写）、`torch_light ^1.1.0`、`flutter_local_notifications ^22.3.1`（Windows 原生 toast）。
@@ -87,8 +87,8 @@ doc/                       文档（英文默认 + zh-CN）
 10. **参考手册的 SoLoud 播放器懒创建**（首次播放/键控时），否则外壳 `IndexedStack` 一构建就碰音频引擎，测试与无声卡环境会崩。
 11. **多语言**：`LocaleController.active` 由 `AppScope` 设置，`currentS()` 供无 `BuildContext` 代码使用；`AppServices.dispose()` 必须在任何 `await` 之前同步释放 `StringsResolver`（`AppScope` 随后就 dispose 控制器）。Android 通知渠道名会跟随语言切换（`LocalNotificationsApi.refreshStrings`，经 `AppServices` → `NotificationCenter` 接线，2026-09-30）；重要性与提示音仍按 Android 规则在首次创建时冻结。
 12. **应用级偏好**（语言、窗口位置）存 `<application support>/settings.json`；**按身份的数据**（训练进度、聊天历史）在 `IdentityService.dataDirectory()` 下，随身份备份（`MCQB` 容器）一起迁移。
-13. 许可证：Tim2Tox 与 morsecq 均 GPL-3.0，**与 App Store 条款存在已知冲突**，尚未拍板（规划 §3.4 / §9）。iOS 上架不能作为任何时间盒的验收门。
-14. **SoLoud 引擎是进程级单例，按租约共享。** 每个 `SidetoneSink` 经 `FlutterSoloudApi` 持一份 `EngineLeases` 租约，只有最后一份释放才关闭由我们启动的引擎；引擎在首次 `init()` 时才解析（原生库加载失败会落在 `prepare()` 里，Learn 页回落为闪屏）。不要在别处直接 `SoLoud.instance.init/deinit`。Linux / Windows 的 CMake 设了 `NO_XIPH_LIBS`（flutter_soloud 自带的 libopus 需要 glibc 2.43，Ubuntu 24.04 上加载失败；morsecq 只放正弦波）。
+13. 许可证：Tim2Tox 与 MorseCQ 均 GPL-3.0，**与 App Store 条款存在已知冲突**，尚未拍板（规划 §3.4 / §9）。iOS 上架不能作为任何时间盒的验收门。
+14. **SoLoud 引擎是进程级单例，按租约共享。** 每个 `SidetoneSink` 经 `FlutterSoloudApi` 持一份 `EngineLeases` 租约，只有最后一份释放才关闭由我们启动的引擎；引擎在首次 `init()` 时才解析（原生库加载失败会落在 `prepare()` 里，Learn 页回落为闪屏）。不要在别处直接 `SoLoud.instance.init/deinit`。Linux / Windows 的 CMake 设了 `NO_XIPH_LIBS`（flutter_soloud 自带的 libopus 需要 glibc 2.43，Ubuntu 24.04 上加载失败；MorseCQ 只放正弦波）。
 15. **集成测试 / 截图的坑**：两次 `pumpWidget` 根类型相同会被原地更新，每个 `MorsecqApp` 要有不同 `key`；SnackBar 会盖住发送按钮，点击一律走 `tapHittable`；桌面上一次 `flutter test` 只跑一个集成测试文件（多文件时第二次启动连不上调试器）；`window_manager.setSize` 设的是外框，harness 会补回标题栏；CI 的 Windows runner 需先把分辨率调到 1920×1080，Linux runner 需装 `fonts-noto-cjk`；flutter_soloud 在 pub cache 里用 CMake 构建 macOS 库，换 Xcode 后要删掉缓存里的 `cmake_build`。worktree 里跑 iOS/macOS 前要从主 checkout 复制被 gitignore 的 `ios/Frameworks/tim2tox_ffi.xcframework` 与 `macos/Frameworks/libtim2tox_ffi.dylib`；Android UI-only 构建需 `ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true`。截图用法见 `tool/screenshots/README.zh-CN.md`。
 
 ## 6. 现状：做完了什么

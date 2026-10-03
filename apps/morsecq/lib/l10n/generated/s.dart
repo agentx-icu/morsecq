@@ -98,7 +98,7 @@ abstract class S {
   /// Product name; never translated
   ///
   /// In en, this message translates to:
-  /// **'morsecq'**
+  /// **'MorseCQ'**
   String get appName;
 
   /// Shell destination: Morse training
@@ -710,7 +710,7 @@ abstract class S {
   /// From AccountStrings.startupFailedBody (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'morsecq could not read your identity. Nothing was changed; you can try again.'**
+  /// **'MorseCQ could not read your identity. Nothing was changed; you can try again.'**
   String get accountStartupFailedBody;
 
   /// From AccountStrings.connectionTapToReconnect (apps/morsecq/lib/ui/account/account_strings.dart)
@@ -728,7 +728,7 @@ abstract class S {
   /// From AccountStrings.welcomeIntro (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'morsecq uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.'**
+  /// **'MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.'**
   String get accountWelcomeIntro;
 
   /// From AccountStrings.welcomePointNoServer (apps/morsecq/lib/ui/account/account_strings.dart)
@@ -842,7 +842,7 @@ abstract class S {
   /// From AccountStrings.backupContinue (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'Continue to morsecq'**
+  /// **'Continue to MorseCQ'**
   String get accountBackupContinue;
 
   /// From AccountStrings.backupShowQrHint (apps/morsecq/lib/ui/account/account_strings.dart)
@@ -860,7 +860,7 @@ abstract class S {
   /// From AccountStrings.restoreBody (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'Choose a backup file exported from morsecq. If the identity was protected with a password you will need it here.'**
+  /// **'Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.'**
   String get accountRestoreBody;
 
   /// From AccountStrings.restoreChooseFile (apps/morsecq/lib/ui/account/account_strings.dart)
@@ -890,7 +890,7 @@ abstract class S {
   /// From AccountStrings.restoreInvalidFile (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'This file is not a morsecq backup.'**
+  /// **'This file is not a MorseCQ backup.'**
   String get accountRestoreInvalidFile;
 
   /// From AccountStrings.restoreReplacesWarning (apps/morsecq/lib/ui/account/account_strings.dart)
@@ -1436,7 +1436,7 @@ abstract class S {
   /// From ChatStrings.defaultRequestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'morsecq CQ'**
+  /// **'MorseCQ CQ'**
   String get chatDefaultRequestMessage;
 
   /// From ChatStrings.sendRequest (apps/morsecq/lib/ui/chat/chat_strings.dart)
@@ -3128,19 +3128,19 @@ abstract class S {
   /// From AccountStrings.backupSaveDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'Save morsecq backup'**
+  /// **'Save MorseCQ backup'**
   String get accountBackupSaveDialogTitle;
 
   /// From AccountStrings.backupShareSubject (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'morsecq identity backup'**
+  /// **'MorseCQ identity backup'**
   String get accountBackupShareSubject;
 
   /// From AccountStrings.backupChooseDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
   ///
   /// In en, this message translates to:
-  /// **'Choose morsecq backup'**
+  /// **'Choose MorseCQ backup'**
   String get accountBackupChooseDialogTitle;
 
   /// Collapsed summary under Android inbox-style grouped message notifications

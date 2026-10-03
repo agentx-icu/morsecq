@@ -9,7 +9,7 @@ class SZh extends S {
   SZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => 'morsecq';
+  String get appName => 'MorseCQ';
 
   @override
   String get navLearn => '学习';
@@ -500,7 +500,7 @@ class SZh extends S {
   String get accountStartupFailedTitle => '无法启动';
 
   @override
-  String get accountStartupFailedBody => 'morsecq 无法读取你的身份。没有做任何更改；你可以重试。';
+  String get accountStartupFailedBody => 'MorseCQ 无法读取你的身份。没有做任何更改；你可以重试。';
 
   @override
   String get accountConnectionTapToReconnect => '点按重新连接';
@@ -509,7 +509,7 @@ class SZh extends S {
   String get accountWelcomeTitle => '你的身份只保存在这台设备上';
 
   @override
-  String get accountWelcomeIntro => 'morsecq 使用 Tox 点对点网络。没有服务器，也无需注册账号：你的身份是一对只保存在本机的密钥。';
+  String get accountWelcomeIntro => 'MorseCQ 使用 Tox 点对点网络。没有服务器，也无需注册账号：你的身份是一对只保存在本机的密钥。';
 
   @override
   String get accountWelcomePointNoServer => '没有服务器，不需要手机号或电子邮件。报务员之间直接用莫尔斯电码通联。';
@@ -566,7 +566,7 @@ class SZh extends S {
   String get accountBackupAcknowledge => '我了解：没有这份备份，我的身份将无法找回。';
 
   @override
-  String get accountBackupContinue => '进入 morsecq';
+  String get accountBackupContinue => '进入 MorseCQ';
 
   @override
   String get accountBackupShowQrHint => '朋友通过你的 Tox ID 添加你。可以以文本或二维码的形式分享。';
@@ -575,7 +575,7 @@ class SZh extends S {
   String get accountRestoreTitle => '从备份恢复';
 
   @override
-  String get accountRestoreBody => '选择一个由 morsecq 导出的备份文件。如果该身份设置了密码，这里需要输入。';
+  String get accountRestoreBody => '选择一个由 MorseCQ 导出的备份文件。如果该身份设置了密码，这里需要输入。';
 
   @override
   String get accountRestoreChooseFile => '选择备份文件';
@@ -590,7 +590,7 @@ class SZh extends S {
   String get accountRestoring => '恢复中…';
 
   @override
-  String get accountRestoreInvalidFile => '这个文件不是 morsecq 备份。';
+  String get accountRestoreInvalidFile => '这个文件不是 MorseCQ 备份。';
 
   @override
   String get accountRestoreReplacesWarning => '恢复将替换当前设备上的身份。';
@@ -865,7 +865,7 @@ class SZh extends S {
   String get chatRequestMessage => '附言';
 
   @override
-  String get chatDefaultRequestMessage => 'morsecq CQ';
+  String get chatDefaultRequestMessage => 'MorseCQ CQ';
 
   @override
   String get chatSendRequest => '发送请求';
@@ -1761,13 +1761,13 @@ class SZh extends S {
   String get accountToxIdQrSemantics => 'Tox ID 二维码';
 
   @override
-  String get accountBackupSaveDialogTitle => '保存 morsecq 备份';
+  String get accountBackupSaveDialogTitle => '保存 MorseCQ 备份';
 
   @override
-  String get accountBackupShareSubject => 'morsecq 身份备份';
+  String get accountBackupShareSubject => 'MorseCQ 身份备份';
 
   @override
-  String get accountBackupChooseDialogTitle => '选择 morsecq 备份';
+  String get accountBackupChooseDialogTitle => '选择 MorseCQ 备份';
 
   @override
   String notificationNewMessages(int count) {

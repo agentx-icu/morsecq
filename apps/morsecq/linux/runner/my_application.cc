@@ -14,6 +14,23 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
+// Sets the window / taskbar icon. Installed packages ship the themed
+// "morsecq" icon (hicolor, matching Icon= in icu.agentx.morsecq.desktop); a
+// bare bundle falls back to data/morsecq.png next to the executable. Without
+// either, X11 window managers that read _NET_WM_ICON show a generic icon.
+static void set_window_icon(GtkWindow* window) {
+  if (gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "morsecq")) {
+    gtk_window_set_icon_name(window, "morsecq");
+    return;
+  }
+  g_autofree gchar* exe = g_file_read_link("/proc/self/exe", nullptr);
+  if (exe == nullptr) return;
+  g_autofree gchar* dir = g_path_get_dirname(exe);
+  g_autofree gchar* path =
+      g_build_filename(dir, "data", "morsecq.png", nullptr);
+  gtk_window_set_icon_from_file(window, path, nullptr);
+}
+
 // Called when first Flutter frame received.
 static void first_frame_cb(MyApplication* self, FlView* view) {
   gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
@@ -45,14 +62,15 @@ static void my_application_activate(GApplication* application) {
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "morsecq");
+    gtk_header_bar_set_title(header_bar, "MorseCQ");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   } else {
-    gtk_window_set_title(window, "morsecq");
+    gtk_window_set_title(window, "MorseCQ");
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  set_window_icon(window);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(

@@ -115,6 +115,7 @@ class _ConversationListState extends State<ConversationList> {
               if (_query.isNotEmpty)
                 IconButton(
                   icon: const Icon(Icons.clear),
+                  tooltip: MaterialLocalizations.of(context).clearButtonTooltip,
                   onPressed: _search.clear,
                 ),
             ],

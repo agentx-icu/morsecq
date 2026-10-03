@@ -76,9 +76,9 @@ Added at `<manifest>` level:
 they are repeated so the runtime permission the app asks for is visible in the
 app's manifest. **No** `ScheduledNotificationReceiver` /
 `ScheduledNotificationBootReceiver` (they exist for *scheduled* notifications;
-morsecq only posts live ones from the Tox poll loop) and **no**
+MorseCQ only posts live ones from the Tox poll loop) and **no**
 `ActionBroadcastReceiver` (no notification actions). No foreground service:
-morsecq does not ship toxee's `ToxPollingService`; if the product later wants
+MorseCQ does not ship toxee's `ToxPollingService`; if the product later wants
 Android background polling, that is a separate native service plus
 `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_DATA_SYNC` permissions.
 
@@ -86,7 +86,7 @@ Android background polling, that is a separate native service plus
 
 Added `UIBackgroundModes = [audio]`.
 
-- **Not `voip`**: morsecq has no ToxAV; declaring `voip` without a VoIP feature
+- **Not `voip`**: MorseCQ has no ToxAV; declaring `voip` without a VoIP feature
   is not honest and App Review rejects it (plan §5.6/§7).
 - **`audio`**: justified by Morse playback (message playback, training
   sessions) continuing when the user switches apps. Side effect: the Tox loop
@@ -97,7 +97,7 @@ Added `UIBackgroundModes = [audio]`.
   (`AVAudioSession` category `.playback`) before App Store submission, remove
   this entry rather than ship an unused mode.
 - **`fetch` deliberately not declared**: `BGAppRefreshTask` needs a native
-  handler and `BGTaskSchedulerPermittedIdentifiers`; toxee has one, morsecq
+  handler and `BGTaskSchedulerPermittedIdentifiers`; toxee has one, MorseCQ
   does not yet. Add both together or neither.
 
 ### macOS

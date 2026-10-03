@@ -1,8 +1,8 @@
 [简体中文](./ADDING_A_LANGUAGE.zh-CN.md)
 
-# Adding a UI language to morsecq
+# Adding a UI language to MorseCQ
 
-morsecq ships English (`en`, template) and Simplified Chinese (`zh`) through
+MorseCQ ships English (`en`, template) and Simplified Chinese (`zh`) through
 Flutter's `gen-l10n`. This page explains how localisation is wired end to end
 and gives the exact steps for adding a third language, modelled on how the
 sibling project toxee ships `ar` / `en` / `ja` / `ko` / `zh_Hans` / `zh_Hant`
@@ -157,7 +157,7 @@ File name = `app_` + the locale tag gen-l10n expects:
 ```json
 {
   "@@locale": "ja",
-  "appName": "morsecq",
+  "appName": "MorseCQ",
   ...
 }
 ```
@@ -171,7 +171,7 @@ File name = `app_` + the locale tag gen-l10n expects:
   plural forms (ja, zh, ko) usually collapse to
   `{count, plural, other{{count} 回}}` — keep any `=0` special case the
   template has.
-- Leave `appName` as `morsecq` (product name, tested to be identical).
+- Leave `appName` as `MorseCQ` (product name, tested to be identical).
 - The `@key` metadata blocks are optional outside the template; keeping them
   is harmless, deleting them keeps the file short. The migration tool marks
   untranslated entries it adds with `"description": "@@TODO(l10n): …"`;
@@ -234,7 +234,7 @@ in §1.6 cannot recur.
 - **iOS / macOS**: Flutter reads the device locale from `NSLocale`, but iOS
   only offers a per-app language switch in Settings when
   `CFBundleLocalizations` lists the languages. toxee declares
-  `en`, `zh-Hans`, `zh-Hant` in `ios/Runner/Info.plist`; morsecq's
+  `en`, `zh-Hans`, `zh-Hant` in `ios/Runner/Info.plist`; MorseCQ's
   `apps/morsecq/ios/Runner/Info.plist` has no such array yet — add one with
   every shipped tag (BCP-47 form: `ja`, `zh-Hans`, `zh-Hant`) when you add a
   language. Same for `macos/Runner/Info.plist`.

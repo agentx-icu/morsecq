@@ -1,6 +1,6 @@
 [简体中文](./README.zh-CN.md)
 
-# morsecq Documentation
+# MorseCQ Documentation
 
 ## Convention: bilingual, English by default
 

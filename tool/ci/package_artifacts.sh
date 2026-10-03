@@ -112,7 +112,7 @@ package_windows() {
 }
 
 package_macos() {
-  local app="$BUILD_DIR/macos/Build/Products/Release/morsecq.app" root plist
+  local app="$BUILD_DIR/macos/Build/Products/Release/MorseCQ.app" root plist scripts
   [[ -d "$app" ]] || ci_die "macOS app not found: $app"
   require_ffi "$app/Contents/Frameworks/libtim2tox_ffi.dylib" macos
 
@@ -125,15 +125,32 @@ package_macos() {
   root="$DIST_DIR/.root"
   plist="$DIST_DIR/.component.plist"
   mkdir -p "$root"
-  ditto "$app" "$root/morsecq.app"
+  ditto "$app" "$root/MorseCQ.app"
   pkgbuild --analyze --root "$root" "$plist" >/dev/null
   # Newer pkgbuild omits the key (so Installer uses its relocatable default).
   /usr/libexec/PlistBuddy -c "Delete :0:BundleIsRelocatable" "$plist" >/dev/null 2>&1 || true
   /usr/libexec/PlistBuddy -c "Add :0:BundleIsRelocatable bool false" "$plist"
-  pkgbuild --root "$root" --component-plist "$plist" \
+  # Pre-rename installs shipped /Applications/morsecq.app. On a case-insensitive
+  # volume Installer would upgrade that bundle in place and keep the lowercase
+  # folder name, so rename it to the new case first (data lives under the
+  # unchanged bundle id, so nothing else moves).
+  scripts="$DIST_DIR/.scripts"
+  mkdir -p "$scripts"
+  cat >"$scripts/preinstall" <<'EOF'
+#!/bin/sh
+# $3 is the target volume ("/" for the boot volume).
+apps="${3%/}/Applications"
+if ls "$apps" 2>/dev/null | grep -qx 'morsecq\.app' &&
+   ! ls "$apps" 2>/dev/null | grep -qx 'MorseCQ\.app'; then
+  mv "$apps/morsecq.app" "$apps/MorseCQ.app" || true
+fi
+exit 0
+EOF
+  chmod 755 "$scripts/preinstall"
+  pkgbuild --root "$root" --component-plist "$plist" --scripts "$scripts" \
     --identifier icu.agentx.morsecq --version "$VERSION" \
     --install-location /Applications "$DIST_DIR/$BASE-macos-arm64.pkg"
-  rm -rf "$root" "$plist"
+  rm -rf "$root" "$plist" "$scripts"
 }
 
 package_android() {

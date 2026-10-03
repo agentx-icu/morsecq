@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Morsecq</string>
+	<string>MorseCQ</string>
 	<!-- Keep in sync with the ARB files under lib/l10n (doc/i18n/ADDING_A_LANGUAGE.md):
 	     lets iOS offer the app's languages in Settings > App > Language. -->
 	<key>CFBundleLocalizations</key>
@@ -22,7 +22,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>morsecq</string>
+	<string>MorseCQ</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -69,9 +69,9 @@
 		<string>audio</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>morsecq uses the camera only to scan a friend's Tox ID QR code.</string>
+	<string>MorseCQ uses the camera only to scan a friend's Tox ID QR code.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>morsecq uses the microphone only to decode Morse code you play or key nearby.</string>
+	<string>MorseCQ uses the microphone only to decode Morse code you play or key nearby.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

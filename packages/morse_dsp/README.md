@@ -2,7 +2,7 @@
 
 # morse_dsp
 
-Pure-Dart audio Morse decoding for the morsecq workspace: 16-bit PCM from a
+Pure-Dart audio Morse decoding for the MorseCQ workspace: 16-bit PCM from a
 microphone (or a file) goes in, decoded text comes out. No Flutter imports —
 `dart test` runs it, and the app only adds the capture layer on top.
 

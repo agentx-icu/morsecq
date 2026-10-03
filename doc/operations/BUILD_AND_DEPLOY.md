@@ -1,9 +1,9 @@
 [简体中文](./BUILD_AND_DEPLOY.zh-CN.md) — the Chinese document is the authoritative, complete version; this is a condensed English summary.
 
-# morsecq Build and Deploy (native library `libtim2tox_ffi`)
+# MorseCQ Build and Deploy (native library `libtim2tox_ffi`)
 
 The Tox chat backend needs one native library per platform: **libtim2tox_ffi**
-(Tim2Tox C++ FFI shim + c-toxcore + libsodium), built **without ToxAV** (morsecq
+(Tim2Tox C++ FFI shim + c-toxcore + libsodium), built **without ToxAV** (MorseCQ
 has no calls) and **without sqlite3** (no communities). Everything is a port of
 toxee's pipeline; see the zh-CN doc §1.2 for the exact differences.
 

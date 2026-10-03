@@ -5,6 +5,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
+import '../account/avatar_initial.dart';
 import '../chat/chat_layout.dart';
 import '../chat/conversation_target.dart';
 import 'add_friend_sheet.dart';
@@ -163,9 +164,7 @@ class _FriendTile extends StatelessWidget {
           CircleAvatar(
             backgroundColor: scheme.primaryContainer,
             child: Text(
-              friend.displayName.isEmpty
-                  ? '?'
-                  : friend.displayName.substring(0, 1).toUpperCase(),
+              avatarInitial(friend.displayName),
               style: TextStyle(color: scheme.onPrimaryContainer),
             ),
           ),

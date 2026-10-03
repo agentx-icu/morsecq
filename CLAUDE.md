@@ -4,7 +4,7 @@ Guidance for coding agents and contributors working in this repository.
 
 ## Project
 
-**morsecq** is a Flutter Morse code trainer plus a serverless Morse chat over the
+**MorseCQ** is a Flutter Morse code trainer plus a serverless Morse chat over the
 **Tox P2P network**. There is no server: peers key Morse to each other directly.
 It is a sibling of **toxee** (same org, same Tim2Tox bridge) and interoperates
 with it on the wire. Licence: GPL-3.0.
@@ -90,7 +90,7 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   Zero analyzer issues — infos included.
 - **Pure-Dart packages stay pure.** `morse_core` and `morse_trainer` must be
   testable with `dart test` and usable from a CLI or server; no `dart:ui`, no Flutter.
-- **Mobile parity is mandatory.** morsecq targets iOS/Android as well as
+- **Mobile parity is mandatory.** MorseCQ targets iOS/Android as well as
   macOS/Linux/Windows. Every design must work on a phone; every bugfix must
   explicitly check whether the same bug exists on the mobile counterpart and fix
   it there too (or state why it cannot apply). Default review question: "does
@@ -101,6 +101,13 @@ the workspace — wait and retry rather than running pub inside a sub-package.
 - **Accounts are required before training too** (product decision). The startup
   gate wraps the whole shell, not just Chat/Groups. See the `TODO(startup-gate)`
   in `apps/morsecq/lib/ui/shell/app_shell.dart`.
+- **Product name is MorseCQ** in every user-visible place (store labels,
+  window titles, menus, installers, notifications, docs prose). Technical
+  identifiers stay lowercase `morsecq` so existing profiles keep working:
+  package names, bundle id `icu.agentx.morsecq`, Linux/Windows binary names,
+  data directories, notification channel ids, and the Windows `ProductName`
+  (path_provider derives `%APPDATA%\icu.agentx\morsecq` from it). macOS is the
+  one bundle renamed: `MorseCQ.app`, same bundle id.
 - **No Tencent Cloud IM.** The backend is Tox P2P via Tim2Tox. Anything assuming
   an IM server is wrong for this repo.
 

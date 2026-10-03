@@ -71,7 +71,7 @@ void main() {
     // `canScan: true` test.)
     expect(find.text(s.chatScanQrDesktopHint), findsOneWidget);
     expect(find.byIcon(Icons.qr_code_scanner), findsNothing);
-    // The greeting defaults to the localized "morsecq CQ".
+    // The greeting defaults to the localized "MorseCQ CQ".
     expect(find.text(s.chatDefaultRequestMessage), findsOneWidget);
 
     await tester.enterText(

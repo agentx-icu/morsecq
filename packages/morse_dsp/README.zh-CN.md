@@ -2,7 +2,7 @@
 
 # morse_dsp
 
-morsecq 工作区的纯 Dart 音频摩尔斯译码：输入来自麦克风（或文件）的 16 位 PCM，输出译码后的文本。
+MorseCQ 工作区的纯 Dart 音频摩尔斯译码：输入来自麦克风（或文件）的 16 位 PCM，输出译码后的文本。
 不引入 Flutter——`dart test` 就能运行，App 只是在其上叠加采集层。
 
 ## 流水线

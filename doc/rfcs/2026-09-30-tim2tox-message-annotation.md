@@ -19,7 +19,7 @@ Two consumers need structured, per-message metadata that travels with the text:
 - **toxee**: reply quotes and forward metadata (`V2TIM` `cloudCustomData`) are
   shown on the sender's side and silently dropped on the receiver's — a known
   gap of the hybrid runtime.
-- **morsecq**: v2 "recorded keying" (plan §5.2 layer two) must ship the sender's
+- **MorseCQ**: v2 "recorded keying" (plan §5.2 layer two) must ship the sender's
   keyed timing (`wpm`, Farnsworth, quantised element durations) next to the plain
   text, so the listener can replay what was actually keyed. v1 sends plain text
   and plays it at the listener's speed precisely because this is missing.
@@ -70,7 +70,7 @@ both ends share, and the existing receipts already correlate by a text-derived
 key for the same reason (`'dup:$text'.hashCode`). The digest is what both ends
 can compute from the bytes that did travel.
 
-Example (morsecq):
+Example (MorseCQ):
 
 ```json
 {"v":1,"h":"9a3f0c1e77b2d4a0","n":17,"data":{"morsecq":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint timing>"}}}
@@ -158,7 +158,7 @@ pointer). Prefer the extension.
   annotation to B; B's `ChatMessage` shows `cloudCustomData`; reversed arrival
   order handled; annotation to an offline peer replays with the text.
 - toxee: reply quote round trip between two builds.
-- morsecq: `morsecq_chat/test/native_smoke_test.dart` gains a
+- MorseCQ: `morsecq_chat/test/native_smoke_test.dart` gains a
   self-annotated send once the API exists.
 
 ## Change log

@@ -90,11 +90,13 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "icu.agentx" "\0"
-            VALUE "FileDescription", "morsecq" "\0"
+            VALUE "FileDescription", "MorseCQ" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "morsecq" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 icu.agentx. All rights reserved." "\0"
             VALUE "OriginalFilename", "morsecq.exe" "\0"
+            // Stays lowercase: path_provider derives %APPDATA%\<CompanyName>\<ProductName>
+            // from it, which holds every identity and setting.
             VALUE "ProductName", "morsecq" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

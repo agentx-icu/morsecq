@@ -2,7 +2,7 @@
 
 # morse_trainer
 
-Training pedagogy for morsecq as **pure Dart** (no Flutter imports): the Koch
+Training pedagogy for MorseCQ as **pure Dart** (no Flutter imports): the Koch
 course, Farnsworth settings, drill generators, alignment-based scoring, spaced
 repetition, send-practice diagnostics and learner progress. It depends on
 `morse_core` for types only (`MorseTiming`, `MorseAlphabet.kochOrder`); audio,

@@ -132,8 +132,8 @@ Shortcuts(
   Closing the last window would normally terminate the app
   (`applicationShouldTerminateAfterLastWindowClosed`); the runner's default
   is fine because close is intercepted before it reaches AppKit.
-- **Windows**: the tray needs a real `.ico` (`tray_icon.ico`, 16/22/32 px
-  frames). Bounds are logical pixels; `window_manager` converts using the
+- **Windows**: the tray needs a real `.ico` (`tray_icon.ico`, 16/20/24/32/40/48 px
+  frames, the small-icon sizes of 100–300 % DPI). Bounds are logical pixels; `window_manager` converts using the
   device pixel ratio, so a DPI change between sessions is handled by the
   clamp, not by us.
 

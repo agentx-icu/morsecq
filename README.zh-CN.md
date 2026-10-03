@@ -1,8 +1,8 @@
 [English](./README.md)
 
-# morsecq
+# MorseCQ
 
-**用莫斯电码聊天。** morsecq 是一款莫斯电码训练器，同时也是一个建立在
+**用莫斯电码聊天。** MorseCQ 是一款莫斯电码训练器，同时也是一个建立在
 [Tox](https://tox.chat) 网络之上、无服务器的点对点莫斯聊天工具。先通过系统化的
 课程与发报练习学会电码，再和真人「敲」着聊——单聊或群组「电台网」都可以，中间
 没有任何服务器。它与姊妹项目 **toxee** 使用同一套 Tim2Tox 线路协议，两者可以互通。
@@ -60,7 +60,7 @@ Me（我）**——全部位于同一个启动门之后：首次启动时创建�
 - **麦克风听抄** —— 从实时音频中解码莫斯（`morse_dsp`：Goertzel 音调检测、自动
   调谐、包络门限），由 `record` 插件把 PCM 送入 `AudioMorseDecoder`。
 - **聊天** —— 通过 Tox ID 或二维码加好友；消息在线路上就是纯文本，任何 Tim2Tox
-  客户端（含 toxee）都能读，morsecq 收到后按**听者**自选速度重新播成「滴答」。气泡
+  客户端（含 toxee）都能读，MorseCQ 收到后按**听者**自选速度重新播成「滴答」。气泡
   显示点划符号 / 明文 / 播放按钮；「先听后揭晓」训练模式；键盘 / 直键 / 双桨三种输入
   并可发送前预听；对方离线时消息进入离线队列并显示「待送达」。
 - **群组** —— 创建 / 邀请 / 通过 chat_id 加入（Tox NGC 群），群内莫斯消息，成员
@@ -141,5 +141,5 @@ dart run tool/import_guard.dart
 
 ## 许可证
 
-morsecq 是自由软件，以 **GNU General Public License v3.0** 发布。见
-[LICENSE](LICENSE)。版权归 morsecq 贡献者（agentx-icu）所有。
+MorseCQ 是自由软件，以 **GNU General Public License v3.0** 发布。见
+[LICENSE](LICENSE)。版权归 MorseCQ 贡献者（agentx-icu）所有。

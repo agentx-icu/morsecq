@@ -2,23 +2,24 @@
 
 > This is a translation. The Chinese file `2026-09-30-morsecq-plan.zh-CN.md` is the original; where the two disagree, the Chinese text is authoritative.
 
-# morsecq — Cross-platform Morse Code App: Project Plan
+# MorseCQ — Cross-platform Morse Code App: Project Plan
 
-> Status: v0.3 (2026-09-30). This document is the founding plan for morsecq. It was first drafted in the toxee repository (reusing its code facts) and is now maintained together with the `agentx-icu/morsecq` repository. toxee's documentation convention is EN/zh-CN pairs; this draft was initially issued in Chinese only.
+> Status: v0.3 (2026-09-30). This document is the founding plan for MorseCQ. It was first drafted in the toxee repository (reusing its code facts) and is now maintained together with the `agentx-icu/morsecq` repository. toxee's documentation convention is EN/zh-CN pairs; this draft was initially issued in Chinese only.
 >
 > Review history is in the "Change log" at the end.
 
 ## 0. One sentence
 
-**morsecq**: a cross-platform app to "learn Morse and chat in Morse". On first launch it creates a Tox identity (no server, no phone number); training and chat then share that identity: training progress is saved per identity, and one-to-one and group chat go over the Tox P2P network, reusing the Tim2Tox communication stack that toxee has already polished. On the wire a message is plain text that any Tim2Tox client (including toxee) can read; the morsecq side plays it back as "dits and dahs" at whatever speed the listener chooses.
+**MorseCQ**: a cross-platform app to "learn Morse and chat in Morse". On first launch it creates a Tox identity (no server, no phone number); training and chat then share that identity: training progress is saved per identity, and one-to-one and group chat go over the Tox P2P network, reusing the Tim2Tox communication stack that toxee has already polished. On the wire a message is plain text that any Tim2Tox client (including toxee) can read; the MorseCQ side plays it back as "dits and dahs" at whatever speed the listener chooses.
 
 ## 1. Project naming
 
-### 1.1 Decision: **morsecq** (settled 2026-09-30)
+### 1.1 Decision: **MorseCQ** (settled 2026-09-30)
 
 - Repository `https://github.com/agentx-icu/morsecq`, GPL-3.0.
 - Dart package prefixes `morse_*` (pure engine) / `morsecq_*` (app side); Bundle ID `icu.agentx.morsecq`.
-- Suggested store title "morsecq: Morse Code Chat & Trainer"; Chinese sub-name 「滴答」 ("tick-tock").
+- Display name vs identifiers (2026-10-01): every user-visible name is **MorseCQ** (Android label, iOS display name, macOS `MorseCQ.app`, Linux/Windows window titles and `.desktop` / installer names, docs). Identifiers stay lowercase `morsecq` so existing profiles keep working: package names, bundle id, Linux/Windows binaries, data directories, notification channel ids, Windows `ProductName` (path_provider derives `%APPDATA%\icu.agentx\morsecq` from it). The macOS pkg renames a pre-existing `/Applications/morsecq.app` to `MorseCQ.app`.
+- Suggested store title "MorseCQ: Morse Code Chat & Trainer"; Chinese sub-name 「滴答」 ("tick-tock").
 - The first candidate, Morsee, was dropped because Google Play already has an app of that name (`com.wisteriastone.morsecode`).
 
 ### 1.2 Candidate record at the time (2026-09-30, store-name collisions checked by web search, not a trademark search)
@@ -40,7 +41,7 @@ To do: after naming, check GitHub `agentx-icu/<name>`, exact App Store / Play na
 
 ### 1.3 Competitor note
 
-Morse Chat (digital.dong.morsechat) already offers "rooms by speed + private chat + seven kinds of keys" for Morse chat over a central server. morsecq's differentiators must be stated clearly: **Tox P2P, no server, no phone/e-mail registration, interoperability with the toxee ecosystem, training and chat in one app**.
+Morse Chat (digital.dong.morsechat) already offers "rooms by speed + private chat + seven kinds of keys" for Morse chat over a central server. MorseCQ's differentiators must be stated clearly: **Tox P2P, no server, no phone/e-mail registration, interoperability with the toxee ecosystem, training and chat in one app**.
 
 ## 2. Product definition
 
@@ -62,7 +63,7 @@ All modules are used under the same Tox identity (product decision, 2026-09-30):
 
 ### 2.3 Interoperability with toxee
 
-In v1 a Morse message on the wire **is plain text**, with no metadata attached (reason: §3.1 item 5 — Tim2Tox's `cloudCustomData` is stored locally only and never goes on the wire). toxee users receive readable text; morsecq regenerates the rhythm at the listener's configured speed on receipt. This matches Morse-training convention — the listener listens at their own speed, which is part of the Farnsworth method anyway.
+In v1 a Morse message on the wire **is plain text**, with no metadata attached (reason: §3.1 item 5 — Tim2Tox's `cloudCustomData` is stored locally only and never goes on the wire). toxee users receive readable text; MorseCQ regenerates the rhythm at the listener's configured speed on receipt. This matches Morse-training convention — the listener listens at their own speed, which is part of the Farnsworth method anyway.
 
 "Hearing the other party's real fist (recorded keying)" is a v2 feature and depends on upstream Tim2Tox adding a "message annotation" carried on the wire (§5.2, second layer).
 
@@ -78,7 +79,7 @@ In v1 a Morse message on the wire **is plain text**, with no metadata attached (
 ### 3.1 Key facts (from a survey of toxee mainline `5a1cebe` and the tim2tox submodule pin `9d4245a`, 2026-09-30)
 
 1. `tim2tox_dart` (`third_party/tim2tox/dart`, GPL-3.0) depends at package level on `tencent_cloud_chat_sdk: any` (**not pinned**) and `tencent_cloud_chat_common ^4.1.0+1`; `FfiChatService` itself imports `tencent_cloud_chat_sdk`'s `native_library_manager`, `tim_message_manager`, `tim_group_manager`, etc. You cannot "take Tim2Tox without the Tencent SDK" unless upstream splits it first; and toxee's `pubspec_overrides` pin must be copied verbatim, otherwise `any` drifts.
-2. `FfiChatService` (about 13k lines) already provides the communication capabilities morsecq needs: account (`init/login`, synchronous `getSelfToxId()`, `updateSelfProfile`), friends (`addFriend/acceptFriendRequest/getFriendList/removeFriend`), C2C (`sendTextWithResult(peerId, text, {cloudCustomData, clientMessageID})`, `sendFile`), groups (`createGroup(name, {groupType: 'group'|'conference'})`, `joinGroup`, `acceptGroupInvite`, `sendGroupTextWithResult(groupId, text, {clientMessageID})`, `quitGroup`), history (`loadHistory/clearC2CHistory/clearGroupHistory`), a connection-status stream, `startPolling()`, and a Dart-side offline message queue (replayed automatically when the peer comes online, returning pending rows).
+2. `FfiChatService` (about 13k lines) already provides the communication capabilities MorseCQ needs: account (`init/login`, synchronous `getSelfToxId()`, `updateSelfProfile`), friends (`addFriend/acceptFriendRequest/getFriendList/removeFriend`), C2C (`sendTextWithResult(peerId, text, {cloudCustomData, clientMessageID})`, `sendFile`), groups (`createGroup(name, {groupType: 'group'|'conference'})`, `joinGroup`, `acceptGroupInvite`, `sendGroupTextWithResult(groupId, text, {clientMessageID})`, `quitGroup`), history (`loadHistory/clearC2CHistory/clearGroupHistory`), a connection-status stream, `startPolling()`, and a Dart-side offline message queue (replayed automatically when the peer comes online, returning pending rows).
 3. Constructing `FfiChatService` only requires injecting `ExtendedPreferencesService` (including the Draft / GroupIdentity / AccountScoped variants, about 60 methods in total), `LoggerService`, `BootstrapService` and `ScratchFileService`; `EventBusProvider` / `ConversationManagerProvider` belong to the FakeUIKit side and are not needed for option B. Interfaces are defined in `tim2tox/dart/lib/interfaces/`.
 4. The only parts of toxee that are **genuinely portable** are `lib/models/`, the `startup_outcome` / `startup_step` types, and the three adapters `logger` / `bootstrap` / `shared_prefs` (about 1.1k lines). `StartupSessionUseCase`, `LoginUseCase`, `AccountService` and `StartupGate` are all coupled through `SessionRuntimeCoordinator` / `FakeUIKit` / Tencent providers — **the flow can be copied, the code cannot**.
 5. **`cloudCustomData` does not go on the wire.** The `FfiChatService.sendText` documentation states explicitly "NOT sent over Tox — the peer never sees the quote"; it only lands on the local `ChatMessage` and the offline-queue row; `sendGroupTextWithResult` does not even take the parameter. toxee uses it for reply quotes, so quotes never reach the peer either — that is a pre-existing gap in toxee itself.
@@ -96,7 +97,7 @@ In v1 a Morse message on the wire **is plain text**, with no metadata attached (
 | A. Fork toxee | Copy all of toxee (Tencent UIKit + FakeUIKit + dual-path hybrid architecture) and add Morse features on top | Chat runs on day one | Inherits ~100k lines, the patch flow, `BinaryReplacementHistoryHook` and other dual-path invariants; Morse UX is boxed in by UIKit bubbles; hard to slim down under the complexity guard |
 | **B. Tim2Tox engine + own UI (recommended, with "variant B" as the baseline)** | Depend on `tim2tox_dart`, use only `FfiChatService`; **still call `setNativeLibraryName('tim2tox_ffi')`** (the two hard dependencies in item 8 need it), but do not install `Tim2ToxSdkPlatform`, do not start FakeUIKit, do not pull in UIKit component packages; all chat UI is drawn for the Morse use case | A single data path; UI designed entirely for Morse; no UIKit patches | The Tencent SDK remains a compile-time dependency (reuse toxee's `bootstrap_deps` and patch flow); `quitGroup` and offline group-invite replay must be re-routed through `Tim2ToxFfi` or upstream must add APIs; the three silently dropped callbacks need `syncGroupIdentitiesFromNative()` as a fallback; a headless two-instance test must be built in-house |
 | C. Bind the C layer `tim2tox_ffi.h` directly | Write a separate thin Dart binding | Zero Tencent dependency | Rewrites 13k lines of Dart (offline queue, history, group re-join, file transfer); not worth it |
-| D. Upstream split into `tim2tox_core` | In the Tim2Tox repository, split the UIKit-independent parts into a standalone package and add "message annotation on the wire", "Dart-side custom packet API" and "lossy packet API" | Cleanest long-term; toxee benefits too (reply quotes finally reach the peer) | A separate upstream project; the "message annotation" part is a prerequisite for morsecq v2 recorded keying but **does not block v1** |
+| D. Upstream split into `tim2tox_core` | In the Tim2Tox repository, split the UIKit-independent parts into a standalone package and add "message annotation on the wire", "Dart-side custom packet API" and "lossy packet API" | Cleanest long-term; toxee benefits too (reply quotes finally reach the peer) | A separate upstream project; the "message annotation" part is a prerequisite for MorseCQ v2 recorded keying but **does not block v1** |
 
 **Decision: variant B as the baseline, track D in parallel.** v1 chat depends only on existing Tim2Tox capabilities (plain-text messages + existing groups/friends/offline queue), so track D's progress does not gate M1–M3. Once track D's deliverables (message annotation, Dart-side custom packet API, lossy API) land, v2's recorded keying and real-time keying can start. If the M0 spike proves the headless route does not work even as variant B, fall back to option A.
 
@@ -126,7 +127,7 @@ In v1 a Morse message on the wire **is plain text**, with no metadata attached (
 
 ### 3.4 Licence (decision needed)
 
-Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be GPL-3.0 compatible. **GPLv3 has a known conflict with the App Store terms** (FSF position; VLC was once pulled over this), and "a source link on the About page" does not resolve it. Options: ① accept the risk and ship (many GPL apps are on the store without guarantees); ② dual-license morsecq's own code (GPL-3.0 + an additional licence permitting store distribution), though the Tim2Tox part stays GPL; ③ add an App Store distribution exception to Tim2Tox (same organisation). Recommendation: ③ + ②, settled in M0. iOS store listing must not be an acceptance gate for any time-boxed milestone (see §6).
+Tim2Tox and toxee are both GPL-3.0; as long as MorseCQ links Tim2Tox it must be GPL-3.0 compatible. **GPLv3 has a known conflict with the App Store terms** (FSF position; VLC was once pulled over this), and "a source link on the About page" does not resolve it. Options: ① accept the risk and ship (many GPL apps are on the store without guarantees); ② dual-license MorseCQ's own code (GPL-3.0 + an additional licence permitting store distribution), though the Tim2Tox part stays GPL; ③ add an App Store distribution exception to Tim2Tox (same organisation). Recommendation: ③ + ②, settled in M0. iOS store listing must not be an acceptance gate for any time-boxed milestone (see §6).
 
 ## 4. Training module design
 
@@ -166,8 +167,8 @@ Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be 
 
 - **Rewritten** inside `morsecq_chat` (copy the flow of toxee's `StartupSessionUseCase` / `LoginUseCase` / `AccountService`, not the code): generate a Tox identity on first launch → optional password-encrypted `.tox` → auto-login → wait for connection.
 - Adding friends: type a Tox ID, scan a code (`mobile_scanner`), show a QR code (`qr_flutter`).
-- First launch must prompt to back up the Tox identity file (toxee's TODOS already lists "lost identity = lost trust" as the number-one risk; morsecq learns from that directly).
-- **"Me" (note to self, 2026-10-01)**: after an account is created, Contacts starts with a "me" entry showing the own display name; messages sent to it are stored on the device only and never sent — a drafts box, a practice partner, a place for notes. The guarantee lives in **tim2tox's `FfiChatService`** (the transport toxee and morsecq share): text and files to the own public key become delivered local rows, and typing, control signals, reactions, receipts and the group-invite queue all short-circuit for self; entries an older build parked in the offline queue are reconciled locally. The morsecq contract gains `ChatService.selfConversationId` and `Conversation.isSelf`. The conversation cannot be deleted (2026-10-02): `deleteConversation` refuses it with `ChatException('self_conversation')` and changes nothing, and the list offers no Delete for it (no menu item, no delete swipe, on phone and desktop alike); its notes are emptied only by the explicit, confirmed "Clear history" inside the conversation. toxee's app-level wiring (conversation list, UIKit contacts) is a separate follow-up.
+- First launch must prompt to back up the Tox identity file (toxee's TODOS already lists "lost identity = lost trust" as the number-one risk; MorseCQ learns from that directly).
+- **"Me" (note to self, 2026-10-01)**: after an account is created, Contacts starts with a "me" entry showing the own display name; messages sent to it are stored on the device only and never sent — a drafts box, a practice partner, a place for notes. The guarantee lives in **tim2tox's `FfiChatService`** (the transport toxee and MorseCQ share): text and files to the own public key become delivered local rows, and typing, control signals, reactions, receipts and the group-invite queue all short-circuit for self; entries an older build parked in the offline queue are reconciled locally. The MorseCQ contract gains `ChatService.selfConversationId` and `Conversation.isSelf`. The conversation cannot be deleted (2026-10-02): `deleteConversation` refuses it with `ChatException('self_conversation')` and changes nothing, and the list offers no Delete for it (no menu item, no delete swipe, on phone and desktop alike); its notes are emptied only by the explicit, confirmed "Clear history" inside the conversation. toxee's app-level wiring (conversation list, UIKit contacts) is a separate follow-up.
 
 ### 5.2 Morse messages: two-layer design
 
@@ -180,7 +181,7 @@ Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be 
 **Layer two (v2, depends on track D "message annotation on the wire"): recorded keying.**
 
 - Upstream change: add a "message annotation" type to the Tim2Tox control frame (T2TC, ID 184), correlated by `clientMessageID`; the receiver merges it into the matching `ChatMessage.cloudCustomData` **instead of** rendering it as a separate bubble. This also fixes toxee's existing gap where reply quotes do not go on the wire, so it is a win-win for upstream.
-- morsecq puts `{"morsee":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint timing>"}}` in the annotation; the timing is quantised in dit units and varint-encoded, total payload ≤ 1.2 KB (custom packets have no fragmentation; exceeding the limit is an immediate error).
+- MorseCQ puts `{"morsee":{"v":1,"wpm":15,"fw":8,"keyed":true,"t":"<base64 varint timing>"}}` in the annotation; the timing is quantised in dit units and varint-encoded, total payload ≤ 1.2 KB (custom packets have no fragmentation; exceeding the limit is an immediate error).
 - Old clients ignore unknown annotation keys; Conference-type groups cannot carry custom packets, so annotations are available only in C2C and NGC groups.
 
 ### 5.3 Morse-specific chat UI
@@ -204,7 +205,7 @@ Tim2Tox and toxee are both GPL-3.0; as long as morsecq links Tim2Tox it must be 
 
 ### 5.6 Mobile considerations (mobile compatibility is a hard requirement)
 
-- Background: toxee keeps the iOS connection warm for a few minutes via the `voip` + `audio` background modes (`MOBILE_BACKGROUND.md`), but morsecq has no ToxAV and **cannot honestly declare the `voip` background mode**, so the iOS background window will be shorter; Android power-saving policies vary by vendor. Keep the foreground-service / local-notification strategy and state clearly in the product that "you receive only while online".
+- Background: toxee keeps the iOS connection warm for a few minutes via the `voip` + `audio` background modes (`MOBILE_BACKGROUND.md`), but MorseCQ has no ToxAV and **cannot honestly declare the `voip` background mode**, so the iOS background window will be shorter; Android power-saving policies vary by vendor. Keep the foreground-service / local-notification strategy and state clearly in the product that "you receive only while online".
 - The paddle on a touch screen needs ≥ 48 dp hot zones and multi-touch; desktop keyboard shortcuts are a separate input implementation, and both need their own tests.
 
 ## 6. Milestones and effort
@@ -250,7 +251,7 @@ v1 totals about **33–42 CC-days**, roughly **260–630 person-days** at this r
 
 ## 9. Decisions needed from you
 
-1. **Project name**: accept morsecq (Chinese sub-name 「滴答」)? Or choose from the candidates / something else.
+1. **Project name**: accept MorseCQ (Chinese sub-name 「滴答」)? Or choose from the candidates / something else.
 2. **Licence and iOS listing** (§3.4): accept the risk / dual-license own code / add a store exception to Tim2Tox.
 3. ~~Whether the training module must work without an account~~ **Settled (2026-09-30): training also requires an identity.** Impact: drop the learn build target; identity flow becomes a prerequisite of M1; training progress is persisted per identity and migrates with the `.tox` backup.
 4. **Whether v1 accepts "sender speed not transmitted"** (§5.2 layer one). If it must be transmitted, v1 has to wait for track D's message annotation and M2 becomes gated on upstream progress.
@@ -326,5 +327,7 @@ At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze`
 - **2026-10-01** — Revalidated the integrated layout/durability changes: 594 app tests passed with one existing skip; Analyze and three desktop E2E jobs passed at UI revision `0a83b325f8d9533340b851cf40672d129d4991fd`. Refreshed the complete 204-frame Modern Calm gallery, with Linux/Windows imported from run 36839181762. The user requested title-free versions of all six concept boards; English and Chinese README images retain their respective UI language.
 
 - **2026-10-01** — Added the "me" (note-to-self) conversation: Contacts starts with the own display name and its messages stay on the device. At the user's request the never-on-the-wire guarantee lives in tim2tox's `FfiChatService` (toxee needs it too); morsecq adds only the contract and UI. Plan and code were reviewed by Codex.
+
+- **2026-10-01** — Display-name rename to MorseCQ on all platforms (see §1.1 for what is renamed and which identifiers stay lowercase); product-name prose in this plan now reads MorseCQ (earlier change-log entries kept verbatim). Why: the user asked for one product name everywhere; keeping identifiers avoids orphaning existing Tox profiles and settings.
 
 - **2026-10-02** — The "me" conversation can no longer be deleted (user requirement). Previously Delete (swipe left or the row menu) emptied all its notes while keeping the row; now the contract, the Tim2Tox transport and the fake all refuse `deleteConversation` for it with `self_conversation` before changing anything, and the conversation list drops Delete from its menu and swipe on every platform. "Clear history" inside the conversation remains the explicit way to empty it. No new user-facing string: the UI never reaches the refusal.

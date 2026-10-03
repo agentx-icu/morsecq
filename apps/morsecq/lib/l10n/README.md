@@ -1,6 +1,6 @@
 [简体中文](./README.zh-CN.md)
 
-# Localisation (l10n) for the morsecq app
+# Localisation (l10n) for the MorseCQ app
 
 English (`en`, template) and Simplified Chinese (`zh`) via Flutter's gen-l10n.
 

@@ -9,7 +9,7 @@ class SEn extends S {
   SEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'morsecq';
+  String get appName => 'MorseCQ';
 
   @override
   String get navLearn => 'Learn';
@@ -516,7 +516,7 @@ class SEn extends S {
   String get accountStartupFailedTitle => 'Could not start';
 
   @override
-  String get accountStartupFailedBody => 'morsecq could not read your identity. Nothing was changed; you can try again.';
+  String get accountStartupFailedBody => 'MorseCQ could not read your identity. Nothing was changed; you can try again.';
 
   @override
   String get accountConnectionTapToReconnect => 'Tap to reconnect';
@@ -525,7 +525,7 @@ class SEn extends S {
   String get accountWelcomeTitle => 'Your identity lives on this device';
 
   @override
-  String get accountWelcomeIntro => 'morsecq uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.';
+  String get accountWelcomeIntro => 'MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.';
 
   @override
   String get accountWelcomePointNoServer => 'No server, no phone number, no e-mail. Peers talk to each other directly, in Morse.';
@@ -582,7 +582,7 @@ class SEn extends S {
   String get accountBackupAcknowledge => 'I understand that without this backup my identity cannot be recovered.';
 
   @override
-  String get accountBackupContinue => 'Continue to morsecq';
+  String get accountBackupContinue => 'Continue to MorseCQ';
 
   @override
   String get accountBackupShowQrHint => 'Your Tox ID is how friends add you. Share it as text or as a QR code.';
@@ -591,7 +591,7 @@ class SEn extends S {
   String get accountRestoreTitle => 'Restore from backup';
 
   @override
-  String get accountRestoreBody => 'Choose a backup file exported from morsecq. If the identity was protected with a password you will need it here.';
+  String get accountRestoreBody => 'Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.';
 
   @override
   String get accountRestoreChooseFile => 'Choose backup file';
@@ -606,7 +606,7 @@ class SEn extends S {
   String get accountRestoring => 'Restoring…';
 
   @override
-  String get accountRestoreInvalidFile => 'This file is not a morsecq backup.';
+  String get accountRestoreInvalidFile => 'This file is not a MorseCQ backup.';
 
   @override
   String get accountRestoreReplacesWarning => 'Restoring replaces the identity currently on this device.';
@@ -881,7 +881,7 @@ class SEn extends S {
   String get chatRequestMessage => 'Message';
 
   @override
-  String get chatDefaultRequestMessage => 'morsecq CQ';
+  String get chatDefaultRequestMessage => 'MorseCQ CQ';
 
   @override
   String get chatSendRequest => 'Send request';
@@ -1777,13 +1777,13 @@ class SEn extends S {
   String get accountToxIdQrSemantics => 'Tox ID QR code';
 
   @override
-  String get accountBackupSaveDialogTitle => 'Save morsecq backup';
+  String get accountBackupSaveDialogTitle => 'Save MorseCQ backup';
 
   @override
-  String get accountBackupShareSubject => 'morsecq identity backup';
+  String get accountBackupShareSubject => 'MorseCQ identity backup';
 
   @override
-  String get accountBackupChooseDialogTitle => 'Choose morsecq backup';
+  String get accountBackupChooseDialogTitle => 'Choose MorseCQ backup';
 
   @override
   String notificationNewMessages(int count) {

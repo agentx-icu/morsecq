@@ -2,7 +2,7 @@
 
 # morse_io
 
-morsecq 的 Flutter I/O 层：把 `morse_core` 的时间线渲染为**声音**、**触觉反馈**和**闪光**，
+MorseCQ 的 Flutter I/O 层：把 `morse_core` 的时间线渲染为**声音**、**触觉反馈**和**闪光**，
 并把屏幕 / 键盘上的**键控**转成 `MorseDecoder` 事件。目标平台为 Android、iOS、macOS、Windows
 和 Linux。
 
