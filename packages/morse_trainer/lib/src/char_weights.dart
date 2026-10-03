@@ -21,8 +21,15 @@ final class CharWeights {
     Map<String, double> weights, {
     double defaultWeight = 1,
   }) {
+    if (defaultWeight < 0 || !defaultWeight.isFinite) {
+      throw ArgumentError.value(
+        defaultWeight,
+        'defaultWeight',
+        'must be finite and >= 0',
+      );
+    }
     for (final entry in weights.entries) {
-      if (entry.value < 0 || entry.value.isNaN) {
+      if (entry.value < 0 || !entry.value.isFinite) {
         throw ArgumentError.value(
           entry.value,
           'weights[${entry.key}]',

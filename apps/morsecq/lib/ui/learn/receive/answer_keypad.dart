@@ -112,7 +112,12 @@ class _Key extends StatelessWidget {
               minWidth: minWidth,
               minHeight: AnswerKeypad.keySize,
             ),
+            // Size factors keep the key as small as its label (and the
+            // min constraints) inside the keypad's Wrap; a plain Center
+            // would stretch every key to the full row.
             child: Center(
+              widthFactor: 1,
+              heightFactor: 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(

@@ -20,6 +20,8 @@ final class TrainerProgress {
     SrsScheduler? srs,
     ConfusionMatrix? confusion,
     this.maxHistory = 500,
+    int? lifetimeSessions,
+    int? lifetimeChars,
   }) : assert(currentLesson >= 1, 'currentLesson must be >= 1'),
        assert(streakDays >= 0, 'streakDays must be >= 0'),
        assert(dailyGoalChars >= 0, 'dailyGoalChars must be >= 0'),
@@ -29,6 +31,12 @@ final class TrainerProgress {
            ? null
            : dayOf(lastPracticeDay),
        history = List<SessionSummary>.unmodifiable(history),
+       // Files written before the lifetime counters existed: the retained
+       // history is the best available lower bound.
+       lifetimeSessions = lifetimeSessions ?? history.length,
+       lifetimeChars =
+           lifetimeChars ??
+           history.fold<int>(0, (sum, s) => sum + s.totalChars),
        srs = srs ?? SrsScheduler(),
        confusion = confusion ?? ConfusionMatrix();
 
@@ -57,14 +65,30 @@ final class TrainerProgress {
 
   final int maxHistory;
 
+  /// Sessions ever recorded; unlike [history] never trimmed.
+  final int lifetimeSessions;
+
+  /// Symbols ever practised; unlike [history] never trimmed.
+  final int lifetimeChars;
+
   /// Local midnight of [when].
   static DateTime dayOf(DateTime when) =>
       DateTime(when.year, when.month, when.day);
 
-  int get totalCharsPracticed =>
-      history.fold<int>(0, (sum, s) => sum + s.totalChars);
+  /// Calendar days from the local day of [from] to the local day of [to].
+  ///
+  /// Compares dates, not durations: across a daylight-saving change two
+  /// local midnights are 23 h or 25 h apart, which `Duration.inDays` would
+  /// truncate to 0 or 1.
+  static int daysBetween(DateTime from, DateTime to) => DateTime.utc(
+    to.year,
+    to.month,
+    to.day,
+  ).difference(DateTime.utc(from.year, from.month, from.day)).inDays;
 
-  int get sessionCount => history.length;
+  int get totalCharsPracticed => lifetimeChars;
+
+  int get sessionCount => lifetimeSessions;
 
   /// Lifetime correct / attempted over every symbol; 0 with no data.
   double get overallAccuracy {
@@ -93,8 +117,43 @@ final class TrainerProgress {
     if (last == null) {
       return 0;
     }
-    final gap = dayOf(now).difference(last).inDays;
-    return gap > 1 ? 0 : streakDays;
+    return daysBetween(last, now) > 1 ? 0 : streakDays;
+  }
+
+  /// The streak after practising at [now]: same day keeps it, the next day
+  /// extends it, anything later (or an unknown last day) restarts at 1.
+  int streakAfterPracticeOn(DateTime now) {
+    final last = lastPracticeDay;
+    if (last == null) {
+      return 1;
+    }
+    final gap = daysBetween(last, now);
+    if (gap == 0) {
+      return streakDays;
+    }
+    return gap == 1 ? streakDays + 1 : 1;
+  }
+
+  /// Appends [summary] to history and credits the streak and lifetime
+  /// counters, leaving per-symbol statistics, SRS and confusion untouched.
+  /// For practice that is not a copy of sent symbols (sending drills).
+  TrainerProgress recordPractice(
+    SessionSummary summary, {
+    required DateTime now,
+  }) => copyWith(
+    history: _appendHistory(summary),
+    streakDays: streakAfterPracticeOn(now),
+    lastPracticeDay: dayOf(now),
+    lifetimeSessions: lifetimeSessions + 1,
+    lifetimeChars: lifetimeChars + summary.totalChars,
+  );
+
+  List<SessionSummary> _appendHistory(SessionSummary summary) {
+    final next = <SessionSummary>[...history, summary];
+    if (next.length > maxHistory) {
+      next.removeRange(0, next.length - maxHistory);
+    }
+    return next;
   }
 
   /// Folds a finished session into the progress.
@@ -108,33 +167,15 @@ final class TrainerProgress {
     bool updateSrs = true,
     double srsPassAccuracy = 0.9,
   }) {
-    final today = dayOf(now);
-    final last = lastPracticeDay;
-    final int streak;
-    if (last == null) {
-      streak = 1;
-    } else {
-      final gap = today.difference(last).inDays;
-      streak = gap == 0 ? streakDays : (gap == 1 ? streakDays + 1 : 1);
-    }
-
     final summary = SessionSummary.fromScore(
       score,
       at: score.at ?? now,
       lesson: lesson ?? score.lesson ?? currentLesson,
     );
-    final nextHistory = <SessionSummary>[...history, summary];
-    if (nextHistory.length > maxHistory) {
-      nextHistory.removeRange(0, nextHistory.length - maxHistory);
-    }
-
     final mergedConfusion = confusion.copy()..merge(score.confusion);
 
-    return copyWith(
+    return recordPractice(summary, now: now).copyWith(
       charStats: CharStats.merge(charStats, score.charStats),
-      streakDays: streak,
-      lastPracticeDay: today,
-      history: nextHistory,
       srs: updateSrs
           ? srs.applyScore(score, now: now, passAccuracy: srsPassAccuracy)
           : srs,
@@ -163,6 +204,8 @@ final class TrainerProgress {
     SrsScheduler? srs,
     ConfusionMatrix? confusion,
     int? maxHistory,
+    int? lifetimeSessions,
+    int? lifetimeChars,
   }) => TrainerProgress(
     currentLesson: currentLesson ?? this.currentLesson,
     charStats: charStats ?? this.charStats,
@@ -173,6 +216,8 @@ final class TrainerProgress {
     srs: srs ?? this.srs,
     confusion: confusion ?? this.confusion,
     maxHistory: maxHistory ?? this.maxHistory,
+    lifetimeSessions: lifetimeSessions ?? this.lifetimeSessions,
+    lifetimeChars: lifetimeChars ?? this.lifetimeChars,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -186,12 +231,23 @@ final class TrainerProgress {
     'srs': srs.toJson(),
     'confusion': confusion.toJson(),
     'maxHistory': maxHistory,
+    'lifetimeSessions': lifetimeSessions,
+    'lifetimeChars': lifetimeChars,
   };
 
+  /// Reads [toJson] output. Values are taken as stored, so a store can
+  /// validate them and fall back to a backup (the app's `FileTrainerStore`
+  /// does).
   factory TrainerProgress.fromJson(Map<String, Object?> json) {
     final lastDay = json['lastPracticeDay'] as String?;
     final rawHistory = json['history'] as List<Object?>? ?? const <Object?>[];
     final rawSrs = json['srs'] as Map<String, Object?>?;
+
+    final history = rawHistory
+        .map((e) => SessionSummary.fromJson(e! as Map<String, Object?>))
+        .toList();
+    final lifetimeSessions = (json['lifetimeSessions'] as num?)?.toInt();
+    final lifetimeChars = (json['lifetimeChars'] as num?)?.toInt();
     return TrainerProgress(
       currentLesson: (json['currentLesson'] as num?)?.toInt() ?? 1,
       charStats: CharStats.mapFromJson(
@@ -200,14 +256,17 @@ final class TrainerProgress {
       streakDays: (json['streakDays'] as num?)?.toInt() ?? 0,
       lastPracticeDay: lastDay == null ? null : DateTime.parse(lastDay),
       dailyGoalChars: (json['dailyGoalChars'] as num?)?.toInt() ?? 100,
-      history: rawHistory
-          .map((e) => SessionSummary.fromJson(e! as Map<String, Object?>))
-          .toList(),
+      history: history,
       srs: rawSrs == null ? null : SrsScheduler.fromJson(rawSrs),
       confusion: ConfusionMatrix.fromJson(
         json['confusion'] as Map<String, Object?>?,
       ),
       maxHistory: (json['maxHistory'] as num?)?.toInt() ?? 500,
+      // Absent in files written before the counters existed: the
+      // constructor derives them from the history. Present values are
+      // taken as stored so a store can reject inconsistent ones.
+      lifetimeSessions: lifetimeSessions,
+      lifetimeChars: lifetimeChars,
     );
   }
 

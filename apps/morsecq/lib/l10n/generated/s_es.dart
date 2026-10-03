@@ -1023,6 +1023,9 @@ class SEs extends S {
   String get learnLoadFailed => 'No se pudo leer tu progreso. Empezarás de nuevo; el archivo anterior se conservó como .corrupt.';
 
   @override
+  String get learnProgressSaveFailed => 'No se pudo guardar tu progreso. El resultado cuenta mientras MorseCQ siga abierto.';
+
+  @override
   String get learnChooseDrill => 'Elige un ejercicio';
 
   @override

@@ -90,15 +90,21 @@ final class SrsScheduler {
     required bool correct,
     required DateTime now,
   }) {
-    final current = cards[char]?.box ?? 0;
+    // A stored box beyond this scheduler's intervals (a file written with a
+    // longer interval list) is treated as the top box.
+    final current = min(maxBox, cards[char]?.box ?? 0);
     final box = correct ? min(maxBox, current + 1) : max(0, current - 1);
     final next = Map<String, SrsCard>.of(cards);
     next[char] = SrsCard(box: box, dueAt: now.add(intervals[box]));
     return SrsScheduler(cards: next, intervals: intervals);
   }
 
-  /// Applies a session: each symbol that appeared is promoted when its
-  /// per-symbol accuracy is >= [passAccuracy], demoted otherwise.
+  /// Applies a session: each symbol that appeared is demoted when its
+  /// per-symbol accuracy is below [passAccuracy]. A good result promotes a
+  /// symbol only when it was due (or not tracked yet); copying a symbol that
+  /// is not due yet leaves its box alone, so daily lesson drills, which
+  /// contain every learned symbol, do not push the whole set to the top box
+  /// in a few days.
   SrsScheduler applyScore(
     SessionScore score, {
     required DateTime now,
@@ -107,11 +113,12 @@ final class SrsScheduler {
     var next = this;
     final chars = score.charStats.keys.toList()..sort();
     for (final c in chars) {
-      next = next.record(
-        c,
-        correct: score.charStats[c]!.accuracy >= passAccuracy,
-        now: now,
-      );
+      final correct = score.charStats[c]!.accuracy >= passAccuracy;
+      final card = cards[c];
+      if (correct && card != null && !card.isDue(now)) {
+        continue;
+      }
+      next = next.record(c, correct: correct, now: now);
     }
     return next;
   }
@@ -174,6 +181,7 @@ final class SrsScheduler {
       },
     );
   }
+
 
   @override
   String toString() => 'SrsScheduler(${cards.length} cards, boxes $boxCounts)';

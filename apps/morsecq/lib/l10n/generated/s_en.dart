@@ -1022,6 +1022,9 @@ class SEn extends S {
   String get learnLoadFailed => 'Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.';
 
   @override
+  String get learnProgressSaveFailed => 'Couldn\'t save your progress. The result still counts while MorseCQ stays open.';
+
+  @override
   String get learnChooseDrill => 'Choose a drill';
 
   @override

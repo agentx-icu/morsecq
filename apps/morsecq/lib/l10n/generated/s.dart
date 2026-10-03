@@ -1730,6 +1730,12 @@ abstract class S {
   /// **'Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.'**
   String get learnLoadFailed;
 
+  /// Learn drills: snack bar when a finished session could not be written to disk; the action retries the save
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your progress. The result still counts while MorseCQ stays open.'**
+  String get learnProgressSaveFailed;
+
   /// Receive drill picker sheet: title
   ///
   /// In en, this message translates to:

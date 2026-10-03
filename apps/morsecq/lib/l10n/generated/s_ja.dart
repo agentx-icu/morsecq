@@ -1006,6 +1006,9 @@ class SJa extends S {
   String get learnLoadFailed => '保存済みの進捗を読み取れませんでした。最初から始めます。元のファイルは .corrupt として保存されています。';
 
   @override
+  String get learnProgressSaveFailed => '進捗を保存できませんでした。MorseCQ を閉じるまでは今回の結果が有効です。';
+
+  @override
   String get learnChooseDrill => '練習を選択';
 
   @override

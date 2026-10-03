@@ -37,6 +37,7 @@ void main() {
       expect(parsed.trainer.toneHz, TrainerSettings.defaults.toneHz);
     });
 
+
     test('hasFeedback is false only when every modality is off', () {
       const off = TrainingSettings(soundEnabled: false);
       expect(off.hasFeedback, isFalse);
@@ -69,6 +70,21 @@ void main() {
       if (await tmp.exists()) {
         await tmp.delete(recursive: true);
       }
+    });
+
+    test('a stored session shorter than the Koch minimum is lifted', () async {
+      // Older builds allowed 20-symbol sessions, which could never pass a
+      // lesson: KochCourse needs at least minCharsPerSession symbols.
+      final file = File(p.join(tmp.path, 'settings.json'));
+      final store = FileTrainingSettingsStore(file);
+      await store.save(
+        const TrainingSettings(
+          trainer: TrainerSettings(sessionLengthChars: 20),
+        ),
+      );
+      final back = await store.load();
+      expect(back!.trainer.sessionLengthChars, KochCourse().minCharsPerSession);
+      expect(TrainingSettings.minSessionChars, KochCourse().minCharsPerSession);
     });
 
     test('writes settings.json next to progress and reloads it', () async {

@@ -270,6 +270,7 @@
   "learnLoading": "学習の進捗を読み込み中…",
   "learnIdentityRequired": "練習を始めるには ID 情報を作成するか、ロックを解除してください。進捗は ID 情報と一緒に保存され、バックアップにも含まれます。",
   "learnLoadFailed": "保存済みの進捗を読み取れませんでした。最初から始めます。元のファイルは .corrupt として保存されています。",
+  "learnProgressSaveFailed": "進捗を保存できませんでした。MorseCQ を閉じるまでは今回の結果が有効です。",
   "learnChooseDrill": "練習を選択",
   "learnDrillGroups": "ランダムな文字列",
   "learnDrillWords": "単語",

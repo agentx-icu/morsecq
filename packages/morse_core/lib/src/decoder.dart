@@ -191,10 +191,19 @@ final class MorseDecoder {
     return text;
   }
 
-  /// Forget the decoded text and any in-progress character but keep the
-  /// learned dit estimate and gap thresholds. Useful between exercises keyed
-  /// by the same operator; [reset] forgets everything.
+  /// Drop a mark that is still held without decoding it, e.g. when the input
+  /// that pressed the key goes away before releasing it. The next [keyDown]
+  /// starts a fresh mark; text and learned timing are kept.
+  void cancelMark() {
+    _isDown = false;
+  }
+
+  /// Forget the decoded text and any in-progress character (including a
+  /// held mark) but keep the learned dit estimate and gap thresholds. Useful
+  /// between exercises keyed by the same operator; [reset] forgets
+  /// everything.
   void clearText() {
+    _isDown = false;
     _text.clear();
     _pending.clear();
     _pendingConfidence.clear();
