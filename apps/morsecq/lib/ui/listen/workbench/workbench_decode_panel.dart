@@ -39,7 +39,18 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   /// Copy-it-myself is the default: the decoder output stays hidden until
   /// the learner asks for it (spec §11.2.4).
   bool _copyMode = true;
-  bool _decoderShown = false;
+
+  /// Decoder answers the learner has seen, keyed by recording, selection
+  /// and tuning: decoding the same selection again does not make its
+  /// answer unseen.
+  final Set<String> _exposed = <String>{};
+
+  String get _exposureKey =>
+      '${_c.file}#${_c.start}-${_c.end}#${_c.autoTune}#${_c.manualHz}';
+
+  bool get _decoderShown => _exposed.contains(_exposureKey);
+
+  void _expose() => _exposed.add(_exposureKey);
   SessionScore? _score;
   bool _againstDecoder = false;
   SegmentDecodeResult? _scoredFor;
@@ -58,7 +69,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
     if (!identical(_scoredFor, _c.result)) {
       _score = null;
       // A new result in decoder mode is exposed the moment it is shown.
-      _decoderShown = !_copyMode;
+      if (!_copyMode && _c.result != null) _expose();
       _scoredFor = _c.result;
       _attemptId = null;
     }
@@ -90,7 +101,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         id: id,
         source: ExerciseSource.recording,
         assistance: <Assistance>{if (_decoderShown) Assistance.decoder},
-        answered: _answer.text.trim().isNotEmpty,
+        answered: MorseSupport.hasSymbols(_answer.text),
         sourceRef: 'recording:${_c.file}#${_c.start}-${_c.end}',
       );
       saved = outcome.saved;
@@ -169,7 +180,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
             onSelectionChanged: (v) => setState(() {
               _copyMode = v.first;
               // Viewing the decoder output exposes the answer for good.
-              if (!_copyMode) _decoderShown = true;
+              if (!_copyMode) _expose();
             }),
           ),
           const SizedBox(height: 12),
@@ -231,7 +242,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
               Text(s.workbenchDecoderHidden),
               TextButton(
                 key: const ValueKey('workbench-show-decoder'),
-                onPressed: () => setState(() => _decoderShown = true),
+                onPressed: () => setState(_expose),
                 child: Text(s.workbenchShowDecoder),
               ),
             ],

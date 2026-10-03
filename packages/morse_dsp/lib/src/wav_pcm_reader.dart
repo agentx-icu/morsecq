@@ -124,9 +124,12 @@ final class WavPcmReader {
     // The RIFF size must fit the file (one pad byte of slack): a shorter
     // file was cut off, a larger declaration is damaged or streamed.
     final int riffEnd = head.getUint32(4, Endian.little) + 8;
-    if (riffEnd > length + 1) {
+    if (riffEnd > length + 1 || riffEnd < 12) {
       throw const WavFormatException(WavError.truncated, 'RIFF size');
     }
+    // Chunks must lie inside the declared RIFF body; bytes after it (some
+    // tools append metadata) are not part of the file.
+    final int end = riffEnd < length ? riffEnd : length;
 
     int? rate;
     int? channels;
@@ -134,13 +137,13 @@ final class WavPcmReader {
     int? dataOffset;
     int? dataDeclared;
     int offset = 12;
-    while (offset + 8 <= length) {
+    while (offset + 8 <= end) {
       final ByteData chunk = ByteData.sublistView(await source.read(offset, 8));
       final String id = _tag(chunk, 0);
       final int size = chunk.getUint32(4, Endian.little);
       final int body = offset + 8;
       if (id == 'fmt ') {
-        if (size < 16 || body + size > length) {
+        if (size < 16 || body + size > end) {
           throw const WavFormatException(WavError.truncated, 'fmt chunk');
         }
         final ByteData fmt = ByteData.sublistView(
@@ -181,17 +184,17 @@ final class WavPcmReader {
       } else if (id == 'data') {
         // A data chunk running past the end is a damaged or cut-off file:
         // rejected, never silently clipped (functional spec §11.3).
-        if (body + size > length) {
+        if (body + size > end) {
           throw const WavFormatException(WavError.truncated, 'data chunk');
         }
         dataOffset = body;
         dataDeclared = size;
-      } else if (body + size > length) {
+      } else if (body + size > end) {
         throw WavFormatException(WavError.truncated, 'chunk "$id"');
       }
       // Chunks are word aligned: an odd size is followed by a pad byte.
       offset = body + size + (size.isOdd ? 1 : 0);
-      if (rate != null && dataOffset != null && offset >= length) break;
+      if (rate != null && dataOffset != null && offset >= end) break;
     }
     if (rate == null || channels == null || bits == null) {
       throw const WavFormatException(WavError.missingFmt);

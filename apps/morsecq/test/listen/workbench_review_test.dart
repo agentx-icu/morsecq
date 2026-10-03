@@ -98,6 +98,28 @@ void main() {
     expect(record.assistance, contains(Assistance.decoder));
   });
 
+  testWidgets('decoding the same selection again keeps it assisted', (
+    tester,
+  ) async {
+    final t = await TestTraining.create();
+    await pumpScreen(tester, t.controller);
+    await tester.tap(find.text(en.workbenchModeDecoder));
+    await tester.pump();
+    await tester.tap(find.text(en.workbenchModeCopy));
+    await tester.pump();
+    // A fresh result for the unchanged selection and tuning.
+    await tester.tap(find.byKey(const ValueKey('workbench-decode')));
+    await settle(tester);
+    await tester.enterText(
+      find.byKey(const ValueKey('workbench-answer')),
+      'SOS TEST',
+    );
+    await tester.tap(find.byKey(const ValueKey('workbench-submit')));
+    await settle(tester);
+    final record = t.controller.progress.history.single;
+    expect(record.assistance, contains(Assistance.decoder));
+  });
+
   testWidgets('the keypad never reveals the hidden decoder output', (
     tester,
   ) async {

@@ -14,7 +14,7 @@ final class EnvelopeGateConfig {
     this.minOn = const Duration(milliseconds: 12),
     this.minOff = const Duration(milliseconds: 12),
     this.meterRangeDb = 30,
-    this.noiseWarmup = const Duration(milliseconds: 50),
+    this.noiseWarmup = Duration.zero,
   })  : assert(offDropDb > onDropDb, 'offDropDb must exceed onDropDb'),
         assert(noiseAttack > 0 && noiseAttack <= 1, 'noiseAttack in (0, 1]');
 
@@ -58,7 +58,14 @@ final class EnvelopeGateConfig {
   /// signal contrast is smaller than this.
   final double meterRangeDb;
 
-  /// The first stretch is buffered before any decision. One block of white
+  /// Optional, off by default (zero): the floor is then seeded from the
+  /// first block, as it always was. Known limitation of that default: one
+  /// unusually quiet first noise block can open the gate on plain noise
+  /// (seen at 44.1 kHz as a spurious leading symbol). The warm-up fixes
+  /// that case but costs early onsets at low sample rates and can mistake
+  /// a steady noise run for a tone, so it is not enabled.
+  ///
+  /// When enabled, the first stretch is buffered before any decision. One block of white
   /// noise in a narrow bin is exponentially distributed and can sit 10 dB
   /// or more below the mean, so seeding the floor from the first block
   /// alone opens the gate on plain noise. The floor comes from the quiet
@@ -99,7 +106,9 @@ final class EnvelopeGate {
         assert(blockSize > 0, 'blockSize must be positive'),
         minOnBlocks = _blocksFor(config.minOn, blockSize, sampleRate),
         minOffBlocks = _blocksFor(config.minOff, blockSize, sampleRate),
-        warmupBlocks = _blocksFor(config.noiseWarmup, blockSize, sampleRate),
+        warmupBlocks = config.noiseWarmup == Duration.zero
+            ? 0
+            : _blocksFor(config.noiseWarmup, blockSize, sampleRate),
         _peakDecay = _perBlock(-config.peakDecayDbPerSecond, blockSize, sampleRate),
         _noiseRise = _perBlock(config.noiseRiseDbPerSecond, blockSize, sampleRate),
         _onFactor = _fromDb(-config.onDropDb),
@@ -188,7 +197,7 @@ final class EnvelopeGate {
     final double p = power > floorPower ? power : floorPower;
     final int index = _blocks++;
     _lastPower = p;
-    if (index < warmupBlocks) {
+    if (warmupBlocks > 0 && index < warmupBlocks) {
       _warmup.add(p);
       _peak = math.max(p, _peak * _peakDecay);
       if (index < warmupBlocks - 1) return const <GateTransition>[];
@@ -241,6 +250,10 @@ final class EnvelopeGate {
   }
 
   GateTransition? _step(double p, int index) {
+    if (_noise == null) {
+      _noise = p;
+      _peak = p;
+    }
     _peak = math.max(p, _peak * _peakDecay);
     final double noise = _noise!;
 

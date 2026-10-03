@@ -217,4 +217,34 @@ void main() {
     expect(decoder.text.trim(), 'TEST');
     decoder.dispose();
   });
+
+  for (final int rate in <int>[8000, 16000, 44100, 48000]) {
+    test('live decoding keeps a tone one quiet block in at $rate Hz', () {
+      final Int16List pcm = SyntheticMorse(
+        sampleRate: rate,
+        leadIn: Duration(microseconds: 256 * 1000000 ~/ rate),
+      ).renderText('TEST');
+      final AudioMorseDecoder decoder = AudioMorseDecoder(sampleRate: rate);
+      decoder.feed(pcm);
+      decoder.commitPending();
+      expect(decoder.text.trim(), 'TEST');
+      decoder.dispose();
+    });
+  }
+
+  test('live decoding of pure noise yields no text (seed 1430)', () {
+    final Int16List pcm = SyntheticMorse(
+      sampleRate: 44100,
+      seed: 1430,
+      snrDb: 20,
+      leadIn: Duration.zero,
+      tail: const Duration(seconds: 1),
+    ).render(const <MorseElement>[]);
+    final AudioMorseDecoder decoder = AudioMorseDecoder(sampleRate: 44100);
+    decoder.feed(pcm);
+    expect(decoder.text.trim(), isEmpty, reason: 'before flushing');
+    decoder.commitPending();
+    expect(decoder.text.trim(), isEmpty);
+    decoder.dispose();
+  });
 }

@@ -32,16 +32,26 @@ extension _IdentityBackup on Tim2ToxIdentityService {
       }
     }
     if (includeMedia) {
-      // Opt-in only: saved recordings beside (not inside) the training tree.
-      final media = Directory(p.join(_paths.root, 'media', 'recordings'));
-      if (await media.exists()) {
-        final files =
-            media.listSync(followLinks: false).whereType<File>().toList()
-              ..sort((a, b) => a.path.compareTo(b.path));
-        for (final file in files) {
-          entries['${BackupContainer.mediaPrefix}${p.basename(file.path)}'] =
-              await file.readAsBytes();
+      // Opt-in only: exactly the saved recordings the app counted before
+      // asking (BackupMedia.referenced) — never the working recording or
+      // staging/temporary files — and never more than BackupMedia.maxBytes.
+      final doc = File(p.join(training.path, BackupMedia.materialsDoc));
+      final names = BackupMedia.referenced(
+        await doc.exists() ? await doc.readAsString() : null,
+      ).toList()..sort();
+      var total = 0;
+      for (final name in names) {
+        final file = File(p.join(_paths.root, 'media', 'recordings', name));
+        if (!await file.exists()) continue;
+        total += await file.length();
+        if (total > BackupMedia.maxBytes) {
+          throw const ChatException(
+            'backup_media_too_large',
+            'Recordings exceed the backup size limit',
+          );
         }
+        entries['${BackupContainer.mediaPrefix}$name'] = await file
+            .readAsBytes();
       }
     }
     return BackupContainer(

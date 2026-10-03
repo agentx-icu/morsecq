@@ -123,6 +123,34 @@ class GuestStore {
     // A journal describes data that no longer exists.
     final journal = File(p.join(dir, 'migration-journal.json'));
     if (await journal.exists()) await journal.delete();
+    await _deleteMatching(dir, 'pending-');
+  }
+
+  static Future<void> _deleteMatching(String dir, String prefix) async {
+    await for (final e in Directory(dir).list()) {
+      if (e is File && p.basename(e.path).startsWith(prefix)) await e.delete();
+    }
+  }
+
+  /// A migration that recorded completion but crashed before its cleanup:
+  /// finish the cleanup before the guest profile is used again, so new
+  /// guest practice starts a new batch and is never removed by a later
+  /// recovery of the old one.
+  Future<void> finishCompletedMigrations() async {
+    final dir = await directory();
+    final genFile = File(p.join(dir, 'generation'));
+    if (!await genFile.exists()) return;
+    final gen = (await genFile.readAsString()).trim();
+    var done = false;
+    await for (final e in Directory(dir).list()) {
+      final name = p.basename(e.path);
+      if (e is File &&
+          name.startsWith('migrated-') &&
+          name.endsWith('-$gen.json')) {
+        done = true;
+      }
+    }
+    if (done) await clear();
   }
 }
 
@@ -214,18 +242,7 @@ final class GuestMigration {
     if (await staging.exists()) await staging.delete(recursive: true);
     await _copy(source, staging);
 
-    final mediaStaging = Directory(_mediaStaging);
-    if (await mediaStaging.exists()) await mediaStaging.delete(recursive: true);
-    final media = Directory(_mediaSource);
-    if (await media.exists()) {
-      await mediaStaging.create(recursive: true);
-      await for (final entity in media.list()) {
-        if (entity is! File) continue;
-        final name = p.basename(entity.path);
-        if (name == _workingRecording) continue;
-        await entity.copy(p.join(mediaStaging.path, name));
-      }
-    }
+    await _stageMedia();
 
     // 2. Validate: the staged progress must load.
     final progress = File(p.join(_staging, FileTrainerStore.fileName));
@@ -258,19 +275,107 @@ final class GuestMigration {
     return MigrationOutcome.done;
   }
 
-  /// Moves staged recordings next to the identity's own; an identity file
-  /// of the same name is never replaced (or deleted).
+  /// Copies the guest's saved recordings into a staging folder under names
+  /// that are free next to the identity's own recordings. A colliding name
+  /// gets a new one, and the staged audio-material references are rewritten
+  /// to match before anything is committed — an identity recording is never
+  /// replaced, and no guest recording is dropped.
+  Future<void> _stageMedia() async {
+    final mediaStaging = Directory(_mediaStaging);
+    if (await mediaStaging.exists()) await mediaStaging.delete(recursive: true);
+    final media = Directory(_mediaSource);
+    if (!await media.exists()) return;
+    await mediaStaging.create(recursive: true);
+    final taken = <String>{};
+    final target = Directory(_mediaTarget);
+    if (await target.exists()) {
+      await for (final e in target.list()) {
+        taken.add(p.basename(e.path));
+      }
+    }
+    final renames = <String, String>{};
+    await for (final entity in media.list()) {
+      if (entity is! File) continue;
+      final name = p.basename(entity.path);
+      if (name == _workingRecording) continue;
+      var dest = name;
+      if (taken.contains(dest)) {
+        final ext = p.extension(name);
+        final stem = p.basenameWithoutExtension(name);
+        var n = 0;
+        do {
+          dest = '${stem}_g$generation${n == 0 ? '' : '_$n'}$ext';
+          n++;
+        } while (taken.contains(dest));
+        renames[name] = dest;
+      }
+      taken.add(dest);
+      await entity.copy(p.join(mediaStaging.path, dest));
+    }
+    if (renames.isNotEmpty) await _remapReferences(_staging, renames);
+  }
+
+  /// Rewrites `media/recordings/<old>` references in the audio materials
+  /// document (and its backup copy) of the training directory [training].
+  static Future<void> _remapReferences(
+    String training,
+    Map<String, String> renames,
+  ) async {
+    for (final name in const [
+      'audio_materials.json',
+      'audio_materials.json.bak',
+    ]) {
+      final file = File(p.join(training, 'docs', name));
+      if (!await file.exists()) continue;
+      final Object? json;
+      try {
+        json = jsonDecode(await file.readAsString());
+      } on FormatException {
+        continue;
+      }
+      final list = json is Map ? json['materials'] : null;
+      if (list is! List) continue;
+      for (final m in list) {
+        if (m is! Map) continue;
+        final ref = m['file'];
+        if (ref is! String) continue;
+        final old = p.posix.basename(ref);
+        final now = renames[old];
+        if (now != null) m['file'] = 'media/recordings/$now';
+      }
+      await file.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(json),
+        flush: true,
+      );
+    }
+  }
+
+  /// Moves staged recordings next to the identity's own. Names were made
+  /// unique while staging; should one have appeared since, the recording
+  /// takes another free name and the committed references follow it — an
+  /// identity recording is never replaced.
   Future<void> _commitMedia() async {
     final staged = Directory(_mediaStaging);
     if (!await staged.exists()) return;
     final target = Directory(_mediaTarget);
     await target.create(recursive: true);
+    final renames = <String, String>{};
     await for (final entity in staged.list()) {
       if (entity is! File) continue;
-      final dest = File(p.join(target.path, p.basename(entity.path)));
-      if (await dest.exists()) continue;
+      final name = p.basename(entity.path);
+      var dest = File(p.join(target.path, name));
+      var n = 1;
+      while (await dest.exists()) {
+        final next =
+            '${p.basenameWithoutExtension(name)}_g${generation}_m$n'
+            '${p.extension(name)}';
+        dest = File(p.join(target.path, next));
+        renames[name] = next;
+        n++;
+      }
       await entity.rename(dest.path);
     }
+    if (renames.isNotEmpty) await _remapReferences(_target, renames);
     await staged.delete(recursive: true);
   }
 

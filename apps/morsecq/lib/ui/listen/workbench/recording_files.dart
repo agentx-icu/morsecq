@@ -226,19 +226,17 @@ final class RecordingLibrary {
 
   Future<bool> exists(String relativePath) => fileFor(relativePath).exists();
 
-  /// Saved recordings (not the working one): count and total bytes.
-  /// Synchronous: a handful of directory entries, read before a backup.
-  (int, int) savedSizeSync() {
-    final dir = Directory(p.join(root, 'media', 'recordings'));
-    if (!dir.existsSync()) return (0, 0);
+  /// Saved recordings a backup would carry: the files named in
+  /// [referenced] (see `BackupMedia.referenced`) that exist. Count and
+  /// total bytes. Synchronous: a handful of files, read before a backup.
+  (int, int) savedSizeSync(Set<String> referenced) {
     var count = 0;
     var bytes = 0;
-    for (final entity in dir.listSync(followLinks: false)) {
-      if (entity is! File || p.basename(entity.path) == 'current.wav') {
-        continue;
-      }
+    for (final name in referenced) {
+      final f = File(p.join(root, 'media', 'recordings', name));
+      if (!f.existsSync()) continue;
       count++;
-      bytes += entity.lengthSync();
+      bytes += f.lengthSync();
     }
     return (count, bytes);
   }

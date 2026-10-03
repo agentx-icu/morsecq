@@ -9,6 +9,7 @@
 /// updating every consumer.
 library;
 
+export 'src/backup_media.dart';
 export 'src/chat_service.dart';
 export 'src/identity_service.dart';
 export 'src/message_search.dart';

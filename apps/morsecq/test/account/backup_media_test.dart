@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
 import 'package:path/path.dart' as p;
 
@@ -29,12 +30,24 @@ Future<void> _export(WidgetTester tester) async {
 /// Puts a saved recording where the workbench keeps them: the identity
 /// root beside its backed-up data directory.
 Future<void> _saveRecording(FakeIdentityService identity) async {
-  final root = p.dirname(await identity.dataDirectory());
+  final data = await identity.dataDirectory();
+  final root = p.dirname(data);
   final file = File(p.join(root, 'media', 'recordings', 'rec_a.wav'))
     ..createSync(recursive: true)
     ..writeAsBytesSync(List<int>.filled(2048, 1));
+  // Only referenced saved recordings count (the same rule as the export);
+  // the working recording never does.
+  final working = File(p.join(root, 'media', 'recordings', 'current.wav'))
+    ..writeAsBytesSync(List<int>.filled(4096, 1));
+  final doc = File(p.join(data, BackupMedia.materialsDoc))
+    ..createSync(recursive: true)
+    ..writeAsStringSync(
+      '{"v":1,"materials":[{"id":"x","file":"media/recordings/rec_a.wav"}]}',
+    );
   addTearDown(() {
-    if (file.existsSync()) file.deleteSync();
+    for (final f in [file, working, doc]) {
+      if (f.existsSync()) f.deleteSync();
+    }
   });
 }
 

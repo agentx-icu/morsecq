@@ -184,6 +184,20 @@ void main() {
         // backed-up data directory).
         await put(root.path, 'rec_same.wav', 'identity-same');
         await put(root.path, 'current.wav', 'identity-working');
+        // The guest's saved selection refers to its colliding recording.
+        final doc = File(
+          p.join(guest, 'training', 'docs', 'audio_materials.json'),
+        );
+        await doc.create(recursive: true);
+        await doc.writeAsString(
+          jsonEncode({
+            'v': 1,
+            'materials': [
+              {'id': 'x', 'file': 'media/recordings/rec_same.wav'},
+              {'id': 'y', 'file': 'media/recordings/rec_a.wav'},
+            ],
+          }),
+        );
         await GuestMigration(
           guestDirectory: guest,
           identityDirectory: identity,
@@ -195,6 +209,22 @@ void main() {
         expect(read('rec_a.wav'), 'guest-a');
         expect(read('rec_same.wav'), 'identity-same');
         expect(read('current.wav'), 'identity-working');
+        // The colliding guest recording kept under a new name, and the
+        // migrated reference follows it.
+        final migrated =
+            jsonDecode(
+                  File(
+                    p.join(identity, 'training', 'docs', 'audio_materials.json'),
+                  ).readAsStringSync(),
+                )
+                as Map<String, Object?>;
+        final refs = [
+          for (final m in migrated['materials']! as List)
+            (m as Map)['file'] as String,
+        ];
+        expect(refs[1], 'media/recordings/rec_a.wav');
+        expect(refs[0], isNot('media/recordings/rec_same.wav'));
+        expect(read(p.posix.basename(refs[0])), 'guest-same');
         expect(Directory(p.join(guest, 'media')).existsSync(), isFalse);
         expect(
           Directory(
@@ -454,6 +484,24 @@ void main() {
     host.resumeLearning();
     await host.dispose();
   });
+
+  test(
+    'a completed but uncleaned migration is finished before reuse',
+    () async {
+      final root = await _tmp();
+      final store = GuestStore(root: () async => p.join(root.path, 'guest'));
+      final dir = await store.directory();
+      await _writeGuestProgress(dir, 3);
+      final gen = await store.generation();
+      // Marker written, cleanup crashed; a pending marker is left too.
+      await File(p.join(dir, 'migrated-ab-$gen.json')).writeAsString('{}');
+      await File(p.join(dir, 'pending-AB')).writeAsString('1');
+      await store.finishCompletedMigrations();
+      expect(await store.hasProgress(), isFalse);
+      expect(await File(p.join(dir, 'pending-AB')).exists(), isFalse);
+      expect(await store.generation(), isNot(gen));
+    },
+  );
 }
 
 extension<T> on T {

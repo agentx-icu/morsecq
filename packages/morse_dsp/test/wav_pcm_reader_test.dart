@@ -160,6 +160,26 @@ void main() {
       final riff = Uint8List.fromList(full);
       ByteData.sublistView(riff).setUint32(4, full.length + 100, Endian.little);
       expect(_open(riff), _rejects(WavError.truncated));
+      // A RIFF size smaller than the chunks it contains: the declared end
+      // is enforced, not the physical file length.
+      for (final int declared in <int>[0, 4, 28, 36]) {
+        final short = Uint8List.fromList(full);
+        ByteData.sublistView(short).setUint32(4, declared, Endian.little);
+        expect(
+          _open(short),
+          throwsA(isA<WavFormatException>()),
+          reason: 'RIFF size $declared',
+        );
+      }
+    });
+
+    test('bytes after the declared RIFF end are ignored', () async {
+      final extra = Uint8List.fromList(<int>[
+        ...wavBytes(ramp),
+        1, 2, 3, 4, 5, 6, 7, 8, //
+      ]);
+      final r = await _open(extra);
+      expect(r.info.frameCount, ramp.length);
     });
 
     test('size and duration limits', () async {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:path/path.dart' as p;
@@ -29,8 +31,8 @@ Rect? shareOriginOf(BuildContext context) {
 }
 
 /// Largest total of saved recordings a backup may carry (the container is
-/// built in memory).
-const int maxBackupMediaBytes = 100 * 1024 * 1024;
+/// built in memory); the backend enforces the same limit.
+const int maxBackupMediaBytes = BackupMedia.maxBytes;
 
 /// Recordings are left out of backups by default (functional spec §11.3);
 /// when there are saved ones, the learner may opt in. Null = cancelled.
@@ -40,8 +42,13 @@ Future<bool?> _askIncludeRecordings(
 ) async {
   final (int count, int bytes) saved;
   try {
-    final root = p.dirname(await identity.dataDirectory());
-    saved = RecordingLibrary(root).savedSizeSync();
+    final data = await identity.dataDirectory();
+    final doc = File(p.join(data, BackupMedia.materialsDoc));
+    // The same rule the backend exports with: referenced saved recordings.
+    final referenced = BackupMedia.referenced(
+      doc.existsSync() ? doc.readAsStringSync() : null,
+    );
+    saved = RecordingLibrary(p.dirname(data)).savedSizeSync(referenced);
   } on Object {
     return false;
   }
