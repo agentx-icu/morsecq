@@ -111,25 +111,50 @@ void main() {
     expect((await chat.loadHistory(id)).single.text, 'CQ practice');
   });
 
-  test(
-    'deleting it clears the history but keeps the row and its pin',
-    () async {
-      await identity.create(displayName: 'Alice');
-      chat = FakeChatService(identity: identity);
-      final String id = chat.selfConversationId!;
-      await chat.sendText(id, 'note');
-      await chat.setPinned(id, true);
+  test('deleting it is refused and changes nothing', () async {
+    await identity.create(displayName: 'Alice');
+    chat = FakeChatService(identity: identity);
+    final String id = chat.selfConversationId!;
+    await chat.sendText(id, 'note');
+    await chat.setPinned(id, true);
+    await chat.setDraft(id, 'half');
+    final List<List<Conversation>> published = [];
+    final StreamSubscription<List<Conversation>> sub = chat.conversationChanges
+        .listen(published.add);
+    await pumpEventQueue();
+    published.clear(); // the subject replays the latest list on subscribe
 
-      await chat.deleteConversation(id);
+    await expectLater(
+      chat.deleteConversation(id),
+      throwsA(
+        isA<ChatException>().having((e) => e.code, 'code', 'self_conversation'),
+      ),
+    );
+    await pumpEventQueue();
+    await sub.cancel();
 
-      final Conversation row = selfRow()!;
-      expect(row.lastMessage, isNull);
-      expect(row.pinned, isTrue);
-      expect(row.title, 'Alice');
-      expect(await chat.loadHistory(id), isEmpty);
+    expect(published, isEmpty, reason: 'nothing was republished');
+    final Conversation row = selfRow()!;
+    expect(row.lastMessage?.text, 'note');
+    expect(row.pinned, isTrue);
+    expect(row.draft, 'half');
+    expect(row.title, 'Alice');
+    expect((await chat.loadHistory(id)).single.text, 'note');
+  });
 
-      await chat.clearHistory(id);
-      expect(selfRow()!.isSelf, isTrue, reason: 'clearHistory keeps the flag');
-    },
-  );
+  test('clearHistory still empties it explicitly; the row stays', () async {
+    await identity.create(displayName: 'Alice');
+    chat = FakeChatService(identity: identity);
+    final String id = chat.selfConversationId!;
+    await chat.sendText(id, 'note');
+    await chat.setPinned(id, true);
+
+    await chat.clearHistory(id);
+
+    final Conversation row = selfRow()!;
+    expect(row.isSelf, isTrue, reason: 'clearHistory keeps the flag');
+    expect(row.lastMessage, isNull);
+    expect(row.pinned, isTrue);
+    expect(await chat.loadHistory(id), isEmpty);
+  });
 }

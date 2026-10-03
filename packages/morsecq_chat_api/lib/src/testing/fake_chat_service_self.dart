@@ -41,19 +41,6 @@ extension _FakeSelfConversation on FakeChatService {
     isSelf: true,
   );
 
+  /// Whether [id] is the note to self, which `deleteConversation` refuses.
   bool _isSelfConversation(String id) => _selfBound && id == selfConversationId;
-
-  /// Deleting the self conversation empties it; the row itself stays.
-  void _clearSelfConversation() {
-    _messages.remove(selfConversationId);
-    final Conversation? existing = _conversations[selfConversationId];
-    _conversations[selfConversationId!] = Conversation(
-      id: selfConversationId!,
-      kind: ConversationKind.c2c,
-      title: _selfName,
-      pinned: existing?.pinned ?? false,
-      isSelf: true,
-    );
-    _publishConversations();
-  }
 }

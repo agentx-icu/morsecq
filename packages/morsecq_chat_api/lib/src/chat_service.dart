@@ -32,7 +32,8 @@ abstract interface class ChatService {
   /// [conversations] (with [Conversation.isSelf]) whenever the other
   /// conversations are, i.e. while chat is connected. [sendText] to it is
   /// local only — stored, never sent — and returns [MessageStatus.sent] at
-  /// once; [deleteConversation] clears its history but keeps the row.
+  /// once. It cannot be deleted: [deleteConversation] refuses it (see there);
+  /// [clearHistory] is the explicit way to empty it.
   String? get selfConversationId;
 
   List<Conversation> get conversations;
@@ -41,6 +42,11 @@ abstract interface class ChatService {
   Future<void> markRead(String conversationId);
   Future<void> setPinned(String conversationId, bool pinned);
   Future<void> setDraft(String conversationId, String draft);
+
+  /// Clears the conversation's history and removes it from [conversations]
+  /// until the next message. For [selfConversationId] it throws
+  /// `ChatException('self_conversation', ...)` and changes nothing (history,
+  /// draft and pin all stay).
   Future<void> deleteConversation(String conversationId);
 
   // ---- Messages ------------------------------------------------------------
