@@ -224,12 +224,11 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
 
   Widget _scaffold(S s, Widget body) {
     final flash = _playback?.flash;
-    // A 320 px phone (or large text) has no room for the written label next
-    // to the title; fall back to an icon there. The tooltip and merged
-    // semantics keep the switch named for screen readers either way.
-    final media = MediaQuery.of(context);
-    final textScale = media.textScaler.scale(14) / 14;
-    final roomForLabel = media.size.width / textScale >= 420;
+    // Keep the written label whenever the title, label and switch fit the
+    // bar at the current language and text size; a narrow phone or large
+    // text falls back to an icon. The tooltip and merged semantics keep the
+    // switch named for screen readers either way.
+    final roomForLabel = _appBarFits(s.learnSendTitle, s.learnCopyFromMemory);
     return Scaffold(
       appBar: AppBar(
         title: Text(s.learnSendTitle),
@@ -262,6 +261,37 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       ),
       body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
+  }
+
+  /// Whether [title] plus the [label] + switch action fit one app bar row:
+  /// back button, title spacing, switch and trailing gap are fixed chrome.
+  bool _appBarFits(String title, String label) {
+    final media = MediaQuery.of(context);
+    final theme = Theme.of(context);
+    double width(String text, TextStyle? style) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: media.textScaler,
+        maxLines: 1,
+      )..layout();
+      final w = painter.width;
+      painter.dispose();
+      return w;
+    }
+
+    const chrome = kToolbarHeight + NavigationToolbar.kMiddleSpacing * 2 + 72;
+    final needed =
+        chrome +
+        width(
+          title,
+          theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
+        ) +
+        width(
+          label,
+          theme.appBarTheme.toolbarTextStyle ?? theme.textTheme.bodyMedium,
+        );
+    return needed <= media.size.width;
   }
 
   Widget _buildPractice(BuildContext context) {

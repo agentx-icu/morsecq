@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
@@ -116,9 +117,7 @@ void main() {
       expect(find.byType(IdentityCard), findsOneWidget);
     });
 
-    testWidgets('identity card fits a 320 px phone at 2x text', (
-      tester,
-    ) async {
+    testWidgets('identity card fits a 320 px phone at 2x text', (tester) async {
       setPhone(tester, kSmallPhone, textScale: 2);
       await bootApp(tester);
       await tester.tap(navLabel(en.navMe));
@@ -167,6 +166,47 @@ void main() {
         await tester.tap(find.byType(Switch));
         await tester.pumpAndSettle();
         expect(find.text(en.learnHiddenTarget), findsOneWidget);
+      });
+    }
+  });
+
+  group('send practice label', () {
+    // Widget tests render Ahem (every glyph 1 em wide), so the cases keep a
+    // clear margin; real-font frames come from tool/screenshots.
+    final cases = <(String, Size, double, bool)>[
+      // Regression: the fixed 420 threshold dropped the label on a 402 pt
+      // iPhone although it fit.
+      ('zh', const Size(402, 874), 1, true),
+      ('en', const Size(600, 874), 1, true),
+      ('de', kSmallPhone, 1.3, false),
+      ('en', kSmallPhone, 2, false),
+    ];
+    for (final (String lang, Size size, double scale, bool label) in cases) {
+      testWidgets('$lang $size at ${scale}x shows '
+          '${label ? 'the label' : 'the icon'}', (tester) async {
+        setPhone(tester, size, textScale: scale);
+        final t = await TestTraining.create();
+        addTearDown(t.controller.dispose);
+        await tester.pumpWidget(
+          l10nApp(
+            locale: Locale(lang),
+            home: SendPracticeScreen(
+              controller: t.controller,
+              playback: FakeLearnPlaybackFactory(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        final s = lookupS(Locale(lang));
+        expect(
+          find.text(s.learnCopyFromMemory),
+          label ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byIcon(Icons.visibility_off_outlined),
+          label ? findsNothing : findsOneWidget,
+        );
       });
     }
   });
