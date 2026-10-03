@@ -52,12 +52,15 @@ UIKit，并且从不调用 `TIMManager.initSDK`。一切都沿 `FfiChatService` 
 | `locked` | 校验器持有密码**或**文件是 Tox 加密的 | `unlock(pw)` |
 | `ready` | 明文档案，或本次运行中已解锁 | `connect()` / `disconnect()` |
 
-静态加密与 toxee 的 `AccountService` 一致：设置了密码时，引擎**停止**期间档案是加密的，
-**运行**期间是明文（Tox 运行时会不断重写 savedata）。`connect()` 在 `init` 之前解密，
-`disconnect()` 在 `uninit` 之后立即重新加密。PBKDF2-HMAC-SHA256 校验器（`flutter_secure_storage`：
-Keychain / Keystore / libsecret / DPAPI）是"是否设有密码"的权威——文件的加密状态不可能是，
-因为会话中途崩溃会让它停留在明文。对于加密档案，成功的 `tox_pass_decrypt` 证明密码正确，
-并在密码修改或恢复中断后修复过期的校验器。
+静态加密：设置了密码时，`tox_profile.tox` 在磁盘上**始终**是加密的。`connect()` 在
+`init` 之前把密码交给 Tim2Tox（`setProfilePassphrase`）；原生层直接打开加密档案并对每次
+保存加密，因此应用运行中、进入后台或被杀死时都不会留下明文档案（旧版本留下的明文文件会在第一次
+保存时迁移）。连接期间修改密码会对运行中的会话重新加密（`rekeyLiveProfilePassphrase`），之后
+任何一步失败都会回滚。`disconnect()` 仍会加密它发现的明文文件，并在之后的断开中持续重试。
+PBKDF2-HMAC-SHA256 校验器（`flutter_secure_storage`：Keychain / Keystore / libsecret / DPAPI）
+是旧明文文件"是否设有密码"的权威；对于加密档案，成功的 `tox_pass_decrypt` 证明密码正确，并在
+密码修改或恢复中断后修复过期的校验器。消息记录、草稿和待处理的好友请求**不**受密码保护
+（Tim2Tox 以明文 JSON 保存记录）；身份文件仅限所有者访问（0700 / 0600），并排除在系统备份之外。
 
 `PersistentIdentityService.persist()` 在挂起或导出前等待 savedata、延迟写入的历史、待发送队列和
 已注册 `IdentityDataStore` 的写入。替换前先让这些存储停止旧身份的写入；身份流仅在替换成功后

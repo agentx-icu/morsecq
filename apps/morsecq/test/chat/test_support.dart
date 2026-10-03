@@ -25,7 +25,8 @@ final S s = lookupS(const Locale('en'));
 final String kPeerKey = 'A' * 64;
 final String kPeerToxId = '${'B' * 64}${'0' * 12}';
 final String kSelfKey = 'F' * 64;
-final String kSelfToxId = '$kSelfKey${'1' * 12}';
+// Nospam 11111111 and FF..FF cancel out in both checksum lanes: checksum 0000.
+final String kSelfToxId = '$kSelfKey${'1' * 8}0000';
 
 const Size kPhone = Size(390, 844);
 const Size kDesktop = Size(1280, 800);

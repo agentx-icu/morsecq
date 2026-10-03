@@ -66,6 +66,7 @@ final class AppServices {
             badge: apis.badge,
             prefs: this.notificationPrefs,
             isForeground: lifecycle.isForeground,
+            identity: identity,
             strings: () => strings.s,
           );
   }

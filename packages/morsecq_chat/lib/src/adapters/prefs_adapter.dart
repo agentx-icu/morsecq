@@ -23,18 +23,11 @@ class Tim2ToxPreferencesAdapter
         DraftPreferencesService,
         GroupIdentityPreferencesService,
         AccountScopedPreferencesService {
-  Tim2ToxPreferencesAdapter(
-    this._store, {
-    required String accountPrefix,
-    this.isMobile = false,
-  }) : _accountPrefix = accountPrefix;
+  Tim2ToxPreferencesAdapter(this._store, {required String accountPrefix})
+    : _accountPrefix = accountPrefix;
 
   final KeyValueStore _store;
   final String _accountPrefix;
-
-  /// Drives the default auto-download size limit (toxee: 5 MB mobile, 50 MB
-  /// desktop). Files are not a v1 morsecq feature but Tim2Tox asks anyway.
-  final bool isMobile;
 
   static const _kGroups = 'groups_list';
   static const _kQuitGroups = 'quit_groups_list';
@@ -45,7 +38,6 @@ class Tim2ToxPreferencesAdapter
   static const _kBootstrapHost = 'current_bootstrap_host';
   static const _kBootstrapPort = 'current_bootstrap_port';
   static const _kBootstrapPubkey = 'current_bootstrap_pubkey';
-  static const _kAutoDownloadLimit = 'auto_download_size_limit';
   static const _kDownloadsDir = 'downloads_directory';
   static const _kDraftPrefix = 'conversation_draft';
 
@@ -339,13 +331,15 @@ class Tim2ToxPreferencesAdapter
     await _store.setString(_kBootstrapPubkey, pubkey);
   }
 
+  /// Always 0: MorseCQ has no file feature. Tim2Tox reads 0 as "take no
+  /// files at all" and refuses every incoming transfer (images included)
+  /// before it makes a history row, an unread count or a download.
   @override
-  Future<int> getAutoDownloadSizeLimit() async =>
-      _store.getInt(_kAutoDownloadLimit) ?? (isMobile ? 5 : 50);
+  Future<int> getAutoDownloadSizeLimit() async => 0;
 
+  /// Ignored, see [getAutoDownloadSizeLimit].
   @override
-  Future<void> setAutoDownloadSizeLimit(int sizeInMB) =>
-      _store.setInt(_kAutoDownloadLimit, sizeInMB);
+  Future<void> setAutoDownloadSizeLimit(int sizeInMB) async {}
 
   @override
   Future<String?> getDownloadsDirectory() async =>

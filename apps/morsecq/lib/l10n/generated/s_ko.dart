@@ -548,7 +548,37 @@ class SKo extends S {
   String get accountBackupBody => '신원 정보는 이 기기에만 있습니다. 기기를 잃어버리거나 초기화하거나 도난당하면 복구할 수 없습니다. 연락처는 새로운 신원 정보를 알아보지 못하고 학습 진도도 사라집니다.';
 
   @override
-  String get accountBackupWhatIsInside => '백업 파일에는 암호화된 신원 정보와 학습 진도가 들어 있습니다. 이 기기 밖의 안전한 곳에 보관하세요.';
+  String get accountBackupWhatIsInside => '백업 파일에는 비밀번호로 암호화된 신원 키와 학습 진도가 들어 있습니다. 이 기기 밖의 안전한 곳에 보관하세요.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => '백업 파일에는 암호화되지 않은 신원 키와 학습 진도가 들어 있습니다. 이 파일을 가진 사람은 누구나 당신의 신원을 사용할 수 있습니다. 키를 암호화하려면 먼저 비밀번호를 설정하고, 파일은 안전한 곳에 보관하세요.';
+
+  @override
+  String get accountPasswordScope => '비밀번호는 신원 키를 암호화합니다. 메시지 기록은 디스크에 암호화되지 않은 채로 남으며, 기기 암호화로 보호할 수 있습니다.';
+
+  @override
+  String get accountSectionNotifications => '알림';
+
+  @override
+  String get accountNotificationsEnable => '알림 표시';
+
+  @override
+  String get accountNotificationsEnableSubtitle => '새 메시지, 친구 요청, 그룹 초대';
+
+  @override
+  String get accountNotificationsContent => '메시지 내용 표시';
+
+  @override
+  String get accountNotificationsContentSubtitle => '배너와 잠금 화면에 텍스트와 모스 부호를 표시합니다. 끄면 메시지가 왔다는 것만 알립니다.';
+
+  @override
+  String get accountNotificationsAllow => '알림 허용';
+
+  @override
+  String get accountNotificationsAllowSubtitle => '시스템에 알림 권한을 요청합니다';
+
+  @override
+  String get accountNotificationsDenied => '시스템 설정에서 MorseCQ 알림이 꺼져 있습니다.';
 
   @override
   String get accountBackupSaveFile => '백업 파일 저장';

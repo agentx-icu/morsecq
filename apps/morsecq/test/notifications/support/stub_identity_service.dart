@@ -24,13 +24,28 @@ final class StubIdentityService implements IdentityService {
     _statuses.add(status);
   }
 
+  final StreamController<Identity?> _identities =
+      StreamController<Identity?>.broadcast();
+
   /// Simulates "no identity loaded yet".
   void clearIdentity() => _current = null;
 
-  Future<void> dispose() => _statuses.close();
+  /// Replaces the identity and announces it (null: deleted).
+  void setIdentity(Identity? identity) {
+    _current = identity;
+    _identities.add(identity);
+  }
+
+  Future<void> dispose() async {
+    await _statuses.close();
+    await _identities.close();
+  }
 
   @override
   Identity? get current => _current;
+
+  @override
+  Stream<Identity?> get identityChanges => _identities.stream;
 
   @override
   ConnectionStatus get connectionStatus => _status;

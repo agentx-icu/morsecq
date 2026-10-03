@@ -12,7 +12,10 @@ import '../keyboard_binding.dart';
 /// two fingers (a squeeze) and a paddle only releases when its last finger
 /// lifts. Keyboard keys bound to [KeyerAction.dit] / [KeyerAction.dah] in
 /// [binding] work while the widget has focus; repeats are ignored. Losing
-/// focus while a key is held releases that paddle.
+/// focus releases any keyboard-held paddle (the key-up goes to whatever took
+/// focus), and touching a paddle takes focus back. Leaving the foreground
+/// releases both paddles (on mobile focus survives backgrounding, but the
+/// key-up and pointer-up never arrive).
 ///
 /// Accessibility: each paddle exposes a semantic tap that presses and
 /// releases it, which the keyer turns into one element (its paddle memory
@@ -51,7 +54,9 @@ class PaddleButtons extends StatefulWidget {
   State<PaddleButtons> createState() => _PaddleButtonsState();
 }
 
-class _PaddleButtonsState extends State<PaddleButtons> {
+class _PaddleButtonsState extends State<PaddleButtons>
+    with WidgetsBindingObserver {
+  final FocusNode _focus = FocusNode(debugLabel: 'PaddleButtons');
   final _PaddleState _dit = _PaddleState();
   final _PaddleState _dah = _PaddleState();
 
@@ -125,7 +130,27 @@ class _PaddleButtonsState extends State<PaddleButtons> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) return;
+    for (final paddle in [_dit, _dah]) {
+      if (!paddle.isDown) continue;
+      paddle
+        ..keyboardDown = false
+        ..pointers.clear();
+      _sync(paddle, paddle == _dit);
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _focus.dispose();
     final at = widget.clock.now();
     if (_dit.reported) {
       widget.input.ditPaddle(false, at);
@@ -144,6 +169,7 @@ class _PaddleButtonsState extends State<PaddleButtons> {
           ? PaddleButtons.minTouchTarget
           : widget.height,
       onPointerDown: (event) {
+        if (widget.binding != null && !_focus.hasFocus) _focus.requestFocus();
         state.pointers.add(event.pointer);
         _sync(state, isDit);
       },
@@ -160,6 +186,7 @@ class _PaddleButtonsState extends State<PaddleButtons> {
     final left = _paddle(widget.swapPaddles ? _dah : _dit, !widget.swapPaddles);
     final right = _paddle(widget.swapPaddles ? _dit : _dah, widget.swapPaddles);
     return Focus(
+      focusNode: _focus,
       autofocus: widget.autofocus,
       onKeyEvent: widget.binding == null ? null : _onKey,
       onFocusChange: _onFocusChange,

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq_chat/morsecq_chat.dart';
 import 'package:morsecq_chat/src/adapters/prefs_adapter.dart';
+import 'package:morsecq_chat/src/chat/friend_request_store.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
 import 'package:tim2tox_dart/service/ffi_chat_service.dart';
@@ -144,6 +145,37 @@ void main() {
     await pumpEventQueue();
     await Future<void>.delayed(const Duration(milliseconds: 80));
     expect(chat.friendRequests, isEmpty);
+  });
+
+  test('a rejected sender stays out of the inbox when rewording', () async {
+    ffi.applications.add((userId: 'a' * 64, wording: 'CQ?'));
+    await bind();
+    await chat.rejectFriendRequest('A' * 64);
+    expect(chat.friendRequests, isEmpty);
+    ffi.applications
+      ..clear()
+      ..add((userId: 'a' * 64, wording: 'PLEASE ADD ME'));
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    expect(chat.friendRequests, isEmpty);
+  });
+
+  test('remembered requests are capped; native ones always stay', () async {
+    final base = DateTime.utc(2026);
+    await FriendRequestStore(store, accountPrefix: prefix).save([
+      for (var i = 0; i < 120; i++)
+        FriendRequest(
+          publicKey: i.toRadixString(16).padLeft(64, '0').toUpperCase(),
+          message: 'old $i',
+          receivedAt: base.add(Duration(minutes: i)),
+        ),
+    ]);
+    ffi.applications.add((userId: 'f' * 64, wording: 'live'));
+    await bind();
+    expect(chat.friendRequests, hasLength(100));
+    expect(chat.friendRequests.map((r) => r.message), contains('live'));
+    // The newest remembered ones survive, the oldest are dropped.
+    expect(chat.friendRequests.map((r) => r.message), contains('old 119'));
+    expect(chat.friendRequests.map((r) => r.message), isNot(contains('old 0')));
   });
 
   test(
@@ -464,6 +496,38 @@ void main() {
   );
 
   test(
+    'an answer queued behind a refresh throws not_connected after detach',
+    () async {
+      await bind();
+      ffi.applications.add((userId: kPeerKey, wording: 'CQ?'));
+      store.holdSetStringList = Completer<void>();
+      // The tick's request refresh parks on the hold while saving the new
+      // request; the accept queues behind it.
+      await store.heldStringList.future;
+      final accepted = expectLater(
+        chat.acceptFriendRequest(kPeerKey),
+        throwsCode('not_connected'),
+      );
+      engine.bind(null);
+      await pumpEventQueue();
+      store.holdSetStringList!.complete();
+      store.holdSetStringList = null;
+      await accepted;
+    },
+  );
+
+  test(
+    'flush (and so delete/import) survives a failing request refresh',
+    () async {
+      await bind();
+      ffi.failApplications = true;
+      await chat.flush();
+      await chat.prepareForReplacement();
+      expect(chat.conversations, isEmpty);
+    },
+  );
+
+  test(
     'queued-invite flush stops at detach instead of editing the queue',
     () async {
       await store.setStringList('morsecq_queued_group_invites_$prefix', [
@@ -489,6 +553,31 @@ void main() {
       );
     },
   );
+
+  test('a slow queued-invite flush does not stall the refresh rounds', () async {
+    await store.setStringList('morsecq_queued_group_invites_$prefix', [
+      'tox_x\t$kPeerKey',
+    ]);
+    ffi.friends.add((userId: kPeerKey, nick: 'W1AW', online: true));
+    // Only the queue write parks; the request store keeps saving.
+    store
+      ..holdOnlyKeyContaining = 'queued_group_invites'
+      ..holdSetStringList = Completer<void>();
+    engine.bind(engineService);
+    await store.heldStringList.future;
+    ffi.applications.add((userId: 'a' * 64, wording: 'CQ?'));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    expect(chat.friendRequests.map((r) => r.message), ['CQ?']);
+    store.holdSetStringList!.complete();
+    store
+      ..holdSetStringList = null
+      ..holdOnlyKeyContaining = null;
+    await pumpEventQueue();
+    expect(
+      ConversationMetaStoreProbe(store, prefix).queuedGroupsFor(kPeerKey),
+      isEmpty,
+    );
+  });
 
   test(
     'forgetting a removed friend stops between its writes at detach',

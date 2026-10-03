@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' show Rect;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../i18n/current_strings.dart';
@@ -90,16 +92,40 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
       dialogTitle: currentS().accountBackupChooseDialogTitle,
     );
     if (file == null) return null;
-    return file.readAsBytes();
+    // A real backup is a profile plus training state, a few hundred KB at
+    // most. Refuse anything far larger without reading it into memory: the
+    // reported size first, then a bounded read (the size can be unknown).
+    const tooLarge = ChatException(
+      'invalid_backup',
+      'Backup file is too large',
+    );
+    final int? length = file.lengthSync();
+    if (length != null && length > maxBackupBytes) throw tooLarge;
+    final BytesBuilder bytes = BytesBuilder(copy: false);
+    await for (final Uint8List chunk in file.readAsByteStream()) {
+      if (bytes.length + chunk.length > maxBackupBytes) throw tooLarge;
+      bytes.add(chunk);
+    }
+    return bytes.takeBytes();
   }
+
+  /// Largest file [pickBackup] will read.
+  static const int maxBackupBytes = 64 * 1024 * 1024;
 }
 
 /// Test double: records what was saved and returns scripted picks.
 final class FakeBackupFileGateway implements BackupFileGateway {
-  FakeBackupFileGateway({this.saveResult = true, this.pickResult});
+  FakeBackupFileGateway({
+    this.saveResult = true,
+    this.pickResult,
+    this.pickError,
+  });
 
   bool saveResult;
   Uint8List? pickResult;
+
+  /// When set, [pickBackup] throws it (e.g. a file too large to be a backup).
+  Object? pickError;
   Object? saveError;
   final List<Uint8List> saved = [];
   final List<String> savedNames = [];
@@ -120,5 +146,9 @@ final class FakeBackupFileGateway implements BackupFileGateway {
   }
 
   @override
-  Future<Uint8List?> pickBackup() async => pickResult;
+  Future<Uint8List?> pickBackup() async {
+    final Object? error = pickError;
+    if (error != null) throw error;
+    return pickResult;
+  }
 }

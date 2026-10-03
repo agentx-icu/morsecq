@@ -26,10 +26,10 @@ android/ios/macos）。插件 README 在 pub 缓存中。
 | | Android | iOS | macOS | Windows | Linux |
 |---|---|---|---|---|---|
 | 系统通知后端 | NotificationCompat，3 个频道（`morsecq_messages`、`morsecq_friend_requests`、`morsecq_group_invites`） | UNUserNotificationCenter | UNUserNotificationCenter | WinRT toast（`flutter_local_notifications_windows`，AUMID `icu.agentx.morsecq`，固定 CLSID） | 通过 D-Bus 的 `org.freedesktop.Notifications` |
-| 运行时权限 | 13+ 上的 `POST_NOTIFICATIONS`：发送前先静默检查（`isPermissionGranted`），只在 App 可见时弹窗，且每次会话最多一次；后台因未授权丢弃的通知会把这次弹窗推迟到下次回到前台。`ensurePermission()` 按需弹窗 | 提醒 + 角标 + 声音授权（同样规则） | 与 iOS 相同 | 无 | 无 |
+| 运行时权限 | 13+ 上的 `POST_NOTIFICATIONS`：插件就绪后在前台请求一次（若当时在后台，则在下次回到前台时请求）；发送通知从不弹窗，只静默检查（`isPermissionGranted`），未授权时丢弃横幅。`ensurePermission()` 按需请求 | 提醒 + 角标 + 声音授权（同样规则） | 与 iOS 相同 | 无 | 无 |
 | App 在前台时是否显示 | 是（仅对不在屏幕上的会话） | 是——`presentBanner/List` 开启 | 是 | 是 | 是 |
 | 按会话分组 | `groupKey` + `InboxStyle`（最近 5 行，"N 条新消息"摘要） | `threadIdentifier` 堆叠 | `threadIdentifier` 堆叠 | 无（每个会话一条 toast，按 id 替换） | 无（按 id 替换） |
-| 点击 → `openConversationRequests` | 是，包括冷启动（`getNotificationAppLaunchDetails`；外壳订阅之前——启动门、解锁——收到的点击会暂存，并重放给第一个订阅者） | 是，包括冷启动 | 是 | 运行中可以；**冷启动载荷仅在打包为 MSIX 时可用** | 运行中可以 |
+| 点击 → `takePendingTap()`（由 `tapTargets` 发出信号） | 是，包括冷启动（`getNotificationAppLaunchDetails`；点击会一直挂起，直到外壳取走——启动门、解锁） | 是，包括冷启动 | 是 | 运行中可以；**冷启动载荷仅在打包为 MSIX 时可用** | 运行中可以 |
 | 打开 / 已读时取消 | 是 | 是 | 是 | **除非打包为 MSIX，否则为空操作**（插件限制，见 README） | 是 |
 | 未读角标 | 取决于启动器（三星、小米/HyperOS、华为、OPPO、vivo、索尼、HTC……；原生 Pixel 只显示圆点） | 精确 | 精确（Dock） | 不支持 → 空操作 | 不支持 → 空操作 |
 | 声音 | 频道默认，按偏好设置 `playSound` | 按偏好设置 `presentSound` | 相同 | 默认 toast 声音；关闭时 `WindowsNotificationAudio.silent()` | 关闭时 `suppressSound` |
@@ -133,22 +133,27 @@ final center = NotificationCenter(
 final banner = ConnectionBannerPolicy(identity: identity)..start();
 unawaited(center.start());
 
-// Route taps into the chat UI (ChatPage._open / GroupsPage equivalent):
-final tapSub = center.openConversationRequests.listen((conversationId) {
-  final c = chat.conversations.where((c) => c.id == conversationId).firstOrNull;
-  if (c != null) openConversation(ConversationTarget.fromConversation(c));
-});
+// 路由点击（AppShell）：通知中心保留最新一次点击，直到路由取走它，
+// 因此冷启动点击或解锁界面显示期间的点击都不会丢失。AppShell 在首帧后
+// 以及每次收到信号时取出它，再经 ShellRouter 交给 ChatPage / GroupsPage
+// （宽布局用内嵌面板，手机上推入路由；已打开的会话直接复用），好友请求
+// 打开联系人，群邀请切到群组页。
+final tapSub = center.tapTargets.listen((_) => route(center.takePendingTap()));
+WidgetsBinding.instance.addPostFrameCallback((_) => route(center.takePendingTap()));
 
-// ConversationScreen.initState / dispose:
-center.setActiveConversation(widget.target.id);   // initState
-center.setActiveConversation(null);               // dispose
+// ConversationScreen（ConversationAttention）：仅在用户真正看着它时
+// （标签页可见、路由在最上层、应用在前台）用 owner 令牌占用，否则释放。
+// 也只有这时才把消息标为已读。
+center.claimActiveConversation(widget.target.id, owner);
+center.releaseActiveConversation(owner);
 
 // Banner: ValueListenableBuilder(valueListenable: banner.offlineBannerVisible, ...)
 // with context.s.shellOfflineBanner and a Reconnect action calling
 // StartupController.reconnect(). The policy exposes state only, no text.
 
-// Settings page: a "Notifications" tile calling center.ensurePermission()
-// and toggles bound to prefs.enabled / showText / showPattern / sound;
+// Me page: NotificationSettingsSection — prefs.enabled, one "message
+// content" switch driving both showText and showPattern (a pattern reveals
+// the text too), and "Allow notifications" calling center.ensurePermission();
 // per-conversation "Mute" in the conversation menu via prefs.setMuted(id, v).
 
 // Dispose order: tapSub.cancel(); center.dispose(); banner.dispose();

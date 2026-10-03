@@ -566,7 +566,37 @@ class SFr extends S {
   String get accountBackupBody => 'Votre identité existe uniquement sur cet appareil. S’il est perdu, réinitialisé ou volé, elle sera irrécupérable : vos contacts ne reconnaîtront pas une nouvelle identité et votre progression sera perdue.';
 
   @override
-  String get accountBackupWhatIsInside => 'Le fichier de sauvegarde contient votre identité chiffrée et votre progression. Conservez-le en lieu sûr, ailleurs que sur cet appareil.';
+  String get accountBackupWhatIsInside => 'Le fichier de sauvegarde contient votre clé d\'identité, chiffrée avec votre mot de passe, et votre progression. Conservez-le en lieu sûr, ailleurs que sur cet appareil.';
+
+  @override
+  String get accountBackupWhatIsInsidePlain => 'Le fichier de sauvegarde contient votre clé d\'identité non chiffrée et votre progression. Quiconque obtient ce fichier peut utiliser votre identité : définissez d\'abord un mot de passe si vous voulez chiffrer la clé, et conservez le fichier en lieu sûr.';
+
+  @override
+  String get accountPasswordScope => 'Votre mot de passe chiffre votre clé d\'identité. L\'historique des messages reste non chiffré sur le disque ; le chiffrement de l\'appareil peut le protéger.';
+
+  @override
+  String get accountSectionNotifications => 'Notifications';
+
+  @override
+  String get accountNotificationsEnable => 'Afficher les notifications';
+
+  @override
+  String get accountNotificationsEnableSubtitle => 'Nouveaux messages, demandes d\'ami et invitations de groupe';
+
+  @override
+  String get accountNotificationsContent => 'Afficher le contenu des messages';
+
+  @override
+  String get accountNotificationsContentSubtitle => 'Texte et Morse dans les bannières et sur l\'écran verrouillé. Désactivé : seulement l\'arrivée d\'un message.';
+
+  @override
+  String get accountNotificationsAllow => 'Autoriser les notifications';
+
+  @override
+  String get accountNotificationsAllowSubtitle => 'Demander l\'autorisation au système';
+
+  @override
+  String get accountNotificationsDenied => 'Les notifications de MorseCQ sont désactivées dans les réglages du système.';
 
   @override
   String get accountBackupSaveFile => 'Enregistrer le fichier de sauvegarde';

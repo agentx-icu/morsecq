@@ -163,7 +163,10 @@ class StartupController extends ChangeNotifier {
   }
 
   void _onIdentityChanged(Identity? identity) {
-    if (identity != null) return;
+    // Events arrive asynchronously. An import emits null (the old identity
+    // ends) and then the restored one; by the time that null is delivered,
+    // the restore may already have made us ready. Act on what is current.
+    if (identity != null || _identity.current != null) return;
     if (_phase == StartupPhase.ready || _phase == StartupPhase.backupRequired) {
       _set(StartupPhase.onboarding);
     }

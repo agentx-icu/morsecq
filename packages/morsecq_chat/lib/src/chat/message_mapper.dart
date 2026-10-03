@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:morsecq_chat_api/morsecq_chat_api.dart' as api;
 import 'package:tim2tox_dart/models/chat_message.dart' as t2t;
 import 'package:tim2tox_dart/utils/conversation_id_utils.dart';
@@ -26,7 +28,6 @@ class ConversationIds {
   static String normalizeKey(String id) =>
       ConversationIdUtils.normalize(id).toUpperCase();
 
-  static final RegExp toxAddress = RegExp(r'^[0-9A-Fa-f]{76}$');
   static final RegExp publicKey = RegExp(r'^[0-9A-Fa-f]{64}$');
 
   /// Short human label for a bare key (`A1B2C3D4…`).
@@ -60,32 +61,72 @@ class MessageMapper {
     final sender = isMine
         ? selfKey
         : ConversationIds.normalizeKey(m.fromUserId);
+    final body = isMine ? m.text : api.PeerText.clean(m.text);
     final text = m.contentKind == t2t.ChatMessageContentKind.action
-        ? '/me ${m.text}'
-        : m.text;
+        ? '/me $body'
+        : body;
     return api.ChatMessage(
-      id: m.msgID ?? '${m.timestamp.microsecondsSinceEpoch}_${text.hashCode}',
+      id: m.msgID ?? fallbackId(m),
       conversationId: conversationId,
       senderId: sender,
       senderName: isMine ? selfName : nameOf(sender),
       text: text,
       timestamp: m.timestamp,
-      status: isMine && (isQueued?.call(m, conversationId) ?? false)
+      // A failed send is failed even while Tim2Tox is still removing it from
+      // the outbox (it reports the failure first).
+      status: isMine &&
+              !m.isFailed &&
+              (isQueued?.call(m, conversationId) ?? false)
           ? api.MessageStatus.pending
           : statusOf(m),
       isMine: isMine,
     );
   }
 
-  /// Tim2Tox has no distinct "failed" flag on the poll path: a drained item
-  /// that could not be sent is flipped `isPending: false` just like a
-  /// delivered one (`_markPendingItemFailed`). Until upstream carries the
-  /// failure (tracked for the tim2tox_core split), `sent` is the honest
-  /// mapping of "no longer pending".
+  /// Our rows: pending while queued, failed when a queued send could not be
+  /// delivered (Tim2Tox `isFailed`), otherwise sent.
   static api.MessageStatus statusOf(t2t.ChatMessage m) {
     if (!m.isSelf) return api.MessageStatus.received;
+    if (m.isFailed) return api.MessageStatus.failed;
     return m.isPending ? api.MessageStatus.pending : api.MessageStatus.sent;
   }
+
+  /// Id for a row Tim2Tox stored without a native one: deterministic across
+  /// processes (a bubble keeps its id over restarts) and distinct per time,
+  /// sender, direction, content kind and text, so two peers' identical texts
+  /// in the same microsecond never collapse into one bubble. History merges
+  /// use the same identity ([historyRowKey]).
+  static String fallbackId(t2t.ChatMessage m) {
+    final digest = _fnv1a64(
+      utf8.encode(
+        [
+          m.fromUserId,
+          m.isSelf ? 'out' : 'in',
+          m.contentKind.name,
+          m.text,
+        ].join('\u0000'),
+      ),
+    );
+    return 'local_${m.timestamp.microsecondsSinceEpoch}_'
+        '${digest.toUnsigned(64).toRadixString(16).padLeft(16, '0')}';
+  }
+
+  /// FNV-1a, 64-bit: stable, unlike `String.hashCode`.
+  static int _fnv1a64(List<int> bytes) {
+    var hash = 0xcbf29ce484222325;
+    for (final b in bytes) {
+      hash ^= b;
+      hash *= 0x100000001b3;
+    }
+    return hash;
+  }
+
+  /// Whether [m] is a text (or `/me` action) message MorseCQ shows. File
+  /// transfers and custom payloads that toxee peers can send are not.
+  static bool isChatText(t2t.ChatMessage m) =>
+      m.filePath == null &&
+      m.mediaKind == null &&
+      m.contentKind != t2t.ChatMessageContentKind.custom;
 
   /// The contract conversation id of a row when it can be derived from the
   /// row alone (inbound C2C, any group row). Null for our own C2C rows.

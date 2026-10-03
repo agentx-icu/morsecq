@@ -10,6 +10,20 @@ import 'morse_pattern_text.dart';
 /// Which hand-keying widget the input area shows.
 enum KeyingMode { straightKey, paddles }
 
+/// Lets the owner of a [KeyingInput] finish what the operator is keying
+/// before it acts on the draft (send, mode switch).
+class KeyingInputController {
+  _KeyingInputState? _state;
+
+  /// A character is half keyed: a mark is held, the keyer is mid-element,
+  /// or elements wait for the character gap.
+  bool get hasPending => _state?._hasPending ?? false;
+
+  /// Ends a held mark or in-flight paddle element and commits the pending
+  /// character now; its text reaches `onText` before this returns.
+  void complete() => _state?._complete();
+}
+
 /// Straight key or iambic paddles wired to a [MorseDecoder]; decoded
 /// characters are handed to [onText] so the owner can append them to the
 /// draft. Both modalities work by touch (on-screen pads, ≥ 48 dp) and by
@@ -25,7 +39,10 @@ class KeyingInput extends StatefulWidget {
     required this.sink,
     required this.clock,
     required this.onText,
+    this.controller,
+    this.onPendingChanged,
     this.height = 132,
+    this.showHint = true,
   });
 
   final KeyingMode mode;
@@ -33,7 +50,14 @@ class KeyingInput extends StatefulWidget {
   final MorseSink sink;
   final Clock clock;
   final ValueChanged<String> onText;
+  final KeyingInputController? controller;
+
+  /// Fires when [KeyingInputController.hasPending] flips.
+  final ValueChanged<bool>? onPendingChanged;
   final double height;
+
+  /// The one-line "Space / Ctrl" hint above the pad (hidden when compact).
+  final bool showHint;
 
   @override
   State<KeyingInput> createState() => _KeyingInputState();
@@ -45,10 +69,36 @@ class _KeyingInputState extends State<KeyingInput> {
   StraightKey? _straight;
   IambicKeyer? _keyer;
   Timer? _tick;
+  bool _reportedPending = false;
+
+  bool get _hasPending =>
+      _decoder.pendingPattern.isNotEmpty ||
+      (_straight?.isDown ?? false) ||
+      (_keyer?.isKeying ?? false);
+
+  void _complete() {
+    final Duration now = widget.clock.now();
+    final StraightKey? straight = _straight;
+    if (straight != null && straight.isDown) straight.release(now);
+    // A paddle element in flight is finished at its full length, so a dah
+    // being keyed is not cut down to a dit.
+    final IambicKeyer? keyer = _keyer;
+    if (keyer != null && keyer.isKeying) keyer.finish();
+    _decoder.flush();
+    _reportPending();
+  }
+
+  void _reportPending() {
+    final bool pending = _hasPending;
+    if (pending == _reportedPending) return;
+    _reportedPending = pending;
+    widget.onPendingChanged?.call(pending);
+  }
 
   @override
   void initState() {
     super.initState();
+    widget.controller?._state = this;
     _decoder = MorseDecoder(
       config: DecoderConfig(initialDit: widget.timing.dit),
     );
@@ -60,12 +110,17 @@ class _KeyingInputState extends State<KeyingInput> {
       final String before = _decoder.pendingPattern;
       _decoder.tick(widget.clock.now());
       if (before != _decoder.pendingPattern && mounted) setState(() {});
+      _reportPending();
     });
   }
 
   @override
   void didUpdateWidget(KeyingInput old) {
     super.didUpdateWidget(old);
+    if (old.controller != widget.controller) {
+      if (identical(old.controller?._state, this)) old.controller?._state = null;
+      widget.controller?._state = this;
+    }
     if (old.mode != widget.mode || old.sink != widget.sink) {
       _disposeKeyer();
       _buildKeyer();
@@ -110,10 +165,14 @@ class _KeyingInputState extends State<KeyingInput> {
         break;
     }
     if (mounted) setState(() {});
+    _reportPending();
   }
 
   @override
   void dispose() {
+    if (identical(widget.controller?._state, this)) {
+      widget.controller?._state = null;
+    }
     _tick?.cancel();
     unawaited(_events.cancel());
     _disposeKeyer();
@@ -144,36 +203,47 @@ class _KeyingInputState extends State<KeyingInput> {
         dahLabel: context.s.learnDahLabel,
       ),
     };
+    final Widget pattern = MorsePatternText(
+      pending.isEmpty ? ' ' : pending,
+      style: theme.textTheme.titleMedium,
+      color: theme.colorScheme.primary,
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.mode == KeyingMode.straightKey
-                      ? context.s.chatKeyHint
-                      : context.s.chatPaddleHint,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+      child: widget.showHint
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.mode == KeyingMode.straightKey
+                            ? context.s.chatKeyHint
+                            : context.s.chatPaddleHint,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    pattern,
+                  ],
                 ),
-              ),
-              MorsePatternText(
-                pending.isEmpty ? ' ' : pending,
-                style: theme.textTheme.titleMedium,
-                color: theme.colorScheme.primary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          SizedBox(height: widget.height, child: pad),
-        ],
-      ),
+                const SizedBox(height: 4),
+                SizedBox(height: widget.height, child: pad),
+              ],
+            )
+          // Compact (short screens): the pending pattern sits beside the pad
+          // instead of on a row of its own.
+          : Row(
+              children: [
+                Expanded(child: SizedBox(height: widget.height, child: pad)),
+                const SizedBox(width: 8),
+                SizedBox(width: 72, child: Center(child: pattern)),
+              ],
+            ),
     );
   }
 }

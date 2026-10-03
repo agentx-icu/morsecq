@@ -15,13 +15,15 @@ extension _IdentityProfile on Tim2ToxIdentityService {
     String? createdId;
     try {
       await _paths.ensureDirectories();
+      final protected = password != null && password.isNotEmpty;
+      // Native writes the new profile encrypted from its first save.
       final toxId = await _engine.createProfile(
         paths: _paths,
         displayName: name,
         statusMessage: '',
+        passphrase: protected ? password : null,
       );
       createdId = toxId;
-      final protected = password != null && password.isNotEmpty;
       final record = IdentityRecord(
         toxId: toxId,
         displayName: name,
@@ -29,9 +31,13 @@ extension _IdentityProfile on Tim2ToxIdentityService {
       );
       if (protected) {
         final file = File(_paths.profileFile);
-        final encrypted = _crypto.encrypt(await file.readAsBytes(), password);
+        final bytes = await file.readAsBytes();
+        // Never encrypt twice; encrypt here only if the engine did not.
+        final encrypted = _crypto.isEncrypted(bytes)
+            ? null
+            : _crypto.encrypt(bytes, password);
         await _verifier.replacePassword(toxId, password, () async {
-          await writeBytesAtomic(file, encrypted);
+          if (encrypted != null) await writeBytesAtomic(file, encrypted);
           await record.write(_paths.identityFile);
         });
       } else {
@@ -71,12 +77,44 @@ extension _IdentityProfile on Tim2ToxIdentityService {
       // leaves the previous ciphertext and verifier untouched.
       replacement = setting ? _crypto.encrypt(plain, newPassword) : plain;
     }
+    // Running: the live native session holds the passphrase and rewrites
+    // the file on every save, so it is re-keyed (and written) natively.
+    final previousLive = _sessionPassword;
+    var rekeyed = false;
+
+    /// Undoes the profile side of a failed change. If even re-keying back
+    /// fails, the running session (and so the file) now carries the NEW
+    /// password: keep memory on that truth so the disconnect safety net and
+    /// the next unlock agree with the file, and report it.
+    Future<void> undoProfile() async {
+      if (replacement != null) await writeBytesAtomic(file, before);
+      if (!rekeyed) return;
+      rekeyed = false;
+      if (!_engine.rekeyProfilePassphrase(previousLive)) {
+        _sessionPassword = setting ? newPassword : null;
+        throw const ChatException(
+          'rekey_rollback_failed',
+          'The running profile kept the new password',
+        );
+      }
+    }
+
     Future<void> commitFiles() async {
       try {
-        if (replacement != null) await writeBytesAtomic(file, replacement);
+        if (replacement != null) {
+          await writeBytesAtomic(file, replacement);
+        } else if (_started) {
+          if (!_engine.rekeyProfilePassphrase(setting ? newPassword : null)) {
+            throw const ChatException(
+              'rekey_failed',
+              'Could not re-encrypt the running profile',
+            );
+          }
+          rekeyed = true;
+        }
         await updated.write(_paths.identityFile);
       } catch (_) {
-        if (replacement != null) await writeBytesAtomic(file, before);
+        await undoProfile();
         rethrow;
       }
     }
@@ -91,7 +129,7 @@ extension _IdentityProfile on Tim2ToxIdentityService {
         await commitFiles();
         await _verifier.replacePassword(record.toxId, null, () async {});
       } catch (_) {
-        if (replacement != null) await writeBytesAtomic(file, before);
+        await undoProfile();
         await record.write(_paths.identityFile);
         rethrow;
       }

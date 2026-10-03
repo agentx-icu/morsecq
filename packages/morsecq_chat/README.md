@@ -60,15 +60,22 @@ native smoke test on macOS, 2026-09-30).
 | `locked` | verifier holds a password **or** the file is Tox-encrypted | `unlock(pw)` |
 | `ready` | plain profile, or unlocked this run | `connect()` / `disconnect()` |
 
-Encryption at rest mirrors toxee's `AccountService`: with a password, the
-profile is encrypted whenever the engine is **stopped** and plaintext while it
-**runs** (Tox rewrites the savedata as it runs). `connect()` decrypts right
-before `init`, `disconnect()` re-encrypts right after `uninit`. The PBKDF2-
-HMAC-SHA256 verifier (`flutter_secure_storage`: Keychain / Keystore /
-libsecret / DPAPI) is the authority on "has a password" — the file's
-encryption state cannot be, since a crash mid-session leaves it plaintext.
-For an encrypted profile, successful `tox_pass_decrypt` proves the password
-and repairs a stale verifier after an interrupted password change or restore.
+Encryption at rest: with a password, `tox_profile.tox` is encrypted on disk
+**at all times**. `connect()` stages the password with Tim2Tox
+(`setProfilePassphrase`) before `init`; native code opens the encrypted
+profile and encrypts every save, so a running, backgrounded or killed app
+never leaves a plaintext profile behind (a plaintext file from an older build
+is migrated by the first save). A password change while connected re-keys
+the live session (`rekeyLiveProfilePassphrase`) and rolls back on any later
+failure. `disconnect()` still encrypts a plaintext file it finds, and keeps
+retrying on later disconnects. The PBKDF2-HMAC-SHA256 verifier
+(`flutter_secure_storage`: Keychain / Keystore / libsecret / DPAPI) is the
+authority on "has a password" for plaintext legacy files; for an encrypted
+profile, successful `tox_pass_decrypt` proves the password and repairs a
+stale verifier after an interrupted password change or restore. Message
+history, drafts and pending requests are **not** covered by the password
+(Tim2Tox stores history as plain JSON); identity files are owner-only
+(0700 / 0600) and excluded from OS backups.
 
 `PersistentIdentityService.persist()` awaits savedata, debounced history,
 outbox mutations and registered `IdentityDataStore` writes before suspension

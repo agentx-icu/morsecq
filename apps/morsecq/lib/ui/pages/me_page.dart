@@ -6,6 +6,7 @@ import '../../di/app_settings.dart';
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../i18n/language_settings_tile.dart';
+import '../../notifications/notification_settings_section.dart';
 import '../../startup/startup_controller.dart';
 import '../account/account_routes.dart';
 import '../account/account_widgets.dart';
@@ -120,6 +121,9 @@ class _MeBody extends StatelessWidget {
           subtitle: Text(styleLabel(s, context.watch<AppSettings>().style)),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => AppearancePage.open(context),
+        ),
+        NotificationSettingsSection(
+          header: _SectionHeader(s.accountSectionNotifications),
         ),
         _SectionHeader(s.accountSectionAbout),
         ListTile(

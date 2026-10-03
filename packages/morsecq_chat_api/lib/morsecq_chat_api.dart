@@ -12,3 +12,5 @@ library;
 export 'src/chat_service.dart';
 export 'src/identity_service.dart';
 export 'src/models.dart';
+export 'src/peer_text.dart';
+export 'src/tox_address.dart';
