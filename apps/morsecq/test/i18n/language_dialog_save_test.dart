@@ -64,10 +64,18 @@ Future<LocaleController> _pump(WidgetTester tester, KeyValueStore store) async {
   return controller;
 }
 
+/// Scrolls [label]'s row into view first: with every shipped language the
+/// option list is taller than the test surface.
+Future<void> _tapOption(WidgetTester tester, String label) async {
+  final option = find.text(label);
+  await tester.ensureVisible(option);
+  await tester.tap(option);
+}
+
 Future<void> _openDialog(WidgetTester tester) async {
   await tester.tap(find.byType(LanguageSettingsTile));
   await tester.pumpAndSettle();
-  expect(find.byType(SimpleDialog), findsOneWidget);
+  expect(find.byType(AlertDialog), findsOneWidget);
 }
 
 void main() {
@@ -77,19 +85,19 @@ void main() {
     final controller = await _pump(tester, store);
     await _openDialog(tester);
 
-    await tester.tap(find.text('简体中文'));
+    await _tapOption(tester, '简体中文');
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull, reason: 'no unhandled error');
-    expect(find.byType(SimpleDialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text(_saveFailed), findsOneWidget);
     expect(controller.locale, isNull, reason: 'rolled back');
     expect(store.getString(LocaleController.storageKey), isNull);
 
-    await tester.tap(find.text('简体中文'));
+    await _tapOption(tester, '简体中文');
     await tester.pumpAndSettle();
 
-    expect(find.byType(SimpleDialog), findsNothing);
+    expect(find.byType(AlertDialog), findsNothing);
     expect(controller.locale, const Locale('zh'));
     expect(store.getString(LocaleController.storageKey), 'zh');
     expect(find.text('语言'), findsOneWidget, reason: 'page still there');
@@ -103,17 +111,17 @@ void main() {
     final controller = await _pump(tester, store);
     await _openDialog(tester);
 
-    await tester.tap(find.text('跟随系统'));
+    await _tapOption(tester, '跟随系统');
     await tester.pumpAndSettle();
 
-    expect(find.byType(SimpleDialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text(_saveFailedZh), findsOneWidget);
     expect(controller.locale, const Locale('zh'));
     expect(store.getString(LocaleController.storageKey), 'zh');
 
-    await tester.tap(find.text('跟随系统'));
+    await _tapOption(tester, '跟随系统');
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsNothing);
+    expect(find.byType(AlertDialog), findsNothing);
     expect(controller.locale, isNull);
     expect(store.getString(LocaleController.storageKey), isNull);
   });
@@ -123,10 +131,10 @@ void main() {
     final controller = await _pump(tester, store);
     await _openDialog(tester);
 
-    await tester.tap(find.text('简体中文'));
+    await _tapOption(tester, '简体中文');
     await tester.pump();
-    await tester.tap(find.text('English'), warnIfMissed: false);
-    await tester.tap(find.text('跟随系统'), warnIfMissed: false);
+    await _tapOption(tester, 'English');
+    await _tapOption(tester, '跟随系统');
     await tester.pump();
     expect(store.writes, 1);
 
@@ -134,7 +142,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(store.writes, 1);
     expect(controller.locale, const Locale('zh'));
-    expect(find.byType(SimpleDialog), findsNothing);
+    expect(find.byType(AlertDialog), findsNothing);
   });
 
   testWidgets('closing the dialog during a pending save does not pop the '
@@ -144,12 +152,12 @@ void main() {
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
     await _openDialog(tester);
 
-    await tester.tap(find.text('简体中文'));
+    await _tapOption(tester, '简体中文');
     await tester.pump();
     // Same as Close / Back / a barrier tap: the dialog route is popped.
     navigator.pop();
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsNothing);
+    expect(find.byType(AlertDialog), findsNothing);
 
     store.gate!.complete();
     await tester.pumpAndSettle();
@@ -170,7 +178,7 @@ void main() {
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
     await _openDialog(tester);
 
-    await tester.tap(find.text('简体中文'));
+    await _tapOption(tester, '简体中文');
     await tester.pump();
     navigator.pop();
     await tester.pumpAndSettle();

@@ -1015,6 +1015,18 @@
   "@chatTrainingModeOff": {
     "description": "Conversation: snackbar when training mode is switched off"
   },
+  "chatAutoPlay": "Auto-play received Morse",
+  "@chatAutoPlay": {
+    "description": "Chat app-bar toggle and playback-sheet switch: play incoming messages as they arrive"
+  },
+  "chatAutoPlayOn": "Auto-play on: new messages play as they arrive",
+  "@chatAutoPlayOn": {
+    "description": "Snack bar after turning chat auto-play on"
+  },
+  "chatAutoPlayOff": "Auto-play off",
+  "@chatAutoPlayOff": {
+    "description": "Snack bar after turning chat auto-play off"
+  },
   "chatReveal": "Reveal",
   "@chatReveal": {
     "description": "Conversation, training mode: button on a hidden message that reveals its text"
@@ -1083,10 +1095,6 @@
   "@chatClearHistory": {
     "description": "Conversation menu item and confirm button that clears local message history"
   },
-  "chatModeKeyboard": "Keyboard",
-  "@chatModeKeyboard": {
-    "description": "Conversation composer: input-mode segment for typing text with the keyboard"
-  },
   "chatModeStraightKey": "Straight key",
   "@chatModeStraightKey": {
     "description": "Conversation composer: input-mode segment for keying with a straight key"
@@ -1095,9 +1103,9 @@
   "@chatModePaddles": {
     "description": "Conversation composer: input-mode segment for keying with iambic paddles"
   },
-  "chatTypeMessage": "Type a message",
-  "@chatTypeMessage": {
-    "description": "Conversation composer: hint inside the text field"
+  "chatKeyMessage": "Key your message",
+  "@chatKeyMessage": {
+    "description": "Hint in the read-only chat draft field: messages are keyed with the straight key or paddles, not typed"
   },
   "chatSend": "Send",
   "@chatSend": {
@@ -1924,7 +1932,7 @@
   },
   "learnSessionLength": "Session length",
   "@learnSessionLength": {
-    "description": "Training settings: title of the session length slider"
+    "description": "Training settings: practice length in characters, not time; labels the per-session character count slider"
   },
   "learnFeedback": "Feedback",
   "@learnFeedback": {

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../i18n/l10n_extension.dart';
 import 'morse_playback_settings.dart';
 
-/// Bottom sheet with the listener's speed / Farnsworth / tone sliders.
+/// Bottom sheet with the listener's speed / Farnsworth / tone sliders and
+/// the auto-play switch.
 Future<void> showPlaybackSettingsSheet(
   BuildContext context,
   MorsePlaybackSettings settings,
@@ -26,7 +27,8 @@ class _PlaybackSettingsSheet extends StatelessWidget {
     return ListenableBuilder(
       listenable: settings,
       builder: (context, _) => SafeArea(
-        child: Padding(
+        // Scrolls on short landscape phones instead of overflowing.
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -59,6 +61,12 @@ class _PlaybackSettingsSheet extends StatelessWidget {
                 max: MorsePlaybackSettings.maxToneHz,
                 unit: s.chatHz,
                 onChanged: (v) => settings.toneHz = (v / 10).round() * 10,
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(s.chatAutoPlay),
+                value: settings.autoPlay,
+                onChanged: (v) => settings.autoPlay = v,
               ),
             ],
           ),

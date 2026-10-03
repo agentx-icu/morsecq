@@ -232,7 +232,7 @@ void main() {
   ) async {
     final (h, service) = await setup(t, count: 3);
     service.sendGate = Completer<void>();
-    await t.enterText(find.byType(TextField), 'MY NEW SEND');
+    await keyIn(t, 'MY NEW SEND');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
     final nav = t.state<NavigatorState>(find.byType(Navigator));
@@ -247,7 +247,7 @@ void main() {
       ),
     );
     await t.pumpAndSettle();
-    await t.enterText(find.byType(TextField), 'NEWER DRAFT');
+    await keyIn(t, 'NEWER DRAFT');
     await t.pump(const Duration(milliseconds: 450));
     service.sendGate!.complete();
     await t.pumpAndSettle();
@@ -272,7 +272,7 @@ void main() {
       service
         ..createBeforeSendGate = true
         ..sendGate = Completer<void>();
-      await t.enterText(find.byType(TextField), 'CLEARED SEND');
+      await keyIn(t, 'CLEARED SEND');
       await t.pump();
       await t.tap(find.byTooltip(s.chatSend));
       await t.pump();
@@ -295,7 +295,7 @@ void main() {
       service
         ..createBeforeSendGate = true
         ..sendGate = Completer<void>();
-      await t.enterText(find.byType(TextField), 'DELETED SEND');
+      await keyIn(t, 'DELETED SEND');
       await t.pump();
       await t.tap(find.byTooltip(s.chatSend));
       await t.pump();
@@ -468,7 +468,7 @@ void main() {
     expect(find.text('AT BOTTOM'), findsOneWidget);
     await t.drag(find.byType(Scrollable).first, const Offset(0, 900));
     await t.pumpAndSettle();
-    await t.enterText(find.byType(TextField), 'MY SEND');
+    await keyIn(t, 'MY SEND');
     await t.pump();
     await t.tap(find.byTooltip(s.chatSend));
     await t.pumpAndSettle();

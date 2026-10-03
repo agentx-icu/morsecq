@@ -74,7 +74,8 @@ launch and is required for training as well as chat.
   any Tim2Tox client (including toxee) can read them, and MorseCQ replays them
   as dits and dahs at the *listener's* chosen speed. Bubbles show dot/dash
   pattern, plain text and a play button; "listen first, then reveal" training
-  mode; keyboard / straight-key / paddle input with pre-listen; offline queue
+  mode; messages are keyed with a straight key or paddles (touch, or keyboard
+  keys on desktop) into a read-only draft, with pre-listen; offline queue
   with "pending" status while the peer is offline.
 - **Groups** — create, invite and join by chat_id (Tox NGC groups), group
   Morse messages, member list, automatic re-join after restart.
@@ -89,8 +90,10 @@ launch and is required for training as well as chat.
   only the `audio` background mode (no ToxAV, so no `voip`).
 - **Desktop shell** — window bounds persistence, close-to-tray, tray menu and
   keyboard shortcuts on macOS / Windows / Linux; all no-ops on mobile.
-- **Bilingual UI** — English and Simplified Chinese via Flutter gen-l10n
-  (`lib/l10n/app_en.arb` / `app_zh.arb`).
+- **Multilingual UI** — English, Simplified and Traditional Chinese, Japanese,
+  Korean, German, French, Spanish, Portuguese and Russian via Flutter gen-l10n
+  (`lib/l10n/app_*.arb`). Choose Me → Language or follow the system.
+  Documentation is maintained in English and Simplified Chinese only.
 - **Appearance** — Classic Brass, Modern Calm, Night Radio, Paper Handbook
   and Fresh Cartoon, with independent System / Light / Dark mode. Modern Calm
   is the default; existing saved choices are retained. Choose

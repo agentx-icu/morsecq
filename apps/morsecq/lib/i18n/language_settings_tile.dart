@@ -96,54 +96,61 @@ class _LanguageDialogState extends State<_LanguageDialog> {
       builder: (context, _) {
         final current = controller.locale;
         final theme = Theme.of(context);
-        return SimpleDialog(
+        // Only the option list scrolls: with every shipped language it is
+        // taller than a phone screen, and the save error and Close button
+        // must stay in view whichever row was tapped.
+        return AlertDialog(
           title: Text(s.languageTitle),
           contentPadding: const EdgeInsets.only(top: 8, bottom: 8),
-          children: [
-            RadioGroup<String>(
-              groupValue: current == null
-                  ? _systemTag
-                  : LocaleController.localeName(current),
-              onChanged: _select,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<String>(
-                    value: _systemTag,
-                    enabled: !_saving,
-                    title: Text(localeDisplayName(s, null)),
-                  ),
-                  for (final locale in LocaleController.supportedLocales)
-                    RadioListTile<String>(
-                      value: LocaleController.localeName(locale),
-                      enabled: !_saving,
-                      title: Text(localeDisplayName(s, locale)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (_failed)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                  child: Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      s.languageSaveFailed,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
                     ),
-                ],
-              ),
-            ),
-            if (_failed)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
-                child: Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    s.languageSaveFailed,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.error,
+                  ),
+                ),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: RadioGroup<String>(
+                    groupValue: current == null
+                        ? _systemTag
+                        : LocaleController.localeName(current),
+                    onChanged: _select,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RadioListTile<String>(
+                          value: _systemTag,
+                          enabled: !_saving,
+                          title: Text(localeDisplayName(s, null)),
+                        ),
+                        for (final locale in LocaleController.supportedLocales)
+                          RadioListTile<String>(
+                            value: LocaleController.localeName(locale),
+                            enabled: !_saving,
+                            title: Text(localeDisplayName(s, locale)),
+                          ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(s.actionClose),
-                ),
-              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(s.actionClose),
             ),
           ],
         );

@@ -2,20 +2,24 @@
 
 # Adding a UI language to MorseCQ
 
-MorseCQ ships English (`en`, template) and Simplified Chinese (`zh`) through
-Flutter's `gen-l10n`. This page explains how localisation is wired end to end
-and gives the exact steps for adding a third language, modelled on how the
-sibling project toxee ships `ar` / `en` / `ja` / `ko` / `zh_Hans` / `zh_Hant`
-(`/home/user/toxee/l10n.yaml`, `lib/util/locale_controller.dart`,
-`test/l10n/arb_completeness_test.dart` there).
+MorseCQ ships English (`en`, template), Simplified Chinese (`zh`), Traditional
+Chinese (`zh_Hant`), Japanese (`ja`), Korean (`ko`), German (`de`), French (`fr`),
+Spanish (`es`), Portuguese (`pt`) and Russian (`ru`) through Flutter gen-l10n.
+Each translation contains every template message (660 as of 2026-10-03).
+Documentation remains English and Simplified Chinese only.
 
-For day-to-day string work (adding a key, ham vocabulary) see [`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l10n/README.md).
+This page explains the shared localisation pipeline and how to extend it.
+For daily string work (adding a key) and Morse vocabulary, see
+[`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l10n/README.md).
 
-> **Status note (2026-10-02).** Everything below describes the code as it
+> **Status note (2026-10-03).** Everything below describes the code as it
 > is: the `*_strings.dart` migration is finished (no English `static const`
 > UI text remains and the one-off migration tool was deleted), the
 > consistency test covers every shipped ARB, and the platform locale
-> manifests are guarded by a drift test.
+> manifests are guarded by a drift test. All ten languages are declared in
+> `CFBundleLocalizations`, the Android `locale_config.xml` and the iOS/macOS
+> `<tag>.lproj/InfoPlist.strings` files, and
+> `test/i18n/platform_locales_test.dart` keeps those lists equal to the ARB set.
 
 ## 1. How localisation works
 
@@ -25,8 +29,8 @@ For day-to-day string work (adding a key, ham vocabulary) see [`apps/morsecq/lib
 |---|---|---|
 | gen-l10n config | `apps/morsecq/l10n.yaml` | `arb-dir: lib/l10n`, `template-arb-file: app_en.arb`, `output-class: S`, `output-dir: lib/l10n/generated`, `output-localization-file: s.dart`, `nullable-getter: false`, `format: false`. No `synthetic-package` (removed in Flutter 3.41; the key only warns). |
 | Auto-generation | `apps/morsecq/pubspec.yaml` → `flutter: generate: true` | `flutter run` / `flutter build` regenerate; `flutter gen-l10n` does it explicitly. |
-| ARB files | `apps/morsecq/lib/l10n/app_<tag>.arb` | One per locale. `app_en.arb` is the template and the only file that needs `@key` metadata (description, placeholders). About 660 message keys as of 2026-10-02. |
-| Generated code | `apps/morsecq/lib/l10n/generated/s.dart`, `s_en.dart`, `s_zh.dart` | Committed, never edited. Exempt from the 500-LOC gate via the `**/l10n/**` pattern. |
+| ARB files | `apps/morsecq/lib/l10n/app_<tag>.arb` | One per locale. `app_en.arb` is the template and the only file that needs `@key` metadata (description, placeholders). 660 message keys as of 2026-10-03. |
+| Generated code | `apps/morsecq/lib/l10n/generated/s.dart`, `s_<language>.dart` (script/region variants such as `SZhHant` live in the base language's file, `s_zh.dart`) | Committed, never edited. Exempt from the 500-LOC gate via the `**/l10n/**` pattern. |
 | Access | `context.s` (`lib/i18n/l10n_extension.dart`) or `S.of(context)` | Below `MaterialApp` only; tests pump `localizationsDelegates: S.localizationsDelegates`. |
 | Supported set | `S.supportedLocales` | Derived from the ARB files. `LocaleController.supportedLocales` and the language picker read it, so **no Dart list has to be edited to add a language**. |
 
@@ -80,8 +84,8 @@ above `MaterialApp`.
 the OS's whole preferred-locale list, most preferred first. The first entry
 that maps to a shipped locale (by the per-locale rules below, without
 fallback) wins; only when no entry matches — or the list is null/empty — does
-English apply. A user whose OS lists `[fr-FR, zh-CN]` therefore gets Chinese,
-not English: French does not ship, Chinese does.
+English apply. A user whose OS lists `[it-IT, zh-CN]` therefore gets Chinese,
+not English: Italian does not ship, Chinese does.
 
 **One locale.** `resolveSystemLocale(system, supported)` /
 `supportedLocaleFor(candidate, supported)` are toxee's per-locale resolver
@@ -145,8 +149,18 @@ additions need no catalog edit at all.
 Notification texts (Android channel names and descriptions, "New message",
 friend-request and group-invite notifications), the desktop tray menu and
 tooltip, and the desktop window title all read `currentS()` /
-`StringsResolver` (or an `S` handed in from it), so a new language reaches these OS-facing strings with no
-extra work.
+`StringsResolver` (or an `S` handed in from it): notifications resolve
+through an `S Function()` at post time, the desktop shell receives
+`DesktopShellController.updateStrings(strings.s)` on every language change,
+and `LocalNotificationsApi.refreshStrings()` re-creates the Android channels
+so their names follow the language. A new language therefore reaches these
+OS-facing strings with no extra work; only notifications already on screen
+keep their old text.
+
+Reference meanings and mnemonics are separate data tables, currently English
+and Simplified Chinese (§1.6). Traditional Chinese reads the `zh` rows; the
+other added UI languages read the English rows. Translating those data
+tables is separate from adding interface messages.
 
 ### 1.6 Reference content (Q-codes, abbreviations, mnemonics)
 
@@ -171,7 +185,8 @@ have every listed language. Label separators use the full-width colon for
 | `dart run tool/ui_literal_guard.dart` | `.github/workflows/analyze.yml` ("UI literal guard (localisation)"), `tool/test_pyramid.sh` gates | HARD gate. Parses every `apps/morsecq/lib/**` file (generated code skipped) and fails on a string literal containing a letter that is passed straight to a user-visible sink (`Text`, `TextSpan.text`, `Tooltip.message`, named `label` / `hintText` / `title` / `tooltip` / …). Exemption: `// ui-literal-ok: <reason>` at the end of the line or alone on the line above; the reason is mandatory and a stale marker fails. Prose routed through data maps or helpers is not seen — review still matters. |
 | `test/i18n/arb_consistency_test.dart` | `flutter test apps/morsecq` | Enumerates **every** `lib/l10n/app_*.arb`: `@@locale` matches the file name, identical key sets, non-empty values, every template placeholder present, every plural has `other{…}`, `appName` untranslated, no `@@TODO` marker left, a fixed list of `error*` keys present in the template (the codes `lib/i18n/chat_error_messages.dart` maps; any other `ChatException` code reads `errorUnknown`). Every template key must also carry a non-empty `@key` `description` that does not point at a deleted `*_strings.dart` / `*Strings.` class. |
 | `test/i18n/platform_locales_test.dart` | same | Native language declarations equal the ARB set exactly: Android `res/xml/locale_config.xml` (and `android:localeConfig` in the manifest), iOS/macOS `CFBundleLocalizations`, the iOS/macOS `*.lproj/InfoPlist.strings` set and their Xcode registration; every `NS*UsageDescription` translated in every language. ARB `zh` maps to `zh-Hans`, `zh_Hant` to `zh-Hant`, `pt_BR` to `pt-BR`. |
-| `test/i18n/locale_resolution_test.dart`, `locale_list_resolution_test.dart`, `locale_controller_test.dart`, `language_settings_tile_test.dart`, `language_dialog_save_test.dart`, `strings_resolver_test.dart` | same | Resolution rules (single locale and preference list), persistence tags, picker behaviour, OS-locale relabelling. |
+| `test/i18n/shipped_locales_test.dart` | same | The exact set of ten shipped locales, `CFBundleLocalizations` in both Apple `Info.plist` files, Chinese script/region selection, per-locale persistence and context-free service strings, Russian one/few/many and Portuguese zero-count wording. Update it whenever the shipped set changes. |
+| `test/i18n/locale_resolution_test.dart`, `locale_list_resolution_test.dart`, `locale_controller_test.dart`, `language_settings_tile_test.dart`, `language_dialog_save_test.dart`, `strings_resolver_test.dart` | same | Resolution rules (single locale and preference list), persistence tags, picker behaviour (every choice on a 320 × 568 phone), OS-locale relabelling. |
 | `flutter analyze apps/morsecq` | CI analyze step | Generated code compiles; strict lints. |
 
 gen-l10n itself **never fails on a missing translation**; it silently falls
@@ -186,13 +201,13 @@ test here enumerates every shipped ARB and requires identical key sets.
 
 ## 2. Adding a language, step by step
 
-Example: Japanese (`ja`). Replace the tag as needed.
+Example: Italian (`it`), which is not shipped yet. Replace the tag as needed.
 
 ### Step 1 — create the ARB
 
 ```bash
 cd apps/morsecq/lib/l10n
-cp app_en.arb app_ja.arb
+cp app_en.arb app_it.arb
 ```
 
 File name = `app_` + the locale tag gen-l10n expects:
@@ -201,7 +216,7 @@ File name = `app_` + the locale tag gen-l10n expects:
 
 ```json
 {
-  "@@locale": "ja",
+  "@@locale": "it",
   "appName": "MorseCQ",
   ...
 }
@@ -216,11 +231,13 @@ File name = `app_` + the locale tag gen-l10n expects:
   plural forms (ja, zh, ko) usually collapse to
   `{count, plural, other{{count} 回}}` — keep any `=0` special case the
   template has.
+- European languages generally use `one` / `other`. Russian needs `one` /
+  `few` / `many` / `other`; exact `=1` alone misses 21, 31 and similar counts.
 - Leave `appName` as `MorseCQ` (product name, tested to be identical).
 - The `@key` metadata blocks are optional outside the template; keeping them
   is harmless, deleting them keeps the file short. While translating you may
   mark an entry with `"description": "@@TODO(l10n): …"`;
-  `grep -n '@@TODO' apps/morsecq/lib/l10n/app_ja.arb` lists open work, and
+  `grep -n '@@TODO' apps/morsecq/lib/l10n/app_it.arb` lists open work, and
   the consistency test fails until none is left.
 - Reuse the ham/Morse vocabulary consistently within the language (the zh
   glossary in `lib/l10n/README.md` is the model: dit/dah, character speed,
@@ -229,8 +246,8 @@ File name = `app_` + the locale tag gen-l10n expects:
 ### Step 3 — display name in the language catalog
 
 Open `apps/morsecq/lib/i18n/language_catalog.dart`. If your tag (or its
-language code) is already in `LanguageCatalog._names`, nothing to do — `ja` →
-`日本語` is there. Otherwise add one line with the **endonym** (the name in that
+language code) is already in `LanguageCatalog._names`, nothing to do — `it` →
+`Italiano` is there. Otherwise add one line with the **endonym** (the name in that
 language, never translated):
 
 ```dart
@@ -244,10 +261,10 @@ catalog entry the picker still works but shows the raw tag (`cy`).
 
 ```bash
 cd apps/morsecq
-flutter gen-l10n          # writes lib/l10n/generated/s_ja.dart, updates s.dart
+flutter gen-l10n          # writes lib/l10n/generated/s_it.dart, updates s.dart
 ```
 
-`S.supportedLocales` now contains `Locale('ja')`; the delegate's
+`S.supportedLocales` now contains `Locale('it')`; the delegate's
 `isSupported`, the picker and the resolver pick it up with no further edits.
 Commit the regenerated files.
 
@@ -262,11 +279,19 @@ cd apps/morsecq && flutter test test/i18n test/reference
 
 Then run the app (the fake backend is enough:
 `flutter run --dart-define=MORSECQ_FAKE_BACKEND=true`), open **Me → Language**,
-pick 日本語, and confirm the shell relabels immediately. Switch back to
-"System default" and set the device language to Japanese to exercise the
+pick Italiano, and confirm the shell relabels immediately. Switch back to
+"System default" and set the device language to Italian to exercise the
 resolver path.
 
-### Step 6 — reference content rows
+### Step 6 — test completeness and selection
+
+`test/i18n/arb_consistency_test.dart` discovers every `app_*.arb` and checks key
+sets, placeholders and plural branches against the English template. Extend
+`shipped_locales_test.dart` when the shipped set changes, and add the new native
+name to the small-phone picker cases in `language_settings_tile_test.dart`.
+Verify persistence, service strings, system resolution and grammatical counts.
+
+### Step 7 — reference content rows (optional)
 
 Add the language to `kReferenceLanguages` in
 `apps/morsecq/lib/ui/reference/reference_localized_text.dart` and give every
@@ -274,16 +299,19 @@ row of the reference tables (Q-code meanings, abbreviations, prosigns,
 mnemonics) a text for it; `test/reference/reference_catalog_test.dart` fails
 on any row that lacks a listed language. Until you do, the lookup in §1.6
 shows English (or, for a script/region variant, the parent language's text).
+None of the eight languages added on 2026-10-03 has reference rows yet.
 
-### Step 7 — platform locale manifests
+### Step 8 — platform locale manifests
 
 `test/i18n/platform_locales_test.dart` fails until all of these list exactly
-the ARB set (BCP-47 form: `ja`, `zh-Hans`, `zh-Hant`, `pt-BR`):
+the ARB set (BCP-47 form: `it`, `zh-Hans`, `zh-Hant`, `pt-BR`):
 
 - **iOS / macOS — `CFBundleLocalizations`** in
   `apps/morsecq/ios/Runner/Info.plist` and `macos/Runner/Info.plist`
-  (currently `en`, `zh-Hans`). iOS only offers the per-app language in
-  Settings for languages listed here.
+  (currently the ten shipped tags `en`, `zh-Hans`, `zh-Hant`, `ja`, `ko`,
+  `de`, `fr`, `es`, `pt`, `ru`; `shipped_locales_test.dart` checks them
+  too). iOS only offers the per-app language in Settings for languages
+  listed here.
 - **iOS / macOS — `InfoPlist.strings`.** Add
   `ios/Runner/<tag>.lproj/InfoPlist.strings` and
   `macos/Runner/<tag>.lproj/InfoPlist.strings` translating every
@@ -306,26 +334,32 @@ the ARB set (BCP-47 form: `ja`, `zh-Hans`, `zh-Hant`, `pt-BR`):
   language in that list too.
 - **Windows / Linux**: nothing; the locale comes from the OS user profile.
 
+With ten shipped languages every one of these lists carries all ten tags
+(`zh` → `zh-Hans`, `zh_Hant` → `zh-Hant`, the rest unchanged), and there is
+an `ios/Runner` and a `macos/Runner` `<tag>.lproj/InfoPlist.strings` for each
+of them, `en.lproj` included.
+
 ## 3. Script and region variants (zh_Hant, pt_BR, …)
 
 Follow toxee's precedent but keep it minimal:
 
-- **Traditional Chinese.** Add `app_zh_Hant.arb` (`"@@locale": "zh_Hant"`) as
-  a *complete* file — gen-l10n would silently inherit the Simplified `zh`
+- **Traditional Chinese** ships (2026-10-03) and is the worked example of a
+  script variant. `app_zh_Hant.arb` (`"@@locale": "zh_Hant"`) is a
+  *complete* file — gen-l10n would silently inherit the Simplified `zh`
   text for any key it lacks (§1.7), and the consistency test rejects a
-  partial file anyway. Keep `app_zh.arb` as the
-  Simplified file; there is no need for a separate `app_zh_Hans.arb` (toxee
+  partial file anyway. `app_zh.arb` stays the
+  Simplified file; there is no separate `app_zh_Hans.arb` (toxee
   has one only as an override layer, and its completeness test deliberately
-  excludes it because gen-l10n resolves it through `zh`). The resolver then
+  excludes it because gen-l10n resolves it through `zh`). The resolver
   routes `zh-Hant-*`, `zh-TW`, `zh-HK`, `zh-MO` to `zh_Hant` and everything
-  else Chinese to `zh` — no code change. `LanguageCatalog` already labels
+  else Chinese to `zh` with no Chinese-specific list to edit. `LanguageCatalog` labels
   `zh_Hant` as `繁體中文`. Its native tag is `zh-Hant` (Info.plist,
   `InfoPlist.strings`, `locale_config.xml`); reference content shows the `zh`
-  text until `zh_Hant` rows are added (§1.6). gen-l10n emits the variant as a subclass
+  (Simplified) text until `zh_Hant` rows are added (§1.6). gen-l10n emits the variant as a subclass
   (`SZhHant` inside `s_zh.dart`) that overrides only the keys its file
   contains; that is exactly why a partial file would leak Simplified text.
-  Write it as Taiwan Mandarin, not Cantonese colloquial (toxee's test rejects
-  `咗嘅唔喺哋嚟冇揀`).
+  It is written as Taiwan Mandarin (Morse is 摩斯 there), not Cantonese
+  colloquial (toxee's test rejects `咗嘅唔喺哋嚟冇揀`).
 - **Region variants** (`app_pt_BR.arb`, `app_en_GB.arb`): gen-l10n requires
   the plain language file (`app_pt.arb`) to exist as the parent. The resolver
   walks the preference list, and for each entry rule 3 matches the script
@@ -345,7 +379,8 @@ Follow toxee's precedent but keep it minimal:
 - [ ] `apps/morsecq/lib/l10n/app_<tag>.arb` with `@@locale`, complete, placeholders and `other{}` intact, `appName` unchanged, no `@@TODO` left
 - [ ] Endonym present in `LanguageCatalog._names` (and `isRtl` if applicable)
 - [ ] `flutter gen-l10n` run; `lib/l10n/generated/` committed
-- [ ] Reference content: language added to `kReferenceLanguages` and every reference row translated
+- [ ] `shipped_locales_test.dart` and the small-phone picker cases in `language_settings_tile_test.dart` updated for the new locale
+- [ ] Optional: reference content — language added to `kReferenceLanguages` and every reference row translated (otherwise English rows are shown)
 - [ ] `CFBundleLocalizations` updated in the iOS and macOS `Info.plist`
 - [ ] `<tag>.lproj/InfoPlist.strings` added for iOS and macOS (every `NS*UsageDescription`) and registered in both Xcode projects
 - [ ] `<locale android:name="<tag>"/>` added to `android/app/src/main/res/xml/locale_config.xml`

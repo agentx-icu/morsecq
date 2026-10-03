@@ -5,7 +5,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 's_de.dart';
 import 's_en.dart';
+import 's_es.dart';
+import 's_fr.dart';
+import 's_ja.dart';
+import 's_ko.dart';
+import 's_pt.dart';
+import 's_ru.dart';
 import 's_zh.dart';
 
 // ignore_for_file: type=lint
@@ -91,8 +98,16 @@ abstract class S {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
     Locale('en'),
-    Locale('zh')
+    Locale('es'),
+    Locale('fr'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('pt'),
+    Locale('ru'),
+    Locale('zh'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')
   ];
 
   /// Product name; never translated
@@ -1229,6 +1244,24 @@ abstract class S {
   /// **'Training mode off'**
   String get chatTrainingModeOff;
 
+  /// Chat app-bar toggle and playback-sheet switch: play incoming messages as they arrive
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play received Morse'**
+  String get chatAutoPlay;
+
+  /// Snack bar after turning chat auto-play on
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play on: new messages play as they arrive'**
+  String get chatAutoPlayOn;
+
+  /// Snack bar after turning chat auto-play off
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-play off'**
+  String get chatAutoPlayOff;
+
   /// Conversation, training mode: button on a hidden message that reveals its text
   ///
   /// In en, this message translates to:
@@ -1331,12 +1364,6 @@ abstract class S {
   /// **'Clear history'**
   String get chatClearHistory;
 
-  /// Conversation composer: input-mode segment for typing text with the keyboard
-  ///
-  /// In en, this message translates to:
-  /// **'Keyboard'**
-  String get chatModeKeyboard;
-
   /// Conversation composer: input-mode segment for keying with a straight key
   ///
   /// In en, this message translates to:
@@ -1349,11 +1376,11 @@ abstract class S {
   /// **'Paddles'**
   String get chatModePaddles;
 
-  /// Conversation composer: hint inside the text field
+  /// Hint in the read-only chat draft field: messages are keyed with the straight key or paddles, not typed
   ///
   /// In en, this message translates to:
-  /// **'Type a message'**
-  String get chatTypeMessage;
+  /// **'Key your message'**
+  String get chatKeyMessage;
 
   /// Conversation composer: tooltip of the send button
   ///
@@ -2585,7 +2612,7 @@ abstract class S {
   /// **'Play sample'**
   String get learnPlaySample;
 
-  /// Training settings: title of the session length slider
+  /// Training settings: practice length in characters, not time; labels the per-session character count slider
   ///
   /// In en, this message translates to:
   /// **'Session length'**
@@ -4053,7 +4080,7 @@ class _SDelegate extends LocalizationsDelegate<S> {
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'ja', 'ko', 'pt', 'ru', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_SDelegate old) => false;
@@ -4061,10 +4088,26 @@ class _SDelegate extends LocalizationsDelegate<S> {
 
 S lookupS(Locale locale) {
 
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh': {
+  switch (locale.scriptCode) {
+    case 'Hant': return SZhHant();
+   }
+  break;
+   }
+  }
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de': return SDe();
     case 'en': return SEn();
+    case 'es': return SEs();
+    case 'fr': return SFr();
+    case 'ja': return SJa();
+    case 'ko': return SKo();
+    case 'pt': return SPt();
+    case 'ru': return SRu();
     case 'zh': return SZh();
   }
 

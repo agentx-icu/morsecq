@@ -8,6 +8,8 @@ import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../groups/group_members_sheet.dart';
 import 'chat_layout.dart';
+import 'conversation_actions.dart';
+import 'conversation_auto_play.dart';
 import 'conversation_target.dart';
 import 'conversation_header.dart';
 import 'conversation_history.dart';
@@ -17,10 +19,9 @@ import 'message_input.dart';
 import 'local_message_sends.dart';
 import 'morse_playback_controller.dart';
 import 'morse_playback_settings.dart';
-import 'playback_settings_sheet.dart';
 
 /// One conversation (c2c or group): history + live events, Morse bubbles,
-/// training mode, playback settings and the three-mode input.
+/// training mode, auto-play, playback settings and the keyed input.
 ///
 /// [embedded] hides the back button for the master-detail right pane; the
 /// owner passes [onClosed] to clear its selection when the user leaves a
@@ -45,6 +46,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   late final ChatService _service;
   late final MorsePlaybackController _playback;
   bool _ownsPlayback = false;
+  late final ConversationAutoPlay _autoPlay = ConversationAutoPlay(_playback);
   late final StreamSubscription<ChatMessage> _events;
   late final LocalMessageSends _localSends;
   final ScrollController _scroll = ScrollController();
@@ -86,14 +88,24 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _autoPlay.update(context);
+  }
+
+  @override
   void dispose() {
+    _autoPlay.dispose();
     unawaited(_events.cancel());
     _localSends.removeListener(_onLocalSend);
     _scroll.dispose();
     if (_ownsPlayback) {
       _playback.dispose();
-    } else if (_playback.playingId != null) {
-      _playback.stop();
+    } else {
+      // Also drops queued or held clips. Unmounting locks the tree; the stop
+      // notifies listeners after it.
+      final MorsePlaybackController playback = _playback;
+      WidgetsBinding.instance.addPostFrameCallback((_) => playback.stop());
     }
     super.dispose();
   }
@@ -215,6 +227,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         if (!follow) _newMessages++;
       }
     });
+    if (added && !message.isMine) _autoPlay.incoming(message);
     if (added && follow) {
       _scrollToEnd();
       if (!message.isMine) unawaited(_markRead());
@@ -366,7 +379,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final S s = context.s;
     final MorsePlaybackSettings settings = MorsePlaybackSettings.of(context);
     final Group? group = _group();
     final bool conference = group?.kind == GroupKind.conference;
@@ -376,36 +388,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
         automaticallyImplyLeading: !widget.embedded,
         title: ConversationTitle(service: _service, target: widget.target),
         actions: [
-          IconButton(
-            tooltip: s.chatTrainingMode,
-            isSelected: settings.trainingMode,
-            icon: const Icon(Icons.school_outlined),
-            selectedIcon: const Icon(Icons.school),
-            onPressed: () {
-              settings.trainingMode = !settings.trainingMode;
-              showSnack(
-                context,
-                settings.trainingMode
-                    ? s.chatTrainingModeOn
-                    : s.chatTrainingModeOff,
-              );
-            },
-          ),
-          IconButton(
-            tooltip: s.chatPlaybackSettings,
-            icon: const Icon(Icons.speed),
-            onPressed: () =>
-                unawaited(showPlaybackSettingsSheet(context, settings)),
-          ),
-          PopupMenuButton<String>(
-            onSelected: (a) => unawaited(_onMenu(a)),
-            itemBuilder: (_) => [
-              if (_isGroup)
-                PopupMenuItem(value: 'members', child: Text(s.chatMembers)),
-              PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
-              if (_isGroup)
-                PopupMenuItem(value: 'leave', child: Text(s.chatLeaveGroup)),
-            ],
+          ConversationActions(
+            settings: settings,
+            isGroup: _isGroup,
+            onMenu: (a) => unawaited(_onMenu(a)),
           ),
         ],
       ),

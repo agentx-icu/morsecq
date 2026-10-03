@@ -39,8 +39,10 @@ final class AppPreferences implements IdentityDataStore {
       trainingMode: _bool(c, 'trainingMode', false),
       inputMode: InputMode.values.firstWhere(
         (v) => v.name == c['inputMode'],
-        orElse: () => InputMode.keyboard,
+        // Includes the retired typed-text mode ("keyboard").
+        orElse: () => InputMode.straightKey,
       ),
+      autoPlay: _bool(c, 'autoPlay', false),
     );
     final r = _read('reference.playback');
     reference = ReferencePlaybackSettings(
@@ -69,6 +71,7 @@ final class AppPreferences implements IdentityDataStore {
         'toneHz': playback.toneHz,
         'trainingMode': playback.trainingMode,
         'inputMode': playback.inputMode.name,
+        'autoPlay': playback.autoPlay,
       }),
     );
     _watch(

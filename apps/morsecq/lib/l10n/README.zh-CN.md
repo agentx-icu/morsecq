@@ -2,15 +2,17 @@
 
 # MorseCQ App 的本地化（l10n）
 
-通过 Flutter 的 gen-l10n 提供英语（`en`，模板）和简体中文（`zh`）。
+通过 Flutter 的 gen-l10n 提供英语（`en`，模板）、简体中文（`zh`）、繁体中文
+（`zh_Hant`）、日语（`ja`）、韩语（`ko`）、德语（`de`）、法语（`fr`）、
+西班牙语（`es`）、葡萄牙语（`pt`）和俄语（`ru`）。文档只维护英文和简体中文。
 
 | 路径 | 内容 |
 |------|------|
 | `apps/morsecq/l10n.yaml` | gen-l10n 配置：输出类 `S`、非空 getter、输出到 `lib/l10n/generated/` |
 | `lib/l10n/app_en.arb` | **模板。** 每个键都先在这里出现，带 `@key` 元数据（description、placeholders） |
-| `lib/l10n/app_zh.arb` | 简体中文。与模板相同的键集合（由 `test/i18n/arb_consistency_test.dart` 强制） |
+| `lib/l10n/app_<locale>.arb` | 完整译文。每份文件的键集合均与模板相同（由 `test/i18n/arb_consistency_test.dart` 强制） |
 | `lib/l10n/generated/s*.dart` | 生成物；永不手改。通过 `**/l10n/**` 模式免于 500 行门禁 |
-| `lib/i18n/locale_controller.dart` | `LocaleController`（系统 / en / zh），通过 `KeyValueStore` 持久化 |
+| `lib/i18n/locale_controller.dart` | `LocaleController`（系统 / 所有支持的语言），通过 `KeyValueStore` 持久化 |
 | `lib/i18n/key_value_store.dart` | `KeyValueStore` 接口 + `InMemoryKeyValueStore` + `JsonFileKeyValueStore` |
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`；重新导出 `S` |
 | `lib/i18n/language_settings_tile.dart` | "我"页面的 `LanguageSettingsTile`（+ `showLanguageDialog`） |
@@ -38,13 +40,19 @@ MaterialApp(
 )
 ```
 
-优先级：应用内的显式选择（English / 简体中文）优先。选择"跟随系统"（`locale: null`）时，
+优先级：应用内的显式选择（已提供的十种语言之一）优先。选择"跟随系统"（`locale: null`）时，
 `LocaleController.resolve` → `resolveSystemLocales` 按顺序遍历系统首选语言**列表**，取第一个
-应用已提供的语言：`[fr-FR, zh-CN]` 得到中文，列表里没有任何已提供语言时回落到英语。在
-Android 13+ 和 iOS 上，这个系统列表已包含"按应用设置的语言"（声明于
-`android/app/src/main/res/xml/locale_config.xml` 和 Runner 的 `*.lproj/InfoPlist.strings`；
-`test/i18n/platform_locales_test.dart` 保证它们与 ARB 文件一致）。`currentS()` 对没有 context
-的代码使用同一套解析。
+应用已提供的语言：`[it-IT, ja-JP]` 得到日语，列表里没有任何已提供语言时回落到英语。中文内部：
+显式指定 `Hant` 脚本，或没有脚本且地区为 TW / HK / MO（Android 报 `zh-TW`，iOS 报
+`zh-Hant-TW`）时使用繁体中文（`zh_Hant`）；其他中文使用简体中文（`zh`）。其他语言按语言代码匹配。
+在 Android 13+ 和 iOS 上，这个系统列表已包含"按应用设置的语言"（声明于
+`android/app/src/main/res/xml/locale_config.xml`、`CFBundleLocalizations` 和 Runner 的
+`*.lproj/InfoPlist.strings`；`test/i18n/platform_locales_test.dart` 保证它们与 ARB 文件一致）。
+`currentS()` 对没有 context 的代码使用同一套解析。
+
+参考手册的释义与记忆提示是独立数据表，目前提供英文和简体中文（`kReferenceLanguages = ['en', 'zh']`）。
+查找按层级进行（`lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` → `en`），
+所以在加入 `zh_Hant` 行之前，繁体中文读取 `zh`（简体）行；其余新增界面语言读取英文行。
 
 ## 使用字符串
 
@@ -74,13 +82,15 @@ Text(context.s.statsSessions(count))          // ICU plural
 
 ## 添加一个字符串
 
-1. 把键同时加到 `app_en.arb` **和** `app_zh.arb`。按功能区域命名空间（`chatSendHint`、
+1. 把键同时加到 `app_en.arb` **和每份翻译 ARB**。按功能区域命名空间（`chatSendHint`、
    `learnLessonOf`、`statsTitle`、`accountBackupTitle`、`referenceSearchHint`；共享字符串用
    `action*`、`nav*`、`connection*`、`messageStatus*`、`error*`、`language*`）。
 2. 给模板条目一个带 `description` 的 `@key`，有占位符的话再加一个 `placeholders` 映射
    （`{"count": {"type": "int"}}`）。计数使用 ICU 复数：
    `{count, plural, =1{1 session} other{{count} sessions}}`；中文没有复数形式，
    所以其分支通常就是 `{count, plural, other{{count} 次练习}}`（保留任何 `=0` 特例）。
+   译文中，欧洲语言使用 `one` / `other` 等语法类别；俄语使用 `one` / `few` / `many` /
+   `other`，仅保留精确匹配的 `=1` 会遗漏 21 等数字的单数形式。
    description 是写给译者的：说明字符串**显示在哪里**、**是什么意思**
    （`"Receive drill: button that plays the round again"`），每个占位符装的是什么、是否已预先格式化，
    以及长度限制或需保留的术语（呼号、Q 简语、`CQ`）。不要指向源文件或类。
@@ -99,8 +109,9 @@ Text(context.s.statsSessions(count))          // ICU plural
 
 术语规则（两种语言通用）：
 
-* **Morse** 一律译作 莫尔斯（莫尔斯电码），不用 摩尔斯——ARB 文件和平台字符串
-  （`ios/macos/Runner/zh-Hans.lproj/InfoPlist.strings`）都一样。
+* **Morse** 一律译作 莫尔斯（莫尔斯电码），不用 摩尔斯——`app_zh.arb` 和平台字符串
+  （`ios/macos/Runner/zh-Hans.lproj/InfoPlist.strings`）都一样。繁体中文（`app_zh_Hant.arb`）
+  使用台湾通行的 摩斯；在该文件和 `zh-Hant.lproj` 中保持一致。
 * **好友 vs 联系人。** Tox 好友（通过 Tox ID 添加、会上线下线、可发请求、可删除的人）译作 好友——
   英文 "friend" 如此，英文 "contact" 指的是好友时也如此（`errorPeerOffline`、
   `accountEditProfileBody`）。联系人 只用于范围更广的**联系人**页面（`chatContacts`），
@@ -125,9 +136,23 @@ Text(context.s.statsSessions(count))          // ICU plural
 ## 迁移状态
 
 从旧的 `*_strings.dart` 常量类到 ARB 的迁移已经完成；这些类和 `tool/strings_to_arb.dart` 都已删除。
+所有界面区域均使用 `context.s`，或显式接收 `S` 实例，因此每种已提供的译文都会自动覆盖这些调用方：
+
+| 区域 | ARB 前缀 | 调用方 |
+|------|----------|--------|
+| 账号与启动 | `account*`、`action*`、`connection*`、`error*` | `startup/**`、`ui/account/**`、`ui/pages/me_page.dart`；备份对话框使用 `currentS()` |
+| 聊天、联系人与群组 | `chat*`、`messageStatus*` | `ui/chat/**`、`ui/contacts/**`、`ui/groups/**`；时间戳通过 `MaterialLocalizations` 格式化 |
+| 学习 | `learn*` | `ui/learn/**`；发报反馈辅助函数显式接收 `S` |
+| 统计 | `stats*` | `ui/stats/**`；日期按当前语言格式化 |
+| 手册与翻译器 | `reference*` | `ui/reference/**`；释义与记忆提示仍是独立数据表 |
+| 麦克风译码 | `listen*` | `ui/listen/**`；控制器暴露状态/错误，由界面解析文本 |
+| 导航与外壳 | `nav*`、`shellOfflineBanner` | `ui/pages/**`、`ui/shell/app_shell.dart` |
+| 通知与桌面 | `notification*`、`desktop*` | 服务在事件发生或语言变化时解析字符串 |
+
 通知标题与正文、桌面托盘和窗口标题都通过 `currentS()` / `StringsResolver` 解析（见"使用字符串"下的
 "不依赖 context 的字符串"）；参考资料*内容*（Q 简语 / 缩写 / 规程符号释义、助记）是按语言代码索引的数据，
 位于各参考表中（`ui/reference/reference_qcodes.dart`、`reference_abbreviations.dart`、
 `reference_catalog.dart`、`reference_mnemonics.dart`），不在 ARB 中；
 `reference_localized_text.dart` 只包含查找辅助函数（`referenceLanguageFor`、`localizedReferenceText`、标签分隔符）；
 `reference_catalog.dart` 中的 `ReferenceEntry.meaning` / `mnemonic` 调用它们。
+`test/i18n/arb_consistency_test.dart` 约束每种语言都具备完整的模板键集合。

@@ -16,7 +16,8 @@ const _zhHantTw = Locale.fromSubtags(
   countryCode: 'TW',
 );
 const _ja = Locale('ja');
-const _frFr = Locale('fr', 'FR');
+// Italian ships no ARB, so it always falls through to the next preference.
+const _itIt = Locale('it', 'IT');
 
 void main() {
   group('resolveSystemLocales', () {
@@ -25,7 +26,7 @@ void main() {
 
     test('walks the preferred list in order', () {
       expect(
-        resolveSystemLocales([_frFr, const Locale('zh', 'CN')], shippedToday),
+        resolveSystemLocales([_itIt, const Locale('zh', 'CN')], shippedToday),
         _zh,
       );
       expect(
@@ -43,7 +44,7 @@ void main() {
     test('a list with nothing shipped falls back to English', () {
       expect(
         resolveSystemLocales([
-          _frFr,
+          _itIt,
           const Locale('de'),
           const Locale('ko'),
         ], shippedToday),
@@ -58,14 +59,14 @@ void main() {
     });
 
     test('Chinese script/region variants inside a list', () {
-      expect(resolveSystemLocales([_frFr, _zhHantTw], shippedToday), _zh);
+      expect(resolveSystemLocales([_itIt, _zhHantTw], shippedToday), _zh);
       expect(
-        resolveSystemLocales([_frFr, const Locale('zh', 'HK')], shippedLater),
+        resolveSystemLocales([_itIt, const Locale('zh', 'HK')], shippedLater),
         _zhHant,
       );
-      expect(resolveSystemLocales([_frFr, _zhHantTw], shippedLater), _zhHant);
+      expect(resolveSystemLocales([_itIt, _zhHantTw], shippedLater), _zhHant);
       expect(
-        resolveSystemLocales([_frFr, const Locale('zh', 'CN')], shippedLater),
+        resolveSystemLocales([_itIt, const Locale('zh', 'CN')], shippedLater),
         _zhHans,
       );
     });
@@ -73,7 +74,7 @@ void main() {
 
   group('LocaleController with a system locale list', () {
     test('effectiveLocale walks the live list', () {
-      var system = [_frFr, const Locale('zh', 'CN')];
+      var system = [_itIt, const Locale('zh', 'CN')];
       final controller = LocaleController(
         InMemoryKeyValueStore(),
         systemLocales: () => system,
@@ -81,7 +82,7 @@ void main() {
       addTearDown(controller.dispose);
       expect(controller.effectiveLocale, _zh);
 
-      system = [_frFr];
+      system = [_itIt];
       expect(controller.effectiveLocale, _en, reason: 'read live, not cached');
       system = const [];
       expect(controller.effectiveLocale, _en);
@@ -99,18 +100,18 @@ void main() {
 
     test('resolve (the MaterialApp callback) uses the same rules', () {
       expect(
-        LocaleController.resolve([_frFr, _zhHantTw], S.supportedLocales),
-        _zh,
+        LocaleController.resolve([_itIt, _zhHantTw], S.supportedLocales),
+        _zhHant,
       );
       expect(LocaleController.resolve(null, S.supportedLocales), _en);
     });
   });
 
   testWidgets(
-    'MaterialApp, effectiveLocale and currentS agree for [fr-FR, zh-CN]',
+    'MaterialApp, effectiveLocale and currentS agree for [it-IT, zh-CN]',
     (tester) async {
       tester.platformDispatcher.localesTestValue = const [
-        _frFr,
+        _itIt,
         Locale('zh', 'CN'),
       ];
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);

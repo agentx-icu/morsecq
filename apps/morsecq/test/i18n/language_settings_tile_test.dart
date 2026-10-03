@@ -4,6 +4,8 @@ import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/l10n_extension.dart';
 import 'package:morsecq/i18n/language_settings_tile.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
+import 'package:morsecq/i18n/locale_resolution.dart';
+import 'package:morsecq/l10n/generated/s.dart' show lookupS;
 import 'package:provider/provider.dart';
 
 /// Pumps the tile inside a MaterialApp wired exactly the way main.dart is
@@ -23,6 +25,7 @@ Future<LocaleController> pumpTile(
           localizationsDelegates: S.localizationsDelegates,
           supportedLocales: S.supportedLocales,
           locale: context.watch<LocaleController>().locale,
+          localeListResolutionCallback: LocaleController.resolve,
           home: const Scaffold(body: LanguageSettingsTile()),
         ),
       ),
@@ -33,6 +36,57 @@ Future<LocaleController> pumpTile(
 }
 
 void main() {
+  const newLanguages = {
+    'zh_Hant': '繁體中文',
+    'ja': '日本語',
+    'ko': '한국어',
+    'de': 'Deutsch',
+    'fr': 'Français',
+    'es': 'Español',
+    'pt': 'Português',
+    'ru': 'Русский',
+  };
+
+  for (final entry in newLanguages.entries) {
+    testWidgets('selects ${entry.key} from a scrolling phone dialog', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final store = InMemoryKeyValueStore();
+      final controller = await pumpTile(tester, store: store);
+
+      await tester.tap(find.byType(LanguageSettingsTile));
+      await tester.pumpAndSettle();
+      final option = find.text(entry.value);
+      expect(option, findsOneWidget);
+      await tester.ensureVisible(option);
+      await tester.pumpAndSettle();
+      await tester.tap(option);
+      await tester.pumpAndSettle();
+
+      final locale = parseLocaleTag(entry.key)!;
+      expect(controller.locale, locale);
+      expect(store.getString(LocaleController.storageKey), entry.key);
+      expect(find.text(lookupS(locale).languageTitle), findsOneWidget);
+      expect(find.text(entry.value), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byType(LanguageSettingsTile));
+      await tester.pumpAndSettle();
+      final system = find.text(lookupS(locale).languageSystemDefault);
+      await tester.ensureVisible(system);
+      await tester.pumpAndSettle();
+      await tester.tap(system);
+      await tester.pumpAndSettle();
+      expect(controller.locale, isNull);
+      expect(find.text('Language'), findsOneWidget);
+    });
+  }
+
   testWidgets('shows the system-default choice in English by default', (
     tester,
   ) async {
@@ -49,15 +103,17 @@ void main() {
 
     await tester.tap(find.byType(LanguageSettingsTile));
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('简体中文'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('简体中文'));
     await tester.pumpAndSettle();
 
     expect(controller.locale, const Locale('zh'));
     expect(store.getString(LocaleController.storageKey), 'zh');
-    expect(find.byType(SimpleDialog), findsNothing, reason: 'dialog closed');
+    expect(find.byType(AlertDialog), findsNothing, reason: 'dialog closed');
     // The tile itself re-rendered in Chinese.
     expect(find.text('语言'), findsOneWidget);
     expect(find.text('简体中文'), findsOneWidget);
@@ -66,9 +122,7 @@ void main() {
   testWidgets('restores a persisted choice and can return to system', (
     tester,
   ) async {
-    final store = InMemoryKeyValueStore({
-      LocaleController.storageKey: 'zh_CN',
-    });
+    final store = InMemoryKeyValueStore({LocaleController.storageKey: 'zh_CN'});
     final controller = await pumpTile(tester, store: store);
     expect(find.text('语言'), findsOneWidget);
 

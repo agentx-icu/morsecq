@@ -2,15 +2,18 @@
 
 # Localisation (l10n) for the MorseCQ app
 
-English (`en`, template) and Simplified Chinese (`zh`) via Flutter's gen-l10n.
+Flutter's gen-l10n ships English (`en`, template), Simplified Chinese (`zh`),
+Traditional Chinese (`zh_Hant`), Japanese (`ja`), Korean (`ko`), German (`de`),
+French (`fr`), Spanish (`es`), Portuguese (`pt`) and Russian (`ru`).
+Documentation is maintained in English and Simplified Chinese only.
 
 | Path | What |
 |------|------|
 | `apps/morsecq/l10n.yaml` | gen-l10n config: output class `S`, non-nullable getter, output in `lib/l10n/generated/` |
 | `lib/l10n/app_en.arb` | **Template.** Every key lives here first, with `@key` metadata (description, placeholders) |
-| `lib/l10n/app_zh.arb` | Simplified Chinese. Same key set as the template (enforced by `test/i18n/arb_consistency_test.dart`) |
+| `lib/l10n/app_<locale>.arb` | Complete translations. Every file has the template key set (enforced by `test/i18n/arb_consistency_test.dart`) |
 | `lib/l10n/generated/s*.dart` | Generated; never edit. Exempt from the 500-LOC gate by the `**/l10n/**` pattern |
-| `lib/i18n/locale_controller.dart` | `LocaleController` (system / en / zh) persisted through a `KeyValueStore` |
+| `lib/i18n/locale_controller.dart` | `LocaleController` (system / every shipped locale) persisted through a `KeyValueStore` |
 | `lib/i18n/key_value_store.dart` | `KeyValueStore` interface + `InMemoryKeyValueStore` + `JsonFileKeyValueStore` |
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`; re-exports `S` |
 | `lib/i18n/language_settings_tile.dart` | `LanguageSettingsTile` for the Me page (+ `showLanguageDialog`) |
@@ -40,16 +43,27 @@ MaterialApp(
 )
 ```
 
-Precedence: an explicit in-app choice (English / 简体中文) wins. With
-"System default" (`locale: null`) `LocaleController.resolve` →
+Precedence: an explicit in-app choice (any of the ten shipped languages)
+wins. With "System default" (`locale: null`) `LocaleController.resolve` →
 `resolveSystemLocales` walks the OS preferred-locale **list** in order and
-picks the first language the app ships, so `[fr-FR, zh-CN]` gives Chinese
-and a list with no shipped language falls back to English. The OS list
-already contains the per-app language on Android 13+ and iOS (declared in
-`android/app/src/main/res/xml/locale_config.xml` and the Runner
-`*.lproj/InfoPlist.strings`; `test/i18n/platform_locales_test.dart` keeps
-those in step with the ARB files). `currentS()` uses the same resolution for
-code without a context.
+picks the first language the app ships, so `[it-IT, ja-JP]` gives Japanese
+and a list with no shipped language falls back to English. Within Chinese,
+an explicit `Hant` script, or a TW / HK / MO region without a script
+(Android reports `zh-TW`, iOS `zh-Hant-TW`), maps to Traditional Chinese
+(`zh_Hant`); any other Chinese maps to Simplified Chinese (`zh`). Other
+languages match their language code. The OS list already contains the
+per-app language on Android 13+ and iOS (declared in
+`android/app/src/main/res/xml/locale_config.xml`, `CFBundleLocalizations`
+and the Runner `*.lproj/InfoPlist.strings`;
+`test/i18n/platform_locales_test.dart` keeps those in step with the ARB
+files). `currentS()` uses the same resolution for code without a context.
+
+Reference meanings and mnemonics are separate data tables, currently in English
+and Simplified Chinese (`kReferenceLanguages = ['en', 'zh']`). Lookup is
+tiered (`lang_Script_REGION` → `lang_Script` → `lang_REGION` → `lang` →
+`en`), so Traditional Chinese reads the `zh` (Simplified) rows until
+`zh_Hant` rows are added, and the other added interface languages read the
+English rows.
 
 ## Using a string
 
@@ -85,7 +99,7 @@ relying on the host locale.
 
 ## Adding a string
 
-1. Add the key to `app_en.arb` **and** `app_zh.arb`. Namespace it by area
+1. Add the key to `app_en.arb` **and every translation ARB**. Namespace it by area
    (`chatSendHint`, `learnLessonOf`, `statsTitle`, `accountBackupTitle`,
    `referenceSearchHint`; `action*`, `nav*`, `connection*`,
    `messageStatus*`, `error*`, `language*` for shared strings).
@@ -94,6 +108,9 @@ relying on the host locale.
    Counts use ICU plurals: `{count, plural, =1{1 session} other{{count} sessions}}`;
    Chinese has no plural forms, so its branch is usually just
    `{count, plural, other{{count} 次练习}}` (keep any `=0` special cases).
+   In translations use grammatical categories such as `one` / `other` for
+   European languages and `one` / `few` / `many` / `other` for Russian; an
+   exact `=1` alone would miss Russian numbers such as 21.
    The description is for the translator: say **where** the string is shown
    and **what** it means (`"Receive drill: button that plays the round again"`),
    what each placeholder holds and whether it is pre-formatted, and any
@@ -114,8 +131,10 @@ Ham / Morse vocabulary used in `app_zh.arb` — keep it consistent:
 
 Terminology rules (both languages):
 
-* **Morse** is 莫尔斯 (莫尔斯电码), never 摩尔斯 — in the ARB files and in the
+* **Morse** is 莫尔斯 (莫尔斯电码), never 摩尔斯 — in `app_zh.arb` and in the
   platform strings (`ios/macos/Runner/zh-Hans.lproj/InfoPlist.strings`).
+  Traditional Chinese (`app_zh_Hant.arb`) uses the Taiwan-standard 摩斯; keep
+  it consistent there and in `zh-Hant.lproj`.
 * **好友 vs 联系人.** A Tox friend (someone added by Tox ID, who can come
   online, receive a request, be removed) is 好友 — "friend", and also the
   English "contact" when it means a friend (`errorPeerOffline`,
@@ -148,13 +167,29 @@ constants or helpers — review those by hand. Tests:
 ## Migration status
 
 The migration from the old `*_strings.dart` const classes is complete; the
-classes and `tool/strings_to_arb.dart` are gone. Notification titles and
-bodies, the desktop tray and the window title are resolved through
-`currentS()` / `StringsResolver` (see "Context-free strings" under
-"Using a string"), and
-reference *content* (Q-code / abbreviation / prosign meanings, mnemonics) is
-data keyed by language code inside the reference tables
-(`ui/reference/reference_qcodes.dart`, `reference_abbreviations.dart`,
-`reference_catalog.dart`, `reference_mnemonics.dart`), not ARB;
-`reference_localized_text.dart` only holds the lookup helpers
-(`referenceLanguageFor`, `localizedReferenceText`, label separator); `ReferenceEntry.meaning` / `mnemonic` in `reference_catalog.dart` call them.
+classes and `tool/strings_to_arb.dart` are gone. All interface areas use
+`context.s` or receive an `S` instance explicitly, so every shipped
+translation covers these callers automatically:
+
+| Area | ARB prefix | Callers |
+|------|------------|---------|
+| Account and startup | `account*`, `action*`, `connection*`, `error*` | `startup/**`, `ui/account/**`, `ui/pages/me_page.dart`; backup dialogs use `currentS()` |
+| Chat, contacts and groups | `chat*`, `messageStatus*` | `ui/chat/**`, `ui/contacts/**`, `ui/groups/**`; timestamp formatting uses `MaterialLocalizations` |
+| Learning | `learn*` | `ui/learn/**`; send-feedback helpers take `S` explicitly |
+| Statistics | `stats*` | `ui/stats/**`; date formatting uses the current locale |
+| Reference and translator | `reference*` | `ui/reference/**`; meanings and mnemonics remain separate data tables |
+| Microphone decoding | `listen*` | `ui/listen/**`; controllers expose state/errors, widgets resolve text |
+| Navigation and shell | `nav*`, `shellOfflineBanner` | `ui/pages/**`, `ui/shell/app_shell.dart` |
+| Notifications and desktop | `notification*`, `desktop*` | Services resolve strings at event time or on language changes |
+
+Notification titles and bodies, the desktop tray and the window title are
+resolved through `currentS()` / `StringsResolver` (see "Context-free
+strings" under "Using a string"), and reference *content* (Q-code /
+abbreviation / prosign meanings, mnemonics) is data keyed by language code
+inside the reference tables (`ui/reference/reference_qcodes.dart`,
+`reference_abbreviations.dart`, `reference_catalog.dart`,
+`reference_mnemonics.dart`), not ARB; `reference_localized_text.dart` only
+holds the lookup helpers (`referenceLanguageFor`, `localizedReferenceText`,
+label separator); `ReferenceEntry.meaning` / `mnemonic` in
+`reference_catalog.dart` call them. `test/i18n/arb_consistency_test.dart`
+enforces that every locale has the full template key set.

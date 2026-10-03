@@ -2,17 +2,19 @@
 
 # 为 MorseCQ 添加一种界面语言
 
-MorseCQ 通过 Flutter 的 `gen-l10n` 提供英语（`en`，模板）和简体中文（`zh`）。本页端到端地说明
-本地化是如何接线的，并给出添加第三种语言的确切步骤；参照对象是姊妹项目 toxee 发布
-`ar` / `en` / `ja` / `ko` / `zh_Hans` / `zh_Hant` 的方式（那边的 `/home/user/toxee/l10n.yaml`、
-`lib/util/locale_controller.dart`、`test/l10n/arb_completeness_test.dart`）。
+MorseCQ 通过 Flutter gen-l10n 提供英语（`en`，模板）、简体中文（`zh`）、繁体中文
+（`zh_Hant`）、日语（`ja`）、韩语（`ko`）、德语（`de`）、法语（`fr`）、
+西班牙语（`es`）、葡萄牙语（`pt`）和俄语（`ru`）。每份译文完整包含模板的
+全部消息（截至 2026-10-03 共 660 条）。文档仍只维护英文和简体中文。
 
-日常的字符串工作（添加一个键、业余无线电词汇）请看
-[`apps/morsecq/lib/l10n/README.md`](../../apps/morsecq/lib/l10n/README.zh-CN.md)。
+本页说明共享本地化流程与扩展方法。日常字符串工作（添加一个键）和莫尔斯词汇请看
+[`apps/morsecq/lib/l10n/README.zh-CN.md`](../../apps/morsecq/lib/l10n/README.zh-CN.md)。
 
-> **状态说明（2026-10-02）。** 下文描述的都是代码的现状：`*_strings.dart` 迁移已完成（界面上不再有
+> **状态说明（2026-10-03）。** 下文描述的都是代码的现状：`*_strings.dart` 迁移已完成（界面上不再有
 > 英语 `static const` 文本，一次性的迁移工具已删除），一致性测试覆盖每一个已发布的 ARB，
-> 平台语言清单由漂移测试守护。
+> 平台语言清单由漂移测试守护。十种语言都已在 `CFBundleLocalizations`、Android `locale_config.xml`
+> 和 iOS/macOS `<tag>.lproj/InfoPlist.strings` 中声明，`test/i18n/platform_locales_test.dart`
+> 保证这些清单与 ARB 集合完全一致。
 
 ## 1. 本地化是如何工作的
 
@@ -22,8 +24,8 @@ MorseCQ 通过 Flutter 的 `gen-l10n` 提供英语（`en`，模板）和简体�
 |---|---|---|
 | gen-l10n 配置 | `apps/morsecq/l10n.yaml` | `arb-dir: lib/l10n`、`template-arb-file: app_en.arb`、`output-class: S`、`output-dir: lib/l10n/generated`、`output-localization-file: s.dart`、`nullable-getter: false`、`format: false`。不设 `synthetic-package`（Flutter 3.41 已移除；该键只会打印警告）。 |
 | 自动生成 | `apps/morsecq/pubspec.yaml` → `flutter: generate: true` | `flutter run` / `flutter build` 会重新生成；`flutter gen-l10n` 显式执行。 |
-| ARB 文件 | `apps/morsecq/lib/l10n/app_<tag>.arb` | 每个区域设置一个。`app_en.arb` 是模板，也是唯一需要 `@key` 元数据（description、placeholders）的文件。截至 2026-10-02 约有 660 个消息键。 |
-| 生成的代码 | `apps/morsecq/lib/l10n/generated/s.dart`、`s_en.dart`、`s_zh.dart` | 已提交，永不手改。通过 `**/l10n/**` 模式免于 500 行门禁。 |
+| ARB 文件 | `apps/morsecq/lib/l10n/app_<tag>.arb` | 每个区域设置一个。`app_en.arb` 是模板，也是唯一需要 `@key` 元数据（description、placeholders）的文件。截至 2026-10-03 有 660 个消息键。 |
+| 生成的代码 | `apps/morsecq/lib/l10n/generated/s.dart`、`s_<language>.dart`（`SZhHant` 等脚本/地区变体位于基础语言的文件 `s_zh.dart` 中） | 已提交，永不手改。通过 `**/l10n/**` 模式免于 500 行门禁。 |
 | 访问方式 | `context.s`（`lib/i18n/l10n_extension.dart`）或 `S.of(context)` | 仅在 `MaterialApp` 之下可用；测试需要 pump `localizationsDelegates: S.localizationsDelegates`。 |
 | 支持的集合 | `S.supportedLocales` | 由 ARB 文件推导。`LocaleController.supportedLocales` 和语言选择器都读它，因此**添加语言不需要编辑任何 Dart 列表**。 |
 
@@ -66,8 +68,8 @@ MaterialApp(
 
 **首选列表。** `resolveSystemLocales(preferred, supported)` 按优先级从高到低遍历操作系统的整个
 首选区域设置列表。第一个能映射到已发布区域设置的条目（按下面的单区域设置规则，不做回退）胜出；
-只有没有任何条目匹配——或列表为 null/空——时才用英语。因此操作系统列表为 `[fr-FR, zh-CN]` 的用户
-得到的是中文而不是英语：法语没有发布，中文有。
+只有没有任何条目匹配——或列表为 null/空——时才用英语。因此操作系统列表为 `[it-IT, zh-CN]` 的用户
+得到的是中文而不是英语：意大利语没有发布，中文有。
 
 **单个区域设置。** `resolveSystemLocale(system, supported)` / `supportedLocaleFor(candidate, supported)`
 是 toxee 单区域设置解析器的泛化版本，把支持的集合变成了数据：
@@ -114,7 +116,13 @@ ARB 字符串。查找顺序：完整标签 → `language_Script` → 语言 →
   它是一个 `WidgetsBindingObserver`（`didChangeLocales`），不会接管 `PlatformDispatcher.onLocaleChanged`。
 
 通知文本（Android 频道名与频道说明、"新消息"、好友请求与群邀请通知）、桌面托盘菜单与提示、
-以及桌面窗口标题都读取 `currentS()` / `StringsResolver`（或由其传入的 `S`），所以新语言无需额外工作就能覆盖这些面向操作系统的字符串。
+以及桌面窗口标题都读取 `currentS()` / `StringsResolver`（或由其传入的 `S`）：通知在发送时通过
+`S Function()` 解析文本，桌面外壳在每次语言变化时收到 `DesktopShellController.updateStrings(strings.s)`，
+`LocalNotificationsApi.refreshStrings()` 会重新创建 Android 频道，使频道名跟随语言。所以新语言无需额外工作
+就能覆盖这些面向操作系统的字符串；只有已经显示在屏幕上的通知保留原文本。
+
+参考手册的释义与记忆提示是独立数据表，目前提供英文和简体中文（§1.6）。繁体中文读取 `zh` 行；
+其余新增界面语言读取英文行。翻译这些数据表与新增界面消息属于不同工作。
 
 ### 1.6 参考内容（Q 简语、缩略语、助记）
 
@@ -135,7 +143,8 @@ ARB 字符串。查找顺序：完整标签 → `language_Script` → 语言 →
 | `dart run tool/ui_literal_guard.dart` | `.github/workflows/analyze.yml`（"UI literal guard (localisation)"）、`tool/test_pyramid.sh` 的 gates 层 | 硬门禁。解析 `apps/morsecq/lib/**` 下的每个文件（跳过生成代码），凡是含字母的字符串字面量被直接传给用户可见的位置（`Text`、`TextSpan.text`、`Tooltip.message`、具名参数 `label` / `hintText` / `title` / `tooltip` / ……）即失败。豁免：在该行末尾或其上一行单独写 `// ui-literal-ok: <reason>`；理由必填，失效的标记本身也算违规。经由数据表或辅助函数传递的文案它看不到——代码审查仍然必要。 |
 | `test/i18n/arb_consistency_test.dart` | `flutter test apps/morsecq` | 枚举 `lib/l10n/` 下**每一个** `app_*.arb`：`@@locale` 与文件名一致、键集合一致、值非空、模板的每个占位符都出现在译文中、每个复数都有 `other{…}`、`appName` 不翻译、不残留 `@@TODO` 标记、模板中存在一组固定的 `error*` 键（即 `lib/i18n/chat_error_messages.dart` 所映射的错误码；其他 `ChatException` 代码一律显示 `errorUnknown`）。模板中的每个键还必须带非空的 `@key` `description`，且不得指向已删除的 `*_strings.dart` / `*Strings.` 类。 |
 | `test/i18n/platform_locales_test.dart` | 同上 | 原生语言声明与 ARB 集合严格相等：Android `res/xml/locale_config.xml`（以及清单中的 `android:localeConfig`）、iOS/macOS 的 `CFBundleLocalizations`、iOS/macOS 的 `*.lproj/InfoPlist.strings` 集合及其在 Xcode 工程中的注册；每个 `NS*UsageDescription` 在每种语言下都有翻译。ARB 的 `zh` 映射为 `zh-Hans`，`zh_Hant` 为 `zh-Hant`，`pt_BR` 为 `pt-BR`。 |
-| `test/i18n/locale_resolution_test.dart`、`locale_list_resolution_test.dart`、`locale_controller_test.dart`、`language_settings_tile_test.dart`、`language_dialog_save_test.dart`、`strings_resolver_test.dart` | 同上 | 解析规则（单个区域设置与首选列表）、持久化标签、选择器行为、操作系统语言变化时重新打标签。 |
+| `test/i18n/shipped_locales_test.dart` | 同上 | 已发布的十种语言集合、两份 Apple `Info.plist` 中的 `CFBundleLocalizations`、中文脚本/地区选择、每种语言的持久化与不依赖 context 的服务字符串、俄语 one/few/many 以及葡萄牙语零次数措辞。发布语言集合变化时须更新。 |
+| `test/i18n/locale_resolution_test.dart`、`locale_list_resolution_test.dart`、`locale_controller_test.dart`、`language_settings_tile_test.dart`、`language_dialog_save_test.dart`、`strings_resolver_test.dart` | 同上 | 解析规则（单个区域设置与首选列表）、持久化标签、选择器行为（320 × 568 手机上的每个选项）、操作系统语言变化时重新打标签。 |
 | `flutter analyze apps/morsecq` | CI 的 analyze 步骤 | 生成的代码能编译；严格 lint。 |
 
 gen-l10n 本身**永远不会因缺少翻译而失败**，而是悄悄回退。基础语言文件（`app_ja.arb`）缺的键会编译成
@@ -146,13 +155,13 @@ gen-l10n 本身**永远不会因缺少翻译而失败**，而是悄悄回退。�
 
 ## 2. 添加语言的逐步操作
 
-示例：日语（`ja`）。按需替换标签。
+示例：尚未发布的意大利语（`it`）。按需替换标签。
 
 ### 第 1 步——创建 ARB
 
 ```bash
 cd apps/morsecq/lib/l10n
-cp app_en.arb app_ja.arb
+cp app_en.arb app_it.arb
 ```
 
 文件名 = `app_` + gen-l10n 期望的区域设置标签：`app_<lang>.arb`、`app_<lang>_<Script>.arb`
@@ -160,7 +169,7 @@ cp app_en.arb app_ja.arb
 
 ```json
 {
-  "@@locale": "ja",
+  "@@locale": "it",
   "appName": "MorseCQ",
   ...
 }
@@ -172,17 +181,19 @@ cp app_en.arb app_ja.arb
 - ICU 复数必须保留 `other{…}` 分支：`{count, plural, =1{1 session} other{{count} sessions}}`。
   没有复数形式的语言（ja、zh、ko）通常折叠为 `{count, plural, other{{count} 回}}`——
   保留模板中已有的任何 `=0` 特例。
+- 欧洲语言通常使用 `one` / `other`；俄语使用 `one` / `few` / `many` / `other`，
+  只保留精确匹配的 `=1` 会遗漏 21、31 等数字的单数形式。
 - `appName` 保持为 `MorseCQ`（产品名，测试要求两边相同）。
 - `@key` 元数据块在模板之外是可选的；保留无害，删除则让文件更短。翻译过程中可以给条目打上
-  `"description": "@@TODO(l10n): …"`；`grep -n '@@TODO' apps/morsecq/lib/l10n/app_ja.arb`
+  `"description": "@@TODO(l10n): …"`；`grep -n '@@TODO' apps/morsecq/lib/l10n/app_it.arb`
   可列出待办，只要还有残留，一致性测试就会失败。
-- 在同一语言内保持业余无线电/摩尔斯词汇一致（`lib/l10n/README.md` 中的中文词表是范本：
+- 在同一语言内保持业余无线电/莫尔斯词汇一致（`lib/l10n/README.md` 中的中文词表是范本：
   点/划、字符速度、Farnsworth 间距、侧音、直键、双桨、呼号、听抄、发报）。
 
 ### 第 3 步——语言目录中的显示名称
 
 打开 `apps/morsecq/lib/i18n/language_catalog.dart`。如果你的标签（或其语言代码）已在
-`LanguageCatalog._names` 中，什么都不用做——`ja` → `日本語` 已经在里面。否则加一行**自称**
+`LanguageCatalog._names` 中，什么都不用做——`it` → `Italiano` 已经在里面。否则加一行**自称**
 （该语言对自己的称呼，永不翻译）：
 
 ```dart
@@ -196,10 +207,10 @@ cp app_en.arb app_ja.arb
 
 ```bash
 cd apps/morsecq
-flutter gen-l10n          # writes lib/l10n/generated/s_ja.dart, updates s.dart
+flutter gen-l10n          # writes lib/l10n/generated/s_it.dart, updates s.dart
 ```
 
-`S.supportedLocales` 现在包含 `Locale('ja')`；delegate 的 `isSupported`、选择器和解析器无需进一步编辑
+`S.supportedLocales` 现在包含 `Locale('it')`；delegate 的 `isSupported`、选择器和解析器无需进一步编辑
 就能识别它。提交重新生成的文件。
 
 ### 第 5 步——验证
@@ -211,23 +222,31 @@ flutter analyze apps/morsecq
 cd apps/morsecq && flutter test test/i18n test/reference
 ```
 
-然后运行 App（假后端就够了：`flutter run --dart-define=MORSECQ_FAKE_BACKEND=true`），打开 **我 → 语言**，选择 日本語，
-确认 shell 立刻重新打标签。再切回"跟随系统"，把设备语言设为日语，以走一遍解析器路径。
+然后运行 App（假后端就够了：`flutter run --dart-define=MORSECQ_FAKE_BACKEND=true`），打开 **我 → 语言**，选择 Italiano，
+确认 shell 立刻重新打标签。再切回"跟随系统"，把设备语言设为意大利语，以走一遍解析器路径。
 
-### 第 6 步——参考内容行
+### 第 6 步——测试完整性与语言选择
+
+`test/i18n/arb_consistency_test.dart` 自动发现所有 `app_*.arb`，检查与英文模板相同
+的键集合、占位符和复数分支。发布语言集合变化时更新 `shipped_locales_test.dart`，
+并在 `language_settings_tile_test.dart` 的小屏幕用例中增加新的语言自称。
+验证持久化、后台字符串、系统解析和不同数量的语法形式。
+
+### 第 7 步——参考内容行（可选）
 
 在 `apps/morsecq/lib/ui/reference/reference_localized_text.dart` 的 `kReferenceLanguages` 中加入该语言，
 并为参考表（Q 简语释义、缩略语、勤务符号、助记）的每一行提供该语言的文本；
 `test/reference/reference_catalog_test.dart` 会对缺少任一列出语言的行报错。在此之前，§1.6 的查找会显示
-英语（脚本/地区变体则显示父语言的文本）。
+英语（脚本/地区变体则显示父语言的文本）。2026-10-03 新增的八种语言目前都还没有参考内容行。
 
-### 第 7 步——平台语言清单
+### 第 8 步——平台语言清单
 
 在以下各处都与 ARB 集合完全一致之前，`test/i18n/platform_locales_test.dart` 会失败
-（BCP-47 形式：`ja`、`zh-Hans`、`zh-Hant`、`pt-BR`）：
+（BCP-47 形式：`it`、`zh-Hans`、`zh-Hant`、`pt-BR`）：
 
 - **iOS / macOS —— `CFBundleLocalizations`**，位于 `apps/morsecq/ios/Runner/Info.plist` 与
-  `macos/Runner/Info.plist`（目前为 `en`、`zh-Hans`）。只有列在这里的语言，iOS 才会在"设置"中提供
+  `macos/Runner/Info.plist`（目前为已发布的十个标签 `en`、`zh-Hans`、`zh-Hant`、`ja`、`ko`、`de`、
+  `fr`、`es`、`pt`、`ru`；`shipped_locales_test.dart` 也会检查）。只有列在这里的语言，iOS 才会在"设置"中提供
   按 App 切换。
 - **iOS / macOS —— `InfoPlist.strings`。** 添加 `ios/Runner/<tag>.lproj/InfoPlist.strings` 与
   `macos/Runner/<tag>.lproj/InfoPlist.strings`，翻译对应 `Info.plist` 中的每个 `NS*UsageDescription`
@@ -242,20 +261,23 @@ cd apps/morsecq && flutter test test/i18n test/reference
   `resourceConfigurations` / `resConfigs` 缩小 APK，也要把新语言保留在那个列表中。
 - **Windows / Linux**：无需改动；区域设置来自操作系统的用户配置。
 
+发布十种语言后，上面每个列表都包含全部十个标签（`zh` → `zh-Hans`，`zh_Hant` → `zh-Hant`，其余不变），
+并且 `ios/Runner` 与 `macos/Runner` 下每种语言（含 `en.lproj`）都有一份 `<tag>.lproj/InfoPlist.strings`。
+
 ## 3. 脚本与地区变体（zh_Hant、pt_BR……）
 
 遵循 toxee 的先例，但保持最小化：
 
-- **繁体中文。** 添加 `app_zh_Hant.arb`（`"@@locale": "zh_Hant"`），且必须是*完整*文件——
-  gen-l10n 会让它缺的任何键悄悄继承简体 `zh` 文本（§1.7），而且一致性测试本来就会拒绝不完整的文件。保留 `app_zh.arb` 作为简体文件；
-  不需要单独的 `app_zh_Hans.arb`（toxee 有一个只是作为覆盖层，而且它的完备性测试刻意排除它，
-  因为 gen-l10n 通过 `zh` 解析它）。之后解析器会把 `zh-Hant-*`、`zh-TW`、`zh-HK`、`zh-MO` 路由到
-  `zh_Hant`，其他中文都路由到 `zh`——无需改代码。`LanguageCatalog` 已把 `zh_Hant` 标为 `繁體中文`。
-  它的原生标签是 `zh-Hant`（Info.plist、
-  `InfoPlist.strings`、`locale_config.xml`）；在添加 `zh_Hant` 行之前，参考内容显示 `zh` 文本（§1.6）。
+- **繁体中文**已发布（2026-10-03），是脚本变体的现成范例。`app_zh_Hant.arb`（`"@@locale": "zh_Hant"`）
+  是*完整*文件——gen-l10n 会让它缺的任何键悄悄继承简体 `zh` 文本（§1.7），而且一致性测试本来就会拒绝
+  不完整的文件。`app_zh.arb` 仍是简体文件；没有单独的 `app_zh_Hans.arb`（toxee 有一个只是作为覆盖层，
+  而且它的完备性测试刻意排除它，因为 gen-l10n 通过 `zh` 解析它）。解析器把 `zh-Hant-*`、`zh-TW`、`zh-HK`、
+  `zh-MO` 路由到 `zh_Hant`，其他中文都路由到 `zh`，没有需要手动维护的中文列表。`LanguageCatalog` 把
+  `zh_Hant` 标为 `繁體中文`。它的原生标签是 `zh-Hant`（Info.plist、
+  `InfoPlist.strings`、`locale_config.xml`）；在添加 `zh_Hant` 行之前，参考内容显示 `zh`（简体）文本（§1.6）。
   gen-l10n 把该变体生成为子类（`s_zh.dart` 内的 `SZhHant`），只覆盖其文件中含有的键；
-  这正是不完整文件会漏出简体文本的原因。用台湾国语书写，不要用粤语口语（toxee 的测试会拒绝
-  `咗嘅唔喺哋嚟冇揀`）。
+  这正是不完整文件会漏出简体文本的原因。它以台湾国语书写（Morse 在那里写作 摩斯），不用粤语口语
+  （toxee 的测试会拒绝 `咗嘅唔喺哋嚟冇揀`）。
 - **地区变体**（`app_pt_BR.arb`、`app_en_GB.arb`）：gen-l10n 要求纯语言文件（`app_pt.arb`）
   作为父级存在。解析器遍历首选列表，对每个条目规则 3 只匹配脚本、不看地区，
   所以 `pt-BR` 设备并不保证拿到 `pt_BR` 文件（它取 `S.supportedLocales` 中第一个无脚本的 `pt*`）。
@@ -269,7 +291,8 @@ cd apps/morsecq && flutter test test/i18n test/reference
 - [ ] `apps/morsecq/lib/l10n/app_<tag>.arb` 带 `@@locale`、完整、占位符与 `other{}` 完好、`appName` 未改、无残留 `@@TODO`
 - [ ] `LanguageCatalog._names` 中有该语言的自称（适用时也加入 `isRtl`）
 - [ ] 已运行 `flutter gen-l10n`；`lib/l10n/generated/` 已提交
-- [ ] 参考内容：该语言已加入 `kReferenceLanguages`，且每个参考行都已翻译
+- [ ] 已为新语言更新 `shipped_locales_test.dart` 以及 `language_settings_tile_test.dart` 中的小屏幕选择器用例
+- [ ] 可选：参考内容——该语言已加入 `kReferenceLanguages`，且每个参考行都已翻译（否则显示英文行）
 - [ ] iOS 与 macOS 的 `Info.plist` 中已更新 `CFBundleLocalizations`
 - [ ] iOS 与 macOS 都已添加 `<tag>.lproj/InfoPlist.strings`（覆盖每个 `NS*UsageDescription`）并在两个 Xcode 工程中注册
 - [ ] `android/app/src/main/res/xml/locale_config.xml` 中已添加 `<locale android:name="<tag>"/>`

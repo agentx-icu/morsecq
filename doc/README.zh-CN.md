@@ -27,6 +27,9 @@
 
 ## 规划（方案）
 
+- [plans/2026-10-03-interface-languages.zh-CN.md](plans/2026-10-03-interface-languages.zh-CN.md) /
+  [English](plans/2026-10-03-interface-languages.md) —— 新增八种界面语言、完整 ARB
+  翻译与手机/桌面验证。
 - [plans/2026-09-30-morsecq-plan.zh-CN.md](plans/2026-09-30-morsecq-plan.zh-CN.md) /
   [English](plans/2026-09-30-morsecq-plan.md) —— 立项产品与架构规划：命名、产品定义、
   Tim2Tox 关键事实、四个方案与「B 变体」决策、训练与通信设计、里程碑、风险、多代理
