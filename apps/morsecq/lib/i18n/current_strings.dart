@@ -20,8 +20,8 @@ S currentS() => lookupSFor(currentLocale());
 Locale currentLocale() {
   final controller = LocaleController.active;
   if (controller != null) return controller.effectiveLocale;
-  return resolveSystemLocale(
-    PlatformDispatcher.instance.locale,
+  return resolveSystemLocales(
+    PlatformDispatcher.instance.locales,
     S.supportedLocales,
   );
 }

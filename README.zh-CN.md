@@ -14,7 +14,7 @@
 ## 状态
 
 **Pre-alpha。** v1 规划的全部模块已接入 App 外壳，通过仓库门禁（analyzer、复杂度、
-import guard、ARB 同步）和完整的测试金字塔（单元、控件，以及 macOS、iOS 模拟器、Android
+import guard、UI 字面量守卫）和完整的测试金字塔（单元、控件，以及 macOS、iOS 模拟器、Android
 模拟器上的真实 UI 启动测试；见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)）。
 尚无可用的发布版本，任何地方都可能发生破坏性变更。
 
@@ -102,7 +102,7 @@ v1 明确不做：语音 / 视频通话、服务器推送、多账号同时在�
 | `packages/morsecq_chat` | 在 Tim2Tox 上实现契约的 Tox 传输层（唯一允许接触 Tim2Tox / 腾讯 SDK 的包） |
 | `apps/morsecq` | Flutter App：Material 3、响应式 Learn / Chat / Groups / Reference / Me 外壳、启动门、通知、桌面外壳、l10n |
 | `third_party/tim2tox` | git 子模块（上游 `agentx-icu/tim2tox`）——永不原地修改 |
-| `tool/` | 仓库门禁（500 行复杂度守卫、import 分层守卫）、依赖引导、原生构建辅助脚本 |
+| `tool/` | 仓库门禁（500 行复杂度守卫、import 分层守卫、本地化用的 UI 字面量守卫）、依赖引导、原生构建辅助脚本 |
 | `doc/` | 文档树——见 [doc/README.zh-CN.md](doc/README.zh-CN.md) |
 
 ## 构建前提
@@ -122,6 +122,7 @@ dart pub get
 flutter analyze apps/morsecq
 dart run tool/check_complexity.dart
 dart run tool/import_guard.dart
+dart run tool/ui_literal_guard.dart
 (cd apps/morsecq && flutter test)
 (cd apps/morsecq && flutter run)
 ```

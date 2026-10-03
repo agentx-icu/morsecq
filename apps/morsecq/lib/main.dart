@@ -124,9 +124,10 @@ class MorsecqApp extends StatelessWidget {
             localizationsDelegates: S.localizationsDelegates,
             supportedLocales: S.supportedLocales,
             locale: locale,
-            // Same script/region-aware rules as LocaleController.effectiveLocale
-            // (zh-TW/HK/MO -> Traditional when shipped, unknown -> English).
-            localeResolutionCallback: LocaleController.resolve,
+            // Same rules as LocaleController.effectiveLocale and currentS():
+            // the whole preferred list in order, script/region aware
+            // (zh-TW/HK/MO -> Traditional when shipped), unknown -> English.
+            localeListResolutionCallback: LocaleController.resolve,
             debugShowCheckedModeBanner: false,
             theme: MorsecqTheme.light(style: appearance.style),
             darkTheme: MorsecqTheme.dark(style: appearance.style),

@@ -10,23 +10,28 @@ import 'locale_resolution.dart';
 /// locales the app ships (`S.supportedLocales`, i.e. the ARB files).
 ///
 /// Wire it above `MaterialApp`, pass [locale] to `MaterialApp.locale` (null
-/// = follow the system) and [resolve] to `localeResolutionCallback` so the
-/// framework, this controller and [effectiveLocale] agree on the same rules
-/// (toxee's scheme: script/region aware, English fallback). Persistence goes
+/// = follow the system) and [resolve] to `localeListResolutionCallback` so
+/// the framework, this controller and [effectiveLocale] agree on the same
+/// rules (toxee's scheme: script/region aware, the whole preferred-locale
+/// list in order, English fallback). Persistence goes
 /// through the injected [KeyValueStore] under [storageKey] as a
 /// `language[_Script]` tag, so a future `app_zh_Hant.arb` needs no migration.
 class LocaleController extends ChangeNotifier {
   /// Restores the saved choice synchronously from [store]; an unknown or
   /// unsupported saved value falls back to "follow the system".
-  LocaleController(this._store, {Locale Function()? systemLocale})
-    : _systemLocale =
-          systemLocale ?? (() => PlatformDispatcher.instance.locale),
+  ///
+  /// [systemLocales] is read live on every [effectiveLocale] call (defaults
+  /// to the OS's preferred-locale list), so an OS language change needs no
+  /// re-wiring.
+  LocaleController(this._store, {List<Locale> Function()? systemLocales})
+    : _systemLocales =
+          systemLocales ?? (() => PlatformDispatcher.instance.locales),
       _override = _restore(_store.getString(storageKey)) {
     _savedOverride = _override;
   }
 
   final KeyValueStore _store;
-  final Locale Function() _systemLocale;
+  final List<Locale> Function() _systemLocales;
 
   /// Key under which the chosen locale is persisted (as a [localeName]).
   static const String storageKey = 'i18n.locale';
@@ -52,15 +57,16 @@ class LocaleController extends ChangeNotifier {
 
   bool get followsSystem => _override == null;
 
-  /// What the UI actually renders in right now: the override, or the system
-  /// locale resolved against the shipped set.
+  /// What the UI actually renders in right now: the override, or the
+  /// system's preferred-locale list resolved against the shipped set.
   Locale get effectiveLocale =>
-      _override ?? resolveSystemLocale(_systemLocale(), supportedLocales);
+      _override ?? resolveSystemLocales(_systemLocales(), supportedLocales);
 
-  /// `MaterialApp.localeResolutionCallback`. Uses the shipped list the
+  /// `MaterialApp.localeListResolutionCallback`. Walks the whole preferred
+  /// list (see [resolveSystemLocales]) and uses the shipped list the
   /// framework passes in, so it stays correct if a test provides fewer.
-  static Locale resolve(Locale? device, Iterable<Locale> supported) =>
-      resolveSystemLocale(device ?? const Locale('en'), supported);
+  static Locale resolve(List<Locale>? preferred, Iterable<Locale> supported) =>
+      resolveSystemLocales(preferred, supported);
 
   /// Sets (and persists) the locale; null returns to the system default.
   /// A locale outside [supportedLocales] is mapped to the shipped locale for

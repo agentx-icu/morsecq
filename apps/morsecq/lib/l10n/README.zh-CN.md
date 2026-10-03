@@ -15,24 +15,36 @@
 | `lib/i18n/l10n_extension.dart` | `context.s` → `S.of(context)`；重新导出 `S` |
 | `lib/i18n/language_settings_tile.dart` | "我"页面的 `LanguageSettingsTile`（+ `showLanguageDialog`） |
 | `lib/i18n/chat_error_messages.dart` | 针对 `ChatException` 代码的 `chatErrorMessage(s, code)` / `describeChatError(s, error)` |
-| `tool/strings_to_arb.dart`（仓库根目录） | 迁移工具：`*_strings.dart` 常量 → ARB 键 |
+| `lib/i18n/current_strings.dart`、`lib/i18n/strings_resolver.dart` | 供没有 `BuildContext` 的代码使用的 `currentS()` / `StringsResolver`（见下文） |
+| `lib/notifications/**` | `notification*` 键：系统通知标题/正文、收件箱汇总复数、Android 通知频道名称、Linux 操作。发送时通过 `S Function()` 解析 |
+| `lib/desktop/**` | `desktop*` 键：托盘菜单（显示/隐藏/声音/退出）、提示复数、未读窗口标题。`DesktopShellController.updateStrings(S)` |
+| `lib/i18n/locale_resolution.dart` | `resolveSystemLocales(preferred, supported)`：按顺序遍历系统首选语言**列表**，第一个已提供的语言胜出，否则英语 |
+| `tool/ui_literal_guard.dart`（仓库根目录） | CI 门禁：`apps/morsecq/lib` 中不得硬编码用户可见文案（见下文） |
 
 ## 接线（main.dart）
 
-在 `MaterialApp` 之上提供一个 `LocaleController`（假后端用 `InMemoryKeyValueStore`，
-真实后端用 `await JsonFileKeyValueStore.open(File(...))` 或一个 `shared_preferences` 适配器），然后：
+`main()` 为所有后端（假后端或 Tox）打开同一个设置存储：位于 `<application support>/settings.json`
+的 `JsonFileKeyValueStore`；只有该文件无法打开时才回落到 `InMemoryKeyValueStore`。它被传给 `AppScope`
+（`localeStore`），由 `AppScope` 在 `MaterialApp` 之上基于它创建 `LocaleController`（没有传入存储的
+`AppScope`，例如 widget 测试中，使用内存存储）。然后：
 
 ```dart
 MaterialApp(
   localizationsDelegates: S.localizationsDelegates,
   supportedLocales: S.supportedLocales,
   locale: context.watch<LocaleController>().locale, // null = follow system
+  localeListResolutionCallback: LocaleController.resolve,
   ...
 )
 ```
 
-`locale: null` 让 Flutter 按 `supportedLocales` 解析设备语言（任何 `zh-*` → 简体中文，
-其他一切 → 英语）。
+优先级：应用内的显式选择（English / 简体中文）优先。选择"跟随系统"（`locale: null`）时，
+`LocaleController.resolve` → `resolveSystemLocales` 按顺序遍历系统首选语言**列表**，取第一个
+应用已提供的语言：`[fr-FR, zh-CN]` 得到中文，列表里没有任何已提供语言时回落到英语。在
+Android 13+ 和 iOS 上，这个系统列表已包含"按应用设置的语言"（声明于
+`android/app/src/main/res/xml/locale_config.xml` 和 Runner 的 `*.lproj/InfoPlist.strings`；
+`test/i18n/platform_locales_test.dart` 保证它们与 ARB 文件一致）。`currentS()` 对没有 context
+的代码使用同一套解析。
 
 ## 使用字符串
 
@@ -47,73 +59,75 @@ Text(context.s.statsSessions(count))          // ICU plural
 在 widget 之外（控制器、后台代码）请把 `S` 实例传进去，而不是去找 context。`S.of(context)` 在
 `MaterialApp` 之上会抛出异常，因此测试需要 pump `localizationsDelegates: S.localizationsDelegates`。
 
+### 不依赖 context 的字符串（通知、托盘、生命周期）
+
+比任何 widget 都活得久的服务接收一个 `S Function()`（默认 `currentS()`，跟随
+`LocaleController.active`——即 toxee 的 `currentAppL10n()` 方案），在需要文本时调用它，所以
+语言切换后的*下一条*通知或下一次托盘重建就是新语言，无需重新接线。`AppServices` 持有一个
+`StringsResolver`（基于该作用域 `LocaleController` 的 `ChangeNotifier`；设置变化时触发，跟随
+系统时也在系统语言变化时触发），把 `() => strings.s` 交给通知，并在启动时和每次变化时调用
+`DesktopShellController.updateStrings(strings.s)`。产品名（`appName`、`MorseCQ`）是占位符，
+从不翻译。Android 通知频道的名称和描述也会在语言切换时刷新
+（`LocalNotificationsApi.refreshStrings()` 重新创建频道；见 `lib/notifications/README.zh-CN.md`）；
+只有已经显示在屏幕上的通知保持旧语言。测试用 `lookupS(const Locale('en'))` /
+`lookupS(const Locale('zh'))` 固定语言，而不依赖宿主机的语言。
+
 ## 添加一个字符串
 
 1. 把键同时加到 `app_en.arb` **和** `app_zh.arb`。按功能区域命名空间（`chatSendHint`、
    `learnLessonOf`、`statsTitle`、`accountBackupTitle`、`referenceSearchHint`；共享字符串用
    `action*`、`nav*`、`connection*`、`messageStatus*`、`error*`、`language*`）。
-2. 给模板条目一个带 `description`（什么/在哪）的 `@key`，有占位符的话再加一个 `placeholders` 映射
+2. 给模板条目一个带 `description` 的 `@key`，有占位符的话再加一个 `placeholders` 映射
    （`{"count": {"type": "int"}}`）。计数使用 ICU 复数：
    `{count, plural, =1{1 session} other{{count} sessions}}`；中文没有复数形式，
    所以其分支通常就是 `{count, plural, other{{count} 次练习}}`（保留任何 `=0` 特例）。
+   description 是写给译者的：说明字符串**显示在哪里**、**是什么意思**
+   （`"Receive drill: button that plays the round again"`），每个占位符装的是什么、是否已预先格式化，
+   以及长度限制或需保留的术语（呼号、Q 简语、`CQ`）。不要指向源文件或类。
+   缺少 description 或为空时 `test/i18n/arb_consistency_test.dart` 会失败。翻译 ARB 不需要 `@key` 元数据。
 3. 在 `apps/morsecq` 下执行 `flutter gen-l10n`（因为 `pubspec.yaml` 有 `generate: true`，
    build/run 时也会自动运行）。提交重新生成的文件。
-4. `flutter analyze apps/morsecq` 和 `flutter test test/i18n` 必须保持通过。
+4. `flutter analyze apps/morsecq`、`flutter test test/i18n` 以及（仓库根目录下的）
+   `dart run tool/ui_literal_guard.dart` 必须保持通过。
 
-`app_zh.arb` 中使用的业余无线电 / 摩尔斯词汇——请保持一致：
+`app_zh.arb` 中使用的业余无线电 / 莫尔斯词汇——请保持一致：
 点/划 (dit/dah), 字符速度 (character speed), Farnsworth 间距, 有效速度,
 呼号 (callsign), 电键 (key), 直键 (straight key), 双桨 (paddles),
 侧音 (sidetone), 音调 (tone), 通联 / QSO, 呼叫 CQ, 报务员 (operator),
 听抄 / 抄收 (copy, receive), 发报 / 拍发 (send, key), 译码 (decoded),
 规程符号 (prosign), Q 简语 (Q-codes), CW 缩写, Koch 课程/顺序.
 
-## 从 `*_strings.dart` 文件迁移字符串
+术语规则（两种语言通用）：
 
-各功能区域把英语文本保存为 `<Area>Strings` 类的 `static const` 成员。要把它们提升到 ARB 文件，
-在仓库根目录运行：
+* **Morse** 一律译作 莫尔斯（莫尔斯电码），不用 摩尔斯——ARB 文件和平台字符串
+  （`ios/macos/Runner/zh-Hans.lproj/InfoPlist.strings`）都一样。
+* **好友 vs 联系人。** Tox 好友（通过 Tox ID 添加、会上线下线、可发请求、可删除的人）译作 好友——
+  英文 "friend" 如此，英文 "contact" 指的是好友时也如此（`errorPeerOffline`、
+  `accountEditProfileBody`）。联系人 只用于范围更广的**联系人**页面（`chatContacts`），
+  它列出好友外加"给自己的笔记"条目。
+* **速度单位。** 每分钟字数在两种语言中都写作 `WPM`（`{wpm} WPM`、`chatWpm`）。速度未知时写作
+  `-- WPM`（`learnWpmUnknown`、`listenSpeedUnknown`）。
 
-```bash
-dart run tool/strings_to_arb.dart                       # all apps/morsecq/lib/ui/**/*_strings.dart
-dart run tool/strings_to_arb.dart apps/morsecq/lib/ui/listen/listen_strings.dart
-dart run tool/strings_to_arb.dart --check               # CI: exit 1 if anything is missing
-dart run tool/strings_to_arb.dart --dry-run             # report only
-```
+## UI 字面量守卫
 
-它做的事：
+`dart run tool/ui_literal_guard.dart`（仓库根目录；CI 步骤 "UI literal guard (localisation)"）
+解析 `apps/morsecq/lib` 下的每个文件（跳过生成代码），当一个去掉插值后仍含字母的字符串字面量被直接
+传给用户可见的接收点时失败：`Text` / `SelectableText`、`TextSpan.text`、`Tooltip.message`、
+`Semantics.value`，以及 `tooltip`、`label`、`labelText`、`hintText`、`helperText`、`errorText`、
+`semanticLabel`、`title`、`subtitle`、`content` 等命名参数。`Text('$n')` 或 `'—'` 可以通过；
+`Text('Send')` 会失败。接收点表在该工具文件顶部。
 
-* `ChatStrings.sendHint = 'Type a message'` → `app_en.arb` 中的 `"chatSendHint": "Type a message"`，
-  外加 `"@chatSendHint": {"description": "From ChatStrings.sendHint (…/chat_strings.dart)"}`。
-* 只添加；从不覆盖或删除已有的键或其元数据。
-* 把 `app_zh.arb` 中缺少的每个模板键以**英语文本**加入，并附上
-  `"description": "@@TODO(l10n): translate from en — …"`。翻译该值，然后删除 `@key` 条目
-  （或替换 description）。`grep -n '@@TODO' apps/morsecq/lib/l10n/app_zh.arb` 可列出待办。
-* 跳过函数（`static String foo(int n) => …`）——请手写为 ICU 消息，参见 `learn*`/`stats*`/`reference*`
-  这些占位符键——也跳过路由/URL（`/settings/…`、`https://…`）。
-* 幂等；`test/i18n/strings_to_arb_test.dart` 中的测试覆盖了这一点。
+对确实不可翻译的内容（呼号、Q 简语、规程符号、网格定位示例），在该行末尾或单独在上一行加
+`// ui-literal-ok: <原因>`。原因必填；不再覆盖任何被标记字面量的豁免本身也会让门禁失败，所以豁免不会
+过期残留。守卫不会追踪经由数据映射、常量或辅助函数传递的文案——这些需人工审查。测试：
+`test/i18n/ui_literal_guard_test.dart`。
 
-然后执行 `flutter gen-l10n`，并把常量引用替换为 `S` 调用。
+## 迁移状态
 
-## 后续工作：仍待替换为 `S` 调用的常量
-
-2026-09-30 时存在的全部 389 个常量（加上 32 个函数字符串）都已在两个 ARB 文件中并已翻译。
-widget 仍在读取常量类；由各自的负责 agent 逐文件替换（`AccountStrings.x` → `context.s.accountX`，
-`LearnStrings.lessonOf(a, b)` → `context.s.learnLessonOf(a, b)`，……）：
-
-| 常量类 | ARB 前缀 | 引用它的文件 |
-|-------------|-----------|-------------------------|
-| `AccountStrings`（`ui/account/account_strings.dart`） | `account*` | `main.dart`（标题、占位路由）、`startup/startup_controller.dart`、`startup/startup_screens.dart`、`ui/account/{account_widgets,backup_actions,backup_wizard_page,change_password_page,connection_chip,create_identity_page,delete_identity_dialog,edit_profile_page,identity_card,password_strength,restore_backup_page,tox_id_qr_dialog,unlock_page,welcome_page}.dart`、`ui/pages/me_page.dart` |
-| `ChatStrings`（`ui/chat/chat_strings.dart`） | `chat*` | `ui/chat/{chat_layout,conversation_list,conversation_screen,conversation_tile,keying_input,message_bubble,message_input,message_status_icon,playback_settings_sheet}.dart`、`ui/contacts/{add_friend_sheet,contacts_page,friend_request_inbox,my_tox_id_sheet,qr_scan_page}.dart`、`ui/groups/{create_group_sheet,group_invites_inbox,group_list,group_members_sheet,join_group_sheet}.dart`、`ui/pages/{chat_page,groups_page}.dart` |
-| `LearnStrings`（`ui/learn/learn_strings.dart`） | `learn*` | `ui/learn/{learn_home,learn_home_widgets}.dart`、`ui/learn/receive/{answer_keypad,receive_drill_screen,receive_summary_view,round_result_view}.dart`、`ui/learn/review/review_screen.dart`、`ui/learn/send/{keyer_legend,send_live_view,send_practice_screen,send_result_view,send_tips}.dart`、`ui/learn/settings/training_settings_screen.dart` |
-| `StatsStrings`（`ui/stats/stats_strings.dart`） | `stats*` | `ui/stats/**`（仪表盘、磁贴、趋势图、字符网格、热力图、日历） |
-| `ReferenceStrings`（`ui/reference/reference_strings.dart`） | `reference*` | `ui/reference/**`（参考页、翻译器、键盘） |
-| 硬编码的页面标题 | `nav*` | `ui/pages/learn_page.dart`（`'Learn'`）、`ui/pages/me_page.dart`（`'Me'`）、`ui/shell/app_shell.dart`（`kShellDestinations` 标签——把它们改成 `S` 的函数，或在 `build` 中解析） |
-| 硬编码的页面描述 | —（尚未进入 ARB） | `ui/pages/{learn,chat,groups,me}_page.dart` 的 `description` 常量 |
-
-替换过程中值得合并的重复项：`accountCancel`/`chatCancel` → `actionCancel`；
-`accountCopy`/`chatCopy` → `actionCopy`；`accountRetry`/`statsRetry` → `actionRetry`；
-`accountConnection*`/`chatOnline`/`chatOffline` → `connection*`；`chatStatus*` → `messageStatus*`；
-`accountWrongPassword` → `errorWrongPassword`；`chatError`/`accountGenericError` → `errorUnknown`；
-`learnLearnTitle`/`chatChatTitle`/`chatGroupsTitle`/`accountMeTitle` → `nav*`。
-一旦某个常量类不再有任何引用，就删除它，ARB 保留这些键（再没有东西依赖那个常量文件了）。
-
-另外仍待处理：本轮运行时 `listen_strings.dart`（音频译码器 UI）尚不存在——它落地后请运行迁移工具。
+从旧的 `*_strings.dart` 常量类到 ARB 的迁移已经完成；这些类和 `tool/strings_to_arb.dart` 都已删除。
+通知标题与正文、桌面托盘和窗口标题都通过 `currentS()` / `StringsResolver` 解析（见"使用字符串"下的
+"不依赖 context 的字符串"）；参考资料*内容*（Q 简语 / 缩写 / 规程符号释义、助记）是按语言代码索引的数据，
+位于各参考表中（`ui/reference/reference_qcodes.dart`、`reference_abbreviations.dart`、
+`reference_catalog.dart`、`reference_mnemonics.dart`），不在 ARB 中；
+`reference_localized_text.dart` 只包含查找辅助函数（`referenceLanguageFor`、`localizedReferenceText`、标签分隔符）；
+`reference_catalog.dart` 中的 `ReferenceEntry.meaning` / `mnemonic` 调用它们。

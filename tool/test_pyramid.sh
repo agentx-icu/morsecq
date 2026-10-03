@@ -3,7 +3,7 @@
 #
 #   tool/test_pyramid.sh [--level gates|unit|widget|e2e|all] [--device <id>] [--help]
 #
-#   gates   analyzer (zero issues), complexity, import guard, ARB sync
+#   gates   analyzer (zero issues), complexity, import guard, UI literal guard
 #   unit    packages/*  — pure-Dart engines and the chat contract/transport
 #   widget  apps/morsecq/test — hermetic widget tests (fake backend, no host)
 #   e2e     apps/morsecq/integration_test on a real device/desktop window:
@@ -51,9 +51,10 @@ level_gates() {
     [[ -f "$dir/pubspec.yaml" ]] || continue
     run_step "analyze $dir" flutter analyze "$dir"
   done
+  run_step "analyze tool" dart analyze --fatal-infos tool
   run_step "complexity gate" dart run tool/check_complexity.dart
   run_step "import guard" dart run tool/import_guard.dart
-  run_step "ARB sync" dart run tool/strings_to_arb.dart --check
+  run_step "UI literal guard" dart run tool/ui_literal_guard.dart
 }
 
 level_unit() {

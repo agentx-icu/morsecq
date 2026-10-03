@@ -76,8 +76,8 @@
 - [lib/desktop](../apps/morsecq/lib/desktop/README.md) —— macOS / Windows / Linux 的
   窗口管理、系统托盘与快捷键（移动端为 no-op）。
 - [lib/l10n](../apps/morsecq/lib/l10n/README.md) —— gen-l10n 配置、ARB 文件
-  （`app_en.arb` 模板、`app_zh.arb`）、`S` 类与 `strings_to_arb` 迁移工具。
-- [doc/i18n/ADDING_A_LANGUAGE.zh-CN.md](./i18n/ADDING_A_LANGUAGE.zh-CN.md) —— UI 多语言方案说明与新增语言步骤（ARB、语言目录、plist）。
+  （`app_en.arb` 模板、`app_zh.arb`）、`S` 类、译者词表与 UI 字面量守卫。
+- [doc/i18n/ADDING_A_LANGUAGE.zh-CN.md](./i18n/ADDING_A_LANGUAGE.zh-CN.md) —— UI 多语言方案说明与新增语言步骤（ARB、语言目录、参考内容行、平台语言清单）。
 
 ## 跨项目联动
 

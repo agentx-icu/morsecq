@@ -37,8 +37,8 @@ void main() {
       expect(
         enKeys.difference(keys),
         isEmpty,
-        reason: 'keys missing from $file — run '
-            '`dart run tool/strings_to_arb.dart` from the repo root',
+        reason: 'keys missing from $file — translate every key of '
+            'app_en.arb in $file',
       );
     });
   });
@@ -95,6 +95,32 @@ void main() {
         );
       }
     });
+  });
+
+  test('every template message has a translator description', () {
+    for (final key in _messageKeys(en)) {
+      final meta = en['@$key'];
+      expect(meta, isA<Map<String, Object?>>(),
+          reason: 'app_en.arb has no "@$key" entry');
+      final description = (meta as Map<String, Object?>)['description'];
+      expect(
+        description is String && description.trim().isNotEmpty,
+        isTrue,
+        reason: '"@$key" needs a description saying where the string is '
+            'shown and what it means',
+      );
+    }
+  });
+
+  test('no template description points at the deleted *Strings classes', () {
+    for (final key in _messageKeys(en)) {
+      final meta = en['@$key'];
+      if (meta is! Map) continue;
+      final description = meta['description'];
+      if (description is! String) continue;
+      expect(description, isNot(contains('_strings.dart')), reason: key);
+      expect(description, isNot(contains('Strings.')), reason: key);
+    }
   });
 
   test('the nav destinations and app name exist', () {

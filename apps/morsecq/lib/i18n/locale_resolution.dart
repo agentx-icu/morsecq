@@ -1,7 +1,8 @@
 import 'dart:ui' show Locale;
 
-/// Locale resolution shared by `MaterialApp.localeResolutionCallback`, the
-/// `LocaleController` and the context-free `currentS()`.
+/// Locale resolution shared by `MaterialApp.localeListResolutionCallback`,
+/// the `LocaleController` and the context-free `currentS()` (all through
+/// [resolveSystemLocales]).
 ///
 /// Ported from toxee (`lib/util/locale_controller.dart`) and generalised so
 /// the supported set is data: whatever ARB files ship (`S.supportedLocales`).
@@ -27,9 +28,9 @@ Locale resolveSystemLocale(
 
   if (system.languageCode == 'zh') {
     const hantRegions = {'TW', 'HK', 'MO'};
-    final wantsHant = system.scriptCode == 'Hant' ||
-        (system.scriptCode == null &&
-            hantRegions.contains(system.countryCode));
+    final wantsHant =
+        system.scriptCode == 'Hant' ||
+        (system.scriptCode == null && hantRegions.contains(system.countryCode));
     final preferred = wantsHant ? 'Hant' : 'Hans';
     return _withScript(candidates, preferred) ??
         _withScript(candidates, null) ??
@@ -94,4 +95,27 @@ Locale? supportedLocaleFor(Locale candidate, Iterable<Locale> supported) {
     fallback: const Locale('und'),
   );
   return resolved.languageCode == 'und' ? null : resolved;
+}
+
+/// Resolves the OS's whole preferred-locale list (most preferred first)
+/// against [supported]: the first preference that maps to a shipped locale
+/// (by [supportedLocaleFor]'s script/region rules) wins, so a user who lists
+/// `[fr-FR, zh-CN]` gets Chinese rather than English. Only when no entry
+/// matches — or the list is null/empty — does [fallback] apply.
+///
+/// The single entry for `MaterialApp.localeListResolutionCallback`,
+/// `LocaleController.effectiveLocale` and `currentLocale()`, so all three
+/// agree.
+Locale resolveSystemLocales(
+  List<Locale>? preferred,
+  Iterable<Locale> supported, {
+  Locale fallback = const Locale('en'),
+}) {
+  if (preferred != null) {
+    for (final locale in preferred) {
+      final match = supportedLocaleFor(locale, supported);
+      if (match != null) return match;
+    }
+  }
+  return fallback;
 }

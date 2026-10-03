@@ -4,10 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 
+import 'listen_failure.dart';
 import 'listen_settings.dart';
 import 'pcm_source.dart';
 
-enum ListenStatus { idle, starting, listening, permissionDenied, failed }
+export 'listen_failure.dart';
+
+/// [failed] covers every reason capture is unavailable, permission included;
+/// [ListenController.failure] says which.
+enum ListenStatus { idle, starting, listening, failed }
 
 /// Per-chunk meter state, kept out of the main notifier so only the meter
 /// repaints at audio-chunk rate.
@@ -62,8 +67,15 @@ final class ListenController extends ChangeNotifier {
   StreamSubscription<DecodeEvent>? _eventSub;
   StreamSubscription<Uint8List>? _pcmSub;
   Future<void>? _stopping;
+
+  /// Bumped by every [start] and [stop]; a start attempt whose number is no
+  /// longer current must not touch state when one of its awaits resumes.
+  int _attempt = 0;
+
+  /// Number of the most recent [start] attempt.
+  int _lastStartAttempt = 0;
   ListenStatus _status = ListenStatus.idle;
-  String? _errorMessage;
+  ListenFailure? _failure;
   String _history = '';
   double _shownHz = 0;
   bool _shownLocked = false;
@@ -74,8 +86,9 @@ final class ListenController extends ChangeNotifier {
   bool get isListening => _status == ListenStatus.listening;
   bool get isBusy => _status == ListenStatus.starting;
 
-  /// Platform error text for [ListenStatus.failed].
-  String? get errorMessage => _errorMessage;
+  /// Why capture failed; non-null exactly when [status] is
+  /// [ListenStatus.failed].
+  ListenFailure? get failure => _failure;
 
   /// True after a lifecycle stop until the next start or clear.
   bool get stoppedInBackground => _stoppedInBackground;
@@ -102,33 +115,70 @@ final class ListenController extends ChangeNotifier {
 
   Future<void> start() async {
     if (_disposed || isBusy || isListening) return;
+    final int attempt = _lastStartAttempt = ++_attempt;
     _stoppedInBackground = false;
-    _errorMessage = null;
+    _failure = null;
     _setStatus(ListenStatus.starting);
+    final bool granted;
     try {
-      final granted = await _source.hasPermission();
-      if (_disposed) return;
-      if (!granted) {
-        _setStatus(ListenStatus.permissionDenied);
-        return;
-      }
-      final stream = await _source.start(
-        sampleRate: sampleRate,
-        channels: 1,
+      granted = await _source.hasPermission();
+    } catch (error, stack) {
+      if (_isStale(attempt)) return;
+      // Nothing was started, so there is nothing to stop.
+      _fail(ListenFailureKind.startFailed, error, stack, release: false);
+      return;
+    }
+    if (_isStale(attempt)) return;
+    if (!granted) {
+      _fail(ListenFailureKind.permissionDenied, null, null, release: false);
+      return;
+    }
+    final Stream<Uint8List> stream;
+    try {
+      stream = await _source.start(sampleRate: sampleRate, channels: 1);
+    } catch (error, stack) {
+      if (_isStale(attempt)) return;
+      // Ask for the device list only now: it costs a platform round trip,
+      // and "empty" is the one signal that reliably means "no microphone".
+      final bool? hasDevice = await _hasInputDevice();
+      if (_isStale(attempt)) return;
+      _fail(
+        hasDevice == false
+            ? ListenFailureKind.noInputDevice
+            : ListenFailureKind.startFailed,
+        error,
+        stack,
       );
-      if (_disposed) {
-        unawaited(_source.stop());
-        return;
+      return;
+    }
+    if (_isStale(attempt)) {
+      // stop() or dispose() ran while the platform was starting. Release
+      // what this attempt opened, unless a newer start now owns the source.
+      if (_disposed || _lastStartAttempt == attempt) {
+        unawaited(_source.stop().catchError((Object _) {}));
       }
-      _pcmSub = stream.listen(
-        _onChunk,
-        onError: _fail,
-        onDone: _onStreamDone,
-        cancelOnError: true,
-      );
-      _setStatus(ListenStatus.listening);
+      return;
+    }
+    _pcmSub = stream.listen(
+      _onChunk,
+      onError: (Object error, StackTrace stack) =>
+          _fail(ListenFailureKind.streamFailed, error, stack),
+      onDone: _onStreamDone,
+      cancelOnError: true,
+    );
+    _setStatus(ListenStatus.listening);
+  }
+
+  bool _isStale(int attempt) => _disposed || attempt != _attempt;
+
+  /// [PcmSource.hasInputDevice] must not throw, but a misbehaving source
+  /// must not turn a start failure into an uncaught error either.
+  Future<bool?> _hasInputDevice() async {
+    try {
+      return await _source.hasInputDevice();
     } catch (error) {
-      _fail(error);
+      debugPrint('[ListenController] hasInputDevice threw: $error');
+      return null;
     }
   }
 
@@ -141,6 +191,7 @@ final class ListenController extends ChangeNotifier {
       _stopping ??= _stop(fromBackground).whenComplete(() => _stopping = null);
 
   Future<void> _stop(bool fromBackground) async {
+    _attempt++; // Invalidates a start still waiting on the platform.
     final sub = _pcmSub;
     _pcmSub = null;
     // Not awaited: cancelling is synchronous as far as delivery goes (no
@@ -186,13 +237,30 @@ final class ListenController extends ChangeNotifier {
     _setStatus(ListenStatus.idle);
   }
 
-  void _fail(Object error) {
+  /// Records a typed failure. The platform's [error] text is logged for
+  /// diagnostics and kept in [ListenFailure.detail]; it is never shown.
+  /// [release] stops the source, for failures after `start` was called.
+  void _fail(
+    ListenFailureKind kind,
+    Object? error,
+    StackTrace? stack, {
+    bool release = true,
+  }) {
     if (_disposed) return;
-    _errorMessage = error.toString();
-    final sub = _pcmSub;
-    _pcmSub = null;
-    unawaited(sub?.cancel());
-    unawaited(_source.stop().catchError((Object _) {}));
+    final String? detail = error?.toString();
+    if (detail != null) {
+      debugPrint(
+        '[ListenController] ${kind.name}: $detail'
+        '${stack == null ? '' : '\n$stack'}',
+      );
+    }
+    _failure = ListenFailure(kind, detail: detail);
+    if (release) {
+      final sub = _pcmSub;
+      _pcmSub = null;
+      unawaited(sub?.cancel());
+      unawaited(_source.stop().catchError((Object _) {}));
+    }
     _setStatus(ListenStatus.failed);
   }
 

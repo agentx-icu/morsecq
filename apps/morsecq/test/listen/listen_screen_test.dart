@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_dsp/testing.dart';
 import 'package:morsecq/l10n/generated/s.dart';
+import 'package:morsecq/ui/listen/listen_controller.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
+import 'package:morsecq/ui/listen/listen_widgets.dart';
 import 'package:morsecq/ui/listen/listen_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -11,11 +13,13 @@ import 'fake_pcm_source.dart';
 
 /// Strings of the locale the harness pins.
 final S en = lookupS(const Locale('en'));
+final S zh = lookupS(const Locale('zh'));
 
 Future<void> _pump(
   WidgetTester tester,
   FakePcmSource source, {
   ListenPreferences? preferences,
+  Locale locale = const Locale('en'),
 }) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1.0;
@@ -25,7 +29,7 @@ Future<void> _pump(
     MaterialApp(
       localizationsDelegates: S.localizationsDelegates,
       supportedLocales: S.supportedLocales,
-      locale: const Locale('en'),
+      locale: locale,
       home: preferences == null
           ? ListenScreen(source: source)
           : ChangeNotifierProvider<ListenPreferences>.value(
@@ -41,6 +45,9 @@ String _decodedText(WidgetTester tester) => tester
     .widget<SelectableText>(find.byKey(ListenScreen.decodedTextKey))
     .data!
     .trim();
+
+/// English platform text that must never reach the UI.
+const String _rawDetail = 'No input device: AVAudioSession error -50';
 
 void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
   final pcm = SyntheticMorse(snrDb: 20).renderText(text, wpm: wpm);
@@ -124,14 +131,88 @@ void main() {
     expect(source.isStreaming, isTrue);
   });
 
-  testWidgets('reports a missing microphone without crashing', (tester) async {
-    final source = FakePcmSource(startError: StateError('No input device'));
-    await _pump(tester, source);
-    await tester.tap(find.text(en.listenStart));
-    await tester.pumpAndSettle();
-    expect(find.text(en.listenNoInput), findsOneWidget);
-    expect(source.isStreaming, isFalse);
-    expect(find.text(en.listenStart), findsOneWidget);
+  for (final (Locale locale, S s) in <(Locale, S)>[
+    (const Locale('en'), en),
+    (const Locale('zh'), zh),
+  ]) {
+    testWidgets('reports a missing microphone without crashing ($locale)', (
+      tester,
+    ) async {
+      final source = FakePcmSource(
+        startError: StateError(_rawDetail),
+        inputDevicePresent: false,
+      );
+      await _pump(tester, source, locale: locale);
+      await tester.tap(find.text(s.listenStart));
+      await tester.pumpAndSettle();
+      expect(find.text(s.listenNoInput), findsOneWidget);
+      expect(find.textContaining(_rawDetail), findsNothing);
+      expect(source.isStreaming, isFalse);
+      expect(find.text(s.listenStart), findsOneWidget);
+    });
+
+    testWidgets('a start failure shows only the localised message ($locale)', (
+      tester,
+    ) async {
+      // Even text that looks like "no microphone" is not parsed.
+      final source = FakePcmSource(startError: StateError(_rawDetail));
+      await _pump(tester, source, locale: locale);
+      await tester.tap(find.text(s.listenStart));
+      await tester.pumpAndSettle();
+      expect(find.text(s.listenStartFailed), findsOneWidget);
+      expect(find.text(s.listenNoInput), findsNothing);
+      expect(find.textContaining(_rawDetail), findsNothing);
+      expect(find.text(s.listenPermissionRetry), findsOneWidget);
+    });
+
+    testWidgets('a permission query error is a start failure ($locale)', (
+      tester,
+    ) async {
+      final source = FakePcmSource(permissionError: StateError(_rawDetail));
+      await _pump(tester, source, locale: locale);
+      await tester.tap(find.text(s.listenStart));
+      await tester.pumpAndSettle();
+      expect(find.text(s.listenStartFailed), findsOneWidget);
+      expect(find.text(s.listenPermissionDenied), findsNothing);
+      expect(find.textContaining(_rawDetail), findsNothing);
+    });
+
+    testWidgets('a stream error mid-capture is reported ($locale)', (
+      tester,
+    ) async {
+      final source = FakePcmSource();
+      await _pump(tester, source, locale: locale);
+      await tester.tap(find.text(s.listenStart));
+      await tester.pumpAndSettle();
+      source.failStream(StateError(_rawDetail));
+      await tester.pumpAndSettle();
+      expect(find.text(s.listenStreamFailed), findsOneWidget);
+      expect(find.text(s.listenStartFailed), findsNothing);
+      expect(find.textContaining(_rawDetail), findsNothing);
+      expect(source.isStreaming, isFalse);
+      expect(find.text(s.listenStart), findsOneWidget);
+    });
+  }
+
+  test('every failure kind maps to a localised string', () {
+    for (final s in <S>[en, zh]) {
+      expect(
+        ListenStatusBanner.failureText(s, ListenFailureKind.permissionDenied),
+        s.listenPermissionDenied,
+      );
+      expect(
+        ListenStatusBanner.failureText(s, ListenFailureKind.noInputDevice),
+        s.listenNoInput,
+      );
+      expect(
+        ListenStatusBanner.failureText(s, ListenFailureKind.startFailed),
+        s.listenStartFailed,
+      );
+      expect(
+        ListenStatusBanner.failureText(s, ListenFailureKind.streamFailed),
+        s.listenStreamFailed,
+      );
+    }
   });
 
   testWidgets('clear empties the text and copy puts it on the clipboard', (

@@ -160,6 +160,7 @@ class _BandRow extends StatelessWidget {
             width: 56,
             child: Text(band.name, style: theme.textTheme.titleSmall),
           ),
+          // ui-literal-ok: SI unit symbol MHz, written the same in every locale
           Text('${formatMhz(band.lowerMhz)} – ${formatMhz(band.upperMhz)} MHz'),
           if (qrp != null)
             Text(

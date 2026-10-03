@@ -102,7 +102,7 @@ class SZh extends S {
   String get errorWrongPassword => '密码错误，请重试。';
 
   @override
-  String get errorPeerOffline => '该联系人离线。Tox 没有服务器，消息会等到对方上线后再送达。';
+  String get errorPeerOffline => '该好友离线。Tox 没有服务器，消息会等到对方上线后再送达。';
 
   @override
   String get errorInvalidToxId => '这不是有效的 Tox ID（应为 76 位十六进制字符）。';
@@ -127,6 +127,9 @@ class SZh extends S {
 
   @override
   String get languageSystemDefault => '跟随系统';
+
+  @override
+  String get languageSaveFailed => '无法保存语言设置，请重试。';
 
   @override
   String learnLessonOf(int lesson, int total) {
@@ -211,7 +214,7 @@ class SZh extends S {
 
   @override
   String learnWpmValue(String wpm) {
-    return '$wpm wpm';
+    return '$wpm WPM';
   }
 
   @override
@@ -542,7 +545,7 @@ class SZh extends S {
   String get accountBackupTitle => '现在就备份你的身份';
 
   @override
-  String get accountBackupBody => '你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：联系人不会认出新的身份，训练进度也会丢失。';
+  String get accountBackupBody => '你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：好友不会认出新的身份，训练进度也会丢失。';
 
   @override
   String get accountBackupWhatIsInside => '备份文件包含加密后的身份和你的训练进度。请把它保存在本机以外的安全位置。';
@@ -629,7 +632,7 @@ class SZh extends S {
   String get accountEditProfile => '编辑资料';
 
   @override
-  String get accountEditProfileBody => '会显示给 Tox 网络上的联系人。';
+  String get accountEditProfileBody => '会显示给 Tox 网络上的好友。';
 
   @override
   String get accountSetPassword => '设置密码';
@@ -1792,10 +1795,10 @@ class SZh extends S {
   String get listenDecoded => '解码结果';
 
   @override
-  String get listenEmptyHint => '把麦克风对准莫斯电码音，解码文本会显示在这里。';
+  String get listenEmptyHint => '把麦克风对准莫尔斯电码音，解码文本会显示在这里。';
 
   @override
-  String get listenIdleHint => '点击「开始」以收听莫斯电码音。';
+  String get listenIdleHint => '点击「开始」以收听莫尔斯电码音。';
 
   @override
   String get listenPending => '接收中';
@@ -1858,6 +1861,9 @@ class SZh extends S {
   String get listenNoInput => '未找到麦克风。请连接后重试。';
 
   @override
+  String get listenStreamFailed => '麦克风意外中断，请重试。';
+
+  @override
   String listenWpmValue(int wpm) {
     return '$wpm WPM';
   }
@@ -1881,7 +1887,7 @@ class SZh extends S {
   String get listenStoppedInBackground => '应用进入后台，已停止收听。';
 
   @override
-  String get learnWpmUnknown => '- wpm';
+  String get learnWpmUnknown => '-- WPM';
 
   @override
   String get learnTipDitTooLongTitle => '点太长';
@@ -1917,7 +1923,7 @@ class SZh extends S {
   String get notificationChannelMessages => '消息';
 
   @override
-  String get notificationChannelMessagesDescription => '来自好友和群组的新摩尔斯电码消息';
+  String get notificationChannelMessagesDescription => '来自好友和群组的新莫尔斯电码消息';
 
   @override
   String get notificationChannelFriendRequests => '好友请求';

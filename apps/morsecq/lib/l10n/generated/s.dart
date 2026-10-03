@@ -167,61 +167,61 @@ abstract class S {
   /// **'Offline: not connected to the Tox network. Messages will be sent when you are back online.'**
   String get shellOfflineBanner;
 
-  /// No description provided for @actionOk.
+  /// Generic dialog button that acknowledges and closes a message (currently unused; keep short)
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get actionOk;
 
-  /// No description provided for @actionCancel.
+  /// Generic button that dismisses a dialog or sheet without changing anything (e.g. delete-identity dialog, chat layout)
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get actionCancel;
 
-  /// No description provided for @actionSave.
+  /// Generic button that saves a form (edit profile, change password pages)
   ///
   /// In en, this message translates to:
   /// **'Save'**
   String get actionSave;
 
-  /// No description provided for @actionDelete.
+  /// Generic destructive button that deletes an item (currently unused; keep short)
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get actionDelete;
 
-  /// No description provided for @actionCopy.
+  /// Button that copies the user's Tox ID to the clipboard (My Tox ID sheet, Tox ID QR dialog)
   ///
   /// In en, this message translates to:
   /// **'Copy'**
   String get actionCopy;
 
-  /// No description provided for @actionShare.
+  /// Generic button that opens the system share sheet (currently unused; keep short)
   ///
   /// In en, this message translates to:
   /// **'Share'**
   String get actionShare;
 
-  /// No description provided for @actionRetry.
+  /// Button on the startup error screen that retries opening the identity
   ///
   /// In en, this message translates to:
   /// **'Retry'**
   String get actionRetry;
 
-  /// No description provided for @actionClose.
+  /// Generic button that closes a dialog (Tox ID QR dialog, language picker)
   ///
   /// In en, this message translates to:
   /// **'Close'**
   String get actionClose;
 
-  /// No description provided for @actionSearch.
+  /// Generic search action label (currently unused; keep short)
   ///
   /// In en, this message translates to:
   /// **'Search'**
   String get actionSearch;
 
-  /// No description provided for @actionSettings.
+  /// Generic settings action label (currently unused; keep short)
   ///
   /// In en, this message translates to:
   /// **'Settings'**
@@ -257,19 +257,19 @@ abstract class S {
   /// **'Tox has no server: the message is delivered when the peer comes online.'**
   String get messageStatusPendingDetail;
 
-  /// No description provided for @messageStatusSending.
+  /// Chat: tooltip/semantics of the status icon on an outgoing message that is being sent
   ///
   /// In en, this message translates to:
   /// **'Sending'**
   String get messageStatusSending;
 
-  /// No description provided for @messageStatusSent.
+  /// Chat: tooltip/semantics of the status icon on an outgoing message that has left the send queue. It does not confirm the peer received it (Tox reports no separate failure here), so avoid words like 'delivered' or 'read'
   ///
   /// In en, this message translates to:
   /// **'Sent'**
   String get messageStatusSent;
 
-  /// No description provided for @messageStatusFailed.
+  /// Chat: tooltip/semantics of the status icon on an outgoing message that could not be delivered
   ///
   /// In en, this message translates to:
   /// **'Failed to send'**
@@ -335,247 +335,253 @@ abstract class S {
   /// **'System default'**
   String get languageSystemDefault;
 
-  /// From LearnStrings.lessonOf (Koch lesson progress)
+  /// Inline error inside the language dialog when persisting the chosen language failed (the previous choice is kept and the dialog stays open)
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the language setting. Try again.'**
+  String get languageSaveFailed;
+
+  /// Learn home, Koch lesson card: which lesson the user is on out of the whole course (e.g. 'Lesson 4 of 42'); also used in the appearance style preview
   ///
   /// In en, this message translates to:
   /// **'Lesson {lesson} of {total}'**
   String learnLessonOf(int lesson, int total);
 
-  /// From LearnStrings.charsLearned
+  /// Learn home, Koch lesson card: how many Morse characters the user has unlocked so far
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 character learned} other{{count} characters learned}}'**
   String learnCharsLearned(int count);
 
-  /// From LearnStrings.dailyGoalProgress (characters copied today vs goal)
+  /// Learn home, 'Today' card: characters practised today (receive and send practice both count) versus the daily goal (e.g. '120 / 200 chars')
   ///
   /// In en, this message translates to:
   /// **'{done} / {goal} chars'**
   String learnDailyGoalProgress(int done, int goal);
 
-  /// From LearnStrings.streakDays
+  /// Learn home, 'Today' card: number of consecutive days with practice
   ///
   /// In en, this message translates to:
   /// **'{days, plural, =1{1 day streak} other{{days} day streak}}'**
   String learnStreakDays(int days);
 
-  /// From LearnStrings.reviewDueCount (spaced-repetition characters due)
+  /// Learn home: trailing count on the 'Review due characters' button — how many spaced-repetition characters are due for review
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =0{Nothing due} =1{1 due} other{{count} due}}'**
   String learnReviewDueCount(int count);
 
-  /// From LearnStrings.roundScore
+  /// Receive drill: result line for any round that was not a perfect copy (including one where every sent character was right but extra characters were typed); correct and total count characters
   ///
   /// In en, this message translates to:
   /// **'{correct} of {total} correct'**
   String learnRoundScore(int correct, int total);
 
-  /// From LearnStrings.roundOf
+  /// Receive drill: header showing the number of the current round (1-based)
   ///
   /// In en, this message translates to:
   /// **'Round {round}'**
   String learnRoundOf(int round);
 
-  /// From LearnStrings.accuracyPercent; percent is already rounded (0-100)
+  /// A percentage; percent is already rounded (0-100). Used for the daily-goal completion inside the ring on the Learn home 'Today' card, and for accuracy in receive/send results and their per-character list
   ///
   /// In en, this message translates to:
   /// **'{percent}%'**
   String learnAccuracyPercent(int percent);
 
-  /// From LearnStrings.charsSent
+  /// Receive drill session summary: how many characters were played to the user in the session
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 character sent} other{{count} characters sent}}'**
   String learnCharsSent(int count);
 
-  /// From LearnStrings.lessonUnlocked
+  /// Receive drill session summary: verdict when the lesson was passed and a new Koch character was unlocked; {char} is that character
   ///
   /// In en, this message translates to:
   /// **'Next character unlocked: {char}'**
   String learnLessonUnlocked(String char);
 
-  /// From LearnStrings.confusedAs when nothing was answered
+  /// Receive drill: confusion chip when the user typed nothing for the sent character {target}
   ///
   /// In en, this message translates to:
   /// **'{target} missed'**
   String learnConfusedMissed(String target);
 
-  /// From LearnStrings.confusedAs when a wrong character was answered
+  /// Receive drill: confusion chip when the user typed {answered} for the sent character {target}
   ///
   /// In en, this message translates to:
   /// **'{target} heard as {answered}'**
   String learnConfusedAs(String target, String answered);
 
-  /// From LearnStrings.wpm; wpm is pre-formatted (e.g. 18)
+  /// Training settings and send-practice tips: a speed in words per minute; wpm is pre-formatted (e.g. 18).
   ///
   /// In en, this message translates to:
-  /// **'{wpm} wpm'**
+  /// **'{wpm} WPM'**
   String learnWpmValue(String wpm);
 
-  /// From LearnStrings.hz; hz is pre-formatted (e.g. 600)
+  /// Training settings: the sidetone pitch in hertz; hz is pre-formatted (e.g. 600)
   ///
   /// In en, this message translates to:
   /// **'{hz} Hz'**
   String learnHzValue(String hz);
 
-  /// From LearnStrings.charsCount (session length)
+  /// Training settings: the session length in characters (slider value and label)
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 character} other{{count} characters}}'**
   String learnCharsCount(int count);
 
-  /// From StatsStrings.lessonOf
+  /// Statistics overview, 'Koch lesson' tile: current lesson out of the total (e.g. '4 / 42')
   ///
   /// In en, this message translates to:
   /// **'{lesson} / {total}'**
   String statsLessonOf(int lesson, int total);
 
-  /// From StatsStrings.charsLearned
+  /// Statistics overview, 'Koch lesson' tile: detail line with the number of unlocked characters
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 character learned} other{{count} characters learned}}'**
   String statsCharsLearned(int count);
 
-  /// From StatsStrings.percent; percent is pre-formatted (e.g. 92.5)
+  /// Statistics: a percentage (accuracy tiles, chart axis ticks); percent is pre-formatted (e.g. 92.5)
   ///
   /// In en, this message translates to:
   /// **'{percent}%'**
   String statsPercent(String percent);
 
-  /// From StatsStrings.charsCopied
+  /// Statistics overview, 'Practice' tile: total characters copied across all sessions
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 char copied} other{{count} chars copied}}'**
   String statsCharsCopied(int count);
 
-  /// From StatsStrings.sessions
+  /// Statistics: number of practice sessions (overview 'Practice' tile, statistics summary card)
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 session} other{{count} sessions}}'**
   String statsSessions(int count);
 
-  /// From StatsStrings.days
+  /// Statistics: the current streak length in days ('Streak' tile)
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 day} other{{count} days}}'**
   String statsDays(int count);
 
-  /// From StatsStrings.bestStreak
+  /// Statistics, 'Streak' tile: detail line with the longest streak ever reached
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{best 1 day} other{best {count} days}}'**
   String statsBestStreak(int count);
 
-  /// From StatsStrings.goalProgress
+  /// Statistics, 'Daily goal' tile: characters practised today (receive and send practice both count) versus the daily goal
   ///
   /// In en, this message translates to:
   /// **'{done} / {goal} chars'**
   String statsGoalProgress(int done, int goal);
 
-  /// From StatsStrings.goalRemaining
+  /// Statistics, 'Daily goal' tile: how many more characters must be practised to reach today's goal
   ///
   /// In en, this message translates to:
   /// **'{remaining, plural, =1{1 char to go} other{{remaining} chars to go}}'**
   String statsGoalRemaining(int remaining);
 
-  /// From StatsStrings.trendSubtitle
+  /// Statistics, accuracy trend chart: subtitle saying how many recent sessions are plotted
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{Last session} other{Last {count} sessions}}'**
   String statsTrendSubtitle(int count);
 
-  /// From StatsStrings.tooltipSession
+  /// Statistics, accuracy trend chart: tooltip heading for a tapped point — which session out of those plotted
   ///
   /// In en, this message translates to:
   /// **'Session {index} of {total}'**
   String statsTooltipSession(int index, int total);
 
-  /// From StatsStrings.tooltipCopied
+  /// Statistics, accuracy trend chart: tooltip line with correct characters out of characters attempted in that session (copied for a receive session, keyed for a send session)
   ///
   /// In en, this message translates to:
   /// **'{correct} / {total} correct'**
   String statsTooltipCopied(int correct, int total);
 
-  /// From StatsStrings.tooltipLesson
+  /// Statistics, accuracy trend chart: tooltip line with the Koch lesson the session belonged to
   ///
   /// In en, this message translates to:
   /// **'Lesson {lesson}'**
   String statsTooltipLesson(int lesson);
 
-  /// From StatsStrings.attempts
+  /// Statistics, character grid: semantics label giving how many times a character was played
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 attempt} other{{count} attempts}}'**
   String statsAttempts(int count);
 
-  /// From StatsStrings.correctOf
+  /// Statistics, character detail dialog: how often the character was copied correctly out of all attempts
   ///
   /// In en, this message translates to:
   /// **'{correct} of {attempts} correct'**
   String statsCorrectOf(int correct, int attempts);
 
-  /// From StatsStrings.lessonIntroduced
+  /// Statistics, character detail dialog: the Koch lesson in which this character was introduced
   ///
   /// In en, this message translates to:
   /// **'Introduced in lesson {lesson}'**
   String statsLessonIntroduced(int lesson);
 
-  /// From StatsStrings.srsBox (Leitner box)
+  /// Statistics, character detail dialog: the character's Leitner box in spaced repetition (e.g. 'Box 2 of 5')
   ///
   /// In en, this message translates to:
   /// **'Box {box} of {maxBox}'**
   String statsSrsBox(int box, int maxBox);
 
-  /// From StatsStrings.srsDueIn
+  /// Statistics, character detail dialog: when the character is next due for spaced-repetition review
   ///
   /// In en, this message translates to:
   /// **'{days, plural, =1{Due tomorrow} other{Due in {days} days}}'**
   String statsSrsDueIn(int days);
 
-  /// From StatsStrings.times
+  /// Statistics, character detail dialog: how many times the character was confused with another one
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 time} other{{count} times}}'**
   String statsTimes(int count);
 
-  /// From StatsStrings.heatmapCell (semantics label of one heatmap cell)
+  /// Statistics, confusion heatmap: screen-reader label of one cell — sent character {target} was answered as {answered} {count} times
   ///
   /// In en, this message translates to:
   /// **'{target} answered as {answered}, {count, plural, =1{1 time} other{{count} times}}'**
   String statsHeatmapCell(String target, String answered, int count);
 
-  /// From StatsStrings.calendarDay; date is pre-formatted
+  /// Statistics, practice calendar: line under the calendar describing the selected day; date is pre-formatted, chars is the characters practised that day
   ///
   /// In en, this message translates to:
   /// **'{date}: {chars, plural, =0{no practice} other{{chars} chars}}'**
   String statsCalendarDay(String date, int chars);
 
-  /// From StatsStrings.activeDays
+  /// Statistics, practice calendar: subtitle with how many days had practice in the shown period
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 active day} other{{count} active days}}'**
   String statsActiveDays(int count);
 
-  /// From ReferenceStrings.entryCount (matches in a reference section)
+  /// Reference: number of entries in a group, shown at the right of the group's header
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 entry} other{{count} entries}}'**
   String referenceEntryCount(int count);
 
-  /// From ReferenceStrings.wpm; wpm is pre-rounded (e.g. 18)
+  /// Reference playback settings: a speed in words per minute; wpm is pre-rounded (e.g. 18)
   ///
   /// In en, this message translates to:
   /// **'{wpm} WPM'**
   String referenceWpmValue(String wpm);
 
-  /// From ReferenceStrings.hz; hz is pre-rounded (e.g. 600)
+  /// Reference playback settings: the tone pitch in hertz; hz is pre-rounded (e.g. 600)
   ///
   /// In en, this message translates to:
   /// **'{hz} Hz'**
   String referenceHzValue(String hz);
 
-  /// From ReferenceStrings.skippedChars; chars lists the characters that have no Morse code
+  /// Reference translator, Text to Morse: note listing input characters that have no Morse code and were skipped; chars is that list
   ///
   /// In en, this message translates to:
   /// **'Skipped (no Morse code): {chars}'**
@@ -587,535 +593,535 @@ abstract class S {
   /// **'Koch position: {position}'**
   String referenceKochPositionValue(int position);
 
-  /// From ReferenceStrings.estimatedSpeed; wpm is pre-rounded
+  /// Reference translator, Key mode: the speed estimated from the user's keying; wpm is pre-rounded
   ///
   /// In en, this message translates to:
   /// **'Estimated {wpm} WPM'**
   String referenceEstimatedSpeed(String wpm);
 
-  /// From AccountStrings.copied (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar after the user's Tox ID was copied to the clipboard
   ///
   /// In en, this message translates to:
   /// **'Tox ID copied to clipboard'**
   String get accountCopied;
 
-  /// From AccountStrings.showQr (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Button / tooltip that shows the user's Tox ID as a QR code (identity card, backup wizard)
   ///
   /// In en, this message translates to:
   /// **'Show QR code'**
   String get accountShowQr;
 
-  /// From AccountStrings.toxId (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Label and dialog title for the user's Tox ID (the 76-character Tox address others use to add them)
   ///
   /// In en, this message translates to:
   /// **'Tox ID'**
   String get accountToxId;
 
-  /// From AccountStrings.displayName (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Text field label for the name other Tox users see (create identity, edit profile)
   ///
   /// In en, this message translates to:
   /// **'Display name'**
   String get accountDisplayName;
 
-  /// From AccountStrings.displayNameHint (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Hint inside the display-name field on the create-identity page
   ///
   /// In en, this message translates to:
   /// **'Your callsign or nickname'**
   String get accountDisplayNameHint;
 
-  /// From AccountStrings.displayNameRequired (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Validation error when the display-name field is empty
   ///
   /// In en, this message translates to:
   /// **'Enter a display name'**
   String get accountDisplayNameRequired;
 
-  /// From AccountStrings.statusMessage (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Edit profile page: text field label for the Tox status message shown to friends
   ///
   /// In en, this message translates to:
   /// **'Status message'**
   String get accountStatusMessage;
 
-  /// From AccountStrings.password (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page: label of the password field; also the identity card's lock-icon tooltip
   ///
   /// In en, this message translates to:
   /// **'Password'**
   String get accountPassword;
 
-  /// From AccountStrings.passwordOptional (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Label of the optional password field (create identity, restore backup)
   ///
   /// In en, this message translates to:
   /// **'Password (optional)'**
   String get accountPasswordOptional;
 
-  /// From AccountStrings.confirmPassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Label of the field where the password is typed a second time
   ///
   /// In en, this message translates to:
   /// **'Confirm password'**
   String get accountConfirmPassword;
 
-  /// From AccountStrings.passwordsDoNotMatch (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Validation error when the two password fields differ
   ///
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get accountPasswordsDoNotMatch;
 
-  /// From AccountStrings.showPassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Tooltip of the eye button that reveals the typed password
   ///
   /// In en, this message translates to:
   /// **'Show password'**
   String get accountShowPassword;
 
-  /// From AccountStrings.hidePassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Tooltip of the eye button that hides the typed password again
   ///
   /// In en, this message translates to:
   /// **'Hide password'**
   String get accountHidePassword;
 
-  /// From AccountStrings.strengthWeak (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Password strength meter: verdict for a weak password, with advice
   ///
   /// In en, this message translates to:
   /// **'Weak: use at least 8 characters'**
   String get accountStrengthWeak;
 
-  /// From AccountStrings.strengthFair (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Password strength meter: verdict for a fair password, with advice
   ///
   /// In en, this message translates to:
   /// **'Fair: 12+ characters with mixed types is better'**
   String get accountStrengthFair;
 
-  /// From AccountStrings.strengthStrong (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Password strength meter: verdict for a strong password
   ///
   /// In en, this message translates to:
   /// **'Strong'**
   String get accountStrengthStrong;
 
-  /// From AccountStrings.startupInspecting (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Startup splash: shown while the app checks whether an identity exists on this device
   ///
   /// In en, this message translates to:
   /// **'Checking your identity…'**
   String get accountStartupInspecting;
 
-  /// From AccountStrings.startupOpening (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Startup splash: shown while the identity is being opened
   ///
   /// In en, this message translates to:
   /// **'Opening your identity…'**
   String get accountStartupOpening;
 
-  /// From AccountStrings.startupFailedTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Startup error screen: title when the identity could not be read
   ///
   /// In en, this message translates to:
   /// **'Could not start'**
   String get accountStartupFailedTitle;
 
-  /// From AccountStrings.startupFailedBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Startup error screen: explanation under the title; nothing was changed and the user can retry
   ///
   /// In en, this message translates to:
   /// **'MorseCQ could not read your identity. Nothing was changed; you can try again.'**
   String get accountStartupFailedBody;
 
-  /// From AccountStrings.connectionTapToReconnect (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Tooltip of the Tox connection chip while offline; tapping it reconnects
   ///
   /// In en, this message translates to:
   /// **'Tap to reconnect'**
   String get accountConnectionTapToReconnect;
 
-  /// From AccountStrings.welcomeTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page (first launch): title explaining the identity is stored locally
   ///
   /// In en, this message translates to:
   /// **'Your identity lives on this device'**
   String get accountWelcomeTitle;
 
-  /// From AccountStrings.welcomeIntro (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: introductory paragraph about the serverless Tox identity
   ///
   /// In en, this message translates to:
   /// **'MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.'**
   String get accountWelcomeIntro;
 
-  /// From AccountStrings.welcomePointNoServer (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: bullet point — no server or sign-up, peers talk directly
   ///
   /// In en, this message translates to:
   /// **'No server, no phone number, no e-mail. Peers talk to each other directly, in Morse.'**
   String get accountWelcomePointNoServer;
 
-  /// From AccountStrings.welcomePointTraining (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: bullet point — training progress is stored with the identity
   ///
   /// In en, this message translates to:
   /// **'Training progress is saved with your identity, so it can be backed up and moved between devices.'**
   String get accountWelcomePointTraining;
 
-  /// From AccountStrings.welcomePointBackup (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: bullet point warning that only a backup can recover the identity
   ///
   /// In en, this message translates to:
   /// **'Nobody can recover an identity for you. Back it up right after creating it, or you will lose it with the device.'**
   String get accountWelcomePointBackup;
 
-  /// From AccountStrings.createIdentity (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: button that starts creating a new identity
   ///
   /// In en, this message translates to:
   /// **'Create identity'**
   String get accountCreateIdentity;
 
-  /// From AccountStrings.restoreFromBackup (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Welcome page: button that restores an identity from a backup file
   ///
   /// In en, this message translates to:
   /// **'Restore from backup'**
   String get accountRestoreFromBackup;
 
-  /// From AccountStrings.createTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Create identity page: app bar title
   ///
   /// In en, this message translates to:
   /// **'Create your identity'**
   String get accountCreateTitle;
 
-  /// From AccountStrings.createBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Create identity page: explanation of the display name and the optional password
   ///
   /// In en, this message translates to:
   /// **'Pick a name others will see. A password encrypts the identity file on this device; leave it empty if you prefer to open the app without one.'**
   String get accountCreateBody;
 
-  /// From AccountStrings.createButton (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Create identity page: submit button
   ///
   /// In en, this message translates to:
   /// **'Create'**
   String get accountCreateButton;
 
-  /// From AccountStrings.creating (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Create identity page: submit button label while the identity is being created
   ///
   /// In en, this message translates to:
   /// **'Creating…'**
   String get accountCreating;
 
-  /// From AccountStrings.backupTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard (after creating an identity): title urging the user to back up now
   ///
   /// In en, this message translates to:
   /// **'Back up your identity now'**
   String get accountBackupTitle;
 
-  /// From AccountStrings.backupBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: explanation that a lost device means a lost identity without a backup
   ///
   /// In en, this message translates to:
   /// **'Your identity exists only on this device. If it is lost, reset or stolen, there is no way to recover it: your contacts will not recognise a new identity and your training progress is gone.'**
   String get accountBackupBody;
 
-  /// From AccountStrings.backupWhatIsInside (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: what the backup file contains and where to keep it
   ///
   /// In en, this message translates to:
   /// **'The backup file contains your encrypted identity and your training progress. Keep it somewhere safe, outside this device.'**
   String get accountBackupWhatIsInside;
 
-  /// From AccountStrings.backupSaveFile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: button that saves the backup file (desktop)
   ///
   /// In en, this message translates to:
   /// **'Save backup file'**
   String get accountBackupSaveFile;
 
-  /// From AccountStrings.backupShareFile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: button that shares the backup file via the system share sheet (mobile)
   ///
   /// In en, this message translates to:
   /// **'Share backup file'**
   String get accountBackupShareFile;
 
-  /// From AccountStrings.backupSaved (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar / status line after the backup file was saved
   ///
   /// In en, this message translates to:
   /// **'Backup saved'**
   String get accountBackupSaved;
 
-  /// From AccountStrings.backupNotSaved (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar when the user cancelled saving the backup
   ///
   /// In en, this message translates to:
   /// **'Backup was not saved'**
   String get accountBackupNotSaved;
 
-  /// From AccountStrings.backupFailed (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar prefix when writing the backup failed; followed by ': ' and the error message
   ///
   /// In en, this message translates to:
   /// **'Could not write the backup'**
   String get accountBackupFailed;
 
-  /// From AccountStrings.backupAcknowledge (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: checkbox the user must tick to confirm they understand the risk
   ///
   /// In en, this message translates to:
   /// **'I understand that without this backup my identity cannot be recovered.'**
   String get accountBackupAcknowledge;
 
-  /// From AccountStrings.backupContinue (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: button that leaves the wizard and opens the app
   ///
   /// In en, this message translates to:
   /// **'Continue to MorseCQ'**
   String get accountBackupContinue;
 
-  /// From AccountStrings.backupShowQrHint (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Backup wizard: explains that the Tox ID is how friends add the user
   ///
   /// In en, this message translates to:
   /// **'Your Tox ID is how friends add you. Share it as text or as a QR code.'**
   String get accountBackupShowQrHint;
 
-  /// From AccountStrings.restoreTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: app bar title
   ///
   /// In en, this message translates to:
   /// **'Restore from backup'**
   String get accountRestoreTitle;
 
-  /// From AccountStrings.restoreBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: explanation of which file to pick and the password
   ///
   /// In en, this message translates to:
   /// **'Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.'**
   String get accountRestoreBody;
 
-  /// From AccountStrings.restoreChooseFile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: button that opens the file picker
   ///
   /// In en, this message translates to:
   /// **'Choose backup file'**
   String get accountRestoreChooseFile;
 
-  /// From AccountStrings.restoreNoFile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: error when Restore is pressed before choosing a file
   ///
   /// In en, this message translates to:
   /// **'Choose a backup file first'**
   String get accountRestoreNoFile;
 
-  /// From AccountStrings.restoreButton (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: submit button
   ///
   /// In en, this message translates to:
   /// **'Restore'**
   String get accountRestoreButton;
 
-  /// From AccountStrings.restoring (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: submit button label while restoring
   ///
   /// In en, this message translates to:
   /// **'Restoring…'**
   String get accountRestoring;
 
-  /// From AccountStrings.restoreInvalidFile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: error when the chosen file is not a MorseCQ backup
   ///
   /// In en, this message translates to:
   /// **'This file is not a MorseCQ backup.'**
   String get accountRestoreInvalidFile;
 
-  /// From AccountStrings.restoreReplacesWarning (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Restore backup page: warning that restoring replaces the current identity
   ///
   /// In en, this message translates to:
   /// **'Restoring replaces the identity currently on this device.'**
   String get accountRestoreReplacesWarning;
 
-  /// From AccountStrings.unlockTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page (password-protected identity): title
   ///
   /// In en, this message translates to:
   /// **'Unlock your identity'**
   String get accountUnlockTitle;
 
-  /// From AccountStrings.unlockBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page: explanation that the identity file is encrypted
   ///
   /// In en, this message translates to:
   /// **'Your identity file is encrypted. Enter the password to continue.'**
   String get accountUnlockBody;
 
-  /// From AccountStrings.unlockButton (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page: submit button
   ///
   /// In en, this message translates to:
   /// **'Unlock'**
   String get accountUnlockButton;
 
-  /// From AccountStrings.unlocking (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page: submit button label while unlocking
   ///
   /// In en, this message translates to:
   /// **'Unlocking…'**
   String get accountUnlocking;
 
-  /// From AccountStrings.unlockRestoreInstead (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Unlock page: text button that switches to restoring from a backup
   ///
   /// In en, this message translates to:
   /// **'Restore from backup instead'**
   String get accountUnlockRestoreInstead;
 
-  /// From AccountStrings.meNoIdentity (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page / snackbar: shown when no identity is loaded
   ///
   /// In en, this message translates to:
   /// **'No identity loaded'**
   String get accountMeNoIdentity;
 
-  /// From AccountStrings.sectionAccount (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: section header for account settings
   ///
   /// In en, this message translates to:
   /// **'Account'**
   String get accountSectionAccount;
 
-  /// From AccountStrings.sectionTraining (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: section header for training settings
   ///
   /// In en, this message translates to:
   /// **'Training'**
   String get accountSectionTraining;
 
-  /// From AccountStrings.sectionAbout (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: section header for app information (licence, source code, backend)
   ///
   /// In en, this message translates to:
   /// **'About'**
   String get accountSectionAbout;
 
-  /// From AccountStrings.sectionDanger (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: section header for destructive actions (delete identity)
   ///
   /// In en, this message translates to:
   /// **'Danger zone'**
   String get accountSectionDanger;
 
-  /// From AccountStrings.editProfile (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page tile and edit profile page title
   ///
   /// In en, this message translates to:
   /// **'Edit profile'**
   String get accountEditProfile;
 
-  /// From AccountStrings.editProfileBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Edit profile: explains that the name and status are shown to friends on Tox
   ///
   /// In en, this message translates to:
   /// **'Shown to your contacts on the Tox network.'**
   String get accountEditProfileBody;
 
-  /// From AccountStrings.setPassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page tile / page title to add a password to an unprotected identity
   ///
   /// In en, this message translates to:
   /// **'Set password'**
   String get accountSetPassword;
 
-  /// From AccountStrings.changePassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page tile / page title to change the identity password
   ///
   /// In en, this message translates to:
   /// **'Change password'**
   String get accountChangePassword;
 
-  /// From AccountStrings.removePassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Change password page: button that removes the password
   ///
   /// In en, this message translates to:
   /// **'Remove password'**
   String get accountRemovePassword;
 
-  /// From AccountStrings.currentPassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Change password page: label of the current password field
   ///
   /// In en, this message translates to:
   /// **'Current password'**
   String get accountCurrentPassword;
 
-  /// From AccountStrings.newPassword (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Change password page: label of the new password field
   ///
   /// In en, this message translates to:
   /// **'New password'**
   String get accountNewPassword;
 
-  /// From AccountStrings.passwordUpdated (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar after the password was set or changed
   ///
   /// In en, this message translates to:
   /// **'Password updated'**
   String get accountPasswordUpdated;
 
-  /// From AccountStrings.passwordRemoved (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar after the password was removed
   ///
   /// In en, this message translates to:
   /// **'Password removed'**
   String get accountPasswordRemoved;
 
-  /// From AccountStrings.profileUpdated (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar after the profile was saved
   ///
   /// In en, this message translates to:
   /// **'Profile updated'**
   String get accountProfileUpdated;
 
-  /// From AccountStrings.exportBackup (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: tile that exports an identity backup
   ///
   /// In en, this message translates to:
   /// **'Export backup'**
   String get accountExportBackup;
 
-  /// From AccountStrings.exportBackupSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: subtitle of the export-backup tile
   ///
   /// In en, this message translates to:
   /// **'Save your identity and training progress to a file'**
   String get accountExportBackupSubtitle;
 
-  /// From AccountStrings.trainingDefaults (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: tile that opens the training / playback settings
   ///
   /// In en, this message translates to:
   /// **'Playback & training defaults'**
   String get accountTrainingDefaults;
 
-  /// From AccountStrings.trainingDefaultsSubtitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page: subtitle of the training-defaults tile listing what it controls
   ///
   /// In en, this message translates to:
   /// **'Speed, tone, Farnsworth spacing'**
   String get accountTrainingDefaultsSubtitle;
 
-  /// From AccountStrings.trainingDefaultsPlaceholder (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Placeholder text for the training-defaults page (currently unused)
   ///
   /// In en, this message translates to:
   /// **'Speed, tone and Farnsworth defaults will live here.'**
   String get accountTrainingDefaultsPlaceholder;
 
-  /// From AccountStrings.aboutLicence (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, About section: tile title for the software licence
   ///
   /// In en, this message translates to:
   /// **'Licence'**
   String get accountAboutLicence;
 
-  /// From AccountStrings.aboutLicenceValue (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, About section: the licence identifier; normally kept as is (SPDX id)
   ///
   /// In en, this message translates to:
   /// **'GPL-3.0'**
   String get accountAboutLicenceValue;
 
-  /// From AccountStrings.aboutSource (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, About section: tile that copies the source-code link
   ///
   /// In en, this message translates to:
   /// **'Source code'**
   String get accountAboutSource;
 
-  /// From AccountStrings.aboutSourceCopied (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Snackbar after the source-code link was copied
   ///
   /// In en, this message translates to:
   /// **'Source link copied'**
   String get accountAboutSourceCopied;
 
-  /// From AccountStrings.aboutBackend (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, About section: tile title naming the chat backend in use (Tox, or the fake backend)
   ///
   /// In en, this message translates to:
   /// **'Backend'**
   String get accountAboutBackend;
 
-  /// From AccountStrings.deleteIdentity (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, danger zone: tile that deletes the identity
   ///
   /// In en, this message translates to:
   /// **'Delete identity'**
   String get accountDeleteIdentity;
 
-  /// From AccountStrings.deleteIdentitySubtitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Me page, danger zone: subtitle explaining what deleting erases
   ///
   /// In en, this message translates to:
   /// **'Erase this identity, history and progress from this device'**
   String get accountDeleteIdentitySubtitle;
 
-  /// From AccountStrings.deleteDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Delete identity dialog: title
   ///
   /// In en, this message translates to:
   /// **'Delete this identity?'**
   String get accountDeleteDialogTitle;
 
-  /// From AccountStrings.deleteDialogBody (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Delete identity dialog: warning that the deletion cannot be undone without a backup
   ///
   /// In en, this message translates to:
   /// **'This removes your identity, chat history and training progress from this device. Without a backup it cannot be recovered. Type DELETE to confirm.'**
   String get accountDeleteDialogBody;
 
-  /// From AccountStrings.deleteConfirmWord (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Delete identity dialog: the word the user must type to confirm; must match the word quoted in accountDeleteConfirmHint
   ///
   /// In en, this message translates to:
   /// **'DELETE'**
   String get accountDeleteConfirmWord;
 
-  /// From AccountStrings.deleteConfirmHint (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Delete identity dialog: hint telling the user to type the confirmation word (accountDeleteConfirmWord)
   ///
   /// In en, this message translates to:
   /// **'Type DELETE'**
   String get accountDeleteConfirmHint;
 
-  /// From AccountStrings.deleteButton (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Delete identity dialog: destructive confirm button
   ///
   /// In en, this message translates to:
   /// **'Delete'**
@@ -1127,601 +1133,601 @@ abstract class S {
   /// **'Backup file selected ({bytes} bytes)'**
   String accountRestoreFileChosenSize(int bytes);
 
-  /// From ChatStrings.searchConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: hint inside the search field
   ///
   /// In en, this message translates to:
   /// **'Search conversations'**
   String get chatSearchConversations;
 
-  /// From ChatStrings.noConversations (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: empty state when there are no conversations
   ///
   /// In en, this message translates to:
   /// **'No conversations yet'**
   String get chatNoConversations;
 
-  /// From ChatStrings.noSearchResults (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: empty state when no conversation matches the search
   ///
   /// In en, this message translates to:
   /// **'No conversations match'**
   String get chatNoSearchResults;
 
-  /// From ChatStrings.pin (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: action that pins a conversation to the top
   ///
   /// In en, this message translates to:
   /// **'Pin'**
   String get chatPin;
 
-  /// From ChatStrings.unpin (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: action that unpins a pinned conversation
   ///
   /// In en, this message translates to:
   /// **'Unpin'**
   String get chatUnpin;
 
-  /// From ChatStrings.markRead (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: context-menu action that marks a conversation as read
   ///
   /// In en, this message translates to:
   /// **'Mark as read'**
   String get chatMarkRead;
 
-  /// From ChatStrings.delete (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: action / confirm button that deletes a conversation
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get chatDelete;
 
-  /// From ChatStrings.deleteConversationTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: title of the delete-conversation confirmation
   ///
   /// In en, this message translates to:
   /// **'Delete conversation?'**
   String get chatDeleteConversationTitle;
 
-  /// From ChatStrings.deleteConversationBody (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: body of the delete-conversation confirmation (only local history is removed)
   ///
   /// In en, this message translates to:
   /// **'Local history for this conversation is removed. Tox keeps no copy.'**
   String get chatDeleteConversationBody;
 
-  /// From ChatStrings.draftPrefix (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat list: prefix before the unsent draft preview of a conversation; keep the trailing space if the language uses one
   ///
   /// In en, this message translates to:
   /// **'Draft: '**
   String get chatDraftPrefix;
 
-  /// From ChatStrings.selectConversation (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat (wide layout): placeholder in the detail pane when no conversation is open
   ///
   /// In en, this message translates to:
   /// **'Select a conversation'**
   String get chatSelectConversation;
 
-  /// From ChatStrings.contacts (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Title of the Contacts screen (friends plus note-to-self) and tooltip of the button that opens it
   ///
   /// In en, this message translates to:
   /// **'Contacts'**
   String get chatContacts;
 
-  /// From ChatStrings.noMessages (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: empty state before any message; CQ is the radio call 'calling any station' and stays as is
   ///
   /// In en, this message translates to:
   /// **'No messages yet — send CQ to start.'**
   String get chatNoMessages;
 
-  /// From ChatStrings.trainingMode (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: tooltip of the training-mode toggle; in training mode message text stays hidden until the user taps Reveal (chatReveal) on the message
   ///
   /// In en, this message translates to:
   /// **'Training mode'**
   String get chatTrainingMode;
 
-  /// From ChatStrings.trainingModeOn (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: snackbar when training mode is switched on
   ///
   /// In en, this message translates to:
   /// **'Training mode on: text hidden'**
   String get chatTrainingModeOn;
 
-  /// From ChatStrings.trainingModeOff (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: snackbar when training mode is switched off
   ///
   /// In en, this message translates to:
   /// **'Training mode off'**
   String get chatTrainingModeOff;
 
-  /// From ChatStrings.reveal (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation, training mode: button on a hidden message that reveals its text
   ///
   /// In en, this message translates to:
   /// **'Reveal'**
   String get chatReveal;
 
-  /// From ChatStrings.hiddenText (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation, training mode: placeholder shown instead of a hidden message's text
   ///
   /// In en, this message translates to:
   /// **'Listen first, then reveal'**
   String get chatHiddenText;
 
-  /// From ChatStrings.play (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: tooltip of the button that plays a message as Morse audio
   ///
   /// In en, this message translates to:
   /// **'Play Morse'**
   String get chatPlay;
 
-  /// From ChatStrings.stop (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: tooltip of the button that stops Morse playback
   ///
   /// In en, this message translates to:
   /// **'Stop'**
   String get chatStop;
 
-  /// From ChatStrings.playbackSettings (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation: title of the playback settings sheet and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Playback settings'**
   String get chatPlaybackSettings;
 
-  /// From ChatStrings.characterSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat playback settings: slider label for the speed of each character
   ///
   /// In en, this message translates to:
   /// **'Character speed'**
   String get chatCharacterSpeed;
 
-  /// From ChatStrings.farnsworthSpeed (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat playback settings: slider label for the Farnsworth (effective, gap-stretched) speed
   ///
   /// In en, this message translates to:
   /// **'Farnsworth speed'**
   String get chatFarnsworthSpeed;
 
-  /// From ChatStrings.tone (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat playback settings: slider label for the tone pitch
   ///
   /// In en, this message translates to:
   /// **'Tone'**
   String get chatTone;
 
-  /// From ChatStrings.wpm (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat playback settings: unit shown after speed values (words per minute)
   ///
   /// In en, this message translates to:
   /// **'WPM'**
   String get chatWpm;
 
-  /// From ChatStrings.hz (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Chat playback settings: unit shown after the tone value (hertz)
   ///
   /// In en, this message translates to:
   /// **'Hz'**
   String get chatHz;
 
-  /// From ChatStrings.members (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Group conversation / group list menu: shows the group's members
   ///
   /// In en, this message translates to:
   /// **'Members'**
   String get chatMembers;
 
-  /// From ChatStrings.leaveGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Group conversation / group list menu: leaves the group
   ///
   /// In en, this message translates to:
   /// **'Leave group'**
   String get chatLeaveGroup;
 
-  /// From ChatStrings.leaveGroupTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Leave-group confirmation: title
   ///
   /// In en, this message translates to:
   /// **'Leave this group?'**
   String get chatLeaveGroupTitle;
 
-  /// From ChatStrings.leaveGroupBody (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Leave-group confirmation: body (the chat id lets the user rejoin)
   ///
   /// In en, this message translates to:
   /// **'You will stop receiving messages. Rejoin later with the chat id.'**
   String get chatLeaveGroupBody;
 
-  /// From ChatStrings.leave (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Leave-group confirmation: confirm button
   ///
   /// In en, this message translates to:
   /// **'Leave'**
   String get chatLeave;
 
-  /// From ChatStrings.conferenceNote (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Group conversation header: note on legacy Tox conferences, which cannot carry Morse keying metadata
   ///
   /// In en, this message translates to:
   /// **'Legacy conference: Morse keying metadata (v2) will not be available here. Text still works.'**
   String get chatConferenceNote;
 
-  /// From ChatStrings.clearHistory (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation menu item and confirm button that clears local message history
   ///
   /// In en, this message translates to:
   /// **'Clear history'**
   String get chatClearHistory;
 
-  /// From ChatStrings.modeKeyboard (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: input-mode segment for typing text with the keyboard
   ///
   /// In en, this message translates to:
   /// **'Keyboard'**
   String get chatModeKeyboard;
 
-  /// From ChatStrings.modeStraightKey (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: input-mode segment for keying with a straight key
   ///
   /// In en, this message translates to:
   /// **'Straight key'**
   String get chatModeStraightKey;
 
-  /// From ChatStrings.modePaddles (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: input-mode segment for keying with iambic paddles
   ///
   /// In en, this message translates to:
   /// **'Paddles'**
   String get chatModePaddles;
 
-  /// From ChatStrings.typeMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: hint inside the text field
   ///
   /// In en, this message translates to:
   /// **'Type a message'**
   String get chatTypeMessage;
 
-  /// From ChatStrings.send (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: tooltip of the send button
   ///
   /// In en, this message translates to:
   /// **'Send'**
   String get chatSend;
 
-  /// From ChatStrings.tooLong (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: error when the message exceeds one Tox message
   ///
   /// In en, this message translates to:
   /// **'Too long for one Tox message'**
   String get chatTooLong;
 
-  /// From ChatStrings.keyHint (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer, straight-key mode: hint on how to key
   ///
   /// In en, this message translates to:
   /// **'Key on the pad or press Space'**
   String get chatKeyHint;
 
-  /// From ChatStrings.paddleHint (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer, paddle mode: hint on how to key (left/right Ctrl)
   ///
   /// In en, this message translates to:
   /// **'Tap the paddles or hold Ctrl (left dit, right dah)'**
   String get chatPaddleHint;
 
-  /// From ChatStrings.deleteLast (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Conversation composer: tooltip of the button that deletes the last keyed character
   ///
   /// In en, this message translates to:
   /// **'Delete last character'**
   String get chatDeleteLast;
 
-  /// From ChatStrings.noFriends (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Contacts screen: empty state when the user has no Tox friends yet
   ///
   /// In en, this message translates to:
   /// **'No friends yet. Add one with their Tox ID.'**
   String get chatNoFriends;
 
-  /// From ChatStrings.noRequests (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Friend request inbox: empty state
   ///
   /// In en, this message translates to:
   /// **'No pending requests'**
   String get chatNoRequests;
 
-  /// From ChatStrings.addFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Contacts screen: title of the add-friend sheet and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Add friend'**
   String get chatAddFriend;
 
-  /// From ChatStrings.myToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Contacts screen: title of the sheet showing the user's own Tox ID and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'My Tox ID'**
   String get chatMyToxId;
 
-  /// From ChatStrings.toxIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: label of the Tox ID field
   ///
   /// In en, this message translates to:
   /// **'Tox ID (76 hex characters)'**
   String get chatToxIdLabel;
 
-  /// From ChatStrings.toxIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: error for a malformed Tox ID
   ///
   /// In en, this message translates to:
   /// **'Tox ID must be exactly 76 hex characters'**
   String get chatToxIdInvalid;
 
-  /// From ChatStrings.toxIdOwn (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: error when the user enters their own Tox ID
   ///
   /// In en, this message translates to:
   /// **'That is your own Tox ID'**
   String get chatToxIdOwn;
 
-  /// From ChatStrings.toxIdAlreadyFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: error when the Tox ID already belongs to a friend
   ///
   /// In en, this message translates to:
   /// **'Already in your friend list'**
   String get chatToxIdAlreadyFriend;
 
-  /// From ChatStrings.requestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: label of the message sent with the friend request
   ///
   /// In en, this message translates to:
   /// **'Message'**
   String get chatRequestMessage;
 
-  /// From ChatStrings.defaultRequestMessage (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: default friend-request message; CQ is the radio call 'calling any station'
   ///
   /// In en, this message translates to:
   /// **'MorseCQ CQ'**
   String get chatDefaultRequestMessage;
 
-  /// From ChatStrings.sendRequest (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: submit button that sends the friend request
   ///
   /// In en, this message translates to:
   /// **'Send request'**
   String get chatSendRequest;
 
-  /// From ChatStrings.requestSent (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Snackbar after a friend request was sent
   ///
   /// In en, this message translates to:
   /// **'Friend request sent'**
   String get chatRequestSent;
 
-  /// From ChatStrings.scanQr (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet: button that scans a Tox ID QR code with the camera
   ///
   /// In en, this message translates to:
   /// **'Scan QR'**
   String get chatScanQr;
 
-  /// From ChatStrings.scanQrDesktopHint (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Add friend sheet (desktop): note that QR scanning needs a phone camera
   ///
   /// In en, this message translates to:
   /// **'QR scanning needs a phone camera'**
   String get chatScanQrDesktopHint;
 
-  /// From ChatStrings.scanQrTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// QR scan page: app bar title
   ///
   /// In en, this message translates to:
   /// **'Scan a Tox ID'**
   String get chatScanQrTitle;
 
-  /// From ChatStrings.scanQrNotToxId (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// QR scan page: error when the scanned QR code is not a Tox ID
   ///
   /// In en, this message translates to:
   /// **'That QR code is not a Tox ID'**
   String get chatScanQrNotToxId;
 
-  /// From ChatStrings.accept (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Friend request / group invite inbox: tooltip of the accept button
   ///
   /// In en, this message translates to:
   /// **'Accept'**
   String get chatAccept;
 
-  /// From ChatStrings.reject (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Friend request / group invite inbox: tooltip of the reject button
   ///
   /// In en, this message translates to:
   /// **'Reject'**
   String get chatReject;
 
-  /// From ChatStrings.copied (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Snackbar after a Tox ID or chat id was copied to the clipboard
   ///
   /// In en, this message translates to:
   /// **'Copied to clipboard'**
   String get chatCopied;
 
-  /// From ChatStrings.noIdentity (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// My Tox ID sheet: shown when no identity is loaded
   ///
   /// In en, this message translates to:
   /// **'No identity loaded'**
   String get chatNoIdentity;
 
-  /// From ChatStrings.removeFriend (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Contacts screen: friend context-menu item that removes the friend
   ///
   /// In en, this message translates to:
   /// **'Remove friend'**
   String get chatRemoveFriend;
 
-  /// From ChatStrings.removeFriendTitle (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Remove-friend confirmation: title
   ///
   /// In en, this message translates to:
   /// **'Remove this friend?'**
   String get chatRemoveFriendTitle;
 
-  /// From ChatStrings.removeFriendBody (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Remove-friend confirmation: body
   ///
   /// In en, this message translates to:
   /// **'They will no longer be able to message you.'**
   String get chatRemoveFriendBody;
 
-  /// From ChatStrings.remove (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Remove-friend confirmation: confirm button
   ///
   /// In en, this message translates to:
   /// **'Remove'**
   String get chatRemove;
 
-  /// From ChatStrings.noGroups (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Groups list: empty state
   ///
   /// In en, this message translates to:
   /// **'No groups yet. Create one or join by chat id.'**
   String get chatNoGroups;
 
-  /// From ChatStrings.createGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Groups: title of the create-group sheet and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Create group'**
   String get chatCreateGroup;
 
-  /// From ChatStrings.joinGroup (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Groups: title of the join-group sheet and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Join group'**
   String get chatJoinGroup;
 
-  /// From ChatStrings.groupName (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: label of the group name field
   ///
   /// In en, this message translates to:
   /// **'Group name'**
   String get chatGroupName;
 
-  /// From ChatStrings.groupNameRequired (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: validation error when the name is empty
   ///
   /// In en, this message translates to:
   /// **'Give the group a name'**
   String get chatGroupNameRequired;
 
-  /// From ChatStrings.advanced (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: expander for advanced options
   ///
   /// In en, this message translates to:
   /// **'Advanced'**
   String get chatAdvanced;
 
-  /// From ChatStrings.legacyConference (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: switch that creates an old-style Tox conference instead of a group
   ///
   /// In en, this message translates to:
   /// **'Legacy conference (old clients)'**
   String get chatLegacyConference;
 
-  /// From ChatStrings.legacyConferenceHint (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: subtitle warning against legacy conferences
   ///
   /// In en, this message translates to:
   /// **'Not recommended: no persistent chat id, no Morse metadata.'**
   String get chatLegacyConferenceHint;
 
-  /// From ChatStrings.create (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Create group sheet: submit button
   ///
   /// In en, this message translates to:
   /// **'Create'**
   String get chatCreate;
 
-  /// From ChatStrings.chatIdLabel (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Join group sheet: label of the group chat id field
   ///
   /// In en, this message translates to:
   /// **'Chat id (64 hex characters)'**
   String get chatChatIdLabel;
 
-  /// From ChatStrings.chatIdInvalid (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Join group sheet: error for a malformed chat id
   ///
   /// In en, this message translates to:
   /// **'Chat id must be exactly 64 hex characters'**
   String get chatChatIdInvalid;
 
-  /// From ChatStrings.password (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Join group sheet: label of the optional group password field
   ///
   /// In en, this message translates to:
   /// **'Password (optional)'**
   String get chatPassword;
 
-  /// From ChatStrings.join (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Join group sheet: submit button
   ///
   /// In en, this message translates to:
   /// **'Join'**
   String get chatJoin;
 
-  /// From ChatStrings.joinRequested (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Snackbar after a join request; the group shows up once a peer is found
   ///
   /// In en, this message translates to:
   /// **'Joining — the group appears once a peer is found.'**
   String get chatJoinRequested;
 
-  /// From ChatStrings.conferenceBadge (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Badge on a group that is a legacy Tox conference (group list, conversation header)
   ///
   /// In en, this message translates to:
   /// **'Conference'**
   String get chatConferenceBadge;
 
-  /// From ChatStrings.copyChatId (apps/morsecq/lib/ui/chat/chat_strings.dart)
+  /// Group list menu: copies the group's chat id
   ///
   /// In en, this message translates to:
   /// **'Copy chat id'**
   String get chatCopyChatId;
 
-  /// From LearnStrings.lessonCardTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: title of the Koch lesson card
   ///
   /// In en, this message translates to:
   /// **'Koch lesson'**
   String get learnLessonCardTitle;
 
-  /// From LearnStrings.courseComplete (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home, Koch lesson card: shown once every Koch character is unlocked
   ///
   /// In en, this message translates to:
   /// **'Course complete - keep sharpening!'**
   String get learnCourseComplete;
 
-  /// From LearnStrings.dailyGoalTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: title of the daily goal card
   ///
   /// In en, this message translates to:
   /// **'Today'**
   String get learnDailyGoalTitle;
 
-  /// From LearnStrings.dailyGoalMet (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home, daily goal card: shown when today's goal is reached
   ///
   /// In en, this message translates to:
   /// **'Daily goal reached'**
   String get learnDailyGoalMet;
 
-  /// From LearnStrings.noStreak (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home, daily goal card: shown instead of the streak when there is none
   ///
   /// In en, this message translates to:
   /// **'Start a streak today'**
   String get learnNoStreak;
 
-  /// From LearnStrings.continueLesson (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: primary button that starts the current Koch lesson
   ///
   /// In en, this message translates to:
   /// **'Continue lesson'**
   String get learnContinueLesson;
 
-  /// From LearnStrings.receivePractice (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: button that opens the receive (copy) drill picker
   ///
   /// In en, this message translates to:
   /// **'Receive practice'**
   String get learnReceivePractice;
 
-  /// From LearnStrings.sendPractice (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: button that opens send (keying) practice
   ///
   /// In en, this message translates to:
   /// **'Send practice'**
   String get learnSendPractice;
 
-  /// From LearnStrings.reviewDue (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: button that starts a spaced-repetition review of due characters
   ///
   /// In en, this message translates to:
   /// **'Review due characters'**
   String get learnReviewDue;
 
-  /// From LearnStrings.settings (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: tooltip of the training settings button and that page's title
   ///
   /// In en, this message translates to:
   /// **'Training settings'**
   String get learnSettings;
 
-  /// From LearnStrings.loading (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn tab: shown while training progress loads
   ///
   /// In en, this message translates to:
   /// **'Loading your progress...'**
   String get learnLoading;
 
-  /// From LearnStrings.identityRequired (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn tab: shown when no identity is open; training needs one
   ///
   /// In en, this message translates to:
   /// **'Create or unlock your identity to start training. Progress is stored with your identity so it travels with your backup.'**
   String get learnIdentityRequired;
 
-  /// From LearnStrings.loadFailed (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: error line shown when saved progress was unreadable and training restarted fresh
   ///
   /// In en, this message translates to:
   /// **'Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.'**
   String get learnLoadFailed;
 
-  /// From LearnStrings.chooseDrill (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker sheet: title
   ///
   /// In en, this message translates to:
   /// **'Choose a drill'**
   String get learnChooseDrill;
 
-  /// From LearnStrings.drillGroups (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker: drill with random groups of the characters the user already knows
   ///
   /// In en, this message translates to:
   /// **'Random groups'**
   String get learnDrillGroups;
 
-  /// From LearnStrings.drillWords (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker: drill with common words
   ///
   /// In en, this message translates to:
   /// **'Words'**
   String get learnDrillWords;
 
-  /// From LearnStrings.drillCallsigns (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker: drill with amateur radio callsigns
   ///
   /// In en, this message translates to:
   /// **'Callsigns'**
   String get learnDrillCallsigns;
 
-  /// From LearnStrings.drillQso (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker: drill with short QSO (radio contact) exchanges; QSO is a Q-code, keep as is
   ///
   /// In en, this message translates to:
   /// **'QSO'**
@@ -2291,1207 +2297,1213 @@ abstract class S {
   /// **'Logs and QSL cards use UTC.'**
   String get toolsClockNote;
 
-  /// From LearnStrings.receiveTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill screen: app bar title
   ///
   /// In en, this message translates to:
   /// **'Receive'**
   String get learnReceiveTitle;
 
-  /// From LearnStrings.reviewTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill picker / screen: title of the spaced-repetition review drill
   ///
   /// In en, this message translates to:
   /// **'Review'**
   String get learnReviewTitle;
 
-  /// From LearnStrings.listen (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: status while Morse is playing
   ///
   /// In en, this message translates to:
   /// **'Listen...'**
   String get learnListen;
 
-  /// From LearnStrings.ready (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: status when playback finished and an answer is expected
   ///
   /// In en, this message translates to:
   /// **'Ready'**
   String get learnReady;
 
-  /// From LearnStrings.replay (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: button that plays the round again
   ///
   /// In en, this message translates to:
   /// **'Replay'**
   String get learnReplay;
 
-  /// From LearnStrings.answerHint (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: hint inside the answer field
   ///
   /// In en, this message translates to:
   /// **'Type what you heard'**
   String get learnAnswerHint;
 
-  /// From LearnStrings.submit (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: button that checks the typed answer
   ///
   /// In en, this message translates to:
   /// **'Check'**
   String get learnSubmit;
 
-  /// From LearnStrings.next (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: button that moves to the next round
   ///
   /// In en, this message translates to:
   /// **'Next'**
   String get learnNext;
 
-  /// From LearnStrings.finish (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: button on the last round that ends the session
   ///
   /// In en, this message translates to:
   /// **'Finish'**
   String get learnFinish;
 
-  /// From LearnStrings.done (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: button that closes the screen. Send practice: button that ends the attempt, records it and shows the result
   ///
   /// In en, this message translates to:
   /// **'Done'**
   String get learnDone;
 
-  /// From LearnStrings.backspace (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill on-screen keypad: screen-reader label of the backspace key
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get learnBackspace;
 
-  /// From LearnStrings.space (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill on-screen keypad: label of the space key
   ///
   /// In en, this message translates to:
   /// **'Space'**
   String get learnSpace;
 
-  /// From LearnStrings.sent (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill round result: label of the line with what was sent
   ///
   /// In en, this message translates to:
   /// **'Sent'**
   String get learnSent;
 
-  /// From LearnStrings.yourCopy (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill round result: label of the line with what the user typed
   ///
   /// In en, this message translates to:
   /// **'Your copy'**
   String get learnYourCopy;
 
-  /// From LearnStrings.roundPerfect (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill round result: shown when every character was copied correctly
   ///
   /// In en, this message translates to:
   /// **'Perfect copy!'**
   String get learnRoundPerfect;
 
-  /// From LearnStrings.sessionSummary (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: title of the end-of-session summary
   ///
   /// In en, this message translates to:
   /// **'Session summary'**
   String get learnSessionSummary;
 
-  /// From LearnStrings.lessonPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: verdict when the lesson was passed
   ///
   /// In en, this message translates to:
   /// **'Lesson passed'**
   String get learnLessonPassed;
 
-  /// From LearnStrings.lessonNotPassed (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: verdict when accuracy stayed under the 90% pass mark
   ///
   /// In en, this message translates to:
   /// **'Keep at it: 90% unlocks the next one'**
   String get learnLessonNotPassed;
 
-  /// From LearnStrings.reviewRecorded (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: verdict after a review session
   ///
   /// In en, this message translates to:
   /// **'Review recorded'**
   String get learnReviewRecorded;
 
-  /// From LearnStrings.weakChars (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: heading over characters copied poorly
   ///
   /// In en, this message translates to:
   /// **'Needs work'**
   String get learnWeakChars;
 
-  /// From LearnStrings.confusions (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill summary: heading over characters mistaken for others
   ///
   /// In en, this message translates to:
   /// **'Confused'**
   String get learnConfusions;
 
-  /// From LearnStrings.noFeedbackWarning (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Receive drill: warning when sound, flash and haptics are all disabled
   ///
   /// In en, this message translates to:
   /// **'Sound, flash and haptics are all off - the screen will flash instead.'**
   String get learnNoFeedbackWarning;
 
-  /// From LearnStrings.sendTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice screen: app bar title
   ///
   /// In en, this message translates to:
   /// **'Send'**
   String get learnSendTitle;
 
-  /// From LearnStrings.sendThis (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: label above the text the user should key
   ///
   /// In en, this message translates to:
   /// **'Send this'**
   String get learnSendThis;
 
-  /// From LearnStrings.copyFromMemory (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: app bar switch that hides the target so the user keys it from memory
   ///
   /// In en, this message translates to:
   /// **'From memory'**
   String get learnCopyFromMemory;
 
-  /// From LearnStrings.hiddenTarget (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: placeholder replacing the hidden target text
   ///
   /// In en, this message translates to:
   /// **'Hidden - key it from memory'**
   String get learnHiddenTarget;
 
-  /// From LearnStrings.decoded (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: label above the text decoded from the user's keying
   ///
   /// In en, this message translates to:
   /// **'Decoded'**
   String get learnDecoded;
 
-  /// From LearnStrings.waitingForKey (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: shown before the user has keyed anything
   ///
   /// In en, this message translates to:
   /// **'Start keying when ready'**
   String get learnWaitingForKey;
 
-  /// From LearnStrings.restart (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: button that clears the attempt and starts over
   ///
   /// In en, this message translates to:
   /// **'Restart'**
   String get learnRestart;
 
-  /// From LearnStrings.tryAnother (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice result: button that picks a new target
   ///
   /// In en, this message translates to:
   /// **'Try another'**
   String get learnTryAnother;
 
-  /// From LearnStrings.keyerStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Keyer type option: straight key (training settings, send practice)
   ///
   /// In en, this message translates to:
   /// **'Straight'**
   String get learnKeyerStraight;
 
-  /// From LearnStrings.keyerIambicA (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Keyer type option: iambic paddles, mode A (technical term, usually kept)
   ///
   /// In en, this message translates to:
   /// **'Iambic A'**
   String get learnKeyerIambicA;
 
-  /// From LearnStrings.keyerIambicB (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Keyer type option: iambic paddles, mode B (technical term, usually kept)
   ///
   /// In en, this message translates to:
   /// **'Iambic B'**
   String get learnKeyerIambicB;
 
-  /// From LearnStrings.legendStraight (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: keyboard legend for the straight key
   ///
   /// In en, this message translates to:
   /// **'Space = key'**
   String get learnLegendStraight;
 
-  /// From LearnStrings.legendPaddles (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: keyboard legend for paddles (left/right Ctrl)
   ///
   /// In en, this message translates to:
   /// **'Left Ctrl = dit, Right Ctrl = dah'**
   String get learnLegendPaddles;
 
-  /// From LearnStrings.sendClean (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice result: shown when the keying had no timing issues ('fist' is ham slang for a sender's keying style)
   ///
   /// In en, this message translates to:
   /// **'Clean fist - nothing to fix.'**
   String get learnSendClean;
 
-  /// From LearnStrings.sendIssues (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice result: heading over the list of timing issues
   ///
   /// In en, this message translates to:
   /// **'Rhythm notes'**
   String get learnSendIssues;
 
-  /// From LearnStrings.yourSending (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice result: label above what the user's keying decoded to
   ///
   /// In en, this message translates to:
   /// **'Decoded as'**
   String get learnYourSending;
 
-  /// From LearnStrings.straightKeyLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: label printed on the on-screen straight key (short, upper case in English)
   ///
   /// In en, this message translates to:
   /// **'KEY'**
   String get learnStraightKeyLabel;
 
-  /// From LearnStrings.ditLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: label on the on-screen dit (short element) paddle
   ///
   /// In en, this message translates to:
   /// **'DIT'**
   String get learnDitLabel;
 
-  /// From LearnStrings.dahLabel (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice: label on the on-screen dah (long element) paddle
   ///
   /// In en, this message translates to:
   /// **'DAH'**
   String get learnDahLabel;
 
-  /// From LearnStrings.settingsTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings page: app bar title
   ///
   /// In en, this message translates to:
   /// **'Training settings'**
   String get learnSettingsTitle;
 
-  /// From LearnStrings.characterSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the character speed slider
   ///
   /// In en, this message translates to:
   /// **'Character speed'**
   String get learnCharacterSpeed;
 
-  /// From LearnStrings.farnsworth (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: switch for Farnsworth spacing (stretched gaps between characters)
   ///
   /// In en, this message translates to:
   /// **'Farnsworth spacing'**
   String get learnFarnsworth;
 
-  /// From LearnStrings.farnsworthHelp (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: explanation under the Farnsworth switch
   ///
   /// In en, this message translates to:
   /// **'Characters stay fast; the gaps between them stretch to this speed.'**
   String get learnFarnsworthHelp;
 
-  /// From LearnStrings.effectiveSpeed (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the Farnsworth effective speed slider
   ///
   /// In en, this message translates to:
   /// **'Effective speed'**
   String get learnEffectiveSpeed;
 
-  /// From LearnStrings.tone (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the tone pitch slider
   ///
   /// In en, this message translates to:
   /// **'Tone'**
   String get learnTone;
 
-  /// From LearnStrings.playSample (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: tooltip of the button that plays a sample at the chosen settings
   ///
   /// In en, this message translates to:
   /// **'Play sample'**
   String get learnPlaySample;
 
-  /// From LearnStrings.sessionLength (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the session length slider
   ///
   /// In en, this message translates to:
   /// **'Session length'**
   String get learnSessionLength;
 
-  /// From LearnStrings.feedback (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: section header over the switches that choose how Morse is output during drills (sound, screen flash, vibration) — not right/wrong feedback
   ///
   /// In en, this message translates to:
   /// **'Feedback'**
   String get learnFeedback;
 
-  /// From LearnStrings.sound (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings, output section: switch that plays Morse as a sidetone
   ///
   /// In en, this message translates to:
   /// **'Sound'**
   String get learnSound;
 
-  /// From LearnStrings.flash (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings, output section: switch that flashes the screen in time with the Morse
   ///
   /// In en, this message translates to:
   /// **'Screen flash'**
   String get learnFlash;
 
-  /// From LearnStrings.haptic (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings, output section: switch that vibrates in time with the Morse
   ///
   /// In en, this message translates to:
   /// **'Vibration'**
   String get learnHaptic;
 
-  /// From LearnStrings.keyer (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the keyer type selector
   ///
   /// In en, this message translates to:
   /// **'Keyer'**
   String get learnKeyer;
 
-  /// From LearnStrings.dailyGoal (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Training settings: title of the daily goal slider (characters per day)
   ///
   /// In en, this message translates to:
   /// **'Daily goal'**
   String get learnDailyGoal;
 
-  /// From ReferenceStrings.referenceTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference tab: app bar title
   ///
   /// In en, this message translates to:
   /// **'Morse reference'**
   String get referenceReferenceTitle;
 
-  /// From ReferenceStrings.translatorTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator screen title and tooltip of the button that opens it
   ///
   /// In en, this message translates to:
   /// **'Translator'**
   String get referenceTranslatorTitle;
 
-  /// From ReferenceStrings.play (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference: button / tooltip that plays an entry or translated text as Morse
   ///
   /// In en, this message translates to:
   /// **'Play'**
   String get referencePlay;
 
-  /// From ReferenceStrings.stop (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference: button / tooltip that stops Morse playback
   ///
   /// In en, this message translates to:
   /// **'Stop'**
   String get referenceStop;
 
-  /// From ReferenceStrings.clear (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference translator: tooltip of the button that clears keyed input
   ///
   /// In en, this message translates to:
   /// **'Clear'**
   String get referenceClear;
 
-  /// From ReferenceStrings.close (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference entry dialog: close button
   ///
   /// In en, this message translates to:
   /// **'Close'**
   String get referenceClose;
 
-  /// From ReferenceStrings.emptyOutput (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference translator: placeholder shown when the output is empty (a dash)
   ///
   /// In en, this message translates to:
   /// **'—'**
   String get referenceEmptyOutput;
 
-  /// From ReferenceStrings.searchHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference tab: hint inside the search field
   ///
   /// In en, this message translates to:
   /// **'Search characters, prosigns, Q-codes…'**
   String get referenceSearchHint;
 
-  /// From ReferenceStrings.clearSearch (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference tab: tooltip of the button that clears the search
   ///
   /// In en, this message translates to:
   /// **'Clear search'**
   String get referenceClearSearch;
 
-  /// From ReferenceStrings.noResults (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference tab: empty state when the search matches nothing
   ///
   /// In en, this message translates to:
   /// **'Nothing matches your search.'**
   String get referenceNoResults;
 
-  /// From ReferenceStrings.sectionAlphabet (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: letters and digits
   ///
   /// In en, this message translates to:
   /// **'Alphabet'**
   String get referenceSectionAlphabet;
 
-  /// From ReferenceStrings.sectionPunctuation (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: punctuation marks
   ///
   /// In en, this message translates to:
   /// **'Punctuation'**
   String get referenceSectionPunctuation;
 
-  /// From ReferenceStrings.sectionProsigns (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: procedural signals such as AR, SK
   ///
   /// In en, this message translates to:
   /// **'Prosigns'**
   String get referenceSectionProsigns;
 
-  /// From ReferenceStrings.sectionQCodes (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: Q-codes such as QTH, QRZ
   ///
   /// In en, this message translates to:
   /// **'Q-codes'**
   String get referenceSectionQCodes;
 
-  /// From ReferenceStrings.sectionAbbreviations (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: common CW (Morse) abbreviations
   ///
   /// In en, this message translates to:
   /// **'CW abbreviations'**
   String get referenceSectionAbbreviations;
 
-  /// From ReferenceStrings.sectionKoch (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference section tab: the Koch teaching order of characters
   ///
   /// In en, this message translates to:
   /// **'Koch order'**
   String get referenceSectionKoch;
 
-  /// From ReferenceStrings.alphabetHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference alphabet: hint above the grid on tapping and long-pressing
   ///
   /// In en, this message translates to:
   /// **'Tap a card to hear it. Long-press for a mnemonic.'**
   String get referenceAlphabetHint;
 
-  /// From ReferenceStrings.kochHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference, Koch order section: explanation of the Koch character order
   ///
   /// In en, this message translates to:
   /// **'The order the Koch method introduces characters (LCWO sequence). Start with K and M; add one when you copy at 90 %.'**
   String get referenceKochHint;
 
-  /// From ReferenceStrings.mnemonicTitle (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference entry dialog: heading of the memory aid for a character
   ///
   /// In en, this message translates to:
   /// **'Mnemonic'**
   String get referenceMnemonicTitle;
 
-  /// From ReferenceStrings.meaningLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference entry dialog: heading of the meaning of a prosign / Q-code / abbreviation
   ///
   /// In en, this message translates to:
   /// **'Meaning'**
   String get referenceMeaningLabel;
 
-  /// From ReferenceStrings.playbackSettings (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings sheet title and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Playback settings'**
   String get referencePlaybackSettings;
 
-  /// From ReferenceStrings.characterSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings: character speed slider label
   ///
   /// In en, this message translates to:
   /// **'Character speed'**
   String get referenceCharacterSpeed;
 
-  /// From ReferenceStrings.farnsworth (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings: switch for Farnsworth spacing
   ///
   /// In en, this message translates to:
   /// **'Farnsworth spacing'**
   String get referenceFarnsworth;
 
-  /// From ReferenceStrings.farnsworthHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings: explanation under the Farnsworth switch
   ///
   /// In en, this message translates to:
   /// **'Characters stay at full speed; gaps stretch to the effective speed.'**
   String get referenceFarnsworthHelp;
 
-  /// From ReferenceStrings.effectiveSpeed (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings: effective speed slider label
   ///
   /// In en, this message translates to:
   /// **'Effective speed'**
   String get referenceEffectiveSpeed;
 
-  /// From ReferenceStrings.tone (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Reference playback settings: tone pitch slider label
   ///
   /// In en, this message translates to:
   /// **'Tone'**
   String get referenceTone;
 
-  /// From ReferenceStrings.modeTextToMorse (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator: mode segment that converts text to Morse
   ///
   /// In en, this message translates to:
   /// **'Text → Morse'**
   String get referenceModeTextToMorse;
 
-  /// From ReferenceStrings.modeMorseToText (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator: mode segment that converts Morse to text
   ///
   /// In en, this message translates to:
   /// **'Morse → Text'**
   String get referenceModeMorseToText;
 
-  /// From ReferenceStrings.modeKey (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator: mode segment where the user keys Morse by hand
   ///
   /// In en, this message translates to:
   /// **'Key'**
   String get referenceModeKey;
 
-  /// From ReferenceStrings.textInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Text to Morse: label of the text input
   ///
   /// In en, this message translates to:
   /// **'Text'**
   String get referenceTextInputLabel;
 
-  /// From ReferenceStrings.textInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Text to Morse: hint inside the text input
   ///
   /// In en, this message translates to:
   /// **'Type text to encode…'**
   String get referenceTextInputHint;
 
-  /// From ReferenceStrings.patternOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Text to Morse: label above the dot-dash output
   ///
   /// In en, this message translates to:
   /// **'Morse'**
   String get referencePatternOutputLabel;
 
-  /// From ReferenceStrings.copyPattern (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Text to Morse: tooltip of the button that copies the dot-dash pattern
   ///
   /// In en, this message translates to:
   /// **'Copy pattern'**
   String get referenceCopyPattern;
 
-  /// From ReferenceStrings.patternCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator: snackbar after the pattern was copied
   ///
   /// In en, this message translates to:
   /// **'Pattern copied'**
   String get referencePatternCopied;
 
-  /// From ReferenceStrings.patternInputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Morse to Text: label of the dot-dash input
   ///
   /// In en, this message translates to:
   /// **'Morse'**
   String get referencePatternInputLabel;
 
-  /// From ReferenceStrings.patternInputHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Morse to Text: hint explaining the input syntax (. and -, space, /); keep the symbols
   ///
   /// In en, this message translates to:
   /// **'Type . and -, a space between letters, / between words'**
   String get referencePatternInputHint;
 
-  /// From ReferenceStrings.textOutputLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Morse to Text: label above the decoded text
   ///
   /// In en, this message translates to:
   /// **'Text'**
   String get referenceTextOutputLabel;
 
-  /// From ReferenceStrings.copyText (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Morse to Text: tooltip of the button that copies the decoded text
   ///
   /// In en, this message translates to:
   /// **'Copy text'**
   String get referenceCopyText;
 
-  /// From ReferenceStrings.textCopied (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator: snackbar after the decoded text was copied
   ///
   /// In en, this message translates to:
   /// **'Text copied'**
   String get referenceTextCopied;
 
-  /// From ReferenceStrings.unknownPatternHelp (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Morse to Text: note on how undecodable patterns are shown; keep '<pattern>' as an example
   ///
   /// In en, this message translates to:
   /// **'Patterns with no character are shown as <pattern>.'**
   String get referenceUnknownPatternHelp;
 
-  /// From ReferenceStrings.keypadDit (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator keypad: tooltip of the dit (short element) key
   ///
   /// In en, this message translates to:
   /// **'Dit'**
   String get referenceKeypadDit;
 
-  /// From ReferenceStrings.keypadDah (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator keypad: tooltip of the dah (long element) key
   ///
   /// In en, this message translates to:
   /// **'Dah'**
   String get referenceKeypadDah;
 
-  /// From ReferenceStrings.keypadCharGap (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator keypad: tooltip of the key inserting a gap between letters
   ///
   /// In en, this message translates to:
   /// **'Letter gap'**
   String get referenceKeypadCharGap;
 
-  /// From ReferenceStrings.keypadWordGap (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator keypad: tooltip of the key inserting a gap between words
   ///
   /// In en, this message translates to:
   /// **'Word gap'**
   String get referenceKeypadWordGap;
 
-  /// From ReferenceStrings.keypadBackspace (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator keypad: tooltip of the backspace key
   ///
   /// In en, this message translates to:
   /// **'Backspace'**
   String get referenceKeypadBackspace;
 
-  /// From ReferenceStrings.keyHint (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Key mode: hint on how to key (touch or Space bar)
   ///
   /// In en, this message translates to:
   /// **'Press and hold the key to send. On a keyboard, hold Space.'**
   String get referenceKeyHint;
 
-  /// From ReferenceStrings.keyLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Key mode: label on the on-screen key (short, upper case in English)
   ///
   /// In en, this message translates to:
   /// **'KEY'**
   String get referenceKeyLabel;
 
-  /// From ReferenceStrings.keyDecodedLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Key mode: label above the decoded text
   ///
   /// In en, this message translates to:
   /// **'Decoded'**
   String get referenceKeyDecodedLabel;
 
-  /// From ReferenceStrings.keyPendingLabel (apps/morsecq/lib/ui/reference/reference_strings.dart)
+  /// Translator, Key mode: label above the character currently being keyed
   ///
   /// In en, this message translates to:
   /// **'Keying'**
   String get referenceKeyPendingLabel;
 
-  /// From StatsStrings.title (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics screen: app bar title
   ///
   /// In en, this message translates to:
   /// **'Statistics'**
   String get statsTitle;
 
-  /// From StatsStrings.loading (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics screen: shown while statistics load
   ///
   /// In en, this message translates to:
   /// **'Loading your statistics...'**
   String get statsLoading;
 
-  /// From StatsStrings.loadFailed (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics screen: error when progress could not be loaded
   ///
   /// In en, this message translates to:
   /// **'Your progress could not be loaded. Pull down or reopen to retry.'**
   String get statsLoadFailed;
 
-  /// From StatsStrings.retry (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics screen: button that retries loading
   ///
   /// In en, this message translates to:
   /// **'Retry'**
   String get statsRetry;
 
-  /// From StatsStrings.emptyTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: empty state title before any session
   ///
   /// In en, this message translates to:
   /// **'No sessions yet'**
   String get statsEmptyTitle;
 
-  /// From StatsStrings.emptyBody (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: empty state explanation of what the page will show
   ///
   /// In en, this message translates to:
   /// **'Finish your first receive or send session and this page fills up with your accuracy trend, per-character strengths and a practice calendar.'**
   String get statsEmptyBody;
 
-  /// From StatsStrings.emptyCallToAction (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: empty state call to action; the quoted button name must match learnContinueLesson
   ///
   /// In en, this message translates to:
   /// **'Head to Learn and press \"Continue lesson\" to start.'**
   String get statsEmptyCallToAction;
 
-  /// From StatsStrings.overviewTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: title of the overview tiles section
   ///
   /// In en, this message translates to:
   /// **'Overview'**
   String get statsOverviewTitle;
 
-  /// From StatsStrings.tileLesson (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics overview: label of the Koch lesson tile
   ///
   /// In en, this message translates to:
   /// **'Koch lesson'**
   String get statsTileLesson;
 
-  /// From StatsStrings.tileAccuracy (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics overview / summary card: label of the accuracy tile
   ///
   /// In en, this message translates to:
   /// **'Accuracy'**
   String get statsTileAccuracy;
 
-  /// From StatsStrings.noData (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: placeholder shown for a value that has no data yet
   ///
   /// In en, this message translates to:
   /// **'--'**
   String get statsNoData;
 
-  /// From StatsStrings.tilePractice (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics overview: label of the practice totals tile
   ///
   /// In en, this message translates to:
   /// **'Practice'**
   String get statsTilePractice;
 
-  /// From StatsStrings.tileStreak (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics overview / summary card: label of the streak tile
   ///
   /// In en, this message translates to:
   /// **'Streak'**
   String get statsTileStreak;
 
-  /// From StatsStrings.tileDailyGoal (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics overview: label of the daily goal tile
   ///
   /// In en, this message translates to:
   /// **'Daily goal'**
   String get statsTileDailyGoal;
 
-  /// From StatsStrings.goalMet (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, daily goal tile: detail line when today's goal is reached
   ///
   /// In en, this message translates to:
   /// **'Reached today'**
   String get statsGoalMet;
 
-  /// From StatsStrings.summaryTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics summary card: title (the card is not placed on any screen at the moment)
   ///
   /// In en, this message translates to:
   /// **'Your stats'**
   String get statsSummaryTitle;
 
-  /// From StatsStrings.summaryOpen (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics summary card: link that opens the statistics screen (the card is not placed on any screen at the moment)
   ///
   /// In en, this message translates to:
   /// **'View statistics'**
   String get statsSummaryOpen;
 
-  /// From StatsStrings.trendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: title of the accuracy trend chart
   ///
   /// In en, this message translates to:
   /// **'Accuracy trend'**
   String get statsTrendTitle;
 
-  /// From StatsStrings.trendHint (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, accuracy trend chart: hint below the chart
   ///
   /// In en, this message translates to:
   /// **'Tap a point to inspect a session.'**
   String get statsTrendHint;
 
-  /// From StatsStrings.seriesReceive (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, accuracy trend chart: legend / tooltip for receive (copy) sessions
   ///
   /// In en, this message translates to:
   /// **'Receive'**
   String get statsSeriesReceive;
 
-  /// From StatsStrings.seriesSend (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, accuracy trend chart: legend / tooltip for send (keying) sessions
   ///
   /// In en, this message translates to:
   /// **'Send'**
   String get statsSeriesSend;
 
-  /// From StatsStrings.axisSessions (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, accuracy trend chart: x-axis label
   ///
   /// In en, this message translates to:
   /// **'Session'**
   String get statsAxisSessions;
 
-  /// From StatsStrings.charsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: title of the per-character grid
   ///
   /// In en, this message translates to:
   /// **'Characters'**
   String get statsCharsTitle;
 
-  /// From StatsStrings.charsSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid: subtitle
   ///
   /// In en, this message translates to:
   /// **'Koch order. Tap a character for detail.'**
   String get statsCharsSubtitle;
 
-  /// From StatsStrings.charsNotStarted (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid / detail: a character never practised
   ///
   /// In en, this message translates to:
   /// **'Not practised yet'**
   String get statsCharsNotStarted;
 
-  /// From StatsStrings.notInCourse (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: character outside the Koch course
   ///
   /// In en, this message translates to:
   /// **'Not part of the Koch course'**
   String get statsNotInCourse;
 
-  /// From StatsStrings.srsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: heading of the spaced-repetition section
   ///
   /// In en, this message translates to:
   /// **'Spaced repetition'**
   String get statsSrsTitle;
 
-  /// From StatsStrings.srsNotTracked (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: character not yet scheduled for review
   ///
   /// In en, this message translates to:
   /// **'Not scheduled yet'**
   String get statsSrsNotTracked;
 
-  /// From StatsStrings.srsDueNow (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: character due for review now
   ///
   /// In en, this message translates to:
   /// **'Due now'**
   String get statsSrsDueNow;
 
-  /// From StatsStrings.confusionsTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: heading over the characters it is confused with
   ///
   /// In en, this message translates to:
   /// **'Most often confused with'**
   String get statsConfusionsTitle;
 
-  /// From StatsStrings.confusionsNone (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character detail: no confusions recorded
   ///
   /// In en, this message translates to:
   /// **'No confusions recorded'**
   String get statsConfusionsNone;
 
-  /// From StatsStrings.confusionMissed (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: shown in place of the answered character when nothing was typed (lower case)
   ///
   /// In en, this message translates to:
   /// **'missed'**
   String get statsConfusionMissed;
 
-  /// From StatsStrings.bucketLegendTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid: title of the accuracy colour legend
   ///
   /// In en, this message translates to:
   /// **'Accuracy'**
   String get statsBucketLegendTitle;
 
-  /// From StatsStrings.bucketNone (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid legend: no data bucket
   ///
   /// In en, this message translates to:
   /// **'None'**
   String get statsBucketNone;
 
-  /// From StatsStrings.bucketWeak (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid legend: accuracy under 70%
   ///
   /// In en, this message translates to:
   /// **'< 70%'**
   String get statsBucketWeak;
 
-  /// From StatsStrings.bucketFair (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid legend: accuracy 70 to 89%
   ///
   /// In en, this message translates to:
   /// **'70-89%'**
   String get statsBucketFair;
 
-  /// From StatsStrings.bucketGood (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid legend: accuracy 90 to 97%
   ///
   /// In en, this message translates to:
   /// **'90-97%'**
   String get statsBucketGood;
 
-  /// From StatsStrings.bucketStrong (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, character grid legend: accuracy 98% or more
   ///
   /// In en, this message translates to:
   /// **'>= 98%'**
   String get statsBucketStrong;
 
-  /// From StatsStrings.heatmapTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: title of the confusion heatmap
   ///
   /// In en, this message translates to:
   /// **'Confusions'**
   String get statsHeatmapTitle;
 
-  /// From StatsStrings.heatmapSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: how to read rows and columns
   ///
   /// In en, this message translates to:
   /// **'Rows are the sent character, columns what you answered. Darker means more often.'**
   String get statsHeatmapSubtitle;
 
-  /// From StatsStrings.heatmapEmpty (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: empty state
   ///
   /// In en, this message translates to:
   /// **'No confusions yet. Wrong answers will show up here.'**
   String get statsHeatmapEmpty;
 
-  /// From StatsStrings.heatmapLegendLow (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: legend end for rare confusions
   ///
   /// In en, this message translates to:
   /// **'Rare'**
   String get statsHeatmapLegendLow;
 
-  /// From StatsStrings.heatmapLegendHigh (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: legend end for frequent confusions
   ///
   /// In en, this message translates to:
   /// **'Frequent'**
   String get statsHeatmapLegendHigh;
 
-  /// From StatsStrings.heatmapAxisTarget (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: row axis name (the character that was sent)
   ///
   /// In en, this message translates to:
   /// **'Sent'**
   String get statsHeatmapAxisTarget;
 
-  /// From StatsStrings.heatmapAxisAnswered (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, confusion heatmap: column axis name (what the user answered)
   ///
   /// In en, this message translates to:
   /// **'Answered'**
   String get statsHeatmapAxisAnswered;
 
-  /// From StatsStrings.calendarTitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics: title of the practice calendar
   ///
   /// In en, this message translates to:
   /// **'Practice calendar'**
   String get statsCalendarTitle;
 
-  /// From StatsStrings.calendarSubtitle (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, practice calendar: the period shown
   ///
   /// In en, this message translates to:
   /// **'Last 12 weeks'**
   String get statsCalendarSubtitle;
 
-  /// From StatsStrings.calendarLegendLess (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, practice calendar: legend end for little practice
   ///
   /// In en, this message translates to:
   /// **'Less'**
   String get statsCalendarLegendLess;
 
-  /// From StatsStrings.calendarLegendMore (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, practice calendar: legend end for much practice
   ///
   /// In en, this message translates to:
   /// **'More'**
   String get statsCalendarLegendMore;
 
-  /// From StatsStrings.streakExplanation (apps/morsecq/lib/ui/stats/stats_strings.dart)
+  /// Statistics, practice calendar: explanation of how a streak is counted
   ///
   /// In en, this message translates to:
   /// **'A streak counts consecutive calendar days with at least one session. Skipping a whole day resets it; practising twice in a day counts once.'**
   String get statsStreakExplanation;
 
-  /// From LearnStrings.statistics (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Learn home: tooltip of the button that opens the statistics screen
   ///
   /// In en, this message translates to:
   /// **'Statistics'**
   String get learnStatistics;
 
-  /// From ListenStrings.title (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen (microphone decoder) screen title and tooltip of the Reference button that opens it
   ///
   /// In en, this message translates to:
   /// **'Listen'**
   String get listenTitle;
 
-  /// From ListenStrings.start (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: button that starts decoding from the microphone
   ///
   /// In en, this message translates to:
   /// **'Start'**
   String get listenStart;
 
-  /// From ListenStrings.stop (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: button that stops decoding
   ///
   /// In en, this message translates to:
   /// **'Stop'**
   String get listenStop;
 
-  /// From ListenStrings.starting (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: status while the microphone starts
   ///
   /// In en, this message translates to:
   /// **'Starting microphone...'**
   String get listenStarting;
 
-  /// From ListenStrings.clear (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: tooltip of the button that clears the decoded text
   ///
   /// In en, this message translates to:
   /// **'Clear text'**
   String get listenClear;
 
-  /// From ListenStrings.copy (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: tooltip of the button that copies the decoded text
   ///
   /// In en, this message translates to:
   /// **'Copy text'**
   String get listenCopy;
 
-  /// From ListenStrings.copied (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: snackbar after the decoded text was copied
   ///
   /// In en, this message translates to:
   /// **'Decoded text copied'**
   String get listenCopied;
 
-  /// From ListenStrings.settings (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings sheet title and tooltip of its button
   ///
   /// In en, this message translates to:
   /// **'Listen settings'**
   String get listenSettings;
 
-  /// From ListenStrings.decoded (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: label above the decoded text
   ///
   /// In en, this message translates to:
   /// **'Decoded'**
   String get listenDecoded;
 
-  /// From ListenStrings.emptyHint (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: placeholder while listening but nothing decoded yet
   ///
   /// In en, this message translates to:
   /// **'Point the microphone at a Morse tone. Decoded text appears here.'**
   String get listenEmptyHint;
 
-  /// From ListenStrings.idleHint (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: placeholder before listening starts; 'Start' refers to listenStart
   ///
   /// In en, this message translates to:
   /// **'Tap Start to listen for a Morse tone.'**
   String get listenIdleHint;
 
-  /// From ListenStrings.pending (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: label of the character currently being received
   ///
   /// In en, this message translates to:
   /// **'Receiving'**
   String get listenPending;
 
-  /// From ListenStrings.speed (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: label of the estimated sending speed
   ///
   /// In en, this message translates to:
   /// **'Speed'**
   String get listenSpeed;
 
-  /// From ListenStrings.speedUnknown (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: shown instead of a speed before one can be estimated; same form as learnWpmUnknown
   ///
   /// In en, this message translates to:
   /// **'-- WPM'**
   String get listenSpeedUnknown;
 
-  /// From ListenStrings.level (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: label of the input signal level meter
   ///
   /// In en, this message translates to:
   /// **'Signal'**
   String get listenLevel;
 
-  /// From ListenStrings.toneOn (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: label of the tone-detected indicator
   ///
   /// In en, this message translates to:
   /// **'Tone'**
   String get listenToneOn;
 
-  /// From ListenStrings.tone (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: title of the tone frequency control
   ///
   /// In en, this message translates to:
   /// **'Tone frequency'**
   String get listenTone;
 
-  /// From ListenStrings.toneLocked (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: auto-tune has locked onto a tone
   ///
   /// In en, this message translates to:
   /// **'Locked'**
   String get listenToneLocked;
 
-  /// From ListenStrings.toneSearching (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: auto-tune is still searching for a tone
   ///
   /// In en, this message translates to:
   /// **'Searching'**
   String get listenToneSearching;
 
-  /// From ListenStrings.toneManual (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: the frequency is tuned by hand
   ///
   /// In en, this message translates to:
   /// **'Manual'**
   String get listenToneManual;
 
-  /// From ListenStrings.autoTune (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: switch for automatic tone tracking
   ///
   /// In en, this message translates to:
   /// **'Auto-tune'**
   String get listenAutoTune;
 
-  /// From ListenStrings.autoTuneHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: explanation under the auto-tune switch
   ///
   /// In en, this message translates to:
   /// **'Follow the strongest tone between 400 and 1000 Hz. Drag the slider to tune by hand instead.'**
   String get listenAutoTuneHelp;
 
-  /// From ListenStrings.retune (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: button that returns to automatic tuning (short)
   ///
   /// In en, this message translates to:
   /// **'Auto'**
   String get listenRetune;
 
-  /// From ListenStrings.blockSize (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: title of the analysis block size setting
   ///
   /// In en, this message translates to:
   /// **'Analysis block'**
   String get listenBlockSize;
 
-  /// From ListenStrings.blockSizeHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: explanation of the analysis block size
   ///
   /// In en, this message translates to:
   /// **'Smaller blocks place mark edges more precisely but pick up more noise. 256 samples (5.3 ms) suits 5-40 WPM.'**
   String get listenBlockSizeHelp;
 
-  /// From ListenStrings.minElement (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: title of the shortest element (debounce) setting
   ///
   /// In en, this message translates to:
   /// **'Shortest element'**
   String get listenMinElement;
 
-  /// From ListenStrings.minElementHelp (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen settings: explanation of the shortest element setting
   ///
   /// In en, this message translates to:
   /// **'Tones and gaps shorter than this are ignored as clicks and dropouts.'**
   String get listenMinElementHelp;
 
-  /// From ListenStrings.permissionDenied (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen banner when microphone permission was denied
   ///
   /// In en, this message translates to:
   /// **'Microphone access was denied. Allow it in the system settings, then try again.'**
   String get listenPermissionDenied;
 
-  /// From ListenStrings.permissionRetry (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen banner: button that retries starting the microphone
   ///
   /// In en, this message translates to:
   /// **'Try again'**
   String get listenPermissionRetry;
 
-  /// From ListenStrings.startFailed (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen banner when the microphone could not be started
   ///
   /// In en, this message translates to:
   /// **'Could not start the microphone.'**
   String get listenStartFailed;
 
-  /// From ListenStrings.noInput (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen banner when no microphone input device exists
   ///
   /// In en, this message translates to:
   /// **'No microphone was found. Connect one and try again.'**
   String get listenNoInput;
 
-  /// From ListenStrings.wpm; estimated speed, pre-rounded
+  /// Listen banner shown when the microphone stream fails after capture has started.
+  ///
+  /// In en, this message translates to:
+  /// **'The microphone stopped unexpectedly. Try again.'**
+  String get listenStreamFailed;
+
+  /// Listen screen: estimated sending speed in words per minute; wpm is pre-rounded
   ///
   /// In en, this message translates to:
   /// **'{wpm} WPM'**
   String listenWpmValue(int wpm);
 
-  /// From ListenStrings.hz; detected / manual tone frequency, pre-rounded
+  /// Listen screen / settings: detected or manual tone frequency in hertz; hz is pre-rounded
   ///
   /// In en, this message translates to:
   /// **'{hz} Hz'**
   String listenHzValue(int hz);
 
-  /// From ListenStrings.blockSamples; analysis block length, ms pre-formatted with one decimal
+  /// Listen settings: analysis block length in samples and milliseconds; ms is pre-formatted with one decimal
   ///
   /// In en, this message translates to:
   /// **'{samples} samples ({ms} ms)'**
   String listenBlockSamples(int samples, String ms);
 
-  /// From ListenStrings.ms; shortest-element debounce in milliseconds
+  /// Listen settings: shortest-element debounce in milliseconds
   ///
   /// In en, this message translates to:
   /// **'{ms} ms'**
   String listenMsValue(int ms);
 
-  /// From ListenStrings.stoppedInBackground (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: status when listening stopped because the app went to the background
   ///
   /// In en, this message translates to:
   /// **'Listening stopped while the app was in the background.'**
   String get listenStoppedInBackground;
 
-  /// From LearnStrings.wpmUnknown (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tips: shown instead of a speed when it could not be measured; same form as listenSpeedUnknown
   ///
   /// In en, this message translates to:
-  /// **'- wpm'**
+  /// **'-- WPM'**
   String get learnWpmUnknown;
 
-  /// From LearnStrings.tipDitTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: dits were keyed too long
   ///
   /// In en, this message translates to:
   /// **'Dits too long'**
   String get learnTipDitTooLongTitle;
 
-  /// From LearnStrings.tipDahTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: dahs were keyed too short
   ///
   /// In en, this message translates to:
   /// **'Dahs too short'**
   String get learnTipDahTooShortTitle;
 
-  /// From LearnStrings.tipIntraGapTooLongTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: gaps inside a character were too long
   ///
   /// In en, this message translates to:
   /// **'Elements spread out'**
   String get learnTipIntraGapTooLongTitle;
 
-  /// From LearnStrings.tipCharGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: gaps between characters were too short
   ///
   /// In en, this message translates to:
   /// **'Characters crowded'**
   String get learnTipCharGapTooShortTitle;
 
-  /// From LearnStrings.tipWordGapTooShortTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: gaps between words were too short
   ///
   /// In en, this message translates to:
   /// **'Words crowded'**
   String get learnTipWordGapTooShortTitle;
 
-  /// From LearnStrings.tipSpeedUnsteadyTitle (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip title: keying speed varied too much
   ///
   /// In en, this message translates to:
   /// **'Speed unsteady'**
   String get learnTipSpeedUnsteadyTitle;
 
-  /// From LearnStrings.severityMinor (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip: severity tag for a minor issue (lower case, shown next to the tip title)
   ///
   /// In en, this message translates to:
   /// **'minor'**
   String get learnSeverityMinor;
 
-  /// From LearnStrings.severityModerate (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip: severity tag for a noticeable issue
   ///
   /// In en, this message translates to:
   /// **'noticeable'**
   String get learnSeverityModerate;
 
-  /// From LearnStrings.severitySevere (apps/morsecq/lib/ui/learn/learn_strings.dart)
+  /// Send practice tip: severity tag for a major issue
   ///
   /// In en, this message translates to:
   /// **'major'**
@@ -3677,31 +3689,31 @@ abstract class S {
   /// **'{seconds}s'**
   String statsDurationSeconds(int seconds);
 
-  /// From AccountStrings.newPasswordRequired (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Change password page: validation error when the new password field is empty
   ///
   /// In en, this message translates to:
   /// **'Enter a new password'**
   String get accountNewPasswordRequired;
 
-  /// From AccountStrings.toxIdQrSemantics (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Screen-reader label of the Tox ID QR code image
   ///
   /// In en, this message translates to:
   /// **'Tox ID QR code'**
   String get accountToxIdQrSemantics;
 
-  /// From AccountStrings.backupSaveDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Title of the system save-file dialog when exporting a backup (desktop)
   ///
   /// In en, this message translates to:
   /// **'Save MorseCQ backup'**
   String get accountBackupSaveDialogTitle;
 
-  /// From AccountStrings.backupShareSubject (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Subject line passed to the system share sheet when sharing a backup (mobile, e.g. e-mail subject)
   ///
   /// In en, this message translates to:
   /// **'MorseCQ identity backup'**
   String get accountBackupShareSubject;
 
-  /// From AccountStrings.backupChooseDialogTitle (apps/morsecq/lib/ui/account/account_strings.dart)
+  /// Title of the system open-file dialog when choosing a backup to restore
   ///
   /// In en, this message translates to:
   /// **'Choose MorseCQ backup'**
@@ -3779,13 +3791,13 @@ abstract class S {
   /// **'({badge}) {app}'**
   String desktopWindowTitleUnread(String badge, String app);
 
-  /// From ListenStrings.stateOn (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: value of the tone indicator when a tone is present (screen-reader)
   ///
   /// In en, this message translates to:
   /// **'On'**
   String get listenStateOn;
 
-  /// From ListenStrings.stateOff (apps/morsecq/lib/ui/listen/listen_strings.dart)
+  /// Listen screen: value of the tone indicator when no tone is present (screen-reader)
   ///
   /// In en, this message translates to:
   /// **'Off'**
@@ -3869,139 +3881,139 @@ abstract class S {
   /// **'not in this codebook'**
   String get referenceTelegraphNone;
 
-  /// No description provided for @appearanceTitle.
+  /// Appearance page title and tooltip of the Learn home button that opens it
   ///
   /// In en, this message translates to:
   /// **'Appearance'**
   String get appearanceTitle;
 
-  /// No description provided for @appearanceStyles.
+  /// Appearance page: heading over the interface style choices
   ///
   /// In en, this message translates to:
   /// **'Interface style'**
   String get appearanceStyles;
 
-  /// No description provided for @appearanceChoose.
+  /// Appearance page: instruction under the style heading
   ///
   /// In en, this message translates to:
   /// **'Choose a style, preview, then apply'**
   String get appearanceChoose;
 
-  /// No description provided for @appearanceMode.
+  /// Appearance page: heading over the light / dark choice
   ///
   /// In en, this message translates to:
   /// **'Brightness'**
   String get appearanceMode;
 
-  /// No description provided for @appearancePreview.
+  /// Appearance page: heading over the live preview
   ///
   /// In en, this message translates to:
   /// **'Preview'**
   String get appearancePreview;
 
-  /// No description provided for @appearanceApply.
+  /// Appearance page: button that saves the chosen style
   ///
   /// In en, this message translates to:
   /// **'Apply style'**
   String get appearanceApply;
 
-  /// No description provided for @appearanceRestore.
+  /// Appearance page: button that resets style and brightness to defaults
   ///
   /// In en, this message translates to:
   /// **'Restore defaults'**
   String get appearanceRestore;
 
-  /// No description provided for @appearanceApplied.
+  /// Appearance page: snackbar after saving
   ///
   /// In en, this message translates to:
   /// **'Appearance saved'**
   String get appearanceApplied;
 
-  /// No description provided for @appearanceSaveFailed.
+  /// Appearance page: snackbar when saving failed
   ///
   /// In en, this message translates to:
   /// **'Could not save appearance. Try again.'**
   String get appearanceSaveFailed;
 
-  /// No description provided for @appearanceClassic.
+  /// Appearance style name (brass-instrument themed); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Classic Brass'**
   String get appearanceClassic;
 
-  /// No description provided for @appearanceModern.
+  /// Appearance style name (calm modern theme); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Modern Calm'**
   String get appearanceModern;
 
-  /// No description provided for @appearanceRadio.
+  /// Appearance style name (dark radio-room theme); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Night Radio'**
   String get appearanceRadio;
 
-  /// No description provided for @appearancePaper.
+  /// Appearance style name (printed handbook theme); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Paper Handbook'**
   String get appearancePaper;
 
-  /// No description provided for @appearanceCartoon.
+  /// Appearance style name (bright cartoon theme); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Fresh Cartoon'**
   String get appearanceCartoon;
 
-  /// No description provided for @appearanceLight.
+  /// Appearance page: light brightness option
   ///
   /// In en, this message translates to:
   /// **'Light'**
   String get appearanceLight;
 
-  /// No description provided for @appearanceDark.
+  /// Appearance page: dark brightness option
   ///
   /// In en, this message translates to:
   /// **'Dark'**
   String get appearanceDark;
 
-  /// No description provided for @appearanceSubtitle.
+  /// Subtitle describing the appearance options (currently unused)
   ///
   /// In en, this message translates to:
   /// **'Five styles with light and dark modes'**
   String get appearanceSubtitle;
 
-  /// No description provided for @chatClearHistoryBody.
+  /// Conversation: body of the clear-history confirmation
   ///
   /// In en, this message translates to:
   /// **'Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.'**
   String get chatClearHistoryBody;
 
-  /// No description provided for @chatLoadEarlier.
+  /// Conversation timeline: button at the top that loads older messages
   ///
   /// In en, this message translates to:
   /// **'Load earlier messages'**
   String get chatLoadEarlier;
 
-  /// No description provided for @chatHistoryLoadFailed.
+  /// Conversation timeline: text of the button at the top when loading older messages failed; tapping it retries
   ///
   /// In en, this message translates to:
   /// **'Could not load earlier messages. Tap to retry.'**
   String get chatHistoryLoadFailed;
 
-  /// No description provided for @chatRetryHistory.
+  /// Conversation: button that retries loading the history after a failure
   ///
   /// In en, this message translates to:
   /// **'Retry'**
   String get chatRetryHistory;
 
-  /// No description provided for @chatNewMessages.
+  /// Conversation: button shown while new messages arrived below the visible part of the timeline; tapping it jumps to the latest message
   ///
   /// In en, this message translates to:
   /// **'{count} new messages'**
   String chatNewMessages(int count);
 
-  /// No description provided for @learnShowAllChars.
+  /// Learn home, Koch lesson card: button that expands the learned-character list to all {count} characters
   ///
   /// In en, this message translates to:
   /// **'Show all {count} characters'**
@@ -4025,7 +4037,7 @@ abstract class S {
   /// **'Drafts, practice and notes · never sent'**
   String get chatSelfContactSubtitle;
 
-  /// No description provided for @learnShowFewerChars.
+  /// Learn home, Koch lesson card: button that collapses the expanded learned-character list
   ///
   /// In en, this message translates to:
   /// **'Show fewer characters'**

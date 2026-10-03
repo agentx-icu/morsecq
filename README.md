@@ -15,7 +15,7 @@ Tim2Tox wire protocol as its sibling project **toxee**, so the two interoperate.
 ## Status
 
 **Pre-alpha.** All planned v1 modules are wired into the app shell and pass the
-repository gates (analyzer, complexity, import guard, ARB sync) and the full
+repository gates (analyzer, complexity, import guard, UI literal guard) and the full
 test pyramid (unit, widget, and real-UI launch tests on macOS, iOS simulator
 and Android emulator; see [doc/testing/TEST_PYRAMID.md](doc/testing/TEST_PYRAMID.md)).
 There is no usable release yet. Expect breaking changes everywhere.
@@ -118,7 +118,7 @@ This is a pub workspace (one `dart pub get` at the root resolves everything).
 | `packages/morsecq_chat` | Tox transport implementing the contract on Tim2Tox (the only package that touches Tim2Tox / the Tencent SDK) |
 | `apps/morsecq` | The Flutter app: Material 3, responsive Learn / Chat / Groups / Reference / Me shell, startup gate, notifications, desktop shell, l10n |
 | `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — never edited in place |
-| `tool/` | Repository gates (500-LOC complexity guard, import/layering guard), dependency bootstrap, native build helpers |
+| `tool/` | Repository gates (500-LOC complexity guard, import/layering guard, UI literal guard for localisation), dependency bootstrap, native build helpers |
 | `doc/` | Documentation tree — see [doc/README.md](doc/README.md) |
 
 ## Build prerequisites
@@ -139,6 +139,7 @@ dart pub get
 flutter analyze apps/morsecq
 dart run tool/check_complexity.dart
 dart run tool/import_guard.dart
+dart run tool/ui_literal_guard.dart
 (cd apps/morsecq && flutter test)
 (cd apps/morsecq && flutter run)
 ```
