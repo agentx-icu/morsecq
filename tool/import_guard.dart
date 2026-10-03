@@ -25,14 +25,15 @@ const _rules = <ImportRule>[
   ImportRule(
     name: 'pure-dart-engine',
     description:
-        'morse_core, morse_trainer, morse_dsp and morsecq_chat_api are pure '
-        'Dart and must not depend on Flutter.',
+        'morse_core, morse_trainer, morse_dsp, radio_tools and '
+        'morsecq_chat_api are pure Dart and must not depend on Flutter.',
     forbiddenPrefixes: ['package:flutter/', 'package:flutter_test/'],
     // The rule only applies inside these subtrees; everything else is exempt.
     appliesOnlyTo: [
       'packages/morse_core/',
       'packages/morse_trainer/',
       'packages/morse_dsp/',
+      'packages/radio_tools/',
       'packages/morsecq_chat_api/',
     ],
   ),

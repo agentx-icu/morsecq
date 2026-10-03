@@ -26,9 +26,12 @@ this convention, so `<BT>` in `MorseAlphabet.kochOrder` just works.
 | Settings | `TrainerSettings` (char/Farnsworth wpm, tone, session length, `toTiming()`, JSON) | `src/trainer_settings.dart` |
 | Drills | `Drill`, `DrillGenerator` | `src/drill.dart` |
 | | `RandomGroupsDrill` (weighted groups of 5) | `src/random_groups_drill.dart` |
-| | `WordDrill` (+ `WordLists.commonWords`, `WordLists.cwAbbreviations`) | `src/word_drill.dart`, `src/word_lists.dart` |
+| | `WordDrill` (+ `WordLists.commonWords`, `WordLists.cwAbbreviations`, `WordLists.qCodes`; `WordDrill.radioShorthand` mixes the last two) | `src/word_drill.dart`, `src/word_lists.dart` |
+| | `NumberGroupsDrill` (digit groups from the allowed digits) | `src/number_groups_drill.dart` |
+| | `ConfusableDrill` (minimal pairs from the confusion matrix and one-element pattern neighbours) | `src/confusable_drill.dart` |
 | | `CallsignDrill` (prefix + digit + suffix, optional symbol filter) | `src/callsign_drill.dart` |
 | | `QsoDrill` (templated exchanges, single line or full QSO) | `src/qso_drill.dart` |
+| | `ContestExchangeDrill` (`call 599 nnn`, optionally cut numbers `5NN TT7`) | `src/contest_drill.dart` |
 | Scoring | `SessionScore` (Needleman-Wunsch alignment, per-char stats), `ConfusionMatrix`, `CharStats`, `SequenceAligner` | `src/session_score.dart`, `src/confusion_matrix.dart`, `src/char_stats.dart`, `src/alignment.dart` |
 | Weighting / SRS | `CharWeights` (`w = max(floor, 1 + k(1 - acc))` x recency boost), `SrsScheduler` (Leitner boxes 0..4, `dueChars(now)`) | `src/char_weights.dart`, `src/srs_scheduler.dart` |
 | Send practice | `SendAttempt`, `SendDiagnostics`, `SendIssue`, `SendIssueKind`, `SendThresholds` | `src/send_practice.dart` |

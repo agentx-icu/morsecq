@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../training/receive_session.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
 import '../stats/stats_screen.dart';
@@ -10,6 +9,7 @@ import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'receive/drill_picker_sheet.dart';
 import 'receive/receive_drill_screen.dart';
 import 'review/review_screen.dart';
 import 'send/send_practice_screen.dart';
@@ -45,31 +45,9 @@ class LearnHome extends StatelessWidget {
   );
 
   Future<void> _receivePractice(BuildContext context) async {
-    final kinds = controller.availableReceiveKinds;
-    final s = context.s;
-    final kind = await showModalBottomSheet<ReceiveDrillKind>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                s.learnChooseDrill,
-                style: Theme.of(sheetContext).textTheme.titleMedium,
-              ),
-            ),
-            for (final k in kinds)
-              ListTile(
-                leading: Icon(_iconFor(k)),
-                title: Text(_labelFor(s, k)),
-                onTap: () => Navigator.of(sheetContext).pop(k),
-              ),
-          ],
-        ),
-      ),
+    final kind = await showDrillPickerSheet(
+      context,
+      controller.availableReceiveKinds,
     );
     if (kind == null || !context.mounted) {
       return;
@@ -95,22 +73,6 @@ class LearnHome extends StatelessWidget {
   void _settings(BuildContext context) => Navigator.of(context).push(
     TrainingSettingsScreen.route(controller: controller, playback: playback),
   );
-
-  static IconData _iconFor(ReceiveDrillKind kind) => switch (kind) {
-    ReceiveDrillKind.groups => Icons.grid_view,
-    ReceiveDrillKind.words => Icons.text_fields,
-    ReceiveDrillKind.callsigns => Icons.badge_outlined,
-    ReceiveDrillKind.qso => Icons.forum_outlined,
-    ReceiveDrillKind.review => Icons.replay,
-  };
-
-  static String _labelFor(S s, ReceiveDrillKind kind) => switch (kind) {
-    ReceiveDrillKind.groups => s.learnDrillGroups,
-    ReceiveDrillKind.words => s.learnDrillWords,
-    ReceiveDrillKind.callsigns => s.learnDrillCallsigns,
-    ReceiveDrillKind.qso => s.learnDrillQso,
-    ReceiveDrillKind.review => s.learnReviewTitle,
-  };
 
   @override
   Widget build(BuildContext context) {

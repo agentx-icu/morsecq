@@ -23,9 +23,12 @@ MorseCQ 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程�
 | 设置 | `TrainerSettings`（字符/Farnsworth wpm、音调、会话长度、`toTiming()`、JSON） | `src/trainer_settings.dart` |
 | 练习 | `Drill`、`DrillGenerator` | `src/drill.dart` |
 | | `RandomGroupsDrill`（加权的 5 字符组） | `src/random_groups_drill.dart` |
-| | `WordDrill`（+ `WordLists.commonWords`、`WordLists.cwAbbreviations`） | `src/word_drill.dart`、`src/word_lists.dart` |
+| | `WordDrill`（+ `WordLists.commonWords`、`WordLists.cwAbbreviations`、`WordLists.qCodes`；`WordDrill.radioShorthand` 混合后两者） | `src/word_drill.dart`、`src/word_lists.dart` |
+| | `NumberGroupsDrill`（取允许数字组成的数字组） | `src/number_groups_drill.dart` |
+| | `ConfusableDrill`（成对对比：混淆矩阵中的易混对 + 码型只差一个点划的邻居） | `src/confusable_drill.dart` |
 | | `CallsignDrill`（前缀 + 数字 + 后缀，可选符号过滤） | `src/callsign_drill.dart` |
 | | `QsoDrill`（模板化通联，单行或完整 QSO） | `src/qso_drill.dart` |
+| | `ContestExchangeDrill`（`呼号 599 序号`，可用缩略数字 `5NN TT7`） | `src/contest_drill.dart` |
 | 评分 | `SessionScore`（Needleman-Wunsch 对齐、逐字符统计）、`ConfusionMatrix`、`CharStats`、`SequenceAligner` | `src/session_score.dart`、`src/confusion_matrix.dart`、`src/char_stats.dart`、`src/alignment.dart` |
 | 权重 / SRS | `CharWeights`（`w = max(floor, 1 + k(1 - acc))` x 近期加成）、`SrsScheduler`（Leitner 盒 0..4，`dueChars(now)`） | `src/char_weights.dart`、`src/srs_scheduler.dart` |
 | 发报练习 | `SendAttempt`、`SendDiagnostics`、`SendIssue`、`SendIssueKind`、`SendThresholds` | `src/send_practice.dart` |
