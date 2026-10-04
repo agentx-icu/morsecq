@@ -175,7 +175,9 @@ final class RadioScenario {
     final period = json['fadePeriodMs'];
     return RadioScenario(
       version: json['v'] is int ? json['v']! as int : currentVersion,
-      preset: RadioPreset.parse(json['preset'] as String?),
+      preset: RadioPreset.parse(
+        json['preset'] is String ? json['preset']! as String : null,
+      ),
       seed: seed,
       characterWpm: cw.toDouble(),
       effectiveWpm: ew.toDouble(),

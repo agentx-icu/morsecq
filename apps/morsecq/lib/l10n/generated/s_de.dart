@@ -4209,4 +4209,7 @@ class SDe extends S {
 
   @override
   String get groupPracticeDeleteBody => 'Runden und lokale Ergebnisse werden von diesem Gerät entfernt. Dein Trainingsverlauf und die Gruppennachrichten bleiben.';
+
+  @override
+  String get conditionsAudioFailed => 'Der Ton ließ sich auf diesem Gerät nicht starten. Übe stattdessen mit klaren Bedingungen.';
 }

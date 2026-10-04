@@ -4166,4 +4166,7 @@ class SKo extends S {
 
   @override
   String get groupPracticeDeleteBody => '라운드와 이 기기의 결과가 삭제됩니다. 연습 기록과 그룹 메시지는 남습니다.';
+
+  @override
+  String get conditionsAudioFailed => '이 기기에서 오디오를 시작하지 못했습니다. 깨끗한 환경으로 연습하세요.';
 }

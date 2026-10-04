@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "Para compartir, manipula tú mismo el resultado en el chat del grupo, p. ej. {done}/{total} {accuracy}%. No se envía nada automáticamente.",
   "groupPracticeComplete": "Terminar sesión",
   "groupPracticeDeleteTitle": "¿Eliminar esta sesión?",
-  "groupPracticeDeleteBody": "Sus rondas y resultados locales se eliminan de este dispositivo. Tu historial de práctica y los mensajes del grupo se conservan."
+  "groupPracticeDeleteBody": "Sus rondas y resultados locales se eliminan de este dispositivo. Tu historial de práctica y los mensajes del grupo se conservan.",
+  "conditionsAudioFailed": "No se pudo iniciar el audio en este dispositivo. Practica con condiciones limpias."
 }

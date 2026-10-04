@@ -4208,4 +4208,7 @@ class SEn extends S {
 
   @override
   String get groupPracticeDeleteBody => 'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.';
+
+  @override
+  String get conditionsAudioFailed => 'The audio could not be started on this device. Practise with Clear conditions instead.';
 }

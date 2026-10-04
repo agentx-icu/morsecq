@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "Zum Teilen gib dein Ergebnis selbst im Gruppenchat, z. B. {done}/{total} {accuracy}%. Nichts wird automatisch gesendet.",
   "groupPracticeComplete": "Sitzung beenden",
   "groupPracticeDeleteTitle": "Diese Sitzung löschen?",
-  "groupPracticeDeleteBody": "Runden und lokale Ergebnisse werden von diesem Gerät entfernt. Dein Trainingsverlauf und die Gruppennachrichten bleiben."
+  "groupPracticeDeleteBody": "Runden und lokale Ergebnisse werden von diesem Gerät entfernt. Dein Trainingsverlauf und die Gruppennachrichten bleiben.",
+  "conditionsAudioFailed": "Der Ton ließ sich auf diesem Gerät nicht starten. Übe stattdessen mit klaren Bedingungen."
 }

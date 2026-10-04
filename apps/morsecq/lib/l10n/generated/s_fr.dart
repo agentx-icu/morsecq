@@ -4210,4 +4210,7 @@ class SFr extends S {
 
   @override
   String get groupPracticeDeleteBody => 'Ses manches et résultats locaux sont supprimés de cet appareil. Votre historique d\'entraînement et les messages du groupe restent.';
+
+  @override
+  String get conditionsAudioFailed => 'Le son n\'a pas pu démarrer sur cet appareil. Entraînez-vous plutôt en conditions claires.';
 }

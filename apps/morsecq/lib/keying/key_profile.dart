@@ -195,7 +195,9 @@ final class KeyProfile {
       dit: keys(json['dit']),
       dah: keys(json['dah']),
       swapPaddles: flag('swapPaddles', false),
-      keyerMode: KeyerMode.parse(json['keyerMode'] as String?),
+      keyerMode: KeyerMode.parse(
+        json['keyerMode'] is String ? json['keyerMode']! as String : null,
+      ),
       adapterKeyer: flag('adapterKeyer', false),
       appSidetone: flag('appSidetone', true),
     );

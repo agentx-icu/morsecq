@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "Pour partager, manipulez vous-même votre résultat dans le chat du groupe, par ex. {done}/{total} {accuracy}%. Rien n'est envoyé automatiquement.",
   "groupPracticeComplete": "Terminer la séance",
   "groupPracticeDeleteTitle": "Supprimer cette séance ?",
-  "groupPracticeDeleteBody": "Ses manches et résultats locaux sont supprimés de cet appareil. Votre historique d'entraînement et les messages du groupe restent."
+  "groupPracticeDeleteBody": "Ses manches et résultats locaux sont supprimés de cet appareil. Votre historique d'entraînement et les messages du groupe restent.",
+  "conditionsAudioFailed": "Le son n'a pas pu démarrer sur cet appareil. Entraînez-vous plutôt en conditions claires."
 }

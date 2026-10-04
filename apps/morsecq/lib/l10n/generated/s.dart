@@ -7249,6 +7249,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.'**
   String get groupPracticeDeleteBody;
+
+  /// Receive drill: the conditions audio could not be started
+  ///
+  /// In en, this message translates to:
+  /// **'The audio could not be started on this device. Practise with Clear conditions instead.'**
+  String get conditionsAudioFailed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

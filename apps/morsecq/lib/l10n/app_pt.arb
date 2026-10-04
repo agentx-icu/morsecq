@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "Para compartilhar, manipule você mesmo o resultado no chat do grupo, ex.: {done}/{total} {accuracy}%. Nada é enviado automaticamente.",
   "groupPracticeComplete": "Encerrar sessão",
   "groupPracticeDeleteTitle": "Excluir esta sessão?",
-  "groupPracticeDeleteBody": "Suas rodadas e resultados locais são removidos deste dispositivo. Seu histórico de treino e as mensagens do grupo permanecem."
+  "groupPracticeDeleteBody": "Suas rodadas e resultados locais são removidos deste dispositivo. Seu histórico de treino e as mensagens do grupo permanecem.",
+  "conditionsAudioFailed": "Não foi possível iniciar o áudio neste dispositivo. Pratique com condições limpas."
 }

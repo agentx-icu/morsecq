@@ -4289,4 +4289,7 @@ class SRu extends S {
 
   @override
   String get groupPracticeDeleteBody => 'Раунды и локальные результаты будут удалены с этого устройства. История тренировок и сообщения группы останутся.';
+
+  @override
+  String get conditionsAudioFailed => 'Не удалось запустить звук на этом устройстве. Занимайтесь в чистых условиях.';
 }

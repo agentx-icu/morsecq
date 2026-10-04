@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/training/training_controller.dart';
@@ -84,7 +87,10 @@ void main() {
             controller: t.controller,
             playback: playback,
             session: session,
-            conditionsPlayback: ConditionsPlayback(player: clip),
+            conditionsPlayback: ConditionsPlayback(
+              player: clip,
+              render: ConditionsPlayback.renderNow,
+            ),
           ),
         ),
       );
@@ -159,6 +165,32 @@ void main() {
       expect(playback.sink.events, isEmpty);
     });
 
+    testWidgets('an audio engine failure is explained, not "listening" forever', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final t = await TestTraining.create(settings: kShortSettings);
+      addTearDown(t.controller.dispose);
+      final session = t.controller.startReceiveSession(ReceiveDrillKind.groups, preset: RadioPreset.light);
+      await tester.pumpWidget(
+        l10nApp(
+          home: ReceiveDrillScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+            session: session,
+            conditionsPlayback: ConditionsPlayback(
+              player: _FailingClipPlayer(),
+              render: ConditionsPlayback.renderNow,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(en.conditionsAudioFailed), findsOneWidget);
+      expect(find.text(en.learnReady), findsOneWidget);
+    });
+
     testWidgets('dispose releases the audio', (tester) async {
       final (_, _, _, clip) = await pump(tester);
       await tester.pumpWidget(const SizedBox());
@@ -166,4 +198,22 @@ void main() {
       expect(clip.disposed, isTrue);
     });
   });
+}
+
+final class _FailingClipPlayer implements ClipPlayer {
+  @override
+  bool get isPlaying => false;
+
+  @override
+  Stream<bool> get playing => const Stream<bool>.empty();
+
+  @override
+  Future<void> play(Uint8List wav, {required Duration length, bool loop = false}) =>
+      Future.error(StateError('no audio device'));
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<void> dispose() async {}
 }

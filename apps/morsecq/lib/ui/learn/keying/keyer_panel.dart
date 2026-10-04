@@ -55,7 +55,9 @@ class KeyerPanelState extends State<KeyerPanel> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // First build, or the device key profile (F12) changed meanwhile.
-    if (_keyer == null || KeyProfiles.of(context) != _keyer!.profile) _build();
+    // Always read (and so subscribe), even before the keyer exists.
+    final profile = KeyProfiles.of(context);
+    if (_keyer == null || profile != _keyer!.profile) _build();
   }
 
   @override
@@ -89,6 +91,7 @@ class KeyerPanelState extends State<KeyerPanel> {
       mode: widget.mode,
       target: widget.session,
       sink: playback.sink,
+      sidetone: playback.sidetone,
       clock: playback.clock,
       timing: widget.session.nominalTiming,
     );

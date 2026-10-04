@@ -62,7 +62,7 @@ class LearnHome extends StatelessWidget {
       controller.availableReceiveKinds,
       onPreview: (preset) {
         final timing = controller.trainerSettings.toTiming();
-        return (previewer ??= ConditionsPlayback()).play(
+        return (previewer ??= ConditionsPlayback(stopInBackground: true)).play(
           kConditionsPreviewText,
           RadioScenario.preset(
             preset,

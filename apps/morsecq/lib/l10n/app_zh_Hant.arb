@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "如需分享，請自行在群聊中拍發成績，例如 {done}/{total} {accuracy}%。不會自動傳送。",
   "groupPracticeComplete": "結束練習",
   "groupPracticeDeleteTitle": "刪除這次練習？",
-  "groupPracticeDeleteBody": "本機上的輪次與成績將被刪除；訓練紀錄與群組訊息保留。"
+  "groupPracticeDeleteBody": "本機上的輪次與成績將被刪除；訓練紀錄與群組訊息保留。",
+  "conditionsAudioFailed": "本裝置無法播放音訊。請改用「清晰」環境練習。"
 }

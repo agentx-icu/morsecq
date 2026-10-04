@@ -140,12 +140,18 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     if (mounted && _playing != playing) setState(() => _playing = playing);
   }
 
+  /// Always stops: a clip still rendering or loading is not "playing" yet
+  /// but must not start once the round is over or the app is hidden.
   void _stopConditions() {
     final c = _conditions;
-    if (c == null || !c.isPlaying) return;
-    _stopping = true;
+    if (c == null) return;
+    if (c.isPlaying) _stopping = true;
     unawaited(c.stop());
   }
+
+  /// The audio engine could not play the rendering: the round says so
+  /// instead of "listening" forever.
+  bool _conditionsFailed = false;
 
   /// Radio conditions are an audio effect: without sound there is nothing
   /// realistic to hear, and an unaffected flash would give the copy away.
@@ -161,12 +167,16 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     if (conditions != null) {
       if (_conditionsBlocked) return;
       setState(() => _playing = true);
-      unawaited(
-        conditions.play(
-          _session.currentDrill.text,
-          _session.currentConditions!,
-        ),
-      );
+      conditions
+          .play(_session.currentDrill.text, _session.currentConditions!)
+          .catchError((Object _) {
+            if (mounted) {
+              setState(() {
+                _playing = false;
+                _conditionsFailed = true;
+              });
+            }
+          });
       return;
     }
     setState(() => _playing = true);
@@ -356,11 +366,11 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
             ),
           ],
         ),
-        if (_conditionsBlocked)
+        if (_conditionsBlocked || _conditionsFailed)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              s.conditionsNeedSound,
+              _conditionsFailed ? s.conditionsAudioFailed : s.conditionsNeedSound,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
               ),

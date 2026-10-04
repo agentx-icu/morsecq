@@ -55,8 +55,9 @@ final class KeyProfiles extends ChangeNotifier {
       }
       final selected = doc['selected'];
       if (selected is String) _selected = selected;
-    } on FormatException {
-      // A broken preference never blocks keying: defaults apply.
+    } on Object {
+      // A broken preference (bad JSON, wrong types) never blocks keying:
+      // what loaded so far stays, the rest falls back to the defaults.
     }
   }
 

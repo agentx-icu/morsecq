@@ -13,7 +13,7 @@ import 'key_profile.dart';
 /// external adapter times its own elements, and its sidetone switch gating
 /// the local echo. The surface keeps choosing [KeyerMode] for its paddles.
 final class ProfileKeyer {
-  ProfileKeyer._(this.profile, this.straight, this.keyer);
+  ProfileKeyer._(this.profile, this.straight, this.keyer, this.mode);
 
   /// Builds the keyer for [mode] (straight when the profile's adapter keys
   /// its own elements), feeding [target] and echoing through [sink].
@@ -24,15 +24,18 @@ final class ProfileKeyer {
     required MorseSink sink,
     required Clock clock,
     required MorseTiming timing,
+    MorseSink? sidetone,
   }) {
-    // Keyers never dispose their sink, so wrapping it is safe.
-    final echo = GatedSink(sink, () => profile.appSidetone);
+    // Keyers never dispose their sink, so wrapping it is safe. Only the
+    // sound is switched off: a flash or vibration echo stays.
+    final echo = gateSidetone(sink, sidetone, () => profile.appSidetone);
     final effective = profile.adapterKeyer ? KeyerMode.straight : mode;
     return switch (effective) {
       KeyerMode.straight => ProfileKeyer._(
         profile,
         StraightKey(target: target, sink: echo),
         null,
+        effective,
       ),
       KeyerMode.iambicA || KeyerMode.iambicB => ProfileKeyer._(
         profile,
@@ -44,8 +47,25 @@ final class ProfileKeyer {
           clock: clock,
           mode: effective == KeyerMode.iambicA ? IambicMode.a : IambicMode.b,
         ),
+        effective,
       ),
     };
+  }
+
+  /// [sink] with only its [sidetone] member gated by [enabled] (the whole
+  /// sink when it is the sidetone itself or no member is given).
+  static MorseSink gateSidetone(
+    MorseSink sink,
+    MorseSink? sidetone,
+    bool Function() enabled,
+  ) {
+    if (sidetone != null && sink is CompositeSink) {
+      return CompositeSink([
+        for (final s in sink.sinks)
+          identical(s, sidetone) ? GatedSink(s, enabled) : s,
+      ]);
+    }
+    return GatedSink(sink, enabled);
   }
 
   final KeyProfile profile;
@@ -53,11 +73,7 @@ final class ProfileKeyer {
   final IambicKeyer? keyer;
 
   /// The keyer mode actually running.
-  KeyerMode get mode => straight != null
-      ? KeyerMode.straight
-      : profile.keyerMode == KeyerMode.iambicA
-      ? KeyerMode.iambicA
-      : KeyerMode.iambicB;
+  final KeyerMode mode;
 
   /// Releases anything held (no stuck tone) and closes the keyer.
   void dispose() {

@@ -6,6 +6,8 @@ import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/keying/key_profile.dart';
 import 'package:morsecq/keying/key_profiles.dart';
+import 'package:morsecq/keying/profile_keyer.dart';
+import 'package:morse_io/testing.dart';
 import 'package:morsecq/training/training_settings.dart';
 
 KeyProfile _vail() => KeyProfile(
@@ -90,6 +92,27 @@ void main() {
       );
       expect(s.saved, isEmpty);
       expect(kv.getString(KeyProfiles.storageKey), isNull);
+    });
+
+    test('a wrong-typed field never takes the app down', () {
+      final odd = {..._vail().toJson(), 'keyerMode': 1, 'swapPaddles': 'yes'};
+      final s = KeyProfiles(InMemoryKeyValueStore({
+        KeyProfiles.storageKey: jsonEncode({'v': 1, 'selected': 'vail', 'profiles': [odd]}),
+      }));
+      expect(s.active.id, 'vail');
+      expect(s.active.keyerMode, KeyerMode.iambicB);
+      expect(s.active.swapPaddles, isFalse);
+    });
+
+    test('the sidetone switch gates only the sound, not flash or haptics', () {
+      final tone = RecordingSink(clock: FakeClock());
+      final flash = RecordingSink(clock: FakeClock());
+      final echo = ProfileKeyer.gateSidetone(CompositeSink([tone, flash]), tone, () => false);
+      echo.on();
+      expect(tone.isOn, isFalse);
+      expect(flash.isOn, isTrue);
+      echo.off();
+      expect(flash.isOn, isFalse);
     });
 
     test('broken, foreign-version or ambiguous stored data falls back', () {

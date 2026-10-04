@@ -103,10 +103,10 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     // A key profile edited meanwhile applies to the next key press.
+    // Always read (and so subscribe), even before the keyer exists.
+    final profile = KeyProfiles.of(context);
     final keyer = _keyer;
-    if (keyer != null && KeyProfiles.of(context) != keyer.profile) {
-      _buildKeyer();
-    }
+    if (keyer != null && profile != keyer.profile) _buildKeyer();
   }
 
   @override
@@ -163,6 +163,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       mode: _mode,
       target: _session,
       sink: playback.sink,
+      sidetone: playback.sidetone,
       clock: playback.clock,
       timing: _session.nominalTiming,
     );

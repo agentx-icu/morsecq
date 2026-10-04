@@ -59,8 +59,14 @@ class KeySetupPage extends StatelessWidget {
             const SizedBox(height: 8),
             RadioGroup<String>(
               groupValue: active.id,
-              onChanged: (id) {
-                if (id != null) unawaited(profiles.select(id));
+              onChanged: (id) async {
+                if (id == null) return;
+                final host = Provider.of<TrainingControllerHost?>(
+                  context,
+                  listen: false,
+                );
+                await profiles.select(id);
+                await syncLearnKeyerMode(host, profiles.active.keyerMode);
               },
               child: Column(
                 children: [
@@ -182,6 +188,11 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
       };
       _capturing = null;
     });
+    // Hand the keyboard back to the test key, so the new binding can be
+    // tried at once.
+    _captureFocus.unfocus(
+      disposition: UnfocusDisposition.previouslyFocusedChild,
+    );
     return KeyEventResult.handled;
   }
 
@@ -203,18 +214,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
       );
       return;
     }
-    // Learn keeps its keyer mode in the training settings: follow the
-    // profile so every keying surface runs the same mode.
-    if (host != null) {
-      try {
-        final c = await host.controller();
-        if (c.settings.keyerMode != profile.keyerMode) {
-          await c.updateSettings(c.settings.copyWith(keyerMode: profile.keyerMode));
-        }
-      } on Object {
-        // No identity or guest profile yet: Learn picks it up later.
-      }
-    }
+    await syncLearnKeyerMode(host, profile.keyerMode);
     navigator.pop();
   }
 
@@ -339,5 +339,23 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
         ),
       ),
     );
+  }
+}
+
+/// Learn keeps its keyer mode in the training settings: follow the active
+/// profile so every keying surface runs the same mode. Without an identity
+/// or guest profile yet, Learn picks it up from the next save or selection.
+Future<void> syncLearnKeyerMode(
+  TrainingControllerHost? host,
+  KeyerMode mode,
+) async {
+  if (host == null) return;
+  try {
+    final c = await host.controller();
+    if (c.settings.keyerMode != mode) {
+      await c.updateSettings(c.settings.copyWith(keyerMode: mode));
+    }
+  } on Object {
+    // See above.
   }
 }

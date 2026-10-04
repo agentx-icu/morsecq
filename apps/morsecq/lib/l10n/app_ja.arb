@@ -1189,5 +1189,6 @@
   "groupPracticeShareHint": "共有するなら、結果を自分でグループチャットに打電してください（例：{done}/{total} {accuracy}%）。自動送信はされません。",
   "groupPracticeComplete": "セッションを終了",
   "groupPracticeDeleteTitle": "このセッションを削除しますか？",
-  "groupPracticeDeleteBody": "ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。"
+  "groupPracticeDeleteBody": "ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。",
+  "conditionsAudioFailed": "この端末では音声を開始できませんでした。「クリア」で練習してください。"
 }

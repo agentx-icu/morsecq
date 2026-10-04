@@ -4166,4 +4166,7 @@ class SJa extends S {
 
   @override
   String get groupPracticeDeleteBody => 'ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。';
+
+  @override
+  String get conditionsAudioFailed => 'この端末では音声を開始できませんでした。「クリア」で練習してください。';
 }

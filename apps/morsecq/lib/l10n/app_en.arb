@@ -5905,5 +5905,9 @@
   "groupPracticeDeleteBody": "Its rounds and local results are removed from this device. Your training history and the group's messages stay.",
   "@groupPracticeDeleteBody": {
     "description": "Group practice: what deleting a session removes"
+  },
+  "conditionsAudioFailed": "The audio could not be started on this device. Practise with Clear conditions instead.",
+  "@conditionsAudioFailed": {
+    "description": "Receive drill: the conditions audio could not be started"
   }
 }
