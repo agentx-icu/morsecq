@@ -4160,4 +4160,10 @@ class SKo extends S {
 
   @override
   String get groupPracticeComplete => '세션 마치기';
+
+  @override
+  String get groupPracticeDeleteTitle => '이 세션을 삭제할까요?';
+
+  @override
+  String get groupPracticeDeleteBody => '라운드와 이 기기의 결과가 삭제됩니다. 연습 기록과 그룹 메시지는 남습니다.';
 }

@@ -5897,5 +5897,13 @@
   "groupPracticeComplete": "Finish session",
   "@groupPracticeComplete": {
     "description": "Group practice: mark the session complete"
+  },
+  "groupPracticeDeleteTitle": "Delete this session?",
+  "@groupPracticeDeleteTitle": {
+    "description": "Group practice: confirm deleting a session"
+  },
+  "groupPracticeDeleteBody": "Its rounds and local results are removed from this device. Your training history and the group's messages stay.",
+  "@groupPracticeDeleteBody": {
+    "description": "Group practice: what deleting a session removes"
   }
 }

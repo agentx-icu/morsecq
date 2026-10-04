@@ -246,6 +246,13 @@ final class GroupPracticeBook {
 
   static const GroupPracticeBook empty = GroupPracticeBook([]);
   static const int version = 1;
+  static const int maxAttemptsPerRound = 20;
+
+  /// Written by a newer MorseCQ: must not be overwritten by this one.
+  static bool isNewer(Map<String, Object?>? j) {
+    final v = j?['v'];
+    return v is int && v > version;
+  }
 
   final List<GroupPracticeSession> sessions;
 
@@ -315,8 +322,12 @@ final class GroupPracticeBook {
     GroupPracticeAttempt attempt,
   ) => _mapRound(sessionId, roundId, (r) {
     if (r.attempts.any((a) => a.exerciseId == attempt.exerciseId)) return r;
+    final all = [...r.attempts, attempt];
     return r.copyWith(
-      attempts: [...r.attempts, attempt],
+      // The exercise records keep every attempt; a round keeps the latest.
+      attempts: all.length > maxAttemptsPerRound
+          ? all.sublist(all.length - maxAttemptsPerRound)
+          : all,
       state: r.state == GroupRoundState.unavailable
           ? r.state
           : GroupRoundState.done,
@@ -370,7 +381,11 @@ extension GroupPracticeStore on TrainingController {
   Future<GroupPracticeBook> updateGroupPractice(
     GroupPracticeBook Function(GroupPracticeBook book) change,
   ) => docTransaction(() async {
-    final next = change(GroupPracticeBook.fromJson(await readDoc(doc)));
+    final raw = await readDoc(doc);
+    if (GroupPracticeBook.isNewer(raw)) {
+      throw StateError('group practice written by a newer version');
+    }
+    final next = change(GroupPracticeBook.fromJson(raw));
     await writeDoc(doc, next.toJson());
     return next;
   });

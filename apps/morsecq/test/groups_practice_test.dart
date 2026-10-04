@@ -163,7 +163,9 @@ void main() {
     await tester.runAsync(() => c.flush());
     await tester.pumpAndSettle();
     expect(find.text(en.groupPracticeSourceGone), findsOneWidget);
-    expect((await c.readGroupPractice()).byId('s1')!.rounds.single.state, GroupRoundState.unavailable);
+    expect(find.byKey(const Key('gp-copy-0')), findsNothing);
+    // Shown, not stored: an empty read may be a history still loading.
+    expect((await c.readGroupPractice()).byId('s1')!.rounds.single.state, GroupRoundState.done);
   });
 
   testWidgets('instructor: own exercise messages as a checklist, no copying', (tester) async {
@@ -212,5 +214,43 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(en.groupPracticeRoundsDone(1, 1)), findsWidgets);
     expect(c.progress.history, isEmpty, reason: 'a checklist adds no exercise');
+  });
+
+  testWidgets('without a chat session the rounds say so and retry when chat '
+      'connects', (tester) async {
+    final identity = FakeIdentityService.withProfile(
+      identity: Identity(toxId: FakeIdentityService.toxIdForSeed(5), displayName: 'Me'),
+      connectDelay: Duration.zero,
+    );
+    addTearDown(identity.dispose);
+    await identity.open();
+    final chat = FakeChatService(identity: identity);
+    addTearDown(chat.dispose);
+    final t = await TestTraining.create(settings: kShortSettings);
+    addTearDown(t.controller.dispose);
+    final c = t.controller;
+    var book = GroupPracticeBook.empty.add(
+      GroupPracticeSession(
+        id: 's3',
+        conversationId: 'group_tox_1',
+        title: 'Net',
+        role: GroupPracticeRole.participant,
+        createdAt: DateTime.utc(2026, 10, 4),
+      ),
+    );
+    book = book.addRound('s3', roundId: 'r1', messageId: 'm_x', messageAt: DateTime.utc(2026));
+    await c.updateGroupPractice((_) => book);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [Provider<ChatService>.value(value: chat)],
+        child: l10nApp(home: GroupPracticeSessionPage(controller: c, sessionId: 's3')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('gp-retry')), findsOneWidget);
+    expect(find.text(en.groupPracticeNotConnected), findsWidgets);
+    await identity.connect();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('gp-retry')), findsNothing);
   });
 }

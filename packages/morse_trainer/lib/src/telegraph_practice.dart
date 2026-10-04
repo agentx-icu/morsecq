@@ -194,10 +194,19 @@ final class TelegraphRecallStats {
 
   static const int version = 1;
 
-  /// `codebook/char` → (seen, correct, assisted).
+  /// `codebook/table/char` → (seen, correct, assisted). The mapping-table
+  /// version is part of the key, so results stay tied to the table they
+  /// were recorded against after an update.
   final Map<String, (int, int, int)> _entries;
 
-  static String _key(TelegraphCodebook b, String char) => '${b.name}/$char';
+  static String _key(TelegraphCodebook b, String char) =>
+      '${b.name}/${ChineseTelegraphCode.unicodeVersion}/$char';
+
+  /// Written by a newer MorseCQ: must not be overwritten by this one.
+  static bool isNewer(Map<String, Object?>? json) {
+    final v = json?['v'];
+    return v is int && v > version;
+  }
 
   /// Records one answered card.
   TelegraphRecallStats record(
@@ -238,7 +247,6 @@ final class TelegraphRecallStats {
 
   Map<String, Object?> toJson() => {
     'v': version,
-    'table': ChineseTelegraphCode.unicodeVersion,
     'entries': {
       for (final MapEntry(:key, :value) in _entries.entries)
         key: [value.$1, value.$2, value.$3],

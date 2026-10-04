@@ -71,7 +71,11 @@ extension TelegraphSessions on TrainingController {
     TelegraphCodebook codebook,
     List<(String char, bool correct, bool assisted)> answers,
   ) => docTransaction(() async {
-    var stats = TelegraphRecallStats.fromJson(await readDoc(recallDoc));
+    final raw = await readDoc(recallDoc);
+    if (TelegraphRecallStats.isNewer(raw)) {
+      throw StateError('recall statistics written by a newer version');
+    }
+    var stats = TelegraphRecallStats.fromJson(raw);
     for (final (char, correct, assisted) in answers) {
       stats = stats.record(
         codebook,

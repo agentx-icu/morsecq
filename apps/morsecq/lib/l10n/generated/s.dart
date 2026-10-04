@@ -7237,6 +7237,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Finish session'**
   String get groupPracticeComplete;
+
+  /// Group practice: confirm deleting a session
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this session?'**
+  String get groupPracticeDeleteTitle;
+
+  /// Group practice: what deleting a session removes
+  ///
+  /// In en, this message translates to:
+  /// **'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.'**
+  String get groupPracticeDeleteBody;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

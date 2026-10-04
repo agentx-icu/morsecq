@@ -4283,4 +4283,10 @@ class SRu extends S {
 
   @override
   String get groupPracticeComplete => 'Завершить занятие';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Удалить это занятие?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Раунды и локальные результаты будут удалены с этого устройства. История тренировок и сообщения группы останутся.';
 }

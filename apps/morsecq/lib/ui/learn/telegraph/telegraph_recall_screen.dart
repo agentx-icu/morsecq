@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -81,17 +82,41 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
     if (_done) await _save();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Check needs four digits: an empty submit is no answer.
+    _code.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+  /// Saves the round; on failure the result stays on screen with a retry.
   Future<void> _save() async {
     setState(() => _saving = true);
-    final stats = await widget.controller.recordTelegraphRecall(
-      widget.codebook,
-      _answers,
-    );
-    if (mounted) {
-      setState(() {
-        _saving = false;
-        _saved = stats;
-      });
+    try {
+      final stats = await widget.controller.recordTelegraphRecall(
+        widget.codebook,
+        _answers,
+      );
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _saved = stats;
+        });
+      }
+    } on Object {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(context.s.learnProgressSaveFailed),
+          action: SnackBarAction(
+            label: context.s.actionRetry,
+            onPressed: () => unawaited(_save()),
+          ),
+        ),
+      );
     }
   }
 
@@ -182,7 +207,9 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
         if (toCode)
           FilledButton(
             key: const Key('telegraph-check'),
-            onPressed: () => _answer(_code.text),
+            onPressed: _code.text.length == 4
+                ? () => _answer(_code.text)
+                : null,
             child: Text(s.learnSubmit),
           ),
         TextButton(
@@ -245,10 +272,14 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
       const SizedBox(height: 8),
       Text(s.telegraphSeparateNote, textAlign: TextAlign.center),
       const SizedBox(height: 16),
+      if (_saved == null && !_saving)
+        OutlinedButton(
+          key: const Key('telegraph-save-retry'),
+          onPressed: _save,
+          child: Text(s.actionRetry),
+        ),
       FilledButton(
-        onPressed: _saving || _saved == null
-            ? null
-            : () => Navigator.of(context).pop(),
+        onPressed: _saving ? null : () => Navigator.of(context).pop(),
         child: Text(s.learnDone),
       ),
     ];

@@ -58,16 +58,15 @@ class _TelegraphInterpretationState extends State<TelegraphInterpretation> {
               key: ValueKey('telegraph-token-$i'),
               dense: true,
               contentPadding: EdgeInsets.zero,
-              leading: SizedBox(
-                width: 64,
-                child: Text(
-                  t.source,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+              // The token in full (a long word or CJK run is never clipped),
+              // its reading underneath.
+              title: Text(
+                t.source,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
-              title: switch (t.kind) {
+              subtitle: switch (t.kind) {
                 TelegraphTokenKind.group when t.isUnresolved => Text(
                   s.telegraphUnresolved,
                   style: TextStyle(color: theme.colorScheme.error),
@@ -82,7 +81,12 @@ class _TelegraphInterpretationState extends State<TelegraphInterpretation> {
                 ),
                 TelegraphTokenKind.text => Text(s.telegraphNotCode),
               },
-              subtitle: t.isAmbiguous ? Text(s.telegraphAmbiguous) : null,
+              trailing: t.isAmbiguous
+                  ? Tooltip(
+                      message: s.telegraphAmbiguous,
+                      child: const Icon(Icons.call_split),
+                    )
+                  : null,
             ),
         ],
       ),

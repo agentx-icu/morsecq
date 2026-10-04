@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
@@ -164,7 +165,13 @@ class _GroupPracticePageState extends State<GroupPracticePage> {
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text(s.learnIdentityRequired),
+                  // No host or no identity: say so; anything else is a
+                  // read failure, not a missing identity.
+                  child: Text(
+                    _error is StateError || _error is ChatException
+                        ? s.learnIdentityRequired
+                        : s.errorUnknown,
+                  ),
                 ),
               )
             : ListView(

@@ -4160,4 +4160,10 @@ class SJa extends S {
 
   @override
   String get groupPracticeComplete => 'セッションを終了';
+
+  @override
+  String get groupPracticeDeleteTitle => 'このセッションを削除しますか？';
+
+  @override
+  String get groupPracticeDeleteBody => 'ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。';
 }

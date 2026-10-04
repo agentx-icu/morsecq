@@ -4160,6 +4160,12 @@ class SZh extends S {
 
   @override
   String get groupPracticeComplete => '结束练习';
+
+  @override
+  String get groupPracticeDeleteTitle => '删除这次练习？';
+
+  @override
+  String get groupPracticeDeleteBody => '本机上的轮次和成绩将被删除；训练记录和群消息保留。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8318,4 +8324,10 @@ class SZhHant extends SZh {
 
   @override
   String get groupPracticeComplete => '結束練習';
+
+  @override
+  String get groupPracticeDeleteTitle => '刪除這次練習？';
+
+  @override
+  String get groupPracticeDeleteBody => '本機上的輪次與成績將被刪除；訓練紀錄與群組訊息保留。';
 }

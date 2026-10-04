@@ -1187,5 +1187,7 @@
   "groupPracticeAccuracy": "聞き取り正答率：{accuracy}%",
   "groupPracticeAssisted": "{count, plural, other{補助ありの挑戦 {count} 回}}",
   "groupPracticeShareHint": "共有するなら、結果を自分でグループチャットに打電してください（例：{done}/{total} {accuracy}%）。自動送信はされません。",
-  "groupPracticeComplete": "セッションを終了"
+  "groupPracticeComplete": "セッションを終了",
+  "groupPracticeDeleteTitle": "このセッションを削除しますか？",
+  "groupPracticeDeleteBody": "ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。"
 }

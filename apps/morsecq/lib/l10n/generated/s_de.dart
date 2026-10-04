@@ -4203,4 +4203,10 @@ class SDe extends S {
 
   @override
   String get groupPracticeComplete => 'Sitzung beenden';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Diese Sitzung löschen?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Runden und lokale Ergebnisse werden von diesem Gerät entfernt. Dein Trainingsverlauf und die Gruppennachrichten bleiben.';
 }

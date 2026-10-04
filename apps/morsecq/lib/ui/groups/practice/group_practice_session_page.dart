@@ -37,14 +37,32 @@ class GroupPracticeSessionPage extends StatefulWidget {
 class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
   GroupPracticeSession? _session;
 
-  /// Round messages read from history; a missing key means not found yet
-  /// (or chat is not connected), never "deleted".
+  /// Round messages read from history.
   final Map<String, ChatMessage> _messages = {};
+
+  /// Messages not found in history on the last read. Shown, never stored:
+  /// a history that is still loading reads as empty too, so this must stay
+  /// reversible (it clears as soon as the message is found).
+  final Set<String> _missing = {};
+
+  /// History could not be read (no chat session): rounds say so instead of
+  /// waiting forever, and are read again when chat connects.
+  bool _notConnected = false;
+  StreamSubscription<bool>? _sessionSub;
 
   @override
   void initState() {
     super.initState();
+    _sessionSub = _chat.sessionChanges.listen((up) {
+      if (up && _notConnected) unawaited(_resolveAll());
+    });
     unawaited(_load());
+  }
+
+  @override
+  void dispose() {
+    _sessionSub?.cancel().ignore();
+    super.dispose();
   }
 
   ChatService get _chat => context.read<ChatService>();
@@ -54,15 +72,20 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
     final session = book.byId(widget.sessionId);
     if (!mounted) return;
     setState(() => _session = session);
+    await _resolveAll();
+  }
+
+  Future<void> _resolveAll() async {
+    final session = _session;
     if (session == null) return;
+    setState(() => _notConnected = false);
     for (final r in session.rounds) {
-      await _resolve(session, r);
+      if (!await _resolve(session, r)) break;
     }
   }
 
-  /// Reads a round's message; a definite "not in history" marks the round
-  /// unavailable. Without a session nothing is concluded.
-  Future<void> _resolve(GroupPracticeSession s, GroupPracticeRound r) async {
+  /// Reads a round's message; false when chat is not connected.
+  Future<bool> _resolve(GroupPracticeSession s, GroupPracticeRound r) async {
     final List<ChatMessage> rows;
     try {
       rows = await _chat.loadAround(
@@ -72,22 +95,56 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
         after: 0,
       );
     } on ChatException {
-      return;
+      if (mounted) setState(() => _notConnected = true);
+      return false;
     }
-    if (!mounted) return;
+    if (!mounted) return false;
     final hit = rows.where((m) => m.id == r.messageId).firstOrNull;
-    if (hit != null) {
-      setState(() => _messages[r.messageId] = hit);
-    } else if (r.state != GroupRoundState.unavailable) {
-      await _update(
-        (b) => b.setRoundState(s.id, r.id, GroupRoundState.unavailable),
-      );
-    }
+    setState(() {
+      if (hit != null) {
+        _messages[r.messageId] = hit;
+        _missing.remove(r.messageId);
+      } else {
+        _messages.remove(r.messageId);
+        _missing.add(r.messageId);
+      }
+    });
+    return true;
   }
 
   Future<void> _update(GroupPracticeBook Function(GroupPracticeBook) f) async {
-    final book = await widget.controller.updateGroupPractice(f);
-    if (mounted) setState(() => _session = book.byId(widget.sessionId));
+    try {
+      final book = await widget.controller.updateGroupPractice(f);
+      if (mounted) setState(() => _session = book.byId(widget.sessionId));
+    } on Object {
+      if (mounted) showSnack(context, context.s.learnProgressSaveFailed);
+    }
+  }
+
+  Future<void> _delete(GroupPracticeSession session) async {
+    final s = context.s;
+    final navigator = Navigator.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(s.groupPracticeDeleteTitle),
+        content: Text(s.groupPracticeDeleteBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(s.actionCancel),
+          ),
+          FilledButton(
+            key: const Key('gp-delete-confirm'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(s.actionDelete),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _update((b) => b.remove(session.id));
+    navigator.pop();
   }
 
   Future<void> _addRounds() async {
@@ -197,6 +254,9 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
     }
     final instructor = session.role == GroupPracticeRole.instructor;
     final sum = session.summary;
+    final missing = session.rounds
+        .where((r) => _missing.contains(r.messageId))
+        .length;
     return Scaffold(
       appBar: AppBar(
         title: Text(session.title),
@@ -204,13 +264,7 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
           IconButton(
             tooltip: s.actionDelete,
             icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-              await widget.controller.updateGroupPractice(
-                (b) => b.remove(session.id),
-              );
-              navigator.pop();
-            },
+            onPressed: () => _delete(session),
           ),
         ],
       ),
@@ -236,6 +290,19 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
               s.groupPracticeLocalNote,
               style: Theme.of(context).textTheme.bodySmall,
             ),
+            if (_notConnected) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(child: Text(s.groupPracticeNotConnected)),
+                  TextButton(
+                    key: const Key('gp-retry'),
+                    onPressed: _resolveAll,
+                    child: Text(s.actionRetry),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 8),
             for (final (i, r) in session.rounds.indexed) _round(i, r, instructor),
             const Divider(height: 32),
@@ -248,8 +315,8 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
                   children: [
                     Text(s.groupPracticeSummary, style: Theme.of(context).textTheme.titleSmall),
                     Text(s.groupPracticeRoundsDone(sum.done, sum.rounds)),
-                    if (sum.unavailable > 0)
-                      Text(s.groupPracticeUnavailableCount(sum.unavailable)),
+                    if (missing > 0)
+                      Text(s.groupPracticeUnavailableCount(missing)),
                     if (sum.attempts > 0) ...[
                       Text(s.groupPracticeAccuracy((sum.accuracy * 100).round())),
                       if (sum.assisted > 0) Text(s.groupPracticeAssisted(sum.assisted)),
@@ -282,12 +349,14 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
   Widget _round(int i, GroupPracticeRound r, bool instructor) {
     final s = context.s;
     final message = _messages[r.messageId];
-    final unavailable = r.state == GroupRoundState.unavailable;
+    final unavailable = _missing.contains(r.messageId);
     final last = r.attempts.isEmpty ? null : r.attempts.last;
     final subtitle = unavailable
         ? s.groupPracticeSourceGone
         : message == null
-        ? s.groupPracticeSourceLoading
+        ? (_notConnected
+              ? s.groupPracticeNotConnected
+              : s.groupPracticeSourceLoading)
         : [
             if (instructor || last != null) message.text,
             formatMessageTime(context, r.messageAt),
@@ -311,6 +380,13 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
         subtitle: Text(subtitle),
         trailing: Wrap(
           children: [
+            if (unavailable)
+              IconButton(
+                key: Key('gp-recheck-$i'),
+                tooltip: s.actionRetry,
+                icon: const Icon(Icons.refresh),
+                onPressed: () => _resolve(_session!, r),
+              ),
             if (!instructor && message != null && !unavailable)
               IconButton(
                 key: Key('gp-copy-$i'),

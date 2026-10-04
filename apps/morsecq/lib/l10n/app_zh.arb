@@ -1207,5 +1207,7 @@
   "groupPracticeAccuracy": "抄收正确率：{accuracy}%",
   "groupPracticeAssisted": "{count, plural, other{{count} 次使用了提示}}",
   "groupPracticeShareHint": "如需分享，请自行在群聊中拍发成绩，例如 {done}/{total} {accuracy}%。不会自动发送。",
-  "groupPracticeComplete": "结束练习"
+  "groupPracticeComplete": "结束练习",
+  "groupPracticeDeleteTitle": "删除这次练习？",
+  "groupPracticeDeleteBody": "本机上的轮次和成绩将被删除；训练记录和群消息保留。"
 }

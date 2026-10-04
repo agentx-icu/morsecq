@@ -1187,5 +1187,7 @@
   "groupPracticeAccuracy": "Precisão da cópia: {accuracy}%",
   "groupPracticeAssisted": "{count, plural, =1{1 tentativa com ajuda} other{{count} tentativas com ajuda}}",
   "groupPracticeShareHint": "Para compartilhar, manipule você mesmo o resultado no chat do grupo, ex.: {done}/{total} {accuracy}%. Nada é enviado automaticamente.",
-  "groupPracticeComplete": "Encerrar sessão"
+  "groupPracticeComplete": "Encerrar sessão",
+  "groupPracticeDeleteTitle": "Excluir esta sessão?",
+  "groupPracticeDeleteBody": "Suas rodadas e resultados locais são removidos deste dispositivo. Seu histórico de treino e as mensagens do grupo permanecem."
 }

@@ -4204,4 +4204,10 @@ class SFr extends S {
 
   @override
   String get groupPracticeComplete => 'Terminer la séance';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Supprimer cette séance ?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Ses manches et résultats locaux sont supprimés de cet appareil. Votre historique d\'entraînement et les messages du groupe restent.';
 }

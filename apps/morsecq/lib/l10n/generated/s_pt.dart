@@ -4204,4 +4204,10 @@ class SPt extends S {
 
   @override
   String get groupPracticeComplete => 'Encerrar sessão';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Excluir esta sessão?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Suas rodadas e resultados locais são removidos deste dispositivo. Seu histórico de treino e as mensagens do grupo permanecem.';
 }

@@ -4202,4 +4202,10 @@ class SEn extends S {
 
   @override
   String get groupPracticeComplete => 'Finish session';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Delete this session?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.';
 }

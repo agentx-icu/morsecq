@@ -58,7 +58,13 @@ void main() {
     expect(s.answered(TelegraphCodebook.mainland), 2);
     final back = TelegraphRecallStats.fromJson(s.toJson());
     expect(back.of(TelegraphCodebook.taiwan, '國'), (1, 0, 0));
-    expect(back.toJson()['table'], ChineseTelegraphCode.unicodeVersion);
+    // Entries are keyed by the mapping-table version they were recorded on.
+    expect(
+      (back.toJson()['entries']! as Map).keys,
+      everyElement(contains('/${ChineseTelegraphCode.unicodeVersion}/')),
+    );
+    expect(TelegraphRecallStats.isNewer({'v': 2}), isTrue);
+    expect(TelegraphRecallStats.isNewer({'v': 1}), isFalse);
     expect(TelegraphRecallStats.fromJson({'v': 99}).answered(TelegraphCodebook.mainland), 0);
   });
 }

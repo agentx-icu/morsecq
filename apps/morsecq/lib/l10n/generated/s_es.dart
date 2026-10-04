@@ -4203,4 +4203,10 @@ class SEs extends S {
 
   @override
   String get groupPracticeComplete => 'Terminar sesión';
+
+  @override
+  String get groupPracticeDeleteTitle => '¿Eliminar esta sesión?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Sus rondas y resultados locales se eliminan de este dispositivo. Tu historial de práctica y los mensajes del grupo se conservan.';
 }

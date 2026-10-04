@@ -133,6 +133,7 @@ void main() {
     final char = tester.widget<Text>(find.byKey(const Key('telegraph-prompt'))).data!;
     final code = ChineseTelegraphCode.codeOf(char)!;
     await tester.enterText(find.byKey(const Key('telegraph-code-field')), code);
+    await tester.pump();
     await tester.tap(find.byKey(const Key('telegraph-check')));
     await tester.pump();
     expect(find.text(en.telegraphCorrect), findsOneWidget);
