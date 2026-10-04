@@ -9,6 +9,7 @@ import '../../i18n/l10n_extension.dart';
 import '../../notifications/notification_center.dart';
 import '../diagnostics/connection_diagnostics_page.dart';
 import '../groups/group_members_sheet.dart';
+import '../groups/practice/group_practice_page.dart';
 import 'chat_layout.dart';
 import 'conversation_actions.dart';
 import 'conversation_attention.dart';

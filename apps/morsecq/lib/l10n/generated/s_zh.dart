@@ -4049,6 +4049,117 @@ class SZh extends S {
 
   @override
   String get telegraphAmbiguous => '多个字共用此码';
+
+  @override
+  String get groupPracticeTitle => '群组带练';
+
+  @override
+  String get groupPracticeIntro => '带练者照常在群聊中拍发练习内容。每位成员在此选择练习消息，按自己的速度抄收。答案和成绩只保存在本机，不会发送到群里。';
+
+  @override
+  String get groupPracticeNew => '新建练习';
+
+  @override
+  String get groupPracticeTitleField => '标题';
+
+  @override
+  String get groupPracticeCreate => '创建';
+
+  @override
+  String get groupPracticeInstructor => '带练者';
+
+  @override
+  String get groupPracticeParticipant => '参与者';
+
+  @override
+  String get groupPracticeInstructorHint => '在群聊中拍发每道练习，在此添加为一轮并勾选完成；轮次请在群聊里通知。';
+
+  @override
+  String get groupPracticeParticipantHint => '把带练者的练习消息添加为轮次，并在此逐一抄收。';
+
+  @override
+  String get groupPracticeLocalNote => '仅限本机：轮次、角色和成绩不会与其他成员同步，错过的消息也不一定能送达所有人。';
+
+  @override
+  String get groupPracticeAddRound => '添加练习';
+
+  @override
+  String get groupPracticeNoMessages => '最近记录中没有可添加的消息。';
+
+  @override
+  String get groupPracticeNotConnected => '聊天连接后才能读取群记录。';
+
+  @override
+  String get groupPracticeRoundOpen => '待完成';
+
+  @override
+  String get groupPracticeRoundDone => '已完成';
+
+  @override
+  String get groupPracticeRoundUnavailable => '不可用';
+
+  @override
+  String get groupPracticeSourceGone => '该练习消息已不在记录中。';
+
+  @override
+  String get groupPracticeSourceLoading => '正在查找消息…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '抄收：$accuracy%（$count 次）',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '抄收';
+
+  @override
+  String get groupPracticeRemoveRound => '移除本轮';
+
+  @override
+  String get groupPracticeSummary => '小结';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '已完成 $done/$total 轮';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 轮不可用',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '抄收正确率：$accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次使用了提示',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '如需分享，请自行在群聊中拍发成绩，例如 $done/$total $accuracy%。不会自动发送。';
+  }
+
+  @override
+  String get groupPracticeComplete => '结束练习';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8096,4 +8207,115 @@ class SZhHant extends SZh {
 
   @override
   String get telegraphAmbiguous => '多個字共用此碼';
+
+  @override
+  String get groupPracticeTitle => '群組帶練';
+
+  @override
+  String get groupPracticeIntro => '帶練者照常在群聊中拍發練習內容。每位成員在此選擇練習訊息，按自己的速度抄收。答案與成績只保存在本機，不會傳送到群組。';
+
+  @override
+  String get groupPracticeNew => '新增練習';
+
+  @override
+  String get groupPracticeTitleField => '標題';
+
+  @override
+  String get groupPracticeCreate => '建立';
+
+  @override
+  String get groupPracticeInstructor => '帶練者';
+
+  @override
+  String get groupPracticeParticipant => '參與者';
+
+  @override
+  String get groupPracticeInstructorHint => '在群聊中拍發每道練習，在此新增為一輪並勾選完成；輪次請在群聊裡通知。';
+
+  @override
+  String get groupPracticeParticipantHint => '把帶練者的練習訊息新增為輪次，並在此逐一抄收。';
+
+  @override
+  String get groupPracticeLocalNote => '僅限本機：輪次、角色與成績不會與其他成員同步，錯過的訊息也不一定能送達所有人。';
+
+  @override
+  String get groupPracticeAddRound => '新增練習';
+
+  @override
+  String get groupPracticeNoMessages => '最近紀錄中沒有可新增的訊息。';
+
+  @override
+  String get groupPracticeNotConnected => '聊天連線後才能讀取群組紀錄。';
+
+  @override
+  String get groupPracticeRoundOpen => '待完成';
+
+  @override
+  String get groupPracticeRoundDone => '已完成';
+
+  @override
+  String get groupPracticeRoundUnavailable => '不可用';
+
+  @override
+  String get groupPracticeSourceGone => '該練習訊息已不在紀錄中。';
+
+  @override
+  String get groupPracticeSourceLoading => '正在尋找訊息…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '抄收：$accuracy%（$count 次）',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '抄收';
+
+  @override
+  String get groupPracticeRemoveRound => '移除本輪';
+
+  @override
+  String get groupPracticeSummary => '小結';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '已完成 $done/$total 輪';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 輪不可用',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '抄收正確率：$accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次使用了提示',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '如需分享，請自行在群聊中拍發成績，例如 $done/$total $accuracy%。不會自動傳送。';
+  }
+
+  @override
+  String get groupPracticeComplete => '結束練習';
 }

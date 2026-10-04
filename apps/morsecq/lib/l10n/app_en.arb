@@ -5743,5 +5743,159 @@
   "telegraphAmbiguous": "Several characters share this code",
   "@telegraphAmbiguous": {
     "description": "Telegraph interpretation: several characters share the code"
+  },
+  "groupPracticeTitle": "Group practice",
+  "@groupPracticeTitle": {
+    "description": "Group practice page title / group menu entry"
+  },
+  "groupPracticeIntro": "The instructor keys exercises in the group chat as usual. Each member picks an exercise message here and copies it at their own speed. Answers and scores stay on your device; nothing is sent to the group.",
+  "@groupPracticeIntro": {
+    "description": "Group practice: how the manual workflow works"
+  },
+  "groupPracticeNew": "New session",
+  "@groupPracticeNew": {
+    "description": "Group practice: start a new local session"
+  },
+  "groupPracticeTitleField": "Title",
+  "@groupPracticeTitleField": {
+    "description": "Group practice: session title field"
+  },
+  "groupPracticeCreate": "Create",
+  "@groupPracticeCreate": {
+    "description": "Group practice: create the session"
+  },
+  "groupPracticeInstructor": "Instructor",
+  "@groupPracticeInstructor": {
+    "description": "Group practice role: instructor (local label)"
+  },
+  "groupPracticeParticipant": "Participant",
+  "@groupPracticeParticipant": {
+    "description": "Group practice role: participant"
+  },
+  "groupPracticeInstructorHint": "Key each exercise in the group chat, add it here as a round and tick it off; announce turns in the chat.",
+  "@groupPracticeInstructorHint": {
+    "description": "Group practice: instructor's role explanation"
+  },
+  "groupPracticeParticipantHint": "Add the instructor's exercise messages as rounds and copy each one here.",
+  "@groupPracticeParticipantHint": {
+    "description": "Group practice: participant's role explanation"
+  },
+  "groupPracticeLocalNote": "Local only: rounds, roles and results are not synchronised with other members, and missed messages may never reach everyone.",
+  "@groupPracticeLocalNote": {
+    "description": "Group practice: everything is local, nothing synchronised"
+  },
+  "groupPracticeAddRound": "Add exercise",
+  "@groupPracticeAddRound": {
+    "description": "Group practice: add an exercise message as a round"
+  },
+  "groupPracticeNoMessages": "No suitable messages in the recent history.",
+  "@groupPracticeNoMessages": {
+    "description": "Group practice: no suitable messages to add"
+  },
+  "groupPracticeNotConnected": "Group history is not available until chat is connected.",
+  "@groupPracticeNotConnected": {
+    "description": "Group practice: history unavailable (chat not connected)"
+  },
+  "groupPracticeRoundOpen": "To do",
+  "@groupPracticeRoundOpen": {
+    "description": "Group practice round state: open"
+  },
+  "groupPracticeRoundDone": "Done",
+  "@groupPracticeRoundDone": {
+    "description": "Group practice round state: done"
+  },
+  "groupPracticeRoundUnavailable": "Unavailable",
+  "@groupPracticeRoundUnavailable": {
+    "description": "Group practice round state: source message gone"
+  },
+  "groupPracticeSourceGone": "The exercise message is no longer in the history.",
+  "@groupPracticeSourceGone": {
+    "description": "Group practice: source message deleted or cleared"
+  },
+  "groupPracticeSourceLoading": "Looking for the message…",
+  "@groupPracticeSourceLoading": {
+    "description": "Group practice: source message not loaded yet"
+  },
+  "groupPracticeAttemptResult": "{count, plural, =1{Copied: {accuracy}%} other{Copied: {accuracy}% ({count} attempts)}}",
+  "@groupPracticeAttemptResult": {
+    "description": "Group practice round: latest result and number of attempts",
+    "placeholders": {
+      "accuracy": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeCopy": "Copy",
+  "@groupPracticeCopy": {
+    "description": "Group practice round: copy this exercise"
+  },
+  "groupPracticeRemoveRound": "Remove round",
+  "@groupPracticeRemoveRound": {
+    "description": "Group practice round: remove"
+  },
+  "groupPracticeSummary": "Summary",
+  "@groupPracticeSummary": {
+    "description": "Group practice: summary heading"
+  },
+  "groupPracticeRoundsDone": "{done} of {total} rounds done",
+  "@groupPracticeRoundsDone": {
+    "description": "Group practice: rounds done of total",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeUnavailableCount": "{count, plural, =1{1 round unavailable} other{{count} rounds unavailable}}",
+  "@groupPracticeUnavailableCount": {
+    "description": "Group practice: rounds whose source is gone",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeAccuracy": "Copy accuracy: {accuracy}%",
+  "@groupPracticeAccuracy": {
+    "description": "Group practice: copy accuracy over latest attempts",
+    "placeholders": {
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeAssisted": "{count, plural, =1{1 attempt with help} other{{count} attempts with help}}",
+  "@groupPracticeAssisted": {
+    "description": "Group practice: attempts with help",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeShareHint": "To share, key your result in the group chat yourself, e.g. {done}/{total} {accuracy}%. Nothing is sent automatically.",
+  "@groupPracticeShareHint": {
+    "description": "Group practice: a result the learner may key into the chat themselves",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeComplete": "Finish session",
+  "@groupPracticeComplete": {
+    "description": "Group practice: mark the session complete"
   }
 }

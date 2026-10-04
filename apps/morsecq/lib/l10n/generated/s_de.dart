@@ -4089,4 +4089,118 @@ class SDe extends S {
 
   @override
   String get telegraphAmbiguous => 'Mehrere Zeichen teilen sich diesen Code';
+
+  @override
+  String get groupPracticeTitle => 'Gruppentraining';
+
+  @override
+  String get groupPracticeIntro => 'Die Kursleitung gibt Übungen wie gewohnt im Gruppenchat. Jedes Mitglied wählt hier eine Übungsnachricht und schreibt sie im eigenen Tempo mit. Antworten und Ergebnisse bleiben auf deinem Gerät; nichts wird an die Gruppe gesendet.';
+
+  @override
+  String get groupPracticeNew => 'Neue Sitzung';
+
+  @override
+  String get groupPracticeTitleField => 'Titel';
+
+  @override
+  String get groupPracticeCreate => 'Erstellen';
+
+  @override
+  String get groupPracticeInstructor => 'Kursleitung';
+
+  @override
+  String get groupPracticeParticipant => 'Teilnehmer';
+
+  @override
+  String get groupPracticeInstructorHint => 'Gib jede Übung im Gruppenchat, füge sie hier als Runde hinzu und hake sie ab; kündige Durchgänge im Chat an.';
+
+  @override
+  String get groupPracticeParticipantHint => 'Füge die Übungsnachrichten der Kursleitung als Runden hinzu und schreibe jede hier mit.';
+
+  @override
+  String get groupPracticeLocalNote => 'Nur lokal: Runden, Rollen und Ergebnisse werden nicht mit anderen abgeglichen, und verpasste Nachrichten erreichen nicht unbedingt alle.';
+
+  @override
+  String get groupPracticeAddRound => 'Übung hinzufügen';
+
+  @override
+  String get groupPracticeNoMessages => 'Keine passenden Nachrichten im jüngsten Verlauf.';
+
+  @override
+  String get groupPracticeNotConnected => 'Der Gruppenverlauf ist erst verfügbar, wenn der Chat verbunden ist.';
+
+  @override
+  String get groupPracticeRoundOpen => 'Offen';
+
+  @override
+  String get groupPracticeRoundDone => 'Erledigt';
+
+  @override
+  String get groupPracticeRoundUnavailable => 'Nicht verfügbar';
+
+  @override
+  String get groupPracticeSourceGone => 'Die Übungsnachricht ist nicht mehr im Verlauf.';
+
+  @override
+  String get groupPracticeSourceLoading => 'Nachricht wird gesucht …';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Mitgeschrieben: $accuracy % ($count Versuche)',
+      one: 'Mitgeschrieben: $accuracy %',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => 'Mitschreiben';
+
+  @override
+  String get groupPracticeRemoveRound => 'Runde entfernen';
+
+  @override
+  String get groupPracticeSummary => 'Übersicht';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '$done von $total Runden erledigt';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Runden nicht verfügbar',
+      one: '1 Runde nicht verfügbar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return 'Mitschreib-Genauigkeit: $accuracy %';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Versuche mit Hilfe',
+      one: '1 Versuch mit Hilfe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return 'Zum Teilen gib dein Ergebnis selbst im Gruppenchat, z. B. $done/$total $accuracy%. Nichts wird automatisch gesendet.';
+  }
+
+  @override
+  String get groupPracticeComplete => 'Sitzung beenden';
 }

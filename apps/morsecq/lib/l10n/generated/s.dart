@@ -7069,6 +7069,174 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Several characters share this code'**
   String get telegraphAmbiguous;
+
+  /// Group practice page title / group menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Group practice'**
+  String get groupPracticeTitle;
+
+  /// Group practice: how the manual workflow works
+  ///
+  /// In en, this message translates to:
+  /// **'The instructor keys exercises in the group chat as usual. Each member picks an exercise message here and copies it at their own speed. Answers and scores stay on your device; nothing is sent to the group.'**
+  String get groupPracticeIntro;
+
+  /// Group practice: start a new local session
+  ///
+  /// In en, this message translates to:
+  /// **'New session'**
+  String get groupPracticeNew;
+
+  /// Group practice: session title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get groupPracticeTitleField;
+
+  /// Group practice: create the session
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get groupPracticeCreate;
+
+  /// Group practice role: instructor (local label)
+  ///
+  /// In en, this message translates to:
+  /// **'Instructor'**
+  String get groupPracticeInstructor;
+
+  /// Group practice role: participant
+  ///
+  /// In en, this message translates to:
+  /// **'Participant'**
+  String get groupPracticeParticipant;
+
+  /// Group practice: instructor's role explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Key each exercise in the group chat, add it here as a round and tick it off; announce turns in the chat.'**
+  String get groupPracticeInstructorHint;
+
+  /// Group practice: participant's role explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Add the instructor\'s exercise messages as rounds and copy each one here.'**
+  String get groupPracticeParticipantHint;
+
+  /// Group practice: everything is local, nothing synchronised
+  ///
+  /// In en, this message translates to:
+  /// **'Local only: rounds, roles and results are not synchronised with other members, and missed messages may never reach everyone.'**
+  String get groupPracticeLocalNote;
+
+  /// Group practice: add an exercise message as a round
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get groupPracticeAddRound;
+
+  /// Group practice: no suitable messages to add
+  ///
+  /// In en, this message translates to:
+  /// **'No suitable messages in the recent history.'**
+  String get groupPracticeNoMessages;
+
+  /// Group practice: history unavailable (chat not connected)
+  ///
+  /// In en, this message translates to:
+  /// **'Group history is not available until chat is connected.'**
+  String get groupPracticeNotConnected;
+
+  /// Group practice round state: open
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get groupPracticeRoundOpen;
+
+  /// Group practice round state: done
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get groupPracticeRoundDone;
+
+  /// Group practice round state: source message gone
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get groupPracticeRoundUnavailable;
+
+  /// Group practice: source message deleted or cleared
+  ///
+  /// In en, this message translates to:
+  /// **'The exercise message is no longer in the history.'**
+  String get groupPracticeSourceGone;
+
+  /// Group practice: source message not loaded yet
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the message…'**
+  String get groupPracticeSourceLoading;
+
+  /// Group practice round: latest result and number of attempts
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Copied: {accuracy}%} other{Copied: {accuracy}% ({count} attempts)}}'**
+  String groupPracticeAttemptResult(int accuracy, int count);
+
+  /// Group practice round: copy this exercise
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get groupPracticeCopy;
+
+  /// Group practice round: remove
+  ///
+  /// In en, this message translates to:
+  /// **'Remove round'**
+  String get groupPracticeRemoveRound;
+
+  /// Group practice: summary heading
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get groupPracticeSummary;
+
+  /// Group practice: rounds done of total
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} rounds done'**
+  String groupPracticeRoundsDone(int done, int total);
+
+  /// Group practice: rounds whose source is gone
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 round unavailable} other{{count} rounds unavailable}}'**
+  String groupPracticeUnavailableCount(int count);
+
+  /// Group practice: copy accuracy over latest attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Copy accuracy: {accuracy}%'**
+  String groupPracticeAccuracy(int accuracy);
+
+  /// Group practice: attempts with help
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attempt with help} other{{count} attempts with help}}'**
+  String groupPracticeAssisted(int count);
+
+  /// Group practice: a result the learner may key into the chat themselves
+  ///
+  /// In en, this message translates to:
+  /// **'To share, key your result in the group chat yourself, e.g. {done}/{total} {accuracy}%. Nothing is sent automatically.'**
+  String groupPracticeShareHint(int done, int total, int accuracy);
+
+  /// Group practice: mark the session complete
+  ///
+  /// In en, this message translates to:
+  /// **'Finish session'**
+  String get groupPracticeComplete;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

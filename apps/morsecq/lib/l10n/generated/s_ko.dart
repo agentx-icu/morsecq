@@ -4049,4 +4049,115 @@ class SKo extends S {
 
   @override
   String get telegraphAmbiguous => '여러 글자가 이 부호를 함께 씁니다';
+
+  @override
+  String get groupPracticeTitle => '그룹 연습';
+
+  @override
+  String get groupPracticeIntro => '강사는 평소처럼 그룹 채팅에서 연습 문제를 키잉합니다. 각 멤버는 여기서 연습 메시지를 골라 자기 속도로 받아 적습니다. 답과 점수는 이 기기에만 남고 그룹에 아무것도 보내지 않습니다.';
+
+  @override
+  String get groupPracticeNew => '새 세션';
+
+  @override
+  String get groupPracticeTitleField => '제목';
+
+  @override
+  String get groupPracticeCreate => '만들기';
+
+  @override
+  String get groupPracticeInstructor => '강사';
+
+  @override
+  String get groupPracticeParticipant => '참가자';
+
+  @override
+  String get groupPracticeInstructorHint => '각 연습을 그룹 채팅에서 키잉하고 여기에 라운드로 추가해 체크하세요. 차례는 채팅에서 알리세요.';
+
+  @override
+  String get groupPracticeParticipantHint => '강사의 연습 메시지를 라운드로 추가하고 여기서 하나씩 받아 적으세요.';
+
+  @override
+  String get groupPracticeLocalNote => '이 기기에만 남습니다. 라운드·역할·결과는 다른 멤버와 동기화되지 않으며, 놓친 메시지가 모두에게 도착한다는 보장은 없습니다.';
+
+  @override
+  String get groupPracticeAddRound => '연습 추가';
+
+  @override
+  String get groupPracticeNoMessages => '최근 기록에 추가할 메시지가 없습니다.';
+
+  @override
+  String get groupPracticeNotConnected => '채팅이 연결될 때까지 그룹 기록을 쓸 수 없습니다.';
+
+  @override
+  String get groupPracticeRoundOpen => '할 일';
+
+  @override
+  String get groupPracticeRoundDone => '완료';
+
+  @override
+  String get groupPracticeRoundUnavailable => '사용 불가';
+
+  @override
+  String get groupPracticeSourceGone => '연습 메시지가 더 이상 기록에 없습니다.';
+
+  @override
+  String get groupPracticeSourceLoading => '메시지를 찾는 중…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '받아쓰기: $accuracy% ($count회)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '받아쓰기';
+
+  @override
+  String get groupPracticeRemoveRound => '라운드 삭제';
+
+  @override
+  String get groupPracticeSummary => '요약';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '$total라운드 중 $done 완료';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '사용할 수 없는 라운드 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '받아쓰기 정확도: $accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '도움 받은 시도 $count회',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '공유하려면 결과를 직접 그룹 채팅에 키잉하세요(예: $done/$total $accuracy%). 자동으로 보내지지 않습니다.';
+  }
+
+  @override
+  String get groupPracticeComplete => '세션 마치기';
 }

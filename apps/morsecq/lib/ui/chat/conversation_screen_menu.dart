@@ -331,6 +331,12 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
         await _leaveGroup();
       case 'search':
         await _search();
+      case 'practice':
+        await GroupPracticePage.open(
+          context,
+          conversationId: _id,
+          groupTitle: _group()?.name ?? '',
+        );
       case 'connection':
         await ConnectionDiagnosticsPage.open(context, conversationId: _id);
       case 'clear':

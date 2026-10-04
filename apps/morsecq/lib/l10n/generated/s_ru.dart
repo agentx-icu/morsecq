@@ -4163,4 +4163,124 @@ class SRu extends S {
 
   @override
   String get telegraphAmbiguous => 'Этот код у нескольких иероглифов';
+
+  @override
+  String get groupPracticeTitle => 'Групповая тренировка';
+
+  @override
+  String get groupPracticeIntro => 'Ведущий, как обычно, передаёт упражнения в чат группы. Каждый участник выбирает здесь сообщение-упражнение и принимает его на своей скорости. Ответы и баллы остаются на вашем устройстве; в группу ничего не отправляется.';
+
+  @override
+  String get groupPracticeNew => 'Новое занятие';
+
+  @override
+  String get groupPracticeTitleField => 'Название';
+
+  @override
+  String get groupPracticeCreate => 'Создать';
+
+  @override
+  String get groupPracticeInstructor => 'Ведущий';
+
+  @override
+  String get groupPracticeParticipant => 'Участник';
+
+  @override
+  String get groupPracticeInstructorHint => 'Передайте упражнение в чат группы, добавьте его здесь как раунд и отметьте; очерёдность объявляйте в чате.';
+
+  @override
+  String get groupPracticeParticipantHint => 'Добавьте сообщения-упражнения ведущего как раунды и примите каждое здесь.';
+
+  @override
+  String get groupPracticeLocalNote => 'Только локально: раунды, роли и результаты не синхронизируются, а пропущенные сообщения могут дойти не до всех.';
+
+  @override
+  String get groupPracticeAddRound => 'Добавить упражнение';
+
+  @override
+  String get groupPracticeNoMessages => 'В недавней истории нет подходящих сообщений.';
+
+  @override
+  String get groupPracticeNotConnected => 'История группы недоступна, пока чат не подключён.';
+
+  @override
+  String get groupPracticeRoundOpen => 'Не выполнено';
+
+  @override
+  String get groupPracticeRoundDone => 'Выполнено';
+
+  @override
+  String get groupPracticeRoundUnavailable => 'Недоступно';
+
+  @override
+  String get groupPracticeSourceGone => 'Сообщения-упражнения больше нет в истории.';
+
+  @override
+  String get groupPracticeSourceLoading => 'Поиск сообщения…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Принято: $accuracy% ($count попытки)',
+      many: 'Принято: $accuracy% ($count попыток)',
+      few: 'Принято: $accuracy% ($count попытки)',
+      one: 'Принято: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => 'Принять';
+
+  @override
+  String get groupPracticeRemoveRound => 'Удалить раунд';
+
+  @override
+  String get groupPracticeSummary => 'Итоги';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return 'Выполнено раундов: $done из $total';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раунда недоступны',
+      many: '$count раундов недоступны',
+      few: '$count раунда недоступны',
+      one: '$count раунд недоступен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return 'Точность приёма: $accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count попытки с подсказкой',
+      many: '$count попыток с подсказкой',
+      few: '$count попытки с подсказкой',
+      one: '$count попытка с подсказкой',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return 'Чтобы поделиться, сами передайте результат в чат группы, например $done/$total $accuracy%. Автоматически ничего не отправляется.';
+  }
+
+  @override
+  String get groupPracticeComplete => 'Завершить занятие';
 }
