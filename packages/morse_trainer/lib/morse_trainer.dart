@@ -37,6 +37,7 @@ export 'src/session_score.dart';
 export 'src/session_summary.dart';
 export 'src/speed_recommendation.dart';
 export 'src/srs_scheduler.dart';
+export 'src/telegraph_practice.dart';
 export 'src/trainer_progress.dart';
 export 'src/trainer_settings.dart';
 export 'src/trainer_store.dart';

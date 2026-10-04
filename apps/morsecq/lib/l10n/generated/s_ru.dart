@@ -4050,4 +4050,117 @@ class SRu extends S {
   String keysHintCustom(String keys) {
     return 'Клавиши: $keys';
   }
+
+  @override
+  String get telegraphTitle => 'Китайский телеграфный код';
+
+  @override
+  String get telegraphIntro => 'Каждый китайский иероглиф передаётся четырёхзначным кодом. Тренируйте приём цифр и отдельно — запоминание, какой код означает какой иероглиф.';
+
+  @override
+  String get telegraphCodebook => 'Кодовая книга';
+
+  @override
+  String get telegraphCodebookMainland => 'Материковый';
+
+  @override
+  String get telegraphCodebookTaiwan => 'Тайвань';
+
+  @override
+  String get telegraphDigitsTitle => 'Приём кодовых групп';
+
+  @override
+  String get telegraphDigitsHint => 'Слушайте четырёхзначные группы настоящих кодов и вводите цифры.';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count занятия: $accuracy% цифр',
+      many: '$count занятий: $accuracy% цифр',
+      few: '$count занятия: $accuracy% цифр',
+      one: '$count занятие: $accuracy% цифр',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => 'Вспомнить коды';
+
+  @override
+  String get telegraphRecallHint => 'Иероглиф → код и код → иероглиф. Отдельно от прогресса в Морзе.';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count карточки: известно $accuracy%',
+      many: '$count карточек: известно $accuracy%',
+      few: '$count карточки: известно $accuracy%',
+      one: '$count карточка: известно $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => 'Запоминание кодов не открывает уроки Морзе и не меняет советы по скорости; приём цифр засчитывается как обычный приём Морзе.';
+
+  @override
+  String get telegraphRecallCharPrompt => 'Введите код этого иероглифа';
+
+  @override
+  String get telegraphRecallCodePrompt => 'Выберите иероглиф для этого кода';
+
+  @override
+  String get telegraphReveal => 'Показать ответ';
+
+  @override
+  String get telegraphRevealAssisted => 'Показано: карточка засчитывается как с подсказкой.';
+
+  @override
+  String get telegraphCorrect => 'Верно';
+
+  @override
+  String get telegraphIncorrect => 'Не совсем';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return 'Известно $correct из $total';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count карточки с показанным ответом',
+      many: '$count карточек с показанным ответом',
+      few: '$count карточки с показанным ответом',
+      one: '$count карточка с показанным ответом',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => 'Расшифровать как китайский телеграфный код';
+
+  @override
+  String get telegraphInterpretTitle => 'Расшифровка телеграфного кода';
+
+  @override
+  String get telegraphInterpretNote => 'Только для просмотра: само сообщение не меняется, ничего не отправляется.';
+
+  @override
+  String get telegraphUnresolved => 'Не найдено: нет иероглифа с этим кодом';
+
+  @override
+  String get telegraphMalformed => 'Не четырёхзначная группа';
+
+  @override
+  String get telegraphNotCode => 'Текст, без изменений';
+
+  @override
+  String get telegraphAmbiguous => 'Этот код у нескольких иероглифов';
 }

@@ -6907,6 +6907,168 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Keys: {keys}'**
   String keysHintCustom(String keys);
+
+  /// Chinese telegraph-code practice title / Learn entry
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese telegraph code'**
+  String get telegraphTitle;
+
+  /// Telegraph practice: introduction
+  ///
+  /// In en, this message translates to:
+  /// **'Each Chinese character is sent as a four-digit code. Practise hearing the digits and, separately, remembering which code stands for which character.'**
+  String get telegraphIntro;
+
+  /// Codebook selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Codebook'**
+  String get telegraphCodebook;
+
+  /// Codebook: mainland China (1983)
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland'**
+  String get telegraphCodebookMainland;
+
+  /// Codebook: Taiwan / Hong Kong
+  ///
+  /// In en, this message translates to:
+  /// **'Taiwan'**
+  String get telegraphCodebookTaiwan;
+
+  /// Telegraph practice: digit copying task
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code groups'**
+  String get telegraphDigitsTitle;
+
+  /// Telegraph practice: digit copying explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Hear four-digit groups of real codes and type the digits.'**
+  String get telegraphDigitsHint;
+
+  /// Telegraph practice: digit copying results
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session: {accuracy}% of digits} other{{count} sessions: {accuracy}% of digits}}'**
+  String telegraphDigitsResults(int count, int accuracy);
+
+  /// Telegraph practice: codebook recall task
+  ///
+  /// In en, this message translates to:
+  /// **'Recall codes'**
+  String get telegraphRecallTitle;
+
+  /// Telegraph practice: recall explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Character to code and code to character. Kept apart from Morse progress.'**
+  String get telegraphRecallHint;
+
+  /// Telegraph practice: recall results
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 card answered: {accuracy}% known} other{{count} cards answered: {accuracy}% known}}'**
+  String telegraphRecallResults(int count, int accuracy);
+
+  /// Telegraph practice: recall does not affect Morse progress
+  ///
+  /// In en, this message translates to:
+  /// **'Codebook recall never unlocks Morse lessons or changes speed advice; digit copying counts like other Morse copying.'**
+  String get telegraphSeparateNote;
+
+  /// Recall card: type the code of this character
+  ///
+  /// In en, this message translates to:
+  /// **'Type the code of this character'**
+  String get telegraphRecallCharPrompt;
+
+  /// Recall card: pick the character of this code
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the character for this code'**
+  String get telegraphRecallCodePrompt;
+
+  /// Recall card: reveal the answer (assisted)
+  ///
+  /// In en, this message translates to:
+  /// **'Show answer'**
+  String get telegraphReveal;
+
+  /// Recall card: revealed answers count as assisted
+  ///
+  /// In en, this message translates to:
+  /// **'Shown: this card counts as assisted.'**
+  String get telegraphRevealAssisted;
+
+  /// Recall card: correct
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get telegraphCorrect;
+
+  /// Recall card: incorrect
+  ///
+  /// In en, this message translates to:
+  /// **'Not quite'**
+  String get telegraphIncorrect;
+
+  /// Recall summary: correct of total
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} of {total} known'**
+  String telegraphRecallSummary(int correct, int total);
+
+  /// Recall summary: cards with a revealed answer
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}'**
+  String telegraphRecallAssisted(int count);
+
+  /// Chat message menu: interpret digits as telegraph code
+  ///
+  /// In en, this message translates to:
+  /// **'Interpret as Chinese telegraph code'**
+  String get telegraphInterpretAction;
+
+  /// Telegraph interpretation sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Telegraph code interpretation'**
+  String get telegraphInterpretTitle;
+
+  /// Telegraph interpretation: local and read-only
+  ///
+  /// In en, this message translates to:
+  /// **'Shown here only: the message itself is not changed and nothing is sent.'**
+  String get telegraphInterpretNote;
+
+  /// Telegraph interpretation: unassigned code
+  ///
+  /// In en, this message translates to:
+  /// **'Unresolved: no character has this code'**
+  String get telegraphUnresolved;
+
+  /// Telegraph interpretation: digits but not four
+  ///
+  /// In en, this message translates to:
+  /// **'Not a four-digit group'**
+  String get telegraphMalformed;
+
+  /// Telegraph interpretation: ordinary text token
+  ///
+  /// In en, this message translates to:
+  /// **'Text, kept as written'**
+  String get telegraphNotCode;
+
+  /// Telegraph interpretation: several characters share the code
+  ///
+  /// In en, this message translates to:
+  /// **'Several characters share this code'**
+  String get telegraphAmbiguous;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

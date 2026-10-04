@@ -3945,4 +3945,108 @@ class SKo extends S {
   String keysHintCustom(String keys) {
     return '키: $keys';
   }
+
+  @override
+  String get telegraphTitle => '중국어 전신 부호';
+
+  @override
+  String get telegraphIntro => '한자는 한 글자씩 네 자리 숫자로 보냅니다. 숫자를 듣는 연습과, 어떤 부호가 어떤 글자인지 기억하는 연습을 따로 합니다.';
+
+  @override
+  String get telegraphCodebook => '부호표';
+
+  @override
+  String get telegraphCodebookMainland => '중국 대륙';
+
+  @override
+  String get telegraphCodebookTaiwan => '대만';
+
+  @override
+  String get telegraphDigitsTitle => '부호 묶음 받아쓰기';
+
+  @override
+  String get telegraphDigitsHint => '실제 부호의 네 자리 묶음을 듣고 숫자를 입력합니다.';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count회: 숫자 정확도 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '부호 떠올리기';
+
+  @override
+  String get telegraphRecallHint => '글자→부호, 부호→글자. 모스 진도와 따로 기록합니다.';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count장 답함: $accuracy% 정답',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '부호 기억은 모스 레슨을 열거나 속도 추천을 바꾸지 않습니다. 숫자 받아쓰기는 다른 모스 수신과 똑같이 집계됩니다.';
+
+  @override
+  String get telegraphRecallCharPrompt => '이 글자의 부호를 입력하세요';
+
+  @override
+  String get telegraphRecallCodePrompt => '이 부호의 글자를 고르세요';
+
+  @override
+  String get telegraphReveal => '정답 보기';
+
+  @override
+  String get telegraphRevealAssisted => '표시함: 이 카드는 도움 받은 것으로 기록됩니다.';
+
+  @override
+  String get telegraphCorrect => '정답';
+
+  @override
+  String get telegraphIncorrect => '오답';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total개 중 $correct개 정답';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '정답을 본 카드 $count장',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '중국어 전신 부호로 해석';
+
+  @override
+  String get telegraphInterpretTitle => '전신 부호 해석';
+
+  @override
+  String get telegraphInterpretNote => '여기에만 표시됩니다. 메시지는 바뀌지 않고 아무것도 전송되지 않습니다.';
+
+  @override
+  String get telegraphUnresolved => '미해결: 이 부호에 해당하는 글자가 없습니다';
+
+  @override
+  String get telegraphMalformed => '네 자리 묶음이 아닙니다';
+
+  @override
+  String get telegraphNotCode => '텍스트(그대로 둠)';
+
+  @override
+  String get telegraphAmbiguous => '여러 글자가 이 부호를 함께 씁니다';
 }

@@ -3983,4 +3983,111 @@ class SPt extends S {
   String keysHintCustom(String keys) {
     return 'Teclas: $keys';
   }
+
+  @override
+  String get telegraphTitle => 'Código telegráfico chinês';
+
+  @override
+  String get telegraphIntro => 'Cada caractere chinês é enviado como um código de quatro dígitos. Pratique ouvir os dígitos e, separadamente, lembrar qual código corresponde a cada caractere.';
+
+  @override
+  String get telegraphCodebook => 'Livro de códigos';
+
+  @override
+  String get telegraphCodebookMainland => 'China continental';
+
+  @override
+  String get telegraphCodebookTaiwan => 'Taiwan';
+
+  @override
+  String get telegraphDigitsTitle => 'Copiar grupos de código';
+
+  @override
+  String get telegraphDigitsHint => 'Ouça grupos de quatro dígitos de códigos reais e digite os dígitos.';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessões: $accuracy% dos dígitos',
+      one: '1 sessão: $accuracy% dos dígitos',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => 'Lembrar códigos';
+
+  @override
+  String get telegraphRecallHint => 'De caractere para código e de código para caractere. Separado do progresso em Morse.';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartões respondidos: $accuracy% sabido',
+      one: '1 cartão respondido: $accuracy% sabido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => 'Lembrar códigos nunca desbloqueia lições de Morse nem muda a recomendação de velocidade; copiar dígitos conta como qualquer cópia em Morse.';
+
+  @override
+  String get telegraphRecallCharPrompt => 'Digite o código deste caractere';
+
+  @override
+  String get telegraphRecallCodePrompt => 'Escolha o caractere deste código';
+
+  @override
+  String get telegraphReveal => 'Ver resposta';
+
+  @override
+  String get telegraphRevealAssisted => 'Mostrada: este cartão conta como assistido.';
+
+  @override
+  String get telegraphCorrect => 'Correto';
+
+  @override
+  String get telegraphIncorrect => 'Não exatamente';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$correct de $total sabidas';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartões com a resposta mostrada',
+      one: '1 cartão com a resposta mostrada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => 'Interpretar como código telegráfico chinês';
+
+  @override
+  String get telegraphInterpretTitle => 'Interpretação do código telegráfico';
+
+  @override
+  String get telegraphInterpretNote => 'Só exibido aqui: a mensagem não muda e nada é enviado.';
+
+  @override
+  String get telegraphUnresolved => 'Não resolvido: nenhum caractere tem este código';
+
+  @override
+  String get telegraphMalformed => 'Não é um grupo de quatro dígitos';
+
+  @override
+  String get telegraphNotCode => 'Texto, mantido como está';
+
+  @override
+  String get telegraphAmbiguous => 'Vários caracteres compartilham este código';
 }

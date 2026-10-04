@@ -347,10 +347,14 @@ class QuickActions extends StatelessWidget {
     this.onQso,
     this.qsoFromLesson,
     this.onMaterials,
+    this.onTelegraph,
   });
 
   /// Opens My materials.
   final VoidCallback? onMaterials;
+
+  /// Opens Chinese telegraph-code practice (F13).
+  final VoidCallback? onTelegraph;
 
   /// Opens the QSO simulator; null while it is locked.
   final VoidCallback? onQso;
@@ -404,6 +408,12 @@ class QuickActions extends StatelessWidget {
             icon: Icons.library_books_outlined,
             label: s.materialsTitle,
             onTap: onMaterials,
+          ),
+        if (onTelegraph != null)
+          _ActionTile(
+            icon: Icons.translate,
+            label: s.telegraphTitle,
+            onTap: onTelegraph,
           ),
         _ActionTile(
           icon: Icons.cell_tower,

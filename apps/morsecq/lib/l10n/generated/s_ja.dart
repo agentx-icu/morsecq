@@ -3945,4 +3945,108 @@ class SJa extends S {
   String keysHintCustom(String keys) {
     return 'キー：$keys';
   }
+
+  @override
+  String get telegraphTitle => '中文電碼';
+
+  @override
+  String get telegraphIntro => '漢字は 1 文字ずつ 4 桁の番号で送られます。数字を聞き取る練習と、どの番号がどの字かを覚える練習を別々に行います。';
+
+  @override
+  String get telegraphCodebook => '電碼本';
+
+  @override
+  String get telegraphCodebookMainland => '中国大陸';
+
+  @override
+  String get telegraphCodebookTaiwan => '台湾';
+
+  @override
+  String get telegraphDigitsTitle => '電碼を聞き取る';
+
+  @override
+  String get telegraphDigitsHint => '実在する電碼の 4 桁を聞いて、数字を入力します。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回：数字の正答率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '電碼を思い出す';
+
+  @override
+  String get telegraphRecallHint => '字から番号、番号から字。モールスの進捗とは別に記録します。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 枚回答：正答率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '電碼の暗記がモールスのレッスン解放や速度のおすすめに影響することはありません。数字の聞き取りは他のモールス受信と同じ扱いです。';
+
+  @override
+  String get telegraphRecallCharPrompt => 'この字の電碼を入力';
+
+  @override
+  String get telegraphRecallCodePrompt => 'この電碼の字を選ぶ';
+
+  @override
+  String get telegraphReveal => '答えを見る';
+
+  @override
+  String get telegraphRevealAssisted => '表示済み：このカードは補助ありとして記録します。';
+
+  @override
+  String get telegraphCorrect => '正解';
+
+  @override
+  String get telegraphIncorrect => '不正解';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 問中 $correct 問正解';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '答えを見たカード $count 枚',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '中文電碼として解釈';
+
+  @override
+  String get telegraphInterpretTitle => '電碼の解釈';
+
+  @override
+  String get telegraphInterpretNote => 'ここに表示するだけで、メッセージ自体は変わらず、何も送信されません。';
+
+  @override
+  String get telegraphUnresolved => '未解決：この番号の字はありません';
+
+  @override
+  String get telegraphMalformed => '4 桁のグループではありません';
+
+  @override
+  String get telegraphNotCode => '文字列（そのまま）';
+
+  @override
+  String get telegraphAmbiguous => 'この番号を共有する字が複数あります';
 }

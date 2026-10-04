@@ -10,4 +10,5 @@ export 'src/decoder.dart';
 export 'src/element.dart';
 export 'src/encoder.dart';
 export 'src/telegraph/chinese_telegraph_code.dart';
+export 'src/telegraph/telegraph_groups.dart';
 export 'src/timing.dart';

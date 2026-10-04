@@ -3981,4 +3981,111 @@ class SEn extends S {
   String keysHintCustom(String keys) {
     return 'Keys: $keys';
   }
+
+  @override
+  String get telegraphTitle => 'Chinese telegraph code';
+
+  @override
+  String get telegraphIntro => 'Each Chinese character is sent as a four-digit code. Practise hearing the digits and, separately, remembering which code stands for which character.';
+
+  @override
+  String get telegraphCodebook => 'Codebook';
+
+  @override
+  String get telegraphCodebookMainland => 'Mainland';
+
+  @override
+  String get telegraphCodebookTaiwan => 'Taiwan';
+
+  @override
+  String get telegraphDigitsTitle => 'Copy code groups';
+
+  @override
+  String get telegraphDigitsHint => 'Hear four-digit groups of real codes and type the digits.';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions: $accuracy% of digits',
+      one: '1 session: $accuracy% of digits',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => 'Recall codes';
+
+  @override
+  String get telegraphRecallHint => 'Character to code and code to character. Kept apart from Morse progress.';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards answered: $accuracy% known',
+      one: '1 card answered: $accuracy% known',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => 'Codebook recall never unlocks Morse lessons or changes speed advice; digit copying counts like other Morse copying.';
+
+  @override
+  String get telegraphRecallCharPrompt => 'Type the code of this character';
+
+  @override
+  String get telegraphRecallCodePrompt => 'Pick the character for this code';
+
+  @override
+  String get telegraphReveal => 'Show answer';
+
+  @override
+  String get telegraphRevealAssisted => 'Shown: this card counts as assisted.';
+
+  @override
+  String get telegraphCorrect => 'Correct';
+
+  @override
+  String get telegraphIncorrect => 'Not quite';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$correct of $total known';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards with the answer shown',
+      one: '1 card with the answer shown',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => 'Interpret as Chinese telegraph code';
+
+  @override
+  String get telegraphInterpretTitle => 'Telegraph code interpretation';
+
+  @override
+  String get telegraphInterpretNote => 'Shown here only: the message itself is not changed and nothing is sent.';
+
+  @override
+  String get telegraphUnresolved => 'Unresolved: no character has this code';
+
+  @override
+  String get telegraphMalformed => 'Not a four-digit group';
+
+  @override
+  String get telegraphNotCode => 'Text, kept as written';
+
+  @override
+  String get telegraphAmbiguous => 'Several characters share this code';
 }

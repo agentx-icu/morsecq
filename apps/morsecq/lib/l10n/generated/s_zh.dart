@@ -3945,6 +3945,110 @@ class SZh extends S {
   String keysHintCustom(String keys) {
     return '按键：$keys';
   }
+
+  @override
+  String get telegraphTitle => '中文电码';
+
+  @override
+  String get telegraphIntro => '每个汉字以四位数字码拍发。分别练习听写数字，以及记住哪个码对应哪个字。';
+
+  @override
+  String get telegraphCodebook => '码本';
+
+  @override
+  String get telegraphCodebookMainland => '大陆';
+
+  @override
+  String get telegraphCodebookTaiwan => '台湾';
+
+  @override
+  String get telegraphDigitsTitle => '抄收电码组';
+
+  @override
+  String get telegraphDigitsHint => '收听真实电码的四位数字组并输入数字。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共 $count 次：数字正确率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '记忆码本';
+
+  @override
+  String get telegraphRecallHint => '由字查码、由码认字。与莫尔斯进度分开记录。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已答 $count 张：掌握 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '码本记忆不会解锁莫尔斯课程，也不改变速度建议；数字抄收与其他莫尔斯抄收同等计入。';
+
+  @override
+  String get telegraphRecallCharPrompt => '输入这个字的电码';
+
+  @override
+  String get telegraphRecallCodePrompt => '选出这个电码对应的字';
+
+  @override
+  String get telegraphReveal => '显示答案';
+
+  @override
+  String get telegraphRevealAssisted => '已显示：本题计为有提示。';
+
+  @override
+  String get telegraphCorrect => '正确';
+
+  @override
+  String get telegraphIncorrect => '不对';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 题中答对 $correct 题';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 题看过答案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '按中文电码解读';
+
+  @override
+  String get telegraphInterpretTitle => '电码解读';
+
+  @override
+  String get telegraphInterpretNote => '仅在此显示：不会修改原消息，也不会发送任何内容。';
+
+  @override
+  String get telegraphUnresolved => '无法解读：没有字对应此码';
+
+  @override
+  String get telegraphMalformed => '不是四位数字组';
+
+  @override
+  String get telegraphNotCode => '文字，保持原样';
+
+  @override
+  String get telegraphAmbiguous => '多个字共用此码';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7888,4 +7992,108 @@ class SZhHant extends SZh {
   String keysHintCustom(String keys) {
     return '按鍵：$keys';
   }
+
+  @override
+  String get telegraphTitle => '中文電碼';
+
+  @override
+  String get telegraphIntro => '每個漢字以四位數字碼拍發。分別練習聽寫數字，以及記住哪個碼對應哪個字。';
+
+  @override
+  String get telegraphCodebook => '碼本';
+
+  @override
+  String get telegraphCodebookMainland => '大陸';
+
+  @override
+  String get telegraphCodebookTaiwan => '臺灣';
+
+  @override
+  String get telegraphDigitsTitle => '抄收電碼組';
+
+  @override
+  String get telegraphDigitsHint => '收聽真實電碼的四位數字組並輸入數字。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共 $count 次：數字正確率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '記憶碼本';
+
+  @override
+  String get telegraphRecallHint => '由字查碼、由碼認字。與摩斯進度分開記錄。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已答 $count 張：掌握 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '碼本記憶不會解鎖摩斯課程，也不改變速度建議；數字抄收與其他摩斯抄收同等計入。';
+
+  @override
+  String get telegraphRecallCharPrompt => '輸入這個字的電碼';
+
+  @override
+  String get telegraphRecallCodePrompt => '選出這個電碼對應的字';
+
+  @override
+  String get telegraphReveal => '顯示答案';
+
+  @override
+  String get telegraphRevealAssisted => '已顯示：本題計為有提示。';
+
+  @override
+  String get telegraphCorrect => '正確';
+
+  @override
+  String get telegraphIncorrect => '不對';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 題中答對 $correct 題';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 題看過答案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '按中文電碼解讀';
+
+  @override
+  String get telegraphInterpretTitle => '電碼解讀';
+
+  @override
+  String get telegraphInterpretNote => '僅在此顯示：不會修改原訊息，也不會傳送任何內容。';
+
+  @override
+  String get telegraphUnresolved => '無法解讀：沒有字對應此碼';
+
+  @override
+  String get telegraphMalformed => '不是四位數字組';
+
+  @override
+  String get telegraphNotCode => '文字，保持原樣';
+
+  @override
+  String get telegraphAmbiguous => '多個字共用此碼';
 }

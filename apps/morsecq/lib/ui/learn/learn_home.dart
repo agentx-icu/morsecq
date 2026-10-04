@@ -23,6 +23,7 @@ import 'receive/receive_drill_screen.dart';
 import 'review/review_screen.dart';
 import 'send/send_practice_screen.dart';
 import 'settings/training_settings_screen.dart';
+import 'telegraph/telegraph_practice_screen.dart';
 
 /// Learn tab home: lesson state, daily goal, streak and the practice entry
 /// points. One column on phones, two from [kLearnTwoColumnMinWidth].
@@ -232,6 +233,12 @@ class LearnHome extends StatelessWidget {
     onQso: _qsoAction(context),
     qsoFromLesson: TrainingController.qsoFromLesson,
     onMaterials: () => _materials(context),
+    onTelegraph: () => _telegraph(context),
+  );
+
+  void _telegraph(BuildContext context) => _push(
+    context,
+    TelegraphPracticeScreen(controller: controller, playback: playback),
   );
 
   void _materials(BuildContext context) => _push(
@@ -286,6 +293,7 @@ class LearnHome extends StatelessWidget {
       onQso: _qsoAction(context),
       qsoFromLesson: TrainingController.qsoFromLesson,
       onMaterials: () => _materials(context),
+      onTelegraph: () => _telegraph(context),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

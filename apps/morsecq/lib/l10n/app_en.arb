@@ -5606,5 +5606,142 @@
         "type": "String"
       }
     }
+  },
+  "telegraphTitle": "Chinese telegraph code",
+  "@telegraphTitle": {
+    "description": "Chinese telegraph-code practice title / Learn entry"
+  },
+  "telegraphIntro": "Each Chinese character is sent as a four-digit code. Practise hearing the digits and, separately, remembering which code stands for which character.",
+  "@telegraphIntro": {
+    "description": "Telegraph practice: introduction"
+  },
+  "telegraphCodebook": "Codebook",
+  "@telegraphCodebook": {
+    "description": "Codebook selector label"
+  },
+  "telegraphCodebookMainland": "Mainland",
+  "@telegraphCodebookMainland": {
+    "description": "Codebook: mainland China (1983)"
+  },
+  "telegraphCodebookTaiwan": "Taiwan",
+  "@telegraphCodebookTaiwan": {
+    "description": "Codebook: Taiwan / Hong Kong"
+  },
+  "telegraphDigitsTitle": "Copy code groups",
+  "@telegraphDigitsTitle": {
+    "description": "Telegraph practice: digit copying task"
+  },
+  "telegraphDigitsHint": "Hear four-digit groups of real codes and type the digits.",
+  "@telegraphDigitsHint": {
+    "description": "Telegraph practice: digit copying explanation"
+  },
+  "telegraphDigitsResults": "{count, plural, =1{1 session: {accuracy}% of digits} other{{count} sessions: {accuracy}% of digits}}",
+  "@telegraphDigitsResults": {
+    "description": "Telegraph practice: digit copying results",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphRecallTitle": "Recall codes",
+  "@telegraphRecallTitle": {
+    "description": "Telegraph practice: codebook recall task"
+  },
+  "telegraphRecallHint": "Character to code and code to character. Kept apart from Morse progress.",
+  "@telegraphRecallHint": {
+    "description": "Telegraph practice: recall explanation"
+  },
+  "telegraphRecallResults": "{count, plural, =1{1 card answered: {accuracy}% known} other{{count} cards answered: {accuracy}% known}}",
+  "@telegraphRecallResults": {
+    "description": "Telegraph practice: recall results",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphSeparateNote": "Codebook recall never unlocks Morse lessons or changes speed advice; digit copying counts like other Morse copying.",
+  "@telegraphSeparateNote": {
+    "description": "Telegraph practice: recall does not affect Morse progress"
+  },
+  "telegraphRecallCharPrompt": "Type the code of this character",
+  "@telegraphRecallCharPrompt": {
+    "description": "Recall card: type the code of this character"
+  },
+  "telegraphRecallCodePrompt": "Pick the character for this code",
+  "@telegraphRecallCodePrompt": {
+    "description": "Recall card: pick the character of this code"
+  },
+  "telegraphReveal": "Show answer",
+  "@telegraphReveal": {
+    "description": "Recall card: reveal the answer (assisted)"
+  },
+  "telegraphRevealAssisted": "Shown: this card counts as assisted.",
+  "@telegraphRevealAssisted": {
+    "description": "Recall card: revealed answers count as assisted"
+  },
+  "telegraphCorrect": "Correct",
+  "@telegraphCorrect": {
+    "description": "Recall card: correct"
+  },
+  "telegraphIncorrect": "Not quite",
+  "@telegraphIncorrect": {
+    "description": "Recall card: incorrect"
+  },
+  "telegraphRecallSummary": "{correct} of {total} known",
+  "@telegraphRecallSummary": {
+    "description": "Recall summary: correct of total",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphRecallAssisted": "{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}",
+  "@telegraphRecallAssisted": {
+    "description": "Recall summary: cards with a revealed answer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphInterpretAction": "Interpret as Chinese telegraph code",
+  "@telegraphInterpretAction": {
+    "description": "Chat message menu: interpret digits as telegraph code"
+  },
+  "telegraphInterpretTitle": "Telegraph code interpretation",
+  "@telegraphInterpretTitle": {
+    "description": "Telegraph interpretation sheet title"
+  },
+  "telegraphInterpretNote": "Shown here only: the message itself is not changed and nothing is sent.",
+  "@telegraphInterpretNote": {
+    "description": "Telegraph interpretation: local and read-only"
+  },
+  "telegraphUnresolved": "Unresolved: no character has this code",
+  "@telegraphUnresolved": {
+    "description": "Telegraph interpretation: unassigned code"
+  },
+  "telegraphMalformed": "Not a four-digit group",
+  "@telegraphMalformed": {
+    "description": "Telegraph interpretation: digits but not four"
+  },
+  "telegraphNotCode": "Text, kept as written",
+  "@telegraphNotCode": {
+    "description": "Telegraph interpretation: ordinary text token"
+  },
+  "telegraphAmbiguous": "Several characters share this code",
+  "@telegraphAmbiguous": {
+    "description": "Telegraph interpretation: several characters share the code"
   }
 }
