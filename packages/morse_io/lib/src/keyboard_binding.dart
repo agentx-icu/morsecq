@@ -47,6 +47,25 @@ final class KeyboardKeyBinding {
   KeyerAction? actionForEvent(KeyEvent event) =>
       event is KeyRepeatEvent ? null : actionFor(event.logicalKey);
 
+  /// Keys bound to more than one action. A valid configuration has none:
+  /// [actionFor]'s precedence is a fallback, not a feature.
+  Set<LogicalKeyboardKey> get conflicts => <LogicalKeyboardKey>{
+    ...straight.intersection(dit),
+    ...straight.intersection(dah),
+    ...dit.intersection(dah),
+  };
+
+  bool get hasConflicts => conflicts.isNotEmpty;
+
+  /// Every bound key as a straight key, no paddles: for an external adapter
+  /// that runs its own keyer and sends already-timed key-down / key-up, so
+  /// the app must not generate a second iambic sequence from those marks.
+  KeyboardKeyBinding straightOnly() => KeyboardKeyBinding(
+    straight: <LogicalKeyboardKey>{...straight, ...dit, ...dah},
+    dit: const <LogicalKeyboardKey>{},
+    dah: const <LogicalKeyboardKey>{},
+  );
+
   /// Swaps the dit and dah sets (left-handed operators).
   KeyboardKeyBinding swapped() =>
       KeyboardKeyBinding(straight: straight, dit: dah, dah: dit);

@@ -6709,6 +6709,204 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.'**
   String get conditionsSeparateNote;
+
+  /// Key setup page title; also the Me entry
+  ///
+  /// In en, this message translates to:
+  /// **'Keys and external keyers'**
+  String get keysTitle;
+
+  /// Me page: subtitle of the key setup entry
+  ///
+  /// In en, this message translates to:
+  /// **'Key bindings, paddles and USB keyer adapters'**
+  String get keysMeSubtitle;
+
+  /// Key setup: introduction
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which keys key Morse. Keyboard-emulating USB key and paddle adapters work like a keyboard: set their keys here. The app cannot tell which device sent a key, so a profile is a set of bindings.'**
+  String get keysIntro;
+
+  /// Key setup: built-in default profile
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get keysStandardProfile;
+
+  /// Key setup: profile without a name
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed profile'**
+  String get keysUnnamed;
+
+  /// Key setup: edit a profile
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get keysEdit;
+
+  /// Key setup: create a profile
+  ///
+  /// In en, this message translates to:
+  /// **'New profile'**
+  String get keysNewProfile;
+
+  /// Key setup: what is not supported
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI, serial and Bluetooth keyers, adapter firmware settings and transmitter control are not supported. Tested adapters are listed in the documentation.'**
+  String get keysLimitations;
+
+  /// Key profile editor title
+  ///
+  /// In en, this message translates to:
+  /// **'Key profile'**
+  String get keysEditTitle;
+
+  /// Key profile editor: name field
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name'**
+  String get keysName;
+
+  /// Key action/keyer mode: straight key
+  ///
+  /// In en, this message translates to:
+  /// **'Straight key'**
+  String get keysActionStraight;
+
+  /// Key action: dit paddle
+  ///
+  /// In en, this message translates to:
+  /// **'Dit paddle'**
+  String get keysActionDit;
+
+  /// Key action: dah paddle
+  ///
+  /// In en, this message translates to:
+  /// **'Dah paddle'**
+  String get keysActionDah;
+
+  /// Key capture: waiting for a key
+  ///
+  /// In en, this message translates to:
+  /// **'Press a key…'**
+  String get keysPressKey;
+
+  /// Key capture: no key bound
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get keysNone;
+
+  /// Key capture: start capturing
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get keysSet;
+
+  /// Key capture: reserved key refused
+  ///
+  /// In en, this message translates to:
+  /// **'{key} is reserved by the system or the app; choose another key.'**
+  String keysReserved(String key);
+
+  /// Key capture: key already used for another action
+  ///
+  /// In en, this message translates to:
+  /// **'{key} is already used for {action}.'**
+  String keysConflict(String key, String action);
+
+  /// Key profile save refused: duplicate binding
+  ///
+  /// In en, this message translates to:
+  /// **'Each key can do only one thing: {keys} is bound twice.'**
+  String keysConflictSave(String keys);
+
+  /// Key profile save refused: keys missing for the mode
+  ///
+  /// In en, this message translates to:
+  /// **'Set the keys this keyer mode needs (both paddles for iambic).'**
+  String get keysMissing;
+
+  /// Key profile: swap dit and dah paddles
+  ///
+  /// In en, this message translates to:
+  /// **'Swap paddles (left-handed)'**
+  String get keysSwapPaddles;
+
+  /// Key profile: keyer mode heading
+  ///
+  /// In en, this message translates to:
+  /// **'Keyer mode'**
+  String get keysKeyerMode;
+
+  /// Keyer mode: iambic A
+  ///
+  /// In en, this message translates to:
+  /// **'Iambic A'**
+  String get keysIambicA;
+
+  /// Keyer mode: iambic B
+  ///
+  /// In en, this message translates to:
+  /// **'Iambic B'**
+  String get keysIambicB;
+
+  /// Key profile: adapter has its own keyer
+  ///
+  /// In en, this message translates to:
+  /// **'The adapter keys its own elements'**
+  String get keysAdapterKeyer;
+
+  /// Key profile: adapter keyer explanation
+  ///
+  /// In en, this message translates to:
+  /// **'For an adapter with its own keyer: its timed key-down and key-up are used as they are, without a second iambic keyer in the app.'**
+  String get keysAdapterKeyerHint;
+
+  /// Key profile: app sidetone while keying
+  ///
+  /// In en, this message translates to:
+  /// **'App sidetone while keying'**
+  String get keysAppSidetone;
+
+  /// Key profile: sidetone explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off when the adapter makes its own sidetone. Decoding is not affected.'**
+  String get keysAppSidetoneHint;
+
+  /// Key profile: test area title
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get keysTestTitle;
+
+  /// Key profile: test area is not sent or credited
+  ///
+  /// In en, this message translates to:
+  /// **'Testing only: nothing is sent or added to your training.'**
+  String get keysTestNote;
+
+  /// Key profile: release all keys (stop a stuck tone)
+  ///
+  /// In en, this message translates to:
+  /// **'Release keys'**
+  String get keysTestRelease;
+
+  /// Key profile test: adapter keyer active
+  ///
+  /// In en, this message translates to:
+  /// **'The adapter\'s own keyer is used: paddle keys act as a straight key.'**
+  String get keysAdapterActive;
+
+  /// Keying hint with the active profile's keys
+  ///
+  /// In en, this message translates to:
+  /// **'Keys: {keys}'**
+  String keysHintCustom(String keys);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

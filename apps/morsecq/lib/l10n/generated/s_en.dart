@@ -3874,4 +3874,111 @@ class SEn extends S {
 
   @override
   String get conditionsSeparateNote => 'Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.';
+
+  @override
+  String get keysTitle => 'Keys and external keyers';
+
+  @override
+  String get keysMeSubtitle => 'Key bindings, paddles and USB keyer adapters';
+
+  @override
+  String get keysIntro => 'Choose which keys key Morse. Keyboard-emulating USB key and paddle adapters work like a keyboard: set their keys here. The app cannot tell which device sent a key, so a profile is a set of bindings.';
+
+  @override
+  String get keysStandardProfile => 'Standard';
+
+  @override
+  String get keysUnnamed => 'Unnamed profile';
+
+  @override
+  String get keysEdit => 'Edit';
+
+  @override
+  String get keysNewProfile => 'New profile';
+
+  @override
+  String get keysLimitations => 'MIDI, serial and Bluetooth keyers, adapter firmware settings and transmitter control are not supported. Tested adapters are listed in the documentation.';
+
+  @override
+  String get keysEditTitle => 'Key profile';
+
+  @override
+  String get keysName => 'Profile name';
+
+  @override
+  String get keysActionStraight => 'Straight key';
+
+  @override
+  String get keysActionDit => 'Dit paddle';
+
+  @override
+  String get keysActionDah => 'Dah paddle';
+
+  @override
+  String get keysPressKey => 'Press a key…';
+
+  @override
+  String get keysNone => 'Not set';
+
+  @override
+  String get keysSet => 'Set';
+
+  @override
+  String keysReserved(String key) {
+    return '$key is reserved by the system or the app; choose another key.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key is already used for $action.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Each key can do only one thing: $keys is bound twice.';
+  }
+
+  @override
+  String get keysMissing => 'Set the keys this keyer mode needs (both paddles for iambic).';
+
+  @override
+  String get keysSwapPaddles => 'Swap paddles (left-handed)';
+
+  @override
+  String get keysKeyerMode => 'Keyer mode';
+
+  @override
+  String get keysIambicA => 'Iambic A';
+
+  @override
+  String get keysIambicB => 'Iambic B';
+
+  @override
+  String get keysAdapterKeyer => 'The adapter keys its own elements';
+
+  @override
+  String get keysAdapterKeyerHint => 'For an adapter with its own keyer: its timed key-down and key-up are used as they are, without a second iambic keyer in the app.';
+
+  @override
+  String get keysAppSidetone => 'App sidetone while keying';
+
+  @override
+  String get keysAppSidetoneHint => 'Turn off when the adapter makes its own sidetone. Decoding is not affected.';
+
+  @override
+  String get keysTestTitle => 'Test';
+
+  @override
+  String get keysTestNote => 'Testing only: nothing is sent or added to your training.';
+
+  @override
+  String get keysTestRelease => 'Release keys';
+
+  @override
+  String get keysAdapterActive => 'The adapter\'s own keyer is used: paddle keys act as a straight key.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Keys: $keys';
+  }
 }

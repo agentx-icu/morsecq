@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../../keying/key_profile.dart';
+import '../../../keying/key_profiles.dart';
 import '../../../training/training_settings.dart';
 
 /// Desktop hint under the on-screen key(s): which keyboard keys drive them.
@@ -13,7 +15,10 @@ class KeyerLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final text = mode.isPaddle
+    final profile = KeyProfiles.of(context);
+    final text = !profile.isDefault
+        ? context.s.keysHintCustom(keyLabels(profile.keysFor(mode)))
+        : mode.isPaddle
         ? context.s.learnLegendPaddles
         : context.s.learnLegendStraight;
     return Row(

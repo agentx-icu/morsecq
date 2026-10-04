@@ -5451,5 +5451,160 @@
   "conditionsSeparateNote": "Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.",
   "@conditionsSeparateNote": {
     "description": "Receive summary: conditions results do not change progress"
+  },
+  "keysTitle": "Keys and external keyers",
+  "@keysTitle": {
+    "description": "Key setup page title; also the Me entry"
+  },
+  "keysMeSubtitle": "Key bindings, paddles and USB keyer adapters",
+  "@keysMeSubtitle": {
+    "description": "Me page: subtitle of the key setup entry"
+  },
+  "keysIntro": "Choose which keys key Morse. Keyboard-emulating USB key and paddle adapters work like a keyboard: set their keys here. The app cannot tell which device sent a key, so a profile is a set of bindings.",
+  "@keysIntro": {
+    "description": "Key setup: introduction"
+  },
+  "keysStandardProfile": "Standard",
+  "@keysStandardProfile": {
+    "description": "Key setup: built-in default profile"
+  },
+  "keysUnnamed": "Unnamed profile",
+  "@keysUnnamed": {
+    "description": "Key setup: profile without a name"
+  },
+  "keysEdit": "Edit",
+  "@keysEdit": {
+    "description": "Key setup: edit a profile"
+  },
+  "keysNewProfile": "New profile",
+  "@keysNewProfile": {
+    "description": "Key setup: create a profile"
+  },
+  "keysLimitations": "MIDI, serial and Bluetooth keyers, adapter firmware settings and transmitter control are not supported. Tested adapters are listed in the documentation.",
+  "@keysLimitations": {
+    "description": "Key setup: what is not supported"
+  },
+  "keysEditTitle": "Key profile",
+  "@keysEditTitle": {
+    "description": "Key profile editor title"
+  },
+  "keysName": "Profile name",
+  "@keysName": {
+    "description": "Key profile editor: name field"
+  },
+  "keysActionStraight": "Straight key",
+  "@keysActionStraight": {
+    "description": "Key action/keyer mode: straight key"
+  },
+  "keysActionDit": "Dit paddle",
+  "@keysActionDit": {
+    "description": "Key action: dit paddle"
+  },
+  "keysActionDah": "Dah paddle",
+  "@keysActionDah": {
+    "description": "Key action: dah paddle"
+  },
+  "keysPressKey": "Press a key…",
+  "@keysPressKey": {
+    "description": "Key capture: waiting for a key"
+  },
+  "keysNone": "Not set",
+  "@keysNone": {
+    "description": "Key capture: no key bound"
+  },
+  "keysSet": "Set",
+  "@keysSet": {
+    "description": "Key capture: start capturing"
+  },
+  "keysReserved": "{key} is reserved by the system or the app; choose another key.",
+  "@keysReserved": {
+    "description": "Key capture: reserved key refused",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "keysConflict": "{key} is already used for {action}.",
+  "@keysConflict": {
+    "description": "Key capture: key already used for another action",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      },
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "keysConflictSave": "Each key can do only one thing: {keys} is bound twice.",
+  "@keysConflictSave": {
+    "description": "Key profile save refused: duplicate binding",
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "keysMissing": "Set the keys this keyer mode needs (both paddles for iambic).",
+  "@keysMissing": {
+    "description": "Key profile save refused: keys missing for the mode"
+  },
+  "keysSwapPaddles": "Swap paddles (left-handed)",
+  "@keysSwapPaddles": {
+    "description": "Key profile: swap dit and dah paddles"
+  },
+  "keysKeyerMode": "Keyer mode",
+  "@keysKeyerMode": {
+    "description": "Key profile: keyer mode heading"
+  },
+  "keysIambicA": "Iambic A",
+  "@keysIambicA": {
+    "description": "Keyer mode: iambic A"
+  },
+  "keysIambicB": "Iambic B",
+  "@keysIambicB": {
+    "description": "Keyer mode: iambic B"
+  },
+  "keysAdapterKeyer": "The adapter keys its own elements",
+  "@keysAdapterKeyer": {
+    "description": "Key profile: adapter has its own keyer"
+  },
+  "keysAdapterKeyerHint": "For an adapter with its own keyer: its timed key-down and key-up are used as they are, without a second iambic keyer in the app.",
+  "@keysAdapterKeyerHint": {
+    "description": "Key profile: adapter keyer explanation"
+  },
+  "keysAppSidetone": "App sidetone while keying",
+  "@keysAppSidetone": {
+    "description": "Key profile: app sidetone while keying"
+  },
+  "keysAppSidetoneHint": "Turn off when the adapter makes its own sidetone. Decoding is not affected.",
+  "@keysAppSidetoneHint": {
+    "description": "Key profile: sidetone explanation"
+  },
+  "keysTestTitle": "Test",
+  "@keysTestTitle": {
+    "description": "Key profile: test area title"
+  },
+  "keysTestNote": "Testing only: nothing is sent or added to your training.",
+  "@keysTestNote": {
+    "description": "Key profile: test area is not sent or credited"
+  },
+  "keysTestRelease": "Release keys",
+  "@keysTestRelease": {
+    "description": "Key profile: release all keys (stop a stuck tone)"
+  },
+  "keysAdapterActive": "The adapter's own keyer is used: paddle keys act as a straight key.",
+  "@keysAdapterActive": {
+    "description": "Key profile test: adapter keyer active"
+  },
+  "keysHintCustom": "Keys: {keys}",
+  "@keysHintCustom": {
+    "description": "Keying hint with the active profile's keys",
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
   }
 }

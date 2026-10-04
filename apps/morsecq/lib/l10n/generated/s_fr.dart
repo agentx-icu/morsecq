@@ -3876,4 +3876,111 @@ class SFr extends S {
 
   @override
   String get conditionsSeparateNote => 'L\'entraînement en conditions radio compte comme activité mais ne modifie ni vos leçons, ni vos révisions, ni les conseils de vitesse.';
+
+  @override
+  String get keysTitle => 'Touches et manipulateurs externes';
+
+  @override
+  String get keysMeSubtitle => 'Affectation des touches, palettes et adaptateurs USB';
+
+  @override
+  String get keysIntro => 'Choisissez les touches qui manipulent le Morse. Les adaptateurs USB de manipulateur et de palettes qui émulent un clavier fonctionnent comme lui : définissez leurs touches ici. L\'app ne sait pas quel appareil a envoyé une touche ; un profil est donc un ensemble d\'affectations.';
+
+  @override
+  String get keysStandardProfile => 'Standard';
+
+  @override
+  String get keysUnnamed => 'Profil sans nom';
+
+  @override
+  String get keysEdit => 'Modifier';
+
+  @override
+  String get keysNewProfile => 'Nouveau profil';
+
+  @override
+  String get keysLimitations => 'Les manipulateurs MIDI, série et Bluetooth, les réglages du firmware des adaptateurs et la commande d\'émetteur ne sont pas pris en charge. Les adaptateurs testés figurent dans la documentation.';
+
+  @override
+  String get keysEditTitle => 'Profil de touches';
+
+  @override
+  String get keysName => 'Nom du profil';
+
+  @override
+  String get keysActionStraight => 'Manipulateur droit';
+
+  @override
+  String get keysActionDit => 'Palette point';
+
+  @override
+  String get keysActionDah => 'Palette trait';
+
+  @override
+  String get keysPressKey => 'Appuyez sur une touche…';
+
+  @override
+  String get keysNone => 'Non défini';
+
+  @override
+  String get keysSet => 'Définir';
+
+  @override
+  String keysReserved(String key) {
+    return '$key est réservée par le système ou l\'app ; choisissez une autre touche.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key est déjà utilisée pour $action.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Chaque touche ne peut faire qu\'une chose : $keys est affectée deux fois.';
+  }
+
+  @override
+  String get keysMissing => 'Définissez les touches requises par ce mode (les deux palettes en iambique).';
+
+  @override
+  String get keysSwapPaddles => 'Inverser les palettes (gaucher)';
+
+  @override
+  String get keysKeyerMode => 'Mode du manipulateur';
+
+  @override
+  String get keysIambicA => 'Iambique A';
+
+  @override
+  String get keysIambicB => 'Iambique B';
+
+  @override
+  String get keysAdapterKeyer => 'L\'adaptateur génère lui-même les éléments';
+
+  @override
+  String get keysAdapterKeyerHint => 'Pour un adaptateur doté de son propre manipulateur : ses appuis temporisés sont utilisés tels quels, sans second manipulateur iambique dans l\'app.';
+
+  @override
+  String get keysAppSidetone => 'Tonalité locale de l\'app en manipulant';
+
+  @override
+  String get keysAppSidetoneHint => 'Désactivez-la si l\'adaptateur produit sa propre tonalité. Le décodage n\'est pas affecté.';
+
+  @override
+  String get keysTestTitle => 'Test';
+
+  @override
+  String get keysTestNote => 'Test uniquement : rien n\'est envoyé ni ajouté à votre entraînement.';
+
+  @override
+  String get keysTestRelease => 'Relâcher les touches';
+
+  @override
+  String get keysAdapterActive => 'Le manipulateur de l\'adaptateur est utilisé : les touches de palette agissent comme un manipulateur droit.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Touches : $keys';
+  }
 }

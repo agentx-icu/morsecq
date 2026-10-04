@@ -3875,4 +3875,111 @@ class SDe extends S {
 
   @override
   String get conditionsSeparateNote => 'Training unter Funkbedingungen zählt als Aktivität, ändert aber weder Lektionen noch Wiederholungsplan oder Tempo-Empfehlung.';
+
+  @override
+  String get keysTitle => 'Tasten und externe Keyer';
+
+  @override
+  String get keysMeSubtitle => 'Tastenbelegung, Paddles und USB-Keyer-Adapter';
+
+  @override
+  String get keysIntro => 'Wähle, welche Tasten Morse geben. USB-Adapter für Tasten und Paddles, die eine Tastatur nachbilden, verhalten sich wie eine Tastatur: Lege ihre Tasten hier fest. Die App erkennt nicht, welches Gerät eine Taste gesendet hat; ein Profil ist daher eine Tastenbelegung.';
+
+  @override
+  String get keysStandardProfile => 'Standard';
+
+  @override
+  String get keysUnnamed => 'Unbenanntes Profil';
+
+  @override
+  String get keysEdit => 'Bearbeiten';
+
+  @override
+  String get keysNewProfile => 'Neues Profil';
+
+  @override
+  String get keysLimitations => 'MIDI-, serielle und Bluetooth-Keyer, Adapter-Firmware-Einstellungen und Sendersteuerung werden nicht unterstützt. Getestete Adapter stehen in der Dokumentation.';
+
+  @override
+  String get keysEditTitle => 'Tastenprofil';
+
+  @override
+  String get keysName => 'Profilname';
+
+  @override
+  String get keysActionStraight => 'Handtaste';
+
+  @override
+  String get keysActionDit => 'Punkt-Paddle';
+
+  @override
+  String get keysActionDah => 'Strich-Paddle';
+
+  @override
+  String get keysPressKey => 'Taste drücken …';
+
+  @override
+  String get keysNone => 'Nicht festgelegt';
+
+  @override
+  String get keysSet => 'Festlegen';
+
+  @override
+  String keysReserved(String key) {
+    return '$key ist vom System oder der App reserviert; wähle eine andere Taste.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key wird bereits für $action verwendet.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Jede Taste darf nur eine Aufgabe haben: $keys ist doppelt belegt.';
+  }
+
+  @override
+  String get keysMissing => 'Lege die Tasten fest, die dieser Keyer-Modus braucht (beide Paddles bei Iambic).';
+
+  @override
+  String get keysSwapPaddles => 'Paddles tauschen (Linkshänder)';
+
+  @override
+  String get keysKeyerMode => 'Keyer-Modus';
+
+  @override
+  String get keysIambicA => 'Iambic A';
+
+  @override
+  String get keysIambicB => 'Iambic B';
+
+  @override
+  String get keysAdapterKeyer => 'Der Adapter erzeugt die Zeichen selbst';
+
+  @override
+  String get keysAdapterKeyerHint => 'Für Adapter mit eigenem Keyer: Seine getakteten Tastendrücke werden unverändert verwendet, ohne zweiten Iambic-Keyer in der App.';
+
+  @override
+  String get keysAppSidetone => 'App-Mithörton beim Geben';
+
+  @override
+  String get keysAppSidetoneHint => 'Ausschalten, wenn der Adapter selbst einen Mithörton erzeugt. Die Dekodierung bleibt unberührt.';
+
+  @override
+  String get keysTestTitle => 'Test';
+
+  @override
+  String get keysTestNote => 'Nur zum Testen: Nichts wird gesendet oder dem Training angerechnet.';
+
+  @override
+  String get keysTestRelease => 'Tasten lösen';
+
+  @override
+  String get keysAdapterActive => 'Der Keyer des Adapters wird verwendet: Paddle-Tasten wirken wie eine Handtaste.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Tasten: $keys';
+  }
 }

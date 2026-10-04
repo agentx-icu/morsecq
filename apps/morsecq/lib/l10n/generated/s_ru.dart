@@ -3943,4 +3943,111 @@ class SRu extends S {
 
   @override
   String get conditionsSeparateNote => 'Тренировка в эфирных условиях засчитывается как активность, но не меняет уроки, график повторения и советы по скорости.';
+
+  @override
+  String get keysTitle => 'Клавиши и внешние ключи';
+
+  @override
+  String get keysMeSubtitle => 'Назначение клавиш, манипуляторы и USB-адаптеры';
+
+  @override
+  String get keysIntro => 'Выберите клавиши для передачи Морзе. USB-адаптеры ключа и манипулятора, эмулирующие клавиатуру, работают как она: задайте их клавиши здесь. Приложение не знает, какое устройство прислало клавишу, поэтому профиль — это набор назначений.';
+
+  @override
+  String get keysStandardProfile => 'Стандарт';
+
+  @override
+  String get keysUnnamed => 'Профиль без названия';
+
+  @override
+  String get keysEdit => 'Изменить';
+
+  @override
+  String get keysNewProfile => 'Новый профиль';
+
+  @override
+  String get keysLimitations => 'MIDI-, последовательные и Bluetooth-ключи, настройки прошивки адаптеров и управление передатчиком не поддерживаются. Проверенные адаптеры перечислены в документации.';
+
+  @override
+  String get keysEditTitle => 'Профиль клавиш';
+
+  @override
+  String get keysName => 'Название профиля';
+
+  @override
+  String get keysActionStraight => 'Прямой ключ';
+
+  @override
+  String get keysActionDit => 'Лопатка точки';
+
+  @override
+  String get keysActionDah => 'Лопатка тире';
+
+  @override
+  String get keysPressKey => 'Нажмите клавишу…';
+
+  @override
+  String get keysNone => 'Не задано';
+
+  @override
+  String get keysSet => 'Задать';
+
+  @override
+  String keysReserved(String key) {
+    return '$key зарезервирована системой или приложением; выберите другую клавишу.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key уже используется для: $action.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Каждая клавиша может выполнять только одно действие: $keys назначена дважды.';
+  }
+
+  @override
+  String get keysMissing => 'Задайте клавиши, нужные этому режиму (обе лопатки для ямбического).';
+
+  @override
+  String get keysSwapPaddles => 'Поменять лопатки (левша)';
+
+  @override
+  String get keysKeyerMode => 'Режим ключа';
+
+  @override
+  String get keysIambicA => 'Ямбический A';
+
+  @override
+  String get keysIambicB => 'Ямбический B';
+
+  @override
+  String get keysAdapterKeyer => 'Адаптер сам формирует элементы';
+
+  @override
+  String get keysAdapterKeyerHint => 'Для адаптера со своим ключом: его нажатия и отпускания используются как есть, без второго ямбического ключа в приложении.';
+
+  @override
+  String get keysAppSidetone => 'Самоконтроль приложения при передаче';
+
+  @override
+  String get keysAppSidetoneHint => 'Выключите, если адаптер сам даёт самоконтроль. На декодирование не влияет.';
+
+  @override
+  String get keysTestTitle => 'Проверка';
+
+  @override
+  String get keysTestNote => 'Только проверка: ничего не отправляется и не засчитывается в тренировку.';
+
+  @override
+  String get keysTestRelease => 'Отпустить клавиши';
+
+  @override
+  String get keysAdapterActive => 'Используется ключ адаптера: клавиши лопаток работают как прямой ключ.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Клавиши: $keys';
+  }
 }

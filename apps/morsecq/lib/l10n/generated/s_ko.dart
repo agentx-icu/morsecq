@@ -3838,4 +3838,111 @@ class SKo extends S {
 
   @override
   String get conditionsSeparateNote => '무선 환경 연습은 활동으로 기록되지만 레슨, 복습 일정, 속도 추천은 바뀌지 않습니다.';
+
+  @override
+  String get keysTitle => '키와 외부 키어';
+
+  @override
+  String get keysMeSubtitle => '키 할당, 패들, USB 키어 어댑터';
+
+  @override
+  String get keysIntro => '모스를 키잉할 키를 고르세요. 키보드처럼 동작하는 USB 키·패들 어댑터는 키보드와 같으니 여기서 키를 지정하세요. 앱은 어떤 기기가 키를 보냈는지 알 수 없으므로 프로필은 키 할당 묶음입니다.';
+
+  @override
+  String get keysStandardProfile => '기본';
+
+  @override
+  String get keysUnnamed => '이름 없는 프로필';
+
+  @override
+  String get keysEdit => '편집';
+
+  @override
+  String get keysNewProfile => '새 프로필';
+
+  @override
+  String get keysLimitations => 'MIDI·시리얼·블루투스 키어, 어댑터 펌웨어 설정, 송신기 제어는 지원하지 않습니다. 검증된 어댑터는 문서에 있습니다.';
+
+  @override
+  String get keysEditTitle => '키 프로필';
+
+  @override
+  String get keysName => '프로필 이름';
+
+  @override
+  String get keysActionStraight => '스트레이트 키';
+
+  @override
+  String get keysActionDit => '점 패들';
+
+  @override
+  String get keysActionDah => '선 패들';
+
+  @override
+  String get keysPressKey => '키를 누르세요…';
+
+  @override
+  String get keysNone => '설정 안 됨';
+
+  @override
+  String get keysSet => '지정';
+
+  @override
+  String keysReserved(String key) {
+    return '$key은(는) 시스템이나 앱이 사용하는 키입니다. 다른 키를 고르세요.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key은(는) 이미 $action에 쓰이고 있습니다.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '키 하나에는 동작 하나만 지정할 수 있습니다: $keys이(가) 중복되었습니다.';
+  }
+
+  @override
+  String get keysMissing => '이 키어 모드에 필요한 키를 지정하세요(아이앰빅은 두 패들 모두).';
+
+  @override
+  String get keysSwapPaddles => '패들 바꾸기(왼손잡이)';
+
+  @override
+  String get keysKeyerMode => '키어 모드';
+
+  @override
+  String get keysIambicA => '아이앰빅 A';
+
+  @override
+  String get keysIambicB => '아이앰빅 B';
+
+  @override
+  String get keysAdapterKeyer => '어댑터가 직접 부호를 만듦';
+
+  @override
+  String get keysAdapterKeyerHint => '자체 키어가 있는 어댑터용: 어댑터가 타이밍을 맞춘 눌림·뗌을 그대로 쓰며 앱에서 아이앰빅을 한 번 더 만들지 않습니다.';
+
+  @override
+  String get keysAppSidetone => '키잉할 때 앱 사이드톤';
+
+  @override
+  String get keysAppSidetoneHint => '어댑터가 자체 사이드톤을 낼 때 끄세요. 해독에는 영향이 없습니다.';
+
+  @override
+  String get keysTestTitle => '테스트';
+
+  @override
+  String get keysTestNote => '테스트 전용: 아무것도 전송하거나 연습 기록에 더하지 않습니다.';
+
+  @override
+  String get keysTestRelease => '키 놓기';
+
+  @override
+  String get keysAdapterActive => '어댑터의 키어를 사용 중: 패들 키는 스트레이트 키로 동작합니다.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return '키: $keys';
+  }
 }

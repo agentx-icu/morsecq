@@ -3838,6 +3838,113 @@ class SZh extends S {
 
   @override
   String get conditionsSeparateNote => '电台环境练习计入活动，但不会改变课程进度、复习计划或速度建议。';
+
+  @override
+  String get keysTitle => '按键与外接电键';
+
+  @override
+  String get keysMeSubtitle => '按键绑定、双桨与 USB 电键适配器';
+
+  @override
+  String get keysIntro => '选择用哪些键拍发莫尔斯。模拟键盘的 USB 电键/双桨适配器与键盘相同，请在此设置其按键。应用无法分辨按键来自哪个设备，因此配置方案就是一组按键绑定。';
+
+  @override
+  String get keysStandardProfile => '标准';
+
+  @override
+  String get keysUnnamed => '未命名方案';
+
+  @override
+  String get keysEdit => '编辑';
+
+  @override
+  String get keysNewProfile => '新建方案';
+
+  @override
+  String get keysLimitations => '不支持 MIDI、串口和蓝牙电键，也不支持适配器固件设置和电台控制。已测试的适配器列在文档中。';
+
+  @override
+  String get keysEditTitle => '按键方案';
+
+  @override
+  String get keysName => '方案名称';
+
+  @override
+  String get keysActionStraight => '手键';
+
+  @override
+  String get keysActionDit => '点桨';
+
+  @override
+  String get keysActionDah => '划桨';
+
+  @override
+  String get keysPressKey => '请按一个键…';
+
+  @override
+  String get keysNone => '未设置';
+
+  @override
+  String get keysSet => '设置';
+
+  @override
+  String keysReserved(String key) {
+    return '$key 已被系统或应用占用，请换一个键。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key 已用于“$action”。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '每个键只能有一种用途：$keys 被重复绑定。';
+  }
+
+  @override
+  String get keysMissing => '请设置此电键模式需要的键（自动键需同时设置两只桨）。';
+
+  @override
+  String get keysSwapPaddles => '交换双桨（左手）';
+
+  @override
+  String get keysKeyerMode => '电键模式';
+
+  @override
+  String get keysIambicA => '自动键 A';
+
+  @override
+  String get keysIambicB => '自动键 B';
+
+  @override
+  String get keysAdapterKeyer => '适配器自行生成点划';
+
+  @override
+  String get keysAdapterKeyerHint => '适用于自带电键逻辑的适配器：直接使用它计时好的按下和松开，应用不会再生成一遍自动键序列。';
+
+  @override
+  String get keysAppSidetone => '拍发时的应用侧音';
+
+  @override
+  String get keysAppSidetoneHint => '适配器自带侧音时请关闭。不影响解码。';
+
+  @override
+  String get keysTestTitle => '测试';
+
+  @override
+  String get keysTestNote => '仅用于测试：不会发送，也不计入训练。';
+
+  @override
+  String get keysTestRelease => '释放按键';
+
+  @override
+  String get keysAdapterActive => '正在使用适配器自带的电键逻辑：桨对应的键按手键处理。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return '按键：$keys';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7674,4 +7781,111 @@ class SZhHant extends SZh {
 
   @override
   String get conditionsSeparateNote => '電台環境練習計入活動，但不會改變課程進度、複習計畫或速度建議。';
+
+  @override
+  String get keysTitle => '按鍵與外接電鍵';
+
+  @override
+  String get keysMeSubtitle => '按鍵綁定、雙槳與 USB 電鍵轉接器';
+
+  @override
+  String get keysIntro => '選擇用哪些鍵拍發摩斯。模擬鍵盤的 USB 電鍵／雙槳轉接器與鍵盤相同，請在此設定其按鍵。應用程式無法分辨按鍵來自哪個裝置，因此設定方案就是一組按鍵綁定。';
+
+  @override
+  String get keysStandardProfile => '標準';
+
+  @override
+  String get keysUnnamed => '未命名方案';
+
+  @override
+  String get keysEdit => '編輯';
+
+  @override
+  String get keysNewProfile => '新增方案';
+
+  @override
+  String get keysLimitations => '不支援 MIDI、序列埠與藍牙電鍵，也不支援轉接器韌體設定與電台控制。已測試的轉接器列在文件中。';
+
+  @override
+  String get keysEditTitle => '按鍵方案';
+
+  @override
+  String get keysName => '方案名稱';
+
+  @override
+  String get keysActionStraight => '手鍵';
+
+  @override
+  String get keysActionDit => '點槳';
+
+  @override
+  String get keysActionDah => '劃槳';
+
+  @override
+  String get keysPressKey => '請按一個鍵…';
+
+  @override
+  String get keysNone => '未設定';
+
+  @override
+  String get keysSet => '設定';
+
+  @override
+  String keysReserved(String key) {
+    return '$key 已被系統或應用程式佔用，請換一個鍵。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key 已用於「$action」。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '每個鍵只能有一種用途：$keys 被重複綁定。';
+  }
+
+  @override
+  String get keysMissing => '請設定此電鍵模式需要的鍵（自動鍵需同時設定兩隻槳）。';
+
+  @override
+  String get keysSwapPaddles => '交換雙槳（左手）';
+
+  @override
+  String get keysKeyerMode => '電鍵模式';
+
+  @override
+  String get keysIambicA => '自動鍵 A';
+
+  @override
+  String get keysIambicB => '自動鍵 B';
+
+  @override
+  String get keysAdapterKeyer => '轉接器自行產生點劃';
+
+  @override
+  String get keysAdapterKeyerHint => '適用於內建電鍵邏輯的轉接器：直接使用它計時好的按下與放開，應用程式不會再產生一遍自動鍵序列。';
+
+  @override
+  String get keysAppSidetone => '拍發時的應用程式側音';
+
+  @override
+  String get keysAppSidetoneHint => '轉接器內建側音時請關閉。不影響解碼。';
+
+  @override
+  String get keysTestTitle => '測試';
+
+  @override
+  String get keysTestNote => '僅用於測試：不會傳送，也不計入訓練。';
+
+  @override
+  String get keysTestRelease => '放開按鍵';
+
+  @override
+  String get keysAdapterActive => '正在使用轉接器內建的電鍵邏輯：槳對應的鍵按手鍵處理。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return '按鍵：$keys';
+  }
 }

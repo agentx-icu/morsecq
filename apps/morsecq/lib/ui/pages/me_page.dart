@@ -18,6 +18,7 @@ import '../account/identity_card.dart';
 import '../appearance/appearance_page.dart';
 import '../appearance/style_labels.dart';
 import '../diagnostics/connection_diagnostics_page.dart';
+import '../keying/key_setup_page.dart';
 
 /// Profile, account, progress and settings.
 class MePage extends StatelessWidget {
@@ -126,6 +127,14 @@ class _MeBody extends StatelessWidget {
           title: Text(s.accountTrainingDefaults),
           subtitle: Text(s.accountTrainingDefaultsSubtitle),
           onTap: () => Navigator.of(context).pushNamed(kTrainingSettingsRoute),
+        ),
+        ListTile(
+          key: const ValueKey('me-keys'),
+          leading: const Icon(Icons.keyboard_outlined),
+          title: Text(s.keysTitle),
+          subtitle: Text(s.keysMeSubtitle),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => KeySetupPage.open(context),
         ),
         const LanguageSettingsTile(),
         ListTile(

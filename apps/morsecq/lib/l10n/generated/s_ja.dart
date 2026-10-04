@@ -3838,4 +3838,111 @@ class SJa extends S {
 
   @override
   String get conditionsSeparateNote => '受信環境つきの練習は活動として記録されますが、レッスン・復習スケジュール・速度のおすすめは変わりません。';
+
+  @override
+  String get keysTitle => 'キーと外部キーヤー';
+
+  @override
+  String get keysMeSubtitle => 'キー割り当て・パドル・USB キーヤーアダプター';
+
+  @override
+  String get keysIntro => 'モールスを打つキーを選びます。キーボードとして動作する USB 電鍵・パドルアダプターはキーボードと同じ扱いなので、ここでキーを設定してください。どの機器からのキー入力かはアプリには分からないため、プロファイルはキー割り当ての組み合わせです。';
+
+  @override
+  String get keysStandardProfile => '標準';
+
+  @override
+  String get keysUnnamed => '名前のないプロファイル';
+
+  @override
+  String get keysEdit => '編集';
+
+  @override
+  String get keysNewProfile => '新しいプロファイル';
+
+  @override
+  String get keysLimitations => 'MIDI・シリアル・Bluetooth のキーヤー、アダプターのファームウェア設定、送信機の制御には対応していません。検証済みのアダプターはドキュメントに記載しています。';
+
+  @override
+  String get keysEditTitle => 'キープロファイル';
+
+  @override
+  String get keysName => 'プロファイル名';
+
+  @override
+  String get keysActionStraight => '縦振り電鍵';
+
+  @override
+  String get keysActionDit => '短点パドル';
+
+  @override
+  String get keysActionDah => '長点パドル';
+
+  @override
+  String get keysPressKey => 'キーを押してください…';
+
+  @override
+  String get keysNone => '未設定';
+
+  @override
+  String get keysSet => '設定';
+
+  @override
+  String keysReserved(String key) {
+    return '$key はシステムまたはアプリが使用するため設定できません。別のキーを選んでください。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key はすでに「$action」に使われています。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '1 つのキーに割り当てられる動作は 1 つだけです：$keys が重複しています。';
+  }
+
+  @override
+  String get keysMissing => 'このキーヤーモードに必要なキーを設定してください（iambic では両方のパドル）。';
+
+  @override
+  String get keysSwapPaddles => 'パドルを入れ替える（左利き）';
+
+  @override
+  String get keysKeyerMode => 'キーヤーモード';
+
+  @override
+  String get keysIambicA => 'Iambic A';
+
+  @override
+  String get keysIambicB => 'Iambic B';
+
+  @override
+  String get keysAdapterKeyer => 'アダプターが自分で符号を作る';
+
+  @override
+  String get keysAdapterKeyerHint => 'キーヤー内蔵のアダプター向け：アダプターが計った押下・解放をそのまま使い、アプリ側で二重に iambic 処理しません。';
+
+  @override
+  String get keysAppSidetone => '打鍵時のアプリのサイドトーン';
+
+  @override
+  String get keysAppSidetoneHint => 'アダプターがサイドトーンを出す場合はオフにします。解読には影響しません。';
+
+  @override
+  String get keysTestTitle => 'テスト';
+
+  @override
+  String get keysTestNote => 'テスト専用です。送信も練習記録への追加もされません。';
+
+  @override
+  String get keysTestRelease => 'キーを解放';
+
+  @override
+  String get keysAdapterActive => 'アダプターのキーヤーを使用中：パドルのキーは縦振り電鍵として扱います。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'キー：$keys';
+  }
 }

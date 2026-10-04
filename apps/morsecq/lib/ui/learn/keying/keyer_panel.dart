@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:morse_io/morse_io.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../../keying/key_profiles.dart';
+import '../../../keying/profile_keyer.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_settings.dart';
 import '../learn_platform.dart';
@@ -39,8 +40,7 @@ class KeyerPanel extends StatefulWidget {
 }
 
 class KeyerPanelState extends State<KeyerPanel> {
-  StraightKey? _straight;
-  IambicKeyer? _keyer;
+  ProfileKeyer? _keyer;
   Timer? _tick;
   int _generation = 0;
   bool _disposed = false;
@@ -48,8 +48,14 @@ class KeyerPanelState extends State<KeyerPanel> {
   @override
   void initState() {
     super.initState();
-    _build();
     _scheduleTick();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // First build, or the device key profile (F12) changed meanwhile.
+    if (_keyer == null || KeyProfiles.of(context) != _keyer!.profile) _build();
   }
 
   @override
@@ -73,26 +79,19 @@ class KeyerPanelState extends State<KeyerPanel> {
 
   void _build() {
     widget.session.cancelHeld();
-    unawaited(_straight?.dispose());
-    unawaited(_keyer?.dispose());
-    _straight = null;
+    _keyer?.dispose();
     _keyer = null;
     _generation++;
     if (!widget.enabled) return;
     final playback = widget.playback;
-    switch (widget.mode) {
-      case KeyerMode.straight:
-        _straight = StraightKey(target: widget.session, sink: playback.sink);
-      case KeyerMode.iambicA:
-      case KeyerMode.iambicB:
-        _keyer = IambicKeyer(
-          timing: KeyerTiming.fromMorseTiming(widget.session.nominalTiming),
-          target: widget.session,
-          sink: playback.sink,
-          clock: playback.clock,
-          mode: widget.mode == KeyerMode.iambicA ? IambicMode.a : IambicMode.b,
-        );
-    }
+    _keyer = ProfileKeyer.build(
+      profile: KeyProfiles.of(context, listen: false),
+      mode: widget.mode,
+      target: widget.session,
+      sink: playback.sink,
+      clock: playback.clock,
+      timing: widget.session.nominalTiming,
+    );
   }
 
   void _scheduleTick() {
@@ -109,8 +108,7 @@ class KeyerPanelState extends State<KeyerPanel> {
   void dispose() {
     _disposed = true;
     _tick?.cancel();
-    unawaited(_straight?.dispose());
-    unawaited(_keyer?.dispose());
+    _keyer?.dispose();
     super.dispose();
   }
 
@@ -118,43 +116,23 @@ class KeyerPanelState extends State<KeyerPanel> {
   Widget build(BuildContext context) {
     final s = context.s;
     final playback = widget.playback;
-    final Widget key;
-    final straight = _straight;
     final keyer = _keyer;
-    if (straight != null) {
-      key = Center(
-        child: StraightKeyButton(
-          key: ValueKey<String>('panel-straight-$_generation'),
-          input: straight,
-          clock: playback.clock,
-          autofocus: true,
-          size: widget.size,
-          label: s.learnStraightKeyLabel,
-          semanticDit: widget.session.nominalTiming.dit,
-          semanticDitLabel: s.learnDitLabel,
-          semanticDahLabel: s.learnDahLabel,
-        ),
-      );
-    } else if (keyer != null) {
-      key = PaddleButtons(
-        key: ValueKey<String>('panel-paddles-$_generation'),
-        input: keyer,
-        clock: playback.clock,
-        autofocus: true,
-        height: widget.size,
-        ditLabel: s.learnDitLabel,
-        dahLabel: s.learnDahLabel,
-      );
-    } else {
-      key = SizedBox(height: widget.size);
-    }
+    final Widget key = keyer == null
+        ? SizedBox(height: widget.size)
+        : keyer.widget(
+            key: ValueKey<String>('panel-key-$_generation'),
+            clock: playback.clock,
+            size: widget.size,
+            s: s,
+            semanticDit: widget.session.nominalTiming.dit,
+          );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         key,
         if (hasPhysicalKeyboardByDefault && widget.enabled) ...<Widget>[
           const SizedBox(height: 8),
-          KeyerLegend(mode: widget.mode),
+          KeyerLegend(mode: keyer?.mode ?? widget.mode),
         ],
       ],
     );

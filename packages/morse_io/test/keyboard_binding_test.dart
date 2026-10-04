@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_io/testing.dart';
 
 void main() {
   test('defaults: space = straight, ctrl left/right = dit/dah', () {
@@ -54,5 +55,41 @@ void main() {
       () => KeyboardKeyBinding.defaults.dit.add(LogicalKeyboardKey.keyA),
       throwsUnsupportedError,
     );
+  });
+
+  test('conflicts lists keys bound to more than one action', () {
+    expect(KeyboardKeyBinding.defaults.hasConflicts, isFalse);
+    final b = KeyboardKeyBinding(
+      straight: {LogicalKeyboardKey.space},
+      dit: {LogicalKeyboardKey.space, LogicalKeyboardKey.keyZ},
+      dah: {LogicalKeyboardKey.keyZ, LogicalKeyboardKey.keyX},
+    );
+    expect(b.conflicts, {LogicalKeyboardKey.space, LogicalKeyboardKey.keyZ});
+  });
+
+  test('straightOnly turns every bound key into a straight key', () {
+    final b = KeyboardKeyBinding.defaults.straightOnly();
+    for (final k in [
+      LogicalKeyboardKey.space,
+      LogicalKeyboardKey.controlLeft,
+      LogicalKeyboardKey.controlRight,
+    ]) {
+      expect(b.actionFor(k), KeyerAction.straight);
+    }
+    expect(b.dit, isEmpty);
+    expect(b.dah, isEmpty);
+  });
+
+  test('a gated sink drops on() while closed but always passes off()', () async {
+    final inner = RecordingSink(clock: FakeClock());
+    var open = true;
+    final gate = GatedSink(inner, () => open);
+    gate.on();
+    open = false; // switched off mid-mark
+    gate.off();
+    gate.on();
+    gate.off();
+    expect(inner.events.map((e) => e.on), [true, false, false]);
+    expect(inner.isOn, isFalse, reason: 'no stuck tone');
   });
 }

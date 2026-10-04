@@ -3875,4 +3875,111 @@ class SEs extends S {
 
   @override
   String get conditionsSeparateNote => 'La práctica con condiciones de radio cuenta como actividad, pero no cambia tus lecciones, tu repaso ni la recomendación de velocidad.';
+
+  @override
+  String get keysTitle => 'Teclas y manipuladores externos';
+
+  @override
+  String get keysMeSubtitle => 'Asignación de teclas, paletas y adaptadores USB';
+
+  @override
+  String get keysIntro => 'Elige qué teclas manipulan Morse. Los adaptadores USB de manipulador y paletas que emulan un teclado funcionan como tal: define aquí sus teclas. La app no sabe qué dispositivo envió una tecla, así que un perfil es un conjunto de asignaciones.';
+
+  @override
+  String get keysStandardProfile => 'Estándar';
+
+  @override
+  String get keysUnnamed => 'Perfil sin nombre';
+
+  @override
+  String get keysEdit => 'Editar';
+
+  @override
+  String get keysNewProfile => 'Nuevo perfil';
+
+  @override
+  String get keysLimitations => 'No se admiten manipuladores MIDI, serie ni Bluetooth, ajustes de firmware del adaptador ni control del transmisor. Los adaptadores probados figuran en la documentación.';
+
+  @override
+  String get keysEditTitle => 'Perfil de teclas';
+
+  @override
+  String get keysName => 'Nombre del perfil';
+
+  @override
+  String get keysActionStraight => 'Manipulador vertical';
+
+  @override
+  String get keysActionDit => 'Paleta de punto';
+
+  @override
+  String get keysActionDah => 'Paleta de raya';
+
+  @override
+  String get keysPressKey => 'Pulsa una tecla…';
+
+  @override
+  String get keysNone => 'Sin definir';
+
+  @override
+  String get keysSet => 'Definir';
+
+  @override
+  String keysReserved(String key) {
+    return '$key está reservada por el sistema o la app; elige otra tecla.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key ya se usa para $action.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Cada tecla solo puede hacer una cosa: $keys está asignada dos veces.';
+  }
+
+  @override
+  String get keysMissing => 'Define las teclas que necesita este modo (ambas paletas en yámbico).';
+
+  @override
+  String get keysSwapPaddles => 'Invertir paletas (zurdos)';
+
+  @override
+  String get keysKeyerMode => 'Modo del manipulador';
+
+  @override
+  String get keysIambicA => 'Yámbico A';
+
+  @override
+  String get keysIambicB => 'Yámbico B';
+
+  @override
+  String get keysAdapterKeyer => 'El adaptador genera sus propios elementos';
+
+  @override
+  String get keysAdapterKeyerHint => 'Para un adaptador con manipulador propio: sus pulsaciones temporizadas se usan tal cual, sin un segundo manipulador yámbico en la app.';
+
+  @override
+  String get keysAppSidetone => 'Tono local de la app al manipular';
+
+  @override
+  String get keysAppSidetoneHint => 'Desactívalo si el adaptador genera su propio tono. La decodificación no cambia.';
+
+  @override
+  String get keysTestTitle => 'Prueba';
+
+  @override
+  String get keysTestNote => 'Solo prueba: no se envía nada ni cuenta para tu práctica.';
+
+  @override
+  String get keysTestRelease => 'Soltar teclas';
+
+  @override
+  String get keysAdapterActive => 'Se usa el manipulador del adaptador: las teclas de paleta actúan como manipulador vertical.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Teclas: $keys';
+  }
 }
