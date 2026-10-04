@@ -162,7 +162,13 @@ class ConnectionDiagnostics extends ChangeNotifier {
 
   void _apply(ConnectionStatus status, DateTime at) {
     if (status == _status) return;
-    if (_status == ConnectionStatus.online) _lastOnlineAt = at;
+    if (_status == ConnectionStatus.online) {
+      // After a suspension a queued "connection lost" may be delivered on
+      // thaw, before the foreground hint: we can only vouch for the moment
+      // the app left the foreground (or, failing that, when the connection
+      // was last seen to begin), never for the time we woke up.
+      _lastOnlineAt = _suspended ? (_backgroundAt ?? _statusSince ?? at) : at;
+    }
     _status = status;
     _statusSince = at;
     _sinceKind = StatusSinceKind.changed;

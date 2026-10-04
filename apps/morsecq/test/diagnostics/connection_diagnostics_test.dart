@@ -213,6 +213,46 @@ void main() {
     expect(diag.snapshot().statusSince, since);
     expect(diag.snapshot().statusSinceKind, StatusSinceKind.changed);
   });
+
+  test('a connection loss delivered on thaw, before the foreground hint, '
+      'never claims the gap', () async {
+    await status(ConnectionStatus.online);
+    final left = now = now.add(const Duration(minutes: 1));
+    hints.add(LifecycleHint.background);
+    await pumpEventQueue();
+    now = now.add(const Duration(minutes: 10));
+    hints.add(LifecycleHint.mayBeDisconnected);
+    await pumpEventQueue();
+    now = now.add(const Duration(minutes: 20));
+    await status(ConnectionStatus.connecting); // queued during the freeze
+    hints.add(LifecycleHint.foreground);
+    await pumpEventQueue();
+    expect(diag.snapshot().lastOnlineAt, left);
+  });
+
+  test('a status that precedes the identity event is filed under the new '
+      'identity', () async {
+    await status(ConnectionStatus.online);
+    await status(ConnectionStatus.offline);
+    // Replace the identity without announcing it yet; a status arrives first.
+    identity.clearIdentity();
+    identity.setIdentityQuietly(Identity(toxId: 'C' * 76, displayName: 'C'));
+    await status(ConnectionStatus.connecting);
+    final snap = diag.snapshot();
+    expect(snap.identityKey, 'C' * 64);
+    expect(snap.lastOnlineAt, isNull, reason: 'the old identity\'s observation');
+  });
+
+  test('group conversations scope the outbox and leave the peer unknown', () async {
+    final g = chat.addFakeGroup(const Group(id: 'tox_1', name: 'Net', kind: GroupKind.group));
+    chat.setGroupConnected(g.id, false);
+    await status(ConnectionStatus.online);
+    await chat.sendText('group_tox_1', 'CQ NET');
+    await chat.sendText(c2c, 'CQ');
+    expect(diag.snapshot(conversationId: 'group_tox_1').pending!.count, 1);
+    expect(diag.snapshot(conversationId: 'group_tox_1').peer, PeerAvailability.unknown);
+    expect(diag.snapshot().pending!.count, 2);
+  });
 }
 
 /// A [ChatService] that does not implement [OutboxInspector].

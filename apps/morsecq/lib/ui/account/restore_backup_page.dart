@@ -308,7 +308,9 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
               label: s.backupXPassphrase,
               errorText: _passphraseError,
               textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _openEncrypted(),
+              onSubmitted: (_) {
+                if (!_busy) _openEncrypted();
+              },
             ),
             const SizedBox(height: 8),
             if (_preview == null)

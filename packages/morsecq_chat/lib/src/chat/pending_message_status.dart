@@ -34,6 +34,8 @@ class PendingMessageStatus {
   }
 
   /// Durable outbox contents (F09): for one conversation, or every queue key
+  /// (a legacy entry stored under a raw, un-normalized address counts for
+  /// the identity but, like [isQueued], not for its conversation)
   /// when [conversationId] is null. An item that appears twice (same durable
   /// id, e.g. re-enqueued by an interrupted drain) counts once.
   PendingOutboxSummary summary({String? conversationId}) {

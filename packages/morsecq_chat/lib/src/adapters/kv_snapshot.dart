@@ -5,17 +5,25 @@ import 'key_value_store.dart';
 /// a later step fails. The store has no generic getter, so each value is
 /// read with the typed getter that accepts it.
 final class KvSnapshot {
-  KvSnapshot._(this._values);
+  KvSnapshot._(this._values, this._unreadable);
 
   final Map<String, Object> _values;
 
+  /// Keys whose type no getter accepts (e.g. a double): left untouched.
+  final Set<String> _unreadable;
+
   static KvSnapshot capture(KeyValueStore store) {
     final values = <String, Object>{};
+    final unreadable = <String>{};
     for (final key in store.keys()) {
       final value = _read(store, key);
-      if (value != null) values[key] = value;
+      if (value != null) {
+        values[key] = value;
+      } else {
+        unreadable.add(key);
+      }
     }
-    return KvSnapshot._(values);
+    return KvSnapshot._(values, unreadable);
   }
 
   static Object? _read(KeyValueStore store, String key) {
@@ -51,7 +59,9 @@ final class KvSnapshot {
     }
 
     for (final key in store.keys().toList()) {
-      if (!_values.containsKey(key)) await attempt(() => store.remove(key));
+      if (!_values.containsKey(key) && !_unreadable.contains(key)) {
+        await attempt(() => store.remove(key));
+      }
     }
     for (final MapEntry(:key, :value) in _values.entries) {
       await attempt(() => switch (value) {

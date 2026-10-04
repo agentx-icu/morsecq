@@ -105,9 +105,11 @@ final class AppServices {
   void start() {
     if (_started) return;
     _started = true;
+    // Before attach(): a launch straight into the background emits its
+    // `background` hint synchronously, and diagnostics must see it.
+    diagnostics.start();
     lifecycle.attach();
     banner.start();
-    diagnostics.start();
     final center = notifications;
     if (center != null) unawaited(center.start());
     // Language changes reach the tray (desktop) and the Android channel

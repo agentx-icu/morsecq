@@ -213,6 +213,31 @@ void main() {
     await restored.dispose();
   });
 
+  test('saved recordings are counted, exported on request and restored', () async {
+    final svc = await seeded();
+    // Where the app keeps them: the materials document under the training
+    // documents, the audio under the identity root.
+    final training = await svc.dataDirectory();
+    File(p.join(training, BackupMedia.materialsDoc))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('{"v":1,"materials":[{"id":"x","file":"media/recordings/rec_a.wav"}]}');
+    File(p.join(paths.root, 'media', 'recordings', 'rec_a.wav'))
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(List<int>.filled(2048, 7));
+    final inv = await svc.backupInventory();
+    expect(inv.sizeOf(BackupCategory.media), isA<BackupCategorySize>().having((x) => x.items, 'items', 1));
+    final without = await svc.exportEncryptedBackup(request(_all));
+    final withMedia = await svc.exportEncryptedBackup(request({..._all, BackupCategory.media}));
+    expect((await svc.previewEncryptedBackup(without, 'correct horse')).includes(BackupCategory.media), isFalse);
+    await svc.dispose();
+    final other = IdentityPaths(p.join(tempRoot.path, 'device2'));
+    final restored = service(other, kv: MemoryKeyValueStore());
+    final report = await restored.restoreEncryptedBackup(withMedia, 'correct horse');
+    expect(report.restored, contains(BackupCategory.media));
+    expect(File(p.join(other.root, 'media', 'recordings', 'rec_a.wav')).lengthSync(), 2048);
+    await restored.dispose();
+  });
+
   test('export pauses and resumes a running node', () async {
     final svc = await seeded();
     await svc.connect();

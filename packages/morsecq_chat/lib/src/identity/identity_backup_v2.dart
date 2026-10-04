@@ -87,7 +87,9 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
   }
 
   Future<List<String>> _referencedMedia() async {
-    final doc = File(p.join(_paths.root, BackupMedia.materialsDoc));
+    // Relative to dataDirectory() (the training directory), like the
+    // legacy exporter and the app's own count.
+    final doc = File(p.join(_paths.trainingDirectory, BackupMedia.materialsDoc));
     return BackupMedia.referenced(
       await doc.exists() ? await doc.readAsString() : null,
     ).toList()..sort();
@@ -139,6 +141,7 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
     final entries = <String, Uint8List>{};
     final sizes = <BackupCategory, BackupCategorySize>{};
     final read = <File>[];
+    final stamps = <String, (int, DateTime)>{};
     void add(BackupCategory c, String path, Uint8List bytes) {
       entries[path] = bytes;
       final was = sizes[c] ?? BackupCategorySize.zero;
@@ -148,9 +151,18 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
       );
     }
 
-    Future<Uint8List> readFile(File f) {
+    // Stamped before and after each read: a write that lands while the
+    // bytes are read is caught here, one that lands later by verifyStable.
+    Future<Uint8List> readFile(File f) async {
+      final before = (await f.length(), await f.lastModified());
+      final bytes = await f.readAsBytes();
+      if ((await f.length(), await f.lastModified()) != before ||
+          bytes.length != before.$1) {
+        throw SnapshotUnstable(f.path);
+      }
       read.add(f);
-      return f.readAsBytes();
+      stamps[f.path] = before;
+      return bytes;
     }
 
     final profileFile = File(_paths.profileFile);
@@ -169,9 +181,12 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
       File(_paths.offlineQueueFile),
       File('${_paths.offlineQueueFile}.bak'),
     ]) {
-      if (await f.exists()) read.add(f);
+      if (await f.exists()) {
+        read.add(f);
+        stamps[f.path] = (await f.length(), await f.lastModified());
+      }
     }
-    var pendingItems = [for (final q in queue) q.toItem()];
+    var pendingItems = [for (final (i, q) in queue.indexed) q.toItem(i)];
 
     for (final (rel, file) in await BackupSnapshot.files(
       _paths.trainingDirectory,
@@ -261,7 +276,6 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
       );
     }
 
-    final stamps = await BackupSnapshot.stamp(read);
     await BackupSnapshot.verifyStable(stamps, await _selection(cats));
 
     final manifest = <String, Object?>{
@@ -323,7 +337,7 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
     String passphrase,
     String? identityPassword,
   ) async {
-    final (preview, backup) = BackupArchive.open(bytes, passphrase, _crypto);
+    final (preview, backup) = _openCached(bytes, passphrase);
     final profile = backup.profile!;
     final encrypted = preview.profileNeedsPassword;
     if (encrypted) {
@@ -440,7 +454,13 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
       _sessionPassword = encrypted ? identityPassword : null;
       _publish(record);
       if (old != null && old.toxId != record.toxId) {
-        await _verifier.removePassword(old.toxId);
+        // Cleanup after the commit: a failure here must not report the
+        // committed restore as failed.
+        try {
+          await _verifier.removePassword(old.toxId);
+        } on Object catch (e, st) {
+          _logger.error('[Backup] could not remove the old verifier', e, st);
+        }
       }
     } catch (_) {
       if (!replaced && old != null) {

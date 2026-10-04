@@ -32,8 +32,10 @@ final class QueuedRow {
       ? queueKey.substring('group:'.length)
       : queueKey;
 
-  RestoredPendingItem toItem() => RestoredPendingItem(
-    id: msgId ?? 'q_${queuedAt.microsecondsSinceEpoch}',
+  /// [index] keeps legacy rows without a durable id apart, even when two
+  /// were queued in the same microsecond.
+  RestoredPendingItem toItem(int index) => RestoredPendingItem(
+    id: msgId ?? 'q_${queuedAt.microsecondsSinceEpoch}_$index',
     conversationId: conversationId,
     text: text,
     queuedAt: queuedAt,

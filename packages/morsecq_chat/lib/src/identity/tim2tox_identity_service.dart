@@ -248,7 +248,27 @@ class Tim2ToxIdentityService
   Future<BackupPreview> previewEncryptedBackup(
     Uint8List bytes,
     String passphrase,
-  ) async => BackupArchive.open(bytes, passphrase, _crypto).$1;
+  ) async => _openCached(bytes, passphrase).$1;
+
+  /// The archive the last preview opened: restoring the same bytes with the
+  /// same passphrase does not decrypt the whole file a second time.
+  (Uint8List, String, (BackupPreview, BackupContainer))? _opened;
+
+  (BackupPreview, BackupContainer) _openCached(
+    Uint8List bytes,
+    String passphrase,
+  ) {
+    final cached = _opened;
+    if (cached != null &&
+        identical(cached.$1, bytes) &&
+        cached.$2 == passphrase) {
+      return cached.$3;
+    }
+    _opened = null;
+    final opened = BackupArchive.open(bytes, passphrase, _crypto);
+    _opened = (bytes, passphrase, opened);
+    return opened;
+  }
 
   @override
   Future<RestoreReport> restoreEncryptedBackup(
@@ -257,7 +277,7 @@ class Tim2ToxIdentityService
     String? identityPassword,
   }) => _runMutation(
     () => _restoreEncrypted(bytes, passphrase, identityPassword),
-  );
+  ).whenComplete(() => _opened = null);
 
   // ---- connect / disconnect / delete ----------------------------------------
 
