@@ -125,3 +125,20 @@ bool buttonEnabled(WidgetTester tester, String label) {
   );
   return tester.widget<ButtonStyleButton>(finder).onPressed != null;
 }
+
+/// Fills the encrypted backup page's passphrase twice and creates the
+/// backup (F10). Leaves the result to the caller's expectations.
+Future<void> completeEncryptedBackup(
+  WidgetTester tester, {
+  String passphrase = 'correct horse',
+}) async {
+  Finder field(String key) => find.descendant(
+    of: find.byKey(ValueKey(key)),
+    matching: find.byType(TextField),
+  );
+  await tester.ensureVisible(field('backup-x-passphrase'));
+  await tester.enterText(field('backup-x-passphrase'), passphrase);
+  await tester.ensureVisible(field('backup-x-confirm'));
+  await tester.enterText(field('backup-x-confirm'), passphrase);
+  await tapVisible(tester, find.byKey(const ValueKey('backup-x-export')));
+}

@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import '../encrypted_backup.dart';
 import '../identity_service.dart';
 import '../models.dart';
 import '../tox_address.dart';
+
+part 'fake_identity_backup.dart';
 
 /// In-memory [IdentityService] for widget tests and UI development.
 ///
@@ -19,7 +22,8 @@ import '../tox_address.dart';
 /// Everything is deterministic: Tox IDs derive from a counter (see
 /// [toxIdForSeed]) and [connect] flips `connecting → online` after
 /// [connectDelay], which tests set to [Duration.zero].
-final class FakeIdentityService implements IdentityService {
+final class FakeIdentityService
+    implements IdentityService, EncryptedBackupService {
   /// Starts with no profile on disk (first run).
   FakeIdentityService({
     this.connectDelay = const Duration(milliseconds: 400),
@@ -223,6 +227,33 @@ final class FakeIdentityService implements IdentityService {
     });
     return Uint8List.fromList(utf8.encode(payload));
   }
+
+  /// Extra category sizes [backupInventory] reports (tests set them).
+  Map<BackupCategory, BackupCategorySize> fakeBackupSizes = {};
+
+  /// Outbox size [backupInventory] reports and exports carry.
+  int fakePendingMessages = 0;
+
+  @override
+  Future<BackupInventory> backupInventory() async => _inventory();
+
+  @override
+  Future<Uint8List> exportEncryptedBackup(
+    EncryptedBackupRequest request,
+  ) async => _export(request);
+
+  @override
+  Future<BackupPreview> previewEncryptedBackup(
+    Uint8List bytes,
+    String passphrase,
+  ) async => _preview(_open(bytes, passphrase));
+
+  @override
+  Future<RestoreReport> restoreEncryptedBackup(
+    Uint8List bytes,
+    String passphrase, {
+    String? identityPassword,
+  }) => _restore(bytes, passphrase, identityPassword);
 
   @override
   Future<Identity> importBackup(Uint8List bytes, {String? password}) async {

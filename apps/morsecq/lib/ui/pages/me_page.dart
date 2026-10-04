@@ -104,7 +104,11 @@ class _MeBody extends StatelessWidget {
           builder: (tile) => ListTile(
             leading: const Icon(Icons.save_alt),
             title: Text(s.accountExportBackup),
-            subtitle: Text(s.accountExportBackupSubtitle),
+            subtitle: Text(
+              context.read<IdentityService>() is EncryptedBackupService
+                  ? s.backupXMeSubtitle
+                  : s.accountExportBackupSubtitle,
+            ),
             onTap: () => exportBackupWithFeedback(context, anchor: tile),
           ),
         ),

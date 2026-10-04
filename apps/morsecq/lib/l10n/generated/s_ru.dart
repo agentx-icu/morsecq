@@ -3614,4 +3614,282 @@ class SRu extends S {
 
   @override
   String get diagDetailError => 'Последний код ошибки';
+
+  @override
+  String get backupXTitle => 'Зашифрованная резервная копия';
+
+  @override
+  String get backupXIntro => 'Выберите, что перенести на другое устройство. Весь файл шифруется парольной фразой, которую вы зададите здесь.';
+
+  @override
+  String get backupXCategoryIdentity => 'Личность и профиль Tox';
+
+  @override
+  String get backupXCategoryTraining => 'Прогресс и материалы тренировок';
+
+  @override
+  String get backupXCategoryChat => 'История чатов, включая заметки для себя';
+
+  @override
+  String get backupXCategoryMeta => 'Черновики, закрепления и закладки';
+
+  @override
+  String get backupXCategoryPrefs => 'Настройки приложения';
+
+  @override
+  String get backupXPrefsHint => 'Воспроизведение, уведомления, оформление и язык. Без положения окон и назначений клавиш.';
+
+  @override
+  String get backupXCategoryMedia => 'Сохранённые записи';
+
+  @override
+  String get backupXMediaHint => 'По умолчанию выключено: записи могут быть большими. Без них переносятся только названия и заметки.';
+
+  @override
+  String get backupXCategoryPending => 'Неотправленные сообщения';
+
+  @override
+  String get backupXPendingHint => 'Они возвращаются только для просмотра и никогда не отправляются автоматически.';
+
+  @override
+  String get backupXRequired => 'Обязательно';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count элемента',
+      many: '$count элементов',
+      few: '$count элемента',
+      one: '$count элемент',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size КБ';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size МБ';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return 'Слишком велико для включения ($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count приглашения в группу не переносятся.',
+      many: '$count приглашений в группу для друзей не в сети не переносятся.',
+      few: '$count приглашения в группу для друзей не в сети не переносятся.',
+      one: '$count приглашение в группу для друга не в сети не переносится.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'Пароль личности остаётся на профиле: новое устройство спросит его вместе с парольной фразой копии.';
+
+  @override
+  String backupXTotal(String size) {
+    return 'Всего около $size';
+  }
+
+  @override
+  String get backupXPassphrase => 'Парольная фраза копии';
+
+  @override
+  String get backupXPassphraseConfirm => 'Повторите парольную фразу';
+
+  @override
+  String get backupXPassphraseHint => 'Не менее 8 символов. Она не связана с паролем личности и не восстанавливается.';
+
+  @override
+  String get backupXPassphraseTooShort => 'Используйте не менее 8 символов';
+
+  @override
+  String get backupXPassphraseMismatch => 'Парольные фразы не совпадают';
+
+  @override
+  String get backupXExport => 'Создать зашифрованную копию';
+
+  @override
+  String get backupXExporting => 'Создание копии…';
+
+  @override
+  String get backupXMigrationNote => 'Переезжаете на новое устройство? После восстановления там перестаньте пользоваться этой личностью здесь: два устройства с одной личностью могут отправить одно сообщение дважды.';
+
+  @override
+  String get backupXBusy => 'Данные менялись во время создания копии. Попробуйте ещё раз.';
+
+  @override
+  String get backupXTooLarge => 'Копия слишком велика. Исключите записи и попробуйте снова.';
+
+  @override
+  String get restoreXWrongPassphrase => 'Неверная парольная фраза, либо файл изменён или неполон.';
+
+  @override
+  String get restoreXUnsupported => 'Эта копия создана более новой версией MorseCQ.';
+
+  @override
+  String get restoreXCheck => 'Открыть копию';
+
+  @override
+  String get restoreXPreviewTitle => 'Содержимое копии';
+
+  @override
+  String restoreXCreated(String date) {
+    return 'Создана $date';
+  }
+
+  @override
+  String get restoreXIncluded => 'Включено';
+
+  @override
+  String get restoreXExcluded => 'Нет в этой копии';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения вернутся для просмотра.',
+      many: '$count неотправленных сообщений вернутся для просмотра и не будут отправлены автоматически.',
+      few: '$count неотправленных сообщения вернутся для просмотра и не будут отправлены автоматически.',
+      one: '$count неотправленное сообщение вернётся для просмотра и не будет отправлено автоматически.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения не вошли в копию.',
+      many: '$count неотправленных сообщений со старого устройства не вошли в копию.',
+      few: '$count неотправленных сообщения со старого устройства не вошли в копию.',
+      one: '$count неотправленное сообщение со старого устройства не вошло в копию.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'Пароль личности';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'У личности в этой копии свой пароль. Введите и его.';
+
+  @override
+  String get restoreXConfirmTitle => 'Заменить личность на этом устройстве?';
+
+  @override
+  String get restoreXConfirmBody => 'Личность и данные на этом устройстве будут заменены копией. Перестаньте пользоваться личностью на старом устройстве, прежде чем подключаться здесь.';
+
+  @override
+  String get restoreXConfirm => 'Заменить и восстановить';
+
+  @override
+  String get restoreXReportTitle => 'Восстановление завершено';
+
+  @override
+  String get restoreXReportRestored => 'Восстановлено';
+
+  @override
+  String get restoreXReportNotIncluded => 'Не восстановлено';
+
+  @override
+  String get restoreXReportPrefsFailed => 'Не удалось применить настройки; прежние сохранены.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения ждут просмотра.',
+      many: '$count неотправленных сообщений ждут просмотра в Чате.',
+      few: '$count неотправленных сообщения ждут просмотра в Чате.',
+      one: '$count неотправленное сообщение ждёт просмотра в Чате.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения не перенесены.',
+      many: '$count неотправленных сообщений со старого устройства не перенесены.',
+      few: '$count неотправленных сообщения со старого устройства не перенесены.',
+      one: '$count неотправленное сообщение со старого устройства не перенесено.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count приглашения не отправлены повторно.',
+      many: '$count приглашений в группу из очереди не отправлены повторно.',
+      few: '$count приглашения в группу из очереди не отправлены повторно.',
+      one: '$count приглашение в группу из очереди не отправлено повторно.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => 'Больше не используйте эту личность на старом устройстве.';
+
+  @override
+  String get restoreXReportDone => 'Готово';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения с прежнего устройства',
+      many: '$count неотправленных сообщений с прежнего устройства',
+      few: '$count неотправленных сообщения с прежнего устройства',
+      one: '$count неотправленное сообщение с прежнего устройства',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => 'Неотправленные сообщения';
+
+  @override
+  String get pendingReviewBody => 'Эти сообщения ждали отправки на прежнем устройстве. MorseCQ никогда не отправляет их сам; передайте ключом заново, если ещё нужно.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return 'В очереди с $time на прежнем устройстве';
+  }
+
+  @override
+  String get pendingReviewDismiss => 'Убрать';
+
+  @override
+  String get pendingReviewDismissAll => 'Убрать все';
+
+  @override
+  String get pendingReviewEmpty => 'Больше нечего просматривать.';
+
+  @override
+  String get backupXWizardInside => 'Файл копии целиком шифруется выбранной вами парольной фразой и содержит ключ личности и прогресс тренировок. Храните файл и фразу в надёжном месте вне этого устройства.';
+
+  @override
+  String get backupXMeSubtitle => 'Зашифрованный файл с личностью, чатами и прогрессом — для хранения или переноса на другое устройство';
 }

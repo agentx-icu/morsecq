@@ -85,6 +85,49 @@ class ConversationMetaStore {
           if (e.endsWith('\t$friendPublicKey')) e.substring(0, e.indexOf('\t')),
       ];
 
+  /// Every non-empty draft of this identity, by conversation id.
+  Map<String, String> allDrafts() {
+    final head = '${_kDraftPrefix}_';
+    final tail = _prefix.isEmpty ? '' : '_$_prefix';
+    final out = <String, String>{};
+    for (final key in _store.keys()) {
+      if (!key.startsWith(head) || !key.endsWith(tail)) continue;
+      final id = key.substring(head.length, key.length - tail.length);
+      final text = _store.getString(key);
+      if (id.isNotEmpty && text != null && text.isNotEmpty) out[id] = text;
+    }
+    return out;
+  }
+
+  /// The portable part of this identity's metadata (backup, F10): pins,
+  /// hidden conversations and drafts. Queued group invites are left out on
+  /// purpose: a restored identity never replays them.
+  Map<String, Object?> exportPortable() => {
+    'pinned': pinned.toList()..sort(),
+    'hidden': hidden.toList()..sort(),
+    'drafts': allDrafts(),
+  };
+
+  /// Writes [doc] (from [exportPortable]); unknown or malformed fields are
+  /// ignored. The caller clears the identity first.
+  Future<void> importPortable(Object? doc) async {
+    if (doc is! Map) return;
+    List<String> strings(Object? v) =>
+        v is List ? v.whereType<String>().toList() : const [];
+    final pins = strings(doc['pinned']);
+    if (pins.isNotEmpty) await _setSet(_kPinned, pins.toSet());
+    final hidden = strings(doc['hidden']);
+    if (hidden.isNotEmpty) await _setSet(_kHidden, hidden.toSet());
+    final drafts = doc['drafts'];
+    if (drafts is Map) {
+      for (final e in drafts.entries) {
+        if (e.key is String && e.value is String) {
+          await setDraft(e.key as String, e.value as String);
+        }
+      }
+    }
+  }
+
   /// Forgets everything about one conversation.
   Future<void> forget(String conversationId) async {
     await setPinned(conversationId, false);

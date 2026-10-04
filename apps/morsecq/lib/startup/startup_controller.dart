@@ -364,6 +364,34 @@ class StartupController extends ChangeNotifier {
     return identity;
   }
 
+  /// Restores a complete encrypted backup (F10). Same gate behaviour as
+  /// [restoreFromBackup]; the report lists what came back and what did not.
+  /// Throws `wrong_passphrase`, `wrong_password`, `invalid_backup`, ...
+  Future<RestoreReport> restoreEncryptedBackup(
+    Uint8List bytes,
+    String passphrase, {
+    String? identityPassword,
+  }) async {
+    final backups = switch (_identity) {
+      final EncryptedBackupService b => b,
+      _ => throw const ChatException(
+        'unsupported_backup_version',
+        'This backend cannot read encrypted backups',
+      ),
+    };
+    final report = await backups.restoreEncryptedBackup(
+      bytes,
+      passphrase,
+      identityPassword: identityPassword,
+    );
+    final fromGuest = _cameFromGuest;
+    _cameFromGuest = false;
+    guestMode.value = false;
+    _guestChoicePending = fromGuest && await _guestHasProgress();
+    _becomeReady();
+    return report;
+  }
+
   /// Retries the background connection, e.g. from the connection chip.
   Future<void> reconnect() => _connectInBackground();
 

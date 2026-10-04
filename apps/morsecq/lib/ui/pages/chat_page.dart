@@ -11,6 +11,7 @@ import '../chat/conversation_list.dart';
 import '../chat/conversation_route.dart';
 import '../chat/conversation_screen.dart';
 import '../chat/conversation_target.dart';
+import '../chat/restored_pending.dart';
 import '../contacts/contacts_page.dart';
 import '../shell/shell_router.dart';
 import 'placeholder_page.dart';
@@ -137,11 +138,20 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ],
       ),
-      body: ConversationList(
-        service: service,
-        selectedId: _selected?.id,
-        emptyText: ChatPage.description(s),
-        onOpen: (c) => _open(context, ConversationTarget.fromConversation(c)),
+      body: Column(
+        children: [
+          // Unsent messages a restore brought over (F10), for review only.
+          const RestoredPendingBanner(),
+          Expanded(
+            child: ConversationList(
+              service: service,
+              selectedId: _selected?.id,
+              emptyText: ChatPage.description(s),
+              onOpen: (c) =>
+                  _open(context, ConversationTarget.fromConversation(c)),
+            ),
+          ),
+        ],
       ),
     );
 

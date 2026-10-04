@@ -3565,4 +3565,266 @@ class SFr extends S {
 
   @override
   String get diagDetailError => 'Dernier code d\'erreur';
+
+  @override
+  String get backupXTitle => 'Sauvegarde chiffrée';
+
+  @override
+  String get backupXIntro => 'Choisissez ce que vous emportez sur un autre appareil. Le fichier entier est chiffré avec une phrase secrète définie ici.';
+
+  @override
+  String get backupXCategoryIdentity => 'Identité et profil Tox';
+
+  @override
+  String get backupXCategoryTraining => 'Progression et supports d\'entraînement';
+
+  @override
+  String get backupXCategoryChat => 'Historique des discussions, notes perso comprises';
+
+  @override
+  String get backupXCategoryMeta => 'Brouillons, épingles et signets';
+
+  @override
+  String get backupXCategoryPrefs => 'Préférences de l\'app';
+
+  @override
+  String get backupXPrefsHint => 'Lecture, notifications, apparence et langue. Jamais les positions de fenêtre ni les affectations de touches.';
+
+  @override
+  String get backupXCategoryMedia => 'Enregistrements sauvegardés';
+
+  @override
+  String get backupXMediaHint => 'Désactivé par défaut : les enregistrements peuvent être volumineux. Sans eux, seuls les titres et notes suivent.';
+
+  @override
+  String get backupXCategoryPending => 'Messages non envoyés';
+
+  @override
+  String get backupXPendingHint => 'Ils reviennent uniquement pour relecture et ne sont jamais envoyés automatiquement.';
+
+  @override
+  String get backupXRequired => 'Obligatoire';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments',
+      one: '1 élément',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size Ko';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size Mo';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return 'Trop volumineux pour être inclus ($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invitations de groupe en attente d\'amis hors ligne ne sont pas reprises.',
+      one: '1 invitation de groupe en attente d\'un ami hors ligne n\'est pas reprise.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'Le mot de passe de votre identité reste sur le profil : le nouvel appareil le demandera en plus de la phrase secrète.';
+
+  @override
+  String backupXTotal(String size) {
+    return 'Environ $size au total';
+  }
+
+  @override
+  String get backupXPassphrase => 'Phrase secrète de la sauvegarde';
+
+  @override
+  String get backupXPassphraseConfirm => 'Répétez la phrase secrète';
+
+  @override
+  String get backupXPassphraseHint => 'Au moins 8 caractères. Elle est distincte du mot de passe de votre identité et ne peut pas être récupérée.';
+
+  @override
+  String get backupXPassphraseTooShort => 'Utilisez au moins 8 caractères';
+
+  @override
+  String get backupXPassphraseMismatch => 'Les phrases secrètes ne correspondent pas';
+
+  @override
+  String get backupXExport => 'Créer la sauvegarde chiffrée';
+
+  @override
+  String get backupXExporting => 'Création de la sauvegarde…';
+
+  @override
+  String get backupXMigrationNote => 'Vous changez d\'appareil ? Après la restauration là-bas, n\'utilisez plus cette identité ici : deux appareils avec une même identité peuvent envoyer deux fois le même message.';
+
+  @override
+  String get backupXBusy => 'Vos données ont changé pendant la sauvegarde. Réessayez.';
+
+  @override
+  String get backupXTooLarge => 'La sauvegarde est trop volumineuse. Excluez les enregistrements et réessayez.';
+
+  @override
+  String get restoreXWrongPassphrase => 'Phrase secrète incorrecte, ou fichier modifié ou incomplet.';
+
+  @override
+  String get restoreXUnsupported => 'Cette sauvegarde provient d\'une version plus récente de MorseCQ.';
+
+  @override
+  String get restoreXCheck => 'Ouvrir la sauvegarde';
+
+  @override
+  String get restoreXPreviewTitle => 'Contenu de la sauvegarde';
+
+  @override
+  String restoreXCreated(String date) {
+    return 'Créée le $date';
+  }
+
+  @override
+  String get restoreXIncluded => 'Inclus';
+
+  @override
+  String get restoreXExcluded => 'Absent de cette sauvegarde';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages non envoyés reviennent pour relecture. Ils ne seront pas envoyés automatiquement.',
+      one: '1 message non envoyé revient pour relecture. Il ne sera pas envoyé automatiquement.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages non envoyés de l\'ancien appareil ne sont pas dans cette sauvegarde.',
+      one: '1 message non envoyé de l\'ancien appareil n\'est pas dans cette sauvegarde.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'Mot de passe de l\'identité';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'L\'identité de cette sauvegarde a son propre mot de passe. Saisissez-le aussi.';
+
+  @override
+  String get restoreXConfirmTitle => 'Remplacer l\'identité de cet appareil ?';
+
+  @override
+  String get restoreXConfirmBody => 'L\'identité et les données de cet appareil sont remplacées par la sauvegarde. Cessez d\'utiliser l\'identité sur l\'ancien appareil avant de vous connecter ici.';
+
+  @override
+  String get restoreXConfirm => 'Remplacer et restaurer';
+
+  @override
+  String get restoreXReportTitle => 'Restauration terminée';
+
+  @override
+  String get restoreXReportRestored => 'Restauré';
+
+  @override
+  String get restoreXReportNotIncluded => 'Non restauré';
+
+  @override
+  String get restoreXReportPrefsFailed => 'Les préférences n\'ont pas pu être appliquées ; les précédentes sont conservées.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages non envoyés attendent votre relecture dans Discussions.',
+      one: '1 message non envoyé attend votre relecture dans Discussions.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages non envoyés de l\'ancien appareil n\'ont pas été repris.',
+      one: '1 message non envoyé de l\'ancien appareil n\'a pas été repris.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invitations de groupe en attente n\'ont pas été renvoyées.',
+      one: '1 invitation de groupe en attente n\'a pas été renvoyée.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => 'N\'utilisez plus cette identité sur l\'ancien appareil.';
+
+  @override
+  String get restoreXReportDone => 'Terminé';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages non envoyés de votre ancien appareil',
+      one: '1 message non envoyé de votre ancien appareil',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => 'Messages non envoyés';
+
+  @override
+  String get pendingReviewBody => 'Ils attendaient d\'être envoyés sur votre ancien appareil. MorseCQ ne les envoie jamais automatiquement ; manipulez-en un à nouveau s\'il compte encore.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return 'En attente depuis $time sur l\'ancien appareil';
+  }
+
+  @override
+  String get pendingReviewDismiss => 'Ignorer';
+
+  @override
+  String get pendingReviewDismissAll => 'Tout ignorer';
+
+  @override
+  String get pendingReviewEmpty => 'Plus rien à relire.';
+
+  @override
+  String get backupXWizardInside => 'Le fichier de sauvegarde est entièrement chiffré avec une phrase secrète de votre choix et contient la clé de votre identité et votre progression. Conservez le fichier et la phrase en lieu sûr, hors de cet appareil.';
+
+  @override
+  String get backupXMeSubtitle => 'Un fichier chiffré avec votre identité, vos discussions et votre progression, à garder ou à emporter sur un autre appareil';
 }

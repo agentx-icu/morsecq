@@ -3563,4 +3563,266 @@ class SEn extends S {
 
   @override
   String get diagDetailError => 'Last error code';
+
+  @override
+  String get backupXTitle => 'Encrypted backup';
+
+  @override
+  String get backupXIntro => 'Choose what to take to another device. The whole file is encrypted with a passphrase you set here.';
+
+  @override
+  String get backupXCategoryIdentity => 'Identity and Tox profile';
+
+  @override
+  String get backupXCategoryTraining => 'Training progress and materials';
+
+  @override
+  String get backupXCategoryChat => 'Chat history, including notes to self';
+
+  @override
+  String get backupXCategoryMeta => 'Drafts, pins and bookmarks';
+
+  @override
+  String get backupXCategoryPrefs => 'App preferences';
+
+  @override
+  String get backupXPrefsHint => 'Playback, notifications, appearance and language. Never window positions or key bindings.';
+
+  @override
+  String get backupXCategoryMedia => 'Saved recordings';
+
+  @override
+  String get backupXMediaHint => 'Off by default: recordings can be large. Without them, only their titles and notes come along.';
+
+  @override
+  String get backupXCategoryPending => 'Unsent messages';
+
+  @override
+  String get backupXPendingHint => 'They come back for review only and are never sent automatically.';
+
+  @override
+  String get backupXRequired => 'Required';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return 'Too large to include ($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count group invitations waiting for offline friends are not carried over.',
+      one: '1 group invitation waiting for an offline friend is not carried over.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.';
+
+  @override
+  String backupXTotal(String size) {
+    return 'About $size in total';
+  }
+
+  @override
+  String get backupXPassphrase => 'Backup passphrase';
+
+  @override
+  String get backupXPassphraseConfirm => 'Repeat passphrase';
+
+  @override
+  String get backupXPassphraseHint => 'At least 8 characters. It is separate from your identity password and cannot be recovered.';
+
+  @override
+  String get backupXPassphraseTooShort => 'Use at least 8 characters';
+
+  @override
+  String get backupXPassphraseMismatch => 'The passphrases do not match';
+
+  @override
+  String get backupXExport => 'Create encrypted backup';
+
+  @override
+  String get backupXExporting => 'Creating backup…';
+
+  @override
+  String get backupXMigrationNote => 'Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.';
+
+  @override
+  String get backupXBusy => 'Your data kept changing while the backup was taken. Try again.';
+
+  @override
+  String get backupXTooLarge => 'The backup is too large. Leave out recordings and try again.';
+
+  @override
+  String get restoreXWrongPassphrase => 'Wrong passphrase, or the file was changed or is incomplete.';
+
+  @override
+  String get restoreXUnsupported => 'This backup was made by a newer version of MorseCQ.';
+
+  @override
+  String get restoreXCheck => 'Open backup';
+
+  @override
+  String get restoreXPreviewTitle => 'Backup contents';
+
+  @override
+  String restoreXCreated(String date) {
+    return 'Created $date';
+  }
+
+  @override
+  String get restoreXIncluded => 'Included';
+
+  @override
+  String get restoreXExcluded => 'Not in this backup';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsent messages come back for review. They will not be sent automatically.',
+      one: '1 unsent message comes back for review. It will not be sent automatically.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsent messages on the old device are not in this backup.',
+      one: '1 unsent message on the old device is not in this backup.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'Identity password';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'The identity in this backup has its own password. Enter it as well.';
+
+  @override
+  String get restoreXConfirmTitle => 'Replace the identity on this device?';
+
+  @override
+  String get restoreXConfirmBody => 'Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.';
+
+  @override
+  String get restoreXConfirm => 'Replace and restore';
+
+  @override
+  String get restoreXReportTitle => 'Restore complete';
+
+  @override
+  String get restoreXReportRestored => 'Restored';
+
+  @override
+  String get restoreXReportNotIncluded => 'Not restored';
+
+  @override
+  String get restoreXReportPrefsFailed => 'Preferences could not be applied; your previous preferences were kept.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsent messages are waiting for your review in Chat.',
+      one: '1 unsent message is waiting for your review in Chat.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsent messages from the old device were not brought over.',
+      one: '1 unsent message from the old device was not brought over.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count queued group invitations were not resent.',
+      one: '1 queued group invitation was not resent.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => 'Stop using this identity on the old device.';
+
+  @override
+  String get restoreXReportDone => 'Done';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsent messages from your previous device',
+      one: '1 unsent message from your previous device',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => 'Unsent messages';
+
+  @override
+  String get pendingReviewBody => 'These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return 'Queued $time on the previous device';
+  }
+
+  @override
+  String get pendingReviewDismiss => 'Dismiss';
+
+  @override
+  String get pendingReviewDismissAll => 'Dismiss all';
+
+  @override
+  String get pendingReviewEmpty => 'Nothing left to review.';
+
+  @override
+  String get backupXWizardInside => 'The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.';
+
+  @override
+  String get backupXMeSubtitle => 'An encrypted file with your identity, chats and progress, to keep or to move to another device';
 }

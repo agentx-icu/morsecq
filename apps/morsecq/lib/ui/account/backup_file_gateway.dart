@@ -110,7 +110,7 @@ final class PlatformBackupFileGateway implements BackupFileGateway {
   }
 
   /// Largest file [pickBackup] will read.
-  static const int maxBackupBytes = 64 * 1024 * 1024;
+  static const int maxBackupBytes = maxBackupFileBytes;
 }
 
 /// Test double: records what was saved and returns scripted picks.

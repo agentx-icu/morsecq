@@ -6259,6 +6259,378 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Last error code'**
   String get diagDetailError;
+
+  /// Encrypted complete backup page title
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted backup'**
+  String get backupXTitle;
+
+  /// Encrypted backup page: intro
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to take to another device. The whole file is encrypted with a passphrase you set here.'**
+  String get backupXIntro;
+
+  /// Backup category: identity and Tox profile
+  ///
+  /// In en, this message translates to:
+  /// **'Identity and Tox profile'**
+  String get backupXCategoryIdentity;
+
+  /// Backup category: training progress and materials
+  ///
+  /// In en, this message translates to:
+  /// **'Training progress and materials'**
+  String get backupXCategoryTraining;
+
+  /// Backup category: chat history including note to self
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history, including notes to self'**
+  String get backupXCategoryChat;
+
+  /// Backup category: drafts, pins, bookmarks
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts, pins and bookmarks'**
+  String get backupXCategoryMeta;
+
+  /// Backup category: portable app preferences
+  ///
+  /// In en, this message translates to:
+  /// **'App preferences'**
+  String get backupXCategoryPrefs;
+
+  /// Backup: what app preferences include/exclude
+  ///
+  /// In en, this message translates to:
+  /// **'Playback, notifications, appearance and language. Never window positions or key bindings.'**
+  String get backupXPrefsHint;
+
+  /// Backup category: saved recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Saved recordings'**
+  String get backupXCategoryMedia;
+
+  /// Backup: recordings are large and off by default
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default: recordings can be large. Without them, only their titles and notes come along.'**
+  String get backupXMediaHint;
+
+  /// Backup category: unsent messages
+  ///
+  /// In en, this message translates to:
+  /// **'Unsent messages'**
+  String get backupXCategoryPending;
+
+  /// Backup: unsent messages are restored only for review
+  ///
+  /// In en, this message translates to:
+  /// **'They come back for review only and are never sent automatically.'**
+  String get backupXPendingHint;
+
+  /// Backup: this category is required
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get backupXRequired;
+
+  /// Backup: item count and size of a category
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}} · {size}'**
+  String backupXSizeLine(int count, String size);
+
+  /// File size in kilobytes
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String backupXSizeKb(String size);
+
+  /// File size in megabytes
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String backupXSizeMb(String size);
+
+  /// Backup: recordings exceed the size limit
+  ///
+  /// In en, this message translates to:
+  /// **'Too large to include ({size})'**
+  String backupXMediaTooLarge(String size);
+
+  /// Backup: queued group invites are not carried
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 group invitation waiting for an offline friend is not carried over.} other{{count} group invitations waiting for offline friends are not carried over.}}'**
+  String backupXInvitesNote(int count);
+
+  /// Backup: the profile keeps its identity password
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.'**
+  String get backupXIdentityPasswordNote;
+
+  /// Backup: estimated total size
+  ///
+  /// In en, this message translates to:
+  /// **'About {size} in total'**
+  String backupXTotal(String size);
+
+  /// Backup passphrase field (export and restore)
+  ///
+  /// In en, this message translates to:
+  /// **'Backup passphrase'**
+  String get backupXPassphrase;
+
+  /// Backup: repeat passphrase field
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat passphrase'**
+  String get backupXPassphraseConfirm;
+
+  /// Backup: passphrase guidance
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters. It is separate from your identity password and cannot be recovered.'**
+  String get backupXPassphraseHint;
+
+  /// Backup: passphrase too short
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters'**
+  String get backupXPassphraseTooShort;
+
+  /// Backup: passphrases differ
+  ///
+  /// In en, this message translates to:
+  /// **'The passphrases do not match'**
+  String get backupXPassphraseMismatch;
+
+  /// Backup: create button
+  ///
+  /// In en, this message translates to:
+  /// **'Create encrypted backup'**
+  String get backupXExport;
+
+  /// Backup: creating in progress
+  ///
+  /// In en, this message translates to:
+  /// **'Creating backup…'**
+  String get backupXExporting;
+
+  /// Backup: stop using the identity on the old device after moving
+  ///
+  /// In en, this message translates to:
+  /// **'Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.'**
+  String get backupXMigrationNote;
+
+  /// Backup error: data kept changing
+  ///
+  /// In en, this message translates to:
+  /// **'Your data kept changing while the backup was taken. Try again.'**
+  String get backupXBusy;
+
+  /// Backup error: too large
+  ///
+  /// In en, this message translates to:
+  /// **'The backup is too large. Leave out recordings and try again.'**
+  String get backupXTooLarge;
+
+  /// Restore: wrong passphrase or altered file
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong passphrase, or the file was changed or is incomplete.'**
+  String get restoreXWrongPassphrase;
+
+  /// Restore: backup from a newer version
+  ///
+  /// In en, this message translates to:
+  /// **'This backup was made by a newer version of MorseCQ.'**
+  String get restoreXUnsupported;
+
+  /// Restore: open the encrypted backup with the passphrase
+  ///
+  /// In en, this message translates to:
+  /// **'Open backup'**
+  String get restoreXCheck;
+
+  /// Restore preview title
+  ///
+  /// In en, this message translates to:
+  /// **'Backup contents'**
+  String get restoreXPreviewTitle;
+
+  /// Restore preview: creation time
+  ///
+  /// In en, this message translates to:
+  /// **'Created {date}'**
+  String restoreXCreated(String date);
+
+  /// Restore preview: included categories heading
+  ///
+  /// In en, this message translates to:
+  /// **'Included'**
+  String get restoreXIncluded;
+
+  /// Restore preview: categories not in the backup
+  ///
+  /// In en, this message translates to:
+  /// **'Not in this backup'**
+  String get restoreXExcluded;
+
+  /// Restore preview: unsent messages included for review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message comes back for review. It will not be sent automatically.} other{{count} unsent messages come back for review. They will not be sent automatically.}}'**
+  String restoreXPendingIncluded(int count);
+
+  /// Restore preview: unsent messages not included
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message on the old device is not in this backup.} other{{count} unsent messages on the old device are not in this backup.}}'**
+  String restoreXPendingExcluded(int count);
+
+  /// Restore: identity password field for an encrypted profile
+  ///
+  /// In en, this message translates to:
+  /// **'Identity password'**
+  String get restoreXIdentityPassword;
+
+  /// Restore: the profile needs its own password
+  ///
+  /// In en, this message translates to:
+  /// **'The identity in this backup has its own password. Enter it as well.'**
+  String get restoreXIdentityPasswordNote;
+
+  /// Restore: confirm replacement dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the identity on this device?'**
+  String get restoreXConfirmTitle;
+
+  /// Restore: confirm replacement dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.'**
+  String get restoreXConfirmBody;
+
+  /// Restore: confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Replace and restore'**
+  String get restoreXConfirm;
+
+  /// Restore report title
+  ///
+  /// In en, this message translates to:
+  /// **'Restore complete'**
+  String get restoreXReportTitle;
+
+  /// Restore report: restored heading
+  ///
+  /// In en, this message translates to:
+  /// **'Restored'**
+  String get restoreXReportRestored;
+
+  /// Restore report: not restored heading
+  ///
+  /// In en, this message translates to:
+  /// **'Not restored'**
+  String get restoreXReportNotIncluded;
+
+  /// Restore report: preferences failed to apply
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences could not be applied; your previous preferences were kept.'**
+  String get restoreXReportPrefsFailed;
+
+  /// Restore report: unsent messages await review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message is waiting for your review in Chat.} other{{count} unsent messages are waiting for your review in Chat.}}'**
+  String restoreXReportPendingReview(int count);
+
+  /// Restore report: unsent messages not brought over
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message from the old device was not brought over.} other{{count} unsent messages from the old device were not brought over.}}'**
+  String restoreXReportPendingNotResumed(int count);
+
+  /// Restore: queued group invitations not resent
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 queued group invitation was not resent.} other{{count} queued group invitations were not resent.}}'**
+  String restoreXReportInvites(int count);
+
+  /// Restore report: stop using the old device
+  ///
+  /// In en, this message translates to:
+  /// **'Stop using this identity on the old device.'**
+  String get restoreXReportStopOld;
+
+  /// Restore report: close button
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get restoreXReportDone;
+
+  /// Chat list strip: restored unsent messages to review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message from your previous device} other{{count} unsent messages from your previous device}}'**
+  String pendingReviewBanner(int count);
+
+  /// Restored unsent messages review page title
+  ///
+  /// In en, this message translates to:
+  /// **'Unsent messages'**
+  String get pendingReviewTitle;
+
+  /// Restored unsent messages: explanation
+  ///
+  /// In en, this message translates to:
+  /// **'These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.'**
+  String get pendingReviewBody;
+
+  /// Restored unsent message: when it was queued
+  ///
+  /// In en, this message translates to:
+  /// **'Queued {time} on the previous device'**
+  String pendingReviewQueuedAt(String time);
+
+  /// Restored unsent message: dismiss one
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get pendingReviewDismiss;
+
+  /// Restored unsent messages: dismiss all
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss all'**
+  String get pendingReviewDismissAll;
+
+  /// Restored unsent messages: nothing left
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to review.'**
+  String get pendingReviewEmpty;
+
+  /// First-run backup wizard: what the encrypted backup contains
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.'**
+  String get backupXWizardInside;
+
+  /// Me page: subtitle of the export backup entry (encrypted complete backup)
+  ///
+  /// In en, this message translates to:
+  /// **'An encrypted file with your identity, chats and progress, to keep or to move to another device'**
+  String get backupXMeSubtitle;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

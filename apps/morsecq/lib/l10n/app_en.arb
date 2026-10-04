@@ -5065,5 +5065,326 @@
   "diagDetailError": "Last error code",
   "@diagDetailError": {
     "description": "Diagnostics details: last reconnect error code"
+  },
+  "backupXTitle": "Encrypted backup",
+  "@backupXTitle": {
+    "description": "Encrypted complete backup page title"
+  },
+  "backupXIntro": "Choose what to take to another device. The whole file is encrypted with a passphrase you set here.",
+  "@backupXIntro": {
+    "description": "Encrypted backup page: intro"
+  },
+  "backupXCategoryIdentity": "Identity and Tox profile",
+  "@backupXCategoryIdentity": {
+    "description": "Backup category: identity and Tox profile"
+  },
+  "backupXCategoryTraining": "Training progress and materials",
+  "@backupXCategoryTraining": {
+    "description": "Backup category: training progress and materials"
+  },
+  "backupXCategoryChat": "Chat history, including notes to self",
+  "@backupXCategoryChat": {
+    "description": "Backup category: chat history including note to self"
+  },
+  "backupXCategoryMeta": "Drafts, pins and bookmarks",
+  "@backupXCategoryMeta": {
+    "description": "Backup category: drafts, pins, bookmarks"
+  },
+  "backupXCategoryPrefs": "App preferences",
+  "@backupXCategoryPrefs": {
+    "description": "Backup category: portable app preferences"
+  },
+  "backupXPrefsHint": "Playback, notifications, appearance and language. Never window positions or key bindings.",
+  "@backupXPrefsHint": {
+    "description": "Backup: what app preferences include/exclude"
+  },
+  "backupXCategoryMedia": "Saved recordings",
+  "@backupXCategoryMedia": {
+    "description": "Backup category: saved recordings"
+  },
+  "backupXMediaHint": "Off by default: recordings can be large. Without them, only their titles and notes come along.",
+  "@backupXMediaHint": {
+    "description": "Backup: recordings are large and off by default"
+  },
+  "backupXCategoryPending": "Unsent messages",
+  "@backupXCategoryPending": {
+    "description": "Backup category: unsent messages"
+  },
+  "backupXPendingHint": "They come back for review only and are never sent automatically.",
+  "@backupXPendingHint": {
+    "description": "Backup: unsent messages are restored only for review"
+  },
+  "backupXRequired": "Required",
+  "@backupXRequired": {
+    "description": "Backup: this category is required"
+  },
+  "backupXSizeLine": "{count, plural, =1{1 item} other{{count} items}} · {size}",
+  "@backupXSizeLine": {
+    "description": "Backup: item count and size of a category",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXSizeKb": "{size} KB",
+  "@backupXSizeKb": {
+    "description": "File size in kilobytes",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXSizeMb": "{size} MB",
+  "@backupXSizeMb": {
+    "description": "File size in megabytes",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXMediaTooLarge": "Too large to include ({size})",
+  "@backupXMediaTooLarge": {
+    "description": "Backup: recordings exceed the size limit",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXInvitesNote": "{count, plural, =1{1 group invitation waiting for an offline friend is not carried over.} other{{count} group invitations waiting for offline friends are not carried over.}}",
+  "@backupXInvitesNote": {
+    "description": "Backup: queued group invites are not carried",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupXIdentityPasswordNote": "Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.",
+  "@backupXIdentityPasswordNote": {
+    "description": "Backup: the profile keeps its identity password"
+  },
+  "backupXTotal": "About {size} in total",
+  "@backupXTotal": {
+    "description": "Backup: estimated total size",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXPassphrase": "Backup passphrase",
+  "@backupXPassphrase": {
+    "description": "Backup passphrase field (export and restore)"
+  },
+  "backupXPassphraseConfirm": "Repeat passphrase",
+  "@backupXPassphraseConfirm": {
+    "description": "Backup: repeat passphrase field"
+  },
+  "backupXPassphraseHint": "At least 8 characters. It is separate from your identity password and cannot be recovered.",
+  "@backupXPassphraseHint": {
+    "description": "Backup: passphrase guidance"
+  },
+  "backupXPassphraseTooShort": "Use at least 8 characters",
+  "@backupXPassphraseTooShort": {
+    "description": "Backup: passphrase too short"
+  },
+  "backupXPassphraseMismatch": "The passphrases do not match",
+  "@backupXPassphraseMismatch": {
+    "description": "Backup: passphrases differ"
+  },
+  "backupXExport": "Create encrypted backup",
+  "@backupXExport": {
+    "description": "Backup: create button"
+  },
+  "backupXExporting": "Creating backup…",
+  "@backupXExporting": {
+    "description": "Backup: creating in progress"
+  },
+  "backupXMigrationNote": "Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.",
+  "@backupXMigrationNote": {
+    "description": "Backup: stop using the identity on the old device after moving"
+  },
+  "backupXBusy": "Your data kept changing while the backup was taken. Try again.",
+  "@backupXBusy": {
+    "description": "Backup error: data kept changing"
+  },
+  "backupXTooLarge": "The backup is too large. Leave out recordings and try again.",
+  "@backupXTooLarge": {
+    "description": "Backup error: too large"
+  },
+  "restoreXWrongPassphrase": "Wrong passphrase, or the file was changed or is incomplete.",
+  "@restoreXWrongPassphrase": {
+    "description": "Restore: wrong passphrase or altered file"
+  },
+  "restoreXUnsupported": "This backup was made by a newer version of MorseCQ.",
+  "@restoreXUnsupported": {
+    "description": "Restore: backup from a newer version"
+  },
+  "restoreXCheck": "Open backup",
+  "@restoreXCheck": {
+    "description": "Restore: open the encrypted backup with the passphrase"
+  },
+  "restoreXPreviewTitle": "Backup contents",
+  "@restoreXPreviewTitle": {
+    "description": "Restore preview title"
+  },
+  "restoreXCreated": "Created {date}",
+  "@restoreXCreated": {
+    "description": "Restore preview: creation time",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreXIncluded": "Included",
+  "@restoreXIncluded": {
+    "description": "Restore preview: included categories heading"
+  },
+  "restoreXExcluded": "Not in this backup",
+  "@restoreXExcluded": {
+    "description": "Restore preview: categories not in the backup"
+  },
+  "restoreXPendingIncluded": "{count, plural, =1{1 unsent message comes back for review. It will not be sent automatically.} other{{count} unsent messages come back for review. They will not be sent automatically.}}",
+  "@restoreXPendingIncluded": {
+    "description": "Restore preview: unsent messages included for review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXPendingExcluded": "{count, plural, =1{1 unsent message on the old device is not in this backup.} other{{count} unsent messages on the old device are not in this backup.}}",
+  "@restoreXPendingExcluded": {
+    "description": "Restore preview: unsent messages not included",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXIdentityPassword": "Identity password",
+  "@restoreXIdentityPassword": {
+    "description": "Restore: identity password field for an encrypted profile"
+  },
+  "restoreXIdentityPasswordNote": "The identity in this backup has its own password. Enter it as well.",
+  "@restoreXIdentityPasswordNote": {
+    "description": "Restore: the profile needs its own password"
+  },
+  "restoreXConfirmTitle": "Replace the identity on this device?",
+  "@restoreXConfirmTitle": {
+    "description": "Restore: confirm replacement dialog title"
+  },
+  "restoreXConfirmBody": "Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.",
+  "@restoreXConfirmBody": {
+    "description": "Restore: confirm replacement dialog body"
+  },
+  "restoreXConfirm": "Replace and restore",
+  "@restoreXConfirm": {
+    "description": "Restore: confirm button"
+  },
+  "restoreXReportTitle": "Restore complete",
+  "@restoreXReportTitle": {
+    "description": "Restore report title"
+  },
+  "restoreXReportRestored": "Restored",
+  "@restoreXReportRestored": {
+    "description": "Restore report: restored heading"
+  },
+  "restoreXReportNotIncluded": "Not restored",
+  "@restoreXReportNotIncluded": {
+    "description": "Restore report: not restored heading"
+  },
+  "restoreXReportPrefsFailed": "Preferences could not be applied; your previous preferences were kept.",
+  "@restoreXReportPrefsFailed": {
+    "description": "Restore report: preferences failed to apply"
+  },
+  "restoreXReportPendingReview": "{count, plural, =1{1 unsent message is waiting for your review in Chat.} other{{count} unsent messages are waiting for your review in Chat.}}",
+  "@restoreXReportPendingReview": {
+    "description": "Restore report: unsent messages await review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportPendingNotResumed": "{count, plural, =1{1 unsent message from the old device was not brought over.} other{{count} unsent messages from the old device were not brought over.}}",
+  "@restoreXReportPendingNotResumed": {
+    "description": "Restore report: unsent messages not brought over",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportInvites": "{count, plural, =1{1 queued group invitation was not resent.} other{{count} queued group invitations were not resent.}}",
+  "@restoreXReportInvites": {
+    "description": "Restore: queued group invitations not resent",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportStopOld": "Stop using this identity on the old device.",
+  "@restoreXReportStopOld": {
+    "description": "Restore report: stop using the old device"
+  },
+  "restoreXReportDone": "Done",
+  "@restoreXReportDone": {
+    "description": "Restore report: close button"
+  },
+  "pendingReviewBanner": "{count, plural, =1{1 unsent message from your previous device} other{{count} unsent messages from your previous device}}",
+  "@pendingReviewBanner": {
+    "description": "Chat list strip: restored unsent messages to review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReviewTitle": "Unsent messages",
+  "@pendingReviewTitle": {
+    "description": "Restored unsent messages review page title"
+  },
+  "pendingReviewBody": "These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.",
+  "@pendingReviewBody": {
+    "description": "Restored unsent messages: explanation"
+  },
+  "pendingReviewQueuedAt": "Queued {time} on the previous device",
+  "@pendingReviewQueuedAt": {
+    "description": "Restored unsent message: when it was queued",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingReviewDismiss": "Dismiss",
+  "@pendingReviewDismiss": {
+    "description": "Restored unsent message: dismiss one"
+  },
+  "pendingReviewDismissAll": "Dismiss all",
+  "@pendingReviewDismissAll": {
+    "description": "Restored unsent messages: dismiss all"
+  },
+  "pendingReviewEmpty": "Nothing left to review.",
+  "@pendingReviewEmpty": {
+    "description": "Restored unsent messages: nothing left"
+  },
+  "backupXWizardInside": "The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.",
+  "@backupXWizardInside": {
+    "description": "First-run backup wizard: what the encrypted backup contains"
+  },
+  "backupXMeSubtitle": "An encrypted file with your identity, chats and progress, to keep or to move to another device",
+  "@backupXMeSubtitle": {
+    "description": "Me page: subtitle of the export backup entry (encrypted complete backup)"
   }
 }

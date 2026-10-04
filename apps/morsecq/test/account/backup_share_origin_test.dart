@@ -4,6 +4,7 @@ import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/ui/account/backup_actions.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/account/backup_wizard_page.dart';
+import 'package:morsecq/ui/account/encrypted_backup_page.dart';
 
 import 'test_app.dart';
 
@@ -30,10 +31,18 @@ void main() {
     await tapVisible(tester, find.text(en.accountCreateButton));
     expect(find.byType(BackupWizardPage), findsOneWidget);
 
-    final button = find.byKey(BackupWizardPage.saveButtonKey);
+    await tapVisible(tester, find.byKey(BackupWizardPage.saveButtonKey));
+    // The encrypted backup page owns the share: its create button anchors.
+    Finder field(String key) => find.descendant(
+      of: find.byKey(ValueKey(key)),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(field('backup-x-passphrase'), 'correct horse');
+    await tester.enterText(field('backup-x-confirm'), 'correct horse');
+    final button = find.byKey(EncryptedBackupPage.exportKey);
     await tester.ensureVisible(button);
     await tester.pumpAndSettle();
-    // Measured before the tap: the "saved" row shifts the layout afterwards.
+    // Measured before the tap: the outcome row shifts the layout afterwards.
     final buttonRect = tester.getRect(button);
     await tapVisible(tester, button);
 

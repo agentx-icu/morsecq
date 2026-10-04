@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/l10n/generated/s.dart';
@@ -7,13 +5,12 @@ import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
-import 'package:path/path.dart' as p;
 
 import 'test_app.dart';
 
 final S en = lookupS(const Locale('en'));
 
-Future<void> _export(WidgetTester tester) async {
+Future<void> _openExport(WidgetTester tester) async {
   await tester.tap(
     find.descendant(
       of: find.byType(NavigationBar),
@@ -27,30 +24,12 @@ Future<void> _export(WidgetTester tester) async {
   await settle(tester);
 }
 
-/// Puts a saved recording where the workbench keeps them: the identity
-/// root beside its backed-up data directory.
-Future<void> _saveRecording(FakeIdentityService identity) async {
-  final data = await identity.dataDirectory();
-  final root = p.dirname(data);
-  final file = File(p.join(root, 'media', 'recordings', 'rec_a.wav'))
-    ..createSync(recursive: true)
-    ..writeAsBytesSync(List<int>.filled(2048, 1));
-  // Only referenced saved recordings count (the same rule as the export);
-  // the working recording never does.
-  final working = File(p.join(root, 'media', 'recordings', 'current.wav'))
-    ..writeAsBytesSync(List<int>.filled(4096, 1));
-  final doc = File(p.join(data, BackupMedia.materialsDoc))
-    ..createSync(recursive: true)
-    ..writeAsStringSync(
-      '{"v":1,"materials":[{"id":"x","file":"media/recordings/rec_a.wav"}]}',
-    );
-  addTearDown(() {
-    for (final f in [file, working, doc]) {
-      if (f.existsSync()) f.deleteSync();
-    }
-  });
-}
+CheckboxListTile _tile(WidgetTester tester, BackupCategory c) =>
+    tester.widget<CheckboxListTile>(find.byKey(ValueKey('backup-x-${c.name}')));
 
+/// Recordings are opt-in on the encrypted backup page (functional spec
+/// §11.3, F10): off by default, offered when there are some, refused when
+/// they exceed the limit.
 void main() {
   late FakeIdentityService identity;
   late FakeBackupFileGateway files;
@@ -60,37 +39,63 @@ void main() {
     files = FakeBackupFileGateway();
   });
 
-  testWidgets('no recordings: export asks nothing', (tester) async {
+  Future<BackupPreview> previewOfSaved() => identity.previewEncryptedBackup(
+    files.saved.single,
+    'correct horse',
+  );
+
+  testWidgets('no recordings: the category cannot be chosen', (tester) async {
     await pumpApp(tester, identity: identity, backupFiles: files);
-    await _export(tester);
-    expect(find.text(en.accountBackupMediaTitle), findsNothing);
+    await _openExport(tester);
+    final media = _tile(tester, BackupCategory.media);
+    expect(media.value, isFalse);
+    expect(media.onChanged, isNull);
+    await completeEncryptedBackup(tester);
     expect(files.saved, hasLength(1));
+    expect((await previewOfSaved()).includes(BackupCategory.media), isFalse);
   });
 
-  testWidgets('saved recordings: the learner opts in or out', (tester) async {
+  testWidgets('saved recordings: off by default, the learner may opt in', (
+    tester,
+  ) async {
+    identity.fakeBackupSizes = {
+      BackupCategory.media: const BackupCategorySize(items: 1, bytes: 2048),
+    };
     await pumpApp(tester, identity: identity, backupFiles: files);
-    await _saveRecording(identity);
-    await _export(tester);
-    expect(find.text(en.accountBackupMediaTitle), findsOneWidget);
-    expect(find.text(en.accountBackupMediaBody(1, '0.0')), findsOneWidget);
-    // The default action leaves the recordings out.
-    await tester.tap(find.byKey(const ValueKey('backup-without-media')));
-    await settle(tester);
-    expect(files.saved, hasLength(1));
-
-    await tester.tap(find.text(en.accountExportBackup));
-    await settle(tester);
-    await tester.tap(find.byKey(const ValueKey('backup-include-media')));
-    await settle(tester);
-    expect(files.saved, hasLength(2));
+    await _openExport(tester);
+    expect(_tile(tester, BackupCategory.media).value, isFalse);
+    final tile = find.byKey(const ValueKey('backup-x-media'));
+    await tester.ensureVisible(tile);
+    await tester.tap(tile);
+    await tester.pump();
+    expect(_tile(tester, BackupCategory.media).value, isTrue);
+    await completeEncryptedBackup(tester);
+    expect((await previewOfSaved()).includes(BackupCategory.media), isTrue);
   });
 
-  testWidgets('cancelling the question exports nothing', (tester) async {
+  testWidgets('too-large recordings are refused with their size', (
+    tester,
+  ) async {
+    identity.fakeBackupSizes = {
+      BackupCategory.media: const BackupCategorySize(
+        items: 3,
+        bytes: BackupMedia.maxBytes + 1,
+      ),
+    };
     await pumpApp(tester, identity: identity, backupFiles: files);
-    await _saveRecording(identity);
-    await _export(tester);
-    await tester.tap(find.text(en.actionCancel));
-    await settle(tester);
-    expect(files.saved, isEmpty);
+    await _openExport(tester);
+    expect(_tile(tester, BackupCategory.media).onChanged, isNull);
+    expect(
+      find.textContaining(en.backupXMediaTooLarge(en.backupXSizeMb('100.0'))),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('unsent messages are offered and explained', (tester) async {
+    identity.fakePendingMessages = 2;
+    await pumpApp(tester, identity: identity, backupFiles: files);
+    await _openExport(tester);
+    expect(_tile(tester, BackupCategory.pendingMessages).value, isFalse);
+    expect(find.textContaining(en.backupXPendingHint), findsOneWidget);
   });
 }

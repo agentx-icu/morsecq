@@ -3564,4 +3564,266 @@ class SEs extends S {
 
   @override
   String get diagDetailError => 'Último código de error';
+
+  @override
+  String get backupXTitle => 'Copia cifrada';
+
+  @override
+  String get backupXIntro => 'Elige qué llevar a otro dispositivo. Todo el archivo se cifra con una frase de contraseña que defines aquí.';
+
+  @override
+  String get backupXCategoryIdentity => 'Identidad y perfil Tox';
+
+  @override
+  String get backupXCategoryTraining => 'Progreso y materiales de práctica';
+
+  @override
+  String get backupXCategoryChat => 'Historial de chat, incluidas las notas para mí';
+
+  @override
+  String get backupXCategoryMeta => 'Borradores, fijados y marcadores';
+
+  @override
+  String get backupXCategoryPrefs => 'Preferencias de la app';
+
+  @override
+  String get backupXPrefsHint => 'Reproducción, notificaciones, apariencia e idioma. Nunca posiciones de ventana ni asignaciones de teclas.';
+
+  @override
+  String get backupXCategoryMedia => 'Grabaciones guardadas';
+
+  @override
+  String get backupXMediaHint => 'Desactivado por defecto: las grabaciones pueden ser grandes. Sin ellas solo se llevan títulos y notas.';
+
+  @override
+  String get backupXCategoryPending => 'Mensajes sin enviar';
+
+  @override
+  String get backupXPendingHint => 'Vuelven solo para revisarlos y nunca se envían automáticamente.';
+
+  @override
+  String get backupXRequired => 'Obligatorio';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count elementos',
+      one: '1 elemento',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return 'Demasiado grande para incluir ($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invitaciones de grupo pendientes para amigos desconectados no se trasladan.',
+      one: '1 invitación de grupo pendiente para un amigo desconectado no se traslada.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'La contraseña de tu identidad se mantiene en el perfil: el nuevo dispositivo la pedirá además de la frase de la copia.';
+
+  @override
+  String backupXTotal(String size) {
+    return 'Unos $size en total';
+  }
+
+  @override
+  String get backupXPassphrase => 'Frase de la copia';
+
+  @override
+  String get backupXPassphraseConfirm => 'Repite la frase';
+
+  @override
+  String get backupXPassphraseHint => 'Al menos 8 caracteres. Es distinta de la contraseña de tu identidad y no se puede recuperar.';
+
+  @override
+  String get backupXPassphraseTooShort => 'Usa al menos 8 caracteres';
+
+  @override
+  String get backupXPassphraseMismatch => 'Las frases no coinciden';
+
+  @override
+  String get backupXExport => 'Crear copia cifrada';
+
+  @override
+  String get backupXExporting => 'Creando copia…';
+
+  @override
+  String get backupXMigrationNote => '¿Cambias de dispositivo? Tras restaurar allí, deja de usar esta identidad aquí: dos dispositivos con una identidad pueden enviar el mismo mensaje dos veces.';
+
+  @override
+  String get backupXBusy => 'Tus datos cambiaron mientras se hacía la copia. Inténtalo de nuevo.';
+
+  @override
+  String get backupXTooLarge => 'La copia es demasiado grande. Excluye las grabaciones e inténtalo de nuevo.';
+
+  @override
+  String get restoreXWrongPassphrase => 'Frase incorrecta, o el archivo se modificó o está incompleto.';
+
+  @override
+  String get restoreXUnsupported => 'Esta copia se hizo con una versión más reciente de MorseCQ.';
+
+  @override
+  String get restoreXCheck => 'Abrir copia';
+
+  @override
+  String get restoreXPreviewTitle => 'Contenido de la copia';
+
+  @override
+  String restoreXCreated(String date) {
+    return 'Creada el $date';
+  }
+
+  @override
+  String get restoreXIncluded => 'Incluido';
+
+  @override
+  String get restoreXExcluded => 'No está en esta copia';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes sin enviar vuelven para revisarlos. No se enviarán automáticamente.',
+      one: '1 mensaje sin enviar vuelve para revisarlo. No se enviará automáticamente.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes sin enviar del dispositivo anterior no están en esta copia.',
+      one: '1 mensaje sin enviar del dispositivo anterior no está en esta copia.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'Contraseña de la identidad';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'La identidad de esta copia tiene su propia contraseña. Introdúcela también.';
+
+  @override
+  String get restoreXConfirmTitle => '¿Reemplazar la identidad de este dispositivo?';
+
+  @override
+  String get restoreXConfirmBody => 'La identidad y los datos de este dispositivo se reemplazan por la copia. Deja de usar la identidad en el dispositivo anterior antes de conectarte aquí.';
+
+  @override
+  String get restoreXConfirm => 'Reemplazar y restaurar';
+
+  @override
+  String get restoreXReportTitle => 'Restauración completada';
+
+  @override
+  String get restoreXReportRestored => 'Restaurado';
+
+  @override
+  String get restoreXReportNotIncluded => 'No restaurado';
+
+  @override
+  String get restoreXReportPrefsFailed => 'No se pudieron aplicar las preferencias; se mantuvieron las anteriores.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes sin enviar esperan tu revisión en Chat.',
+      one: '1 mensaje sin enviar espera tu revisión en Chat.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes sin enviar del dispositivo anterior no se trasladaron.',
+      one: '1 mensaje sin enviar del dispositivo anterior no se trasladó.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invitaciones de grupo en cola no se reenviaron.',
+      one: '1 invitación de grupo en cola no se reenvió.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => 'Deja de usar esta identidad en el dispositivo anterior.';
+
+  @override
+  String get restoreXReportDone => 'Listo';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes sin enviar de tu dispositivo anterior',
+      one: '1 mensaje sin enviar de tu dispositivo anterior',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => 'Mensajes sin enviar';
+
+  @override
+  String get pendingReviewBody => 'Estaban pendientes de envío en tu dispositivo anterior. MorseCQ nunca los envía automáticamente; vuelve a manipular uno si aún importa.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return 'En cola desde $time en el dispositivo anterior';
+  }
+
+  @override
+  String get pendingReviewDismiss => 'Descartar';
+
+  @override
+  String get pendingReviewDismissAll => 'Descartar todo';
+
+  @override
+  String get pendingReviewEmpty => 'No queda nada por revisar.';
+
+  @override
+  String get backupXWizardInside => 'El archivo de copia se cifra entero con una frase que eliges y contiene la clave de tu identidad y tu progreso. Guarda el archivo y la frase en un lugar seguro, fuera de este dispositivo.';
+
+  @override
+  String get backupXMeSubtitle => 'Un archivo cifrado con tu identidad, chats y progreso, para guardarlo o llevarlo a otro dispositivo';
 }

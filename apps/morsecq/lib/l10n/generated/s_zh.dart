@@ -3536,6 +3536,260 @@ class SZh extends S {
 
   @override
   String get diagDetailError => '最近错误代码';
+
+  @override
+  String get backupXTitle => '加密备份';
+
+  @override
+  String get backupXIntro => '选择要带到其他设备的内容。整个文件都会用你在此设置的口令加密。';
+
+  @override
+  String get backupXCategoryIdentity => '身份与 Tox 配置文件';
+
+  @override
+  String get backupXCategoryTraining => '训练进度与素材';
+
+  @override
+  String get backupXCategoryChat => '聊天记录（含给自己的笔记）';
+
+  @override
+  String get backupXCategoryMeta => '草稿、置顶与书签';
+
+  @override
+  String get backupXCategoryPrefs => '应用偏好设置';
+
+  @override
+  String get backupXPrefsHint => '播放、通知、外观与语言。不含窗口位置和按键绑定。';
+
+  @override
+  String get backupXCategoryMedia => '已保存的录音';
+
+  @override
+  String get backupXMediaHint => '默认不包含：录音可能很大。不包含时只带走标题和备注。';
+
+  @override
+  String get backupXCategoryPending => '未发送的消息';
+
+  @override
+  String get backupXPendingHint => '恢复后仅供查看，绝不会自动发送。';
+
+  @override
+  String get backupXRequired => '必选';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 项',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '太大，无法包含（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个等待离线好友的群邀请不会被带走。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => '身份密码仍保留在配置文件上：新设备除备份口令外还会要求输入它。';
+
+  @override
+  String backupXTotal(String size) {
+    return '总计约 $size';
+  }
+
+  @override
+  String get backupXPassphrase => '备份口令';
+
+  @override
+  String get backupXPassphraseConfirm => '再次输入口令';
+
+  @override
+  String get backupXPassphraseHint => '至少 8 个字符。它与身份密码相互独立，且无法找回。';
+
+  @override
+  String get backupXPassphraseTooShort => '请至少使用 8 个字符';
+
+  @override
+  String get backupXPassphraseMismatch => '两次输入的口令不一致';
+
+  @override
+  String get backupXExport => '创建加密备份';
+
+  @override
+  String get backupXExporting => '正在创建备份…';
+
+  @override
+  String get backupXMigrationNote => '要换设备？在新设备恢复后，请停止在本机使用此身份：同一身份的两台设备可能把同一条消息发送两次。';
+
+  @override
+  String get backupXBusy => '备份过程中数据持续变化，请重试。';
+
+  @override
+  String get backupXTooLarge => '备份太大。请去掉录音后重试。';
+
+  @override
+  String get restoreXWrongPassphrase => '口令错误，或文件已被修改、不完整。';
+
+  @override
+  String get restoreXUnsupported => '此备份由更新版本的 MorseCQ 创建。';
+
+  @override
+  String get restoreXCheck => '打开备份';
+
+  @override
+  String get restoreXPreviewTitle => '备份内容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '创建于 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '包含';
+
+  @override
+  String get restoreXExcluded => '不在此备份中';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条未发送的消息将恢复供你查看，不会自动发送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '旧设备上的 $count 条未发送消息不在此备份中。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => '身份密码';
+
+  @override
+  String get restoreXIdentityPasswordNote => '此备份中的身份另设有密码，请一并输入。';
+
+  @override
+  String get restoreXConfirmTitle => '替换本机上的身份？';
+
+  @override
+  String get restoreXConfirmBody => '本机上的身份和数据将被备份替换。在此连接之前，请先停止在旧设备上使用该身份。';
+
+  @override
+  String get restoreXConfirm => '替换并恢复';
+
+  @override
+  String get restoreXReportTitle => '恢复完成';
+
+  @override
+  String get restoreXReportRestored => '已恢复';
+
+  @override
+  String get restoreXReportNotIncluded => '未恢复';
+
+  @override
+  String get restoreXReportPrefsFailed => '偏好设置未能应用，已保留原有设置。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 条未发送的消息在“聊天”中等你查看。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '旧设备上的 $count 条未发送消息未被带过来。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个排队中的群邀请未重新发送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '请停止在旧设备上使用此身份。';
+
+  @override
+  String get restoreXReportDone => '完成';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '来自旧设备的 $count 条未发送消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未发送的消息';
+
+  @override
+  String get pendingReviewBody => '这些消息在旧设备上等待发送。MorseCQ 绝不会自动发送；如仍需要，请重新拍发。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '于 $time 在旧设备上排队';
+  }
+
+  @override
+  String get pendingReviewDismiss => '忽略';
+
+  @override
+  String get pendingReviewDismissAll => '全部忽略';
+
+  @override
+  String get pendingReviewEmpty => '没有需要查看的内容了。';
+
+  @override
+  String get backupXWizardInside => '备份文件会用你自选的口令整体加密，包含身份密钥和训练进度。请把文件和口令保存在本机以外的安全位置。';
+
+  @override
+  String get backupXMeSubtitle => '包含身份、聊天和进度的加密文件，可留存或迁移到其他设备';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7070,4 +7324,258 @@ class SZhHant extends SZh {
 
   @override
   String get diagDetailError => '最近錯誤代碼';
+
+  @override
+  String get backupXTitle => '加密備份';
+
+  @override
+  String get backupXIntro => '選擇要帶到其他裝置的內容。整個檔案都會用你在此設定的通關密語加密。';
+
+  @override
+  String get backupXCategoryIdentity => '身分與 Tox 設定檔';
+
+  @override
+  String get backupXCategoryTraining => '訓練進度與素材';
+
+  @override
+  String get backupXCategoryChat => '聊天紀錄（含給自己的筆記）';
+
+  @override
+  String get backupXCategoryMeta => '草稿、置頂與書籤';
+
+  @override
+  String get backupXCategoryPrefs => '應用程式偏好設定';
+
+  @override
+  String get backupXPrefsHint => '播放、通知、外觀與語言。不含視窗位置與按鍵綁定。';
+
+  @override
+  String get backupXCategoryMedia => '已儲存的錄音';
+
+  @override
+  String get backupXMediaHint => '預設不包含：錄音可能很大。不包含時只帶走標題與備註。';
+
+  @override
+  String get backupXCategoryPending => '未傳送的訊息';
+
+  @override
+  String get backupXPendingHint => '還原後僅供查看，絕不會自動傳送。';
+
+  @override
+  String get backupXRequired => '必選';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 項',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '太大，無法包含（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 個等待離線好友的群組邀請不會被帶走。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => '身分密碼仍保留在設定檔上：新裝置除備份通關密語外還會要求輸入它。';
+
+  @override
+  String backupXTotal(String size) {
+    return '總計約 $size';
+  }
+
+  @override
+  String get backupXPassphrase => '備份通關密語';
+
+  @override
+  String get backupXPassphraseConfirm => '再次輸入通關密語';
+
+  @override
+  String get backupXPassphraseHint => '至少 8 個字元。它與身分密碼相互獨立，且無法找回。';
+
+  @override
+  String get backupXPassphraseTooShort => '請至少使用 8 個字元';
+
+  @override
+  String get backupXPassphraseMismatch => '兩次輸入的通關密語不一致';
+
+  @override
+  String get backupXExport => '建立加密備份';
+
+  @override
+  String get backupXExporting => '正在建立備份…';
+
+  @override
+  String get backupXMigrationNote => '要換裝置？在新裝置還原後，請停止在本機使用此身分：同一身分的兩台裝置可能把同一則訊息傳送兩次。';
+
+  @override
+  String get backupXBusy => '備份過程中資料持續變化，請重試。';
+
+  @override
+  String get backupXTooLarge => '備份太大。請去掉錄音後重試。';
+
+  @override
+  String get restoreXWrongPassphrase => '通關密語錯誤，或檔案已被修改、不完整。';
+
+  @override
+  String get restoreXUnsupported => '此備份由更新版本的 MorseCQ 建立。';
+
+  @override
+  String get restoreXCheck => '開啟備份';
+
+  @override
+  String get restoreXPreviewTitle => '備份內容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '建立於 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '包含';
+
+  @override
+  String get restoreXExcluded => '不在此備份中';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 則未傳送的訊息將還原供你查看，不會自動傳送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '舊裝置上的 $count 則未傳送訊息不在此備份中。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => '身分密碼';
+
+  @override
+  String get restoreXIdentityPasswordNote => '此備份中的身分另設有密碼，請一併輸入。';
+
+  @override
+  String get restoreXConfirmTitle => '取代本機上的身分？';
+
+  @override
+  String get restoreXConfirmBody => '本機上的身分與資料將被備份取代。在此連線之前，請先停止在舊裝置上使用該身分。';
+
+  @override
+  String get restoreXConfirm => '取代並還原';
+
+  @override
+  String get restoreXReportTitle => '還原完成';
+
+  @override
+  String get restoreXReportRestored => '已還原';
+
+  @override
+  String get restoreXReportNotIncluded => '未還原';
+
+  @override
+  String get restoreXReportPrefsFailed => '偏好設定未能套用，已保留原有設定。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 則未傳送的訊息在「聊天」中等你查看。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '舊裝置上的 $count 則未傳送訊息未被帶過來。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 個排隊中的群組邀請未重新傳送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '請停止在舊裝置上使用此身分。';
+
+  @override
+  String get restoreXReportDone => '完成';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '來自舊裝置的 $count 則未傳送訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未傳送的訊息';
+
+  @override
+  String get pendingReviewBody => '這些訊息在舊裝置上等待傳送。MorseCQ 絕不會自動傳送；如仍需要，請重新拍發。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '於 $time 在舊裝置上排隊';
+  }
+
+  @override
+  String get pendingReviewDismiss => '忽略';
+
+  @override
+  String get pendingReviewDismissAll => '全部忽略';
+
+  @override
+  String get pendingReviewEmpty => '沒有需要查看的內容了。';
+
+  @override
+  String get backupXWizardInside => '備份檔案會用你自選的通關密語整體加密，包含身分金鑰與訓練進度。請把檔案與通關密語保存在本機以外的安全位置。';
+
+  @override
+  String get backupXMeSubtitle => '包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置';
 }

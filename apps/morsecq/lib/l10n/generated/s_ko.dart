@@ -3536,4 +3536,258 @@ class SKo extends S {
 
   @override
   String get diagDetailError => '마지막 오류 코드';
+
+  @override
+  String get backupXTitle => '암호화 백업';
+
+  @override
+  String get backupXIntro => '다른 기기로 가져갈 항목을 고르세요. 파일 전체가 여기서 정한 암호 문구로 암호화됩니다.';
+
+  @override
+  String get backupXCategoryIdentity => 'ID와 Tox 프로필';
+
+  @override
+  String get backupXCategoryTraining => '연습 진도와 자료';
+
+  @override
+  String get backupXCategoryChat => '채팅 기록(나에게 쓴 메모 포함)';
+
+  @override
+  String get backupXCategoryMeta => '임시 저장, 고정, 북마크';
+
+  @override
+  String get backupXCategoryPrefs => '앱 환경설정';
+
+  @override
+  String get backupXPrefsHint => '재생, 알림, 모양, 언어. 창 위치나 키 할당은 포함하지 않습니다.';
+
+  @override
+  String get backupXCategoryMedia => '저장한 녹음';
+
+  @override
+  String get backupXMediaHint => '기본값은 꺼짐: 녹음은 클 수 있습니다. 제외하면 제목과 메모만 옮겨집니다.';
+
+  @override
+  String get backupXCategoryPending => '보내지 않은 메시지';
+
+  @override
+  String get backupXPendingHint => '검토용으로만 돌아오며 자동으로 전송되지 않습니다.';
+
+  @override
+  String get backupXRequired => '필수';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '${size}KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '${size}MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '너무 커서 포함할 수 없음($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '오프라인 친구를 기다리는 그룹 초대 $count건은 옮겨지지 않습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'ID 비밀번호는 프로필에 그대로 남습니다. 새 기기에서 백업 암호 문구와 함께 물어봅니다.';
+
+  @override
+  String backupXTotal(String size) {
+    return '합계 약 $size';
+  }
+
+  @override
+  String get backupXPassphrase => '백업 암호 문구';
+
+  @override
+  String get backupXPassphraseConfirm => '암호 문구 다시 입력';
+
+  @override
+  String get backupXPassphraseHint => '8자 이상. ID 비밀번호와 별개이며 복구할 수 없습니다.';
+
+  @override
+  String get backupXPassphraseTooShort => '8자 이상 입력하세요';
+
+  @override
+  String get backupXPassphraseMismatch => '암호 문구가 일치하지 않습니다';
+
+  @override
+  String get backupXExport => '암호화 백업 만들기';
+
+  @override
+  String get backupXExporting => '백업 만드는 중…';
+
+  @override
+  String get backupXMigrationNote => '기기를 옮기시나요? 새 기기에서 복원한 뒤에는 이 기기에서 이 ID를 쓰지 마세요. 같은 ID를 쓰는 기기가 둘이면 같은 메시지가 두 번 전송될 수 있습니다.';
+
+  @override
+  String get backupXBusy => '백업하는 동안 데이터가 계속 바뀌었습니다. 다시 시도하세요.';
+
+  @override
+  String get backupXTooLarge => '백업이 너무 큽니다. 녹음을 빼고 다시 시도하세요.';
+
+  @override
+  String get restoreXWrongPassphrase => '암호 문구가 틀렸거나 파일이 변경되었거나 불완전합니다.';
+
+  @override
+  String get restoreXUnsupported => '이 백업은 더 새로운 버전의 MorseCQ로 만들어졌습니다.';
+
+  @override
+  String get restoreXCheck => '백업 열기';
+
+  @override
+  String get restoreXPreviewTitle => '백업 내용';
+
+  @override
+  String restoreXCreated(String date) {
+    return '만든 시각 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '포함됨';
+
+  @override
+  String get restoreXExcluded => '이 백업에 없음';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '보내지 않은 메시지 $count개가 검토용으로 돌아옵니다. 자동으로 전송되지 않습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '이전 기기의 보내지 않은 메시지 $count개는 이 백업에 없습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'ID 비밀번호';
+
+  @override
+  String get restoreXIdentityPasswordNote => '이 백업의 ID에는 별도 비밀번호가 있습니다. 함께 입력하세요.';
+
+  @override
+  String get restoreXConfirmTitle => '이 기기의 ID를 바꿀까요?';
+
+  @override
+  String get restoreXConfirmBody => '이 기기의 ID와 데이터가 백업으로 바뀝니다. 여기서 연결하기 전에 이전 기기에서 이 ID 사용을 멈추세요.';
+
+  @override
+  String get restoreXConfirm => '바꾸고 복원';
+
+  @override
+  String get restoreXReportTitle => '복원 완료';
+
+  @override
+  String get restoreXReportRestored => '복원됨';
+
+  @override
+  String get restoreXReportNotIncluded => '복원되지 않음';
+
+  @override
+  String get restoreXReportPrefsFailed => '환경설정을 적용하지 못했습니다. 이전 설정이 유지됩니다.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '보내지 않은 메시지 $count개가 채팅에서 검토를 기다리고 있습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '이전 기기의 보내지 않은 메시지 $count개는 옮겨지지 않았습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '대기 중이던 그룹 초대 $count건은 다시 보내지 않았습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '이전 기기에서는 이 ID를 더 이상 쓰지 마세요.';
+
+  @override
+  String get restoreXReportDone => '완료';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '이전 기기의 보내지 않은 메시지 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '보내지 않은 메시지';
+
+  @override
+  String get pendingReviewBody => '이전 기기에서 전송을 기다리던 메시지입니다. MorseCQ는 자동으로 보내지 않습니다. 아직 필요하면 다시 키잉하세요.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '이전 기기에서 $time에 대기열에 추가됨';
+  }
+
+  @override
+  String get pendingReviewDismiss => '닫기';
+
+  @override
+  String get pendingReviewDismissAll => '모두 닫기';
+
+  @override
+  String get pendingReviewEmpty => '더 검토할 항목이 없습니다.';
+
+  @override
+  String get backupXWizardInside => '백업 파일은 직접 정한 암호 문구로 통째로 암호화되며 ID 키와 연습 진도를 담습니다. 파일과 암호 문구를 이 기기 밖의 안전한 곳에 보관하세요.';
+
+  @override
+  String get backupXMeSubtitle => 'ID, 채팅, 진도를 담은 암호화 파일. 보관하거나 다른 기기로 옮길 때 사용';
 }

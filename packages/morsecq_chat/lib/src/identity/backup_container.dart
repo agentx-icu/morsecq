@@ -32,10 +32,24 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 /// training data is not secret. Paths are validated on decode (no `..`, no
 /// absolute paths, no backslashes) so a hostile archive cannot escape the
 /// identity root on restore.
+///
+/// Version 2 is the same layout used only as the *inner* archive of an
+/// encrypted backup (`backup_envelope.dart`), adding a private
+/// `manifest.json` and the chat / metadata / preference / pending entries
+/// listed in `backup_snapshot.dart`. A bare v2 container is never accepted
+/// as a legacy backup.
 class BackupContainer {
-  BackupContainer({required this.entries, required this.profileEncrypted});
+  BackupContainer({
+    required this.entries,
+    required this.profileEncrypted,
+    this.formatVersion = version,
+  });
 
   static const int version = 1;
+  static const int innerVersion = 2;
+
+  /// Most entries a container may declare; real ones hold a few hundred.
+  static const int maxEntries = 100000;
   static const List<int> magic = [0x4D, 0x43, 0x51, 0x42]; // "MCQB"
   static const String identityEntry = 'identity.json';
   static const String profileEntry = 'tox_profile.tox';
@@ -45,6 +59,7 @@ class BackupContainer {
   /// Archive path → bytes, in insertion order.
   final Map<String, Uint8List> entries;
   final bool profileEncrypted;
+  final int formatVersion;
 
   Uint8List? get profile => entries[profileEntry];
   Uint8List? get identity => entries[identityEntry];
@@ -62,7 +77,7 @@ class BackupContainer {
   Uint8List encode() {
     final out = BytesBuilder(copy: false);
     out.add(magic);
-    out.addByte(version);
+    out.addByte(formatVersion);
     out.addByte(profileEncrypted ? 1 : 0);
     out.add(_u32(entries.length));
     for (final e in entries.entries) {
@@ -78,10 +93,14 @@ class BackupContainer {
     return out.toBytes();
   }
 
-  /// Largest archive [decode] accepts; real ones are a few hundred KB.
-  static const int maxBytes = 64 * 1024 * 1024;
+  /// Largest archive [decode] accepts. Real ones are a few hundred KB, but
+  /// opt-in recordings may add up to [BackupMedia.maxBytes].
+  static const int maxBytes = maxBackupFileBytes;
 
-  static BackupContainer decode(Uint8List bytes) {
+  /// Decodes a legacy (v1) backup, or with [inner] the v2 archive found
+  /// inside an encrypted envelope. Duplicate paths, unsafe paths, entry
+  /// counts above [maxEntries] and trailing bytes are rejected.
+  static BackupContainer decode(Uint8List bytes, {bool inner = false}) {
     const invalid = ChatException('invalid_backup', 'Not a morsecq backup');
     if (bytes.length < 10 || bytes.length > maxBytes) throw invalid;
     for (var i = 0; i < 4; i++) {
@@ -89,7 +108,7 @@ class BackupContainer {
     }
     final data = ByteData.sublistView(bytes);
     final ver = data.getUint8(4);
-    if (ver != version) {
+    if (ver != (inner ? innerVersion : version)) {
       throw ChatException(
         'unsupported_backup_version',
         'Backup version $ver is newer than this app supports',
@@ -97,6 +116,7 @@ class BackupContainer {
     }
     final flags = data.getUint8(5);
     final count = data.getUint32(6, Endian.big);
+    if (count > maxEntries) throw invalid;
     var offset = 10;
     final entries = <String, Uint8List>{};
     for (var i = 0; i < count; i++) {
@@ -119,10 +139,20 @@ class BackupContainer {
       if (!isSafeArchivePath(path)) {
         throw ChatException('invalid_backup', 'Unsafe entry path: $path');
       }
+      if (entries.containsKey(path)) {
+        throw ChatException('invalid_backup', 'Duplicate entry: $path');
+      }
       entries[path] = Uint8List.sublistView(bytes, offset, offset + size);
       offset += size;
     }
-    return BackupContainer(entries: entries, profileEncrypted: flags & 1 == 1);
+    // A v2 archive is sealed whole, so trailing bytes there mean tampering
+    // by the writer; v1 files keep the lenient reading they always had.
+    if (inner && offset != bytes.length) throw invalid;
+    return BackupContainer(
+      entries: entries,
+      profileEncrypted: flags & 1 == 1,
+      formatVersion: ver,
+    );
   }
 
   /// Relative, '/'-separated, no empty / `.` / `..` segments, no backslashes.

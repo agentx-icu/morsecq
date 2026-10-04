@@ -3536,4 +3536,258 @@ class SJa extends S {
 
   @override
   String get diagDetailError => '最後のエラーコード';
+
+  @override
+  String get backupXTitle => '暗号化バックアップ';
+
+  @override
+  String get backupXIntro => '別の端末へ持っていく内容を選んでください。ファイル全体が、ここで設定するパスフレーズで暗号化されます。';
+
+  @override
+  String get backupXCategoryIdentity => 'ID と Tox プロファイル';
+
+  @override
+  String get backupXCategoryTraining => '練習の進捗と教材';
+
+  @override
+  String get backupXCategoryChat => 'チャット履歴（自分用メモを含む）';
+
+  @override
+  String get backupXCategoryMeta => '下書き・ピン留め・ブックマーク';
+
+  @override
+  String get backupXCategoryPrefs => 'アプリの設定';
+
+  @override
+  String get backupXPrefsHint => '再生・通知・外観・言語。ウィンドウ位置やキー割り当ては含みません。';
+
+  @override
+  String get backupXCategoryMedia => '保存した録音';
+
+  @override
+  String get backupXMediaHint => '既定ではオフ：録音は大きくなることがあります。含めない場合はタイトルとメモだけが移ります。';
+
+  @override
+  String get backupXCategoryPending => '未送信のメッセージ';
+
+  @override
+  String get backupXPendingHint => '確認用として戻るだけで、自動送信されることはありません。';
+
+  @override
+  String get backupXRequired => '必須';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '大きすぎて含められません（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オフラインの友だち宛てに待機中のグループ招待 $count 件は引き継がれません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'ID のパスワードはプロファイルに残ります。新しい端末ではバックアップのパスフレーズに加えて入力が必要です。';
+
+  @override
+  String backupXTotal(String size) {
+    return '合計 約 $size';
+  }
+
+  @override
+  String get backupXPassphrase => 'バックアップのパスフレーズ';
+
+  @override
+  String get backupXPassphraseConfirm => 'パスフレーズを再入力';
+
+  @override
+  String get backupXPassphraseHint => '8 文字以上。ID のパスワードとは別のもので、再発行はできません。';
+
+  @override
+  String get backupXPassphraseTooShort => '8 文字以上にしてください';
+
+  @override
+  String get backupXPassphraseMismatch => 'パスフレーズが一致しません';
+
+  @override
+  String get backupXExport => '暗号化バックアップを作成';
+
+  @override
+  String get backupXExporting => 'バックアップを作成中…';
+
+  @override
+  String get backupXMigrationNote => '端末を移行しますか？向こうで復元したら、この端末ではこの ID を使わないでください。同じ ID の端末が 2 台あると、同じメッセージが二重に送られることがあります。';
+
+  @override
+  String get backupXBusy => 'バックアップ中にデータが変化し続けました。もう一度お試しください。';
+
+  @override
+  String get backupXTooLarge => 'バックアップが大きすぎます。録音を除外してもう一度お試しください。';
+
+  @override
+  String get restoreXWrongPassphrase => 'パスフレーズが違うか、ファイルが改変・欠損しています。';
+
+  @override
+  String get restoreXUnsupported => 'このバックアップは新しいバージョンの MorseCQ で作成されています。';
+
+  @override
+  String get restoreXCheck => 'バックアップを開く';
+
+  @override
+  String get restoreXPreviewTitle => 'バックアップの内容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '作成日時 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '含まれるもの';
+
+  @override
+  String get restoreXExcluded => 'このバックアップにないもの';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未送信のメッセージ $count 件が確認用に戻ります。自動送信はされません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末にある未送信のメッセージ $count 件はこのバックアップに含まれていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'ID のパスワード';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'このバックアップの ID には独自のパスワードがあります。あわせて入力してください。';
+
+  @override
+  String get restoreXConfirmTitle => 'この端末の ID を置き換えますか？';
+
+  @override
+  String get restoreXConfirmBody => 'この端末の ID とデータはバックアップで置き換えられます。ここで接続する前に、以前の端末でこの ID を使うのをやめてください。';
+
+  @override
+  String get restoreXConfirm => '置き換えて復元';
+
+  @override
+  String get restoreXReportTitle => '復元が完了しました';
+
+  @override
+  String get restoreXReportRestored => '復元したもの';
+
+  @override
+  String get restoreXReportNotIncluded => '復元しなかったもの';
+
+  @override
+  String get restoreXReportPrefsFailed => '設定を適用できませんでした。以前の設定のままです。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未送信のメッセージ $count 件がチャットで確認を待っています。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末の未送信メッセージ $count 件は引き継がれていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '待機中のグループ招待 $count 件は再送されていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '以前の端末ではこの ID を使わないでください。';
+
+  @override
+  String get restoreXReportDone => '完了';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末の未送信メッセージ $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未送信のメッセージ';
+
+  @override
+  String get pendingReviewBody => '以前の端末で送信を待っていたメッセージです。MorseCQ が自動で送ることはありません。まだ必要なら打ち直してください。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '以前の端末で $time に送信待ち';
+  }
+
+  @override
+  String get pendingReviewDismiss => '破棄';
+
+  @override
+  String get pendingReviewDismissAll => 'すべて破棄';
+
+  @override
+  String get pendingReviewEmpty => '確認するものはもうありません。';
+
+  @override
+  String get backupXWizardInside => 'バックアップファイルは自分で決めたパスフレーズでまるごと暗号化され、ID の鍵と練習の進捗を含みます。ファイルとパスフレーズは、この端末以外の安全な場所に保管してください。';
+
+  @override
+  String get backupXMeSubtitle => 'ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも';
 }
