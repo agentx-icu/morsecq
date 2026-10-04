@@ -72,7 +72,11 @@ the guest progress).
   replies checked slot by slot, AGN/QRS); sending **rhythm timelines** with
   replay and targeted practice; a skippable **placement check**; **My
   materials** (own texts, word lists, callsigns; TXT/JSON import and export;
-  16-bit WAV export).
+  16-bit WAV export). Receive practice under simulated **radio conditions**
+  (Clear / Light interference / Radio practice: seeded noise, fading, a nearby
+  station, slightly uneven timing; kept apart from clean statistics) and
+  **Chinese telegraph code** practice (copying four-digit groups by ear, and
+  mainland / Taiwan codebook recall with its own statistics).
 - **Radio tools** — from the Reference tab: Maidenhead locator with distance
   and beam heading, band edges per IARU region with wavelength and antenna
   lengths, CW speed calculator, RST report builder and a UTC clock
@@ -92,13 +96,25 @@ the guest progress).
   practised as a copy exercise or saved as training material; a listen-only
   mode hides text and dots/dashes. History search with filters, jump to a
   result, local bookmarks, cancelling a still-queued send and retrying a
-  failed one (same message, no duplicate bubble).
+  failed one (same message, no duplicate bubble). Four-digit groups can be
+  interpreted as Chinese telegraph code on request (all candidates shown,
+  nothing converted automatically). **Connection diagnostics** explain why
+  messages are waiting: own connection, the contact's presence, the durable
+  outbox, and a reconnect that never resends or discards anything.
 - **Groups** — create, invite and join by chat_id (Tox NGC groups), group
-  Morse messages, member list, automatic re-join after restart.
+  Morse messages, member list, automatic re-join after restart. **Group
+  practice** sessions: the instructor keys exercises in the chat as usual;
+  each member copies them locally at their own speed (nothing is sent).
 - **Reference** — alphabet, punctuation, prosigns, Q-codes and CW
   abbreviations, plus a two-way text ↔ Morse translator that shares the
   playback settings.
-- **Me** — identity backup/restore (encrypted `.tox` + QR), training settings,
+- **Me** — complete **encrypted backup** and device migration (one passphrase
+  seals the whole file; choose identity, training, chat history, drafts and
+  bookmarks, preferences, recordings, unsent messages; restore shows a preview
+  and a report, unsent messages come back for review only), legacy `.tox`
+  backups still restore, **keys and external keyers** (bindings for keyboard-
+  emulating USB key/paddle adapters, paddle swap, adapter keyer, sidetone),
+  training settings,
   statistics (accuracy trends, character grid, confusion heat-map, practice
   calendar), language, notifications and about (shows which backend is live).
 - **Notifications** — local notifications for chat events (with a Morse

@@ -32,6 +32,12 @@ top (today that is the Chinese original of the plan document and the English
 
 ## Plans (方案)
 
+- [plans/2026-10-04-additional-functional-improvements-handoff.md](plans/2026-10-04-additional-functional-improvements-handoff.md) /
+  [zh-CN](plans/2026-10-04-additional-functional-improvements-handoff.zh-CN.md) — English-first
+  handoff and implementation record for six additional features (F09–F14): connection
+  diagnostics, complete encrypted migration, radio-condition training, external keys,
+  Chinese telegraph codes, and group practice; with acceptance criteria, decisions and
+  the verification that was and was not done.
 - [plans/2026-10-03-functional-improvements.md](plans/2026-10-03-functional-improvements.md) /
   [zh-CN](plans/2026-10-03-functional-improvements.zh-CN.md) — Detailed specifications and AI
   handoff for eight proposed features: daily plans, interactive QSO, chat practice,
