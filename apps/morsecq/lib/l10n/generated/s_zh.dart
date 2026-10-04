@@ -3402,6 +3402,140 @@ class SZh extends S {
 
   @override
   String get accountBackupMediaSkip => '不含录音';
+
+  @override
+  String get diagTitle => '连接诊断';
+
+  @override
+  String get diagOpenSubtitle => '消息为何在等待，以及如何重新连接';
+
+  @override
+  String get diagBannerDetails => '详情';
+
+  @override
+  String get diagSummaryNoIdentity => '尚未打开身份，没有可检查的连接。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => '你已连接到 Tox 网络，且该联系人在线。消息会直接送达对方。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '你已连接，但该联系人离线。消息会留在本机的待发队列中，对方上线后自动发送。';
+
+  @override
+  String get diagSummaryOnline => '你已连接到 Tox 网络。';
+
+  @override
+  String get diagSummaryConnecting => '正在连接 Tox 网络。应用启动或网络切换后可能需要一分钟左右。';
+
+  @override
+  String get diagSummaryOffline => '你未连接到 Tox 网络。连接恢复前无法收发任何消息。';
+
+  @override
+  String get diagLocalLabel => '本机连接';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '自 $time 起';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '自 $time 起观察到';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '自 $time 回到应用后观察到';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最近一次观察到的连接';
+
+  @override
+  String get diagLastOnlineNow => '当前已连接';
+
+  @override
+  String get diagLastOnlineNone => '尚未观察到连接。';
+
+  @override
+  String get diagLastOnlineHint => '这是本机最后一次观察到自身连接的时间，并非消息送达对方的时间。';
+
+  @override
+  String get diagPeerLabel => '联系人';
+
+  @override
+  String get diagUnknown => '未知';
+
+  @override
+  String get diagPeerUnknownHint => '只有在你已连接时才能看到联系人是否在线。';
+
+  @override
+  String get diagPeerGroupHint => '群成员是否在线请查看成员列表。';
+
+  @override
+  String get diagPendingLabel => '待发送';
+
+  @override
+  String get diagPendingNone => '没有待发消息';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最早一条排队于 $time';
+  }
+
+  @override
+  String get diagPendingUnknown => '聊天连接后才能得知';
+
+  @override
+  String get diagPendingHint => '排队的消息保存在本机，对方可达时会自动发送。诊断页面不会丢弃或重发它们。';
+
+  @override
+  String get diagReconnect => '重新连接';
+
+  @override
+  String get diagReconnecting => '正在重新连接…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '重新连接失败：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '重新连接会重新发起连接尝试。上线仍可能需要一段时间，届时本页会自动更新。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ 如何连接';
+
+  @override
+  String get diagAboutBody => 'MorseCQ 没有服务器。你的设备通过 Tox 点对点网络直接与联系人通信，因此双方必须同时在线消息才能送达。手机会暂停后台应用：MorseCQ 在后台无法保持连接，回到应用时会重新连接。';
+
+  @override
+  String get diagDetailsTitle => '技术详情';
+
+  @override
+  String get diagDetailIdentity => '身份';
+
+  @override
+  String get diagDetailStatus => '状态';
+
+  @override
+  String get diagDetailObserved => '观察时间';
+
+  @override
+  String get diagDetailQueued => '队列条目';
+
+  @override
+  String get diagDetailError => '最近错误代码';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6802,4 +6936,138 @@ class SZhHant extends SZh {
 
   @override
   String get accountBackupMediaSkip => '不含錄音';
+
+  @override
+  String get diagTitle => '連線診斷';
+
+  @override
+  String get diagOpenSubtitle => '訊息為何在等待，以及如何重新連線';
+
+  @override
+  String get diagBannerDetails => '詳情';
+
+  @override
+  String get diagSummaryNoIdentity => '尚未開啟身分，沒有可檢查的連線。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => '你已連線到 Tox 網路，且該聯絡人在線。訊息會直接送達對方。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '你已連線，但該聯絡人離線。訊息會留在本機的待發佇列中，對方上線後自動傳送。';
+
+  @override
+  String get diagSummaryOnline => '你已連線到 Tox 網路。';
+
+  @override
+  String get diagSummaryConnecting => '正在連線 Tox 網路。應用程式啟動或網路切換後可能需要一分鐘左右。';
+
+  @override
+  String get diagSummaryOffline => '你未連線到 Tox 網路。連線恢復前無法收發任何訊息。';
+
+  @override
+  String get diagLocalLabel => '本機連線';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '自 $time 起';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '自 $time 起觀察到';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '自 $time 回到應用程式後觀察到';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最近一次觀察到的連線';
+
+  @override
+  String get diagLastOnlineNow => '目前已連線';
+
+  @override
+  String get diagLastOnlineNone => '尚未觀察到連線。';
+
+  @override
+  String get diagLastOnlineHint => '這是本機最後一次觀察到自身連線的時間，並非訊息送達對方的時間。';
+
+  @override
+  String get diagPeerLabel => '聯絡人';
+
+  @override
+  String get diagUnknown => '未知';
+
+  @override
+  String get diagPeerUnknownHint => '只有在你已連線時才能看到聯絡人是否在線。';
+
+  @override
+  String get diagPeerGroupHint => '群組成員是否在線請查看成員列表。';
+
+  @override
+  String get diagPendingLabel => '待傳送';
+
+  @override
+  String get diagPendingNone => '沒有待傳訊息';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 則訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最早一則排隊於 $time';
+  }
+
+  @override
+  String get diagPendingUnknown => '聊天連線後才能得知';
+
+  @override
+  String get diagPendingHint => '排隊的訊息保存在本機，對方可達時會自動傳送。診斷頁面不會捨棄或重送它們。';
+
+  @override
+  String get diagReconnect => '重新連線';
+
+  @override
+  String get diagReconnecting => '正在重新連線…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '重新連線失敗：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '重新連線會重新發起連線嘗試。上線仍可能需要一段時間，屆時本頁會自動更新。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ 如何連線';
+
+  @override
+  String get diagAboutBody => 'MorseCQ 沒有伺服器。你的裝置透過 Tox 點對點網路直接與聯絡人通訊，因此雙方必須同時在線訊息才能送達。手機會暫停背景應用程式：MorseCQ 在背景無法保持連線，回到應用程式時會重新連線。';
+
+  @override
+  String get diagDetailsTitle => '技術詳情';
+
+  @override
+  String get diagDetailIdentity => '身分';
+
+  @override
+  String get diagDetailStatus => '狀態';
+
+  @override
+  String get diagDetailObserved => '觀察時間';
+
+  @override
+  String get diagDetailQueued => '佇列項目';
+
+  @override
+  String get diagDetailError => '最近錯誤代碼';
 }

@@ -6025,6 +6025,240 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Without recordings'**
   String get accountBackupMediaSkip;
+
+  /// Connection diagnostics page title; also the menu / Me entry that opens it
+  ///
+  /// In en, this message translates to:
+  /// **'Connection diagnostics'**
+  String get diagTitle;
+
+  /// Me page: subtitle of the Connection diagnostics entry
+  ///
+  /// In en, this message translates to:
+  /// **'Why messages are waiting and how to reconnect'**
+  String get diagOpenSubtitle;
+
+  /// Offline banner: button that opens Connection diagnostics
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get diagBannerDetails;
+
+  /// Diagnostics summary when no identity is open
+  ///
+  /// In en, this message translates to:
+  /// **'No identity is open, so there is no connection to inspect.'**
+  String get diagSummaryNoIdentity;
+
+  /// Diagnostics summary: we are online and the selected contact is online
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected to the Tox network and this contact is online. Messages go straight to them.'**
+  String get diagSummaryOnlinePeerOnline;
+
+  /// Diagnostics summary: we are online but the selected contact is offline
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.'**
+  String get diagSummaryOnlinePeerOffline;
+
+  /// Diagnostics summary: we are online (no contact selected, or its state is unknown)
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected to the Tox network.'**
+  String get diagSummaryOnline;
+
+  /// Diagnostics summary while connecting
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to the Tox network. This can take a minute after the app starts or the network changes.'**
+  String get diagSummaryConnecting;
+
+  /// Diagnostics summary while offline
+  ///
+  /// In en, this message translates to:
+  /// **'You are not connected to the Tox network. Nothing can be sent or received until the connection is back.'**
+  String get diagSummaryOffline;
+
+  /// Diagnostics: label of the local connection state row
+  ///
+  /// In en, this message translates to:
+  /// **'Your connection'**
+  String get diagLocalLabel;
+
+  /// Diagnostics: when the current state was observed to start
+  ///
+  /// In en, this message translates to:
+  /// **'Since {time}'**
+  String diagSinceChanged(String time);
+
+  /// Diagnostics: the state was first observed at this time (no change seen yet)
+  ///
+  /// In en, this message translates to:
+  /// **'Observed since {time}'**
+  String diagSinceFirst(String time);
+
+  /// Diagnostics: observation restarted when the app returned from the background
+  ///
+  /// In en, this message translates to:
+  /// **'Observed since returning to the app at {time}'**
+  String diagSinceResumed(String time);
+
+  /// Diagnostics: label of the last observed local connection row
+  ///
+  /// In en, this message translates to:
+  /// **'Last connection observed'**
+  String get diagLastOnlineLabel;
+
+  /// Diagnostics: we are connected right now
+  ///
+  /// In en, this message translates to:
+  /// **'Connected now'**
+  String get diagLastOnlineNow;
+
+  /// Diagnostics: no local connection has been observed for this identity yet
+  ///
+  /// In en, this message translates to:
+  /// **'No connection observed yet.'**
+  String get diagLastOnlineNone;
+
+  /// Diagnostics: explains that the last-connection time is local, not a delivery time
+  ///
+  /// In en, this message translates to:
+  /// **'When this device last saw its own connection. It is not when a message reached anyone.'**
+  String get diagLastOnlineHint;
+
+  /// Diagnostics: label of the selected contact's state row
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get diagPeerLabel;
+
+  /// Diagnostics: a fact that cannot be observed right now
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get diagUnknown;
+
+  /// Diagnostics: why the contact state is unknown
+  ///
+  /// In en, this message translates to:
+  /// **'A contact\'s presence can only be seen while you are connected.'**
+  String get diagPeerUnknownHint;
+
+  /// Diagnostics: group conversations have no single contact state
+  ///
+  /// In en, this message translates to:
+  /// **'Group members\' presence is shown in the member list.'**
+  String get diagPeerGroupHint;
+
+  /// Diagnostics: label of the durable outbox row
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to send'**
+  String get diagPendingLabel;
+
+  /// Diagnostics: the outbox is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing waiting'**
+  String get diagPendingNone;
+
+  /// Diagnostics: number of queued messages
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message} other{{count} messages}}'**
+  String diagPendingCount(int count);
+
+  /// Diagnostics: enqueue time of the oldest queued message
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest queued {time}'**
+  String diagPendingOldest(String time);
+
+  /// Diagnostics: the outbox cannot be read right now (chat not connected)
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown until chat is connected'**
+  String get diagPendingUnknown;
+
+  /// Diagnostics: queued messages are kept and never resent or discarded by diagnostics
+  ///
+  /// In en, this message translates to:
+  /// **'Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.'**
+  String get diagPendingHint;
+
+  /// Diagnostics: reconnect button
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get diagReconnect;
+
+  /// Diagnostics: reconnect in progress
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting…'**
+  String get diagReconnecting;
+
+  /// Diagnostics: the reconnect attempt failed; reason is a localized error
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect failed: {reason}'**
+  String diagReconnectFailed(String reason);
+
+  /// Diagnostics: a finished reconnect does not mean online
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.'**
+  String get diagReconnectNote;
+
+  /// Diagnostics: heading of the P2P explanation
+  ///
+  /// In en, this message translates to:
+  /// **'How MorseCQ connects'**
+  String get diagAboutTitle;
+
+  /// Diagnostics: P2P and mobile background explanation
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.'**
+  String get diagAboutBody;
+
+  /// Diagnostics: expandable technical details
+  ///
+  /// In en, this message translates to:
+  /// **'Technical details'**
+  String get diagDetailsTitle;
+
+  /// Diagnostics details: identity key prefix
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get diagDetailIdentity;
+
+  /// Diagnostics details: raw connection status
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get diagDetailStatus;
+
+  /// Diagnostics details: when this snapshot was taken
+  ///
+  /// In en, this message translates to:
+  /// **'Observed at'**
+  String get diagDetailObserved;
+
+  /// Diagnostics details: raw queue count
+  ///
+  /// In en, this message translates to:
+  /// **'Queue entries'**
+  String get diagDetailQueued;
+
+  /// Diagnostics details: last reconnect error code
+  ///
+  /// In en, this message translates to:
+  /// **'Last error code'**
+  String get diagDetailError;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

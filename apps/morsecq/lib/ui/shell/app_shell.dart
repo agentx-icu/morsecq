@@ -18,6 +18,7 @@ import '../pages/learn_page.dart';
 import '../pages/me_page.dart';
 import '../pages/reference_page.dart';
 import '../account/guest_widgets.dart';
+import '../diagnostics/connection_diagnostics_page.dart';
 import '../responsive.dart';
 import 'shell_router.dart';
 
@@ -303,6 +304,14 @@ class _OfflineBanner extends StatelessWidget {
                   context.s.shellOfflineBanner,
                   style: TextStyle(color: scheme.onErrorContainer),
                 ),
+              ),
+              TextButton(
+                key: const ValueKey('offline-banner-details'),
+                style: TextButton.styleFrom(
+                  foregroundColor: scheme.onErrorContainer,
+                ),
+                onPressed: () => ConnectionDiagnosticsPage.open(context),
+                child: Text(context.s.diagBannerDetails),
               ),
             ],
           ),

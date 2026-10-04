@@ -331,6 +331,8 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
         await _leaveGroup();
       case 'search':
         await _search();
+      case 'connection':
+        await ConnectionDiagnosticsPage.open(context, conversationId: _id);
       case 'clear':
         await _clearHistory();
       case 'listenOnly':

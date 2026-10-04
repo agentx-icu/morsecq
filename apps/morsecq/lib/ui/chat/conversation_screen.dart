@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../notifications/notification_center.dart';
+import '../diagnostics/connection_diagnostics_page.dart';
 import '../groups/group_members_sheet.dart';
 import 'chat_layout.dart';
 import 'conversation_actions.dart';

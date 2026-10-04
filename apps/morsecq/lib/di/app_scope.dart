@@ -3,6 +3,7 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../desktop/desktop_shell_controller.dart';
+import '../diagnostics/connection_diagnostics.dart';
 import '../i18n/key_value_store.dart';
 import '../i18n/locale_controller.dart';
 import '../lifecycle/app_lifecycle_coordinator.dart';
@@ -30,8 +31,9 @@ import 'backend_factory.dart';
 /// Provided: [IdentityService], [ChatService], [BackupFileGateway],
 /// [AppSettings], [StartupController], [LocaleController],
 /// [MorsePlaybackSettings], [AppLifecycleCoordinator],
-/// [ConnectionBannerPolicy], [NotificationPrefs], and — when `main()` supplies
-/// them — [NotificationCenter] and [DesktopShellController] (nullable).
+/// [ConnectionBannerPolicy], [ConnectionDiagnostics], [NotificationPrefs],
+/// and — when `main()` supplies them — [NotificationCenter] and
+/// [DesktopShellController] (nullable).
 class AppScope extends StatefulWidget {
   const AppScope({
     super.key,
@@ -106,6 +108,11 @@ class _AppScopeState extends State<AppScope> {
     notificationPrefs: _preferences.notifications,
     onBackground: _flushSettings,
     backgroundTasks: widget.backgroundTasks,
+    // The startup controller owns connect(): its error is the chip's too.
+    reconnect: () async {
+      await _startup.reconnect();
+      return _startup.connectionError;
+    },
     desktopShell: widget.desktopShell,
   );
 
@@ -169,6 +176,9 @@ class _AppScopeState extends State<AppScope> {
         ),
         Provider<AppLifecycleCoordinator>.value(value: _services.lifecycle),
         Provider<ConnectionBannerPolicy>.value(value: _services.banner),
+        ChangeNotifierProvider<ConnectionDiagnostics>.value(
+          value: _services.diagnostics,
+        ),
         ChangeNotifierProvider<NotificationPrefs>.value(
           value: _services.notificationPrefs,
         ),

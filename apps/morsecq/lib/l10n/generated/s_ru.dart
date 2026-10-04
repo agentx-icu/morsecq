@@ -3477,4 +3477,141 @@ class SRu extends S {
 
   @override
   String get accountBackupMediaSkip => 'Без записей';
+
+  @override
+  String get diagTitle => 'Диагностика подключения';
+
+  @override
+  String get diagOpenSubtitle => 'Почему сообщения ждут отправки и как переподключиться';
+
+  @override
+  String get diagBannerDetails => 'Подробнее';
+
+  @override
+  String get diagSummaryNoIdentity => 'Личность не открыта, поэтому проверять нечего.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Вы подключены к сети Tox, и этот контакт в сети. Сообщения доходят напрямую.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => 'Вы подключены, но этот контакт не в сети. Сообщения ждут в исходящих на этом устройстве и отправятся, когда контакт появится в сети.';
+
+  @override
+  String get diagSummaryOnline => 'Вы подключены к сети Tox.';
+
+  @override
+  String get diagSummaryConnecting => 'Подключение к сети Tox. После запуска или смены сети это может занять минуту.';
+
+  @override
+  String get diagSummaryOffline => 'Вы не подключены к сети Tox. Пока соединение не восстановится, ничего нельзя отправить или получить.';
+
+  @override
+  String get diagLocalLabel => 'Ваше подключение';
+
+  @override
+  String diagSinceChanged(String time) {
+    return 'С $time';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return 'Наблюдается с $time';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return 'Наблюдается с возврата в приложение в $time';
+  }
+
+  @override
+  String get diagLastOnlineLabel => 'Последнее замеченное подключение';
+
+  @override
+  String get diagLastOnlineNow => 'Подключено сейчас';
+
+  @override
+  String get diagLastOnlineNone => 'Подключение ещё не наблюдалось.';
+
+  @override
+  String get diagLastOnlineHint => 'Когда это устройство последний раз видело собственное подключение. Это не время доставки сообщения.';
+
+  @override
+  String get diagPeerLabel => 'Контакт';
+
+  @override
+  String get diagUnknown => 'Неизвестно';
+
+  @override
+  String get diagPeerUnknownHint => 'Присутствие контакта видно, только пока вы подключены.';
+
+  @override
+  String get diagPeerGroupHint => 'Присутствие участников группы показано в списке участников.';
+
+  @override
+  String get diagPendingLabel => 'Ожидают отправки';
+
+  @override
+  String get diagPendingNone => 'Ничего не ожидает';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщения',
+      many: '$count сообщений',
+      few: '$count сообщения',
+      one: '$count сообщение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return 'Самое старое — с $time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'Неизвестно, пока чат не подключён';
+
+  @override
+  String get diagPendingHint => 'Сообщения в очереди хранятся на этом устройстве и отправятся сами, когда контакт станет доступен. Диагностика никогда их не удаляет и не отправляет повторно.';
+
+  @override
+  String get diagReconnect => 'Переподключиться';
+
+  @override
+  String get diagReconnecting => 'Переподключение…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return 'Не удалось переподключиться: $reason';
+  }
+
+  @override
+  String get diagReconnectNote => 'Переподключение заново запускает попытку соединения. Выход в сеть всё равно может занять время; страница обновится, когда это произойдёт.';
+
+  @override
+  String get diagAboutTitle => 'Как подключается MorseCQ';
+
+  @override
+  String get diagAboutBody => 'У MorseCQ нет сервера. Устройство общается с контактами напрямую через одноранговую сеть Tox, поэтому для доставки сообщения вы оба должны быть в сети одновременно. Телефоны приостанавливают фоновые приложения: там MorseCQ не может оставаться на связи и переподключается, когда вы возвращаетесь.';
+
+  @override
+  String get diagDetailsTitle => 'Технические подробности';
+
+  @override
+  String get diagDetailIdentity => 'Личность';
+
+  @override
+  String get diagDetailStatus => 'Статус';
+
+  @override
+  String get diagDetailObserved => 'Время наблюдения';
+
+  @override
+  String get diagDetailQueued => 'Записей в очереди';
+
+  @override
+  String get diagDetailError => 'Последний код ошибки';
 }

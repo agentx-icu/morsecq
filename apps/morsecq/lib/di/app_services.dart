@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../desktop/desktop_shell_controller.dart';
+import '../diagnostics/connection_diagnostics.dart';
 import '../i18n/locale_controller.dart';
 import '../i18n/strings_resolver.dart';
 import '../lifecycle/app_lifecycle_coordinator.dart';
@@ -43,6 +44,7 @@ final class AppServices {
     NotificationPrefs? notificationPrefs,
     Future<void> Function()? onBackground,
     BackgroundTaskApi? backgroundTasks,
+    Future<Object?> Function()? reconnect,
     this.desktopShell,
   }) : lifecycle = AppLifecycleCoordinator(
          identity: identity,
@@ -57,6 +59,12 @@ final class AppServices {
        _chat = chat,
        _identity = identity,
        _onBackground = onBackground {
+    diagnostics = ConnectionDiagnostics(
+      identity: identity,
+      chat: chat,
+      lifecycleHints: lifecycle.hints,
+      reconnect: reconnect,
+    );
     final apis = notificationApis;
     notifications = apis == null
         ? null
@@ -76,6 +84,9 @@ final class AppServices {
   final Future<void> Function()? _onBackground;
   final AppLifecycleCoordinator lifecycle;
   final ConnectionBannerPolicy banner;
+
+  /// Per-identity connection observations for the diagnostics page (F09).
+  late final ConnectionDiagnostics diagnostics;
   final NotificationPrefs notificationPrefs;
   final bool _ownsNotificationPrefs;
   final DesktopShellController? desktopShell;
@@ -96,6 +107,7 @@ final class AppServices {
     _started = true;
     lifecycle.attach();
     banner.start();
+    diagnostics.start();
     final center = notifications;
     if (center != null) unawaited(center.start());
     // Language changes reach the tray (desktop) and the Android channel
@@ -159,6 +171,7 @@ final class AppServices {
       banner.dispose(),
       lifecycle.dispose(),
     ];
+    diagnostics.dispose();
     if (_ownsNotificationPrefs) notificationPrefs.dispose();
     await Future.wait(pending);
   }

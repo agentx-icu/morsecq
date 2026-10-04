@@ -17,6 +17,7 @@ import '../account/edit_profile_page.dart';
 import '../account/identity_card.dart';
 import '../appearance/appearance_page.dart';
 import '../appearance/style_labels.dart';
+import '../diagnostics/connection_diagnostics_page.dart';
 
 /// Profile, account, progress and settings.
 class MePage extends StatelessWidget {
@@ -106,6 +107,14 @@ class _MeBody extends StatelessWidget {
             subtitle: Text(s.accountExportBackupSubtitle),
             onTap: () => exportBackupWithFeedback(context, anchor: tile),
           ),
+        ),
+        ListTile(
+          key: const ValueKey('me-connection-diagnostics'),
+          leading: const Icon(Icons.network_check),
+          title: Text(s.diagTitle),
+          subtitle: Text(s.diagOpenSubtitle),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => ConnectionDiagnosticsPage.open(context),
         ),
         _SectionHeader(s.accountSectionTraining),
         ListTile(

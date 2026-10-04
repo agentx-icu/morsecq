@@ -3402,4 +3402,138 @@ class SKo extends S {
 
   @override
   String get accountBackupMediaSkip => '녹음 없이';
+
+  @override
+  String get diagTitle => '연결 진단';
+
+  @override
+  String get diagOpenSubtitle => '메시지가 대기 중인 이유와 다시 연결하는 방법';
+
+  @override
+  String get diagBannerDetails => '자세히';
+
+  @override
+  String get diagSummaryNoIdentity => '열린 ID가 없어 확인할 연결이 없습니다.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Tox 네트워크에 연결되어 있고 이 연락처도 온라인입니다. 메시지가 바로 전달됩니다.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '연결되어 있지만 이 연락처는 오프라인입니다. 메시지는 이 기기의 보낼 편지함에서 기다리다가 상대가 온라인이 되면 전송됩니다.';
+
+  @override
+  String get diagSummaryOnline => 'Tox 네트워크에 연결되어 있습니다.';
+
+  @override
+  String get diagSummaryConnecting => 'Tox 네트워크에 연결하는 중입니다. 앱 시작 직후나 네트워크가 바뀐 뒤에는 1분 정도 걸릴 수 있습니다.';
+
+  @override
+  String get diagSummaryOffline => 'Tox 네트워크에 연결되어 있지 않습니다. 연결이 돌아올 때까지 아무것도 주고받을 수 없습니다.';
+
+  @override
+  String get diagLocalLabel => '내 연결';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '$time부터';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '$time부터 관찰됨';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '$time에 앱으로 돌아온 뒤부터 관찰됨';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '마지막으로 확인된 연결';
+
+  @override
+  String get diagLastOnlineNow => '지금 연결됨';
+
+  @override
+  String get diagLastOnlineNone => '아직 확인된 연결이 없습니다.';
+
+  @override
+  String get diagLastOnlineHint => '이 기기가 자신의 연결을 마지막으로 확인한 시각입니다. 메시지가 상대에게 도착한 시각이 아닙니다.';
+
+  @override
+  String get diagPeerLabel => '연락처';
+
+  @override
+  String get diagUnknown => '알 수 없음';
+
+  @override
+  String get diagPeerUnknownHint => '연락처의 접속 여부는 내가 연결되어 있을 때만 볼 수 있습니다.';
+
+  @override
+  String get diagPeerGroupHint => '그룹 멤버의 접속 여부는 멤버 목록에 표시됩니다.';
+
+  @override
+  String get diagPendingLabel => '전송 대기';
+
+  @override
+  String get diagPendingNone => '대기 중인 메시지 없음';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '메시지 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '가장 오래된 메시지: $time';
+  }
+
+  @override
+  String get diagPendingUnknown => '채팅이 연결될 때까지 알 수 없음';
+
+  @override
+  String get diagPendingHint => '대기 중인 메시지는 이 기기에 남아 있다가 상대에게 닿을 수 있을 때 자동으로 전송됩니다. 진단은 메시지를 삭제하거나 다시 보내지 않습니다.';
+
+  @override
+  String get diagReconnect => '다시 연결';
+
+  @override
+  String get diagReconnecting => '다시 연결하는 중…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '다시 연결하지 못했습니다: $reason';
+  }
+
+  @override
+  String get diagReconnectNote => '다시 연결하면 연결 시도를 새로 시작합니다. 온라인이 되기까지 시간이 걸릴 수 있으며, 그때 이 페이지가 갱신됩니다.';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ의 연결 방식';
+
+  @override
+  String get diagAboutBody => 'MorseCQ에는 서버가 없습니다. 기기가 Tox P2P 네트워크로 연락처와 직접 통신하므로, 메시지가 도착하려면 양쪽이 동시에 온라인이어야 합니다. 휴대폰은 백그라운드 앱을 일시 중지하므로 그동안 MorseCQ는 연결을 유지할 수 없고, 돌아오면 다시 연결합니다.';
+
+  @override
+  String get diagDetailsTitle => '기술 세부 정보';
+
+  @override
+  String get diagDetailIdentity => 'ID';
+
+  @override
+  String get diagDetailStatus => '상태';
+
+  @override
+  String get diagDetailObserved => '관찰 시각';
+
+  @override
+  String get diagDetailQueued => '대기열 항목';
+
+  @override
+  String get diagDetailError => '마지막 오류 코드';
 }

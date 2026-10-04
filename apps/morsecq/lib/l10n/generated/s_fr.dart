@@ -3430,4 +3430,139 @@ class SFr extends S {
 
   @override
   String get accountBackupMediaSkip => 'Sans les enregistrements';
+
+  @override
+  String get diagTitle => 'Diagnostic de connexion';
+
+  @override
+  String get diagOpenSubtitle => 'Pourquoi des messages attendent et comment se reconnecter';
+
+  @override
+  String get diagBannerDetails => 'Détails';
+
+  @override
+  String get diagSummaryNoIdentity => 'Aucune identité n\'est ouverte : il n\'y a pas de connexion à examiner.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Vous êtes connecté au réseau Tox et ce contact est en ligne. Les messages lui parviennent directement.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => 'Vous êtes connecté, mais ce contact est hors ligne. Les messages attendent dans la boîte d\'envoi de cet appareil et partent dès que le contact revient en ligne.';
+
+  @override
+  String get diagSummaryOnline => 'Vous êtes connecté au réseau Tox.';
+
+  @override
+  String get diagSummaryConnecting => 'Connexion au réseau Tox en cours. Cela peut prendre une minute après le démarrage ou un changement de réseau.';
+
+  @override
+  String get diagSummaryOffline => 'Vous n\'êtes pas connecté au réseau Tox. Rien ne peut être envoyé ni reçu tant que la connexion n\'est pas rétablie.';
+
+  @override
+  String get diagLocalLabel => 'Votre connexion';
+
+  @override
+  String diagSinceChanged(String time) {
+    return 'Depuis $time';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return 'Observé depuis $time';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return 'Observé depuis le retour dans l\'app à $time';
+  }
+
+  @override
+  String get diagLastOnlineLabel => 'Dernière connexion observée';
+
+  @override
+  String get diagLastOnlineNow => 'Connecté maintenant';
+
+  @override
+  String get diagLastOnlineNone => 'Aucune connexion observée pour l\'instant.';
+
+  @override
+  String get diagLastOnlineHint => 'Moment où cet appareil a vu sa propre connexion pour la dernière fois. Ce n\'est pas l\'heure de réception d\'un message.';
+
+  @override
+  String get diagPeerLabel => 'Contact';
+
+  @override
+  String get diagUnknown => 'Inconnu';
+
+  @override
+  String get diagPeerUnknownHint => 'La présence d\'un contact n\'est visible que lorsque vous êtes connecté.';
+
+  @override
+  String get diagPeerGroupHint => 'La présence des membres est indiquée dans la liste des membres.';
+
+  @override
+  String get diagPendingLabel => 'En attente d\'envoi';
+
+  @override
+  String get diagPendingNone => 'Rien en attente';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '1 message',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return 'La plus ancienne, en attente depuis $time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'Inconnu tant que le chat n\'est pas connecté';
+
+  @override
+  String get diagPendingHint => 'Les messages en attente restent sur cet appareil et partent automatiquement quand le contact est joignable. Le diagnostic ne les supprime ni ne les renvoie jamais.';
+
+  @override
+  String get diagReconnect => 'Se reconnecter';
+
+  @override
+  String get diagReconnecting => 'Reconnexion…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return 'Échec de la reconnexion : $reason';
+  }
+
+  @override
+  String get diagReconnectNote => 'La reconnexion relance la tentative de connexion. La mise en ligne peut encore prendre du temps ; cette page se met à jour à ce moment-là.';
+
+  @override
+  String get diagAboutTitle => 'Comment MorseCQ se connecte';
+
+  @override
+  String get diagAboutBody => 'MorseCQ n\'a pas de serveur. Votre appareil communique directement avec vos contacts via le réseau pair-à-pair Tox : vous devez être en ligne en même temps pour qu\'un message arrive. Les téléphones mettent les apps en pause en arrière-plan : MorseCQ ne peut pas y rester connecté et se reconnecte à votre retour.';
+
+  @override
+  String get diagDetailsTitle => 'Détails techniques';
+
+  @override
+  String get diagDetailIdentity => 'Identité';
+
+  @override
+  String get diagDetailStatus => 'État';
+
+  @override
+  String get diagDetailObserved => 'Observé à';
+
+  @override
+  String get diagDetailQueued => 'Entrées en file';
+
+  @override
+  String get diagDetailError => 'Dernier code d\'erreur';
 }

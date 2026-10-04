@@ -218,6 +218,14 @@ class ConversationActions extends StatelessWidget {
               checked: settings.listenOnly,
               child: Text(s.chatListenOnly),
             ),
+            PopupMenuItem(
+              value: 'connection',
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.network_check),
+                title: Text(s.diagTitle),
+              ),
+            ),
             PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
             if (isGroup)
               PopupMenuItem(value: 'leave', child: Text(s.chatLeaveGroup)),

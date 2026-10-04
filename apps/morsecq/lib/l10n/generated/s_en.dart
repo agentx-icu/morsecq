@@ -3428,4 +3428,139 @@ class SEn extends S {
 
   @override
   String get accountBackupMediaSkip => 'Without recordings';
+
+  @override
+  String get diagTitle => 'Connection diagnostics';
+
+  @override
+  String get diagOpenSubtitle => 'Why messages are waiting and how to reconnect';
+
+  @override
+  String get diagBannerDetails => 'Details';
+
+  @override
+  String get diagSummaryNoIdentity => 'No identity is open, so there is no connection to inspect.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'You are connected to the Tox network and this contact is online. Messages go straight to them.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => 'You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.';
+
+  @override
+  String get diagSummaryOnline => 'You are connected to the Tox network.';
+
+  @override
+  String get diagSummaryConnecting => 'Connecting to the Tox network. This can take a minute after the app starts or the network changes.';
+
+  @override
+  String get diagSummaryOffline => 'You are not connected to the Tox network. Nothing can be sent or received until the connection is back.';
+
+  @override
+  String get diagLocalLabel => 'Your connection';
+
+  @override
+  String diagSinceChanged(String time) {
+    return 'Since $time';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return 'Observed since $time';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return 'Observed since returning to the app at $time';
+  }
+
+  @override
+  String get diagLastOnlineLabel => 'Last connection observed';
+
+  @override
+  String get diagLastOnlineNow => 'Connected now';
+
+  @override
+  String get diagLastOnlineNone => 'No connection observed yet.';
+
+  @override
+  String get diagLastOnlineHint => 'When this device last saw its own connection. It is not when a message reached anyone.';
+
+  @override
+  String get diagPeerLabel => 'Contact';
+
+  @override
+  String get diagUnknown => 'Unknown';
+
+  @override
+  String get diagPeerUnknownHint => 'A contact\'s presence can only be seen while you are connected.';
+
+  @override
+  String get diagPeerGroupHint => 'Group members\' presence is shown in the member list.';
+
+  @override
+  String get diagPendingLabel => 'Waiting to send';
+
+  @override
+  String get diagPendingNone => 'Nothing waiting';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '1 message',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return 'Oldest queued $time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'Unknown until chat is connected';
+
+  @override
+  String get diagPendingHint => 'Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.';
+
+  @override
+  String get diagReconnect => 'Reconnect';
+
+  @override
+  String get diagReconnecting => 'Reconnecting…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return 'Reconnect failed: $reason';
+  }
+
+  @override
+  String get diagReconnectNote => 'Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.';
+
+  @override
+  String get diagAboutTitle => 'How MorseCQ connects';
+
+  @override
+  String get diagAboutBody => 'MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.';
+
+  @override
+  String get diagDetailsTitle => 'Technical details';
+
+  @override
+  String get diagDetailIdentity => 'Identity';
+
+  @override
+  String get diagDetailStatus => 'Status';
+
+  @override
+  String get diagDetailObserved => 'Observed at';
+
+  @override
+  String get diagDetailQueued => 'Queue entries';
+
+  @override
+  String get diagDetailError => 'Last error code';
 }

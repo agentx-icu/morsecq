@@ -4879,5 +4879,191 @@
   "accountBackupMediaSkip": "Without recordings",
   "@accountBackupMediaSkip": {
     "description": "Backup export: continue without recordings (default)"
+  },
+  "diagTitle": "Connection diagnostics",
+  "@diagTitle": {
+    "description": "Connection diagnostics page title; also the menu / Me entry that opens it"
+  },
+  "diagOpenSubtitle": "Why messages are waiting and how to reconnect",
+  "@diagOpenSubtitle": {
+    "description": "Me page: subtitle of the Connection diagnostics entry"
+  },
+  "diagBannerDetails": "Details",
+  "@diagBannerDetails": {
+    "description": "Offline banner: button that opens Connection diagnostics"
+  },
+  "diagSummaryNoIdentity": "No identity is open, so there is no connection to inspect.",
+  "@diagSummaryNoIdentity": {
+    "description": "Diagnostics summary when no identity is open"
+  },
+  "diagSummaryOnlinePeerOnline": "You are connected to the Tox network and this contact is online. Messages go straight to them.",
+  "@diagSummaryOnlinePeerOnline": {
+    "description": "Diagnostics summary: we are online and the selected contact is online"
+  },
+  "diagSummaryOnlinePeerOffline": "You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.",
+  "@diagSummaryOnlinePeerOffline": {
+    "description": "Diagnostics summary: we are online but the selected contact is offline"
+  },
+  "diagSummaryOnline": "You are connected to the Tox network.",
+  "@diagSummaryOnline": {
+    "description": "Diagnostics summary: we are online (no contact selected, or its state is unknown)"
+  },
+  "diagSummaryConnecting": "Connecting to the Tox network. This can take a minute after the app starts or the network changes.",
+  "@diagSummaryConnecting": {
+    "description": "Diagnostics summary while connecting"
+  },
+  "diagSummaryOffline": "You are not connected to the Tox network. Nothing can be sent or received until the connection is back.",
+  "@diagSummaryOffline": {
+    "description": "Diagnostics summary while offline"
+  },
+  "diagLocalLabel": "Your connection",
+  "@diagLocalLabel": {
+    "description": "Diagnostics: label of the local connection state row"
+  },
+  "diagSinceChanged": "Since {time}",
+  "@diagSinceChanged": {
+    "description": "Diagnostics: when the current state was observed to start",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagSinceFirst": "Observed since {time}",
+  "@diagSinceFirst": {
+    "description": "Diagnostics: the state was first observed at this time (no change seen yet)",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagSinceResumed": "Observed since returning to the app at {time}",
+  "@diagSinceResumed": {
+    "description": "Diagnostics: observation restarted when the app returned from the background",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagLastOnlineLabel": "Last connection observed",
+  "@diagLastOnlineLabel": {
+    "description": "Diagnostics: label of the last observed local connection row"
+  },
+  "diagLastOnlineNow": "Connected now",
+  "@diagLastOnlineNow": {
+    "description": "Diagnostics: we are connected right now"
+  },
+  "diagLastOnlineNone": "No connection observed yet.",
+  "@diagLastOnlineNone": {
+    "description": "Diagnostics: no local connection has been observed for this identity yet"
+  },
+  "diagLastOnlineHint": "When this device last saw its own connection. It is not when a message reached anyone.",
+  "@diagLastOnlineHint": {
+    "description": "Diagnostics: explains that the last-connection time is local, not a delivery time"
+  },
+  "diagPeerLabel": "Contact",
+  "@diagPeerLabel": {
+    "description": "Diagnostics: label of the selected contact's state row"
+  },
+  "diagUnknown": "Unknown",
+  "@diagUnknown": {
+    "description": "Diagnostics: a fact that cannot be observed right now"
+  },
+  "diagPeerUnknownHint": "A contact's presence can only be seen while you are connected.",
+  "@diagPeerUnknownHint": {
+    "description": "Diagnostics: why the contact state is unknown"
+  },
+  "diagPeerGroupHint": "Group members' presence is shown in the member list.",
+  "@diagPeerGroupHint": {
+    "description": "Diagnostics: group conversations have no single contact state"
+  },
+  "diagPendingLabel": "Waiting to send",
+  "@diagPendingLabel": {
+    "description": "Diagnostics: label of the durable outbox row"
+  },
+  "diagPendingNone": "Nothing waiting",
+  "@diagPendingNone": {
+    "description": "Diagnostics: the outbox is empty"
+  },
+  "diagPendingCount": "{count, plural, =1{1 message} other{{count} messages}}",
+  "@diagPendingCount": {
+    "description": "Diagnostics: number of queued messages",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "diagPendingOldest": "Oldest queued {time}",
+  "@diagPendingOldest": {
+    "description": "Diagnostics: enqueue time of the oldest queued message",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagPendingUnknown": "Unknown until chat is connected",
+  "@diagPendingUnknown": {
+    "description": "Diagnostics: the outbox cannot be read right now (chat not connected)"
+  },
+  "diagPendingHint": "Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.",
+  "@diagPendingHint": {
+    "description": "Diagnostics: queued messages are kept and never resent or discarded by diagnostics"
+  },
+  "diagReconnect": "Reconnect",
+  "@diagReconnect": {
+    "description": "Diagnostics: reconnect button"
+  },
+  "diagReconnecting": "Reconnecting…",
+  "@diagReconnecting": {
+    "description": "Diagnostics: reconnect in progress"
+  },
+  "diagReconnectFailed": "Reconnect failed: {reason}",
+  "@diagReconnectFailed": {
+    "description": "Diagnostics: the reconnect attempt failed; reason is a localized error",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "diagReconnectNote": "Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.",
+  "@diagReconnectNote": {
+    "description": "Diagnostics: a finished reconnect does not mean online"
+  },
+  "diagAboutTitle": "How MorseCQ connects",
+  "@diagAboutTitle": {
+    "description": "Diagnostics: heading of the P2P explanation"
+  },
+  "diagAboutBody": "MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.",
+  "@diagAboutBody": {
+    "description": "Diagnostics: P2P and mobile background explanation"
+  },
+  "diagDetailsTitle": "Technical details",
+  "@diagDetailsTitle": {
+    "description": "Diagnostics: expandable technical details"
+  },
+  "diagDetailIdentity": "Identity",
+  "@diagDetailIdentity": {
+    "description": "Diagnostics details: identity key prefix"
+  },
+  "diagDetailStatus": "Status",
+  "@diagDetailStatus": {
+    "description": "Diagnostics details: raw connection status"
+  },
+  "diagDetailObserved": "Observed at",
+  "@diagDetailObserved": {
+    "description": "Diagnostics details: when this snapshot was taken"
+  },
+  "diagDetailQueued": "Queue entries",
+  "@diagDetailQueued": {
+    "description": "Diagnostics details: raw queue count"
+  },
+  "diagDetailError": "Last error code",
+  "@diagDetailError": {
+    "description": "Diagnostics details: last reconnect error code"
   }
 }

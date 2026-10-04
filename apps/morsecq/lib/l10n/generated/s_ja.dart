@@ -3402,4 +3402,138 @@ class SJa extends S {
 
   @override
   String get accountBackupMediaSkip => '録音なし';
+
+  @override
+  String get diagTitle => '接続の診断';
+
+  @override
+  String get diagOpenSubtitle => 'メッセージが待機している理由と再接続の方法';
+
+  @override
+  String get diagBannerDetails => '詳細';
+
+  @override
+  String get diagSummaryNoIdentity => 'ID が開かれていないため、確認できる接続はありません。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Tox ネットワークに接続済みで、この連絡先もオンラインです。メッセージは直接届きます。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '接続済みですが、この連絡先はオフラインです。メッセージはこの端末の送信待ちに残り、相手がオンラインになると送信されます。';
+
+  @override
+  String get diagSummaryOnline => 'Tox ネットワークに接続しています。';
+
+  @override
+  String get diagSummaryConnecting => 'Tox ネットワークに接続中です。起動直後やネットワーク変更後は 1 分ほどかかることがあります。';
+
+  @override
+  String get diagSummaryOffline => 'Tox ネットワークに接続していません。接続が戻るまで送受信はできません。';
+
+  @override
+  String get diagLocalLabel => 'この端末の接続';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '$time から';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '$time から観測';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '$time にアプリへ戻ってから観測';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最後に確認した接続';
+
+  @override
+  String get diagLastOnlineNow => '現在接続中';
+
+  @override
+  String get diagLastOnlineNone => 'まだ接続を確認していません。';
+
+  @override
+  String get diagLastOnlineHint => 'この端末が自分の接続を最後に確認した時刻です。メッセージが相手に届いた時刻ではありません。';
+
+  @override
+  String get diagPeerLabel => '連絡先';
+
+  @override
+  String get diagUnknown => '不明';
+
+  @override
+  String get diagPeerUnknownHint => '連絡先の在席状態は、自分が接続しているときだけ確認できます。';
+
+  @override
+  String get diagPeerGroupHint => 'グループメンバーの在席状態はメンバー一覧に表示されます。';
+
+  @override
+  String get diagPendingLabel => '送信待ち';
+
+  @override
+  String get diagPendingNone => '待機中のメッセージはありません';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のメッセージ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最も古いもの：$time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'チャットが接続されるまで不明';
+
+  @override
+  String get diagPendingHint => '送信待ちのメッセージはこの端末に保存され、相手に届く状態になると自動で送信されます。診断で削除や再送をすることはありません。';
+
+  @override
+  String get diagReconnect => '再接続';
+
+  @override
+  String get diagReconnecting => '再接続中…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '再接続に失敗しました：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '再接続は接続の試行をやり直します。オンラインになるまで時間がかかることがあり、そのときはこのページが更新されます。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ の接続のしくみ';
+
+  @override
+  String get diagAboutBody => 'MorseCQ にはサーバーがありません。端末は Tox のピアツーピアネットワークで連絡先と直接通信するため、メッセージが届くには双方が同時にオンラインである必要があります。スマートフォンはバックグラウンドのアプリを一時停止するので、その間 MorseCQ は接続を保てず、戻ったときに再接続します。';
+
+  @override
+  String get diagDetailsTitle => '技術的な詳細';
+
+  @override
+  String get diagDetailIdentity => 'ID';
+
+  @override
+  String get diagDetailStatus => '状態';
+
+  @override
+  String get diagDetailObserved => '観測時刻';
+
+  @override
+  String get diagDetailQueued => 'キューの件数';
+
+  @override
+  String get diagDetailError => '最後のエラーコード';
 }

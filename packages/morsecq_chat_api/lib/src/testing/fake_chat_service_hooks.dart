@@ -182,6 +182,18 @@ extension _FakeGroups on FakeChatService {
     return group;
   }
 
+  /// Normalised [chatId], or `invalid_chat_id` unless it is 64 hex chars.
+  String _requireValidChatId(String chatId) {
+    final String id = chatId.trim().toUpperCase();
+    if (!FakeChatService.isValidChatId(id)) {
+      throw const ChatException(
+        'invalid_chat_id',
+        'Chat id must be 64 hex chars',
+      );
+    }
+    return id;
+  }
+
   Group _requireGroup(String groupId) {
     final Group? group = _groups[groupId];
     if (group == null) {

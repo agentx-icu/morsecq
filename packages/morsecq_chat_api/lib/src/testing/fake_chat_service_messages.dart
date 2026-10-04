@@ -4,7 +4,7 @@ part of 'fake_chat_service.dart';
 /// part file keeps the service under the 500-line gate while still
 /// implementing the [ChatService] members; the abstract members below are
 /// the service's own private state.
-mixin _FakeMessageManagement implements ChatService {
+mixin _FakeMessageManagement implements ChatService, OutboxInspector {
   Map<String, List<ChatMessage>> get _messages;
   Map<String, Conversation> get _conversations;
   Map<String, Friend> get _friends;
@@ -13,6 +13,29 @@ mixin _FakeMessageManagement implements ChatService {
 
   /// Like history, every operation here needs a live session.
   void _requireSession();
+
+  /// The fake keeps every row, so its "durable queue" is our pending rows
+  /// across the whole history (not one loaded page). Null without a session,
+  /// like the transport whose queue is unloaded while detached.
+  @override
+  PendingOutboxSummary? pendingOutbox({String? conversationId}) {
+    if (!hasSession) return null;
+    final Iterable<List<ChatMessage>> lists = conversationId == null
+        ? _messages.values
+        : [_messages[conversationId] ?? const <ChatMessage>[]];
+    final Set<String> ids = <String>{};
+    DateTime? oldest;
+    for (final List<ChatMessage> list in lists) {
+      for (final ChatMessage m in list) {
+        if (!m.isMine || m.status != MessageStatus.pending) continue;
+        if (!ids.add(m.id)) continue;
+        if (oldest == null || m.timestamp.isBefore(oldest)) {
+          oldest = m.timestamp;
+        }
+      }
+    }
+    return PendingOutboxSummary(count: ids.length, oldest: oldest);
+  }
 
   @override
   Future<MessageSearchPage> searchMessages(

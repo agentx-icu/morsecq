@@ -3430,4 +3430,139 @@ class SPt extends S {
 
   @override
   String get accountBackupMediaSkip => 'Sem gravações';
+
+  @override
+  String get diagTitle => 'Diagnóstico de conexão';
+
+  @override
+  String get diagOpenSubtitle => 'Por que há mensagens aguardando e como reconectar';
+
+  @override
+  String get diagBannerDetails => 'Detalhes';
+
+  @override
+  String get diagSummaryNoIdentity => 'Nenhuma identidade está aberta, então não há conexão para verificar.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Você está conectado à rede Tox e este contato está online. As mensagens chegam diretamente.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => 'Você está conectado, mas este contato está offline. As mensagens aguardam na caixa de saída deste dispositivo e são enviadas quando o contato ficar online.';
+
+  @override
+  String get diagSummaryOnline => 'Você está conectado à rede Tox.';
+
+  @override
+  String get diagSummaryConnecting => 'Conectando à rede Tox. Pode levar um minuto após iniciar o app ou trocar de rede.';
+
+  @override
+  String get diagSummaryOffline => 'Você não está conectado à rede Tox. Nada pode ser enviado ou recebido até a conexão voltar.';
+
+  @override
+  String get diagLocalLabel => 'Sua conexão';
+
+  @override
+  String diagSinceChanged(String time) {
+    return 'Desde $time';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return 'Observado desde $time';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return 'Observado desde a volta ao app às $time';
+  }
+
+  @override
+  String get diagLastOnlineLabel => 'Última conexão observada';
+
+  @override
+  String get diagLastOnlineNow => 'Conectado agora';
+
+  @override
+  String get diagLastOnlineNone => 'Nenhuma conexão observada ainda.';
+
+  @override
+  String get diagLastOnlineHint => 'Quando este dispositivo viu sua própria conexão pela última vez. Não é quando uma mensagem chegou a alguém.';
+
+  @override
+  String get diagPeerLabel => 'Contato';
+
+  @override
+  String get diagUnknown => 'Desconhecido';
+
+  @override
+  String get diagPeerUnknownHint => 'A presença de um contato só pode ser vista enquanto você está conectado.';
+
+  @override
+  String get diagPeerGroupHint => 'A presença dos membros aparece na lista de membros.';
+
+  @override
+  String get diagPendingLabel => 'Aguardando envio';
+
+  @override
+  String get diagPendingNone => 'Nada aguardando';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensagens',
+      one: '1 mensagem',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return 'A mais antiga, na fila desde $time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'Desconhecido até o chat conectar';
+
+  @override
+  String get diagPendingHint => 'As mensagens na fila ficam neste dispositivo e são enviadas automaticamente quando o contato estiver acessível. O diagnóstico nunca as descarta nem reenvia.';
+
+  @override
+  String get diagReconnect => 'Reconectar';
+
+  @override
+  String get diagReconnecting => 'Reconectando…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return 'Falha ao reconectar: $reason';
+  }
+
+  @override
+  String get diagReconnectNote => 'Reconectar reinicia a tentativa de conexão. Ainda pode demorar para ficar online; esta página é atualizada quando isso acontecer.';
+
+  @override
+  String get diagAboutTitle => 'Como o MorseCQ se conecta';
+
+  @override
+  String get diagAboutBody => 'O MorseCQ não tem servidor. Seu dispositivo fala diretamente com seus contatos pela rede ponto a ponto Tox, então ambos precisam estar online ao mesmo tempo para a mensagem chegar. Celulares pausam apps em segundo plano: ali o MorseCQ não consegue continuar conectado e reconecta quando você volta.';
+
+  @override
+  String get diagDetailsTitle => 'Detalhes técnicos';
+
+  @override
+  String get diagDetailIdentity => 'Identidade';
+
+  @override
+  String get diagDetailStatus => 'Estado';
+
+  @override
+  String get diagDetailObserved => 'Observado em';
+
+  @override
+  String get diagDetailQueued => 'Itens na fila';
+
+  @override
+  String get diagDetailError => 'Último código de erro';
 }
