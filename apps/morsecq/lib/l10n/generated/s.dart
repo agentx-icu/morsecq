@@ -6631,6 +6631,84 @@ abstract class S {
   /// In en, this message translates to:
   /// **'An encrypted file with your identity, chats and progress, to keep or to move to another device'**
   String get backupXMeSubtitle;
+
+  /// Drill picker: heading of the channel conditions selector
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get conditionsTitle;
+
+  /// Conditions preset: clean tone (default)
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get conditionsClear;
+
+  /// Conditions preset: light interference
+  ///
+  /// In en, this message translates to:
+  /// **'Light interference'**
+  String get conditionsLight;
+
+  /// Conditions preset: realistic radio practice
+  ///
+  /// In en, this message translates to:
+  /// **'Radio practice'**
+  String get conditionsRadio;
+
+  /// Conditions preset hint: clear
+  ///
+  /// In en, this message translates to:
+  /// **'A clean, steady tone: ordinary practice.'**
+  String get conditionsClearHint;
+
+  /// Conditions preset hint: light
+  ///
+  /// In en, this message translates to:
+  /// **'Soft background noise and gentle fading. Results are kept apart from clean practice.'**
+  String get conditionsLightHint;
+
+  /// Conditions preset hint: radio practice
+  ///
+  /// In en, this message translates to:
+  /// **'Noise, deep fading, a nearby station and slightly uneven timing. Results are kept apart from clean practice.'**
+  String get conditionsRadioHint;
+
+  /// Drill picker: play a short sample under the chosen conditions
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get conditionsPreview;
+
+  /// Receive drill: chip naming the active conditions
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions: {name}'**
+  String conditionsActive(String name);
+
+  /// Receive drill: conditions need sound
+  ///
+  /// In en, this message translates to:
+  /// **'Radio conditions are heard, not seen: turn sound on in the training settings, or practise with Clear conditions.'**
+  String get conditionsNeedSound;
+
+  /// Round result: replay the round without effects
+  ///
+  /// In en, this message translates to:
+  /// **'Play without effects'**
+  String get conditionsCleanReplay;
+
+  /// Receive summary: results under the same conditions and speed
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attempt under these conditions at this speed: {accuracy}%} other{{count} attempts under these conditions at this speed: {accuracy}% on average}}'**
+  String conditionsComparable(int count, int accuracy);
+
+  /// Receive summary: conditions results do not change progress
+  ///
+  /// In en, this message translates to:
+  /// **'Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.'**
+  String get conditionsSeparateNote;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

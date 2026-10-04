@@ -1086,5 +1086,18 @@
   "pendingReviewDismissAll": "Descartar tudo",
   "pendingReviewEmpty": "Nada mais para revisar.",
   "backupXWizardInside": "O arquivo de backup é criptografado por inteiro com uma frase-senha escolhida por você e contém a chave da sua identidade e seu progresso. Guarde o arquivo e a frase em um lugar seguro, fora deste dispositivo.",
-  "backupXMeSubtitle": "Um arquivo criptografado com sua identidade, conversas e progresso, para guardar ou levar a outro dispositivo"
+  "backupXMeSubtitle": "Um arquivo criptografado com sua identidade, conversas e progresso, para guardar ou levar a outro dispositivo",
+  "conditionsTitle": "Condições",
+  "conditionsClear": "Limpo",
+  "conditionsLight": "Interferência leve",
+  "conditionsRadio": "Prática de rádio",
+  "conditionsClearHint": "Um tom limpo e estável: prática normal.",
+  "conditionsLightHint": "Ruído de fundo suave e desvanecimento leve. Os resultados ficam separados da prática limpa.",
+  "conditionsRadioHint": "Ruído, desvanecimento forte, uma estação vizinha e ritmo um pouco irregular. Os resultados ficam separados da prática limpa.",
+  "conditionsPreview": "Ouvir",
+  "conditionsActive": "Condições: {name}",
+  "conditionsNeedSound": "Condições de rádio se ouvem, não se veem: ative o som nos ajustes de treino ou pratique com condições limpas.",
+  "conditionsCleanReplay": "Tocar sem efeitos",
+  "conditionsComparable": "{count, plural, =1{1 tentativa nestas condições e velocidade: {accuracy}%} other{{count} tentativas nestas condições e velocidade: média de {accuracy}%}}",
+  "conditionsSeparateNote": "A prática com condições de rádio conta como atividade, mas não muda suas lições, revisões nem a recomendação de velocidade."
 }

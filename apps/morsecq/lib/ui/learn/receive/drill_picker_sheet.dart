@@ -1,62 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
+import '../conditions/conditions_playback.dart';
 
-/// Bottom sheet listing the receive drills the learned set supports.
+/// Bottom sheet listing the receive drills the learned set supports, with
+/// the channel conditions to play them under (F11; Clear by default, each
+/// preset previewable before starting).
 ///
 /// The list scrolls inside the sheet so a short phone screen (or a large
 /// text scale) never overflows as more drills unlock. Resolves to the picked
-/// kind, or null when dismissed.
-Future<ReceiveDrillKind?> showDrillPickerSheet(
+/// kind and preset, or null when dismissed.
+Future<(ReceiveDrillKind, RadioPreset)?> showDrillPickerSheet(
   BuildContext context,
-  List<ReceiveDrillKind> kinds,
-) => showModalBottomSheet<ReceiveDrillKind>(
+  List<ReceiveDrillKind> kinds, {
+  Future<void> Function(RadioPreset preset)? onPreview,
+}) => showModalBottomSheet<(ReceiveDrillKind, RadioPreset)>(
   context: context,
   showDragHandle: true,
   builder: (sheetContext) => SafeArea(
     child: DrillPickerList(
       kinds: kinds,
-      onPicked: (k) => Navigator.of(sheetContext).pop(k),
+      onPreview: onPreview,
+      onPicked: (k, preset) => Navigator.of(sheetContext).pop((k, preset)),
     ),
   ),
 );
 
 /// The scrollable content of [showDrillPickerSheet].
-class DrillPickerList extends StatelessWidget {
+class DrillPickerList extends StatefulWidget {
   const DrillPickerList({
     super.key,
     required this.kinds,
     required this.onPicked,
+    this.onPreview,
   });
 
   final List<ReceiveDrillKind> kinds;
-  final ValueChanged<ReceiveDrillKind> onPicked;
+  final void Function(ReceiveDrillKind kind, RadioPreset preset) onPicked;
+
+  /// Plays a short sample under a preset; null hides the preview button.
+  final Future<void> Function(RadioPreset preset)? onPreview;
 
   /// Key of the row for [kind], for tests and driving harnesses.
   static Key tileKey(ReceiveDrillKind kind) => Key('drill-${kind.name}');
 
+  /// Key of the conditions selector.
+  static const Key presetKey = Key('drill-conditions');
+
+  @override
+  State<DrillPickerList> createState() => _DrillPickerListState();
+}
+
+class _DrillPickerListState extends State<DrillPickerList> {
+  RadioPreset _preset = RadioPreset.clear;
+
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final theme = Theme.of(context);
+    final preview = widget.onPreview;
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Text(
-            s.learnChooseDrill,
-            style: Theme.of(context).textTheme.titleMedium,
+          child: Text(s.learnChooseDrill, style: theme.textTheme.titleMedium),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+          child: Text(s.conditionsTitle, style: theme.textTheme.titleSmall),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          // Chips wrap on a narrow phone or at a large text scale.
+          child: Wrap(
+            key: DrillPickerList.presetKey,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              for (final p in RadioPreset.values)
+                ChoiceChip(
+                  key: Key('drill-conditions-${p.name}'),
+                  label: Text(radioPresetLabel(s, p)),
+                  selected: _preset == p,
+                  onSelected: (_) => setState(() => _preset = p),
+                ),
+            ],
           ),
         ),
-        for (final k in kinds)
-          ListTile(
-            key: tileKey(k),
-            leading: Icon(drillIcon(k)),
-            title: Text(drillLabel(s, k)),
-            subtitle: Text(drillDescription(s, k)),
-            onTap: () => onPicked(k),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  radioPresetHint(s, _preset),
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
+              if (preview != null && _preset != RadioPreset.clear)
+                TextButton.icon(
+                  key: const Key('drill-conditions-preview'),
+                  onPressed: () => preview(_preset),
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(s.conditionsPreview),
+                ),
+            ],
           ),
+        ),
+        const SizedBox(height: 8),
+        for (final k in widget.kinds)
+          if (_preset == RadioPreset.clear || k != ReceiveDrillKind.review)
+            ListTile(
+              key: DrillPickerList.tileKey(k),
+              leading: Icon(drillIcon(k)),
+              title: Text(drillLabel(s, k)),
+              subtitle: Text(drillDescription(s, k)),
+              onTap: () => widget.onPicked(k, _preset),
+            ),
       ],
     );
   }

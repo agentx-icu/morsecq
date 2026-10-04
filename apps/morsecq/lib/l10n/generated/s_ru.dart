@@ -3892,4 +3892,55 @@ class SRu extends S {
 
   @override
   String get backupXMeSubtitle => 'Зашифрованный файл с личностью, чатами и прогрессом — для хранения или переноса на другое устройство';
+
+  @override
+  String get conditionsTitle => 'Условия';
+
+  @override
+  String get conditionsClear => 'Чисто';
+
+  @override
+  String get conditionsLight => 'Лёгкие помехи';
+
+  @override
+  String get conditionsRadio => 'Эфирная практика';
+
+  @override
+  String get conditionsClearHint => 'Чистый ровный тон — обычная тренировка.';
+
+  @override
+  String get conditionsLightHint => 'Тихий шум и мягкие замирания. Результаты хранятся отдельно от чистой тренировки.';
+
+  @override
+  String get conditionsRadioHint => 'Шум, глубокие замирания, соседняя станция и немного неровный темп. Результаты хранятся отдельно от чистой тренировки.';
+
+  @override
+  String get conditionsPreview => 'Прослушать';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Условия: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Эфирные условия слышны, а не видны: включите звук в настройках тренировки или занимайтесь в чистых условиях.';
+
+  @override
+  String get conditionsCleanReplay => 'Воспроизвести без эффектов';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count попытки: в среднем $accuracy%',
+      many: '$count попыток в этих условиях на этой скорости: в среднем $accuracy%',
+      few: '$count попытки в этих условиях на этой скорости: в среднем $accuracy%',
+      one: '$count попытка в этих условиях на этой скорости: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'Тренировка в эфирных условиях засчитывается как активность, но не меняет уроки, график повторения и советы по скорости.';
 }

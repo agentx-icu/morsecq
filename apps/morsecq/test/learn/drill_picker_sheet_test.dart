@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/ui/learn/receive/drill_picker_sheet.dart';
@@ -42,7 +43,7 @@ void main() {
     ) async {
       await _setSize(tester, const Size(320, 568));
       final s = lookupS(locale);
-      ReceiveDrillKind? picked;
+      (ReceiveDrillKind, RadioPreset)? picked;
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: S.localizationsDelegates,
@@ -89,7 +90,49 @@ void main() {
       expect(find.text(s.learnDrillContestHint), findsOneWidget);
       await tester.tap(last);
       await tester.pumpAndSettle();
-      expect(picked, ReceiveDrillKind.contest);
+      expect(picked, (ReceiveDrillKind.contest, RadioPreset.clear));
     });
   }
+
+  testWidgets('a conditions preset comes back with the pick; review is clean '
+      'only', (tester) async {
+    // Tall enough that every row is built.
+    await _setSize(tester, const Size(800, 2400));
+    (ReceiveDrillKind, RadioPreset)? picked;
+    final previews = <RadioPreset>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: S.localizationsDelegates,
+        supportedLocales: S.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: TextButton(
+                onPressed: () async => picked = await showDrillPickerSheet(
+                  context,
+                  [..._all, ReceiveDrillKind.review],
+                  onPreview: (p) async => previews.add(p),
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    // Clear: no preview to offer, review listed.
+    expect(find.byKey(const Key('drill-conditions-preview')), findsNothing);
+    expect(find.byKey(DrillPickerList.tileKey(ReceiveDrillKind.review)), findsOneWidget);
+    await tester.tap(find.byKey(const Key('drill-conditions-radio')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(DrillPickerList.tileKey(ReceiveDrillKind.review)), findsNothing);
+    await tester.tap(find.byKey(const Key('drill-conditions-preview')));
+    await tester.pumpAndSettle();
+    expect(previews, [RadioPreset.radio]);
+    await tester.tap(find.byKey(DrillPickerList.tileKey(ReceiveDrillKind.groups)));
+    await tester.pumpAndSettle();
+    expect(picked, (ReceiveDrillKind.groups, RadioPreset.radio));
+  });
 }

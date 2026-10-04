@@ -3827,4 +3827,53 @@ class SFr extends S {
 
   @override
   String get backupXMeSubtitle => 'Un fichier chiffré avec votre identité, vos discussions et votre progression, à garder ou à emporter sur un autre appareil';
+
+  @override
+  String get conditionsTitle => 'Conditions';
+
+  @override
+  String get conditionsClear => 'Clair';
+
+  @override
+  String get conditionsLight => 'Légères perturbations';
+
+  @override
+  String get conditionsRadio => 'Pratique radio';
+
+  @override
+  String get conditionsClearHint => 'Une tonalité nette et stable : entraînement habituel.';
+
+  @override
+  String get conditionsLightHint => 'Léger bruit de fond et fading doux. Les résultats sont séparés de l\'entraînement clair.';
+
+  @override
+  String get conditionsRadioHint => 'Bruit, fading profond, une station voisine et un rythme légèrement irrégulier. Les résultats sont séparés de l\'entraînement clair.';
+
+  @override
+  String get conditionsPreview => 'Écouter';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Conditions : $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Les conditions radio s\'entendent, elles ne se voient pas : activez le son dans les réglages d\'entraînement ou entraînez-vous en conditions claires.';
+
+  @override
+  String get conditionsCleanReplay => 'Écouter sans effets';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count essais dans ces conditions à cette vitesse : $accuracy % en moyenne',
+      one: '1 essai dans ces conditions à cette vitesse : $accuracy %',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'L\'entraînement en conditions radio compte comme activité mais ne modifie ni vos leçons, ni vos révisions, ni les conseils de vitesse.';
 }

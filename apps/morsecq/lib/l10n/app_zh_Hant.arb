@@ -1086,5 +1086,18 @@
   "pendingReviewDismissAll": "全部忽略",
   "pendingReviewEmpty": "沒有需要查看的內容了。",
   "backupXWizardInside": "備份檔案會用你自選的通關密語整體加密，包含身分金鑰與訓練進度。請把檔案與通關密語保存在本機以外的安全位置。",
-  "backupXMeSubtitle": "包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置"
+  "backupXMeSubtitle": "包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置",
+  "conditionsTitle": "收聽環境",
+  "conditionsClear": "清晰",
+  "conditionsLight": "輕度干擾",
+  "conditionsRadio": "實戰電台",
+  "conditionsClearHint": "乾淨穩定的音調，即一般練習。",
+  "conditionsLightHint": "輕微底噪與緩慢衰落。成績與清晰練習分開記錄。",
+  "conditionsRadioHint": "雜訊、深度衰落、鄰近電台干擾與略不均勻的節奏。成績與清晰練習分開記錄。",
+  "conditionsPreview": "試聽",
+  "conditionsActive": "收聽環境：{name}",
+  "conditionsNeedSound": "電台環境只能聽不能看：請在訓練設定中開啟聲音，或改用「清晰」環境練習。",
+  "conditionsCleanReplay": "無效果重播",
+  "conditionsComparable": "{count, plural, other{在此環境與速度下共 {count} 次：平均 {accuracy}%}}",
+  "conditionsSeparateNote": "電台環境練習計入活動，但不會改變課程進度、複習計畫或速度建議。"
 }

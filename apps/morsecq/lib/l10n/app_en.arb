@@ -5386,5 +5386,70 @@
   "backupXMeSubtitle": "An encrypted file with your identity, chats and progress, to keep or to move to another device",
   "@backupXMeSubtitle": {
     "description": "Me page: subtitle of the export backup entry (encrypted complete backup)"
+  },
+  "conditionsTitle": "Conditions",
+  "@conditionsTitle": {
+    "description": "Drill picker: heading of the channel conditions selector"
+  },
+  "conditionsClear": "Clear",
+  "@conditionsClear": {
+    "description": "Conditions preset: clean tone (default)"
+  },
+  "conditionsLight": "Light interference",
+  "@conditionsLight": {
+    "description": "Conditions preset: light interference"
+  },
+  "conditionsRadio": "Radio practice",
+  "@conditionsRadio": {
+    "description": "Conditions preset: realistic radio practice"
+  },
+  "conditionsClearHint": "A clean, steady tone: ordinary practice.",
+  "@conditionsClearHint": {
+    "description": "Conditions preset hint: clear"
+  },
+  "conditionsLightHint": "Soft background noise and gentle fading. Results are kept apart from clean practice.",
+  "@conditionsLightHint": {
+    "description": "Conditions preset hint: light"
+  },
+  "conditionsRadioHint": "Noise, deep fading, a nearby station and slightly uneven timing. Results are kept apart from clean practice.",
+  "@conditionsRadioHint": {
+    "description": "Conditions preset hint: radio practice"
+  },
+  "conditionsPreview": "Preview",
+  "@conditionsPreview": {
+    "description": "Drill picker: play a short sample under the chosen conditions"
+  },
+  "conditionsActive": "Conditions: {name}",
+  "@conditionsActive": {
+    "description": "Receive drill: chip naming the active conditions",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "conditionsNeedSound": "Radio conditions are heard, not seen: turn sound on in the training settings, or practise with Clear conditions.",
+  "@conditionsNeedSound": {
+    "description": "Receive drill: conditions need sound"
+  },
+  "conditionsCleanReplay": "Play without effects",
+  "@conditionsCleanReplay": {
+    "description": "Round result: replay the round without effects"
+  },
+  "conditionsComparable": "{count, plural, =1{1 attempt under these conditions at this speed: {accuracy}%} other{{count} attempts under these conditions at this speed: {accuracy}% on average}}",
+  "@conditionsComparable": {
+    "description": "Receive summary: results under the same conditions and speed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "conditionsSeparateNote": "Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.",
+  "@conditionsSeparateNote": {
+    "description": "Receive summary: conditions results do not change progress"
   }
 }

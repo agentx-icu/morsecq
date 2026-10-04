@@ -1086,5 +1086,18 @@
   "pendingReviewDismissAll": "すべて破棄",
   "pendingReviewEmpty": "確認するものはもうありません。",
   "backupXWizardInside": "バックアップファイルは自分で決めたパスフレーズでまるごと暗号化され、ID の鍵と練習の進捗を含みます。ファイルとパスフレーズは、この端末以外の安全な場所に保管してください。",
-  "backupXMeSubtitle": "ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも"
+  "backupXMeSubtitle": "ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも",
+  "conditionsTitle": "受信環境",
+  "conditionsClear": "クリア",
+  "conditionsLight": "軽い混信",
+  "conditionsRadio": "実戦練習",
+  "conditionsClearHint": "きれいで一定の音。通常の練習です。",
+  "conditionsLightHint": "小さな雑音とゆるやかなフェージング。結果はクリアな練習とは別に記録します。",
+  "conditionsRadioHint": "雑音、深いフェージング、近くの局、少し不揃いなタイミング。結果はクリアな練習とは別に記録します。",
+  "conditionsPreview": "試聴",
+  "conditionsActive": "受信環境：{name}",
+  "conditionsNeedSound": "受信環境は音で聞くものです。練習設定で音をオンにするか、「クリア」で練習してください。",
+  "conditionsCleanReplay": "効果なしで再生",
+  "conditionsComparable": "{count, plural, other{この環境・速度での挑戦 {count} 回：平均 {accuracy}%}}",
+  "conditionsSeparateNote": "受信環境つきの練習は活動として記録されますが、レッスン・復習スケジュール・速度のおすすめは変わりません。"
 }

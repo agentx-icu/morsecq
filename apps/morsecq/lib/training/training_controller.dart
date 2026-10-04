@@ -14,6 +14,7 @@ import 'training_doc_store.dart';
 import 'training_settings_store.dart';
 
 export 'exercise_outcome.dart';
+export 'receive_recording.dart';
 export 'send_practice_start.dart';
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
@@ -268,26 +269,43 @@ final class TrainingController extends ChangeNotifier {
   ReceiveSession startLessonSession() =>
       startReceiveSession(ReceiveDrillKind.groups);
 
-  ReceiveSession startReceiveSession(ReceiveDrillKind kind) {
+  /// [preset] other than clear plays every round under simulated radio
+  /// conditions (F11) at the learner's own speeds; such a session never
+  /// counts toward the lesson.
+  ReceiveSession startReceiveSession(
+    ReceiveDrillKind kind, {
+    RadioPreset preset = RadioPreset.clear,
+  }) {
     if (kind == ReceiveDrillKind.review) {
       return startReviewSession();
     }
     final chars = learnedChars;
     final t = trainerSettings;
     final generator = _catalog.generatorFor(kind, chars);
+    final timing = t.toTiming();
+    final conditions = preset == RadioPreset.clear
+        ? null
+        : RadioScenario.preset(
+            preset,
+            seed: _random.nextInt(1 << 31),
+            characterWpm: timing.wpm,
+            effectiveWpm: timing.farnsworthWpm ?? timing.wpm,
+            toneHz: t.toneHz,
+          );
     return ReceiveSession(
       kind: kind,
       generator: generator,
       // QSO scripts are fixed text (names, rigs, <BT>, <SK>), not filtered
       // to the lesson, so their keypad offers every symbol of the course.
       chars: generator is QsoDrill ? course.order : chars,
-      timing: t.toTiming(),
+      timing: timing,
       charBudget: t.sessionLengthChars,
       timeBudget: t.sessionLengthSeconds == null
           ? null
           : Duration(seconds: t.sessionLengthSeconds!),
       lesson: currentLesson,
-      countsTowardLesson: true,
+      countsTowardLesson: conditions == null,
+      conditions: conditions,
       random: _random,
       now: _now,
     );
@@ -319,26 +337,6 @@ final class TrainingController extends ChangeNotifier {
     );
   }
 
-  /// Folds a finished receive session into progress (stats, streak, SRS,
-  /// confusion) and, for lesson sessions, applies the Koch unlock rule.
-  Future<ReceiveOutcome> recordReceiveSession(ReceiveSession session) {
-    final score = session.finish();
-    return recordExercise(
-      score: score,
-      id: session.id,
-      source: session.source,
-      assistance: session.assistance,
-      answered: session.hasAnswers,
-      lesson: session.lesson,
-      timing: session.timing,
-      active: session.activeElapsed,
-      planStepId: session.planStepId,
-      sourceRef: session.sourceRef,
-      learned: session.learnedChars,
-      countsTowardLesson: session.countsTowardLesson,
-    );
-  }
-
   /// The one commit path for every scored exercise (spec §3): builds the
   /// exercise record, applies [CreditPolicy], completes the daily-plan step
   /// in the same write and, for course sessions with unlock credit, the
@@ -358,6 +356,7 @@ final class TrainingController extends ChangeNotifier {
     String? detailRef,
     Set<String>? learned,
     bool countsTowardLesson = false,
+    RadioScenario? conditions,
   }) async {
     final (next, outcome) = applyExercise(
       _progress,
@@ -378,6 +377,7 @@ final class TrainingController extends ChangeNotifier {
       detailRef: detailRef,
       learned: learned ?? learnedChars.toSet(),
       countsTowardLesson: countsTowardLesson,
+      conditions: conditions,
     );
     if (outcome.duplicate) {
       // Already credited in memory; "saved" only when it is on disk too.

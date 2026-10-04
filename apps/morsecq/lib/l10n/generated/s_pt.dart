@@ -3827,4 +3827,53 @@ class SPt extends S {
 
   @override
   String get backupXMeSubtitle => 'Um arquivo criptografado com sua identidade, conversas e progresso, para guardar ou levar a outro dispositivo';
+
+  @override
+  String get conditionsTitle => 'Condições';
+
+  @override
+  String get conditionsClear => 'Limpo';
+
+  @override
+  String get conditionsLight => 'Interferência leve';
+
+  @override
+  String get conditionsRadio => 'Prática de rádio';
+
+  @override
+  String get conditionsClearHint => 'Um tom limpo e estável: prática normal.';
+
+  @override
+  String get conditionsLightHint => 'Ruído de fundo suave e desvanecimento leve. Os resultados ficam separados da prática limpa.';
+
+  @override
+  String get conditionsRadioHint => 'Ruído, desvanecimento forte, uma estação vizinha e ritmo um pouco irregular. Os resultados ficam separados da prática limpa.';
+
+  @override
+  String get conditionsPreview => 'Ouvir';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Condições: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Condições de rádio se ouvem, não se veem: ative o som nos ajustes de treino ou pratique com condições limpas.';
+
+  @override
+  String get conditionsCleanReplay => 'Tocar sem efeitos';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tentativas nestas condições e velocidade: média de $accuracy%',
+      one: '1 tentativa nestas condições e velocidade: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'A prática com condições de rádio conta como atividade, mas não muda suas lições, revisões nem a recomendação de velocidade.';
 }

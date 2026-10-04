@@ -29,6 +29,7 @@ export 'src/qso/qso_evaluator.dart';
 export 'src/qso/qso_scenario.dart';
 export 'src/qso/qso_session.dart';
 export 'src/qso_drill.dart';
+export 'src/radio_conditions.dart';
 export 'src/random_groups_drill.dart';
 export 'src/send_practice.dart';
 export 'src/send_timeline.dart';

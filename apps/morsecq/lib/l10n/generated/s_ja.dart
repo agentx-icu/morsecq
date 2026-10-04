@@ -3790,4 +3790,52 @@ class SJa extends S {
 
   @override
   String get backupXMeSubtitle => 'ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも';
+
+  @override
+  String get conditionsTitle => '受信環境';
+
+  @override
+  String get conditionsClear => 'クリア';
+
+  @override
+  String get conditionsLight => '軽い混信';
+
+  @override
+  String get conditionsRadio => '実戦練習';
+
+  @override
+  String get conditionsClearHint => 'きれいで一定の音。通常の練習です。';
+
+  @override
+  String get conditionsLightHint => '小さな雑音とゆるやかなフェージング。結果はクリアな練習とは別に記録します。';
+
+  @override
+  String get conditionsRadioHint => '雑音、深いフェージング、近くの局、少し不揃いなタイミング。結果はクリアな練習とは別に記録します。';
+
+  @override
+  String get conditionsPreview => '試聴';
+
+  @override
+  String conditionsActive(String name) {
+    return '受信環境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '受信環境は音で聞くものです。練習設定で音をオンにするか、「クリア」で練習してください。';
+
+  @override
+  String get conditionsCleanReplay => '効果なしで再生';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'この環境・速度での挑戦 $count 回：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '受信環境つきの練習は活動として記録されますが、レッスン・復習スケジュール・速度のおすすめは変わりません。';
 }

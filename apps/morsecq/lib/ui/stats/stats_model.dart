@@ -62,7 +62,9 @@ final class StatsSnapshot {
   static bool countsAsCopying(SessionSummary s) => switch (s.source) {
     ExerciseSource.qso ||
     ExerciseSource.placement ||
-    ExerciseSource.recording => false,
+    ExerciseSource.recording ||
+    // Radio-condition results stay out of the clean accuracy trend (F11).
+    ExerciseSource.conditions => false,
     _ => true,
   };
 

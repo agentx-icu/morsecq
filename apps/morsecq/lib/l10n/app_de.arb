@@ -1086,5 +1086,18 @@
   "pendingReviewDismissAll": "Alle verwerfen",
   "pendingReviewEmpty": "Nichts mehr zu prüfen.",
   "backupXWizardInside": "Die Sicherungsdatei wird vollständig mit einer selbst gewählten Passphrase verschlüsselt und enthält deinen Identitätsschlüssel und deinen Trainingsfortschritt. Bewahre Datei und Passphrase sicher und außerhalb dieses Geräts auf.",
-  "backupXMeSubtitle": "Eine verschlüsselte Datei mit Identität, Chats und Fortschritt – zum Aufbewahren oder für ein anderes Gerät"
+  "backupXMeSubtitle": "Eine verschlüsselte Datei mit Identität, Chats und Fortschritt – zum Aufbewahren oder für ein anderes Gerät",
+  "conditionsTitle": "Bedingungen",
+  "conditionsClear": "Klar",
+  "conditionsLight": "Leichte Störungen",
+  "conditionsRadio": "Funkpraxis",
+  "conditionsClearHint": "Ein sauberer, gleichmäßiger Ton: normales Training.",
+  "conditionsLightHint": "Leises Rauschen und sanftes Fading. Ergebnisse bleiben getrennt vom klaren Training.",
+  "conditionsRadioHint": "Rauschen, tiefes Fading, eine Nachbarstation und leicht ungleichmäßiges Timing. Ergebnisse bleiben getrennt vom klaren Training.",
+  "conditionsPreview": "Probe hören",
+  "conditionsActive": "Bedingungen: {name}",
+  "conditionsNeedSound": "Funkbedingungen hört man, man sieht sie nicht: Schalte den Ton in den Trainingseinstellungen ein oder übe mit klaren Bedingungen.",
+  "conditionsCleanReplay": "Ohne Effekte abspielen",
+  "conditionsComparable": "{count, plural, =1{1 Versuch unter diesen Bedingungen bei diesem Tempo: {accuracy} %} other{{count} Versuche unter diesen Bedingungen bei diesem Tempo: im Schnitt {accuracy} %}}",
+  "conditionsSeparateNote": "Training unter Funkbedingungen zählt als Aktivität, ändert aber weder Lektionen noch Wiederholungsplan oder Tempo-Empfehlung."
 }

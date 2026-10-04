@@ -3790,6 +3790,54 @@ class SZh extends S {
 
   @override
   String get backupXMeSubtitle => '包含身份、聊天和进度的加密文件，可留存或迁移到其他设备';
+
+  @override
+  String get conditionsTitle => '收听环境';
+
+  @override
+  String get conditionsClear => '清晰';
+
+  @override
+  String get conditionsLight => '轻度干扰';
+
+  @override
+  String get conditionsRadio => '实战电台';
+
+  @override
+  String get conditionsClearHint => '干净稳定的音调，即普通练习。';
+
+  @override
+  String get conditionsLightHint => '轻微底噪和缓慢衰落。成绩与清晰练习分开记录。';
+
+  @override
+  String get conditionsRadioHint => '噪声、深度衰落、邻近电台干扰和略不均匀的节奏。成绩与清晰练习分开记录。';
+
+  @override
+  String get conditionsPreview => '试听';
+
+  @override
+  String conditionsActive(String name) {
+    return '收听环境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '电台环境只能听不能看：请在训练设置中打开声音，或改用“清晰”环境练习。';
+
+  @override
+  String get conditionsCleanReplay => '无效果重播';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '在此环境和速度下共 $count 次：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '电台环境练习计入活动，但不会改变课程进度、复习计划或速度建议。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7578,4 +7626,52 @@ class SZhHant extends SZh {
 
   @override
   String get backupXMeSubtitle => '包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置';
+
+  @override
+  String get conditionsTitle => '收聽環境';
+
+  @override
+  String get conditionsClear => '清晰';
+
+  @override
+  String get conditionsLight => '輕度干擾';
+
+  @override
+  String get conditionsRadio => '實戰電台';
+
+  @override
+  String get conditionsClearHint => '乾淨穩定的音調，即一般練習。';
+
+  @override
+  String get conditionsLightHint => '輕微底噪與緩慢衰落。成績與清晰練習分開記錄。';
+
+  @override
+  String get conditionsRadioHint => '雜訊、深度衰落、鄰近電台干擾與略不均勻的節奏。成績與清晰練習分開記錄。';
+
+  @override
+  String get conditionsPreview => '試聽';
+
+  @override
+  String conditionsActive(String name) {
+    return '收聽環境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '電台環境只能聽不能看：請在訓練設定中開啟聲音，或改用「清晰」環境練習。';
+
+  @override
+  String get conditionsCleanReplay => '無效果重播';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '在此環境與速度下共 $count 次：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '電台環境練習計入活動，但不會改變課程進度、複習計畫或速度建議。';
 }

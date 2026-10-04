@@ -27,7 +27,11 @@ enum ExerciseSource {
   placement,
 
   /// Copying a recorded audio file.
-  recording;
+  recording,
+
+  /// Copying under simulated radio conditions (F11): results are kept
+  /// apart from clean copying and never feed SRS, unlocks or speed advice.
+  conditions;
 
   static ExerciseSource? parse(String? name) {
     for (final value in values) {
@@ -137,6 +141,7 @@ abstract final class CreditPolicy {
       case ExerciseSource.qso:
       case ExerciseSource.placement:
       case ExerciseSource.recording:
+      case ExerciseSource.conditions:
         return activityOnly;
     }
   }

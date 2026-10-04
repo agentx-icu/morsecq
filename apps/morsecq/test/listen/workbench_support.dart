@@ -96,4 +96,11 @@ final class FakeClipPlayer implements ClipPlayer {
     disposed = true;
     await _c.close();
   }
+
+  /// The clip played to its end (the real player reports that as a stop).
+  void end() {
+    if (!_on) return;
+    _on = false;
+    _c.add(false);
+  }
 }

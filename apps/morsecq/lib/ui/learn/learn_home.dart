@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/qso_practice.dart';
@@ -10,6 +11,7 @@ import '../appearance/ui_style.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'conditions/conditions_playback.dart';
 import 'materials/materials_screen.dart';
 import 'placement/placement_offer_card.dart';
 import 'placement/placement_screen.dart';
@@ -52,19 +54,36 @@ class LearnHome extends StatelessWidget {
   );
 
   Future<void> _receivePractice(BuildContext context) async {
-    final kind = await showDrillPickerSheet(
+    // The preview player lives only while the sheet is open.
+    ConditionsPlayback? previewer;
+    final picked = await showDrillPickerSheet(
       context,
       controller.availableReceiveKinds,
+      onPreview: (preset) {
+        final timing = controller.trainerSettings.toTiming();
+        return (previewer ??= ConditionsPlayback()).play(
+          kConditionsPreviewText,
+          RadioScenario.preset(
+            preset,
+            seed: 1,
+            characterWpm: timing.wpm,
+            effectiveWpm: timing.farnsworthWpm ?? timing.wpm,
+            toneHz: controller.trainerSettings.toneHz,
+          ),
+        );
+      },
     );
-    if (kind == null || !context.mounted) {
+    await previewer?.dispose();
+    if (picked == null || !context.mounted) {
       return;
     }
+    final (kind, preset) = picked;
     await _push(
       context,
       ReceiveDrillScreen(
         controller: controller,
         playback: playback,
-        session: controller.startReceiveSession(kind),
+        session: controller.startReceiveSession(kind, preset: preset),
       ),
     );
   }

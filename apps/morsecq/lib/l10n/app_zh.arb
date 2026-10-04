@@ -1106,5 +1106,18 @@
   "pendingReviewDismissAll": "全部忽略",
   "pendingReviewEmpty": "没有需要查看的内容了。",
   "backupXWizardInside": "备份文件会用你自选的口令整体加密，包含身份密钥和训练进度。请把文件和口令保存在本机以外的安全位置。",
-  "backupXMeSubtitle": "包含身份、聊天和进度的加密文件，可留存或迁移到其他设备"
+  "backupXMeSubtitle": "包含身份、聊天和进度的加密文件，可留存或迁移到其他设备",
+  "conditionsTitle": "收听环境",
+  "conditionsClear": "清晰",
+  "conditionsLight": "轻度干扰",
+  "conditionsRadio": "实战电台",
+  "conditionsClearHint": "干净稳定的音调，即普通练习。",
+  "conditionsLightHint": "轻微底噪和缓慢衰落。成绩与清晰练习分开记录。",
+  "conditionsRadioHint": "噪声、深度衰落、邻近电台干扰和略不均匀的节奏。成绩与清晰练习分开记录。",
+  "conditionsPreview": "试听",
+  "conditionsActive": "收听环境：{name}",
+  "conditionsNeedSound": "电台环境只能听不能看：请在训练设置中打开声音，或改用“清晰”环境练习。",
+  "conditionsCleanReplay": "无效果重播",
+  "conditionsComparable": "{count, plural, other{在此环境和速度下共 {count} 次：平均 {accuracy}%}}",
+  "conditionsSeparateNote": "电台环境练习计入活动，但不会改变课程进度、复习计划或速度建议。"
 }

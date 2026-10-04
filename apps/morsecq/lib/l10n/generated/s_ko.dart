@@ -3790,4 +3790,52 @@ class SKo extends S {
 
   @override
   String get backupXMeSubtitle => 'ID, 채팅, 진도를 담은 암호화 파일. 보관하거나 다른 기기로 옮길 때 사용';
+
+  @override
+  String get conditionsTitle => '수신 환경';
+
+  @override
+  String get conditionsClear => '깨끗함';
+
+  @override
+  String get conditionsLight => '약한 간섭';
+
+  @override
+  String get conditionsRadio => '실전 무선';
+
+  @override
+  String get conditionsClearHint => '깨끗하고 일정한 톤: 일반 연습입니다.';
+
+  @override
+  String get conditionsLightHint => '잔잔한 배경 잡음과 약한 페이딩. 결과는 깨끗한 연습과 따로 기록됩니다.';
+
+  @override
+  String get conditionsRadioHint => '잡음, 깊은 페이딩, 가까운 다른 국, 약간 고르지 않은 타이밍. 결과는 깨끗한 연습과 따로 기록됩니다.';
+
+  @override
+  String get conditionsPreview => '미리 듣기';
+
+  @override
+  String conditionsActive(String name) {
+    return '수신 환경: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => '무선 환경은 눈이 아니라 귀로 듣는 것입니다. 연습 설정에서 소리를 켜거나 깨끗한 환경으로 연습하세요.';
+
+  @override
+  String get conditionsCleanReplay => '효과 없이 재생';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '이 환경과 속도에서 $count회: 평균 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '무선 환경 연습은 활동으로 기록되지만 레슨, 복습 일정, 속도 추천은 바뀌지 않습니다.';
 }

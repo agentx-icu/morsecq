@@ -3826,4 +3826,53 @@ class SEs extends S {
 
   @override
   String get backupXMeSubtitle => 'Un archivo cifrado con tu identidad, chats y progreso, para guardarlo o llevarlo a otro dispositivo';
+
+  @override
+  String get conditionsTitle => 'Condiciones';
+
+  @override
+  String get conditionsClear => 'Limpio';
+
+  @override
+  String get conditionsLight => 'Interferencia leve';
+
+  @override
+  String get conditionsRadio => 'Práctica de radio';
+
+  @override
+  String get conditionsClearHint => 'Un tono limpio y estable: práctica normal.';
+
+  @override
+  String get conditionsLightHint => 'Ruido de fondo suave y desvanecimiento ligero. Los resultados se guardan aparte de la práctica limpia.';
+
+  @override
+  String get conditionsRadioHint => 'Ruido, desvanecimiento profundo, una estación cercana y ritmo algo irregular. Los resultados se guardan aparte de la práctica limpia.';
+
+  @override
+  String get conditionsPreview => 'Escuchar';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Condiciones: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Las condiciones de radio se oyen, no se ven: activa el sonido en los ajustes de práctica o practica con condiciones limpias.';
+
+  @override
+  String get conditionsCleanReplay => 'Reproducir sin efectos';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count intentos con estas condiciones y velocidad: $accuracy % de media',
+      one: '1 intento con estas condiciones y velocidad: $accuracy %',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'La práctica con condiciones de radio cuenta como actividad, pero no cambia tus lecciones, tu repaso ni la recomendación de velocidad.';
 }

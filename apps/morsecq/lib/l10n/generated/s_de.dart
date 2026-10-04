@@ -3826,4 +3826,53 @@ class SDe extends S {
 
   @override
   String get backupXMeSubtitle => 'Eine verschlüsselte Datei mit Identität, Chats und Fortschritt – zum Aufbewahren oder für ein anderes Gerät';
+
+  @override
+  String get conditionsTitle => 'Bedingungen';
+
+  @override
+  String get conditionsClear => 'Klar';
+
+  @override
+  String get conditionsLight => 'Leichte Störungen';
+
+  @override
+  String get conditionsRadio => 'Funkpraxis';
+
+  @override
+  String get conditionsClearHint => 'Ein sauberer, gleichmäßiger Ton: normales Training.';
+
+  @override
+  String get conditionsLightHint => 'Leises Rauschen und sanftes Fading. Ergebnisse bleiben getrennt vom klaren Training.';
+
+  @override
+  String get conditionsRadioHint => 'Rauschen, tiefes Fading, eine Nachbarstation und leicht ungleichmäßiges Timing. Ergebnisse bleiben getrennt vom klaren Training.';
+
+  @override
+  String get conditionsPreview => 'Probe hören';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Bedingungen: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Funkbedingungen hört man, man sieht sie nicht: Schalte den Ton in den Trainingseinstellungen ein oder übe mit klaren Bedingungen.';
+
+  @override
+  String get conditionsCleanReplay => 'Ohne Effekte abspielen';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Versuche unter diesen Bedingungen bei diesem Tempo: im Schnitt $accuracy %',
+      one: '1 Versuch unter diesen Bedingungen bei diesem Tempo: $accuracy %',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'Training unter Funkbedingungen zählt als Aktivität, ändert aber weder Lektionen noch Wiederholungsplan oder Tempo-Empfehlung.';
 }

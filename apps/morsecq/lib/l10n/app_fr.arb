@@ -1086,5 +1086,18 @@
   "pendingReviewDismissAll": "Tout ignorer",
   "pendingReviewEmpty": "Plus rien à relire.",
   "backupXWizardInside": "Le fichier de sauvegarde est entièrement chiffré avec une phrase secrète de votre choix et contient la clé de votre identité et votre progression. Conservez le fichier et la phrase en lieu sûr, hors de cet appareil.",
-  "backupXMeSubtitle": "Un fichier chiffré avec votre identité, vos discussions et votre progression, à garder ou à emporter sur un autre appareil"
+  "backupXMeSubtitle": "Un fichier chiffré avec votre identité, vos discussions et votre progression, à garder ou à emporter sur un autre appareil",
+  "conditionsTitle": "Conditions",
+  "conditionsClear": "Clair",
+  "conditionsLight": "Légères perturbations",
+  "conditionsRadio": "Pratique radio",
+  "conditionsClearHint": "Une tonalité nette et stable : entraînement habituel.",
+  "conditionsLightHint": "Léger bruit de fond et fading doux. Les résultats sont séparés de l'entraînement clair.",
+  "conditionsRadioHint": "Bruit, fading profond, une station voisine et un rythme légèrement irrégulier. Les résultats sont séparés de l'entraînement clair.",
+  "conditionsPreview": "Écouter",
+  "conditionsActive": "Conditions : {name}",
+  "conditionsNeedSound": "Les conditions radio s'entendent, elles ne se voient pas : activez le son dans les réglages d'entraînement ou entraînez-vous en conditions claires.",
+  "conditionsCleanReplay": "Écouter sans effets",
+  "conditionsComparable": "{count, plural, =1{1 essai dans ces conditions à cette vitesse : {accuracy} %} other{{count} essais dans ces conditions à cette vitesse : {accuracy} % en moyenne}}",
+  "conditionsSeparateNote": "L'entraînement en conditions radio compte comme activité mais ne modifie ni vos leçons, ni vos révisions, ni les conseils de vitesse."
 }

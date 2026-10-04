@@ -3825,4 +3825,53 @@ class SEn extends S {
 
   @override
   String get backupXMeSubtitle => 'An encrypted file with your identity, chats and progress, to keep or to move to another device';
+
+  @override
+  String get conditionsTitle => 'Conditions';
+
+  @override
+  String get conditionsClear => 'Clear';
+
+  @override
+  String get conditionsLight => 'Light interference';
+
+  @override
+  String get conditionsRadio => 'Radio practice';
+
+  @override
+  String get conditionsClearHint => 'A clean, steady tone: ordinary practice.';
+
+  @override
+  String get conditionsLightHint => 'Soft background noise and gentle fading. Results are kept apart from clean practice.';
+
+  @override
+  String get conditionsRadioHint => 'Noise, deep fading, a nearby station and slightly uneven timing. Results are kept apart from clean practice.';
+
+  @override
+  String get conditionsPreview => 'Preview';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Conditions: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Radio conditions are heard, not seen: turn sound on in the training settings, or practise with Clear conditions.';
+
+  @override
+  String get conditionsCleanReplay => 'Play without effects';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count attempts under these conditions at this speed: $accuracy% on average',
+      one: '1 attempt under these conditions at this speed: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.';
 }
