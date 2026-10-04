@@ -112,12 +112,15 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
     return true;
   }
 
-  Future<void> _update(GroupPracticeBook Function(GroupPracticeBook) f) async {
+  /// Applies [f]; false (with a message) when it could not be saved.
+  Future<bool> _update(GroupPracticeBook Function(GroupPracticeBook) f) async {
     try {
       final book = await widget.controller.updateGroupPractice(f);
       if (mounted) setState(() => _session = book.byId(widget.sessionId));
+      return true;
     } on Object {
       if (mounted) showSnack(context, context.s.learnProgressSaveFailed);
+      return false;
     }
   }
 
@@ -143,8 +146,7 @@ class _GroupPracticeSessionPageState extends State<GroupPracticeSessionPage> {
       ),
     );
     if (ok != true) return;
-    await _update((b) => b.remove(session.id));
-    navigator.pop();
+    if (await _update((b) => b.remove(session.id))) navigator.pop();
   }
 
   Future<void> _addRounds() async {

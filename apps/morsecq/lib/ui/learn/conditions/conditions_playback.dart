@@ -40,14 +40,17 @@ final class ConditionsPlayback with WidgetsBindingObserver {
   /// `true` when a rendering starts, `false` when it ends or is stopped.
   Stream<bool> get playing => _player.playing;
 
-  /// Renders off the UI isolate, then plays [text] under [scenario]. Throws
-  /// when the audio engine cannot play the clip.
-  Future<void> play(String text, RadioScenario scenario) async {
-    if (_disposed) return;
+  /// Renders off the UI isolate, then plays [text] under [scenario].
+  /// Returns false when a stop or dispose dropped it before it started (no
+  /// `playing` event follows then). Throws when the audio engine cannot
+  /// play the clip.
+  Future<bool> play(String text, RadioScenario scenario) async {
+    if (_disposed) return false;
     final generation = ++_generation;
     final (wav, length) = await _render(text, scenario);
-    if (_disposed || generation != _generation) return;
+    if (_disposed || generation != _generation) return false;
     await _player.play(wav, length: length);
+    return true;
   }
 
   /// Renders on a background isolate: a long round is millions of samples.

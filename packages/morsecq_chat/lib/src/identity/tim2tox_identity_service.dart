@@ -254,6 +254,9 @@ class Tim2ToxIdentityService
   /// same passphrase does not decrypt the whole file a second time.
   (Uint8List, String, (BackupPreview, BackupContainer))? _opened;
 
+  @override
+  void forgetPreview() => _opened = null;
+
   (BackupPreview, BackupContainer) _openCached(
     Uint8List bytes,
     String passphrase,

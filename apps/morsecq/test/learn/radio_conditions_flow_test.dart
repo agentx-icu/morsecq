@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -189,6 +190,56 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(en.conditionsAudioFailed), findsOneWidget);
       expect(find.text(en.learnReady), findsOneWidget);
+    });
+
+    testWidgets('backgrounded while rendering: the round is not left '
+        '"listening"', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final t = await TestTraining.create(settings: kShortSettings);
+      addTearDown(t.controller.dispose);
+      final clip = FakeClipPlayer();
+      final gate = Completer<void>();
+      final session = t.controller.startReceiveSession(ReceiveDrillKind.groups, preset: RadioPreset.light);
+      await tester.pumpWidget(
+        l10nApp(
+          home: ReceiveDrillScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+            session: session,
+            conditionsPlayback: ConditionsPlayback(
+              player: clip,
+              render: (text, scenario) async {
+                await gate.future;
+                return ConditionsPlayback.renderNow(text, scenario);
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(clip.plays, isEmpty, reason: 'dropped, not started late');
+      for (final state in [
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      await tester.pumpAndSettle();
+      expect(find.text(en.learnReady), findsOneWidget);
+      expect(session.isAssisted, isFalse);
     });
 
     testWidgets('dispose releases the audio', (tester) async {

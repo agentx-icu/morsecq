@@ -93,6 +93,8 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
 
   /// Saves the round; on failure the result stays on screen with a retry.
   Future<void> _save() async {
+    // The snackbar's Retry may outlive this screen.
+    if (!mounted) return;
     setState(() => _saving = true);
     try {
       final stats = await widget.controller.recordTelegraphRecall(
@@ -185,7 +187,9 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
           ],
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 6),
-          onSubmitted: _answer,
+          onSubmitted: (v) {
+            if (v.length == 4) _answer(v);
+          },
           decoration: const InputDecoration(border: OutlineInputBorder()),
         )
       else

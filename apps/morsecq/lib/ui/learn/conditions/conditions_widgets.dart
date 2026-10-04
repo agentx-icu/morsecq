@@ -66,3 +66,21 @@ class ConditionsSummary extends StatelessWidget {
     );
   }
 }
+
+/// After an answer: replay the round without effects, as a reference.
+class CleanReferenceButton extends StatelessWidget {
+  const CleanReferenceButton({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 12),
+    child: OutlinedButton.icon(
+      key: const ValueKey('conditions-clean-replay'),
+      onPressed: onPressed,
+      icon: const Icon(Icons.hearing),
+      label: Text(context.s.conditionsCleanReplay),
+    ),
+  );
+}

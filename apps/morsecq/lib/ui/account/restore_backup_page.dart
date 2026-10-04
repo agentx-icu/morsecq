@@ -39,8 +39,21 @@ class _RestoreBackupPageState extends State<RestoreBackupPage> {
   String? _passwordError;
   bool _busy = false;
 
+  late final IdentityService _identityService;
+
+  @override
+  void initState() {
+    super.initState();
+    _identityService = context.read<IdentityService>();
+  }
+
   @override
   void dispose() {
+    // Do not keep a decrypted archive around once the page is gone.
+    final service = _identityService;
+    if (service is EncryptedBackupService) {
+      (service as EncryptedBackupService).forgetPreview();
+    }
     _password.dispose();
     _passphrase.dispose();
     super.dispose();

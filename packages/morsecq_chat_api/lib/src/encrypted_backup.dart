@@ -227,6 +227,10 @@ abstract interface class EncryptedBackupService {
     String passphrase,
   );
 
+  /// Drops whatever [previewEncryptedBackup] kept open for a following
+  /// restore (decrypted contents and the passphrase).
+  void forgetPreview();
+
   /// Replaces the current identity with the backup's, transactionally: on
   /// any failure the previous installation stays in place. Restored pending
   /// messages and invitations never send, not even after a restart.

@@ -126,7 +126,17 @@ class _GroupPracticePageState extends State<GroupPracticePage> {
       role: role,
       createdAt: DateTime.now(),
     );
-    final book = await c.updateGroupPractice((b) => b.add(session));
+    final GroupPracticeBook book;
+    try {
+      book = await c.updateGroupPractice((b) => b.add(session));
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(s.learnProgressSaveFailed)),
+        );
+      }
+      return;
+    }
     if (!mounted) return;
     setState(() => _book = book);
     await _openSession(session.id);

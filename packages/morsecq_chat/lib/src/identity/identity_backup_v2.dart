@@ -140,7 +140,6 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
     final cats = {...request.categories, BackupCategory.identity};
     final entries = <String, Uint8List>{};
     final sizes = <BackupCategory, BackupCategorySize>{};
-    final read = <File>[];
     final stamps = <String, (int, DateTime)>{};
     void add(BackupCategory c, String path, Uint8List bytes) {
       entries[path] = bytes;
@@ -160,7 +159,6 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
           bytes.length != before.$1) {
         throw SnapshotUnstable(f.path);
       }
-      read.add(f);
       stamps[f.path] = before;
       return bytes;
     }
@@ -176,16 +174,16 @@ extension _EncryptedBackup on Tim2ToxIdentityService {
     add(BackupCategory.identity, 'identity.json', record.encode());
     add(BackupCategory.identity, 'tox_profile.tox', profile);
 
-    final queue = await BackupSnapshot.readQueue(_paths);
+    // Stamped before the queue is copied and parsed, like every other file.
     for (final f in [
       File(_paths.offlineQueueFile),
       File('${_paths.offlineQueueFile}.bak'),
     ]) {
       if (await f.exists()) {
-        read.add(f);
         stamps[f.path] = (await f.length(), await f.lastModified());
       }
     }
+    final queue = await BackupSnapshot.readQueue(_paths);
     var pendingItems = [for (final (i, q) in queue.indexed) q.toItem(i)];
 
     for (final (rel, file) in await BackupSnapshot.files(

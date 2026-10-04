@@ -249,6 +249,9 @@ final class FakeIdentityService
   ) async => _preview(_open(bytes, passphrase));
 
   @override
+  void forgetPreview() {}
+
+  @override
   Future<RestoreReport> restoreEncryptedBackup(
     Uint8List bytes,
     String passphrase, {

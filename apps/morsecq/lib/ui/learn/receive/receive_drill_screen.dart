@@ -145,7 +145,10 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   void _stopConditions() {
     final c = _conditions;
     if (c == null) return;
-    if (c.isPlaying) _stopping = true;
+    // Set even when nothing plays yet: a clip in its loading window still
+    // emits start and stop, and that stop is ours, not "heard". The next
+    // round's start event clears the flag.
+    _stopping = true;
     unawaited(c.stop());
   }
 
@@ -166,9 +169,16 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     final conditions = _conditions;
     if (conditions != null) {
       if (_conditionsBlocked) return;
-      setState(() => _playing = true);
+      setState(() {
+        _playing = true;
+        _conditionsFailed = false;
+      });
       conditions
           .play(_session.currentDrill.text, _session.currentConditions!)
+          .then((started) {
+            // Dropped by a stop during rendering: no event will reset it.
+            if (!started && mounted) setState(() => _playing = false);
+          })
           .catchError((Object _) {
             if (mounted) {
               setState(() {
@@ -441,15 +451,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         RoundResultView(round: round),
-        if (_session.conditions != null) ...[
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: const ValueKey('conditions-clean-replay'),
-            onPressed: () => _playCleanReference(round),
-            icon: const Icon(Icons.hearing),
-            label: Text(s.conditionsCleanReplay),
-          ),
-        ],
+        if (_session.conditions != null)
+          CleanReferenceButton(onPressed: () => _playCleanReference(round)),
         const SizedBox(height: 24),
         FilledButton(
           onPressed: _next,
