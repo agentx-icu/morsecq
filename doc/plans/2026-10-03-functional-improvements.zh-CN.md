@@ -592,11 +592,11 @@ F05交付时才调整训练身份要求；此前保持当前启动门。
 | F05 | `guest_profile.dart`、`startup_controller.dart`、`training_controller_host.dart`；`ui/account/guest_widgets.dart`；`placement_assessment.dart`、`ui/learn/placement/` | 访客数据位于 `<support>/morsecq/guest/`。迁移：暂停所有学习控制器 → 暂存 → 校验 → 写日志 → 提交 → 按访客批次写完成标记 → 清理；启动时可续完。从访客模式恢复/解锁时提供保留/改用访客进度，绝不合并。 |
 | F06 | `material/*.dart`；`material_store.dart`、`material_practice.dart`；`ui/learn/materials/`；`morse_io` 的 `wav_export.dart` | TXT/JSON 导入（每次 JSON 导入都先预览确认），JSON/TXT/WAV 导出（PCM16 单声道 48 kHz，每段 ≤10 分钟）。 |
 | F07 | `morsecq_chat_api` 的 `message_search.dart`；`morsecq_chat` 的 `chat_service_messages.dart`；`ui/chat/search/`；Tim2Tox PR agentx-icu/tim2tox#27 | 按（时间戳, id）游标分页并可取消；跳转后可双向翻页；收藏按身份隔离，清空历史时一并删除。取消/重试由 Tim2Tox 发送控制支撑（发送队列在发送前复查）。 |
-| F08 | `morse_dsp` 的 `wav_pcm_reader.dart`、`audio_decode_segment.dart`；`morse_io` 的 `clip_player.dart`；`ui/listen/workbench/`；`audio_material_store.dart` | 包络门限默认行为不变（另有可选的噪声预热；44.1 kHz 带噪录音开头可能多出一个误判字符，列为已知限制）。录音存于 `<档案>/media/recordings/`，**不**进入身份备份（界面已说明）；媒体缺失时可重新选择或删除。 |
+| F08 | `morse_dsp` 的 `wav_pcm_reader.dart`、`audio_decode_segment.dart`；`morse_io` 的 `clip_player.dart`；`ui/listen/workbench/`；`audio_material_store.dart` | 包络门限默认行为不变（另有可选的噪声预热；44.1 kHz 带噪录音开头可能多出一个误判字符，列为已知限制）。录音存于 `<档案>/media/recordings/`，默认不进入身份备份；存在已保存的录音时，导出备份会询问是否附带（显示数量与大小，总量不超过 100 MiB 才可选），恢复时一并写回；媒体缺失时可重新选择或删除。 |
 
 验证：各包与应用测试、分析器与三项仓库门禁均通过（数字见 PR）。由 Codex 分四个范围独立评审，问题已修复并复审。
 
-未完成 / 未验证：未重新生成产品截图（macOS 测试运行与已安装的 App 共用沙盒）；未做双节点原生 Tox 取消/重试测试（由 Tim2Tox 自身测试覆盖）；`SoloudClipPlayer` 与真实音频输出未在设备上验证；暂不提供把录音纳入备份；超过 5 分钟的选段只播放前 5 分钟。
+未完成 / 未验证：未重新生成产品截图（macOS 测试运行与已安装的 App 共用沙盒）；未做双节点原生 Tox 取消/重试测试（由 Tim2Tox 自身测试覆盖）；`SoloudClipPlayer` 与真实音频输出未在设备上验证；超过 5 分钟的选段只播放前 5 分钟。
 
 ## 18. 变更记录
 
@@ -604,3 +604,4 @@ F05交付时才调整训练身份要求；此前保持当前启动门。
 - **2026-10-03** — 文档自检补充QSO允许形式、水平测试符号覆盖、计划跨课解锁边界与原生测试命令；纠正分词所属模块，降低实现歧义并保持双语一致。
 
 - **2026-10-03** — 实现 M0–M8（全部八项功能），新增 §17 实现记录；已修复 Codex 评审问题。状态行改为反映已交付范围。
+- **2026-10-04** — 更正 §17：录音可以纳入身份备份。存在已保存的录音时，导出会询问是否附带（上限 100 MiB），恢复时一并写回，符合 §11.3。原记录误写为“暂不提供”。
