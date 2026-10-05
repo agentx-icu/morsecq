@@ -5,6 +5,7 @@ import '../chat_service.dart';
 import '../identity_service.dart';
 import '../message_search.dart';
 import '../models.dart';
+import '../outbox.dart';
 import '../tox_address.dart';
 import 'replay_stream.dart';
 
@@ -398,13 +399,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
   @override
   Future<void> joinGroup(String chatId, {String? password}) async {
     _requireSession();
-    final String id = chatId.trim().toUpperCase();
-    if (!isValidChatId(id)) {
-      throw const ChatException(
-        'invalid_chat_id',
-        'Chat id must be 64 hex chars',
-      );
-    }
+    final String id = _requireValidChatId(chatId);
     if (_groups.values.any((g) => g.chatId == id)) {
       throw const ChatException('already_joined', 'Already in that group');
     }

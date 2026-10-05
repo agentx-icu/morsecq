@@ -30,6 +30,10 @@ final class StubIdentityService implements IdentityService {
   /// Simulates "no identity loaded yet".
   void clearIdentity() => _current = null;
 
+  /// Replaces the identity without an identity event (as when a status
+  /// event is delivered first).
+  void setIdentityQuietly(Identity? identity) => _current = identity;
+
   /// Replaces the identity and announces it (null: deleted).
   void setIdentity(Identity? identity) {
     _current = identity;

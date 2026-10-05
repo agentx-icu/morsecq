@@ -3402,4 +3402,771 @@ class SJa extends S {
 
   @override
   String get accountBackupMediaSkip => '録音なし';
+
+  @override
+  String get diagTitle => '接続の診断';
+
+  @override
+  String get diagOpenSubtitle => 'メッセージが待機している理由と再接続の方法';
+
+  @override
+  String get diagBannerDetails => '詳細';
+
+  @override
+  String get diagSummaryNoIdentity => 'ID が開かれていないため、確認できる接続はありません。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Tox ネットワークに接続済みで、この連絡先もオンラインです。メッセージは直接届きます。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '接続済みですが、この連絡先はオフラインです。メッセージはこの端末の送信待ちに残り、相手がオンラインになると送信されます。';
+
+  @override
+  String get diagSummaryOnline => 'Tox ネットワークに接続しています。';
+
+  @override
+  String get diagSummaryConnecting => 'Tox ネットワークに接続中です。起動直後やネットワーク変更後は 1 分ほどかかることがあります。';
+
+  @override
+  String get diagSummaryOffline => 'Tox ネットワークに接続していません。接続が戻るまで送受信はできません。';
+
+  @override
+  String get diagLocalLabel => 'この端末の接続';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '$time から';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '$time から観測';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '$time にアプリへ戻ってから観測';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最後に確認した接続';
+
+  @override
+  String get diagLastOnlineNow => '現在接続中';
+
+  @override
+  String get diagLastOnlineNone => 'まだ接続を確認していません。';
+
+  @override
+  String get diagLastOnlineHint => 'この端末が自分の接続を最後に確認した時刻です。メッセージが相手に届いた時刻ではありません。';
+
+  @override
+  String get diagPeerLabel => '連絡先';
+
+  @override
+  String get diagUnknown => '不明';
+
+  @override
+  String get diagPeerUnknownHint => '連絡先の在席状態は、自分が接続しているときだけ確認できます。';
+
+  @override
+  String get diagPeerGroupHint => 'グループメンバーの在席状態はメンバー一覧に表示されます。';
+
+  @override
+  String get diagPendingLabel => '送信待ち';
+
+  @override
+  String get diagPendingNone => '待機中のメッセージはありません';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のメッセージ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最も古いもの：$time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'チャットが接続されるまで不明';
+
+  @override
+  String get diagPendingHint => '送信待ちのメッセージはこの端末に保存され、相手に届く状態になると自動で送信されます。診断で削除や再送をすることはありません。';
+
+  @override
+  String get diagReconnect => '再接続';
+
+  @override
+  String get diagReconnecting => '再接続中…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '再接続に失敗しました：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '再接続は接続の試行をやり直します。オンラインになるまで時間がかかることがあり、そのときはこのページが更新されます。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ の接続のしくみ';
+
+  @override
+  String get diagAboutBody => 'MorseCQ にはサーバーがありません。端末は Tox のピアツーピアネットワークで連絡先と直接通信するため、メッセージが届くには双方が同時にオンラインである必要があります。スマートフォンはバックグラウンドのアプリを一時停止するので、その間 MorseCQ は接続を保てず、戻ったときに再接続します。';
+
+  @override
+  String get diagDetailsTitle => '技術的な詳細';
+
+  @override
+  String get diagDetailIdentity => 'ID';
+
+  @override
+  String get diagDetailStatus => '状態';
+
+  @override
+  String get diagDetailObserved => '観測時刻';
+
+  @override
+  String get diagDetailQueued => 'キューの件数';
+
+  @override
+  String get diagDetailError => '最後のエラーコード';
+
+  @override
+  String get backupXTitle => '暗号化バックアップ';
+
+  @override
+  String get backupXIntro => '別の端末へ持っていく内容を選んでください。ファイル全体が、ここで設定するパスフレーズで暗号化されます。';
+
+  @override
+  String get backupXCategoryIdentity => 'ID と Tox プロファイル';
+
+  @override
+  String get backupXCategoryTraining => '練習の進捗と教材';
+
+  @override
+  String get backupXCategoryChat => 'チャット履歴（自分用メモを含む）';
+
+  @override
+  String get backupXCategoryMeta => '下書き・ピン留め・ブックマーク';
+
+  @override
+  String get backupXCategoryPrefs => 'アプリの設定';
+
+  @override
+  String get backupXPrefsHint => '再生・通知・外観・言語。ウィンドウ位置やキー割り当ては含みません。';
+
+  @override
+  String get backupXCategoryMedia => '保存した録音';
+
+  @override
+  String get backupXMediaHint => '既定ではオフ：録音は大きくなることがあります。含めない場合はタイトルとメモだけが移ります。';
+
+  @override
+  String get backupXCategoryPending => '未送信のメッセージ';
+
+  @override
+  String get backupXPendingHint => '確認用として戻るだけで、自動送信されることはありません。';
+
+  @override
+  String get backupXRequired => '必須';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '大きすぎて含められません（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オフラインの友だち宛てに待機中のグループ招待 $count 件は引き継がれません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'ID のパスワードはプロファイルに残ります。新しい端末ではバックアップのパスフレーズに加えて入力が必要です。';
+
+  @override
+  String backupXTotal(String size) {
+    return '合計 約 $size';
+  }
+
+  @override
+  String get backupXPassphrase => 'バックアップのパスフレーズ';
+
+  @override
+  String get backupXPassphraseConfirm => 'パスフレーズを再入力';
+
+  @override
+  String get backupXPassphraseHint => '8 文字以上。ID のパスワードとは別のもので、再発行はできません。';
+
+  @override
+  String get backupXPassphraseTooShort => '8 文字以上にしてください';
+
+  @override
+  String get backupXPassphraseMismatch => 'パスフレーズが一致しません';
+
+  @override
+  String get backupXExport => '暗号化バックアップを作成';
+
+  @override
+  String get backupXExporting => 'バックアップを作成中…';
+
+  @override
+  String get backupXMigrationNote => '端末を移行しますか？向こうで復元したら、この端末ではこの ID を使わないでください。同じ ID の端末が 2 台あると、同じメッセージが二重に送られることがあります。';
+
+  @override
+  String get backupXBusy => 'バックアップ中にデータが変化し続けました。もう一度お試しください。';
+
+  @override
+  String get backupXTooLarge => 'バックアップが大きすぎます。録音を除外してもう一度お試しください。';
+
+  @override
+  String get restoreXWrongPassphrase => 'パスフレーズが違うか、ファイルが改変・欠損しています。';
+
+  @override
+  String get restoreXUnsupported => 'このバックアップは新しいバージョンの MorseCQ で作成されています。';
+
+  @override
+  String get restoreXCheck => 'バックアップを開く';
+
+  @override
+  String get restoreXPreviewTitle => 'バックアップの内容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '作成日時 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '含まれるもの';
+
+  @override
+  String get restoreXExcluded => 'このバックアップにないもの';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未送信のメッセージ $count 件が確認用に戻ります。自動送信はされません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末にある未送信のメッセージ $count 件はこのバックアップに含まれていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'ID のパスワード';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'このバックアップの ID には独自のパスワードがあります。あわせて入力してください。';
+
+  @override
+  String get restoreXConfirmTitle => 'この端末の ID を置き換えますか？';
+
+  @override
+  String get restoreXConfirmBody => 'この端末の ID とデータはバックアップで置き換えられます。ここで接続する前に、以前の端末でこの ID を使うのをやめてください。';
+
+  @override
+  String get restoreXConfirm => '置き換えて復元';
+
+  @override
+  String get restoreXReportTitle => '復元が完了しました';
+
+  @override
+  String get restoreXReportRestored => '復元したもの';
+
+  @override
+  String get restoreXReportNotIncluded => '復元しなかったもの';
+
+  @override
+  String get restoreXReportPrefsFailed => '設定を適用できませんでした。以前の設定のままです。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未送信のメッセージ $count 件がチャットで確認を待っています。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末の未送信メッセージ $count 件は引き継がれていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '待機中のグループ招待 $count 件は再送されていません。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '以前の端末ではこの ID を使わないでください。';
+
+  @override
+  String get restoreXReportDone => '完了';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '以前の端末の未送信メッセージ $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未送信のメッセージ';
+
+  @override
+  String get pendingReviewBody => '以前の端末で送信を待っていたメッセージです。MorseCQ が自動で送ることはありません。まだ必要なら打ち直してください。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '以前の端末で $time に送信待ち';
+  }
+
+  @override
+  String get pendingReviewDismiss => '破棄';
+
+  @override
+  String get pendingReviewDismissAll => 'すべて破棄';
+
+  @override
+  String get pendingReviewEmpty => '確認するものはもうありません。';
+
+  @override
+  String get backupXWizardInside => 'バックアップファイルは自分で決めたパスフレーズでまるごと暗号化され、ID の鍵と練習の進捗を含みます。ファイルとパスフレーズは、この端末以外の安全な場所に保管してください。';
+
+  @override
+  String get backupXMeSubtitle => 'ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも';
+
+  @override
+  String get conditionsTitle => '受信環境';
+
+  @override
+  String get conditionsClear => 'クリア';
+
+  @override
+  String get conditionsLight => '軽い混信';
+
+  @override
+  String get conditionsRadio => '実戦練習';
+
+  @override
+  String get conditionsClearHint => 'きれいで一定の音。通常の練習です。';
+
+  @override
+  String get conditionsLightHint => '小さな雑音とゆるやかなフェージング。結果はクリアな練習とは別に記録します。';
+
+  @override
+  String get conditionsRadioHint => '雑音、深いフェージング、近くの局、少し不揃いなタイミング。結果はクリアな練習とは別に記録します。';
+
+  @override
+  String get conditionsPreview => '試聴';
+
+  @override
+  String conditionsActive(String name) {
+    return '受信環境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '受信環境は音で聞くものです。練習設定で音をオンにするか、「クリア」で練習してください。';
+
+  @override
+  String get conditionsCleanReplay => '効果なしで再生';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'この環境・速度での挑戦 $count 回：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '受信環境つきの練習は活動として記録されますが、レッスン・復習スケジュール・速度のおすすめは変わりません。';
+
+  @override
+  String get keysTitle => 'キーと外部キーヤー';
+
+  @override
+  String get keysMeSubtitle => 'キー割り当て・パドル・USB キーヤーアダプター';
+
+  @override
+  String get keysIntro => 'モールスを打つキーを選びます。キーボードとして動作する USB 電鍵・パドルアダプターはキーボードと同じ扱いなので、ここでキーを設定してください。どの機器からのキー入力かはアプリには分からないため、プロファイルはキー割り当ての組み合わせです。';
+
+  @override
+  String get keysStandardProfile => '標準';
+
+  @override
+  String get keysUnnamed => '名前のないプロファイル';
+
+  @override
+  String get keysEdit => '編集';
+
+  @override
+  String get keysNewProfile => '新しいプロファイル';
+
+  @override
+  String get keysLimitations => 'MIDI・シリアル・Bluetooth のキーヤー、アダプターのファームウェア設定、送信機の制御には対応していません。検証済みのアダプターはドキュメントに記載しています。';
+
+  @override
+  String get keysEditTitle => 'キープロファイル';
+
+  @override
+  String get keysName => 'プロファイル名';
+
+  @override
+  String get keysActionStraight => '縦振り電鍵';
+
+  @override
+  String get keysActionDit => '短点パドル';
+
+  @override
+  String get keysActionDah => '長点パドル';
+
+  @override
+  String get keysPressKey => 'キーを押してください…';
+
+  @override
+  String get keysNone => '未設定';
+
+  @override
+  String get keysSet => '設定';
+
+  @override
+  String keysReserved(String key) {
+    return '$key はシステムまたはアプリが使用するため設定できません。別のキーを選んでください。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key はすでに「$action」に使われています。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '1 つのキーに割り当てられる動作は 1 つだけです：$keys が重複しています。';
+  }
+
+  @override
+  String get keysMissing => 'このキーヤーモードに必要なキーを設定してください（iambic では両方のパドル）。';
+
+  @override
+  String get keysSwapPaddles => 'パドルを入れ替える（左利き）';
+
+  @override
+  String get keysKeyerMode => 'キーヤーモード';
+
+  @override
+  String get keysIambicA => 'Iambic A';
+
+  @override
+  String get keysIambicB => 'Iambic B';
+
+  @override
+  String get keysAdapterKeyer => 'アダプターが自分で符号を作る';
+
+  @override
+  String get keysAdapterKeyerHint => 'キーヤー内蔵のアダプター向け：アダプターが計った押下・解放をそのまま使い、アプリ側で二重に iambic 処理しません。';
+
+  @override
+  String get keysAppSidetone => '打鍵時のアプリのサイドトーン';
+
+  @override
+  String get keysAppSidetoneHint => 'アダプターがサイドトーンを出す場合はオフにします。解読には影響しません。';
+
+  @override
+  String get keysTestTitle => 'テスト';
+
+  @override
+  String get keysTestNote => 'テスト専用です。送信も練習記録への追加もされません。';
+
+  @override
+  String get keysTestRelease => 'キーを解放';
+
+  @override
+  String get keysAdapterActive => 'アダプターのキーヤーを使用中：パドルのキーは縦振り電鍵として扱います。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'キー：$keys';
+  }
+
+  @override
+  String get telegraphTitle => '中文電碼';
+
+  @override
+  String get telegraphIntro => '漢字は 1 文字ずつ 4 桁の番号で送られます。数字を聞き取る練習と、どの番号がどの字かを覚える練習を別々に行います。';
+
+  @override
+  String get telegraphCodebook => '電碼本';
+
+  @override
+  String get telegraphCodebookMainland => '中国大陸';
+
+  @override
+  String get telegraphCodebookTaiwan => '台湾';
+
+  @override
+  String get telegraphDigitsTitle => '電碼を聞き取る';
+
+  @override
+  String get telegraphDigitsHint => '実在する電碼の 4 桁を聞いて、数字を入力します。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 回：数字の正答率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '電碼を思い出す';
+
+  @override
+  String get telegraphRecallHint => '字から番号、番号から字。モールスの進捗とは別に記録します。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 枚回答：正答率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '電碼の暗記がモールスのレッスン解放や速度のおすすめに影響することはありません。数字の聞き取りは他のモールス受信と同じ扱いです。';
+
+  @override
+  String get telegraphRecallCharPrompt => 'この字の電碼を入力';
+
+  @override
+  String get telegraphRecallCodePrompt => 'この電碼の字を選ぶ';
+
+  @override
+  String get telegraphReveal => '答えを見る';
+
+  @override
+  String get telegraphRevealAssisted => '表示済み：このカードは補助ありとして記録します。';
+
+  @override
+  String get telegraphCorrect => '正解';
+
+  @override
+  String get telegraphIncorrect => '不正解';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 問中 $correct 問正解';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '答えを見たカード $count 枚',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '中文電碼として解釈';
+
+  @override
+  String get telegraphInterpretTitle => '電碼の解釈';
+
+  @override
+  String get telegraphInterpretNote => 'ここに表示するだけで、メッセージ自体は変わらず、何も送信されません。';
+
+  @override
+  String get telegraphUnresolved => '未解決：この番号の字はありません';
+
+  @override
+  String get telegraphMalformed => '4 桁のグループではありません';
+
+  @override
+  String get telegraphNotCode => '文字列（そのまま）';
+
+  @override
+  String get telegraphAmbiguous => 'この番号を共有する字が複数あります';
+
+  @override
+  String get groupPracticeTitle => 'グループ練習';
+
+  @override
+  String get groupPracticeIntro => '指導役はいつもどおりグループチャットで課題を打電します。各メンバーはここで課題メッセージを選び、自分の速度で聞き取ります。解答と得点はこの端末に残り、グループには何も送信されません。';
+
+  @override
+  String get groupPracticeNew => '新しいセッション';
+
+  @override
+  String get groupPracticeTitleField => 'タイトル';
+
+  @override
+  String get groupPracticeCreate => '作成';
+
+  @override
+  String get groupPracticeInstructor => '指導役';
+
+  @override
+  String get groupPracticeParticipant => '参加者';
+
+  @override
+  String get groupPracticeInstructorHint => '課題をグループチャットで打電し、ここでラウンドとして追加して完了にします。順番はチャットで伝えてください。';
+
+  @override
+  String get groupPracticeParticipantHint => '指導役の課題メッセージをラウンドとして追加し、ここで 1 つずつ聞き取ります。';
+
+  @override
+  String get groupPracticeLocalNote => 'この端末だけの記録です。ラウンド・役割・結果は他のメンバーと同期されず、受け取り損ねたメッセージが全員に届くとは限りません。';
+
+  @override
+  String get groupPracticeAddRound => '課題を追加';
+
+  @override
+  String get groupPracticeNoMessages => '最近の履歴に追加できるメッセージがありません。';
+
+  @override
+  String get groupPracticeNotConnected => 'チャットが接続されるまでグループの履歴は使えません。';
+
+  @override
+  String get groupPracticeRoundOpen => '未実施';
+
+  @override
+  String get groupPracticeRoundDone => '完了';
+
+  @override
+  String get groupPracticeRoundUnavailable => '利用不可';
+
+  @override
+  String get groupPracticeSourceGone => '課題メッセージは履歴にもうありません。';
+
+  @override
+  String get groupPracticeSourceLoading => 'メッセージを探しています…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '聞き取り：$accuracy%（$count 回）',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '聞き取る';
+
+  @override
+  String get groupPracticeRemoveRound => 'ラウンドを削除';
+
+  @override
+  String get groupPracticeSummary => 'まとめ';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '$total ラウンド中 $done 完了';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '利用できないラウンド $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '聞き取り正答率：$accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '補助ありの挑戦 $count 回',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '共有するなら、結果を自分でグループチャットに打電してください（例：$done/$total $accuracy%）。自動送信はされません。';
+  }
+
+  @override
+  String get groupPracticeComplete => 'セッションを終了';
+
+  @override
+  String get groupPracticeDeleteTitle => 'このセッションを削除しますか？';
+
+  @override
+  String get groupPracticeDeleteBody => 'ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。';
+
+  @override
+  String get conditionsAudioFailed => 'この端末では音声を開始できませんでした。「クリア」で練習してください。';
 }

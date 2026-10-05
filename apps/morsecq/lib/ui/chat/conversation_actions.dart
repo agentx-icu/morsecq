@@ -213,10 +213,27 @@ class ConversationActions extends StatelessWidget {
             ),
             if (isGroup)
               PopupMenuItem(value: 'members', child: Text(s.chatMembers)),
+            if (isGroup)
+              PopupMenuItem(
+                value: 'practice',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.school_outlined),
+                  title: Text(s.groupPracticeTitle),
+                ),
+              ),
             CheckedPopupMenuItem(
               value: 'listenOnly',
               checked: settings.listenOnly,
               child: Text(s.chatListenOnly),
+            ),
+            PopupMenuItem(
+              value: 'connection',
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.network_check),
+                title: Text(s.diagTitle),
+              ),
             ),
             PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
             if (isGroup)

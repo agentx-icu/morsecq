@@ -101,6 +101,15 @@ void main() {
     },
   );
 
+  test('the outbox is unknown while detached and read from the bound queue', () async {
+    expect(chat.pendingOutbox(), isNull);
+    await bind();
+    expect(chat.pendingOutbox(), PendingOutboxSummary.empty);
+    engine.bind(null);
+    await pumpEventQueue();
+    expect(chat.pendingOutbox(), isNull, reason: 'a detached identity');
+  });
+
   test(
     'friends and requests are derived from the engine on each tick',
     () async {

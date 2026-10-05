@@ -4879,5 +4879,1035 @@
   "accountBackupMediaSkip": "Without recordings",
   "@accountBackupMediaSkip": {
     "description": "Backup export: continue without recordings (default)"
+  },
+  "diagTitle": "Connection diagnostics",
+  "@diagTitle": {
+    "description": "Connection diagnostics page title; also the menu / Me entry that opens it"
+  },
+  "diagOpenSubtitle": "Why messages are waiting and how to reconnect",
+  "@diagOpenSubtitle": {
+    "description": "Me page: subtitle of the Connection diagnostics entry"
+  },
+  "diagBannerDetails": "Details",
+  "@diagBannerDetails": {
+    "description": "Offline banner: button that opens Connection diagnostics"
+  },
+  "diagSummaryNoIdentity": "No identity is open, so there is no connection to inspect.",
+  "@diagSummaryNoIdentity": {
+    "description": "Diagnostics summary when no identity is open"
+  },
+  "diagSummaryOnlinePeerOnline": "You are connected to the Tox network and this contact is online. Messages go straight to them.",
+  "@diagSummaryOnlinePeerOnline": {
+    "description": "Diagnostics summary: we are online and the selected contact is online"
+  },
+  "diagSummaryOnlinePeerOffline": "You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.",
+  "@diagSummaryOnlinePeerOffline": {
+    "description": "Diagnostics summary: we are online but the selected contact is offline"
+  },
+  "diagSummaryOnline": "You are connected to the Tox network.",
+  "@diagSummaryOnline": {
+    "description": "Diagnostics summary: we are online (no contact selected, or its state is unknown)"
+  },
+  "diagSummaryConnecting": "Connecting to the Tox network. This can take a minute after the app starts or the network changes.",
+  "@diagSummaryConnecting": {
+    "description": "Diagnostics summary while connecting"
+  },
+  "diagSummaryOffline": "You are not connected to the Tox network. Nothing can be sent or received until the connection is back.",
+  "@diagSummaryOffline": {
+    "description": "Diagnostics summary while offline"
+  },
+  "diagLocalLabel": "Your connection",
+  "@diagLocalLabel": {
+    "description": "Diagnostics: label of the local connection state row"
+  },
+  "diagSinceChanged": "Since {time}",
+  "@diagSinceChanged": {
+    "description": "Diagnostics: when the current state was observed to start",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagSinceFirst": "Observed since {time}",
+  "@diagSinceFirst": {
+    "description": "Diagnostics: the state was first observed at this time (no change seen yet)",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagSinceResumed": "Observed since returning to the app at {time}",
+  "@diagSinceResumed": {
+    "description": "Diagnostics: observation restarted when the app returned from the background",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagLastOnlineLabel": "Last connection observed",
+  "@diagLastOnlineLabel": {
+    "description": "Diagnostics: label of the last observed local connection row"
+  },
+  "diagLastOnlineNow": "Connected now",
+  "@diagLastOnlineNow": {
+    "description": "Diagnostics: we are connected right now"
+  },
+  "diagLastOnlineNone": "No connection observed yet.",
+  "@diagLastOnlineNone": {
+    "description": "Diagnostics: no local connection has been observed for this identity yet"
+  },
+  "diagLastOnlineHint": "When this device last saw its own connection. It is not when a message reached anyone.",
+  "@diagLastOnlineHint": {
+    "description": "Diagnostics: explains that the last-connection time is local, not a delivery time"
+  },
+  "diagPeerLabel": "Contact",
+  "@diagPeerLabel": {
+    "description": "Diagnostics: label of the selected contact's state row"
+  },
+  "diagUnknown": "Unknown",
+  "@diagUnknown": {
+    "description": "Diagnostics: a fact that cannot be observed right now"
+  },
+  "diagPeerUnknownHint": "A contact's presence can only be seen while you are connected.",
+  "@diagPeerUnknownHint": {
+    "description": "Diagnostics: why the contact state is unknown"
+  },
+  "diagPeerGroupHint": "Group members' presence is shown in the member list.",
+  "@diagPeerGroupHint": {
+    "description": "Diagnostics: group conversations have no single contact state"
+  },
+  "diagPendingLabel": "Waiting to send",
+  "@diagPendingLabel": {
+    "description": "Diagnostics: label of the durable outbox row"
+  },
+  "diagPendingNone": "Nothing waiting",
+  "@diagPendingNone": {
+    "description": "Diagnostics: the outbox is empty"
+  },
+  "diagPendingCount": "{count, plural, =1{1 message} other{{count} messages}}",
+  "@diagPendingCount": {
+    "description": "Diagnostics: number of queued messages",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "diagPendingOldest": "Oldest queued {time}",
+  "@diagPendingOldest": {
+    "description": "Diagnostics: enqueue time of the oldest queued message",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "diagPendingUnknown": "Unknown until chat is connected",
+  "@diagPendingUnknown": {
+    "description": "Diagnostics: the outbox cannot be read right now (chat not connected)"
+  },
+  "diagPendingHint": "Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.",
+  "@diagPendingHint": {
+    "description": "Diagnostics: queued messages are kept and never resent or discarded by diagnostics"
+  },
+  "diagReconnect": "Reconnect",
+  "@diagReconnect": {
+    "description": "Diagnostics: reconnect button"
+  },
+  "diagReconnecting": "Reconnecting…",
+  "@diagReconnecting": {
+    "description": "Diagnostics: reconnect in progress"
+  },
+  "diagReconnectFailed": "Reconnect failed: {reason}",
+  "@diagReconnectFailed": {
+    "description": "Diagnostics: the reconnect attempt failed; reason is a localized error",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "diagReconnectNote": "Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.",
+  "@diagReconnectNote": {
+    "description": "Diagnostics: a finished reconnect does not mean online"
+  },
+  "diagAboutTitle": "How MorseCQ connects",
+  "@diagAboutTitle": {
+    "description": "Diagnostics: heading of the P2P explanation"
+  },
+  "diagAboutBody": "MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.",
+  "@diagAboutBody": {
+    "description": "Diagnostics: P2P and mobile background explanation"
+  },
+  "diagDetailsTitle": "Technical details",
+  "@diagDetailsTitle": {
+    "description": "Diagnostics: expandable technical details"
+  },
+  "diagDetailIdentity": "Identity",
+  "@diagDetailIdentity": {
+    "description": "Diagnostics details: identity key prefix"
+  },
+  "diagDetailStatus": "Status",
+  "@diagDetailStatus": {
+    "description": "Diagnostics details: raw connection status"
+  },
+  "diagDetailObserved": "Observed at",
+  "@diagDetailObserved": {
+    "description": "Diagnostics details: when this snapshot was taken"
+  },
+  "diagDetailQueued": "Queue entries",
+  "@diagDetailQueued": {
+    "description": "Diagnostics details: raw queue count"
+  },
+  "diagDetailError": "Last error code",
+  "@diagDetailError": {
+    "description": "Diagnostics details: last reconnect error code"
+  },
+  "backupXTitle": "Encrypted backup",
+  "@backupXTitle": {
+    "description": "Encrypted complete backup page title"
+  },
+  "backupXIntro": "Choose what to take to another device. The whole file is encrypted with a passphrase you set here.",
+  "@backupXIntro": {
+    "description": "Encrypted backup page: intro"
+  },
+  "backupXCategoryIdentity": "Identity and Tox profile",
+  "@backupXCategoryIdentity": {
+    "description": "Backup category: identity and Tox profile"
+  },
+  "backupXCategoryTraining": "Training progress and materials",
+  "@backupXCategoryTraining": {
+    "description": "Backup category: training progress and materials"
+  },
+  "backupXCategoryChat": "Chat history, including notes to self",
+  "@backupXCategoryChat": {
+    "description": "Backup category: chat history including note to self"
+  },
+  "backupXCategoryMeta": "Drafts, pins and bookmarks",
+  "@backupXCategoryMeta": {
+    "description": "Backup category: drafts, pins, bookmarks"
+  },
+  "backupXCategoryPrefs": "App preferences",
+  "@backupXCategoryPrefs": {
+    "description": "Backup category: portable app preferences"
+  },
+  "backupXPrefsHint": "Playback, notifications, appearance and language. Never window positions or key bindings.",
+  "@backupXPrefsHint": {
+    "description": "Backup: what app preferences include/exclude"
+  },
+  "backupXCategoryMedia": "Saved recordings",
+  "@backupXCategoryMedia": {
+    "description": "Backup category: saved recordings"
+  },
+  "backupXMediaHint": "Off by default: recordings can be large. Without them, only their titles and notes come along.",
+  "@backupXMediaHint": {
+    "description": "Backup: recordings are large and off by default"
+  },
+  "backupXCategoryPending": "Unsent messages",
+  "@backupXCategoryPending": {
+    "description": "Backup category: unsent messages"
+  },
+  "backupXPendingHint": "They come back for review only and are never sent automatically.",
+  "@backupXPendingHint": {
+    "description": "Backup: unsent messages are restored only for review"
+  },
+  "backupXRequired": "Required",
+  "@backupXRequired": {
+    "description": "Backup: this category is required"
+  },
+  "backupXSizeLine": "{count, plural, =1{1 item} other{{count} items}} · {size}",
+  "@backupXSizeLine": {
+    "description": "Backup: item count and size of a category",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXSizeKb": "{size} KB",
+  "@backupXSizeKb": {
+    "description": "File size in kilobytes",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXSizeMb": "{size} MB",
+  "@backupXSizeMb": {
+    "description": "File size in megabytes",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXMediaTooLarge": "Too large to include ({size})",
+  "@backupXMediaTooLarge": {
+    "description": "Backup: recordings exceed the size limit",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXInvitesNote": "{count, plural, =1{1 group invitation waiting for an offline friend is not carried over.} other{{count} group invitations waiting for offline friends are not carried over.}}",
+  "@backupXInvitesNote": {
+    "description": "Backup: queued group invites are not carried",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupXIdentityPasswordNote": "Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.",
+  "@backupXIdentityPasswordNote": {
+    "description": "Backup: the profile keeps its identity password"
+  },
+  "backupXTotal": "About {size} in total",
+  "@backupXTotal": {
+    "description": "Backup: estimated total size",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupXPassphrase": "Backup passphrase",
+  "@backupXPassphrase": {
+    "description": "Backup passphrase field (export and restore)"
+  },
+  "backupXPassphraseConfirm": "Repeat passphrase",
+  "@backupXPassphraseConfirm": {
+    "description": "Backup: repeat passphrase field"
+  },
+  "backupXPassphraseHint": "At least 8 characters. It is separate from your identity password and cannot be recovered.",
+  "@backupXPassphraseHint": {
+    "description": "Backup: passphrase guidance"
+  },
+  "backupXPassphraseTooShort": "Use at least 8 characters",
+  "@backupXPassphraseTooShort": {
+    "description": "Backup: passphrase too short"
+  },
+  "backupXPassphraseMismatch": "The passphrases do not match",
+  "@backupXPassphraseMismatch": {
+    "description": "Backup: passphrases differ"
+  },
+  "backupXExport": "Create encrypted backup",
+  "@backupXExport": {
+    "description": "Backup: create button"
+  },
+  "backupXExporting": "Creating backup…",
+  "@backupXExporting": {
+    "description": "Backup: creating in progress"
+  },
+  "backupXMigrationNote": "Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.",
+  "@backupXMigrationNote": {
+    "description": "Backup: stop using the identity on the old device after moving"
+  },
+  "backupXBusy": "Your data kept changing while the backup was taken. Try again.",
+  "@backupXBusy": {
+    "description": "Backup error: data kept changing"
+  },
+  "backupXTooLarge": "The backup is too large. Leave out recordings and try again.",
+  "@backupXTooLarge": {
+    "description": "Backup error: too large"
+  },
+  "restoreXWrongPassphrase": "Wrong passphrase, or the file was changed or is incomplete.",
+  "@restoreXWrongPassphrase": {
+    "description": "Restore: wrong passphrase or altered file"
+  },
+  "restoreXUnsupported": "This backup was made by a newer version of MorseCQ.",
+  "@restoreXUnsupported": {
+    "description": "Restore: backup from a newer version"
+  },
+  "restoreXCheck": "Open backup",
+  "@restoreXCheck": {
+    "description": "Restore: open the encrypted backup with the passphrase"
+  },
+  "restoreXPreviewTitle": "Backup contents",
+  "@restoreXPreviewTitle": {
+    "description": "Restore preview title"
+  },
+  "restoreXCreated": "Created {date}",
+  "@restoreXCreated": {
+    "description": "Restore preview: creation time",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreXIncluded": "Included",
+  "@restoreXIncluded": {
+    "description": "Restore preview: included categories heading"
+  },
+  "restoreXExcluded": "Not in this backup",
+  "@restoreXExcluded": {
+    "description": "Restore preview: categories not in the backup"
+  },
+  "restoreXPendingIncluded": "{count, plural, =1{1 unsent message comes back for review. It will not be sent automatically.} other{{count} unsent messages come back for review. They will not be sent automatically.}}",
+  "@restoreXPendingIncluded": {
+    "description": "Restore preview: unsent messages included for review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXPendingExcluded": "{count, plural, =1{1 unsent message on the old device is not in this backup.} other{{count} unsent messages on the old device are not in this backup.}}",
+  "@restoreXPendingExcluded": {
+    "description": "Restore preview: unsent messages not included",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXIdentityPassword": "Identity password",
+  "@restoreXIdentityPassword": {
+    "description": "Restore: identity password field for an encrypted profile"
+  },
+  "restoreXIdentityPasswordNote": "The identity in this backup has its own password. Enter it as well.",
+  "@restoreXIdentityPasswordNote": {
+    "description": "Restore: the profile needs its own password"
+  },
+  "restoreXConfirmTitle": "Replace the identity on this device?",
+  "@restoreXConfirmTitle": {
+    "description": "Restore: confirm replacement dialog title"
+  },
+  "restoreXConfirmBody": "Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.",
+  "@restoreXConfirmBody": {
+    "description": "Restore: confirm replacement dialog body"
+  },
+  "restoreXConfirm": "Replace and restore",
+  "@restoreXConfirm": {
+    "description": "Restore: confirm button"
+  },
+  "restoreXReportTitle": "Restore complete",
+  "@restoreXReportTitle": {
+    "description": "Restore report title"
+  },
+  "restoreXReportRestored": "Restored",
+  "@restoreXReportRestored": {
+    "description": "Restore report: restored heading"
+  },
+  "restoreXReportNotIncluded": "Not restored",
+  "@restoreXReportNotIncluded": {
+    "description": "Restore report: not restored heading"
+  },
+  "restoreXReportPrefsFailed": "Preferences could not be applied; your previous preferences were kept.",
+  "@restoreXReportPrefsFailed": {
+    "description": "Restore report: preferences failed to apply"
+  },
+  "restoreXReportPendingReview": "{count, plural, =1{1 unsent message is waiting for your review in Chat.} other{{count} unsent messages are waiting for your review in Chat.}}",
+  "@restoreXReportPendingReview": {
+    "description": "Restore report: unsent messages await review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportPendingNotResumed": "{count, plural, =1{1 unsent message from the old device was not brought over.} other{{count} unsent messages from the old device were not brought over.}}",
+  "@restoreXReportPendingNotResumed": {
+    "description": "Restore report: unsent messages not brought over",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportInvites": "{count, plural, =1{1 queued group invitation was not resent.} other{{count} queued group invitations were not resent.}}",
+  "@restoreXReportInvites": {
+    "description": "Restore: queued group invitations not resent",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreXReportStopOld": "Stop using this identity on the old device.",
+  "@restoreXReportStopOld": {
+    "description": "Restore report: stop using the old device"
+  },
+  "restoreXReportDone": "Done",
+  "@restoreXReportDone": {
+    "description": "Restore report: close button"
+  },
+  "pendingReviewBanner": "{count, plural, =1{1 unsent message from your previous device} other{{count} unsent messages from your previous device}}",
+  "@pendingReviewBanner": {
+    "description": "Chat list strip: restored unsent messages to review",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingReviewTitle": "Unsent messages",
+  "@pendingReviewTitle": {
+    "description": "Restored unsent messages review page title"
+  },
+  "pendingReviewBody": "These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.",
+  "@pendingReviewBody": {
+    "description": "Restored unsent messages: explanation"
+  },
+  "pendingReviewQueuedAt": "Queued {time} on the previous device",
+  "@pendingReviewQueuedAt": {
+    "description": "Restored unsent message: when it was queued",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingReviewDismiss": "Dismiss",
+  "@pendingReviewDismiss": {
+    "description": "Restored unsent message: dismiss one"
+  },
+  "pendingReviewDismissAll": "Dismiss all",
+  "@pendingReviewDismissAll": {
+    "description": "Restored unsent messages: dismiss all"
+  },
+  "pendingReviewEmpty": "Nothing left to review.",
+  "@pendingReviewEmpty": {
+    "description": "Restored unsent messages: nothing left"
+  },
+  "backupXWizardInside": "The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.",
+  "@backupXWizardInside": {
+    "description": "First-run backup wizard: what the encrypted backup contains"
+  },
+  "backupXMeSubtitle": "An encrypted file with your identity, chats and progress, to keep or to move to another device",
+  "@backupXMeSubtitle": {
+    "description": "Me page: subtitle of the export backup entry (encrypted complete backup)"
+  },
+  "conditionsTitle": "Conditions",
+  "@conditionsTitle": {
+    "description": "Drill picker: heading of the channel conditions selector"
+  },
+  "conditionsClear": "Clear",
+  "@conditionsClear": {
+    "description": "Conditions preset: clean tone (default)"
+  },
+  "conditionsLight": "Light interference",
+  "@conditionsLight": {
+    "description": "Conditions preset: light interference"
+  },
+  "conditionsRadio": "Radio practice",
+  "@conditionsRadio": {
+    "description": "Conditions preset: realistic radio practice"
+  },
+  "conditionsClearHint": "A clean, steady tone: ordinary practice.",
+  "@conditionsClearHint": {
+    "description": "Conditions preset hint: clear"
+  },
+  "conditionsLightHint": "Soft background noise and gentle fading. Results are kept apart from clean practice.",
+  "@conditionsLightHint": {
+    "description": "Conditions preset hint: light"
+  },
+  "conditionsRadioHint": "Noise, deep fading, a nearby station and slightly uneven timing. Results are kept apart from clean practice.",
+  "@conditionsRadioHint": {
+    "description": "Conditions preset hint: radio practice"
+  },
+  "conditionsPreview": "Preview",
+  "@conditionsPreview": {
+    "description": "Drill picker: play a short sample under the chosen conditions"
+  },
+  "conditionsActive": "Conditions: {name}",
+  "@conditionsActive": {
+    "description": "Receive drill: chip naming the active conditions",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "conditionsNeedSound": "Radio conditions are heard, not seen: turn sound on in the training settings, or practise with Clear conditions.",
+  "@conditionsNeedSound": {
+    "description": "Receive drill: conditions need sound"
+  },
+  "conditionsCleanReplay": "Play without effects",
+  "@conditionsCleanReplay": {
+    "description": "Round result: replay the round without effects"
+  },
+  "conditionsComparable": "{count, plural, =1{1 attempt under these conditions at this speed: {accuracy}%} other{{count} attempts under these conditions at this speed: {accuracy}% on average}}",
+  "@conditionsComparable": {
+    "description": "Receive summary: results under the same conditions and speed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "conditionsSeparateNote": "Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.",
+  "@conditionsSeparateNote": {
+    "description": "Receive summary: conditions results do not change progress"
+  },
+  "keysTitle": "Keys and external keyers",
+  "@keysTitle": {
+    "description": "Key setup page title; also the Me entry"
+  },
+  "keysMeSubtitle": "Key bindings, paddles and USB keyer adapters",
+  "@keysMeSubtitle": {
+    "description": "Me page: subtitle of the key setup entry"
+  },
+  "keysIntro": "Choose which keys key Morse. Keyboard-emulating USB key and paddle adapters work like a keyboard: set their keys here. The app cannot tell which device sent a key, so a profile is a set of bindings.",
+  "@keysIntro": {
+    "description": "Key setup: introduction"
+  },
+  "keysStandardProfile": "Standard",
+  "@keysStandardProfile": {
+    "description": "Key setup: built-in default profile"
+  },
+  "keysUnnamed": "Unnamed profile",
+  "@keysUnnamed": {
+    "description": "Key setup: profile without a name"
+  },
+  "keysEdit": "Edit",
+  "@keysEdit": {
+    "description": "Key setup: edit a profile"
+  },
+  "keysNewProfile": "New profile",
+  "@keysNewProfile": {
+    "description": "Key setup: create a profile"
+  },
+  "keysLimitations": "MIDI, serial and Bluetooth keyers, adapter firmware settings and transmitter control are not supported. Tested adapters are listed in the documentation.",
+  "@keysLimitations": {
+    "description": "Key setup: what is not supported"
+  },
+  "keysEditTitle": "Key profile",
+  "@keysEditTitle": {
+    "description": "Key profile editor title"
+  },
+  "keysName": "Profile name",
+  "@keysName": {
+    "description": "Key profile editor: name field"
+  },
+  "keysActionStraight": "Straight key",
+  "@keysActionStraight": {
+    "description": "Key action/keyer mode: straight key"
+  },
+  "keysActionDit": "Dit paddle",
+  "@keysActionDit": {
+    "description": "Key action: dit paddle"
+  },
+  "keysActionDah": "Dah paddle",
+  "@keysActionDah": {
+    "description": "Key action: dah paddle"
+  },
+  "keysPressKey": "Press a key…",
+  "@keysPressKey": {
+    "description": "Key capture: waiting for a key"
+  },
+  "keysNone": "Not set",
+  "@keysNone": {
+    "description": "Key capture: no key bound"
+  },
+  "keysSet": "Set",
+  "@keysSet": {
+    "description": "Key capture: start capturing"
+  },
+  "keysReserved": "{key} is reserved by the system or the app; choose another key.",
+  "@keysReserved": {
+    "description": "Key capture: reserved key refused",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "keysConflict": "{key} is already used for {action}.",
+  "@keysConflict": {
+    "description": "Key capture: key already used for another action",
+    "placeholders": {
+      "key": {
+        "type": "String"
+      },
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "keysConflictSave": "Each key can do only one thing: {keys} is bound twice.",
+  "@keysConflictSave": {
+    "description": "Key profile save refused: duplicate binding",
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "keysMissing": "Set the keys this keyer mode needs (both paddles for iambic).",
+  "@keysMissing": {
+    "description": "Key profile save refused: keys missing for the mode"
+  },
+  "keysSwapPaddles": "Swap paddles (left-handed)",
+  "@keysSwapPaddles": {
+    "description": "Key profile: swap dit and dah paddles"
+  },
+  "keysKeyerMode": "Keyer mode",
+  "@keysKeyerMode": {
+    "description": "Key profile: keyer mode heading"
+  },
+  "keysIambicA": "Iambic A",
+  "@keysIambicA": {
+    "description": "Keyer mode: iambic A"
+  },
+  "keysIambicB": "Iambic B",
+  "@keysIambicB": {
+    "description": "Keyer mode: iambic B"
+  },
+  "keysAdapterKeyer": "The adapter keys its own elements",
+  "@keysAdapterKeyer": {
+    "description": "Key profile: adapter has its own keyer"
+  },
+  "keysAdapterKeyerHint": "For an adapter with its own keyer: its timed key-down and key-up are used as they are, without a second iambic keyer in the app.",
+  "@keysAdapterKeyerHint": {
+    "description": "Key profile: adapter keyer explanation"
+  },
+  "keysAppSidetone": "App sidetone while keying",
+  "@keysAppSidetone": {
+    "description": "Key profile: app sidetone while keying"
+  },
+  "keysAppSidetoneHint": "Turn off when the adapter makes its own sidetone. Decoding is not affected.",
+  "@keysAppSidetoneHint": {
+    "description": "Key profile: sidetone explanation"
+  },
+  "keysTestTitle": "Test",
+  "@keysTestTitle": {
+    "description": "Key profile: test area title"
+  },
+  "keysTestNote": "Testing only: nothing is sent or added to your training.",
+  "@keysTestNote": {
+    "description": "Key profile: test area is not sent or credited"
+  },
+  "keysTestRelease": "Release keys",
+  "@keysTestRelease": {
+    "description": "Key profile: release all keys (stop a stuck tone)"
+  },
+  "keysAdapterActive": "The adapter's own keyer is used: paddle keys act as a straight key.",
+  "@keysAdapterActive": {
+    "description": "Key profile test: adapter keyer active"
+  },
+  "keysHintCustom": "Keys: {keys}",
+  "@keysHintCustom": {
+    "description": "Keying hint with the active profile's keys",
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "telegraphTitle": "Chinese telegraph code",
+  "@telegraphTitle": {
+    "description": "Chinese telegraph-code practice title / Learn entry"
+  },
+  "telegraphIntro": "Each Chinese character is sent as a four-digit code. Practise hearing the digits and, separately, remembering which code stands for which character.",
+  "@telegraphIntro": {
+    "description": "Telegraph practice: introduction"
+  },
+  "telegraphCodebook": "Codebook",
+  "@telegraphCodebook": {
+    "description": "Codebook selector label"
+  },
+  "telegraphCodebookMainland": "Mainland",
+  "@telegraphCodebookMainland": {
+    "description": "Codebook: mainland China (1983)"
+  },
+  "telegraphCodebookTaiwan": "Taiwan",
+  "@telegraphCodebookTaiwan": {
+    "description": "Codebook: Taiwan / Hong Kong"
+  },
+  "telegraphDigitsTitle": "Copy code groups",
+  "@telegraphDigitsTitle": {
+    "description": "Telegraph practice: digit copying task"
+  },
+  "telegraphDigitsHint": "Hear four-digit groups of real codes and type the digits.",
+  "@telegraphDigitsHint": {
+    "description": "Telegraph practice: digit copying explanation"
+  },
+  "telegraphDigitsResults": "{count, plural, =1{1 session: {accuracy}% of digits} other{{count} sessions: {accuracy}% of digits}}",
+  "@telegraphDigitsResults": {
+    "description": "Telegraph practice: digit copying results",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphRecallTitle": "Recall codes",
+  "@telegraphRecallTitle": {
+    "description": "Telegraph practice: codebook recall task"
+  },
+  "telegraphRecallHint": "Character to code and code to character. Kept apart from Morse progress.",
+  "@telegraphRecallHint": {
+    "description": "Telegraph practice: recall explanation"
+  },
+  "telegraphRecallResults": "{count, plural, =1{1 card answered: {accuracy}% known} other{{count} cards answered: {accuracy}% known}}",
+  "@telegraphRecallResults": {
+    "description": "Telegraph practice: recall results",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphSeparateNote": "Codebook recall never unlocks Morse lessons or changes speed advice; digit copying counts like other Morse copying.",
+  "@telegraphSeparateNote": {
+    "description": "Telegraph practice: recall does not affect Morse progress"
+  },
+  "telegraphRecallCharPrompt": "Type the code of this character",
+  "@telegraphRecallCharPrompt": {
+    "description": "Recall card: type the code of this character"
+  },
+  "telegraphRecallCodePrompt": "Pick the character for this code",
+  "@telegraphRecallCodePrompt": {
+    "description": "Recall card: pick the character of this code"
+  },
+  "telegraphReveal": "Show answer",
+  "@telegraphReveal": {
+    "description": "Recall card: reveal the answer (assisted)"
+  },
+  "telegraphRevealAssisted": "Shown: this card counts as assisted.",
+  "@telegraphRevealAssisted": {
+    "description": "Recall card: revealed answers count as assisted"
+  },
+  "telegraphCorrect": "Correct",
+  "@telegraphCorrect": {
+    "description": "Recall card: correct"
+  },
+  "telegraphIncorrect": "Not quite",
+  "@telegraphIncorrect": {
+    "description": "Recall card: incorrect"
+  },
+  "telegraphRecallSummary": "{correct} of {total} known",
+  "@telegraphRecallSummary": {
+    "description": "Recall summary: correct of total",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphRecallAssisted": "{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}",
+  "@telegraphRecallAssisted": {
+    "description": "Recall summary: cards with a revealed answer",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "telegraphInterpretAction": "Interpret as Chinese telegraph code",
+  "@telegraphInterpretAction": {
+    "description": "Chat message menu: interpret digits as telegraph code"
+  },
+  "telegraphInterpretTitle": "Telegraph code interpretation",
+  "@telegraphInterpretTitle": {
+    "description": "Telegraph interpretation sheet title"
+  },
+  "telegraphInterpretNote": "Shown here only: the message itself is not changed and nothing is sent.",
+  "@telegraphInterpretNote": {
+    "description": "Telegraph interpretation: local and read-only"
+  },
+  "telegraphUnresolved": "Unresolved: no character has this code",
+  "@telegraphUnresolved": {
+    "description": "Telegraph interpretation: unassigned code"
+  },
+  "telegraphMalformed": "Not a four-digit group",
+  "@telegraphMalformed": {
+    "description": "Telegraph interpretation: digits but not four"
+  },
+  "telegraphNotCode": "Text, kept as written",
+  "@telegraphNotCode": {
+    "description": "Telegraph interpretation: ordinary text token"
+  },
+  "telegraphAmbiguous": "Several characters share this code",
+  "@telegraphAmbiguous": {
+    "description": "Telegraph interpretation: several characters share the code"
+  },
+  "groupPracticeTitle": "Group practice",
+  "@groupPracticeTitle": {
+    "description": "Group practice page title / group menu entry"
+  },
+  "groupPracticeIntro": "The instructor keys exercises in the group chat as usual. Each member picks an exercise message here and copies it at their own speed. Answers and scores stay on your device; nothing is sent to the group.",
+  "@groupPracticeIntro": {
+    "description": "Group practice: how the manual workflow works"
+  },
+  "groupPracticeNew": "New session",
+  "@groupPracticeNew": {
+    "description": "Group practice: start a new local session"
+  },
+  "groupPracticeTitleField": "Title",
+  "@groupPracticeTitleField": {
+    "description": "Group practice: session title field"
+  },
+  "groupPracticeCreate": "Create",
+  "@groupPracticeCreate": {
+    "description": "Group practice: create the session"
+  },
+  "groupPracticeInstructor": "Instructor",
+  "@groupPracticeInstructor": {
+    "description": "Group practice role: instructor (local label)"
+  },
+  "groupPracticeParticipant": "Participant",
+  "@groupPracticeParticipant": {
+    "description": "Group practice role: participant"
+  },
+  "groupPracticeInstructorHint": "Key each exercise in the group chat, add it here as a round and tick it off; announce turns in the chat.",
+  "@groupPracticeInstructorHint": {
+    "description": "Group practice: instructor's role explanation"
+  },
+  "groupPracticeParticipantHint": "Add the instructor's exercise messages as rounds and copy each one here.",
+  "@groupPracticeParticipantHint": {
+    "description": "Group practice: participant's role explanation"
+  },
+  "groupPracticeLocalNote": "Local only: rounds, roles and results are not synchronised with other members, and missed messages may never reach everyone.",
+  "@groupPracticeLocalNote": {
+    "description": "Group practice: everything is local, nothing synchronised"
+  },
+  "groupPracticeAddRound": "Add exercise",
+  "@groupPracticeAddRound": {
+    "description": "Group practice: add an exercise message as a round"
+  },
+  "groupPracticeNoMessages": "No suitable messages in the recent history.",
+  "@groupPracticeNoMessages": {
+    "description": "Group practice: no suitable messages to add"
+  },
+  "groupPracticeNotConnected": "Group history is not available until chat is connected.",
+  "@groupPracticeNotConnected": {
+    "description": "Group practice: history unavailable (chat not connected)"
+  },
+  "groupPracticeRoundOpen": "To do",
+  "@groupPracticeRoundOpen": {
+    "description": "Group practice round state: open"
+  },
+  "groupPracticeRoundDone": "Done",
+  "@groupPracticeRoundDone": {
+    "description": "Group practice round state: done"
+  },
+  "groupPracticeRoundUnavailable": "Unavailable",
+  "@groupPracticeRoundUnavailable": {
+    "description": "Group practice round state: source message gone"
+  },
+  "groupPracticeSourceGone": "The exercise message is no longer in the history.",
+  "@groupPracticeSourceGone": {
+    "description": "Group practice: source message deleted or cleared"
+  },
+  "groupPracticeSourceLoading": "Looking for the message…",
+  "@groupPracticeSourceLoading": {
+    "description": "Group practice: source message not loaded yet"
+  },
+  "groupPracticeAttemptResult": "{count, plural, =1{Copied: {accuracy}%} other{Copied: {accuracy}% ({count} attempts)}}",
+  "@groupPracticeAttemptResult": {
+    "description": "Group practice round: latest result and number of attempts",
+    "placeholders": {
+      "accuracy": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeCopy": "Copy",
+  "@groupPracticeCopy": {
+    "description": "Group practice round: copy this exercise"
+  },
+  "groupPracticeRemoveRound": "Remove round",
+  "@groupPracticeRemoveRound": {
+    "description": "Group practice round: remove"
+  },
+  "groupPracticeSummary": "Summary",
+  "@groupPracticeSummary": {
+    "description": "Group practice: summary heading"
+  },
+  "groupPracticeRoundsDone": "{done} of {total} rounds done",
+  "@groupPracticeRoundsDone": {
+    "description": "Group practice: rounds done of total",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeUnavailableCount": "{count, plural, =1{1 round unavailable} other{{count} rounds unavailable}}",
+  "@groupPracticeUnavailableCount": {
+    "description": "Group practice: rounds whose source is gone",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeAccuracy": "Copy accuracy: {accuracy}%",
+  "@groupPracticeAccuracy": {
+    "description": "Group practice: copy accuracy over latest attempts",
+    "placeholders": {
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeAssisted": "{count, plural, =1{1 attempt with help} other{{count} attempts with help}}",
+  "@groupPracticeAssisted": {
+    "description": "Group practice: attempts with help",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeShareHint": "To share, key your result in the group chat yourself, e.g. {done}/{total} {accuracy}%. Nothing is sent automatically.",
+  "@groupPracticeShareHint": {
+    "description": "Group practice: a result the learner may key into the chat themselves",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "int"
+      }
+    }
+  },
+  "groupPracticeComplete": "Finish session",
+  "@groupPracticeComplete": {
+    "description": "Group practice: mark the session complete"
+  },
+  "groupPracticeDeleteTitle": "Delete this session?",
+  "@groupPracticeDeleteTitle": {
+    "description": "Group practice: confirm deleting a session"
+  },
+  "groupPracticeDeleteBody": "Its rounds and local results are removed from this device. Your training history and the group's messages stay.",
+  "@groupPracticeDeleteBody": {
+    "description": "Group practice: what deleting a session removes"
+  },
+  "conditionsAudioFailed": "The audio could not be started on this device. Practise with Clear conditions instead.",
+  "@conditionsAudioFailed": {
+    "description": "Receive drill: the conditions audio could not be started"
   }
 }

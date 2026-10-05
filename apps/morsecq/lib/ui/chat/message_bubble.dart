@@ -3,6 +3,7 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../telegraph/telegraph_interpret_sheet.dart';
 import 'chat_layout.dart';
 import 'message_status_icon.dart';
 import 'morse_pattern_text.dart';
@@ -39,7 +40,13 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onRetry;
   final VoidCallback? onCancelSend;
 
+  /// Four-digit groups in visible text may be interpreted as Chinese
+  /// telegraph code — only on request; numbers are never converted (F13).
+  bool get _canInterpret =>
+      !_textHidden && TelegraphGroups.hasGroups(message.text);
+
   bool get _hasActions =>
+      _canInterpret ||
       onPractice != null ||
       onSaveMaterial != null ||
       onBookmark != null ||
@@ -146,6 +153,11 @@ class MessageBubble extends StatelessWidget {
                           tooltip: s.chatMessageLearnActions,
                           icon: const Icon(Icons.more_vert),
                           onSelected: (v) => switch (v) {
+                            _LearnAction.telegraph =>
+                              () => showTelegraphInterpretation(
+                                context,
+                                message.text,
+                              ),
                             _LearnAction.practice => onPractice,
                             _LearnAction.save => onSaveMaterial,
                             _LearnAction.bookmark => onBookmark,
@@ -181,6 +193,11 @@ class MessageBubble extends StatelessWidget {
                               PopupMenuItem(
                                 value: _LearnAction.save,
                                 child: Text(s.chatSaveAsMaterial),
+                              ),
+                            if (_canInterpret)
+                              PopupMenuItem(
+                                value: _LearnAction.telegraph,
+                                child: Text(s.telegraphInterpretAction),
                               ),
                           ],
                         ),
@@ -234,7 +251,7 @@ class MessageBubble extends StatelessWidget {
 }
 
 /// Distinct from the app bar's `String` menu.
-enum _LearnAction { practice, save, bookmark, retry, cancel }
+enum _LearnAction { practice, save, bookmark, retry, cancel, telegraph }
 
 class _HiddenText extends StatelessWidget {
   const _HiddenText({required this.onReveal});

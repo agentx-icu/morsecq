@@ -9,6 +9,7 @@ import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../listen/workbench/recording_files.dart';
 import 'backup_file_gateway.dart';
+import 'encrypted_backup_page.dart';
 
 /// File name for a backup of [identity]: readable, unique per identity, and
 /// with an extension the restore picker can recognise.
@@ -90,7 +91,9 @@ Future<bool?> _askIncludeRecordings(
 enum BackupExportResult { saved, cancelled, failed }
 
 /// Exports the current identity through the [BackupFileGateway] and reports
-/// the outcome with a snackbar. Shared by the first-run wizard and the Me
+/// the outcome with a snackbar: the complete encrypted flow
+/// ([EncryptedBackupPage]) when the backend supports it, else the legacy
+/// identity + training archive. Shared by the first-run wizard and the Me
 /// page so both surfaces behave identically on every platform.
 ///
 /// [anchor] is the context of the control that was tapped; its rect anchors
@@ -109,6 +112,14 @@ Future<BackupExportResult> exportBackupWithFeedback(
   if (identity == null) {
     messenger?.showSnackBar(SnackBar(content: Text(s.accountMeNoIdentity)));
     return BackupExportResult.failed;
+  }
+  // Backends that seal complete backups (F10) get the full flow: categories,
+  // passphrase, whole-file encryption. The page reports its own outcome.
+  if (identityService is EncryptedBackupService) {
+    final result = await Navigator.of(context).push<BackupExportResult>(
+      MaterialPageRoute(builder: (_) => const EncryptedBackupPage()),
+    );
+    return result ?? BackupExportResult.cancelled;
   }
   final includeMedia = await _askIncludeRecordings(context, identityService);
   if (includeMedia == null) return BackupExportResult.cancelled;

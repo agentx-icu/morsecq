@@ -17,6 +17,8 @@ import '../account/edit_profile_page.dart';
 import '../account/identity_card.dart';
 import '../appearance/appearance_page.dart';
 import '../appearance/style_labels.dart';
+import '../diagnostics/connection_diagnostics_page.dart';
+import '../keying/key_setup_page.dart';
 
 /// Profile, account, progress and settings.
 class MePage extends StatelessWidget {
@@ -103,9 +105,21 @@ class _MeBody extends StatelessWidget {
           builder: (tile) => ListTile(
             leading: const Icon(Icons.save_alt),
             title: Text(s.accountExportBackup),
-            subtitle: Text(s.accountExportBackupSubtitle),
+            subtitle: Text(
+              context.read<IdentityService>() is EncryptedBackupService
+                  ? s.backupXMeSubtitle
+                  : s.accountExportBackupSubtitle,
+            ),
             onTap: () => exportBackupWithFeedback(context, anchor: tile),
           ),
+        ),
+        ListTile(
+          key: const ValueKey('me-connection-diagnostics'),
+          leading: const Icon(Icons.network_check),
+          title: Text(s.diagTitle),
+          subtitle: Text(s.diagOpenSubtitle),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => ConnectionDiagnosticsPage.open(context),
         ),
         _SectionHeader(s.accountSectionTraining),
         ListTile(
@@ -113,6 +127,14 @@ class _MeBody extends StatelessWidget {
           title: Text(s.accountTrainingDefaults),
           subtitle: Text(s.accountTrainingDefaultsSubtitle),
           onTap: () => Navigator.of(context).pushNamed(kTrainingSettingsRoute),
+        ),
+        ListTile(
+          key: const ValueKey('me-keys'),
+          leading: const Icon(Icons.keyboard_outlined),
+          title: Text(s.keysTitle),
+          subtitle: Text(s.keysMeSubtitle),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => KeySetupPage.open(context),
         ),
         const LanguageSettingsTile(),
         ListTile(

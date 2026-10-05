@@ -48,6 +48,31 @@ final class CompositeSink implements MorseSink {
       Future.wait(sinks.map((s) => s.dispose())).then((_) {});
 }
 
+/// Forwards to [inner] while [enabled] says so, e.g. the app's own keying
+/// sidetone switched off because an external keyer makes its own. [off]
+/// always passes through, so turning the gate off mid-mark can never leave
+/// a tone stuck on.
+final class GatedSink implements MorseSink {
+  GatedSink(this.inner, this.enabled);
+
+  final MorseSink inner;
+  final bool Function() enabled;
+
+  @override
+  Future<void> prepare() => inner.prepare();
+
+  @override
+  void on() {
+    if (enabled()) inner.on();
+  }
+
+  @override
+  void off() => inner.off();
+
+  @override
+  Future<void> dispose() => inner.dispose();
+}
+
 /// A sink that does nothing. Handy for silent playback or as a default.
 final class NullSink implements MorseSink {
   const NullSink();

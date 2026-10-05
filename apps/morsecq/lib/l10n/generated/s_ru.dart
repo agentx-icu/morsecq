@@ -3477,4 +3477,819 @@ class SRu extends S {
 
   @override
   String get accountBackupMediaSkip => 'Без записей';
+
+  @override
+  String get diagTitle => 'Диагностика подключения';
+
+  @override
+  String get diagOpenSubtitle => 'Почему сообщения ждут отправки и как переподключиться';
+
+  @override
+  String get diagBannerDetails => 'Подробнее';
+
+  @override
+  String get diagSummaryNoIdentity => 'Личность не открыта, поэтому проверять нечего.';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => 'Вы подключены к сети Tox, и этот контакт в сети. Сообщения доходят напрямую.';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => 'Вы подключены, но этот контакт не в сети. Сообщения ждут в исходящих на этом устройстве и отправятся, когда контакт появится в сети.';
+
+  @override
+  String get diagSummaryOnline => 'Вы подключены к сети Tox.';
+
+  @override
+  String get diagSummaryConnecting => 'Подключение к сети Tox. После запуска или смены сети это может занять минуту.';
+
+  @override
+  String get diagSummaryOffline => 'Вы не подключены к сети Tox. Пока соединение не восстановится, ничего нельзя отправить или получить.';
+
+  @override
+  String get diagLocalLabel => 'Ваше подключение';
+
+  @override
+  String diagSinceChanged(String time) {
+    return 'С $time';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return 'Наблюдается с $time';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return 'Наблюдается с возврата в приложение в $time';
+  }
+
+  @override
+  String get diagLastOnlineLabel => 'Последнее замеченное подключение';
+
+  @override
+  String get diagLastOnlineNow => 'Подключено сейчас';
+
+  @override
+  String get diagLastOnlineNone => 'Подключение ещё не наблюдалось.';
+
+  @override
+  String get diagLastOnlineHint => 'Когда это устройство последний раз видело собственное подключение. Это не время доставки сообщения.';
+
+  @override
+  String get diagPeerLabel => 'Контакт';
+
+  @override
+  String get diagUnknown => 'Неизвестно';
+
+  @override
+  String get diagPeerUnknownHint => 'Присутствие контакта видно, только пока вы подключены.';
+
+  @override
+  String get diagPeerGroupHint => 'Присутствие участников группы показано в списке участников.';
+
+  @override
+  String get diagPendingLabel => 'Ожидают отправки';
+
+  @override
+  String get diagPendingNone => 'Ничего не ожидает';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщения',
+      many: '$count сообщений',
+      few: '$count сообщения',
+      one: '$count сообщение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return 'Самое старое — с $time';
+  }
+
+  @override
+  String get diagPendingUnknown => 'Неизвестно, пока чат не подключён';
+
+  @override
+  String get diagPendingHint => 'Сообщения в очереди хранятся на этом устройстве и отправятся сами, когда контакт станет доступен. Диагностика никогда их не удаляет и не отправляет повторно.';
+
+  @override
+  String get diagReconnect => 'Переподключиться';
+
+  @override
+  String get diagReconnecting => 'Переподключение…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return 'Не удалось переподключиться: $reason';
+  }
+
+  @override
+  String get diagReconnectNote => 'Переподключение заново запускает попытку соединения. Выход в сеть всё равно может занять время; страница обновится, когда это произойдёт.';
+
+  @override
+  String get diagAboutTitle => 'Как подключается MorseCQ';
+
+  @override
+  String get diagAboutBody => 'У MorseCQ нет сервера. Устройство общается с контактами напрямую через одноранговую сеть Tox, поэтому для доставки сообщения вы оба должны быть в сети одновременно. Телефоны приостанавливают фоновые приложения: там MorseCQ не может оставаться на связи и переподключается, когда вы возвращаетесь.';
+
+  @override
+  String get diagDetailsTitle => 'Технические подробности';
+
+  @override
+  String get diagDetailIdentity => 'Личность';
+
+  @override
+  String get diagDetailStatus => 'Статус';
+
+  @override
+  String get diagDetailObserved => 'Время наблюдения';
+
+  @override
+  String get diagDetailQueued => 'Записей в очереди';
+
+  @override
+  String get diagDetailError => 'Последний код ошибки';
+
+  @override
+  String get backupXTitle => 'Зашифрованная резервная копия';
+
+  @override
+  String get backupXIntro => 'Выберите, что перенести на другое устройство. Весь файл шифруется парольной фразой, которую вы зададите здесь.';
+
+  @override
+  String get backupXCategoryIdentity => 'Личность и профиль Tox';
+
+  @override
+  String get backupXCategoryTraining => 'Прогресс и материалы тренировок';
+
+  @override
+  String get backupXCategoryChat => 'История чатов, включая заметки для себя';
+
+  @override
+  String get backupXCategoryMeta => 'Черновики, закрепления и закладки';
+
+  @override
+  String get backupXCategoryPrefs => 'Настройки приложения';
+
+  @override
+  String get backupXPrefsHint => 'Воспроизведение, уведомления, оформление и язык. Без положения окон и назначений клавиш.';
+
+  @override
+  String get backupXCategoryMedia => 'Сохранённые записи';
+
+  @override
+  String get backupXMediaHint => 'По умолчанию выключено: записи могут быть большими. Без них переносятся только названия и заметки.';
+
+  @override
+  String get backupXCategoryPending => 'Неотправленные сообщения';
+
+  @override
+  String get backupXPendingHint => 'Они возвращаются только для просмотра и никогда не отправляются автоматически.';
+
+  @override
+  String get backupXRequired => 'Обязательно';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count элемента',
+      many: '$count элементов',
+      few: '$count элемента',
+      one: '$count элемент',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size КБ';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size МБ';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return 'Слишком велико для включения ($size)';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count приглашения в группу не переносятся.',
+      many: '$count приглашений в группу для друзей не в сети не переносятся.',
+      few: '$count приглашения в группу для друзей не в сети не переносятся.',
+      one: '$count приглашение в группу для друга не в сети не переносится.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => 'Пароль личности остаётся на профиле: новое устройство спросит его вместе с парольной фразой копии.';
+
+  @override
+  String backupXTotal(String size) {
+    return 'Всего около $size';
+  }
+
+  @override
+  String get backupXPassphrase => 'Парольная фраза копии';
+
+  @override
+  String get backupXPassphraseConfirm => 'Повторите парольную фразу';
+
+  @override
+  String get backupXPassphraseHint => 'Не менее 8 символов. Она не связана с паролем личности и не восстанавливается.';
+
+  @override
+  String get backupXPassphraseTooShort => 'Используйте не менее 8 символов';
+
+  @override
+  String get backupXPassphraseMismatch => 'Парольные фразы не совпадают';
+
+  @override
+  String get backupXExport => 'Создать зашифрованную копию';
+
+  @override
+  String get backupXExporting => 'Создание копии…';
+
+  @override
+  String get backupXMigrationNote => 'Переезжаете на новое устройство? После восстановления там перестаньте пользоваться этой личностью здесь: два устройства с одной личностью могут отправить одно сообщение дважды.';
+
+  @override
+  String get backupXBusy => 'Данные менялись во время создания копии. Попробуйте ещё раз.';
+
+  @override
+  String get backupXTooLarge => 'Копия слишком велика. Исключите записи и попробуйте снова.';
+
+  @override
+  String get restoreXWrongPassphrase => 'Неверная парольная фраза, либо файл изменён или неполон.';
+
+  @override
+  String get restoreXUnsupported => 'Эта копия создана более новой версией MorseCQ.';
+
+  @override
+  String get restoreXCheck => 'Открыть копию';
+
+  @override
+  String get restoreXPreviewTitle => 'Содержимое копии';
+
+  @override
+  String restoreXCreated(String date) {
+    return 'Создана $date';
+  }
+
+  @override
+  String get restoreXIncluded => 'Включено';
+
+  @override
+  String get restoreXExcluded => 'Нет в этой копии';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения вернутся для просмотра.',
+      many: '$count неотправленных сообщений вернутся для просмотра и не будут отправлены автоматически.',
+      few: '$count неотправленных сообщения вернутся для просмотра и не будут отправлены автоматически.',
+      one: '$count неотправленное сообщение вернётся для просмотра и не будет отправлено автоматически.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения не вошли в копию.',
+      many: '$count неотправленных сообщений со старого устройства не вошли в копию.',
+      few: '$count неотправленных сообщения со старого устройства не вошли в копию.',
+      one: '$count неотправленное сообщение со старого устройства не вошло в копию.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => 'Пароль личности';
+
+  @override
+  String get restoreXIdentityPasswordNote => 'У личности в этой копии свой пароль. Введите и его.';
+
+  @override
+  String get restoreXConfirmTitle => 'Заменить личность на этом устройстве?';
+
+  @override
+  String get restoreXConfirmBody => 'Личность и данные на этом устройстве будут заменены копией. Перестаньте пользоваться личностью на старом устройстве, прежде чем подключаться здесь.';
+
+  @override
+  String get restoreXConfirm => 'Заменить и восстановить';
+
+  @override
+  String get restoreXReportTitle => 'Восстановление завершено';
+
+  @override
+  String get restoreXReportRestored => 'Восстановлено';
+
+  @override
+  String get restoreXReportNotIncluded => 'Не восстановлено';
+
+  @override
+  String get restoreXReportPrefsFailed => 'Не удалось применить настройки; прежние сохранены.';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения ждут просмотра.',
+      many: '$count неотправленных сообщений ждут просмотра в Чате.',
+      few: '$count неотправленных сообщения ждут просмотра в Чате.',
+      one: '$count неотправленное сообщение ждёт просмотра в Чате.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения не перенесены.',
+      many: '$count неотправленных сообщений со старого устройства не перенесены.',
+      few: '$count неотправленных сообщения со старого устройства не перенесены.',
+      one: '$count неотправленное сообщение со старого устройства не перенесено.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count приглашения не отправлены повторно.',
+      many: '$count приглашений в группу из очереди не отправлены повторно.',
+      few: '$count приглашения в группу из очереди не отправлены повторно.',
+      one: '$count приглашение в группу из очереди не отправлено повторно.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => 'Больше не используйте эту личность на старом устройстве.';
+
+  @override
+  String get restoreXReportDone => 'Готово';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count неотправленного сообщения с прежнего устройства',
+      many: '$count неотправленных сообщений с прежнего устройства',
+      few: '$count неотправленных сообщения с прежнего устройства',
+      one: '$count неотправленное сообщение с прежнего устройства',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => 'Неотправленные сообщения';
+
+  @override
+  String get pendingReviewBody => 'Эти сообщения ждали отправки на прежнем устройстве. MorseCQ никогда не отправляет их сам; передайте ключом заново, если ещё нужно.';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return 'В очереди с $time на прежнем устройстве';
+  }
+
+  @override
+  String get pendingReviewDismiss => 'Убрать';
+
+  @override
+  String get pendingReviewDismissAll => 'Убрать все';
+
+  @override
+  String get pendingReviewEmpty => 'Больше нечего просматривать.';
+
+  @override
+  String get backupXWizardInside => 'Файл копии целиком шифруется выбранной вами парольной фразой и содержит ключ личности и прогресс тренировок. Храните файл и фразу в надёжном месте вне этого устройства.';
+
+  @override
+  String get backupXMeSubtitle => 'Зашифрованный файл с личностью, чатами и прогрессом — для хранения или переноса на другое устройство';
+
+  @override
+  String get conditionsTitle => 'Условия';
+
+  @override
+  String get conditionsClear => 'Чисто';
+
+  @override
+  String get conditionsLight => 'Лёгкие помехи';
+
+  @override
+  String get conditionsRadio => 'Эфирная практика';
+
+  @override
+  String get conditionsClearHint => 'Чистый ровный тон — обычная тренировка.';
+
+  @override
+  String get conditionsLightHint => 'Тихий шум и мягкие замирания. Результаты хранятся отдельно от чистой тренировки.';
+
+  @override
+  String get conditionsRadioHint => 'Шум, глубокие замирания, соседняя станция и немного неровный темп. Результаты хранятся отдельно от чистой тренировки.';
+
+  @override
+  String get conditionsPreview => 'Прослушать';
+
+  @override
+  String conditionsActive(String name) {
+    return 'Условия: $name';
+  }
+
+  @override
+  String get conditionsNeedSound => 'Эфирные условия слышны, а не видны: включите звук в настройках тренировки или занимайтесь в чистых условиях.';
+
+  @override
+  String get conditionsCleanReplay => 'Воспроизвести без эффектов';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count попытки: в среднем $accuracy%',
+      many: '$count попыток в этих условиях на этой скорости: в среднем $accuracy%',
+      few: '$count попытки в этих условиях на этой скорости: в среднем $accuracy%',
+      one: '$count попытка в этих условиях на этой скорости: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => 'Тренировка в эфирных условиях засчитывается как активность, но не меняет уроки, график повторения и советы по скорости.';
+
+  @override
+  String get keysTitle => 'Клавиши и внешние ключи';
+
+  @override
+  String get keysMeSubtitle => 'Назначение клавиш, манипуляторы и USB-адаптеры';
+
+  @override
+  String get keysIntro => 'Выберите клавиши для передачи Морзе. USB-адаптеры ключа и манипулятора, эмулирующие клавиатуру, работают как она: задайте их клавиши здесь. Приложение не знает, какое устройство прислало клавишу, поэтому профиль — это набор назначений.';
+
+  @override
+  String get keysStandardProfile => 'Стандарт';
+
+  @override
+  String get keysUnnamed => 'Профиль без названия';
+
+  @override
+  String get keysEdit => 'Изменить';
+
+  @override
+  String get keysNewProfile => 'Новый профиль';
+
+  @override
+  String get keysLimitations => 'MIDI-, последовательные и Bluetooth-ключи, настройки прошивки адаптеров и управление передатчиком не поддерживаются. Проверенные адаптеры перечислены в документации.';
+
+  @override
+  String get keysEditTitle => 'Профиль клавиш';
+
+  @override
+  String get keysName => 'Название профиля';
+
+  @override
+  String get keysActionStraight => 'Прямой ключ';
+
+  @override
+  String get keysActionDit => 'Лопатка точки';
+
+  @override
+  String get keysActionDah => 'Лопатка тире';
+
+  @override
+  String get keysPressKey => 'Нажмите клавишу…';
+
+  @override
+  String get keysNone => 'Не задано';
+
+  @override
+  String get keysSet => 'Задать';
+
+  @override
+  String keysReserved(String key) {
+    return '$key зарезервирована системой или приложением; выберите другую клавишу.';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key уже используется для: $action.';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return 'Каждая клавиша может выполнять только одно действие: $keys назначена дважды.';
+  }
+
+  @override
+  String get keysMissing => 'Задайте клавиши, нужные этому режиму (обе лопатки для ямбического).';
+
+  @override
+  String get keysSwapPaddles => 'Поменять лопатки (левша)';
+
+  @override
+  String get keysKeyerMode => 'Режим ключа';
+
+  @override
+  String get keysIambicA => 'Ямбический A';
+
+  @override
+  String get keysIambicB => 'Ямбический B';
+
+  @override
+  String get keysAdapterKeyer => 'Адаптер сам формирует элементы';
+
+  @override
+  String get keysAdapterKeyerHint => 'Для адаптера со своим ключом: его нажатия и отпускания используются как есть, без второго ямбического ключа в приложении.';
+
+  @override
+  String get keysAppSidetone => 'Самоконтроль приложения при передаче';
+
+  @override
+  String get keysAppSidetoneHint => 'Выключите, если адаптер сам даёт самоконтроль. На декодирование не влияет.';
+
+  @override
+  String get keysTestTitle => 'Проверка';
+
+  @override
+  String get keysTestNote => 'Только проверка: ничего не отправляется и не засчитывается в тренировку.';
+
+  @override
+  String get keysTestRelease => 'Отпустить клавиши';
+
+  @override
+  String get keysAdapterActive => 'Используется ключ адаптера: клавиши лопаток работают как прямой ключ.';
+
+  @override
+  String keysHintCustom(String keys) {
+    return 'Клавиши: $keys';
+  }
+
+  @override
+  String get telegraphTitle => 'Китайский телеграфный код';
+
+  @override
+  String get telegraphIntro => 'Каждый китайский иероглиф передаётся четырёхзначным кодом. Тренируйте приём цифр и отдельно — запоминание, какой код означает какой иероглиф.';
+
+  @override
+  String get telegraphCodebook => 'Кодовая книга';
+
+  @override
+  String get telegraphCodebookMainland => 'Материковый';
+
+  @override
+  String get telegraphCodebookTaiwan => 'Тайвань';
+
+  @override
+  String get telegraphDigitsTitle => 'Приём кодовых групп';
+
+  @override
+  String get telegraphDigitsHint => 'Слушайте четырёхзначные группы настоящих кодов и вводите цифры.';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count занятия: $accuracy% цифр',
+      many: '$count занятий: $accuracy% цифр',
+      few: '$count занятия: $accuracy% цифр',
+      one: '$count занятие: $accuracy% цифр',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => 'Вспомнить коды';
+
+  @override
+  String get telegraphRecallHint => 'Иероглиф → код и код → иероглиф. Отдельно от прогресса в Морзе.';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count карточки: известно $accuracy%',
+      many: '$count карточек: известно $accuracy%',
+      few: '$count карточки: известно $accuracy%',
+      one: '$count карточка: известно $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => 'Запоминание кодов не открывает уроки Морзе и не меняет советы по скорости; приём цифр засчитывается как обычный приём Морзе.';
+
+  @override
+  String get telegraphRecallCharPrompt => 'Введите код этого иероглифа';
+
+  @override
+  String get telegraphRecallCodePrompt => 'Выберите иероглиф для этого кода';
+
+  @override
+  String get telegraphReveal => 'Показать ответ';
+
+  @override
+  String get telegraphRevealAssisted => 'Показано: карточка засчитывается как с подсказкой.';
+
+  @override
+  String get telegraphCorrect => 'Верно';
+
+  @override
+  String get telegraphIncorrect => 'Не совсем';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return 'Известно $correct из $total';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count карточки с показанным ответом',
+      many: '$count карточек с показанным ответом',
+      few: '$count карточки с показанным ответом',
+      one: '$count карточка с показанным ответом',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => 'Расшифровать как китайский телеграфный код';
+
+  @override
+  String get telegraphInterpretTitle => 'Расшифровка телеграфного кода';
+
+  @override
+  String get telegraphInterpretNote => 'Только для просмотра: само сообщение не меняется, ничего не отправляется.';
+
+  @override
+  String get telegraphUnresolved => 'Не найдено: нет иероглифа с этим кодом';
+
+  @override
+  String get telegraphMalformed => 'Не четырёхзначная группа';
+
+  @override
+  String get telegraphNotCode => 'Текст, без изменений';
+
+  @override
+  String get telegraphAmbiguous => 'Этот код у нескольких иероглифов';
+
+  @override
+  String get groupPracticeTitle => 'Групповая тренировка';
+
+  @override
+  String get groupPracticeIntro => 'Ведущий, как обычно, передаёт упражнения в чат группы. Каждый участник выбирает здесь сообщение-упражнение и принимает его на своей скорости. Ответы и баллы остаются на вашем устройстве; в группу ничего не отправляется.';
+
+  @override
+  String get groupPracticeNew => 'Новое занятие';
+
+  @override
+  String get groupPracticeTitleField => 'Название';
+
+  @override
+  String get groupPracticeCreate => 'Создать';
+
+  @override
+  String get groupPracticeInstructor => 'Ведущий';
+
+  @override
+  String get groupPracticeParticipant => 'Участник';
+
+  @override
+  String get groupPracticeInstructorHint => 'Передайте упражнение в чат группы, добавьте его здесь как раунд и отметьте; очерёдность объявляйте в чате.';
+
+  @override
+  String get groupPracticeParticipantHint => 'Добавьте сообщения-упражнения ведущего как раунды и примите каждое здесь.';
+
+  @override
+  String get groupPracticeLocalNote => 'Только локально: раунды, роли и результаты не синхронизируются, а пропущенные сообщения могут дойти не до всех.';
+
+  @override
+  String get groupPracticeAddRound => 'Добавить упражнение';
+
+  @override
+  String get groupPracticeNoMessages => 'В недавней истории нет подходящих сообщений.';
+
+  @override
+  String get groupPracticeNotConnected => 'История группы недоступна, пока чат не подключён.';
+
+  @override
+  String get groupPracticeRoundOpen => 'Не выполнено';
+
+  @override
+  String get groupPracticeRoundDone => 'Выполнено';
+
+  @override
+  String get groupPracticeRoundUnavailable => 'Недоступно';
+
+  @override
+  String get groupPracticeSourceGone => 'Сообщения-упражнения больше нет в истории.';
+
+  @override
+  String get groupPracticeSourceLoading => 'Поиск сообщения…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Принято: $accuracy% ($count попытки)',
+      many: 'Принято: $accuracy% ($count попыток)',
+      few: 'Принято: $accuracy% ($count попытки)',
+      one: 'Принято: $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => 'Принять';
+
+  @override
+  String get groupPracticeRemoveRound => 'Удалить раунд';
+
+  @override
+  String get groupPracticeSummary => 'Итоги';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return 'Выполнено раундов: $done из $total';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count раунда недоступны',
+      many: '$count раундов недоступны',
+      few: '$count раунда недоступны',
+      one: '$count раунд недоступен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return 'Точность приёма: $accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count попытки с подсказкой',
+      many: '$count попыток с подсказкой',
+      few: '$count попытки с подсказкой',
+      one: '$count попытка с подсказкой',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return 'Чтобы поделиться, сами передайте результат в чат группы, например $done/$total $accuracy%. Автоматически ничего не отправляется.';
+  }
+
+  @override
+  String get groupPracticeComplete => 'Завершить занятие';
+
+  @override
+  String get groupPracticeDeleteTitle => 'Удалить это занятие?';
+
+  @override
+  String get groupPracticeDeleteBody => 'Раунды и локальные результаты будут удалены с этого устройства. История тренировок и сообщения группы останутся.';
+
+  @override
+  String get conditionsAudioFailed => 'Не удалось запустить звук на этом устройстве. Занимайтесь в чистых условиях.';
 }

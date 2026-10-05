@@ -6025,6 +6025,1236 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Without recordings'**
   String get accountBackupMediaSkip;
+
+  /// Connection diagnostics page title; also the menu / Me entry that opens it
+  ///
+  /// In en, this message translates to:
+  /// **'Connection diagnostics'**
+  String get diagTitle;
+
+  /// Me page: subtitle of the Connection diagnostics entry
+  ///
+  /// In en, this message translates to:
+  /// **'Why messages are waiting and how to reconnect'**
+  String get diagOpenSubtitle;
+
+  /// Offline banner: button that opens Connection diagnostics
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get diagBannerDetails;
+
+  /// Diagnostics summary when no identity is open
+  ///
+  /// In en, this message translates to:
+  /// **'No identity is open, so there is no connection to inspect.'**
+  String get diagSummaryNoIdentity;
+
+  /// Diagnostics summary: we are online and the selected contact is online
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected to the Tox network and this contact is online. Messages go straight to them.'**
+  String get diagSummaryOnlinePeerOnline;
+
+  /// Diagnostics summary: we are online but the selected contact is offline
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.'**
+  String get diagSummaryOnlinePeerOffline;
+
+  /// Diagnostics summary: we are online (no contact selected, or its state is unknown)
+  ///
+  /// In en, this message translates to:
+  /// **'You are connected to the Tox network.'**
+  String get diagSummaryOnline;
+
+  /// Diagnostics summary while connecting
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to the Tox network. This can take a minute after the app starts or the network changes.'**
+  String get diagSummaryConnecting;
+
+  /// Diagnostics summary while offline
+  ///
+  /// In en, this message translates to:
+  /// **'You are not connected to the Tox network. Nothing can be sent or received until the connection is back.'**
+  String get diagSummaryOffline;
+
+  /// Diagnostics: label of the local connection state row
+  ///
+  /// In en, this message translates to:
+  /// **'Your connection'**
+  String get diagLocalLabel;
+
+  /// Diagnostics: when the current state was observed to start
+  ///
+  /// In en, this message translates to:
+  /// **'Since {time}'**
+  String diagSinceChanged(String time);
+
+  /// Diagnostics: the state was first observed at this time (no change seen yet)
+  ///
+  /// In en, this message translates to:
+  /// **'Observed since {time}'**
+  String diagSinceFirst(String time);
+
+  /// Diagnostics: observation restarted when the app returned from the background
+  ///
+  /// In en, this message translates to:
+  /// **'Observed since returning to the app at {time}'**
+  String diagSinceResumed(String time);
+
+  /// Diagnostics: label of the last observed local connection row
+  ///
+  /// In en, this message translates to:
+  /// **'Last connection observed'**
+  String get diagLastOnlineLabel;
+
+  /// Diagnostics: we are connected right now
+  ///
+  /// In en, this message translates to:
+  /// **'Connected now'**
+  String get diagLastOnlineNow;
+
+  /// Diagnostics: no local connection has been observed for this identity yet
+  ///
+  /// In en, this message translates to:
+  /// **'No connection observed yet.'**
+  String get diagLastOnlineNone;
+
+  /// Diagnostics: explains that the last-connection time is local, not a delivery time
+  ///
+  /// In en, this message translates to:
+  /// **'When this device last saw its own connection. It is not when a message reached anyone.'**
+  String get diagLastOnlineHint;
+
+  /// Diagnostics: label of the selected contact's state row
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get diagPeerLabel;
+
+  /// Diagnostics: a fact that cannot be observed right now
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get diagUnknown;
+
+  /// Diagnostics: why the contact state is unknown
+  ///
+  /// In en, this message translates to:
+  /// **'A contact\'s presence can only be seen while you are connected.'**
+  String get diagPeerUnknownHint;
+
+  /// Diagnostics: group conversations have no single contact state
+  ///
+  /// In en, this message translates to:
+  /// **'Group members\' presence is shown in the member list.'**
+  String get diagPeerGroupHint;
+
+  /// Diagnostics: label of the durable outbox row
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to send'**
+  String get diagPendingLabel;
+
+  /// Diagnostics: the outbox is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing waiting'**
+  String get diagPendingNone;
+
+  /// Diagnostics: number of queued messages
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message} other{{count} messages}}'**
+  String diagPendingCount(int count);
+
+  /// Diagnostics: enqueue time of the oldest queued message
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest queued {time}'**
+  String diagPendingOldest(String time);
+
+  /// Diagnostics: the outbox cannot be read right now (chat not connected)
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown until chat is connected'**
+  String get diagPendingUnknown;
+
+  /// Diagnostics: queued messages are kept and never resent or discarded by diagnostics
+  ///
+  /// In en, this message translates to:
+  /// **'Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.'**
+  String get diagPendingHint;
+
+  /// Diagnostics: reconnect button
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get diagReconnect;
+
+  /// Diagnostics: reconnect in progress
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting…'**
+  String get diagReconnecting;
+
+  /// Diagnostics: the reconnect attempt failed; reason is a localized error
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect failed: {reason}'**
+  String diagReconnectFailed(String reason);
+
+  /// Diagnostics: a finished reconnect does not mean online
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.'**
+  String get diagReconnectNote;
+
+  /// Diagnostics: heading of the P2P explanation
+  ///
+  /// In en, this message translates to:
+  /// **'How MorseCQ connects'**
+  String get diagAboutTitle;
+
+  /// Diagnostics: P2P and mobile background explanation
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.'**
+  String get diagAboutBody;
+
+  /// Diagnostics: expandable technical details
+  ///
+  /// In en, this message translates to:
+  /// **'Technical details'**
+  String get diagDetailsTitle;
+
+  /// Diagnostics details: identity key prefix
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get diagDetailIdentity;
+
+  /// Diagnostics details: raw connection status
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get diagDetailStatus;
+
+  /// Diagnostics details: when this snapshot was taken
+  ///
+  /// In en, this message translates to:
+  /// **'Observed at'**
+  String get diagDetailObserved;
+
+  /// Diagnostics details: raw queue count
+  ///
+  /// In en, this message translates to:
+  /// **'Queue entries'**
+  String get diagDetailQueued;
+
+  /// Diagnostics details: last reconnect error code
+  ///
+  /// In en, this message translates to:
+  /// **'Last error code'**
+  String get diagDetailError;
+
+  /// Encrypted complete backup page title
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted backup'**
+  String get backupXTitle;
+
+  /// Encrypted backup page: intro
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to take to another device. The whole file is encrypted with a passphrase you set here.'**
+  String get backupXIntro;
+
+  /// Backup category: identity and Tox profile
+  ///
+  /// In en, this message translates to:
+  /// **'Identity and Tox profile'**
+  String get backupXCategoryIdentity;
+
+  /// Backup category: training progress and materials
+  ///
+  /// In en, this message translates to:
+  /// **'Training progress and materials'**
+  String get backupXCategoryTraining;
+
+  /// Backup category: chat history including note to self
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history, including notes to self'**
+  String get backupXCategoryChat;
+
+  /// Backup category: drafts, pins, bookmarks
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts, pins and bookmarks'**
+  String get backupXCategoryMeta;
+
+  /// Backup category: portable app preferences
+  ///
+  /// In en, this message translates to:
+  /// **'App preferences'**
+  String get backupXCategoryPrefs;
+
+  /// Backup: what app preferences include/exclude
+  ///
+  /// In en, this message translates to:
+  /// **'Playback, notifications, appearance and language. Never window positions or key bindings.'**
+  String get backupXPrefsHint;
+
+  /// Backup category: saved recordings
+  ///
+  /// In en, this message translates to:
+  /// **'Saved recordings'**
+  String get backupXCategoryMedia;
+
+  /// Backup: recordings are large and off by default
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default: recordings can be large. Without them, only their titles and notes come along.'**
+  String get backupXMediaHint;
+
+  /// Backup category: unsent messages
+  ///
+  /// In en, this message translates to:
+  /// **'Unsent messages'**
+  String get backupXCategoryPending;
+
+  /// Backup: unsent messages are restored only for review
+  ///
+  /// In en, this message translates to:
+  /// **'They come back for review only and are never sent automatically.'**
+  String get backupXPendingHint;
+
+  /// Backup: this category is required
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get backupXRequired;
+
+  /// Backup: item count and size of a category
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}} · {size}'**
+  String backupXSizeLine(int count, String size);
+
+  /// File size in kilobytes
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String backupXSizeKb(String size);
+
+  /// File size in megabytes
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String backupXSizeMb(String size);
+
+  /// Backup: recordings exceed the size limit
+  ///
+  /// In en, this message translates to:
+  /// **'Too large to include ({size})'**
+  String backupXMediaTooLarge(String size);
+
+  /// Backup: queued group invites are not carried
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 group invitation waiting for an offline friend is not carried over.} other{{count} group invitations waiting for offline friends are not carried over.}}'**
+  String backupXInvitesNote(int count);
+
+  /// Backup: the profile keeps its identity password
+  ///
+  /// In en, this message translates to:
+  /// **'Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.'**
+  String get backupXIdentityPasswordNote;
+
+  /// Backup: estimated total size
+  ///
+  /// In en, this message translates to:
+  /// **'About {size} in total'**
+  String backupXTotal(String size);
+
+  /// Backup passphrase field (export and restore)
+  ///
+  /// In en, this message translates to:
+  /// **'Backup passphrase'**
+  String get backupXPassphrase;
+
+  /// Backup: repeat passphrase field
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat passphrase'**
+  String get backupXPassphraseConfirm;
+
+  /// Backup: passphrase guidance
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters. It is separate from your identity password and cannot be recovered.'**
+  String get backupXPassphraseHint;
+
+  /// Backup: passphrase too short
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters'**
+  String get backupXPassphraseTooShort;
+
+  /// Backup: passphrases differ
+  ///
+  /// In en, this message translates to:
+  /// **'The passphrases do not match'**
+  String get backupXPassphraseMismatch;
+
+  /// Backup: create button
+  ///
+  /// In en, this message translates to:
+  /// **'Create encrypted backup'**
+  String get backupXExport;
+
+  /// Backup: creating in progress
+  ///
+  /// In en, this message translates to:
+  /// **'Creating backup…'**
+  String get backupXExporting;
+
+  /// Backup: stop using the identity on the old device after moving
+  ///
+  /// In en, this message translates to:
+  /// **'Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.'**
+  String get backupXMigrationNote;
+
+  /// Backup error: data kept changing
+  ///
+  /// In en, this message translates to:
+  /// **'Your data kept changing while the backup was taken. Try again.'**
+  String get backupXBusy;
+
+  /// Backup error: too large
+  ///
+  /// In en, this message translates to:
+  /// **'The backup is too large. Leave out recordings and try again.'**
+  String get backupXTooLarge;
+
+  /// Restore: wrong passphrase or altered file
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong passphrase, or the file was changed or is incomplete.'**
+  String get restoreXWrongPassphrase;
+
+  /// Restore: backup from a newer version
+  ///
+  /// In en, this message translates to:
+  /// **'This backup was made by a newer version of MorseCQ.'**
+  String get restoreXUnsupported;
+
+  /// Restore: open the encrypted backup with the passphrase
+  ///
+  /// In en, this message translates to:
+  /// **'Open backup'**
+  String get restoreXCheck;
+
+  /// Restore preview title
+  ///
+  /// In en, this message translates to:
+  /// **'Backup contents'**
+  String get restoreXPreviewTitle;
+
+  /// Restore preview: creation time
+  ///
+  /// In en, this message translates to:
+  /// **'Created {date}'**
+  String restoreXCreated(String date);
+
+  /// Restore preview: included categories heading
+  ///
+  /// In en, this message translates to:
+  /// **'Included'**
+  String get restoreXIncluded;
+
+  /// Restore preview: categories not in the backup
+  ///
+  /// In en, this message translates to:
+  /// **'Not in this backup'**
+  String get restoreXExcluded;
+
+  /// Restore preview: unsent messages included for review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message comes back for review. It will not be sent automatically.} other{{count} unsent messages come back for review. They will not be sent automatically.}}'**
+  String restoreXPendingIncluded(int count);
+
+  /// Restore preview: unsent messages not included
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message on the old device is not in this backup.} other{{count} unsent messages on the old device are not in this backup.}}'**
+  String restoreXPendingExcluded(int count);
+
+  /// Restore: identity password field for an encrypted profile
+  ///
+  /// In en, this message translates to:
+  /// **'Identity password'**
+  String get restoreXIdentityPassword;
+
+  /// Restore: the profile needs its own password
+  ///
+  /// In en, this message translates to:
+  /// **'The identity in this backup has its own password. Enter it as well.'**
+  String get restoreXIdentityPasswordNote;
+
+  /// Restore: confirm replacement dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the identity on this device?'**
+  String get restoreXConfirmTitle;
+
+  /// Restore: confirm replacement dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.'**
+  String get restoreXConfirmBody;
+
+  /// Restore: confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Replace and restore'**
+  String get restoreXConfirm;
+
+  /// Restore report title
+  ///
+  /// In en, this message translates to:
+  /// **'Restore complete'**
+  String get restoreXReportTitle;
+
+  /// Restore report: restored heading
+  ///
+  /// In en, this message translates to:
+  /// **'Restored'**
+  String get restoreXReportRestored;
+
+  /// Restore report: not restored heading
+  ///
+  /// In en, this message translates to:
+  /// **'Not restored'**
+  String get restoreXReportNotIncluded;
+
+  /// Restore report: preferences failed to apply
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences could not be applied; your previous preferences were kept.'**
+  String get restoreXReportPrefsFailed;
+
+  /// Restore report: unsent messages await review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message is waiting for your review in Chat.} other{{count} unsent messages are waiting for your review in Chat.}}'**
+  String restoreXReportPendingReview(int count);
+
+  /// Restore report: unsent messages not brought over
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message from the old device was not brought over.} other{{count} unsent messages from the old device were not brought over.}}'**
+  String restoreXReportPendingNotResumed(int count);
+
+  /// Restore: queued group invitations not resent
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 queued group invitation was not resent.} other{{count} queued group invitations were not resent.}}'**
+  String restoreXReportInvites(int count);
+
+  /// Restore report: stop using the old device
+  ///
+  /// In en, this message translates to:
+  /// **'Stop using this identity on the old device.'**
+  String get restoreXReportStopOld;
+
+  /// Restore report: close button
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get restoreXReportDone;
+
+  /// Chat list strip: restored unsent messages to review
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsent message from your previous device} other{{count} unsent messages from your previous device}}'**
+  String pendingReviewBanner(int count);
+
+  /// Restored unsent messages review page title
+  ///
+  /// In en, this message translates to:
+  /// **'Unsent messages'**
+  String get pendingReviewTitle;
+
+  /// Restored unsent messages: explanation
+  ///
+  /// In en, this message translates to:
+  /// **'These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.'**
+  String get pendingReviewBody;
+
+  /// Restored unsent message: when it was queued
+  ///
+  /// In en, this message translates to:
+  /// **'Queued {time} on the previous device'**
+  String pendingReviewQueuedAt(String time);
+
+  /// Restored unsent message: dismiss one
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get pendingReviewDismiss;
+
+  /// Restored unsent messages: dismiss all
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss all'**
+  String get pendingReviewDismissAll;
+
+  /// Restored unsent messages: nothing left
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to review.'**
+  String get pendingReviewEmpty;
+
+  /// First-run backup wizard: what the encrypted backup contains
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.'**
+  String get backupXWizardInside;
+
+  /// Me page: subtitle of the export backup entry (encrypted complete backup)
+  ///
+  /// In en, this message translates to:
+  /// **'An encrypted file with your identity, chats and progress, to keep or to move to another device'**
+  String get backupXMeSubtitle;
+
+  /// Drill picker: heading of the channel conditions selector
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get conditionsTitle;
+
+  /// Conditions preset: clean tone (default)
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get conditionsClear;
+
+  /// Conditions preset: light interference
+  ///
+  /// In en, this message translates to:
+  /// **'Light interference'**
+  String get conditionsLight;
+
+  /// Conditions preset: realistic radio practice
+  ///
+  /// In en, this message translates to:
+  /// **'Radio practice'**
+  String get conditionsRadio;
+
+  /// Conditions preset hint: clear
+  ///
+  /// In en, this message translates to:
+  /// **'A clean, steady tone: ordinary practice.'**
+  String get conditionsClearHint;
+
+  /// Conditions preset hint: light
+  ///
+  /// In en, this message translates to:
+  /// **'Soft background noise and gentle fading. Results are kept apart from clean practice.'**
+  String get conditionsLightHint;
+
+  /// Conditions preset hint: radio practice
+  ///
+  /// In en, this message translates to:
+  /// **'Noise, deep fading, a nearby station and slightly uneven timing. Results are kept apart from clean practice.'**
+  String get conditionsRadioHint;
+
+  /// Drill picker: play a short sample under the chosen conditions
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get conditionsPreview;
+
+  /// Receive drill: chip naming the active conditions
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions: {name}'**
+  String conditionsActive(String name);
+
+  /// Receive drill: conditions need sound
+  ///
+  /// In en, this message translates to:
+  /// **'Radio conditions are heard, not seen: turn sound on in the training settings, or practise with Clear conditions.'**
+  String get conditionsNeedSound;
+
+  /// Round result: replay the round without effects
+  ///
+  /// In en, this message translates to:
+  /// **'Play without effects'**
+  String get conditionsCleanReplay;
+
+  /// Receive summary: results under the same conditions and speed
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attempt under these conditions at this speed: {accuracy}%} other{{count} attempts under these conditions at this speed: {accuracy}% on average}}'**
+  String conditionsComparable(int count, int accuracy);
+
+  /// Receive summary: conditions results do not change progress
+  ///
+  /// In en, this message translates to:
+  /// **'Practice under radio conditions counts as activity but does not change your lessons, review schedule or speed advice.'**
+  String get conditionsSeparateNote;
+
+  /// Key setup page title; also the Me entry
+  ///
+  /// In en, this message translates to:
+  /// **'Keys and external keyers'**
+  String get keysTitle;
+
+  /// Me page: subtitle of the key setup entry
+  ///
+  /// In en, this message translates to:
+  /// **'Key bindings, paddles and USB keyer adapters'**
+  String get keysMeSubtitle;
+
+  /// Key setup: introduction
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which keys key Morse. Keyboard-emulating USB key and paddle adapters work like a keyboard: set their keys here. The app cannot tell which device sent a key, so a profile is a set of bindings.'**
+  String get keysIntro;
+
+  /// Key setup: built-in default profile
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get keysStandardProfile;
+
+  /// Key setup: profile without a name
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed profile'**
+  String get keysUnnamed;
+
+  /// Key setup: edit a profile
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get keysEdit;
+
+  /// Key setup: create a profile
+  ///
+  /// In en, this message translates to:
+  /// **'New profile'**
+  String get keysNewProfile;
+
+  /// Key setup: what is not supported
+  ///
+  /// In en, this message translates to:
+  /// **'MIDI, serial and Bluetooth keyers, adapter firmware settings and transmitter control are not supported. Tested adapters are listed in the documentation.'**
+  String get keysLimitations;
+
+  /// Key profile editor title
+  ///
+  /// In en, this message translates to:
+  /// **'Key profile'**
+  String get keysEditTitle;
+
+  /// Key profile editor: name field
+  ///
+  /// In en, this message translates to:
+  /// **'Profile name'**
+  String get keysName;
+
+  /// Key action/keyer mode: straight key
+  ///
+  /// In en, this message translates to:
+  /// **'Straight key'**
+  String get keysActionStraight;
+
+  /// Key action: dit paddle
+  ///
+  /// In en, this message translates to:
+  /// **'Dit paddle'**
+  String get keysActionDit;
+
+  /// Key action: dah paddle
+  ///
+  /// In en, this message translates to:
+  /// **'Dah paddle'**
+  String get keysActionDah;
+
+  /// Key capture: waiting for a key
+  ///
+  /// In en, this message translates to:
+  /// **'Press a key…'**
+  String get keysPressKey;
+
+  /// Key capture: no key bound
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get keysNone;
+
+  /// Key capture: start capturing
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get keysSet;
+
+  /// Key capture: reserved key refused
+  ///
+  /// In en, this message translates to:
+  /// **'{key} is reserved by the system or the app; choose another key.'**
+  String keysReserved(String key);
+
+  /// Key capture: key already used for another action
+  ///
+  /// In en, this message translates to:
+  /// **'{key} is already used for {action}.'**
+  String keysConflict(String key, String action);
+
+  /// Key profile save refused: duplicate binding
+  ///
+  /// In en, this message translates to:
+  /// **'Each key can do only one thing: {keys} is bound twice.'**
+  String keysConflictSave(String keys);
+
+  /// Key profile save refused: keys missing for the mode
+  ///
+  /// In en, this message translates to:
+  /// **'Set the keys this keyer mode needs (both paddles for iambic).'**
+  String get keysMissing;
+
+  /// Key profile: swap dit and dah paddles
+  ///
+  /// In en, this message translates to:
+  /// **'Swap paddles (left-handed)'**
+  String get keysSwapPaddles;
+
+  /// Key profile: keyer mode heading
+  ///
+  /// In en, this message translates to:
+  /// **'Keyer mode'**
+  String get keysKeyerMode;
+
+  /// Keyer mode: iambic A
+  ///
+  /// In en, this message translates to:
+  /// **'Iambic A'**
+  String get keysIambicA;
+
+  /// Keyer mode: iambic B
+  ///
+  /// In en, this message translates to:
+  /// **'Iambic B'**
+  String get keysIambicB;
+
+  /// Key profile: adapter has its own keyer
+  ///
+  /// In en, this message translates to:
+  /// **'The adapter keys its own elements'**
+  String get keysAdapterKeyer;
+
+  /// Key profile: adapter keyer explanation
+  ///
+  /// In en, this message translates to:
+  /// **'For an adapter with its own keyer: its timed key-down and key-up are used as they are, without a second iambic keyer in the app.'**
+  String get keysAdapterKeyerHint;
+
+  /// Key profile: app sidetone while keying
+  ///
+  /// In en, this message translates to:
+  /// **'App sidetone while keying'**
+  String get keysAppSidetone;
+
+  /// Key profile: sidetone explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off when the adapter makes its own sidetone. Decoding is not affected.'**
+  String get keysAppSidetoneHint;
+
+  /// Key profile: test area title
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get keysTestTitle;
+
+  /// Key profile: test area is not sent or credited
+  ///
+  /// In en, this message translates to:
+  /// **'Testing only: nothing is sent or added to your training.'**
+  String get keysTestNote;
+
+  /// Key profile: release all keys (stop a stuck tone)
+  ///
+  /// In en, this message translates to:
+  /// **'Release keys'**
+  String get keysTestRelease;
+
+  /// Key profile test: adapter keyer active
+  ///
+  /// In en, this message translates to:
+  /// **'The adapter\'s own keyer is used: paddle keys act as a straight key.'**
+  String get keysAdapterActive;
+
+  /// Keying hint with the active profile's keys
+  ///
+  /// In en, this message translates to:
+  /// **'Keys: {keys}'**
+  String keysHintCustom(String keys);
+
+  /// Chinese telegraph-code practice title / Learn entry
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese telegraph code'**
+  String get telegraphTitle;
+
+  /// Telegraph practice: introduction
+  ///
+  /// In en, this message translates to:
+  /// **'Each Chinese character is sent as a four-digit code. Practise hearing the digits and, separately, remembering which code stands for which character.'**
+  String get telegraphIntro;
+
+  /// Codebook selector label
+  ///
+  /// In en, this message translates to:
+  /// **'Codebook'**
+  String get telegraphCodebook;
+
+  /// Codebook: mainland China (1983)
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland'**
+  String get telegraphCodebookMainland;
+
+  /// Codebook: Taiwan / Hong Kong
+  ///
+  /// In en, this message translates to:
+  /// **'Taiwan'**
+  String get telegraphCodebookTaiwan;
+
+  /// Telegraph practice: digit copying task
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code groups'**
+  String get telegraphDigitsTitle;
+
+  /// Telegraph practice: digit copying explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Hear four-digit groups of real codes and type the digits.'**
+  String get telegraphDigitsHint;
+
+  /// Telegraph practice: digit copying results
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session: {accuracy}% of digits} other{{count} sessions: {accuracy}% of digits}}'**
+  String telegraphDigitsResults(int count, int accuracy);
+
+  /// Telegraph practice: codebook recall task
+  ///
+  /// In en, this message translates to:
+  /// **'Recall codes'**
+  String get telegraphRecallTitle;
+
+  /// Telegraph practice: recall explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Character to code and code to character. Kept apart from Morse progress.'**
+  String get telegraphRecallHint;
+
+  /// Telegraph practice: recall results
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 card answered: {accuracy}% known} other{{count} cards answered: {accuracy}% known}}'**
+  String telegraphRecallResults(int count, int accuracy);
+
+  /// Telegraph practice: recall does not affect Morse progress
+  ///
+  /// In en, this message translates to:
+  /// **'Codebook recall never unlocks Morse lessons or changes speed advice; digit copying counts like other Morse copying.'**
+  String get telegraphSeparateNote;
+
+  /// Recall card: type the code of this character
+  ///
+  /// In en, this message translates to:
+  /// **'Type the code of this character'**
+  String get telegraphRecallCharPrompt;
+
+  /// Recall card: pick the character of this code
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the character for this code'**
+  String get telegraphRecallCodePrompt;
+
+  /// Recall card: reveal the answer (assisted)
+  ///
+  /// In en, this message translates to:
+  /// **'Show answer'**
+  String get telegraphReveal;
+
+  /// Recall card: revealed answers count as assisted
+  ///
+  /// In en, this message translates to:
+  /// **'Shown: this card counts as assisted.'**
+  String get telegraphRevealAssisted;
+
+  /// Recall card: correct
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get telegraphCorrect;
+
+  /// Recall card: incorrect
+  ///
+  /// In en, this message translates to:
+  /// **'Not quite'**
+  String get telegraphIncorrect;
+
+  /// Recall summary: correct of total
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} of {total} known'**
+  String telegraphRecallSummary(int correct, int total);
+
+  /// Recall summary: cards with a revealed answer
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}'**
+  String telegraphRecallAssisted(int count);
+
+  /// Chat message menu: interpret digits as telegraph code
+  ///
+  /// In en, this message translates to:
+  /// **'Interpret as Chinese telegraph code'**
+  String get telegraphInterpretAction;
+
+  /// Telegraph interpretation sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Telegraph code interpretation'**
+  String get telegraphInterpretTitle;
+
+  /// Telegraph interpretation: local and read-only
+  ///
+  /// In en, this message translates to:
+  /// **'Shown here only: the message itself is not changed and nothing is sent.'**
+  String get telegraphInterpretNote;
+
+  /// Telegraph interpretation: unassigned code
+  ///
+  /// In en, this message translates to:
+  /// **'Unresolved: no character has this code'**
+  String get telegraphUnresolved;
+
+  /// Telegraph interpretation: digits but not four
+  ///
+  /// In en, this message translates to:
+  /// **'Not a four-digit group'**
+  String get telegraphMalformed;
+
+  /// Telegraph interpretation: ordinary text token
+  ///
+  /// In en, this message translates to:
+  /// **'Text, kept as written'**
+  String get telegraphNotCode;
+
+  /// Telegraph interpretation: several characters share the code
+  ///
+  /// In en, this message translates to:
+  /// **'Several characters share this code'**
+  String get telegraphAmbiguous;
+
+  /// Group practice page title / group menu entry
+  ///
+  /// In en, this message translates to:
+  /// **'Group practice'**
+  String get groupPracticeTitle;
+
+  /// Group practice: how the manual workflow works
+  ///
+  /// In en, this message translates to:
+  /// **'The instructor keys exercises in the group chat as usual. Each member picks an exercise message here and copies it at their own speed. Answers and scores stay on your device; nothing is sent to the group.'**
+  String get groupPracticeIntro;
+
+  /// Group practice: start a new local session
+  ///
+  /// In en, this message translates to:
+  /// **'New session'**
+  String get groupPracticeNew;
+
+  /// Group practice: session title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get groupPracticeTitleField;
+
+  /// Group practice: create the session
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get groupPracticeCreate;
+
+  /// Group practice role: instructor (local label)
+  ///
+  /// In en, this message translates to:
+  /// **'Instructor'**
+  String get groupPracticeInstructor;
+
+  /// Group practice role: participant
+  ///
+  /// In en, this message translates to:
+  /// **'Participant'**
+  String get groupPracticeParticipant;
+
+  /// Group practice: instructor's role explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Key each exercise in the group chat, add it here as a round and tick it off; announce turns in the chat.'**
+  String get groupPracticeInstructorHint;
+
+  /// Group practice: participant's role explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Add the instructor\'s exercise messages as rounds and copy each one here.'**
+  String get groupPracticeParticipantHint;
+
+  /// Group practice: everything is local, nothing synchronised
+  ///
+  /// In en, this message translates to:
+  /// **'Local only: rounds, roles and results are not synchronised with other members, and missed messages may never reach everyone.'**
+  String get groupPracticeLocalNote;
+
+  /// Group practice: add an exercise message as a round
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get groupPracticeAddRound;
+
+  /// Group practice: no suitable messages to add
+  ///
+  /// In en, this message translates to:
+  /// **'No suitable messages in the recent history.'**
+  String get groupPracticeNoMessages;
+
+  /// Group practice: history unavailable (chat not connected)
+  ///
+  /// In en, this message translates to:
+  /// **'Group history is not available until chat is connected.'**
+  String get groupPracticeNotConnected;
+
+  /// Group practice round state: open
+  ///
+  /// In en, this message translates to:
+  /// **'To do'**
+  String get groupPracticeRoundOpen;
+
+  /// Group practice round state: done
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get groupPracticeRoundDone;
+
+  /// Group practice round state: source message gone
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get groupPracticeRoundUnavailable;
+
+  /// Group practice: source message deleted or cleared
+  ///
+  /// In en, this message translates to:
+  /// **'The exercise message is no longer in the history.'**
+  String get groupPracticeSourceGone;
+
+  /// Group practice: source message not loaded yet
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for the message…'**
+  String get groupPracticeSourceLoading;
+
+  /// Group practice round: latest result and number of attempts
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Copied: {accuracy}%} other{Copied: {accuracy}% ({count} attempts)}}'**
+  String groupPracticeAttemptResult(int accuracy, int count);
+
+  /// Group practice round: copy this exercise
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get groupPracticeCopy;
+
+  /// Group practice round: remove
+  ///
+  /// In en, this message translates to:
+  /// **'Remove round'**
+  String get groupPracticeRemoveRound;
+
+  /// Group practice: summary heading
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get groupPracticeSummary;
+
+  /// Group practice: rounds done of total
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} rounds done'**
+  String groupPracticeRoundsDone(int done, int total);
+
+  /// Group practice: rounds whose source is gone
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 round unavailable} other{{count} rounds unavailable}}'**
+  String groupPracticeUnavailableCount(int count);
+
+  /// Group practice: copy accuracy over latest attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Copy accuracy: {accuracy}%'**
+  String groupPracticeAccuracy(int accuracy);
+
+  /// Group practice: attempts with help
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 attempt with help} other{{count} attempts with help}}'**
+  String groupPracticeAssisted(int count);
+
+  /// Group practice: a result the learner may key into the chat themselves
+  ///
+  /// In en, this message translates to:
+  /// **'To share, key your result in the group chat yourself, e.g. {done}/{total} {accuracy}%. Nothing is sent automatically.'**
+  String groupPracticeShareHint(int done, int total, int accuracy);
+
+  /// Group practice: mark the session complete
+  ///
+  /// In en, this message translates to:
+  /// **'Finish session'**
+  String get groupPracticeComplete;
+
+  /// Group practice: confirm deleting a session
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this session?'**
+  String get groupPracticeDeleteTitle;
+
+  /// Group practice: what deleting a session removes
+  ///
+  /// In en, this message translates to:
+  /// **'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.'**
+  String get groupPracticeDeleteBody;
+
+  /// Receive drill: the conditions audio could not be started
+  ///
+  /// In en, this message translates to:
+  /// **'The audio could not be started on this device. Practise with Clear conditions instead.'**
+  String get conditionsAudioFailed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

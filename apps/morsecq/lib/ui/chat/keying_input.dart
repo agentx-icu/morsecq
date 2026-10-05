@@ -5,6 +5,9 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../../keying/key_profile.dart';
+import '../../keying/key_profiles.dart';
+import '../../training/training_settings.dart';
 import 'morse_pattern_text.dart';
 
 /// Which hand-keying widget the input area shows.
@@ -27,7 +30,10 @@ class KeyingInputController {
 /// Straight key or iambic paddles wired to a [MorseDecoder]; decoded
 /// characters are handed to [onText] so the owner can append them to the
 /// draft. Both modalities work by touch (on-screen pads, ≥ 48 dp) and by
-/// keyboard (Space / left+right Ctrl via `morse_io`'s default binding).
+/// keyboard, with the device's active [KeyProfile] (F12): its bindings,
+/// paddle orientation and iambic mode; an adapter that times its own
+/// elements keys through the straight-key path; its sidetone switch gates
+/// the local echo (decoding is unaffected).
 ///
 /// The decoder is seeded with the listener's own dit length so the first
 /// characters decode sensibly before it adapts to the operator's fist.
@@ -64,6 +70,12 @@ class KeyingInput extends StatefulWidget {
 }
 
 class _KeyingInputState extends State<KeyingInput> {
+  KeyProfile _profile = KeyProfile.defaults;
+  late MorseSink _echo = GatedSink(widget.sink, () => _profile.appSidetone);
+
+  /// Paddles unless the profile's adapter keys its own elements.
+  KeyingMode get _mode =>
+      _profile.adapterKeyer ? KeyingMode.straightKey : widget.mode;
   late MorseDecoder _decoder;
   late StreamSubscription<DecodeEvent> _events;
   StraightKey? _straight;
@@ -103,7 +115,6 @@ class _KeyingInputState extends State<KeyingInput> {
       config: DecoderConfig(initialDit: widget.timing.dit),
     );
     _events = _decoder.events.listen(_onDecode);
-    _buildKeyer();
     // A sink sounds nothing until prepared (the audio engine starts here).
     unawaited(widget.sink.prepare());
     _tick = Timer.periodic(const Duration(milliseconds: 40), (_) {
@@ -115,6 +126,22 @@ class _KeyingInputState extends State<KeyingInput> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final next = KeyProfiles.of(context);
+    final first = _straight == null && _keyer == null;
+    final rebuild =
+        first ||
+        next.adapterKeyer != _profile.adapterKeyer ||
+        next.keyerMode != _profile.keyerMode;
+    _profile = next;
+    if (!rebuild) return;
+    // Disposing the old keyer releases anything held: no stuck tone.
+    _disposeKeyer();
+    _buildKeyer();
+  }
+
+  @override
   void didUpdateWidget(KeyingInput old) {
     super.didUpdateWidget(old);
     if (old.controller != widget.controller) {
@@ -122,6 +149,9 @@ class _KeyingInputState extends State<KeyingInput> {
       widget.controller?._state = this;
     }
     if (old.mode != widget.mode || old.sink != widget.sink) {
+      if (old.sink != widget.sink) {
+        _echo = GatedSink(widget.sink, () => _profile.appSidetone);
+      }
       _disposeKeyer();
       _buildKeyer();
       if (old.sink != widget.sink) unawaited(widget.sink.prepare());
@@ -132,15 +162,18 @@ class _KeyingInputState extends State<KeyingInput> {
 
   void _buildKeyer() {
     final KeyTarget target = MorseDecoderTarget(_decoder);
-    switch (widget.mode) {
+    switch (_mode) {
       case KeyingMode.straightKey:
-        _straight = StraightKey(target: target, sink: widget.sink);
+        _straight = StraightKey(target: target, sink: _echo);
       case KeyingMode.paddles:
         _keyer = IambicKeyer(
           timing: KeyerTiming.fromMorseTiming(widget.timing),
           target: target,
-          sink: widget.sink,
+          sink: _echo,
           clock: widget.clock,
+          mode: _profile.keyerMode == KeyerMode.iambicA
+              ? IambicMode.a
+              : IambicMode.b,
         );
     }
   }
@@ -184,10 +217,12 @@ class _KeyingInputState extends State<KeyingInput> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final String pending = _decoder.pendingPattern;
-    final Widget pad = switch (widget.mode) {
+    final KeyboardKeyBinding binding = _profile.binding;
+    final Widget pad = switch (_mode) {
       KeyingMode.straightKey => Center(
         child: StraightKeyButton(
           input: _straight!,
+          binding: binding,
           clock: widget.clock,
           size: widget.height - 12,
           autofocus: true,
@@ -196,6 +231,8 @@ class _KeyingInputState extends State<KeyingInput> {
       ),
       KeyingMode.paddles => PaddleButtons(
         input: _keyer!,
+        binding: binding,
+        swapPaddles: _profile.swapPaddles,
         clock: widget.clock,
         height: widget.height - 12,
         autofocus: true,
@@ -218,7 +255,17 @@ class _KeyingInputState extends State<KeyingInput> {
                   children: [
                     Expanded(
                       child: Text(
-                        widget.mode == KeyingMode.straightKey
+                        !_profile.isDefault
+                            ? context.s.keysHintCustom(
+                                keyLabels(
+                                  _profile.keysFor(
+                                    _mode == KeyingMode.straightKey
+                                        ? KeyerMode.straight
+                                        : _profile.keyerMode,
+                                  ),
+                                ),
+                              )
+                            : _mode == KeyingMode.straightKey
                             ? context.s.chatKeyHint
                             : context.s.chatPaddleHint,
                         style: theme.textTheme.labelSmall?.copyWith(

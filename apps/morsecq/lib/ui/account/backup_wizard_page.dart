@@ -66,9 +66,12 @@ class _BackupWizardPageState extends State<BackupWizardPage> {
           const SizedBox(height: 16),
           Text(s.accountBackupBody, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 12),
-          // Only a password-protected identity's key is encrypted in the file.
+          // A complete backup (F10) is sealed as a whole with a passphrase;
+          // in a legacy archive only a password-protected key is encrypted.
           Text(
-            identity?.hasPassword ?? false
+            context.read<IdentityService>() is EncryptedBackupService
+                ? s.backupXWizardInside
+                : identity?.hasPassword ?? false
                 ? s.accountBackupWhatIsInside
                 : s.accountBackupWhatIsInsidePlain,
             style: theme.textTheme.bodyMedium,

@@ -113,6 +113,7 @@ TrainerProgress completePlanStep(
   String? planStepId,
   String? sourceRef,
   String? detailRef,
+  RadioScenario? conditions,
 }) {
   if (progress.hasCommitted(id)) {
     return (
@@ -148,6 +149,7 @@ TrainerProgress completePlanStep(
     planStepId: planStepId,
     sourceRef: sourceRef,
     detailRef: detailRef,
+    conditions: conditions,
   );
   var next = progress.recordExercise(
     score,

@@ -1,5 +1,6 @@
 import 'char_stats.dart';
 import 'exercise.dart';
+import 'radio_conditions.dart';
 import 'session_score.dart';
 
 /// Compact record of one finished session, kept in progress history.
@@ -28,6 +29,7 @@ final class SessionSummary {
     this.planStepId,
     this.sourceRef,
     this.detailRef,
+    this.conditions,
     Map<String, CharStats>? perChar,
   }) : assert(totalChars >= 0, 'totalChars must be >= 0'),
        assert(
@@ -70,6 +72,7 @@ final class SessionSummary {
     String? planStepId,
     String? sourceRef,
     String? detailRef,
+    RadioScenario? conditions,
   }) => SessionSummary(
     at: at,
     totalChars: score.totalChars,
@@ -89,6 +92,7 @@ final class SessionSummary {
     planStepId: planStepId,
     sourceRef: sourceRef,
     detailRef: detailRef,
+    conditions: conditions,
     perChar: score.charStats,
   );
 
@@ -128,6 +132,10 @@ final class SessionSummary {
   /// Optional detail file (rhythm, audio); may be missing on load.
   final String? detailRef;
 
+  /// Simulated radio conditions the attempt was played under (F11); null
+  /// for clean playback.
+  final RadioScenario? conditions;
+
   /// Per-symbol results of this attempt alone (recent-window statistics).
   final Map<String, CharStats>? perChar;
 
@@ -164,6 +172,7 @@ final class SessionSummary {
       'planStepId': planStepId,
       'sourceRef': sourceRef,
       'detailRef': detailRef,
+      if (conditions != null) 'conditions': conditions!.toJson(),
       if (perChar != null) 'perChar': CharStats.mapToJson(perChar!),
     },
   };
@@ -191,6 +200,7 @@ final class SessionSummary {
       planStepId: json['planStepId'] as String?,
       sourceRef: json['sourceRef'] as String?,
       detailRef: json['detailRef'] as String?,
+      conditions: RadioScenario.fromJson(json['conditions']),
       perChar: perChar is Map<String, Object?>
           ? CharStats.mapFromJson(perChar)
           : null,

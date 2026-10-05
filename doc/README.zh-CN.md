@@ -27,6 +27,10 @@
 
 ## 规划（方案）
 
+- [plans/2026-10-04-additional-functional-improvements-handoff.md](plans/2026-10-04-additional-functional-improvements-handoff.md) /
+  [中文](plans/2026-10-04-additional-functional-improvements-handoff.zh-CN.md) —— 以英文为主的
+  六项补充功能 F09–F14 交接与实现记录：连接诊断、完整加密迁移、电台环境训练、外接电键、
+  中文电码和群组带练；含验收条件、实现决策以及已做与未做的验证。
 - [plans/2026-10-03-functional-improvements.zh-CN.md](plans/2026-10-03-functional-improvements.zh-CN.md) /
   [English](plans/2026-10-03-functional-improvements.md) —— 八项待实现功能的详细规格与 AI
   交接：每日计划、交互 QSO、聊天练习、节奏回放、体验与水平测试、素材、消息管理、

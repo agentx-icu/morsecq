@@ -6,6 +6,8 @@ import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../../keying/key_profile.dart';
+import '../../keying/key_profiles.dart';
 import 'morse_pattern_text.dart';
 import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
@@ -39,6 +41,16 @@ class _TapToKeyViewState extends State<TapToKeyView> {
   String _text = '';
   String _pending = '';
 
+  /// The device key profile (F12): straight-key bindings and whether the
+  /// app sounds its own sidetone while keying.
+  KeyProfile _profile = KeyProfile.defaults;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _profile = KeyProfiles.of(context);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +59,7 @@ class _TapToKeyViewState extends State<TapToKeyView> {
     controller.stop();
     _key = StraightKey(
       target: MorseDecoderTarget(_decoder),
-      sink: controller.sink,
+      sink: GatedSink(controller.sink, () => _profile.appSidetone),
     );
     _events = _decoder.events.listen((_) => _refresh());
     _scheduleTick();
@@ -154,13 +166,16 @@ class _TapToKeyViewState extends State<TapToKeyView> {
         children: <Widget>[
           StraightKeyButton(
             input: _key,
+            binding: _profile.binding,
             clock: widget.clock,
             label: s.referenceKeyLabel,
             autofocus: true,
           ),
           const SizedBox(height: 12),
           Text(
-            s.referenceKeyHint,
+            _profile.isDefault
+                ? s.referenceKeyHint
+                : s.keysHintCustom(keyLabels(_profile.binding.straight)),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,

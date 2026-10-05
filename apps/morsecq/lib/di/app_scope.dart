@@ -3,8 +3,10 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../desktop/desktop_shell_controller.dart';
+import '../diagnostics/connection_diagnostics.dart';
 import '../i18n/key_value_store.dart';
 import '../i18n/locale_controller.dart';
+import '../keying/key_profiles.dart';
 import '../lifecycle/app_lifecycle_coordinator.dart';
 import '../lifecycle/background_task_api.dart';
 import '../notifications/connection_banner_policy.dart';
@@ -30,8 +32,9 @@ import 'backend_factory.dart';
 /// Provided: [IdentityService], [ChatService], [BackupFileGateway],
 /// [AppSettings], [StartupController], [LocaleController],
 /// [MorsePlaybackSettings], [AppLifecycleCoordinator],
-/// [ConnectionBannerPolicy], [NotificationPrefs], and — when `main()` supplies
-/// them — [NotificationCenter] and [DesktopShellController] (nullable).
+/// [ConnectionBannerPolicy], [ConnectionDiagnostics], [NotificationPrefs],
+/// and — when `main()` supplies them — [NotificationCenter] and
+/// [DesktopShellController] (nullable).
 class AppScope extends StatefulWidget {
   const AppScope({
     super.key,
@@ -97,6 +100,9 @@ class _AppScopeState extends State<AppScope> {
   late final BackupFileGateway _backupFiles =
       widget.backupFiles ?? const PlatformBackupFileGateway();
   late final LocaleController _locale = LocaleController(_store);
+
+  /// Device-local key bindings for every keying surface (F12).
+  late final KeyProfiles _keyProfiles = KeyProfiles(_store);
   MorsePlaybackSettings get _playback => _preferences.playback;
   late final AppServices _services = AppServices(
     identity: _identity,
@@ -106,6 +112,11 @@ class _AppScopeState extends State<AppScope> {
     notificationPrefs: _preferences.notifications,
     onBackground: _flushSettings,
     backgroundTasks: widget.backgroundTasks,
+    // The startup controller owns connect(): its error is the chip's too.
+    reconnect: () async {
+      await _startup.reconnect();
+      return _startup.connectionError;
+    },
     desktopShell: widget.desktopShell,
   );
 
@@ -116,7 +127,11 @@ class _AppScopeState extends State<AppScope> {
   );
 
   Future<void> _flushSettings() async {
-    await Future.wait([_preferences.flush(), _locale.flush()]);
+    await Future.wait([
+      _preferences.flush(),
+      _locale.flush(),
+      _keyProfiles.flush(),
+    ]);
   }
 
   @override
@@ -142,6 +157,7 @@ class _AppScopeState extends State<AppScope> {
     _services.dispose().ignore();
     _preferences.dispose();
     _locale.dispose();
+    _keyProfiles.dispose();
     _startup.dispose();
     // Fire-and-forget: the scope is going away and there is nobody left to
     // report to; the fake and the real backend both log internally.
@@ -160,6 +176,7 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<AppSettings>.value(value: _settings),
         ChangeNotifierProvider<StartupController>.value(value: _startup),
         ChangeNotifierProvider<LocaleController>.value(value: _locale),
+        ChangeNotifierProvider<KeyProfiles?>.value(value: _keyProfiles),
         ChangeNotifierProvider<MorsePlaybackSettings>.value(value: _playback),
         ChangeNotifierProvider<ReferencePlaybackSettings>.value(
           value: _preferences.reference,
@@ -169,6 +186,9 @@ class _AppScopeState extends State<AppScope> {
         ),
         Provider<AppLifecycleCoordinator>.value(value: _services.lifecycle),
         Provider<ConnectionBannerPolicy>.value(value: _services.banner),
+        ChangeNotifierProvider<ConnectionDiagnostics>.value(
+          value: _services.diagnostics,
+        ),
         ChangeNotifierProvider<NotificationPrefs>.value(
           value: _services.notificationPrefs,
         ),

@@ -98,4 +98,28 @@ void main() {
   test('an empty queue is never pending', () {
     expect(status.isQueued(_row(text: 'x', at: t0, msgID: 'm1'), c2c), isFalse);
   });
+
+  test('summary counts the durable queue once per id, per conversation', () {
+    queue.setCache({
+      peer: [
+        _item(text: 'a', at: t1, msgID: 'm1'),
+        _item(text: 'a', at: t1, msgID: 'm1'), // re-enqueued duplicate
+        _item(text: 'legacy', at: t0), // no id: counted
+      ],
+      'group:tox_1': [_item(text: 'net', at: t1, msgID: 'g1')],
+      'B' * 64: [_item(text: 'other', at: t1, msgID: 'm9')],
+    });
+    final mine = status.summary(conversationId: c2c);
+    expect(mine.count, 2);
+    expect(mine.oldest, t0);
+    expect(status.summary(conversationId: group).count, 1);
+    final all = status.summary();
+    expect(all.count, 4);
+    expect(all.oldest, t0);
+    expect(
+      status.summary(conversationId: ConversationIds.c2c('C' * 64)).count,
+      0,
+    );
+    expect(status.summary(conversationId: ConversationIds.c2c('C' * 64)).oldest, isNull);
+  });
 }

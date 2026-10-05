@@ -609,3 +609,4 @@ Not done / unverified: product screenshots were not regenerated (macOS test runs
 
 - **2026-10-03** — Implemented M0–M8 (all eight features) and added §17 Implementation record; Codex review findings fixed. The status line now reflects shipped scope.
 - **2026-10-04** — Corrected §17: recordings can be included in an identity backup. Export asks when saved recordings exist (up to 100 MiB) and restore writes them back, as §11.3 requires. The record had said this was not offered.
+- **2026-10-04** — F10 of the [additional improvements](./2026-10-04-additional-functional-improvements-handoff.md) supersedes the backup statements in §11.3 and §17 for new exports: recordings are now an opt-in category of the complete, passphrase-sealed backup (same 100 MiB limit, same referenced-recordings rule), restored with the rest. Legacy archives keep restoring as described here. Radio-condition sessions (F11) use a new `conditions` exercise source with activity-only credit.

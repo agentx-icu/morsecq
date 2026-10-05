@@ -299,6 +299,8 @@ At the end of each wave the orchestrator runs: `dart pub get`, `flutter analyze`
 
 ## Change log
 
+- **2026-10-04** — Implemented the six [additional functional improvements](./2026-10-04-additional-functional-improvements-handoff.md) (F09–F14). Scope changes for this plan: the in-app export is now a complete, passphrase-sealed backup (identity, training, chat history, conversation metadata, portable preferences, optional recordings and unsent messages) and remains the only way to move an identity; legacy `.tox` backups still restore. Restored unsent messages never send automatically. Radio-condition and codebook-recall results are kept apart from clean Morse proficiency. Group practice is local and manually coordinated; no synchronised rooms or control messages on the wire.
+
 - **2026-10-03** — Implemented all eight [functional improvements](./2026-10-03-functional-improvements.md) (M0–M8). Product rule changed with F05: learning may start on a local guest profile; chat still requires an identity; guest progress moves to a newly created identity and is never merged silently into a restored or unlocked one. Single-message cancel/retry needed Tim2Tox send control (agentx-icu/tim2tox#27, submodule pin updated).
 
 - **2026-10-03** — At the user's request, documented eight proposed improvements in the [functional specification and AI handoff](./2026-10-03-functional-improvements.md), including default scope, data/credit rules, interaction, acceptance, and phased tasks. Specification only: current v1 scope and training identity requirements remain in force until guest mode ships and the product rules are updated.

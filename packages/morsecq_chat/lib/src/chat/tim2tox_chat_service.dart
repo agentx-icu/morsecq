@@ -39,7 +39,7 @@ part 'chat_service_session.dart';
 /// `pending` row; it drains when the friend comes back.
 class Tim2ToxChatService
     with _MessageManagement
-    implements ChatService, IdentityDataStore {
+    implements ChatService, IdentityDataStore, OutboxInspector {
   Tim2ToxChatService({
     required ChatEngine engine,
     required IdentityService identity,
@@ -270,6 +270,17 @@ class Tim2ToxChatService
 
   @override
   int get maxMessageBytes => toxMessageBudget;
+
+  /// The durable Tim2Tox queue of the bound session; null while detached
+  /// (the queue file of a detached identity is not loaded).
+  @override
+  PendingOutboxSummary? pendingOutbox({String? conversationId}) {
+    final svc = _service;
+    if (svc == null || !_isCurrent(svc)) return null;
+    return PendingMessageStatus(
+      svc.offlineMessageQueuePersistence,
+    ).summary(conversationId: conversationId);
+  }
 
   @override
   Future<List<ChatMessage>> loadHistory(

@@ -9,6 +9,7 @@ import 'package:morsecq/ui/account/identity_card.dart';
 import 'package:morsecq/ui/account/welcome_page.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:morsecq_chat_api/testing.dart';
 
 import 'test_app.dart';
@@ -64,7 +65,22 @@ void main() {
     await _scrollTo(tester, find.text(en.accountExportBackup));
     await tester.tap(find.text(en.accountExportBackup));
     await settle(tester);
+    // Too short, then mismatched: nothing is written.
+    Finder field(String key) => find.descendant(
+      of: find.byKey(ValueKey(key)),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(field('backup-x-passphrase'), 'short');
+    await tapVisible(tester, find.byKey(const ValueKey('backup-x-export')));
+    expect(find.text(en.backupXPassphraseTooShort), findsOneWidget);
+    await tester.enterText(field('backup-x-passphrase'), 'correct horse');
+    await tester.enterText(field('backup-x-confirm'), 'correct hose');
+    await tapVisible(tester, find.byKey(const ValueKey('backup-x-export')));
+    expect(find.text(en.backupXPassphraseMismatch), findsOneWidget);
+    expect(files.saved, isEmpty);
+    await completeEncryptedBackup(tester);
     expect(files.saved, hasLength(1));
+    expect(isEncryptedBackup(files.saved.single), isTrue);
     expect(find.text(en.accountBackupSaved), findsOneWidget);
   });
 
@@ -89,11 +105,23 @@ void main() {
       matching: find.byType(ListTile),
     );
     await _scrollTo(tester, tile);
-    final tileRect = tester.getRect(tile);
     await tester.tap(tile);
     await settle(tester);
+    // The encrypted backup page's create button anchors the popover.
+    Finder field(String key) => find.descendant(
+      of: find.byKey(ValueKey(key)),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(field('backup-x-passphrase'), 'correct horse');
+    await tester.enterText(field('backup-x-confirm'), 'correct horse');
+    final button = find.byKey(const ValueKey('backup-x-export'));
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    final buttonRect = tester.getRect(button);
+    await tester.tap(button);
+    await settle(tester);
     expect(files.saved, hasLength(1));
-    expect(files.shareOrigins.single, tileRect);
+    expect(files.shareOrigins.single, buttonRect);
   });
 
   testWidgets('edit profile updates the card', (tester) async {

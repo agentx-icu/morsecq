@@ -3402,6 +3402,773 @@ class SZh extends S {
 
   @override
   String get accountBackupMediaSkip => '不含录音';
+
+  @override
+  String get diagTitle => '连接诊断';
+
+  @override
+  String get diagOpenSubtitle => '消息为何在等待，以及如何重新连接';
+
+  @override
+  String get diagBannerDetails => '详情';
+
+  @override
+  String get diagSummaryNoIdentity => '尚未打开身份，没有可检查的连接。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => '你已连接到 Tox 网络，且该联系人在线。消息会直接送达对方。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '你已连接，但该联系人离线。消息会留在本机的待发队列中，对方上线后自动发送。';
+
+  @override
+  String get diagSummaryOnline => '你已连接到 Tox 网络。';
+
+  @override
+  String get diagSummaryConnecting => '正在连接 Tox 网络。应用启动或网络切换后可能需要一分钟左右。';
+
+  @override
+  String get diagSummaryOffline => '你未连接到 Tox 网络。连接恢复前无法收发任何消息。';
+
+  @override
+  String get diagLocalLabel => '本机连接';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '自 $time 起';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '自 $time 起观察到';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '自 $time 回到应用后观察到';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最近一次观察到的连接';
+
+  @override
+  String get diagLastOnlineNow => '当前已连接';
+
+  @override
+  String get diagLastOnlineNone => '尚未观察到连接。';
+
+  @override
+  String get diagLastOnlineHint => '这是本机最后一次观察到自身连接的时间，并非消息送达对方的时间。';
+
+  @override
+  String get diagPeerLabel => '联系人';
+
+  @override
+  String get diagUnknown => '未知';
+
+  @override
+  String get diagPeerUnknownHint => '只有在你已连接时才能看到联系人是否在线。';
+
+  @override
+  String get diagPeerGroupHint => '群成员是否在线请查看成员列表。';
+
+  @override
+  String get diagPendingLabel => '待发送';
+
+  @override
+  String get diagPendingNone => '没有待发消息';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最早一条排队于 $time';
+  }
+
+  @override
+  String get diagPendingUnknown => '聊天连接后才能得知';
+
+  @override
+  String get diagPendingHint => '排队的消息保存在本机，对方可达时会自动发送。诊断页面不会丢弃或重发它们。';
+
+  @override
+  String get diagReconnect => '重新连接';
+
+  @override
+  String get diagReconnecting => '正在重新连接…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '重新连接失败：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '重新连接会重新发起连接尝试。上线仍可能需要一段时间，届时本页会自动更新。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ 如何连接';
+
+  @override
+  String get diagAboutBody => 'MorseCQ 没有服务器。你的设备通过 Tox 点对点网络直接与联系人通信，因此双方必须同时在线消息才能送达。手机会暂停后台应用：MorseCQ 在后台无法保持连接，回到应用时会重新连接。';
+
+  @override
+  String get diagDetailsTitle => '技术详情';
+
+  @override
+  String get diagDetailIdentity => '身份';
+
+  @override
+  String get diagDetailStatus => '状态';
+
+  @override
+  String get diagDetailObserved => '观察时间';
+
+  @override
+  String get diagDetailQueued => '队列条目';
+
+  @override
+  String get diagDetailError => '最近错误代码';
+
+  @override
+  String get backupXTitle => '加密备份';
+
+  @override
+  String get backupXIntro => '选择要带到其他设备的内容。整个文件都会用你在此设置的口令加密。';
+
+  @override
+  String get backupXCategoryIdentity => '身份与 Tox 配置文件';
+
+  @override
+  String get backupXCategoryTraining => '训练进度与素材';
+
+  @override
+  String get backupXCategoryChat => '聊天记录（含给自己的笔记）';
+
+  @override
+  String get backupXCategoryMeta => '草稿、置顶与书签';
+
+  @override
+  String get backupXCategoryPrefs => '应用偏好设置';
+
+  @override
+  String get backupXPrefsHint => '播放、通知、外观与语言。不含窗口位置和按键绑定。';
+
+  @override
+  String get backupXCategoryMedia => '已保存的录音';
+
+  @override
+  String get backupXMediaHint => '默认不包含：录音可能很大。不包含时只带走标题和备注。';
+
+  @override
+  String get backupXCategoryPending => '未发送的消息';
+
+  @override
+  String get backupXPendingHint => '恢复后仅供查看，绝不会自动发送。';
+
+  @override
+  String get backupXRequired => '必选';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 项',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '太大，无法包含（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个等待离线好友的群邀请不会被带走。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => '身份密码仍保留在配置文件上：新设备除备份口令外还会要求输入它。';
+
+  @override
+  String backupXTotal(String size) {
+    return '总计约 $size';
+  }
+
+  @override
+  String get backupXPassphrase => '备份口令';
+
+  @override
+  String get backupXPassphraseConfirm => '再次输入口令';
+
+  @override
+  String get backupXPassphraseHint => '至少 8 个字符。它与身份密码相互独立，且无法找回。';
+
+  @override
+  String get backupXPassphraseTooShort => '请至少使用 8 个字符';
+
+  @override
+  String get backupXPassphraseMismatch => '两次输入的口令不一致';
+
+  @override
+  String get backupXExport => '创建加密备份';
+
+  @override
+  String get backupXExporting => '正在创建备份…';
+
+  @override
+  String get backupXMigrationNote => '要换设备？在新设备恢复后，请停止在本机使用此身份：同一身份的两台设备可能把同一条消息发送两次。';
+
+  @override
+  String get backupXBusy => '备份过程中数据持续变化，请重试。';
+
+  @override
+  String get backupXTooLarge => '备份太大。请去掉录音后重试。';
+
+  @override
+  String get restoreXWrongPassphrase => '口令错误，或文件已被修改、不完整。';
+
+  @override
+  String get restoreXUnsupported => '此备份由更新版本的 MorseCQ 创建。';
+
+  @override
+  String get restoreXCheck => '打开备份';
+
+  @override
+  String get restoreXPreviewTitle => '备份内容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '创建于 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '包含';
+
+  @override
+  String get restoreXExcluded => '不在此备份中';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条未发送的消息将恢复供你查看，不会自动发送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '旧设备上的 $count 条未发送消息不在此备份中。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => '身份密码';
+
+  @override
+  String get restoreXIdentityPasswordNote => '此备份中的身份另设有密码，请一并输入。';
+
+  @override
+  String get restoreXConfirmTitle => '替换本机上的身份？';
+
+  @override
+  String get restoreXConfirmBody => '本机上的身份和数据将被备份替换。在此连接之前，请先停止在旧设备上使用该身份。';
+
+  @override
+  String get restoreXConfirm => '替换并恢复';
+
+  @override
+  String get restoreXReportTitle => '恢复完成';
+
+  @override
+  String get restoreXReportRestored => '已恢复';
+
+  @override
+  String get restoreXReportNotIncluded => '未恢复';
+
+  @override
+  String get restoreXReportPrefsFailed => '偏好设置未能应用，已保留原有设置。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 条未发送的消息在“聊天”中等你查看。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '旧设备上的 $count 条未发送消息未被带过来。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个排队中的群邀请未重新发送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '请停止在旧设备上使用此身份。';
+
+  @override
+  String get restoreXReportDone => '完成';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '来自旧设备的 $count 条未发送消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未发送的消息';
+
+  @override
+  String get pendingReviewBody => '这些消息在旧设备上等待发送。MorseCQ 绝不会自动发送；如仍需要，请重新拍发。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '于 $time 在旧设备上排队';
+  }
+
+  @override
+  String get pendingReviewDismiss => '忽略';
+
+  @override
+  String get pendingReviewDismissAll => '全部忽略';
+
+  @override
+  String get pendingReviewEmpty => '没有需要查看的内容了。';
+
+  @override
+  String get backupXWizardInside => '备份文件会用你自选的口令整体加密，包含身份密钥和训练进度。请把文件和口令保存在本机以外的安全位置。';
+
+  @override
+  String get backupXMeSubtitle => '包含身份、聊天和进度的加密文件，可留存或迁移到其他设备';
+
+  @override
+  String get conditionsTitle => '收听环境';
+
+  @override
+  String get conditionsClear => '清晰';
+
+  @override
+  String get conditionsLight => '轻度干扰';
+
+  @override
+  String get conditionsRadio => '实战电台';
+
+  @override
+  String get conditionsClearHint => '干净稳定的音调，即普通练习。';
+
+  @override
+  String get conditionsLightHint => '轻微底噪和缓慢衰落。成绩与清晰练习分开记录。';
+
+  @override
+  String get conditionsRadioHint => '噪声、深度衰落、邻近电台干扰和略不均匀的节奏。成绩与清晰练习分开记录。';
+
+  @override
+  String get conditionsPreview => '试听';
+
+  @override
+  String conditionsActive(String name) {
+    return '收听环境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '电台环境只能听不能看：请在训练设置中打开声音，或改用“清晰”环境练习。';
+
+  @override
+  String get conditionsCleanReplay => '无效果重播';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '在此环境和速度下共 $count 次：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '电台环境练习计入活动，但不会改变课程进度、复习计划或速度建议。';
+
+  @override
+  String get keysTitle => '按键与外接电键';
+
+  @override
+  String get keysMeSubtitle => '按键绑定、双桨与 USB 电键适配器';
+
+  @override
+  String get keysIntro => '选择用哪些键拍发莫尔斯。模拟键盘的 USB 电键/双桨适配器与键盘相同，请在此设置其按键。应用无法分辨按键来自哪个设备，因此配置方案就是一组按键绑定。';
+
+  @override
+  String get keysStandardProfile => '标准';
+
+  @override
+  String get keysUnnamed => '未命名方案';
+
+  @override
+  String get keysEdit => '编辑';
+
+  @override
+  String get keysNewProfile => '新建方案';
+
+  @override
+  String get keysLimitations => '不支持 MIDI、串口和蓝牙电键，也不支持适配器固件设置和电台控制。已测试的适配器列在文档中。';
+
+  @override
+  String get keysEditTitle => '按键方案';
+
+  @override
+  String get keysName => '方案名称';
+
+  @override
+  String get keysActionStraight => '手键';
+
+  @override
+  String get keysActionDit => '点桨';
+
+  @override
+  String get keysActionDah => '划桨';
+
+  @override
+  String get keysPressKey => '请按一个键…';
+
+  @override
+  String get keysNone => '未设置';
+
+  @override
+  String get keysSet => '设置';
+
+  @override
+  String keysReserved(String key) {
+    return '$key 已被系统或应用占用，请换一个键。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key 已用于“$action”。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '每个键只能有一种用途：$keys 被重复绑定。';
+  }
+
+  @override
+  String get keysMissing => '请设置此电键模式需要的键（自动键需同时设置两只桨）。';
+
+  @override
+  String get keysSwapPaddles => '交换双桨（左手）';
+
+  @override
+  String get keysKeyerMode => '电键模式';
+
+  @override
+  String get keysIambicA => '自动键 A';
+
+  @override
+  String get keysIambicB => '自动键 B';
+
+  @override
+  String get keysAdapterKeyer => '适配器自行生成点划';
+
+  @override
+  String get keysAdapterKeyerHint => '适用于自带电键逻辑的适配器：直接使用它计时好的按下和松开，应用不会再生成一遍自动键序列。';
+
+  @override
+  String get keysAppSidetone => '拍发时的应用侧音';
+
+  @override
+  String get keysAppSidetoneHint => '适配器自带侧音时请关闭。不影响解码。';
+
+  @override
+  String get keysTestTitle => '测试';
+
+  @override
+  String get keysTestNote => '仅用于测试：不会发送，也不计入训练。';
+
+  @override
+  String get keysTestRelease => '释放按键';
+
+  @override
+  String get keysAdapterActive => '正在使用适配器自带的电键逻辑：桨对应的键按手键处理。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return '按键：$keys';
+  }
+
+  @override
+  String get telegraphTitle => '中文电码';
+
+  @override
+  String get telegraphIntro => '每个汉字以四位数字码拍发。分别练习听写数字，以及记住哪个码对应哪个字。';
+
+  @override
+  String get telegraphCodebook => '码本';
+
+  @override
+  String get telegraphCodebookMainland => '大陆';
+
+  @override
+  String get telegraphCodebookTaiwan => '台湾';
+
+  @override
+  String get telegraphDigitsTitle => '抄收电码组';
+
+  @override
+  String get telegraphDigitsHint => '收听真实电码的四位数字组并输入数字。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共 $count 次：数字正确率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '记忆码本';
+
+  @override
+  String get telegraphRecallHint => '由字查码、由码认字。与莫尔斯进度分开记录。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已答 $count 张：掌握 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '码本记忆不会解锁莫尔斯课程，也不改变速度建议；数字抄收与其他莫尔斯抄收同等计入。';
+
+  @override
+  String get telegraphRecallCharPrompt => '输入这个字的电码';
+
+  @override
+  String get telegraphRecallCodePrompt => '选出这个电码对应的字';
+
+  @override
+  String get telegraphReveal => '显示答案';
+
+  @override
+  String get telegraphRevealAssisted => '已显示：本题计为有提示。';
+
+  @override
+  String get telegraphCorrect => '正确';
+
+  @override
+  String get telegraphIncorrect => '不对';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 题中答对 $correct 题';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 题看过答案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '按中文电码解读';
+
+  @override
+  String get telegraphInterpretTitle => '电码解读';
+
+  @override
+  String get telegraphInterpretNote => '仅在此显示：不会修改原消息，也不会发送任何内容。';
+
+  @override
+  String get telegraphUnresolved => '无法解读：没有字对应此码';
+
+  @override
+  String get telegraphMalformed => '不是四位数字组';
+
+  @override
+  String get telegraphNotCode => '文字，保持原样';
+
+  @override
+  String get telegraphAmbiguous => '多个字共用此码';
+
+  @override
+  String get groupPracticeTitle => '群组带练';
+
+  @override
+  String get groupPracticeIntro => '带练者照常在群聊中拍发练习内容。每位成员在此选择练习消息，按自己的速度抄收。答案和成绩只保存在本机，不会发送到群里。';
+
+  @override
+  String get groupPracticeNew => '新建练习';
+
+  @override
+  String get groupPracticeTitleField => '标题';
+
+  @override
+  String get groupPracticeCreate => '创建';
+
+  @override
+  String get groupPracticeInstructor => '带练者';
+
+  @override
+  String get groupPracticeParticipant => '参与者';
+
+  @override
+  String get groupPracticeInstructorHint => '在群聊中拍发每道练习，在此添加为一轮并勾选完成；轮次请在群聊里通知。';
+
+  @override
+  String get groupPracticeParticipantHint => '把带练者的练习消息添加为轮次，并在此逐一抄收。';
+
+  @override
+  String get groupPracticeLocalNote => '仅限本机：轮次、角色和成绩不会与其他成员同步，错过的消息也不一定能送达所有人。';
+
+  @override
+  String get groupPracticeAddRound => '添加练习';
+
+  @override
+  String get groupPracticeNoMessages => '最近记录中没有可添加的消息。';
+
+  @override
+  String get groupPracticeNotConnected => '聊天连接后才能读取群记录。';
+
+  @override
+  String get groupPracticeRoundOpen => '待完成';
+
+  @override
+  String get groupPracticeRoundDone => '已完成';
+
+  @override
+  String get groupPracticeRoundUnavailable => '不可用';
+
+  @override
+  String get groupPracticeSourceGone => '该练习消息已不在记录中。';
+
+  @override
+  String get groupPracticeSourceLoading => '正在查找消息…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '抄收：$accuracy%（$count 次）',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '抄收';
+
+  @override
+  String get groupPracticeRemoveRound => '移除本轮';
+
+  @override
+  String get groupPracticeSummary => '小结';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '已完成 $done/$total 轮';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 轮不可用',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '抄收正确率：$accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次使用了提示',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '如需分享，请自行在群聊中拍发成绩，例如 $done/$total $accuracy%。不会自动发送。';
+  }
+
+  @override
+  String get groupPracticeComplete => '结束练习';
+
+  @override
+  String get groupPracticeDeleteTitle => '删除这次练习？';
+
+  @override
+  String get groupPracticeDeleteBody => '本机上的轮次和成绩将被删除；训练记录和群消息保留。';
+
+  @override
+  String get conditionsAudioFailed => '本设备无法播放音频。请改用“清晰”环境练习。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6802,4 +7569,771 @@ class SZhHant extends SZh {
 
   @override
   String get accountBackupMediaSkip => '不含錄音';
+
+  @override
+  String get diagTitle => '連線診斷';
+
+  @override
+  String get diagOpenSubtitle => '訊息為何在等待，以及如何重新連線';
+
+  @override
+  String get diagBannerDetails => '詳情';
+
+  @override
+  String get diagSummaryNoIdentity => '尚未開啟身分，沒有可檢查的連線。';
+
+  @override
+  String get diagSummaryOnlinePeerOnline => '你已連線到 Tox 網路，且該聯絡人在線。訊息會直接送達對方。';
+
+  @override
+  String get diagSummaryOnlinePeerOffline => '你已連線，但該聯絡人離線。訊息會留在本機的待發佇列中，對方上線後自動傳送。';
+
+  @override
+  String get diagSummaryOnline => '你已連線到 Tox 網路。';
+
+  @override
+  String get diagSummaryConnecting => '正在連線 Tox 網路。應用程式啟動或網路切換後可能需要一分鐘左右。';
+
+  @override
+  String get diagSummaryOffline => '你未連線到 Tox 網路。連線恢復前無法收發任何訊息。';
+
+  @override
+  String get diagLocalLabel => '本機連線';
+
+  @override
+  String diagSinceChanged(String time) {
+    return '自 $time 起';
+  }
+
+  @override
+  String diagSinceFirst(String time) {
+    return '自 $time 起觀察到';
+  }
+
+  @override
+  String diagSinceResumed(String time) {
+    return '自 $time 回到應用程式後觀察到';
+  }
+
+  @override
+  String get diagLastOnlineLabel => '最近一次觀察到的連線';
+
+  @override
+  String get diagLastOnlineNow => '目前已連線';
+
+  @override
+  String get diagLastOnlineNone => '尚未觀察到連線。';
+
+  @override
+  String get diagLastOnlineHint => '這是本機最後一次觀察到自身連線的時間，並非訊息送達對方的時間。';
+
+  @override
+  String get diagPeerLabel => '聯絡人';
+
+  @override
+  String get diagUnknown => '未知';
+
+  @override
+  String get diagPeerUnknownHint => '只有在你已連線時才能看到聯絡人是否在線。';
+
+  @override
+  String get diagPeerGroupHint => '群組成員是否在線請查看成員列表。';
+
+  @override
+  String get diagPendingLabel => '待傳送';
+
+  @override
+  String get diagPendingNone => '沒有待傳訊息';
+
+  @override
+  String diagPendingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 則訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String diagPendingOldest(String time) {
+    return '最早一則排隊於 $time';
+  }
+
+  @override
+  String get diagPendingUnknown => '聊天連線後才能得知';
+
+  @override
+  String get diagPendingHint => '排隊的訊息保存在本機，對方可達時會自動傳送。診斷頁面不會捨棄或重送它們。';
+
+  @override
+  String get diagReconnect => '重新連線';
+
+  @override
+  String get diagReconnecting => '正在重新連線…';
+
+  @override
+  String diagReconnectFailed(String reason) {
+    return '重新連線失敗：$reason';
+  }
+
+  @override
+  String get diagReconnectNote => '重新連線會重新發起連線嘗試。上線仍可能需要一段時間，屆時本頁會自動更新。';
+
+  @override
+  String get diagAboutTitle => 'MorseCQ 如何連線';
+
+  @override
+  String get diagAboutBody => 'MorseCQ 沒有伺服器。你的裝置透過 Tox 點對點網路直接與聯絡人通訊，因此雙方必須同時在線訊息才能送達。手機會暫停背景應用程式：MorseCQ 在背景無法保持連線，回到應用程式時會重新連線。';
+
+  @override
+  String get diagDetailsTitle => '技術詳情';
+
+  @override
+  String get diagDetailIdentity => '身分';
+
+  @override
+  String get diagDetailStatus => '狀態';
+
+  @override
+  String get diagDetailObserved => '觀察時間';
+
+  @override
+  String get diagDetailQueued => '佇列項目';
+
+  @override
+  String get diagDetailError => '最近錯誤代碼';
+
+  @override
+  String get backupXTitle => '加密備份';
+
+  @override
+  String get backupXIntro => '選擇要帶到其他裝置的內容。整個檔案都會用你在此設定的通關密語加密。';
+
+  @override
+  String get backupXCategoryIdentity => '身分與 Tox 設定檔';
+
+  @override
+  String get backupXCategoryTraining => '訓練進度與素材';
+
+  @override
+  String get backupXCategoryChat => '聊天紀錄（含給自己的筆記）';
+
+  @override
+  String get backupXCategoryMeta => '草稿、置頂與書籤';
+
+  @override
+  String get backupXCategoryPrefs => '應用程式偏好設定';
+
+  @override
+  String get backupXPrefsHint => '播放、通知、外觀與語言。不含視窗位置與按鍵綁定。';
+
+  @override
+  String get backupXCategoryMedia => '已儲存的錄音';
+
+  @override
+  String get backupXMediaHint => '預設不包含：錄音可能很大。不包含時只帶走標題與備註。';
+
+  @override
+  String get backupXCategoryPending => '未傳送的訊息';
+
+  @override
+  String get backupXPendingHint => '還原後僅供查看，絕不會自動傳送。';
+
+  @override
+  String get backupXRequired => '必選';
+
+  @override
+  String backupXSizeLine(int count, String size) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 項',
+    );
+    return '$_temp0 · $size';
+  }
+
+  @override
+  String backupXSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String backupXSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String backupXMediaTooLarge(String size) {
+    return '太大，無法包含（$size）';
+  }
+
+  @override
+  String backupXInvitesNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 個等待離線好友的群組邀請不會被帶走。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backupXIdentityPasswordNote => '身分密碼仍保留在設定檔上：新裝置除備份通關密語外還會要求輸入它。';
+
+  @override
+  String backupXTotal(String size) {
+    return '總計約 $size';
+  }
+
+  @override
+  String get backupXPassphrase => '備份通關密語';
+
+  @override
+  String get backupXPassphraseConfirm => '再次輸入通關密語';
+
+  @override
+  String get backupXPassphraseHint => '至少 8 個字元。它與身分密碼相互獨立，且無法找回。';
+
+  @override
+  String get backupXPassphraseTooShort => '請至少使用 8 個字元';
+
+  @override
+  String get backupXPassphraseMismatch => '兩次輸入的通關密語不一致';
+
+  @override
+  String get backupXExport => '建立加密備份';
+
+  @override
+  String get backupXExporting => '正在建立備份…';
+
+  @override
+  String get backupXMigrationNote => '要換裝置？在新裝置還原後，請停止在本機使用此身分：同一身分的兩台裝置可能把同一則訊息傳送兩次。';
+
+  @override
+  String get backupXBusy => '備份過程中資料持續變化，請重試。';
+
+  @override
+  String get backupXTooLarge => '備份太大。請去掉錄音後重試。';
+
+  @override
+  String get restoreXWrongPassphrase => '通關密語錯誤，或檔案已被修改、不完整。';
+
+  @override
+  String get restoreXUnsupported => '此備份由更新版本的 MorseCQ 建立。';
+
+  @override
+  String get restoreXCheck => '開啟備份';
+
+  @override
+  String get restoreXPreviewTitle => '備份內容';
+
+  @override
+  String restoreXCreated(String date) {
+    return '建立於 $date';
+  }
+
+  @override
+  String get restoreXIncluded => '包含';
+
+  @override
+  String get restoreXExcluded => '不在此備份中';
+
+  @override
+  String restoreXPendingIncluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 則未傳送的訊息將還原供你查看，不會自動傳送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXPendingExcluded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '舊裝置上的 $count 則未傳送訊息不在此備份中。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXIdentityPassword => '身分密碼';
+
+  @override
+  String get restoreXIdentityPasswordNote => '此備份中的身分另設有密碼，請一併輸入。';
+
+  @override
+  String get restoreXConfirmTitle => '取代本機上的身分？';
+
+  @override
+  String get restoreXConfirmBody => '本機上的身分與資料將被備份取代。在此連線之前，請先停止在舊裝置上使用該身分。';
+
+  @override
+  String get restoreXConfirm => '取代並還原';
+
+  @override
+  String get restoreXReportTitle => '還原完成';
+
+  @override
+  String get restoreXReportRestored => '已還原';
+
+  @override
+  String get restoreXReportNotIncluded => '未還原';
+
+  @override
+  String get restoreXReportPrefsFailed => '偏好設定未能套用，已保留原有設定。';
+
+  @override
+  String restoreXReportPendingReview(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 則未傳送的訊息在「聊天」中等你查看。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportPendingNotResumed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '舊裝置上的 $count 則未傳送訊息未被帶過來。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String restoreXReportInvites(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 個排隊中的群組邀請未重新傳送。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get restoreXReportStopOld => '請停止在舊裝置上使用此身分。';
+
+  @override
+  String get restoreXReportDone => '完成';
+
+  @override
+  String pendingReviewBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '來自舊裝置的 $count 則未傳送訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pendingReviewTitle => '未傳送的訊息';
+
+  @override
+  String get pendingReviewBody => '這些訊息在舊裝置上等待傳送。MorseCQ 絕不會自動傳送；如仍需要，請重新拍發。';
+
+  @override
+  String pendingReviewQueuedAt(String time) {
+    return '於 $time 在舊裝置上排隊';
+  }
+
+  @override
+  String get pendingReviewDismiss => '忽略';
+
+  @override
+  String get pendingReviewDismissAll => '全部忽略';
+
+  @override
+  String get pendingReviewEmpty => '沒有需要查看的內容了。';
+
+  @override
+  String get backupXWizardInside => '備份檔案會用你自選的通關密語整體加密，包含身分金鑰與訓練進度。請把檔案與通關密語保存在本機以外的安全位置。';
+
+  @override
+  String get backupXMeSubtitle => '包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置';
+
+  @override
+  String get conditionsTitle => '收聽環境';
+
+  @override
+  String get conditionsClear => '清晰';
+
+  @override
+  String get conditionsLight => '輕度干擾';
+
+  @override
+  String get conditionsRadio => '實戰電台';
+
+  @override
+  String get conditionsClearHint => '乾淨穩定的音調，即一般練習。';
+
+  @override
+  String get conditionsLightHint => '輕微底噪與緩慢衰落。成績與清晰練習分開記錄。';
+
+  @override
+  String get conditionsRadioHint => '雜訊、深度衰落、鄰近電台干擾與略不均勻的節奏。成績與清晰練習分開記錄。';
+
+  @override
+  String get conditionsPreview => '試聽';
+
+  @override
+  String conditionsActive(String name) {
+    return '收聽環境：$name';
+  }
+
+  @override
+  String get conditionsNeedSound => '電台環境只能聽不能看：請在訓練設定中開啟聲音，或改用「清晰」環境練習。';
+
+  @override
+  String get conditionsCleanReplay => '無效果重播';
+
+  @override
+  String conditionsComparable(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '在此環境與速度下共 $count 次：平均 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get conditionsSeparateNote => '電台環境練習計入活動，但不會改變課程進度、複習計畫或速度建議。';
+
+  @override
+  String get keysTitle => '按鍵與外接電鍵';
+
+  @override
+  String get keysMeSubtitle => '按鍵綁定、雙槳與 USB 電鍵轉接器';
+
+  @override
+  String get keysIntro => '選擇用哪些鍵拍發摩斯。模擬鍵盤的 USB 電鍵／雙槳轉接器與鍵盤相同，請在此設定其按鍵。應用程式無法分辨按鍵來自哪個裝置，因此設定方案就是一組按鍵綁定。';
+
+  @override
+  String get keysStandardProfile => '標準';
+
+  @override
+  String get keysUnnamed => '未命名方案';
+
+  @override
+  String get keysEdit => '編輯';
+
+  @override
+  String get keysNewProfile => '新增方案';
+
+  @override
+  String get keysLimitations => '不支援 MIDI、序列埠與藍牙電鍵，也不支援轉接器韌體設定與電台控制。已測試的轉接器列在文件中。';
+
+  @override
+  String get keysEditTitle => '按鍵方案';
+
+  @override
+  String get keysName => '方案名稱';
+
+  @override
+  String get keysActionStraight => '手鍵';
+
+  @override
+  String get keysActionDit => '點槳';
+
+  @override
+  String get keysActionDah => '劃槳';
+
+  @override
+  String get keysPressKey => '請按一個鍵…';
+
+  @override
+  String get keysNone => '未設定';
+
+  @override
+  String get keysSet => '設定';
+
+  @override
+  String keysReserved(String key) {
+    return '$key 已被系統或應用程式佔用，請換一個鍵。';
+  }
+
+  @override
+  String keysConflict(String key, String action) {
+    return '$key 已用於「$action」。';
+  }
+
+  @override
+  String keysConflictSave(String keys) {
+    return '每個鍵只能有一種用途：$keys 被重複綁定。';
+  }
+
+  @override
+  String get keysMissing => '請設定此電鍵模式需要的鍵（自動鍵需同時設定兩隻槳）。';
+
+  @override
+  String get keysSwapPaddles => '交換雙槳（左手）';
+
+  @override
+  String get keysKeyerMode => '電鍵模式';
+
+  @override
+  String get keysIambicA => '自動鍵 A';
+
+  @override
+  String get keysIambicB => '自動鍵 B';
+
+  @override
+  String get keysAdapterKeyer => '轉接器自行產生點劃';
+
+  @override
+  String get keysAdapterKeyerHint => '適用於內建電鍵邏輯的轉接器：直接使用它計時好的按下與放開，應用程式不會再產生一遍自動鍵序列。';
+
+  @override
+  String get keysAppSidetone => '拍發時的應用程式側音';
+
+  @override
+  String get keysAppSidetoneHint => '轉接器內建側音時請關閉。不影響解碼。';
+
+  @override
+  String get keysTestTitle => '測試';
+
+  @override
+  String get keysTestNote => '僅用於測試：不會傳送，也不計入訓練。';
+
+  @override
+  String get keysTestRelease => '放開按鍵';
+
+  @override
+  String get keysAdapterActive => '正在使用轉接器內建的電鍵邏輯：槳對應的鍵按手鍵處理。';
+
+  @override
+  String keysHintCustom(String keys) {
+    return '按鍵：$keys';
+  }
+
+  @override
+  String get telegraphTitle => '中文電碼';
+
+  @override
+  String get telegraphIntro => '每個漢字以四位數字碼拍發。分別練習聽寫數字，以及記住哪個碼對應哪個字。';
+
+  @override
+  String get telegraphCodebook => '碼本';
+
+  @override
+  String get telegraphCodebookMainland => '大陸';
+
+  @override
+  String get telegraphCodebookTaiwan => '臺灣';
+
+  @override
+  String get telegraphDigitsTitle => '抄收電碼組';
+
+  @override
+  String get telegraphDigitsHint => '收聽真實電碼的四位數字組並輸入數字。';
+
+  @override
+  String telegraphDigitsResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共 $count 次：數字正確率 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphRecallTitle => '記憶碼本';
+
+  @override
+  String get telegraphRecallHint => '由字查碼、由碼認字。與摩斯進度分開記錄。';
+
+  @override
+  String telegraphRecallResults(int count, int accuracy) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已答 $count 張：掌握 $accuracy%',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphSeparateNote => '碼本記憶不會解鎖摩斯課程，也不改變速度建議；數字抄收與其他摩斯抄收同等計入。';
+
+  @override
+  String get telegraphRecallCharPrompt => '輸入這個字的電碼';
+
+  @override
+  String get telegraphRecallCodePrompt => '選出這個電碼對應的字';
+
+  @override
+  String get telegraphReveal => '顯示答案';
+
+  @override
+  String get telegraphRevealAssisted => '已顯示：本題計為有提示。';
+
+  @override
+  String get telegraphCorrect => '正確';
+
+  @override
+  String get telegraphIncorrect => '不對';
+
+  @override
+  String telegraphRecallSummary(int correct, int total) {
+    return '$total 題中答對 $correct 題';
+  }
+
+  @override
+  String telegraphRecallAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 題看過答案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get telegraphInterpretAction => '按中文電碼解讀';
+
+  @override
+  String get telegraphInterpretTitle => '電碼解讀';
+
+  @override
+  String get telegraphInterpretNote => '僅在此顯示：不會修改原訊息，也不會傳送任何內容。';
+
+  @override
+  String get telegraphUnresolved => '無法解讀：沒有字對應此碼';
+
+  @override
+  String get telegraphMalformed => '不是四位數字組';
+
+  @override
+  String get telegraphNotCode => '文字，保持原樣';
+
+  @override
+  String get telegraphAmbiguous => '多個字共用此碼';
+
+  @override
+  String get groupPracticeTitle => '群組帶練';
+
+  @override
+  String get groupPracticeIntro => '帶練者照常在群聊中拍發練習內容。每位成員在此選擇練習訊息，按自己的速度抄收。答案與成績只保存在本機，不會傳送到群組。';
+
+  @override
+  String get groupPracticeNew => '新增練習';
+
+  @override
+  String get groupPracticeTitleField => '標題';
+
+  @override
+  String get groupPracticeCreate => '建立';
+
+  @override
+  String get groupPracticeInstructor => '帶練者';
+
+  @override
+  String get groupPracticeParticipant => '參與者';
+
+  @override
+  String get groupPracticeInstructorHint => '在群聊中拍發每道練習，在此新增為一輪並勾選完成；輪次請在群聊裡通知。';
+
+  @override
+  String get groupPracticeParticipantHint => '把帶練者的練習訊息新增為輪次，並在此逐一抄收。';
+
+  @override
+  String get groupPracticeLocalNote => '僅限本機：輪次、角色與成績不會與其他成員同步，錯過的訊息也不一定能送達所有人。';
+
+  @override
+  String get groupPracticeAddRound => '新增練習';
+
+  @override
+  String get groupPracticeNoMessages => '最近紀錄中沒有可新增的訊息。';
+
+  @override
+  String get groupPracticeNotConnected => '聊天連線後才能讀取群組紀錄。';
+
+  @override
+  String get groupPracticeRoundOpen => '待完成';
+
+  @override
+  String get groupPracticeRoundDone => '已完成';
+
+  @override
+  String get groupPracticeRoundUnavailable => '不可用';
+
+  @override
+  String get groupPracticeSourceGone => '該練習訊息已不在紀錄中。';
+
+  @override
+  String get groupPracticeSourceLoading => '正在尋找訊息…';
+
+  @override
+  String groupPracticeAttemptResult(int accuracy, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '抄收：$accuracy%（$count 次）',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupPracticeCopy => '抄收';
+
+  @override
+  String get groupPracticeRemoveRound => '移除本輪';
+
+  @override
+  String get groupPracticeSummary => '小結';
+
+  @override
+  String groupPracticeRoundsDone(int done, int total) {
+    return '已完成 $done/$total 輪';
+  }
+
+  @override
+  String groupPracticeUnavailableCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 輪不可用',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeAccuracy(int accuracy) {
+    return '抄收正確率：$accuracy%';
+  }
+
+  @override
+  String groupPracticeAssisted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次使用了提示',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupPracticeShareHint(int done, int total, int accuracy) {
+    return '如需分享，請自行在群聊中拍發成績，例如 $done/$total $accuracy%。不會自動傳送。';
+  }
+
+  @override
+  String get groupPracticeComplete => '結束練習';
+
+  @override
+  String get groupPracticeDeleteTitle => '刪除這次練習？';
+
+  @override
+  String get groupPracticeDeleteBody => '本機上的輪次與成績將被刪除；訓練紀錄與群組訊息保留。';
+
+  @override
+  String get conditionsAudioFailed => '本裝置無法播放音訊。請改用「清晰」環境練習。';
 }

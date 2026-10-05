@@ -47,9 +47,10 @@ void main() {
 
     expect(identity.current?.displayName, 'Ann');
     expect(identity.current?.hasPassword, isFalse);
-    // No password: the wizard must not claim the file is encrypted.
-    expect(find.text(en.accountBackupWhatIsInsidePlain), findsOneWidget);
-    expect(find.text(en.accountBackupWhatIsInside), findsNothing);
+    // The complete backup is sealed with a passphrase whatever the
+    // identity password (F10).
+    expect(find.text(en.backupXWizardInside), findsOneWidget);
+    expect(find.text(en.accountBackupWhatIsInsidePlain), findsNothing);
     expect(find.byType(BackupWizardPage), findsOneWidget);
     expect(find.byType(CreateIdentityPage), findsNothing);
     expect(find.byType(AppShell), findsNothing);
@@ -60,7 +61,9 @@ void main() {
     // Saving works but is not enough on its own.
     // Label is "Save" on desktop and "Share" on mobile; find by key.
     await tapVisible(tester, find.byKey(BackupWizardPage.saveButtonKey));
+    await completeEncryptedBackup(tester);
     expect(files.saved, hasLength(1));
+    expect(isEncryptedBackup(files.saved.single), isTrue);
     expect(files.savedNames.single, startsWith('morsecq-Ann-'));
     expect(files.savedNames.single, endsWith('.mcqbackup'));
     expect(buttonEnabled(tester, en.accountBackupContinue), isFalse);
@@ -123,7 +126,7 @@ void main() {
     expect(identity.current?.hasPassword, isTrue);
     expect(identity.storedPassword, 'correct horse');
     expect(find.byType(BackupWizardPage), findsOneWidget);
-    expect(find.text(en.accountBackupWhatIsInside), findsOneWidget);
+    expect(find.text(en.backupXWizardInside), findsOneWidget);
   });
 
   testWidgets('restore from backup skips the wizard and opens the shell', (

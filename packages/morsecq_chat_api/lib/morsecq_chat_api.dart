@@ -10,9 +10,11 @@
 library;
 
 export 'src/backup_media.dart';
+export 'src/encrypted_backup.dart';
 export 'src/chat_service.dart';
 export 'src/identity_service.dart';
 export 'src/message_search.dart';
 export 'src/models.dart';
+export 'src/outbox.dart';
 export 'src/peer_text.dart';
 export 'src/tox_address.dart';

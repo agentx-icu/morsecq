@@ -6,6 +6,8 @@ import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../../keying/key_profiles.dart';
+import '../../../keying/profile_keyer.dart';
 import '../../../training/send_detail_store.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
@@ -67,8 +69,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   late SendSession _session;
   late KeyerMode _mode;
   LearnPlayback? _playback;
-  StraightKey? _straight;
-  IambicKeyer? _keyer;
+  ProfileKeyer? _keyer;
 
   /// Bumped whenever the keyer is rebuilt; part of the key widgets' keys so
   /// a fresh keyer never inherits a pointer or key the old widget held.
@@ -96,6 +97,16 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     WidgetsBinding.instance.addObserver(this);
     _wake.setActive(true);
     unawaited(_setup());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // A key profile edited meanwhile applies to the next key press.
+    // Always read (and so subscribe), even before the keyer exists.
+    final profile = KeyProfiles.of(context);
+    final keyer = _keyer;
+    if (keyer != null && profile != keyer.profile) _buildKeyer();
   }
 
   @override
@@ -144,24 +155,18 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     // Release any held key first: neither the old keyer nor its widget will
     // deliver the key-up any more.
     _session.cancelHeld();
-    unawaited(_straight?.dispose());
-    unawaited(_keyer?.dispose());
-    _straight = null;
-    _keyer = null;
+    _keyer?.dispose();
     _keyerGeneration++;
-    switch (_mode) {
-      case KeyerMode.straight:
-        _straight = StraightKey(target: _session, sink: playback.sink);
-      case KeyerMode.iambicA:
-      case KeyerMode.iambicB:
-        _keyer = IambicKeyer(
-          timing: KeyerTiming.fromMorseTiming(_session.nominalTiming),
-          target: _session,
-          sink: playback.sink,
-          clock: playback.clock,
-          mode: _mode == KeyerMode.iambicA ? IambicMode.a : IambicMode.b,
-        );
-    }
+    // The device key profile (F12): bindings, orientation, adapter, echo.
+    _keyer = ProfileKeyer.build(
+      profile: KeyProfiles.of(context, listen: false),
+      mode: _mode,
+      target: _session,
+      sink: playback.sink,
+      sidetone: playback.sidetone,
+      clock: playback.clock,
+      timing: _session.nominalTiming,
+    );
   }
 
   void _scheduleTick() {
@@ -276,8 +281,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     _wake.dispose();
     unawaited(_changesSub?.cancel());
     _tick?.cancel();
-    unawaited(_straight?.dispose());
-    unawaited(_keyer?.dispose());
+    _keyer?.dispose();
     _session.dispose();
     unawaited(_playback?.dispose());
     super.dispose();
@@ -376,7 +380,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
           _buildKey(playback, s),
         if (hasPhysicalKeyboardByDefault) ...<Widget>[
           const SizedBox(height: 8),
-          KeyerLegend(mode: _mode),
+          KeyerLegend(mode: _keyer?.mode ?? _mode),
         ],
         const SizedBox(height: 20),
         Row(
@@ -413,36 +417,16 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     );
   }
 
-  Widget _buildKey(LearnPlayback playback, S s) {
-    // The keyers are rebuilt whenever the mode changes; the widgets get a
-    // key per mode so Flutter never reuses a paddle state for a straight key.
-    final straight = _straight;
-    if (straight != null) {
-      return Center(
-        child: StraightKeyButton(
-          key: ValueKey<String>('straight-key-$_keyerGeneration'),
-          input: straight,
-          clock: playback.clock,
-          autofocus: true,
-          size: 180,
-          label: s.learnStraightKeyLabel,
-          semanticDit: _session.nominalTiming.dit,
-          semanticDitLabel: s.learnDitLabel,
-          semanticDahLabel: s.learnDahLabel,
-        ),
+  Widget _buildKey(LearnPlayback playback, S s) =>
+      // A key per rebuild so Flutter never reuses a paddle state for a
+      // straight key.
+      _keyer!.widget(
+        key: ValueKey<String>('key-$_keyerGeneration'),
+        clock: playback.clock,
+        size: 180,
+        s: s,
+        semanticDit: _session.nominalTiming.dit,
       );
-    }
-    final keyer = _keyer!;
-    return PaddleButtons(
-      key: ValueKey<String>('paddles-$_keyerGeneration'),
-      input: keyer,
-      clock: playback.clock,
-      autofocus: true,
-      height: 180,
-      ditLabel: s.learnDitLabel,
-      dahLabel: s.learnDahLabel,
-    );
-  }
 
   Widget _buildResult(BuildContext context) {
     final s = context.s;

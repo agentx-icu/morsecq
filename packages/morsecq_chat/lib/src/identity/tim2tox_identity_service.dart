@@ -6,19 +6,25 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:path/path.dart' as p;
 
 import '../adapters/key_value_store.dart';
+import '../adapters/kv_snapshot.dart';
 import '../adapters/prefs_adapter.dart';
+import '../chat/conversation_meta_store.dart';
 import '../engine/chat_engine.dart';
 import '../logging/chat_logger.dart';
 import '../util/atomic_file.dart';
 import '../util/posix_permissions.dart';
 import '../util/value_stream.dart';
+import 'backup_archive.dart';
 import 'backup_container.dart';
+import 'backup_envelope.dart';
+import 'backup_snapshot.dart';
 import 'identity_paths.dart';
 import 'identity_record.dart';
 import 'password_verifier.dart';
 import 'profile_crypto.dart';
 
 part 'identity_backup.dart';
+part 'identity_backup_v2.dart';
 part 'identity_profile.dart';
 
 /// [IdentityService] over Tim2Tox. States: `none` (no `tox_profile.tox`),
@@ -35,7 +41,8 @@ part 'identity_profile.dart';
 /// password lives in memory only. An encrypted profile proves its own
 /// password and repairs a verifier interrupted during a password change or
 /// restore.
-class Tim2ToxIdentityService implements PersistentIdentityService {
+class Tim2ToxIdentityService
+    implements PersistentIdentityService, EncryptedBackupService {
   Tim2ToxIdentityService({
     required IdentityPaths paths,
     required ChatEngine engine,
@@ -228,6 +235,52 @@ class Tim2ToxIdentityService implements PersistentIdentityService {
   @override
   Future<Identity> importBackup(Uint8List bytes, {String? password}) =>
       _runMutation(() => _importBackup(bytes, password));
+
+  @override
+  Future<BackupInventory> backupInventory() =>
+      _runMutation(_backupInventory);
+
+  @override
+  Future<Uint8List> exportEncryptedBackup(EncryptedBackupRequest request) =>
+      _runMutation(() => _exportEncrypted(request));
+
+  @override
+  Future<BackupPreview> previewEncryptedBackup(
+    Uint8List bytes,
+    String passphrase,
+  ) async => _openCached(bytes, passphrase).$1;
+
+  /// The archive the last preview opened: restoring the same bytes with the
+  /// same passphrase does not decrypt the whole file a second time.
+  (Uint8List, String, (BackupPreview, BackupContainer))? _opened;
+
+  @override
+  void forgetPreview() => _opened = null;
+
+  (BackupPreview, BackupContainer) _openCached(
+    Uint8List bytes,
+    String passphrase,
+  ) {
+    final cached = _opened;
+    if (cached != null &&
+        identical(cached.$1, bytes) &&
+        cached.$2 == passphrase) {
+      return cached.$3;
+    }
+    _opened = null;
+    final opened = BackupArchive.open(bytes, passphrase, _crypto);
+    _opened = (bytes, passphrase, opened);
+    return opened;
+  }
+
+  @override
+  Future<RestoreReport> restoreEncryptedBackup(
+    Uint8List bytes,
+    String passphrase, {
+    String? identityPassword,
+  }) => _runMutation(
+    () => _restoreEncrypted(bytes, passphrase, identityPassword),
+  ).whenComplete(() => _opened = null);
 
   // ---- connect / disconnect / delete ----------------------------------------
 

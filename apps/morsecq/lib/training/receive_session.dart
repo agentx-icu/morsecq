@@ -89,15 +89,22 @@ final class ReceiveSession {
     this.planStepId,
     this.sourceRef,
     this.learnedChars,
+    this.conditions,
     String? id,
   }) : assert(charBudget > 0, 'charBudget must be positive'),
+       assert(
+         conditions == null || !conditions.isClear,
+         'clear playback is ordinary practice: pass no conditions',
+       ),
        _generator = generator,
        _random = random,
        _now = now,
        chars = List<String>.unmodifiable(chars),
        source =
            source ??
-           (countsTowardLesson
+           (conditions != null
+               ? ExerciseSource.conditions
+               : countsTowardLesson
                ? ExerciseSource.course
                : kind == ReceiveDrillKind.review
                ? ExerciseSource.review
@@ -123,6 +130,13 @@ final class ReceiveSession {
   /// Symbols that may enter learned-symbol statistics; null = the
   /// controller's learned set.
   final Set<String>? learnedChars;
+
+  /// Simulated radio conditions every round is played under (F11); null
+  /// for ordinary clean playback. Round `i` uses `conditions.forRound(i)`.
+  final RadioScenario? conditions;
+
+  /// The scenario of the round waiting to be answered.
+  RadioScenario? get currentConditions => conditions?.forRound(_rounds.length);
 
   final Set<Assistance> _assistance = <Assistance>{};
   Duration _paused = Duration.zero;
