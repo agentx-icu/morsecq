@@ -20,7 +20,7 @@ abstract final class TrayMenuKeys {
 
 /// Desktop window + system-tray behaviour for the app shell.
 ///
-/// Owns the window title (with unread count), the tray icon / tooltip / menu,
+/// Owns the window title, the tray icon / tooltip / menu,
 /// close-to-tray, and the persistence of window bounds through the injected
 /// `KeyValueStore`. Every plugin call is gated on [DesktopShellConfig.isDesktop]
 /// so on Android / iOS / web the controller is inert state: [initialize] and
@@ -67,7 +67,6 @@ class DesktopShellController extends ChangeNotifier
   bool _closeToTray;
   bool _soundEnabled;
   S _s;
-  int _unreadCount = 0;
   Timer? _persistTimer;
   Future<void> _trayQueue = Future<void>.value();
   bool _trayGapWarned = false;
@@ -91,23 +90,12 @@ class DesktopShellController extends ChangeNotifier
 
   bool get soundEnabled => _soundEnabled;
 
-  int get unreadCount => _unreadCount;
 
   /// The strings the title, tooltip and menu currently render from.
   S get strings => _s;
 
-  /// "(3) MorseCQ" while there is unread traffic, else the plain app name.
-  String get windowTitle => _unreadCount > 0
-      ? _s.desktopWindowTitleUnread(trayBadge, config.appName)
-      : config.appName;
-
-  /// Tray tooltip: "MorseCQ — 3 unread messages" or the plain app name.
-  String get trayTooltip => _unreadCount > 0
-      ? _s.desktopTrayTooltipUnread(config.appName, _unreadCount)
-      : config.appName;
-
-  /// Short count shown next to the macOS status item (and in the title).
-  String get trayBadge => _unreadCount > 99 ? '99+' : '$_unreadCount';
+  String get windowTitle => config.appName;
+  String get trayTooltip => config.appName;
 
   /// Current context-menu rows; labels follow visibility, sound state and
   /// language. Shortcut hints are not part of the tray menu (the OS renders
@@ -217,28 +205,13 @@ class DesktopShellController extends ChangeNotifier
     }
   }
 
-  // ----------------------------------------------------------------- unread
-
-  /// Updates the window title, tray tooltip and macOS badge. Negative counts
-  /// clamp to zero. Safe to call before [initialize] and on mobile (state
-  /// only).
-  void setUnreadCount(int count) {
-    final next = count < 0 ? 0 : count;
-    if (next == _unreadCount) return;
-    _unreadCount = next;
-    notifyListeners();
-    if (!_active) return;
-    unawaited(_tolerate('setTitle', () => _window.setTitle(windowTitle)));
-    _enqueueTray(_applyTrayState);
-  }
-
   Future<void> _applyTrayState() async {
     if (!_trayAvailable) return;
     await _tolerate('setToolTip', () => _tray.setToolTip(trayTooltip));
     if (config.isMacOS) {
       await _tolerate(
         'setTitle',
-        () => _tray.setTitle(_unreadCount > 0 ? trayBadge : ''),
+        () => _tray.setTitle(''),
       );
     }
     await _tolerate('setMenu', () => _tray.setMenu(trayMenu));

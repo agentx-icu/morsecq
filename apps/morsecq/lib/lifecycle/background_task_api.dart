@@ -3,14 +3,8 @@ import 'package:flutter/services.dart';
 
 /// Asks the OS for extra running time after the app leaves the foreground.
 ///
-/// iOS suspends an app a few seconds after `applicationDidEnterBackground`
-/// unless it holds a `UIApplication.beginBackgroundTask` assertion, which
-/// stretches that to roughly 30 s. `AppLifecycleCoordinator` holds one for
-/// the background budget so the durability flush (Tox savedata, history,
-/// offline queue, learning data, settings) and an in-flight send can finish
-/// before the process freezes. Android keeps a backgrounded process running
-/// until Doze / the OEM freezes it, and desktop never suspends, so every
-/// other platform uses [NoopBackgroundTaskApi].
+/// iOS grants a brief background window for local learning/preference writes.
+/// Other platforms use [NoopBackgroundTaskApi]. No network task runs here.
 abstract interface class BackgroundTaskApi {
   /// Starts a background task; returns an opaque token, or null when the OS
   /// refused (or the platform has no such concept).

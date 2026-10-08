@@ -11,16 +11,12 @@ SingleActivator _activatorFor(
         as SingleActivator;
 
 void main() {
-  test('binds K, N and M to the three intents', () {
+  test('binds K and M to search and sidetone', () {
     final bindings = desktopShortcutBindings(platform: TargetPlatform.linux);
-    expect(bindings, hasLength(3));
+    expect(bindings, hasLength(2));
     expect(
       _activatorFor(bindings, FocusSearchIntent).trigger,
       LogicalKeyboardKey.keyK,
-    );
-    expect(
-      _activatorFor(bindings, NewMessageIntent).trigger,
-      LogicalKeyboardKey.keyN,
     );
     expect(
       _activatorFor(bindings, ToggleSidetoneIntent).trigger,
@@ -74,7 +70,5 @@ void main() {
 
   test('intents are const and distinct', () {
     expect(const ToggleSidetoneIntent(), isNot(const FocusSearchIntent()));
-    expect(const FocusSearchIntent(), isNot(const NewMessageIntent()));
-    expect(identical(const NewMessageIntent(), const NewMessageIntent()), true);
   });
 }

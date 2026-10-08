@@ -7,15 +7,12 @@ import 'atomic_json_file.dart';
 
 /// [TrainerStore] persisted as `<dataDirectory>/training/progress.json`.
 ///
-/// Progress lives inside the identity's data directory (product decision:
-/// training requires an identity), so switching or deleting an identity
-/// switches or deletes its training progress with it. Writes are atomic and
-/// a corrupt file falls back to the `.bak` of the previous save; see
-/// [AtomicJsonFile].
+/// The local profile owns learning progress. Writes are atomic, and a corrupt
+/// file falls back to the previous save's `.bak`; see [AtomicJsonFile].
 final class FileTrainerStore implements TrainerStore {
   FileTrainerStore(this.file) : _json = AtomicJsonFile(file);
 
-  /// The conventional location under an identity's data directory.
+  /// The conventional location under the local learning directory.
   factory FileTrainerStore.inDataDirectory(String dataDirectory) =>
       FileTrainerStore(File(p.join(dataDirectory, subdirectory, fileName)));
 

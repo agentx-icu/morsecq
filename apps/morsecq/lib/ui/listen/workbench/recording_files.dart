@@ -94,18 +94,12 @@ final class FileByteSource implements ByteSource {
   }
 }
 
-/// Recordings copied into managed storage in the learning profile's own
-/// root, beside (not inside) the tree identity backups copy:
-/// `<profile root>/media/recordings/`. Training documents travel in
-/// identity backups; recordings deliberately do not (spec §11.3), only the
-/// metadata that refers to them.
+/// Managed recordings stored in the local learning profile under
+/// `media/recordings/`. Material JSON exports contain metadata only.
 final class RecordingLibrary {
   RecordingLibrary(this.root);
 
-  /// The profile root media paths resolve from: an identity's root (the
-  /// parent of `IdentityService.dataDirectory()`, which is the backed-up
-  /// tree), or the guest directory (`GuestStore.directory()`). Each profile
-  /// has its own.
+  /// Local learning directory.
   final String root;
 
   static const String workingFile = 'media/recordings/current.wav';

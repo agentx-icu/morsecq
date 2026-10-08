@@ -7,7 +7,7 @@ import 'atomic_json_file.dart';
 
 /// Named JSON documents beside the training progress: simulator drafts,
 /// materials, rhythm details. Each lives under the learning profile's
-/// `training/` directory so identity backups already include it.
+/// `training/` directory alongside the rest of the local learning files.
 abstract interface class TrainingDocStore {
   Future<Map<String, Object?>?> read(String name);
 

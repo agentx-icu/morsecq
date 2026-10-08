@@ -4,15 +4,13 @@
 #   tool/test_pyramid.sh [--level gates|unit|widget|e2e|all] [--device <id>] [--help]
 #
 #   gates   analyzer (zero issues), complexity, import guard, UI literal guard
-#   unit    packages/*  — pure-Dart engines and the chat contract/transport
-#   widget  apps/morsecq/test — hermetic widget tests (fake backend, no host)
+#   unit    packages/*  — pure-Dart Morse engines
+#   widget  apps/morsecq/test — hermetic widget tests (local learning, no host)
 #   e2e     apps/morsecq/integration_test on a real device/desktop window:
 #           the real main() click-through + the screenshot scene walk
 #   all     every level in that order (default)
 #
-# Tests tagged needs-native are excluded at the unit/widget levels (they need
-# libtim2tox_ffi and run from the native workflow). The e2e level needs a
-# device: --device, else the host desktop (macos / linux / windows).
+# E2E needs a device: --device, otherwise the host desktop.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -76,15 +74,13 @@ host_device() {
 }
 
 level_e2e() {
-  # Android UI-only build (fake backend never loads libtim2tox_ffi.so); see
-  # tool/screenshots/capture.sh for the same export.
-  export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
   local device="$DEVICE"
   [[ -z "$device" ]] && device="$(host_device)"
   [[ -z "$device" ]] && { echo "e2e: no device (use --device)" >&2; return 1; }
-  run_step "e2e launch [$device]" bash -c "cd apps/morsecq && flutter test integration_test/app_launch_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
-  run_step "e2e persistence [$device]" bash -c "cd apps/morsecq && flutter test integration_test/persistence_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
-  run_step "e2e scenes [$device]" bash -c "cd apps/morsecq && flutter test integration_test/screenshots_test.dart -d '$device' --dart-define=MORSECQ_FAKE_BACKEND=true"
+  run_step "e2e launch [$device]" bash -c "cd apps/morsecq && flutter test integration_test/app_launch_test.dart -d '$device'"
+  run_step "e2e persistence [$device]" bash -c "cd apps/morsecq && flutter test integration_test/persistence_test.dart -d '$device'"
+  run_step "e2e first day [$device]" bash -c "cd apps/morsecq && flutter test integration_test/first_day_learning_test.dart -d '$device'"
+  run_step "e2e scenes [$device]" bash -c "cd apps/morsecq && flutter test integration_test/screenshots_test.dart -d '$device'"
 }
 
 case "$LEVEL" in

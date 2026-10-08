@@ -1,50 +1,18 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
 import '../i18n/key_value_store.dart';
-import '../notifications/notification_prefs.dart';
-import '../ui/chat/morse_playback_settings.dart';
-import '../ui/chat/input_mode.dart';
 import '../ui/listen/listen_preferences.dart';
 import '../ui/listen/listen_settings.dart';
 import '../ui/reference/reference_playback_settings.dart';
 import 'app_settings.dart';
 
 /// Restores preferences before providers are exposed and saves changes through
-/// the same store as language/window settings. Conversation mutes are scoped
-/// by the full identity public key; other playback/privacy choices are global.
-final class AppPreferences implements IdentityDataStore {
-  AppPreferences(
-    this._store, {
-    required String backendLabel,
-    required IdentityService identity,
-  }) : _identity = identity {
-    settings = AppSettings(backendLabel: backendLabel, store: _store);
-    final n = _read('notifications');
-    notifications = NotificationPrefs(
-      enabled: _bool(n, 'enabled', true),
-      showText: _bool(n, 'showText', true),
-      showPattern: _bool(n, 'showPattern', true),
-      sound: _bool(n, 'sound', true),
-    );
-    final c = _read('chat.playback');
-    final wpm = _number(c, 'wpm', 15).clamp(5.0, 40.0);
-    playback = MorsePlaybackSettings(
-      wpm: wpm,
-      farnsworthWpm: _number(c, 'farnsworthWpm', 8).clamp(5.0, wpm),
-      toneHz: _number(c, 'toneHz', 700).clamp(400.0, 1000.0),
-      trainingMode: _bool(c, 'trainingMode', false),
-      inputMode: InputMode.values.firstWhere(
-        (v) => v.name == c['inputMode'],
-        // Includes the retired typed-text mode ("keyboard").
-        orElse: () => InputMode.straightKey,
-      ),
-      autoPlay: _bool(c, 'autoPlay', false),
-      listenOnly: _bool(c, 'listenOnly', false),
-    );
+/// the same local store as language/window settings.
+final class AppPreferences {
+  AppPreferences(this._store) {
+    settings = AppSettings(store: _store);
     final r = _read('reference.playback');
     reference = ReferencePlaybackSettings(
       wpm: _number(r, 'wpm', 15),
@@ -63,19 +31,6 @@ final class AppPreferences implements IdentityDataStore {
         manualHz: _number(l, 'manualHz', 700).clamp(400.0, 1000.0),
       ),
     );
-    _watch(notifications, _saveNotifications);
-    _watch(
-      playback,
-      () => _saveJson('chat.playback', {
-        'wpm': playback.wpm,
-        'farnsworthWpm': playback.farnsworthWpm,
-        'toneHz': playback.toneHz,
-        'trainingMode': playback.trainingMode,
-        'inputMode': playback.inputMode.name,
-        'autoPlay': playback.autoPlay,
-        'listenOnly': playback.listenOnly,
-      }),
-    );
     _watch(
       reference,
       () => _saveJson('reference.playback', {
@@ -93,27 +48,17 @@ final class AppPreferences implements IdentityDataStore {
         'manualHz': listen.settings.manualHz,
       }),
     );
-    _onIdentity(identity.current);
-    _identitySub = identity.identityChanges.listen(_onIdentity);
-    if (identity is PersistentIdentityService) identity.registerDataStore(this);
   }
 
   final KeyValueStore _store;
-  final IdentityService _identity;
   late final AppSettings settings;
-  late final NotificationPrefs notifications;
-  late final MorsePlaybackSettings playback;
   late final ReferencePlaybackSettings reference;
   late final ListenPreferences listen;
   final Map<ChangeNotifier, VoidCallback> _listeners = {};
-  StreamSubscription<Identity?>? _identitySub;
   Future<void> _pending = Future<void>.value();
   final Map<String, ({String? value, Object version})> _dirty = {};
   final Map<String, Object> _saveErrors = {};
-  bool _replacing = false;
-  bool _hydrating = false;
   bool _disposed = false;
-  String? _identityKey;
 
   static bool _bool(Map<String, Object?> m, String k, bool fallback) =>
       m[k] is bool ? m[k]! as bool : fallback;
@@ -141,7 +86,7 @@ final class AppPreferences implements IdentityDataStore {
       _save(key, jsonEncode(values));
 
   void _save(String key, String value) {
-    if (_hydrating || _disposed) return;
+    if (_disposed) return;
     _change(key, value);
   }
 
@@ -181,48 +126,6 @@ final class AppPreferences implements IdentityDataStore {
     } while (!identical(pending, _pending));
   }
 
-  void _saveNotifications() {
-    if (_hydrating || _disposed) return;
-    final values = notifications.toJson()..remove('muted');
-    _saveJson('notifications', values);
-    final key = _identityKey;
-    if (key != null && !_replacing) {
-      _save(
-        'notifications.muted.$key',
-        jsonEncode(notifications.mutedConversations.toList()..sort()),
-      );
-    }
-  }
-
-  void _onIdentity(Identity? identity) {
-    if (_disposed) return;
-    final key = identity?.publicKey.toUpperCase();
-    _replacing = false;
-    if (key == _identityKey) return;
-    final old = _identityKey;
-    _identityKey = key;
-    if (key == null && old != null) {
-      _change('notifications.muted.$old', null);
-    }
-    Iterable<String> muted = const [];
-    try {
-      final storageKey = 'notifications.muted.$key';
-      final raw = key == null
-          ? null
-          : _dirty.containsKey(storageKey)
-          ? _dirty[storageKey]?.value
-          : _store.getString(storageKey);
-      final decoded = raw == null ? null : jsonDecode(raw);
-      if (decoded is List) muted = decoded.whereType<String>();
-    } on FormatException {
-      // A malformed mute list cannot disable all notifications.
-    }
-    _hydrating = true;
-    notifications.replaceMuted(muted);
-    _hydrating = false;
-  }
-
-  @override
   Future<void> flush() async {
     await Future.wait([settings.flush(), _drain()]);
     // Retry retained snapshots, including removals, once per flush. A save to
@@ -236,26 +139,8 @@ final class AppPreferences implements IdentityDataStore {
     }
   }
 
-  @override
-  Future<void> prepareForReplacement() async {
-    _replacing = true;
-    try {
-      await flush();
-    } on Object {
-      _replacing = false;
-      rethrow;
-    }
-    // Only a committed null identity event clears old account data. If the
-    // backend aborts replacement, republishing the old identity resumes saves.
-  }
-
   void dispose() {
     _disposed = true;
-    final identity = _identity;
-    if (identity is PersistentIdentityService) {
-      identity.unregisterDataStore(this);
-    }
-    unawaited(_identitySub?.cancel());
     settings.dispose();
     for (final entry in _listeners.entries) {
       entry.key.removeListener(entry.value);

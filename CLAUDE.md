@@ -1,185 +1,70 @@
-# CLAUDE.md
+# Contributor guidance
 
-Guidance for coding agents and contributors working in this repository.
+MorseCQ is an account-free, offline Morse trainer. All five platforms open
+Learn / Reference / Me immediately. Chat belongs to the independent DitMesh
+repository. No account, registration, messaging package, transport library,
+network bootstrap or historical-data import belongs in this workspace.
 
-## Project
+## Workspace
 
-**MorseCQ** is a Flutter Morse code trainer plus a serverless Morse chat over the
-**Tox P2P network**. There is no server: peers key Morse to each other directly.
-It is a sibling of **toxee** (same org, same Tim2Tox bridge) and interoperates
-with it on the wire. Licence: GPL-3.0.
+Run Pub resolution once from the repository root with Flutter 3.41.9 / Dart
+3.11.5: `dart pub get --enforce-lockfile`. The root lockfile is committed.
 
-Planning documents (方案) under `doc/plans/` are local working notes, ignored
-by Git. They are optional context; repository behavior and contributor rules
-are documented here and in the package READMEs.
+- `morse_core`, `morse_trainer`, `morse_dsp` and `radio_tools` stay pure Dart.
+- `morse_io` supplies Flutter audio, screen flash, haptics and touch/keyboard keys.
+- `apps/morsecq` owns the three-destination shell, local learning controller,
+  JSON stores, localization, reference/radio tools and desktop lifecycle.
+- `tool/` owns architecture/localization/complexity gates, packaging and captures.
 
-## Layout (pub workspace — one `dart pub get` at the root)
+`LocalLearningStore` opens the device-local learning directory.
+`TrainingControllerHost` shares and retires the controller. Backgrounding and
+quitting await local writes; confirmed clearing retires the controller before
+removing active learning files. Appearance/language and device preferences stay
+available. Read `doc/architecture/OFFLINE_LEARNING.md` for the storage contract.
 
-| Path | Role | Rules |
-|------|------|-------|
-| `packages/morse_core` | **Pure Dart** engine: alphabet, PARIS/Farnsworth timing, encoder, streaming key decoder | never imports Flutter |
-| `packages/morse_trainer` | **Pure Dart** pedagogy: Koch/lesson progression, scoring, spaced practice | never imports Flutter |
-| `packages/morse_io` | Flutter I/O: audio sidetone, haptics, keying input (touch + keyboard) | Flutter allowed |
-| `packages/morsecq_chat_api` | **Pure Dart** contract between UI and backend: `IdentityService`, `ChatService`, models, plus in-memory fakes in `testing.dart` | the UI depends only on this |
-| `packages/morsecq_chat` | Tox transport implementing the contract on Tim2Tox (`Tim2ToxIdentityService`, `Tim2ToxChatService`). **The ONLY package allowed to import Tim2Tox / Tencent SDK.** | everything else talks to the contract |
-| `packages/morse_dsp` | **Pure Dart** audio decoding: Goertzel tone detection, auto-tune, envelope gate, `AudioMorseDecoder` | never imports Flutter |
-| `packages/radio_tools` | **Pure Dart** operator maths for the radio tools: Maidenhead locators, great-circle distance / heading, IARU band edges and antenna lengths, `CwSpeed`, `RstReport` | never imports Flutter |
-| `apps/morsecq` | The app: Material 3 shell, responsive nav (Learn / Chat / Groups / Reference / Me), startup gate (identity required for chat; Learn/Reference/tools also run on a local guest profile). Sub-areas: `lib/di` (backend factories, `AppScope`, `AppServices`), `lib/startup`, `lib/ui/{account,learn,chat,contacts,groups,reference,stats,listen,tools,diagnostics,keying,telegraph}`, `lib/training` (per-identity progress store), `lib/diagnostics` (connection observations), `lib/keying` (device key profiles), `lib/notifications`, `lib/lifecycle`, `lib/desktop`, `lib/i18n` + `lib/l10n` (ARB, class `S`) | depends on packages, never on Tim2Tox; only `lib/di/real_backend_factory.dart` imports `morsecq_chat` |
-| `third_party/tim2tox` | git submodule (upstream `agentx-icu/tim2tox`) — to be added with `morsecq_chat` | never edit in place |
-| `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`, `ui_literal_guard.dart` (tests in `apps/morsecq/test/i18n/`); `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too; analyzed with `dart analyze --fatal-infos tool` (deps from the root `pubspec.yaml` `dev_dependencies`) |
-| `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
-| `doc/screenshots/` | committed frames per platform × locale, published only by `tool/screenshots/capture.sh` | never edit PNGs by hand; regenerate after UI changes |
-| `doc/plans/` | local 方案 / plan documents | ignored by Git; never stage these files |
-| `doc/release/` | App Store submission checklist, metadata and questionnaire answers (`APP_STORE.md`) | keep in sync with `site/`, the privacy manifests and `Info.plist` |
-| `site/` | public GitHub Pages site (privacy policy, terms of use, support), deployed by `.github/workflows/pages.yml` | English + `zh-CN/` pages edited together; URLs referenced from `lib/ui/account/account_routes.dart` |
-| `.github/workflows/` | CI (`analyze.yml`; `e2e.yml` opt-in via `workflow_dispatch` or the `ci:e2e` label) | mirrors the local commands below exactly |
+## Teaching invariants
 
-## Common commands
+The first lesson teaches hearing dit/dah and K/M before independent copying.
+Guided receive and send sessions supply practice and honest feedback.
+Only `startLessonSession()` and an unlock-eligible course-plan step advance the
+course. `LessonChallengeDrill` covers the lesson's new symbols; passing requires
+50 symbols at 90% overall and each new symbol copied at least ten times at 90%.
+Assisted/free practice does not unlock lessons. `ReceiveVerdict` drives summary
+wording, and `courseCompleted` records the final pass rather than just reaching
+lesson 42. Readiness, available drills, daily plans and speed advice follow the
+learned symbols and recent independent evidence. Simulated radio QSOs are local.
 
-Toolchain: Flutter **3.41.9** stable / Dart 3.11 (same pin as CI). Run everything
-from the repository root.
+## Verification and documentation
 
-```bash
-export PATH=/home/user/flutter/bin:$PATH
-
-dart pub get                                   # workspace-wide resolution (root only)
-
-# Analyze — zero issues is the bar. Root analysis_options.yaml applies everywhere.
-flutter analyze packages/morse_core
-flutter analyze apps/morsecq
-for d in packages/* apps/*; do flutter analyze "$d"; done
-dart analyze --fatal-infos tool                # the repo-root scripts
-
-# Tests — per package/app (any that has a test/ dir)
-(cd packages/morse_core && dart test)
-(cd apps/morsecq && flutter test)
-(cd apps/morsecq && flutter test test/app_shell_test.dart)
-
-# Test pyramid — gates, unit, widget, then e2e on a real device (doc/testing/TEST_PYRAMID.md)
-tool/test_pyramid.sh                           # all tiers; host desktop is the e2e device
-tool/test_pyramid.sh --level e2e --device macos
-(cd apps/morsecq && flutter test integration_test -d macos --dart-define=MORSECQ_FAKE_BACKEND=true)
-
-# Product screenshots (tool/screenshots/README.md) -> doc/screenshots/<platform>/<locale>/
-tool/screenshots/capture.sh --platforms macos            # ios, ipad, android, linux, windows too
-
-# Repo gates (all HARD: exit 1 on violation)
-dart run tool/check_complexity.dart            # .dart files > 500 LOC vs tool/.complexity_baseline.txt
-dart run tool/import_guard.dart                # layering: Tim2Tox/Tencent only in morsecq_chat; core/trainer stay pure Dart
-dart run tool/ui_literal_guard.dart            # no hard-coded user-visible prose in apps/morsecq/lib (use the ARBs)
-
-# Run the app
-(cd apps/morsecq && flutter run -d macos)      # or linux / windows / an attached device
+```sh
+flutter analyze --no-pub
+dart analyze --fatal-infos tool
+dart run tool/check_complexity.dart
+dart run tool/import_guard.dart
+dart run tool/ui_literal_guard.dart
+bash tool/test_pyramid.sh --level unit
+bash tool/test_pyramid.sh --level widget
+python3 tool/screenshots/capture_import_test.py
 ```
 
-If `dart pub get` fails with a lock/contention error, another process is resolving
-the workspace — wait and retry rather than running pub inside a sub-package.
+The complexity gate caps production files at 500 lines with its recorded
+baseline; do not suppress failures. The import gate forbids chat/transport SDKs
+and protects pure-Dart packages. User-facing strings come from ARB resources.
+Regenerate localization after changing keys. Keep all ten canonical locales
+and five styles, light/dark/system themes, narrow layouts and physical keys.
 
-## Constraints (hard gates)
+Use real native integration tests and the capture pipeline for product images.
+The default gallery has twelve offline scenes; custom language/style/theme
+profiles require a separate explicit output. The bounded actual-font visual
+matrix checks language, style and phone/desktop coverage. Never copy product
+screenshots from a build with accounts or chat, or edit them manually.
 
-- **500-LOC gate with a baseline ratchet.** `tool/check_complexity.dart` scans
-  `packages/*/lib`, `packages/*/tool`, `apps/*/lib` and `tool/`. Any `.dart` file
-  over 500 lines that is not pinned in `tool/.complexity_baseline.txt` fails CI.
-  A pinned file may shrink but never grow past its pin. `--write-baseline` is for
-  deliberate, explained splits — never for silencing a new offender. Generated
-  files (`*.g.dart`, `*.freezed.dart`, `**/l10n/**`, `app_localizations*.dart`)
-  are exempt by pattern. The baseline is currently empty; keep it that way.
-- **Import guard.** `tool/import_guard.dart` fails if anything outside
-  `packages/morsecq_chat/` imports `package:tim2tox_dart`,
-  `package:tencent_cloud_chat*` or `package:tencent_im`, or if `morse_core` /
-  `morse_trainer` import `package:flutter/`. The rule table is at the top of the
-  file; extend it there, not in the scanner.
-- **UI literal guard.** `tool/ui_literal_guard.dart` parses every file under
-  `apps/morsecq/lib` (generated `l10n/generated/`, `*.g.dart`, `*.freezed.dart`
-  excepted) and fails on a string literal containing a letter that flows into a
-  user-visible sink: `Text` / `SelectableText`, `TextSpan(text:)`,
-  `Tooltip(message:)`, `Semantics(value:)`, and `tooltip`, `label*`, `hint*`,
-  `helperText`, `errorText`, `title`, `subtitle`, `content`, ... on any call.
-  Interpolations do not count (`Text('$n')` passes, `'$n items'` fails). User
-  text goes in `lib/l10n/app_*.arb`. Only non-translatable content (callsigns,
-  Q-codes, locator examples, unit symbols) may be exempted, with
-  `// ui-literal-ok: <reason>` on the line or the line above; a missing reason
-  or an unused exemption fails too. The sink table is at the top of the file.
-- **Strict lints.** Root `analysis_options.yaml` (`avoid_print`, `unawaited_futures`,
-  `use_build_context_synchronously`, `cancel_subscriptions`, `close_sinks`,
-  `always_declare_return_types`, `prefer_final_locals`, …) applies to every
-  package. Packages must not ship their own `analysis_options.yaml` that weakens it.
-  Zero analyzer issues — infos included.
-- **Pure-Dart packages stay pure.** `morse_core` and `morse_trainer` must be
-  testable with `dart test` and usable from a CLI or server; no `dart:ui`, no Flutter.
-- **Mobile parity is mandatory.** MorseCQ targets iOS/Android as well as
-  macOS/Linux/Windows. Every design must work on a phone; every bugfix must
-  explicitly check whether the same bug exists on the mobile counterpart and fix
-  it there too (or state why it cannot apply). Default review question: "does
-  mobile hit this too?"
-- **Both keying modalities must exist.** Any keying UI ships for touch (on-screen
-  paddle/straight key) **and** keyboard (desktop key-down/key-up) at the same
-  time; one modality alone is not done.
-- **Chat requires an identity; learning may start as a guest** (product
-  decision changed with F05, 2026-10-03). The startup gate wraps the whole
-  shell. "Try learning first" runs on a separate guest learning profile
-  (`<support>/morsecq/guest/`) that never reads, decrypts or overwrites an
-  identity; Chat/Groups/Me ask for an identity there. Creating an identity
-  moves guest progress (staged, validated, committed); restore/unlock never
-  merges it silently. See `apps/morsecq/lib/training/guest_profile.dart` and
-  the tests alongside `guest_profile.dart` for the storage contract.
-- **Identity holders accept the community guidelines first** (App Review
-  1.2, 2026-10-05). `StartupGate` shows `TermsGatePage` instead of the whole
-  shell (Learn included; guest learning is not gated) until
-  `AppSettings.termsAccepted`; bump `kTermsVersion` with every material
-  change to `site/terms.md`. Blocking lives in `lib/ui/moderation/` (there
-  is no e-mail or report flow); the transport hides blocked peers
-  (`ChatService.blockedPeers`), and every new chat surface must honour it.
-- **The iOS App Store build has no chat** (2026-10-07). `AppFeatures.chat`
-  (`--dart-define=MORSECQ_CHAT=false`, `lib/di/app_features.dart`) builds an
-  offline trainer: no identity, no Tox, no notifications; the startup gate
-  goes straight to the local (guest) learning profile and the shell shows
-  Learn / Reference / Me. Only `tool/build_ios_store.sh` builds it (no
-  Tim2ToxFFI pod, `ITSAppUsesNonExemptEncryption = NO`). Every new feature
-  must say which build it belongs to; anything chat-only is gated on
-  `AppFeatures.chat`.
-- **Product name is MorseCQ** in every user-visible place (store labels,
-  window titles, menus, installers, notifications, docs prose). Technical
-  identifiers stay lowercase `morsecq` so existing profiles keep working:
-  package names, bundle id `icu.agentx.morsecq`, Linux/Windows binary names,
-  data directories, notification channel ids, and the Windows `ProductName`
-  (path_provider derives `%APPDATA%\icu.agentx\morsecq` from it). macOS is the
-  one bundle renamed: `MorseCQ.app`, same bundle id.
-- **Only a lesson challenge advances the course** (pedagogy review,
-  2026-10-08). `startLessonSession()` and an unlock-eligible daily-plan
-  course step are the only sessions with `countsTowardLesson`; they use
-  `LessonChallengeDrill` so the lesson's new symbols are covered, and
-  `KochCourse.evaluate` demands 50 symbols at 90 % *and* each new symbol
-  copied at least 10 times at 90 %. Free practice (`startReceiveSession`,
-  guided and focus sessions) is `ExerciseSource.focus` and never unlocks;
-  the summary verdict comes from `ReceiveVerdict`, never from the score
-  alone. `TrainerProgress.courseCompleted` records the final pass; reaching
-  lesson 42 is not completion. Drill availability (QSO included) follows
-  the learned symbol set, never a lesson number.
-- **No Tencent Cloud IM.** The backend is Tox P2P via Tim2Tox. Anything assuming
-  an IM server is wrong for this repo.
+Documentation is bilingual. Keep current product/runtime facts in READMEs,
+architecture, testing, store/policy pages and build guides. `doc/plans/` is local
+working material, ignored by Git; published docs must not link into it.
+Do not commit generated build outputs or recordings. Release tags require all
+five platform jobs and the complete ten-asset checksum verifier. Release jobs
+create drafts; distribution needs the owner's signing/notarization setup.
 
-## Working agreement
-
-- **Deep root-cause fixes only.** Fix the real cause at the correct layer
-  (native/FFI, package, or app) — never a surface patch that hides the symptom.
-  If the real fix is large, scope it and say so.
-- **Tests accompany behaviour.** New behaviour lands with tests in the same
-  change; a bugfix lands with the regression test that would have caught it.
-- **Plans stay local.** `doc/plans/` is ignored and must not be committed;
-  published documentation must not link to files in that directory.
-- **Docs are bilingual:** `X.md` (English, default) + `X.zh-CN.md`; add both
-  when adding a doc.
-- **Independent review on every change.** Draft → second opinion → apply
-  findings → proceed. Bundle the diff and have the reviewer check correctness,
-  layering (import guard), memory/ownership for anything FFI-adjacent, and
-  mobile parity. If the reviewer is unavailable, say so explicitly, self-validate
-  with analyzer + tests, and record that a review is still owed.
-- **Resolve uncertainty before asking the user.** Reserve user questions for
-  genuine product/scope forks; technical choices get decided and stated.
-- **Never edit `third_party/` in place.** Upstream changes go to the submodule's
-  own repo; patches are documented, not applied by hand.
-- **Do not commit build outputs.** Platform folders under `apps/morsecq/` keep
-  the `.gitignore` files `flutter create` wrote; the root `.gitignore` is the
-  safety net for ephemeral dirs, Pods, `.gradle`, `local.properties`,
-  `key.properties` and generated plugin registrants.
+Use meaningful regressions and appropriate local/CI checks. User instructions
+prohibit RTK and Claude-based reviews; do not load or invoke those workflows.

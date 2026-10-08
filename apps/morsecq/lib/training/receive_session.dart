@@ -125,7 +125,7 @@ final class ReceiveSession {
   /// Daily-plan step this session executes, if any.
   final String? planStepId;
 
-  /// Local origin reference (chat message, material entry).
+  /// Local origin reference (material entry, recorded audio).
   final String? sourceRef;
 
   /// Symbols that may enter learned-symbol statistics; null = the

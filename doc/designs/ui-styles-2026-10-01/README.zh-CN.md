@@ -1,3 +1,5 @@
+> 已归档的拆分前外观概念。下文与旧图中的学习 / 聊天 / 群组 / 参考 / 我的属于原合并设计，不是当前 MorseCQ 导航。当前离线版只有学习 / 参考 / 我的，见 [2026-10-08 产品设计](../product-2026-10-08/README.zh-CN.md)与[当前 README](../../../README.zh-CN.md)。
+
 [English](./README.md)
 
 # MorseCQ 界面风格视觉提案

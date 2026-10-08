@@ -12,7 +12,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:morsecq/desktop/desktop_platform.dart';
-import 'package:morsecq/notifications/flutter_local_notifications_api.dart';
 
 img.Image _png(String path) {
   final img.Image? image = img.decodePng(File(path).readAsBytesSync());
@@ -121,39 +120,6 @@ void main() {
 
   group('Android', () {
     const String res = 'android/app/src/main/res';
-    const Map<String, int> statusPx = {
-      'mdpi': 24,
-      'hdpi': 36,
-      'xhdpi': 48,
-      'xxhdpi': 72,
-      'xxxhdpi': 96,
-    };
-
-    test('notification small icon is a white-on-transparent drawable', () {
-      const String ref = FlutterLocalNotificationsApi.defaultAndroidIcon;
-      expect(ref, startsWith('@drawable/'));
-      final String name = ref.substring('@drawable/'.length);
-      for (final MapEntry<String, int> d in statusPx.entries) {
-        final String path = '$res/drawable-${d.key}/$name.png';
-        final img.Image image = _png(path);
-        expect(image.width, d.value, reason: path);
-        expect(image.height, d.value, reason: path);
-        // Android tints small icons from alpha alone: an opaque bitmap (the
-        // launcher icon) renders as a solid square.
-        _expectGlyphOnTransparent(image, path);
-        expect(_offColourVisiblePixels(image, 255, 255, 255), 0, reason: path);
-      }
-      // Named only from Dart, so release resource shrinking must keep it.
-      final String keepXml = File(
-        '$res/raw/keep.xml',
-      ).readAsStringSync().replaceAll(RegExp(r'<!--.*?-->', dotAll: true), '');
-      final String? keep = RegExp(
-        r'tools:keep="([^"]*)"',
-      ).firstMatch(keepXml)?.group(1);
-      expect(keep, isNotNull, reason: 'keep.xml has no tools:keep');
-      expect(keep!.split(',').map((e) => e.trim()), contains(ref));
-    });
-
     test('launcher icon and adaptive layers exist in every density', () {
       final String manifest = File(
         'android/app/src/main/AndroidManifest.xml',

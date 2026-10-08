@@ -1,8 +1,8 @@
 import 'training_controller.dart';
 
 /// A saved selection of a recording plus the learner's note (spec §11.2.5).
-/// Only this metadata lives in the training directory (and so in identity
-/// backups); the media file is referenced by a path relative to the profile
+/// Only this metadata lives in the training directory (and so in local
+/// learning backups); the media file is referenced by a path relative to the profile
 /// and may be missing, which never breaks loading.
 final class AudioMaterial {
   const AudioMaterial({

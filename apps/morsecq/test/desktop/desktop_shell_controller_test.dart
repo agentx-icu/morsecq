@@ -371,7 +371,6 @@ void main() {
         expect(h.controller.isTrayAvailable, isTrue);
         expect(h.tray.menu, isNotEmpty);
 
-        h.controller.setUnreadCount(2);
         await h.controller.flushTrayUpdates();
 
         expect(h.log.where((m) => m.contains('setToolTip')).length, 1);
@@ -379,72 +378,16 @@ void main() {
     );
   });
 
-  group('unread count', () {
-    test('updates the window title, tooltip and macOS badge', () async {
-      final h = _harness(platform: TargetPlatform.macOS);
-      await h.controller.initialize();
-      var notified = 0;
-      h.controller.addListener(() => notified++);
-
-      h.controller.setUnreadCount(3);
-      await h.controller.flushTrayUpdates();
-
-      expect(notified, 1);
-      expect(h.controller.windowTitle, '(3) MorseCQ');
-      expect(h.window.title, '(3) MorseCQ');
-      expect(h.tray.tooltip, 'MorseCQ — 3 unread messages');
-      expect(h.tray.title, '3');
-
-      h.controller.setUnreadCount(0);
-      await h.controller.flushTrayUpdates();
-      expect(h.window.title, 'MorseCQ');
-      expect(h.tray.tooltip, 'MorseCQ');
-      expect(h.tray.title, '');
-    });
-
-    test('caps the badge at 99+ and clamps negatives to zero', () async {
-      final h = _harness();
-      await h.controller.initialize();
-
-      h.controller.setUnreadCount(250);
-      await h.controller.flushTrayUpdates();
-      expect(h.controller.windowTitle, '(99+) MorseCQ');
-      expect(h.tray.tooltip, 'MorseCQ — 250 unread messages');
-
-      h.controller.setUnreadCount(-4);
-      expect(h.controller.unreadCount, 0);
-    });
-
-
-    test('does not touch the tray title off macOS', () async {
-      final h = _harness(platform: TargetPlatform.windows);
-      await h.controller.initialize();
-      h.controller.setUnreadCount(1);
-      await h.controller.flushTrayUpdates();
-      expect(h.tray.title, isNull);
-      expect(h.tray.calls, isNot(contains('setTitle')));
-    });
-
-    test('unchanged count is a no-op', () async {
-      final h = _harness();
-      await h.controller.initialize();
-      final calls = h.window.calls.length;
-      h.controller.setUnreadCount(0);
-      expect(h.window.calls.length, calls);
-    });
-  });
-
   // Language switching (updateStrings) is covered in
   // desktop_shell_strings_test.dart.
 
   group('mobile platforms are inert', () {
     for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
-      test('$platform: initialize, unread, show/hide, close never reach '
+      test('$platform: initialize, show/hide, close never reach '
           'the plugins or the store', () async {
         final h = _harness(platform: platform);
         await h.controller.initialize();
 
-        h.controller.setUnreadCount(7);
         await h.controller.showWindow();
         await h.controller.hideToTray();
         await h.controller.toggleWindow();
@@ -461,8 +404,7 @@ void main() {
         expect(h.screen.lookups, 0);
         expect(h.store.values, isEmpty);
         // State is still tracked so callers need no platform branches.
-        expect(h.controller.unreadCount, 7);
-        expect(h.controller.windowTitle, '(7) MorseCQ');
+        expect(h.controller.windowTitle, 'MorseCQ');
         expect(h.controller.closeToTray, isFalse);
       });
     }

@@ -1,42 +1,8 @@
 ---
-layout: page
-title: 技术支持
-permalink: /zh-CN/support/
-lang: zh-CN
-last_updated: 2026-10-07
+layout: default
+title: 支持
 ---
 
-[English]({{ '/support/' | relative_url }})
+# 支持
 
-## 联系我们
-
-在 **[GitHub issues]({{ site.support_url }})** 提交问题即可获得帮助、报告问题或提出建议。
-issues 是公开的：请勿在其中贴出私信内容、备份或他人的 Tox ID。我们不提供邮件支持。
-
-## App Store 版本（iOS / iPadOS）
-
-**iPhone 和 iPad 上有聊天吗？** 没有。App Store 版本是离线莫尔斯电码训练器：没有账号、没有
-聊天，App 自身不发起网络连接。聊天功能在 Android、macOS、Linux 和 Windows 版本中提供。
-
-**我的学习进度在哪里？** 在设备上，保存于 App 的私有存储中。我 → 清除学习数据会删除它；
-卸载 App 也会删除。
-
-**麦克风解码没有反应。** 在 设置 → MorseCQ 中允许麦克风访问，并让声源靠近设备。
-
-## 聊天版本（Android、macOS、Linux、Windows）
-
-**需要注册账号吗？** 不需要。学习功能可直接使用。聊天需要一个 Tox 身份，几秒钟就在设备上
-生成——无需手机号或邮箱。
-
-**有人骚扰我。** 在会话菜单、群成员列表、好友请求或邀请中屏蔽对方。已屏蔽的人列在
-**我 → 已屏蔽的人**，可在那里解除屏蔽。
-
-**为什么 App 关闭时消息发不出去？** 没有服务器替你暂存消息。消息会留在你的设备上
-（显示为待发送），双方都在线时才送达。
-
-**怎么添加好友？** 在“聊天”→ 联系人中分享你的 Tox ID（文本或二维码），并添加对方的
-Tox ID，双方都需要接受。
-
-**设备丢了，能帮我恢复身份吗？** 不能——身份只在你手里。请导出备份（我 → 导出备份）并妥善保管。
-
-**怎么删除我的数据？** 我 → 删除身份，或卸载 App。详见[隐私政策]({{ '/zh-CN/privacy/' | relative_url }})。
+使用问题或错误报告请提交 [GitHub issue](https://github.com/agentx-icu/morsecq/issues)，说明应用版本、平台和复现步骤。学习文件或录音只在你主动选择时分享。安装后即可开始学习；电码聊天请使用独立的 DitMesh 应用。

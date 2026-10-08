@@ -13,7 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/di/app_settings.dart';
-import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/main.dart';
@@ -21,7 +21,7 @@ import 'package:morsecq/ui/appearance/appearance_page.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 
 import '../../integration_test/support/seed_data.dart';
-import '../account/test_app.dart' show settle;
+import '../support/test_app.dart' show settle;
 
 const _render = bool.fromEnvironment('MORSECQ_RENDER_STYLES');
 const _output = String.fromEnvironment('MORSECQ_STYLE_RENDER_DIR');
@@ -89,9 +89,7 @@ void main() {
           final dir = await tester.runAsync(
             () => Directory.systemTemp.createTemp('morsecq_style_render_'),
           );
-          final seed = await tester.runAsync(
-            () => buildSeed(seedCopyFor('zh'), dataDir: dir!.path),
-          );
+          await tester.runAsync(() => seedTrainingProgress(dir!.path, anchor: seedAnchor(DateTime.now())));
           final mode = style == UiStyle.radio
               ? ThemeMode.dark
               : ThemeMode.light;
@@ -100,12 +98,8 @@ void main() {
               key: boundary,
               child: MorsecqApp(
                 key: ValueKey('${style.name}-$device'),
-                backend: FakeBackendFactory(
-                  identityService: seed!.identity,
-                  chatService: (_) => seed.chat,
-                ),
+                learningStore: LocalLearningStore(root: () async => dir!.path),
                 localeStore: InMemoryKeyValueStore({
-                  AppSettings.termsKey: '$kTermsVersion',
                   LocaleController.storageKey: 'zh',
                   AppSettings.storageKey: jsonEncode({
                     'style': style.name,

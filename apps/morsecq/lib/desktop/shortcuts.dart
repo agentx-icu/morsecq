@@ -19,17 +19,12 @@ class FocusSearchIntent extends Intent {
   const FocusSearchIntent();
 }
 
-/// Start a new message / conversation.
-class NewMessageIntent extends Intent {
-  const NewMessageIntent();
-}
-
 /// Whether the platform's primary shortcut modifier is Command (Apple) rather
 /// than Control.
 bool usesCommandModifier(TargetPlatform platform) =>
     platform == TargetPlatform.macOS || platform == TargetPlatform.iOS;
 
-/// Default bindings: Cmd/Ctrl+K search, Cmd/Ctrl+N new message,
+/// Default bindings: Cmd/Ctrl+K search,
 /// Cmd/Ctrl+M mute sidetone. [platform] defaults to [defaultTargetPlatform].
 Map<ShortcutActivator, Intent> desktopShortcutBindings({
   TargetPlatform? platform,
@@ -39,7 +34,6 @@ Map<ShortcutActivator, Intent> desktopShortcutBindings({
       SingleActivator(key, meta: command, control: !command);
   return <ShortcutActivator, Intent>{
     primary(LogicalKeyboardKey.keyK): const FocusSearchIntent(),
-    primary(LogicalKeyboardKey.keyN): const NewMessageIntent(),
     primary(LogicalKeyboardKey.keyM): const ToggleSidetoneIntent(),
   };
 }

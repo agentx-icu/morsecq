@@ -17,9 +17,6 @@ enum ExerciseSource {
   /// Interactive QSO simulator (semantic score, not copying accuracy).
   qso,
 
-  /// Copying a received chat message.
-  chat,
-
   /// Copying a custom training material.
   material,
 
@@ -132,7 +129,6 @@ abstract final class CreditPolicy {
         );
       case ExerciseSource.review:
       case ExerciseSource.focus:
-      case ExerciseSource.chat:
       case ExerciseSource.material:
         return const ExerciseCredit(
           activity: true,

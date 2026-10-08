@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
-import 'package:morsecq_chat_api/morsecq_chat_api.dart';
-import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/audio_material_store.dart';
-import '../../../training/guest_profile.dart';
+import '../../../training/local_learning_store.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
 import '../../learn/learning_unavailable.dart';
@@ -39,7 +37,7 @@ class WorkbenchScreen extends StatefulWidget {
   final ClipPlayer? player;
 
   /// The learning profile's media root ([RecordingLibrary.root]);
-  /// defaults to the identity's root, or the guest directory.
+  /// defaults to the local learning directory.
   final Future<String> Function()? profileRoot;
 
   /// The shared training controller; defaults to the app's host.
@@ -49,19 +47,9 @@ class WorkbenchScreen extends StatefulWidget {
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
 
-/// The learning profile's media root: the identity's root, or the guest
-/// directory when learning without an identity.
+/// The local learning directory also owns managed audio recordings.
 Future<String> _profileDirectory(BuildContext context) {
-  final identity = context.read<IdentityService>();
-  GuestStore? guest;
-  try {
-    guest = context.read<GuestStore?>();
-  } on ProviderNotFoundException {
-    guest = null;
-  }
-  if (identity.current == null && guest != null) return guest.directory();
-  // The identity root: media stay out of the backed-up data directory.
-  return identity.dataDirectory().then(p.dirname);
+  return context.read<LocalLearningStore>().directory();
 }
 
 class _WorkbenchScreenState extends State<WorkbenchScreen>
@@ -103,7 +91,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     try {
       training = await (widget.training ?? _hostController)();
     } on Object {
-      // Chat builds without an identity: attempts are scored, not recorded.
+      // A missing local store still allows transient audio decoding.
       // The offline build always has its profile, so a failure is a storage
       // problem: say so and offer a retry.
       if (mounted && learningRetryable(context)) {

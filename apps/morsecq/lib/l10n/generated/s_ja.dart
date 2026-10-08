@@ -15,12 +15,6 @@ class SJa extends S {
   String get navLearn => '学習';
 
   @override
-  String get navChat => 'チャット';
-
-  @override
-  String get navGroups => 'グループ';
-
-  @override
   String get navMe => '自分';
 
   @override
@@ -30,22 +24,7 @@ class SJa extends S {
   String get navLearnDescription => 'Koch 法のレッスン、送信練習、受信練習。';
 
   @override
-  String get navChatDescription => 'Tox P2P による、サーバーを使わない 1 対 1 のモールス通信。';
-
-  @override
-  String get navGroupsDescription => 'グループ通信網 — 複数の通信者が同じチャンネルで送信。';
-
-  @override
   String get navReferenceDescription => '文字表、手続き符号、Q 符号、略語、双方向変換ツール。';
-
-  @override
-  String get navMeDescription => 'コールサイン、Tox の ID 情報、学習の進捗と設定。';
-
-  @override
-  String get shellOfflineBanner => 'オフライン：Tox ネットワークに接続していません。オンラインに戻るとメッセージを送信します。';
-
-  @override
-  String get actionOk => '確認';
 
   @override
   String get actionCancel => 'キャンセル';
@@ -57,70 +36,10 @@ class SJa extends S {
   String get actionDelete => '削除';
 
   @override
-  String get actionCopy => 'コピー';
-
-  @override
-  String get actionShare => '共有';
-
-  @override
   String get actionRetry => '再試行';
 
   @override
   String get actionClose => '閉じる';
-
-  @override
-  String get actionSearch => '検索';
-
-  @override
-  String get actionSettings => '設定';
-
-  @override
-  String get connectionConnecting => '接続中…';
-
-  @override
-  String get connectionOnline => 'オンライン';
-
-  @override
-  String get connectionOffline => 'オフライン';
-
-  @override
-  String get messageStatusPending => '送信待ち — 相手がオフライン';
-
-  @override
-  String get messageStatusPendingDetail => 'Tox にサーバーはありません。相手がオンラインになるとメッセージが届きます。';
-
-  @override
-  String get messageStatusSending => '送信中';
-
-  @override
-  String get messageStatusSent => '送信済み';
-
-  @override
-  String get messageStatusFailed => '送信失敗';
-
-  @override
-  String get errorWrongPassword => 'パスワードが違います。もう一度お試しください。';
-
-  @override
-  String get errorPeerOffline => 'この連絡先はオフラインです。Tox にサーバーはないため、相手が戻るまでメッセージは送信待ちになります。';
-
-  @override
-  String get errorInvalidToxId => '有効な Tox ID ではありません（76 桁の 16 進数が必要です）。';
-
-  @override
-  String get errorAlreadyFriend => 'この Tox ID はすでに友達リストに登録されています。';
-
-  @override
-  String get errorOwnId => 'これは自分の Tox ID です。';
-
-  @override
-  String get errorGroupNotFound => 'グループが見つかりません。';
-
-  @override
-  String get errorMessageTooLong => 'メッセージが Tox の 1 件あたりの長さ制限を超えています。';
-
-  @override
-  String get errorUnknown => '問題が発生しました';
 
   @override
   String get languageTitle => '言語';
@@ -446,262 +365,16 @@ class SJa extends S {
   }
 
   @override
-  String get accountCopied => 'Tox ID をクリップボードにコピーしました';
-
-  @override
-  String get accountShowQr => 'QR コードを表示';
-
-  @override
-  String get accountToxId => 'Tox ID';
-
-  @override
-  String get accountDisplayName => '表示名';
-
-  @override
-  String get accountDisplayNameHint => 'コールサインまたはニックネーム';
-
-  @override
-  String get accountDisplayNameRequired => '表示名を入力してください';
-
-  @override
-  String get accountStatusMessage => 'ステータスメッセージ';
-
-  @override
-  String get accountPassword => 'パスワード';
-
-  @override
-  String get accountPasswordOptional => 'パスワード（任意）';
-
-  @override
-  String get accountConfirmPassword => 'パスワードの確認';
-
-  @override
-  String get accountPasswordsDoNotMatch => 'パスワードが一致しません';
-
-  @override
-  String get accountShowPassword => 'パスワードを表示';
-
-  @override
-  String get accountHidePassword => 'パスワードを隠す';
-
-  @override
-  String get accountStrengthWeak => '弱い：8 文字以上にしてください';
-
-  @override
-  String get accountStrengthFair => '普通：12 文字以上で複数の文字種を混ぜるとより安全です';
-
-  @override
-  String get accountStrengthStrong => '強い';
-
-  @override
-  String get accountStartupInspecting => 'ID 情報を確認中…';
-
-  @override
-  String get accountStartupOpening => 'ID 情報を開いています…';
-
-  @override
-  String get accountStartupFailedTitle => '起動できませんでした';
-
-  @override
-  String get accountStartupFailedBody => 'MorseCQ が ID 情報を読み取れませんでした。データは変更されていません。再試行できます。';
-
-  @override
-  String get accountConnectionTapToReconnect => 'タップして再接続';
-
-  @override
-  String get accountWelcomeTitle => 'ID 情報はこのデバイスに保存されます';
-
-  @override
-  String get accountWelcomeIntro => 'MorseCQ は Tox の P2P ネットワークを使用します。サーバーもアカウント登録も不要です。ID 情報は、このデバイスだけに保存される鍵のペアです。';
-
-  @override
-  String get accountWelcomePointNoServer => 'サーバー、電話番号、メールアドレスは不要です。通信者同士がモールス符号で直接やり取りします。';
-
-  @override
-  String get accountWelcomePointTraining => '学習の進捗は ID 情報と一緒に保存されるため、バックアップやデバイス間の移行ができます。';
-
-  @override
-  String get accountWelcomePointBackup => 'ID 情報を復元できるのは自分だけです。作成したらすぐにバックアップしてください。バックアップがなければ、デバイスを失うと ID 情報も失われます。';
-
-  @override
-  String get accountCreateIdentity => 'ID 情報を作成';
-
-  @override
-  String get accountRestoreFromBackup => 'バックアップから復元';
-
-  @override
-  String get accountCreateTitle => '自分の ID 情報を作成';
-
-  @override
-  String get accountCreateBody => '相手に表示する名前を選んでください。パスワードはこのデバイスの ID 情報ファイルを暗号化します。パスワードなしでアプリを開きたい場合は空欄にしてください。';
-
-  @override
-  String get accountCreateButton => '作成';
-
-  @override
-  String get accountCreating => '作成中…';
-
-  @override
-  String get accountBackupTitle => '今すぐ ID 情報をバックアップ';
-
-  @override
-  String get accountBackupBody => 'ID 情報はこのデバイスにしか存在しません。デバイスの紛失、初期化、盗難があった場合は復元できません。新しい ID 情報では連絡先に本人だと認識されず、学習の進捗も失われます。';
-
-  @override
-  String get accountBackupWhatIsInside => 'バックアップファイルには、パスワードで暗号化された ID 鍵と学習の進捗が含まれます。このデバイス以外の安全な場所に保管してください。';
-
-  @override
-  String get accountBackupWhatIsInsidePlain => 'バックアップファイルには、暗号化されていない ID 鍵と学習の進捗が含まれます。このファイルを手に入れた人は誰でもあなたの ID を使えます。鍵を暗号化するには先にパスワードを設定し、ファイルは安全な場所に保管してください。';
-
-  @override
-  String get accountPasswordScope => 'パスワードは ID 鍵を暗号化します。メッセージ履歴はディスク上で暗号化されないままですが、デバイスの暗号化で保護できます。';
-
-  @override
-  String get accountSectionNotifications => '通知';
-
-  @override
-  String get accountNotificationsEnable => '通知を表示';
-
-  @override
-  String get accountNotificationsEnableSubtitle => '新しいメッセージ、友だちリクエスト、グループ招待';
-
-  @override
-  String get accountNotificationsContent => 'メッセージの内容を表示';
-
-  @override
-  String get accountNotificationsContentSubtitle => 'バナーとロック画面にテキストとモールスを表示します。オフにすると、メッセージが届いたことだけを知らせます。';
-
-  @override
-  String get accountNotificationsAllow => '通知を許可';
-
-  @override
-  String get accountNotificationsAllowSubtitle => 'システムに通知の許可を求めます';
-
-  @override
-  String get accountNotificationsDenied => 'MorseCQ の通知はシステム設定でオフになっています。';
-
-  @override
-  String get accountBackupSaveFile => 'バックアップファイルを保存';
-
-  @override
-  String get accountBackupShareFile => 'バックアップファイルを共有';
-
-  @override
-  String get accountBackupSaved => 'バックアップを保存しました';
-
-  @override
-  String get accountBackupNotSaved => 'バックアップは保存されませんでした';
-
-  @override
-  String get accountBackupFailed => 'バックアップを書き込めませんでした';
-
-  @override
-  String get accountBackupAcknowledge => 'このバックアップがなければ ID 情報を復元できないことを理解しました。';
-
-  @override
-  String get accountBackupContinue => 'MorseCQ を始める';
-
-  @override
-  String get accountBackupShowQrHint => '友達は Tox ID を使ってあなたを追加します。テキストまたは QR コードで共有できます。';
-
-  @override
-  String get accountRestoreTitle => 'バックアップから復元';
-
-  @override
-  String get accountRestoreBody => 'MorseCQ からエクスポートしたバックアップファイルを選んでください。ID 情報にパスワードを設定していた場合は、ここで入力する必要があります。';
-
-  @override
-  String get accountRestoreChooseFile => 'バックアップファイルを選択';
-
-  @override
-  String get accountRestoreNoFile => '先にバックアップファイルを選んでください';
-
-  @override
-  String get accountRestoreButton => '復元';
-
-  @override
-  String get accountRestoring => '復元中…';
-
-  @override
-  String get accountRestoreInvalidFile => 'このファイルは MorseCQ のバックアップではありません。';
-
-  @override
-  String get accountRestoreReplacesWarning => '復元すると、このデバイスにある現在の ID 情報が置き換わります。';
-
-  @override
-  String get accountUnlockTitle => 'ID 情報のロックを解除';
-
-  @override
-  String get accountUnlockBody => 'ID 情報ファイルは暗号化されています。パスワードを入力して続行してください。';
-
-  @override
-  String get accountUnlockButton => 'ロック解除';
-
-  @override
-  String get accountUnlocking => 'ロック解除中…';
-
-  @override
-  String get accountUnlockRestoreInstead => '代わりにバックアップから復元';
-
-  @override
-  String get accountMeNoIdentity => 'ID 情報が読み込まれていません';
-
-  @override
-  String get accountSectionAccount => 'アカウント';
-
-  @override
   String get accountSectionTraining => '練習';
 
   @override
   String get accountSectionAbout => 'アプリについて';
 
   @override
-  String get accountSectionDanger => '危険な操作';
-
-  @override
-  String get accountEditProfile => 'プロフィールを編集';
-
-  @override
-  String get accountEditProfileBody => 'Tox ネットワーク上の連絡先に表示されます。';
-
-  @override
-  String get accountSetPassword => 'パスワードを設定';
-
-  @override
-  String get accountChangePassword => 'パスワードを変更';
-
-  @override
-  String get accountRemovePassword => 'パスワードを削除';
-
-  @override
-  String get accountCurrentPassword => '現在のパスワード';
-
-  @override
-  String get accountNewPassword => '新しいパスワード';
-
-  @override
-  String get accountPasswordUpdated => 'パスワードを更新しました';
-
-  @override
-  String get accountPasswordRemoved => 'パスワードを削除しました';
-
-  @override
-  String get accountProfileUpdated => 'プロフィールを更新しました';
-
-  @override
-  String get accountExportBackup => 'バックアップをエクスポート';
-
-  @override
-  String get accountExportBackupSubtitle => 'ID 情報と学習の進捗をファイルに保存';
-
-  @override
   String get accountTrainingDefaults => '再生と練習の初期設定';
 
   @override
   String get accountTrainingDefaultsSubtitle => '速度、音の高さ、Farnsworth 間隔';
-
-  @override
-  String get accountTrainingDefaultsPlaceholder => '速度、音の高さ、Farnsworth 間隔の初期設定がここに表示されます。';
 
   @override
   String get accountAboutLicence => 'ライセンス';
@@ -716,285 +389,7 @@ class SJa extends S {
   String get accountAboutSourceCopied => 'ソースコードのリンクをコピーしました';
 
   @override
-  String get accountAboutBackend => 'バックエンド';
-
-  @override
-  String get accountDeleteIdentity => 'ID 情報を削除';
-
-  @override
-  String get accountDeleteIdentitySubtitle => 'このデバイスから ID 情報、履歴、学習の進捗を消去';
-
-  @override
-  String get accountDeleteDialogTitle => 'この ID 情報を削除しますか？';
-
-  @override
-  String get accountDeleteDialogBody => 'このデバイスから ID 情報、チャット履歴、学習の進捗が削除されます。バックアップがなければ復元できません。確認のため DELETE と入力してください。';
-
-  @override
-  String get accountDeleteConfirmWord => 'DELETE';
-
-  @override
-  String get accountDeleteConfirmHint => 'DELETE と入力';
-
-  @override
-  String get accountDeleteButton => '削除';
-
-  @override
-  String accountRestoreFileChosenSize(int bytes) {
-    return 'バックアップファイルを選択しました（$bytes バイト）';
-  }
-
-  @override
-  String get chatSearchConversations => '会話を検索';
-
-  @override
-  String get chatNoConversations => 'まだ会話がありません';
-
-  @override
-  String get chatNoSearchResults => '一致する会話がありません';
-
-  @override
-  String get chatPin => '固定';
-
-  @override
-  String get chatUnpin => '固定を解除';
-
-  @override
-  String get chatMarkRead => '既読にする';
-
-  @override
-  String get chatDelete => '削除';
-
-  @override
-  String get chatDeleteConversationTitle => '会話を削除しますか？';
-
-  @override
-  String get chatDeleteConversationBody => 'このデバイス上の会話履歴が削除されます。Tox にコピーは保存されていません。';
-
-  @override
-  String get chatDraftPrefix => '下書き：';
-
-  @override
-  String get chatSelectConversation => '会話を選択';
-
-  @override
-  String get chatContacts => '連絡先';
-
-  @override
-  String get chatNoMessages => 'まだメッセージがありません。CQ を送って始めましょう。';
-
-  @override
-  String get chatTrainingMode => '練習モード';
-
-  @override
-  String get chatTrainingModeOn => '練習モード有効：テキストを非表示';
-
-  @override
-  String get chatTrainingModeOff => '練習モード無効';
-
-  @override
-  String get chatAutoPlay => '受信したモールスを自動再生';
-
-  @override
-  String get chatAutoPlayOn => '自動再生オン：新着メッセージを受信時に再生します';
-
-  @override
-  String get chatAutoPlayOff => '自動再生オフ';
-
-  @override
-  String get chatReveal => '表示';
-
-  @override
-  String get chatHiddenText => 'まず聞いてから表示';
-
-  @override
-  String get chatPlay => 'モールス符号を再生';
-
-  @override
-  String get chatStop => '停止';
-
-  @override
-  String get chatPlaybackSettings => '再生設定';
-
-  @override
-  String get chatCharacterSpeed => '文字速度';
-
-  @override
-  String get chatFarnsworthSpeed => 'Farnsworth 速度';
-
-  @override
-  String get chatTone => '音の高さ';
-
-  @override
-  String get chatWpm => 'WPM';
-
-  @override
-  String get chatHz => 'Hz';
-
-  @override
-  String get chatMembers => 'メンバー';
-
-  @override
-  String get chatLeaveGroup => 'グループを退出';
-
-  @override
-  String get chatLeaveGroupTitle => 'このグループを退出しますか？';
-
-  @override
-  String get chatLeaveGroupBody => 'メッセージを受信しなくなります。あとでチャット ID を使って再参加できます。';
-
-  @override
-  String get chatLeave => '退出';
-
-  @override
-  String get chatConferenceNote => '旧形式の会議：ここではモールスのキー操作メタデータ（v2）を利用できません。テキストは利用できます。';
-
-  @override
-  String get chatClearHistory => '履歴を消去';
-
-  @override
-  String get chatModeStraightKey => '縦振れ電鍵';
-
-  @override
-  String get chatModePaddles => 'パドル';
-
-  @override
-  String get chatKeyMessage => '電鍵でメッセージを打鍵';
-
-  @override
   String get chatSend => '送信';
-
-  @override
-  String get chatTooLong => 'Tox メッセージ 1 件の長さ制限を超えています';
-
-  @override
-  String get chatKeyHint => '電鍵エリアを押すか、スペースキーを押してください';
-
-  @override
-  String get chatPaddleHint => 'パドルをタップするか Ctrl を押し続けてください（左：短点、右：長点）';
-
-  @override
-  String get chatDeleteLast => '最後の文字を削除';
-
-  @override
-  String get chatNoFriends => 'まだ友達がいません。相手の Tox ID で追加してください。';
-
-  @override
-  String get chatNoRequests => '保留中のリクエストはありません';
-
-  @override
-  String get chatAddFriend => '友達を追加';
-
-  @override
-  String get chatMyToxId => '自分の Tox ID';
-
-  @override
-  String get chatToxIdLabel => 'Tox ID（76 桁の 16 進数）';
-
-  @override
-  String get chatToxIdInvalid => 'Tox ID は 76 桁の 16 進数でなければなりません';
-
-  @override
-  String get chatToxIdOwn => 'これは自分の Tox ID です';
-
-  @override
-  String get chatToxIdAlreadyFriend => 'すでに友達リストに登録されています';
-
-  @override
-  String get chatRequestMessage => 'メッセージ';
-
-  @override
-  String get chatDefaultRequestMessage => 'MorseCQ CQ';
-
-  @override
-  String get chatSendRequest => 'リクエストを送信';
-
-  @override
-  String get chatRequestSent => '友達リクエストを送信しました';
-
-  @override
-  String get chatScanQr => 'QR コードをスキャン';
-
-  @override
-  String get chatScanQrDesktopHint => 'QR コードの読み取りにはスマートフォンのカメラが必要です';
-
-  @override
-  String get chatScanQrTitle => 'Tox ID をスキャン';
-
-  @override
-  String get chatScanQrNotToxId => 'この QR コードは Tox ID ではありません';
-
-  @override
-  String get chatAccept => '承認';
-
-  @override
-  String get chatReject => '拒否';
-
-  @override
-  String get chatCopied => 'クリップボードにコピーしました';
-
-  @override
-  String get chatNoIdentity => 'ID 情報が読み込まれていません';
-
-  @override
-  String get chatRemoveFriend => '友達を削除';
-
-  @override
-  String get chatRemoveFriendTitle => 'この友達を削除しますか？';
-
-  @override
-  String get chatRemoveFriendBody => '相手からメッセージを受信しなくなります。';
-
-  @override
-  String get chatRemove => '削除';
-
-  @override
-  String get chatNoGroups => 'まだグループがありません。作成するか、チャット ID で参加してください。';
-
-  @override
-  String get chatCreateGroup => 'グループを作成';
-
-  @override
-  String get chatJoinGroup => 'グループに参加';
-
-  @override
-  String get chatGroupName => 'グループ名';
-
-  @override
-  String get chatGroupNameRequired => 'グループ名を入力してください';
-
-  @override
-  String get chatAdvanced => '詳細設定';
-
-  @override
-  String get chatLegacyConference => '旧形式の会議（旧クライアント用）';
-
-  @override
-  String get chatLegacyConferenceHint => '非推奨：固定のチャット ID もモールスのメタデータもありません。';
-
-  @override
-  String get chatCreate => '作成';
-
-  @override
-  String get chatChatIdLabel => 'チャット ID（64 桁の 16 進数）';
-
-  @override
-  String get chatChatIdInvalid => 'チャット ID は 64 桁の 16 進数でなければなりません';
-
-  @override
-  String get chatPassword => 'パスワード（任意）';
-
-  @override
-  String get chatJoin => '参加';
-
-  @override
-  String get chatJoinRequested => '参加中 — メンバーが見つかるとグループが表示されます。';
-
-  @override
-  String get chatConferenceBadge => '会議';
-
-  @override
-  String get chatCopyChatId => 'チャット ID をコピー';
 
   @override
   String get learnLessonCardTitle => 'Koch 法のレッスン';
@@ -1028,9 +423,6 @@ class SJa extends S {
 
   @override
   String get learnLoading => '学習の進捗を読み込み中…';
-
-  @override
-  String get learnIdentityRequired => '練習を始めるには ID 情報を作成するか、ロックを解除してください。進捗は ID 情報と一緒に保存され、バックアップにも含まれます。';
 
   @override
   String get learnLoadFailed => '保存済みの進捗を読み取れませんでした。最初から始めます。元のファイルは .corrupt として保存されています。';
@@ -1956,33 +1348,6 @@ class SJa extends S {
   String get learnSeveritySevere => '大きい';
 
   @override
-  String get notificationOpen => '開く';
-
-  @override
-  String get notificationChannelMessages => 'メッセージ';
-
-  @override
-  String get notificationChannelMessagesDescription => '友達やグループからの新しいモールスメッセージ';
-
-  @override
-  String get notificationChannelFriendRequests => '友達リクエスト';
-
-  @override
-  String get notificationChannelFriendRequestsDescription => '誰かがあなたを友達に追加したがっています';
-
-  @override
-  String get notificationChannelGroupInvites => 'グループへの招待';
-
-  @override
-  String get notificationChannelGroupInvitesDescription => '友達からグループに招待されました';
-
-  @override
-  String get notificationNewMessage => '新しいメッセージ';
-
-  @override
-  String get notificationFriendRequestTitle => '新しい友達リクエスト';
-
-  @override
   String learnNewestCharIs(String char) {
     return 'このレッスンの新しい文字：$char';
   }
@@ -2088,51 +1453,6 @@ class SJa extends S {
   }
 
   @override
-  String get accountNewPasswordRequired => '新しいパスワードを入力してください';
-
-  @override
-  String get accountToxIdQrSemantics => 'Tox ID の QR コード';
-
-  @override
-  String get accountBackupSaveDialogTitle => 'MorseCQ のバックアップを保存';
-
-  @override
-  String get accountBackupShareSubject => 'MorseCQ の ID 情報のバックアップ';
-
-  @override
-  String get accountBackupChooseDialogTitle => 'MorseCQ のバックアップを選択';
-
-  @override
-  String notificationNewMessages(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '新しいメッセージ $count 件',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String notificationFriendRequestFrom(String name) {
-    return '$name からの友達リクエスト';
-  }
-
-  @override
-  String notificationFriendRequestBody(String name, String message) {
-    return '$name：$message';
-  }
-
-  @override
-  String notificationGroupInviteTitle(String group) {
-    return '$group への招待';
-  }
-
-  @override
-  String notificationGroupInviteBody(String name) {
-    return '$name から招待されました';
-  }
-
-  @override
   String desktopTrayShow(String app) {
     return '$app を表示';
   }
@@ -2154,80 +1474,10 @@ class SJa extends S {
   }
 
   @override
-  String desktopTrayTooltipUnread(String app, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '未読メッセージ $count 件',
-    );
-    return '$app — $_temp0';
-  }
-
-  @override
-  String desktopWindowTitleUnread(String badge, String app) {
-    return '($badge) $app';
-  }
-
-  @override
   String get listenStateOn => 'オン';
 
   @override
   String get listenStateOff => 'オフ';
-
-  @override
-  String chatBytesLeftCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '残り $count バイト',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatMemberCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'メンバー $count 人',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatFriendsCount(int count) {
-    return '友達（$count）';
-  }
-
-  @override
-  String chatFriendRequestsCount(int count) {
-    return '友達リクエスト（$count）';
-  }
-
-  @override
-  String chatGroupInvitesCount(int count) {
-    return 'グループへの招待（$count）';
-  }
-
-  @override
-  String chatMembersTitleCount(int count) {
-    return 'メンバー · $count';
-  }
-
-  @override
-  String chatInvitedByName(String name) {
-    return '$name からの招待';
-  }
-
-  @override
-  String chatMemberSelf(String name) {
-    return '$name（自分）';
-  }
-
-  @override
-  String chatSliderValue(String label, int value, String unit) {
-    return '$label：$value $unit';
-  }
 
   @override
   String referenceTelegraphCodes(String codes) {
@@ -2292,38 +1542,9 @@ class SJa extends S {
   String get appearanceDark => 'ダーク';
 
   @override
-  String get appearanceSubtitle => '5 つのスタイルにライト・ダークモードを用意';
-
-  @override
-  String get chatClearHistoryBody => 'このデバイスに保存された会話履歴を削除しますか？他のデバイスのコピーには影響しません。この操作は取り消せません。';
-
-  @override
-  String get chatLoadEarlier => '以前のメッセージを読み込む';
-
-  @override
-  String get chatHistoryLoadFailed => '以前のメッセージを読み込めませんでした。タップして再試行してください。';
-
-  @override
-  String get chatRetryHistory => '再試行';
-
-  @override
-  String chatNewMessages(int count) {
-    return '新しいメッセージ $count 件';
-  }
-
-  @override
   String learnShowAllChars(int count) {
     return '全 $count 文字を表示';
   }
-
-  @override
-  String get chatSelfMe => '自分';
-
-  @override
-  String get chatSelfLocalOnly => 'このデバイスにのみ保存';
-
-  @override
-  String get chatSelfContactSubtitle => '下書き、練習、メモ · 送信されません';
 
   @override
   String get learnShowFewerChars => '文字を折りたたむ';
@@ -2336,12 +1557,6 @@ class SJa extends S {
 
   @override
   String get learnLeaveDrillConfirm => '終了';
-
-  @override
-  String get chatScanQrPermissionDenied => 'QR コードを読み取るには MorseCQ にカメラへのアクセスが必要です。システム設定で許可してください。';
-
-  @override
-  String get chatScanQrCameraUnavailable => 'このデバイスではカメラを利用できません。';
 
   @override
   String get learnReplayAssistedNote => '再生し直しました：練習には数えますが、レッスンの解放や復習の更新は行いません。';
@@ -2452,11 +1667,6 @@ class SJa extends S {
 
   @override
   String get learnPlanTomorrow => '明日は新しいプランです。自由練習はいつでもできます。';
-
-  @override
-  String learnPlanNext(String step) {
-    return '次：$step';
-  }
 
   @override
   String learnPlanEarlier(int done, int total) {
@@ -2692,75 +1902,6 @@ class SJa extends S {
   String get learnQsoSummaryNote => 'QSOの結果は受信正答率とは別に扱い、レッスンは解放しません。';
 
   @override
-  String get messageStatusCancelled => 'キャンセル済み（未送信）';
-
-  @override
-  String get chatMessageLearnActions => 'メッセージの操作';
-
-  @override
-  String get chatPracticeMessage => 'このメッセージを受信練習';
-
-  @override
-  String get chatSaveAsMaterial => '練習素材として保存';
-
-  @override
-  String get chatSavedAsMaterial => '「マイ素材」に保存しました';
-
-  @override
-  String get chatSaveMaterialFailed => '素材を保存できませんでした。もう一度お試しください。';
-
-  @override
-  String get chatListenOnly => '聞き取り専用トレーニング';
-
-  @override
-  String get chatListenOnlyHidden => '聞き取り専用：再生して聴いてください';
-
-  @override
-  String chatClearHistoryMaterials(int count) {
-    return 'このチャットの$count件のメッセージが練習素材として保存されています。コピーは「学習 › マイ素材」で削除するまで残ります。';
-  }
-
-  @override
-  String get chatPracticeTitle => '受信練習';
-
-  @override
-  String chatPracticeUnsupported(String chars) {
-    return 'このメッセージにはモールスで打てない文字があります：$chars。練習では省きます。';
-  }
-
-  @override
-  String chatPracticeTrainableCount(int count) {
-    return '$count文字を練習できます。';
-  }
-
-  @override
-  String get chatPracticeNothingTrainable => 'このメッセージにはモールスで練習できる内容がありません。';
-
-  @override
-  String get chatPracticeConfirm => '残りを練習する';
-
-  @override
-  String get chatPracticeHint => 'ヒント';
-
-  @override
-  String chatPracticeHintShown(String symbols) {
-    return 'ヒント：$symbols …';
-  }
-
-  @override
-  String get chatPracticeAssisted => '補助あり：練習には数えますが、復習や速度アドバイスには使いません。';
-
-  @override
-  String chatPracticeErrors(int wrong, int missed, int extra) {
-    return '誤り$wrong · 抜け$missed · 余分$extra';
-  }
-
-  @override
-  String chatPracticeErrorsAction(String symbols) {
-    return '間違えた文字を練習：$symbols';
-  }
-
-  @override
   String get learnTipDahTooLongTitle => '長点が長すぎる';
 
   @override
@@ -2814,74 +1955,6 @@ class SJa extends S {
   String get learnRhythmZoomOut => '縮小';
 
   @override
-  String get chatSearchMessages => 'メッセージを検索';
-
-  @override
-  String get chatSearchHint => 'この会話を検索';
-
-  @override
-  String get chatSearchAnyone => '全員';
-
-  @override
-  String get chatSearchMe => '自分';
-
-  @override
-  String get chatSearchThem => '相手';
-
-  @override
-  String get chatSearchAnyDate => '期間指定なし';
-
-  @override
-  String chatSearchDateRange(String from, String to) {
-    return '$from – $to';
-  }
-
-  @override
-  String get chatSearchBookmarked => 'ブックマーク';
-
-  @override
-  String get chatSearchNoResults => '一致するメッセージはありません。';
-
-  @override
-  String get chatSearchMore => 'さらに読み込む';
-
-  @override
-  String get chatAddBookmark => 'ブックマーク';
-
-  @override
-  String get chatRemoveBookmark => 'ブックマークを解除';
-
-  @override
-  String get chatBookmarked => 'ブックマーク済み';
-
-  @override
-  String get chatBookmarkFailed => 'ブックマークを保存できませんでした。';
-
-  @override
-  String get chatRetrySend => '再送信';
-
-  @override
-  String get chatCancelSend => '送信を取り消す';
-
-  @override
-  String get chatRetryQueued => '再びキューに入れました。相手がオンラインになると送信します。';
-
-  @override
-  String get chatSendCancelled => '取り消しました。メッセージは送信されていません。';
-
-  @override
-  String get chatRetryNotNeeded => 'このメッセージはもう失敗状態ではありません。';
-
-  @override
-  String get chatCancelTooLate => '取り消せません。メッセージはすでにネットワークに渡され、届く可能性があります。';
-
-  @override
-  String get chatSendControlUnavailable => 'このメッセージでは利用できません。';
-
-  @override
-  String get chatSendControlFailed => 'うまくいきませんでした。メッセージの状態は変わっていません。もう一度お試しください。';
-
-  @override
   String get workbenchTitle => '録音ワークベンチ';
 
   @override
@@ -2897,7 +1970,7 @@ class SJa extends S {
   String get workbenchFormats => 'WAV（16ビットPCM、モノラル/ステレオ、8/16/44.1/48 kHz）、最大50 MB・20分。';
 
   @override
-  String get workbenchBackupNote => '録音はこの端末に残り、バックアップの書き出し時に含めると選んだ場合を除き、ID のバックアップには入りません。保存した選択範囲のタイトル・メモ・位置は常にバックアップされます。';
+  String get workbenchBackupNote => '録音はこの端末に保存されます。学習データの削除やアンインストール前にコピーを保管してください。保存済みの区間はタイトル、メモ、位置を保持します。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2909,9 +1982,6 @@ class SJa extends S {
 
   @override
   String get workbenchStereo => 'ステレオ';
-
-  @override
-  String get workbenchTruncated => 'ファイルが途中で終わっています。ある分だけ使います。';
 
   @override
   String get workbenchErrorNotWav => 'WAVファイルではありません。';
@@ -3139,15 +2209,12 @@ class SJa extends S {
   String get materialsUnfavorite => 'お気に入りから削除';
 
   @override
-  String get materialsEmpty => '素材はまだありません。テキスト・単語リスト・コールサインを追加するか、チャットのメッセージを保存してください。';
+  String get materialsEmpty => '教材はまだありません。テキスト、単語リスト、コールサインを追加できます。';
 
   @override
   String materialsItems(int count) {
     return '$count項目';
   }
-
-  @override
-  String get materialsFromChat => 'チャットから';
 
   @override
   String get materialsActions => '素材の操作';
@@ -3264,46 +2331,7 @@ class SJa extends S {
   String get materialsPracticeNothing => 'このモードで練習できる項目はありません。';
 
   @override
-  String get guestTryLearning => 'まず学習を試す';
-
-  @override
-  String get guestBanner => 'ゲスト学習：進捗はこの端末に保存されます。チャットには ID が必要です。';
-
-  @override
-  String get guestGetIdentity => 'ID を設定';
-
-  @override
-  String get guestIdentityTitle => 'ID が必要です';
-
-  @override
-  String get guestIdentityBody => 'Tox でのチャットには自分の ID が必要です。新規作成、バックアップから復元、またはこの端末の ID のロック解除を行ってください。新しい ID を作るとゲストの学習進捗は自動で移ります。';
-
-  @override
-  String get guestClearData => 'ゲストの学習データを消去';
-
-  @override
-  String get guestClearDataBody => 'この端末でゲストとして作った進捗・プラン・素材を削除します。ID には影響しません。';
-
-  @override
   String get guestClearConfirm => '消去';
-
-  @override
-  String get guestCleared => 'ゲストの学習データを消去しました。';
-
-  @override
-  String get guestClearFailed => 'ゲストデータを消去できませんでした。';
-
-  @override
-  String get guestMigrationFailed => 'ID は準備できましたが、ゲストの学習進捗はまだ移っていません。この端末に安全に残っています。';
-
-  @override
-  String get guestChoiceBody => 'ゲストの学習進捗もあります。現在は復元した ID の進捗を使用しており、統合はしていません。';
-
-  @override
-  String get guestChoiceKeep => '復元した方を使う';
-
-  @override
-  String get guestChoiceUseGuest => 'ゲストの進捗を使う';
 
   @override
   String get placementTitle => 'レベルチェック';
@@ -3365,431 +2393,12 @@ class SJa extends S {
   }
 
   @override
-  String get chatJumpToLatest => '最新のメッセージ';
-
-  @override
-  String get chatMessageGone => 'そのメッセージはこの会話にもうありません。';
-
-  @override
-  String get chatListenOnlyPreview => '新着メッセージ — 聴いて受信してください';
-
-  @override
-  String get chatSaveMaterialConfirm => '残りを保存';
-
-  @override
   String materialsImportConfirm(int count) {
     return '$count件の素材を読み込みますか？';
   }
 
   @override
   String get materialsExportTxt => 'テキストで書き出す（TXT）';
-
-  @override
-  String get accountBackupMediaTitle => '保存した録音を含めますか？';
-
-  @override
-  String accountBackupMediaBody(int count, String size) {
-    return '保存した録音 $count 件（$size MB）。タイトル・メモ・位置は常にバックアップに入ります。音声は含めた場合のみです。';
-  }
-
-  @override
-  String accountBackupMediaTooLarge(String size) {
-    return '保存した録音（$size MB）は大きすぎるためバックアップに入れられません。タイトル・メモ・位置のみ含めます。';
-  }
-
-  @override
-  String get accountBackupMediaInclude => '録音を含める';
-
-  @override
-  String get accountBackupMediaSkip => '録音なし';
-
-  @override
-  String get diagTitle => '接続の診断';
-
-  @override
-  String get diagOpenSubtitle => 'メッセージが待機している理由と再接続の方法';
-
-  @override
-  String get diagBannerDetails => '詳細';
-
-  @override
-  String get diagSummaryNoIdentity => 'ID が開かれていないため、確認できる接続はありません。';
-
-  @override
-  String get diagSummaryOnlinePeerOnline => 'Tox ネットワークに接続済みで、この連絡先もオンラインです。メッセージは直接届きます。';
-
-  @override
-  String get diagSummaryOnlinePeerOffline => '接続済みですが、この連絡先はオフラインです。メッセージはこの端末の送信待ちに残り、相手がオンラインになると送信されます。';
-
-  @override
-  String get diagSummaryOnline => 'Tox ネットワークに接続しています。';
-
-  @override
-  String get diagSummaryConnecting => 'Tox ネットワークに接続中です。起動直後やネットワーク変更後は 1 分ほどかかることがあります。';
-
-  @override
-  String get diagSummaryOffline => 'Tox ネットワークに接続していません。接続が戻るまで送受信はできません。';
-
-  @override
-  String get diagLocalLabel => 'この端末の接続';
-
-  @override
-  String diagSinceChanged(String time) {
-    return '$time から';
-  }
-
-  @override
-  String diagSinceFirst(String time) {
-    return '$time から観測';
-  }
-
-  @override
-  String diagSinceResumed(String time) {
-    return '$time にアプリへ戻ってから観測';
-  }
-
-  @override
-  String get diagLastOnlineLabel => '最後に確認した接続';
-
-  @override
-  String get diagLastOnlineNow => '現在接続中';
-
-  @override
-  String get diagLastOnlineNone => 'まだ接続を確認していません。';
-
-  @override
-  String get diagLastOnlineHint => 'この端末が自分の接続を最後に確認した時刻です。メッセージが相手に届いた時刻ではありません。';
-
-  @override
-  String get diagPeerLabel => '連絡先';
-
-  @override
-  String get diagUnknown => '不明';
-
-  @override
-  String get diagPeerUnknownHint => '連絡先の在席状態は、自分が接続しているときだけ確認できます。';
-
-  @override
-  String get diagPeerGroupHint => 'グループメンバーの在席状態はメンバー一覧に表示されます。';
-
-  @override
-  String get diagPendingLabel => '送信待ち';
-
-  @override
-  String get diagPendingNone => '待機中のメッセージはありません';
-
-  @override
-  String diagPendingCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 件のメッセージ',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String diagPendingOldest(String time) {
-    return '最も古いもの：$time';
-  }
-
-  @override
-  String get diagPendingUnknown => 'チャットが接続されるまで不明';
-
-  @override
-  String get diagPendingHint => '送信待ちのメッセージはこの端末に保存され、相手に届く状態になると自動で送信されます。診断で削除や再送をすることはありません。';
-
-  @override
-  String get diagReconnect => '再接続';
-
-  @override
-  String get diagReconnecting => '再接続中…';
-
-  @override
-  String diagReconnectFailed(String reason) {
-    return '再接続に失敗しました：$reason';
-  }
-
-  @override
-  String get diagReconnectNote => '再接続は接続の試行をやり直します。オンラインになるまで時間がかかることがあり、そのときはこのページが更新されます。';
-
-  @override
-  String get diagAboutTitle => 'MorseCQ の接続のしくみ';
-
-  @override
-  String get diagAboutBody => 'MorseCQ にはサーバーがありません。端末は Tox のピアツーピアネットワークで連絡先と直接通信するため、メッセージが届くには双方が同時にオンラインである必要があります。スマートフォンはバックグラウンドのアプリを一時停止するので、その間 MorseCQ は接続を保てず、戻ったときに再接続します。';
-
-  @override
-  String get diagDetailsTitle => '技術的な詳細';
-
-  @override
-  String get diagDetailIdentity => 'ID';
-
-  @override
-  String get diagDetailStatus => '状態';
-
-  @override
-  String get diagDetailObserved => '観測時刻';
-
-  @override
-  String get diagDetailQueued => 'キューの件数';
-
-  @override
-  String get diagDetailError => '最後のエラーコード';
-
-  @override
-  String get backupXTitle => '暗号化バックアップ';
-
-  @override
-  String get backupXIntro => '別の端末へ持っていく内容を選んでください。ファイル全体が、ここで設定するパスフレーズで暗号化されます。';
-
-  @override
-  String get backupXCategoryIdentity => 'ID と Tox プロファイル';
-
-  @override
-  String get backupXCategoryTraining => '練習の進捗と教材';
-
-  @override
-  String get backupXCategoryChat => 'チャット履歴（自分用メモを含む）';
-
-  @override
-  String get backupXCategoryMeta => '下書き・ピン留め・ブックマーク';
-
-  @override
-  String get backupXCategoryPrefs => 'アプリの設定';
-
-  @override
-  String get backupXPrefsHint => '再生・通知・外観・言語。ウィンドウ位置やキー割り当ては含みません。';
-
-  @override
-  String get backupXCategoryMedia => '保存した録音';
-
-  @override
-  String get backupXMediaHint => '既定ではオフ：録音は大きくなることがあります。含めない場合はタイトルとメモだけが移ります。';
-
-  @override
-  String get backupXCategoryPending => '未送信のメッセージ';
-
-  @override
-  String get backupXPendingHint => '確認用として戻るだけで、自動送信されることはありません。';
-
-  @override
-  String get backupXRequired => '必須';
-
-  @override
-  String backupXSizeLine(int count, String size) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 件',
-    );
-    return '$_temp0 · $size';
-  }
-
-  @override
-  String backupXSizeKb(String size) {
-    return '$size KB';
-  }
-
-  @override
-  String backupXSizeMb(String size) {
-    return '$size MB';
-  }
-
-  @override
-  String backupXMediaTooLarge(String size) {
-    return '大きすぎて含められません（$size）';
-  }
-
-  @override
-  String backupXInvitesNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'オフラインの友だち宛てに待機中のグループ招待 $count 件は引き継がれません。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get backupXIdentityPasswordNote => 'ID のパスワードはプロファイルに残ります。新しい端末ではバックアップのパスフレーズに加えて入力が必要です。';
-
-  @override
-  String backupXTotal(String size) {
-    return '合計 約 $size';
-  }
-
-  @override
-  String get backupXPassphrase => 'バックアップのパスフレーズ';
-
-  @override
-  String get backupXPassphraseConfirm => 'パスフレーズを再入力';
-
-  @override
-  String get backupXPassphraseHint => '8 文字以上。ID のパスワードとは別のもので、再発行はできません。';
-
-  @override
-  String get backupXPassphraseTooShort => '8 文字以上にしてください';
-
-  @override
-  String get backupXPassphraseMismatch => 'パスフレーズが一致しません';
-
-  @override
-  String get backupXExport => '暗号化バックアップを作成';
-
-  @override
-  String get backupXExporting => 'バックアップを作成中…';
-
-  @override
-  String get backupXMigrationNote => '端末を移行しますか？向こうで復元したら、この端末ではこの ID を使わないでください。同じ ID の端末が 2 台あると、同じメッセージが二重に送られることがあります。';
-
-  @override
-  String get backupXBusy => 'バックアップ中にデータが変化し続けました。もう一度お試しください。';
-
-  @override
-  String get backupXTooLarge => 'バックアップが大きすぎます。録音を除外してもう一度お試しください。';
-
-  @override
-  String get restoreXWrongPassphrase => 'パスフレーズが違うか、ファイルが改変・欠損しています。';
-
-  @override
-  String get restoreXUnsupported => 'このバックアップは新しいバージョンの MorseCQ で作成されています。';
-
-  @override
-  String get restoreXCheck => 'バックアップを開く';
-
-  @override
-  String get restoreXPreviewTitle => 'バックアップの内容';
-
-  @override
-  String restoreXCreated(String date) {
-    return '作成日時 $date';
-  }
-
-  @override
-  String get restoreXIncluded => '含まれるもの';
-
-  @override
-  String get restoreXExcluded => 'このバックアップにないもの';
-
-  @override
-  String restoreXPendingIncluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '未送信のメッセージ $count 件が確認用に戻ります。自動送信はされません。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXPendingExcluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '以前の端末にある未送信のメッセージ $count 件はこのバックアップに含まれていません。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXIdentityPassword => 'ID のパスワード';
-
-  @override
-  String get restoreXIdentityPasswordNote => 'このバックアップの ID には独自のパスワードがあります。あわせて入力してください。';
-
-  @override
-  String get restoreXConfirmTitle => 'この端末の ID を置き換えますか？';
-
-  @override
-  String get restoreXConfirmBody => 'この端末の ID とデータはバックアップで置き換えられます。ここで接続する前に、以前の端末でこの ID を使うのをやめてください。';
-
-  @override
-  String get restoreXConfirm => '置き換えて復元';
-
-  @override
-  String get restoreXReportTitle => '復元が完了しました';
-
-  @override
-  String get restoreXReportRestored => '復元したもの';
-
-  @override
-  String get restoreXReportNotIncluded => '復元しなかったもの';
-
-  @override
-  String get restoreXReportPrefsFailed => '設定を適用できませんでした。以前の設定のままです。';
-
-  @override
-  String restoreXReportPendingReview(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '未送信のメッセージ $count 件がチャットで確認を待っています。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportPendingNotResumed(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '以前の端末の未送信メッセージ $count 件は引き継がれていません。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportInvites(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '待機中のグループ招待 $count 件は再送されていません。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXReportStopOld => '以前の端末ではこの ID を使わないでください。';
-
-  @override
-  String get restoreXReportDone => '完了';
-
-  @override
-  String pendingReviewBanner(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '以前の端末の未送信メッセージ $count 件',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get pendingReviewTitle => '未送信のメッセージ';
-
-  @override
-  String get pendingReviewBody => '以前の端末で送信を待っていたメッセージです。MorseCQ が自動で送ることはありません。まだ必要なら打ち直してください。';
-
-  @override
-  String pendingReviewQueuedAt(String time) {
-    return '以前の端末で $time に送信待ち';
-  }
-
-  @override
-  String get pendingReviewDismiss => '破棄';
-
-  @override
-  String get pendingReviewDismissAll => 'すべて破棄';
-
-  @override
-  String get pendingReviewEmpty => '確認するものはもうありません。';
-
-  @override
-  String get backupXWizardInside => 'バックアップファイルは自分で決めたパスフレーズでまるごと暗号化され、ID の鍵と練習の進捗を含みます。ファイルとパスフレーズは、この端末以外の安全な場所に保管してください。';
-
-  @override
-  String get backupXMeSubtitle => 'ID・チャット・進捗をまとめた暗号化ファイル。保管用にも、別の端末への移行にも';
 
   @override
   String get conditionsTitle => '受信環境';
@@ -4030,9 +2639,6 @@ class SJa extends S {
   }
 
   @override
-  String get telegraphInterpretAction => '中文電碼として解釈';
-
-  @override
   String get telegraphInterpretTitle => '電碼の解釈';
 
   @override
@@ -4051,183 +2657,7 @@ class SJa extends S {
   String get telegraphAmbiguous => 'この番号を共有する字が複数あります';
 
   @override
-  String get groupPracticeTitle => 'グループ練習';
-
-  @override
-  String get groupPracticeIntro => '指導役はいつもどおりグループチャットで課題を打電します。各メンバーはここで課題メッセージを選び、自分の速度で聞き取ります。解答と得点はこの端末に残り、グループには何も送信されません。';
-
-  @override
-  String get groupPracticeNew => '新しいセッション';
-
-  @override
-  String get groupPracticeTitleField => 'タイトル';
-
-  @override
-  String get groupPracticeCreate => '作成';
-
-  @override
-  String get groupPracticeInstructor => '指導役';
-
-  @override
-  String get groupPracticeParticipant => '参加者';
-
-  @override
-  String get groupPracticeInstructorHint => '課題をグループチャットで打電し、ここでラウンドとして追加して完了にします。順番はチャットで伝えてください。';
-
-  @override
-  String get groupPracticeParticipantHint => '指導役の課題メッセージをラウンドとして追加し、ここで 1 つずつ聞き取ります。';
-
-  @override
-  String get groupPracticeLocalNote => 'この端末だけの記録です。ラウンド・役割・結果は他のメンバーと同期されず、受け取り損ねたメッセージが全員に届くとは限りません。';
-
-  @override
-  String get groupPracticeAddRound => '課題を追加';
-
-  @override
-  String get groupPracticeNoMessages => '最近の履歴に追加できるメッセージがありません。';
-
-  @override
-  String get groupPracticeNotConnected => 'チャットが接続されるまでグループの履歴は使えません。';
-
-  @override
-  String get groupPracticeRoundOpen => '未実施';
-
-  @override
-  String get groupPracticeRoundDone => '完了';
-
-  @override
-  String get groupPracticeRoundUnavailable => '利用不可';
-
-  @override
-  String get groupPracticeSourceGone => '課題メッセージは履歴にもうありません。';
-
-  @override
-  String get groupPracticeSourceLoading => 'メッセージを探しています…';
-
-  @override
-  String groupPracticeAttemptResult(int accuracy, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '聞き取り：$accuracy%（$count 回）',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get groupPracticeCopy => '聞き取る';
-
-  @override
-  String get groupPracticeRemoveRound => 'ラウンドを削除';
-
-  @override
-  String get groupPracticeSummary => 'まとめ';
-
-  @override
-  String groupPracticeRoundsDone(int done, int total) {
-    return '$total ラウンド中 $done 完了';
-  }
-
-  @override
-  String groupPracticeUnavailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '利用できないラウンド $count',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeAccuracy(int accuracy) {
-    return '聞き取り正答率：$accuracy%';
-  }
-
-  @override
-  String groupPracticeAssisted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '補助ありの挑戦 $count 回',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeShareHint(int done, int total, int accuracy) {
-    return '共有するなら、結果を自分でグループチャットに打電してください（例：$done/$total $accuracy%）。自動送信はされません。';
-  }
-
-  @override
-  String get groupPracticeComplete => 'セッションを終了';
-
-  @override
-  String get groupPracticeDeleteTitle => 'このセッションを削除しますか？';
-
-  @override
-  String get groupPracticeDeleteBody => 'ラウンドとこの端末の結果が削除されます。練習履歴とグループのメッセージは残ります。';
-
-  @override
   String get conditionsAudioFailed => 'この端末では音声を開始できませんでした。「クリア」で練習してください。';
-
-  @override
-  String get moderationBlock => 'ブロック';
-
-  @override
-  String moderationBlockTitle(String name) {
-    return '$name をブロックしますか？';
-  }
-
-  @override
-  String get moderationBlockFriendBody => '友達から削除され、その人との会話も削除されます。以後、その人のメッセージ、友達リクエスト、グループへの招待はこの端末に表示されません。相手には通知されません。';
-
-  @override
-  String get moderationBlockMemberBody => '以後、このグループでのその人のメッセージはこの端末に表示されません。相手には通知されません。Tox ではグループごとにメンバーの鍵が異なるため、このグループにのみ適用されます。';
-
-  @override
-  String get moderationBlocked => 'ブロックしました';
-
-  @override
-  String get moderationUnblock => 'ブロック解除';
-
-  @override
-  String get moderationUnblocked => 'ブロックを解除しました';
-
-  @override
-  String get moderationBlockedTitle => 'ブロック中のユーザー';
-
-  @override
-  String get moderationBlockedSubtitle => 'メッセージ・リクエスト・招待を非表示';
-
-  @override
-  String get moderationBlockedEmpty => 'ブロック中のユーザーはいません。';
-
-  @override
-  String get moderationBlockedNote => 'ブロックはこの端末で機能します。Tox には中央サーバーがないため、相手は連絡を試みることはできますが、その内容はここに表示されません。';
-
-  @override
-  String get termsGateTitle => 'コミュニティガイドライン';
-
-  @override
-  String get termsGateIntro => 'MorseCQ のチャットはサーバーを介さず、相手と直接つながります。始める前に、次のルールに同意してください。';
-
-  @override
-  String get termsGateRuleZero => '一切容認しません：嫌がらせ、ヘイト、脅迫、未成年者が関わる性的コンテンツ、スパム、違法なもの。';
-
-  @override
-  String get termsGateRuleContacts => 'メッセージを送れるのはあなたが承認した人だけです。グループには招待かグループ ID で参加します。';
-
-  @override
-  String get termsGateRuleBlock => '会話、グループのメンバー一覧、友達リクエスト、グループへの招待から誰でもブロックできます。';
-
-  @override
-  String get termsGateAgree => '同意して続ける';
-
-  @override
-  String get termsGateReadFull => '利用規約の全文を読む';
-
-  @override
-  String get termsGateSaveFailed => '回答を保存できませんでした。もう一度お試しください。';
 
   @override
   String get aboutPrivacyPolicy => 'プライバシーポリシー';
@@ -4240,9 +2670,6 @@ class SJa extends S {
 
   @override
   String get aboutLinkFailed => 'リンクを開けなかったため、コピーしました。';
-
-  @override
-  String get errorPeerBlocked => 'この人をブロックしています。先に「自分 → ブロック中のユーザー」で解除してください。';
 
   @override
   String get offlineClearData => '学習データを消去';
@@ -4258,6 +2685,9 @@ class SJa extends S {
 
   @override
   String get learnStorageUnavailable => 'この端末でトレーニングデータを開けませんでした。もう一度お試しください。';
+
+  @override
+  String get materialsImportedSource => '読み込み元';
 
   @override
   String get learnStartHereTitle => 'はじめての方へ：3分の最初のレッスンから';

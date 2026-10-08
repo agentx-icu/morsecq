@@ -1,25 +1,5 @@
-[简体中文](./README.zh-CN.md)
+# MorseCQ website
 
-# MorseCQ public site
+The Jekyll site contains the current account-free offline product page, privacy statement, terms and support pages in English and Simplified Chinese. Keep both language variants in sync with the application. Learning requires no account or policy-acceptance gate. External support links open only after user action.
 
-Source of <https://agentx-icu.github.io/morsecq/>: the privacy policy, terms of
-use and support page the app links to (Me → About) and App Store Connect
-requires. Jekyll builds this directory; `.github/workflows/pages.yml` deploys
-it on every push to `master` that touches `site/`.
-
-| Page | English | 简体中文 |
-|---|---|---|
-| Home | `/` (`index.md`) | `/zh-CN/` |
-| Privacy policy | `/privacy/` | `/zh-CN/privacy/` |
-| Terms of use | `/terms/` | `/zh-CN/terms/` |
-| Support | `/support/` | `/zh-CN/support/` |
-
-Rules:
-
-- The URLs are referenced from `apps/morsecq/lib/ui/account/account_routes.dart`
-  and `doc/release/APP_STORE.md`; change all three together.
-- Edit the English and the Chinese page together and bump `last_updated`.
-- A material change to the terms also bumps `kTermsVersion` in the app, so
-  everyone agrees to the new version before chatting again.
-- The support contact is GitHub issues (`support_url` in `_config.yml`); the
-  site and the app publish no e-mail address.
+Run `bundle exec jekyll serve --source site` with the repository's Pages tooling to preview. The Pages workflow publishes the site after its checks. Product screenshots come from `tool/screenshots/capture.sh`; design concepts are labeled separately.

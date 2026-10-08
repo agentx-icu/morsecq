@@ -126,7 +126,7 @@ final class SessionSummary {
   final Duration? active;
   final String? planStepId;
 
-  /// Local origin, e.g. `chat:<profile>/<conversation>/<message>`.
+  /// Local origin, e.g. `material:<profile>/<id>`.
   final String? sourceRef;
 
   /// Optional detail file (rhythm, audio); may be missing on load.

@@ -11,22 +11,21 @@ import 'dart:io';
 /// The rule table is data: edit [_rules], not the scanner.
 const _rules = <ImportRule>[
   ImportRule(
-    name: 'chat-sdk-isolation',
+    name: 'offline-app',
     description:
-        'Tim2Tox and the Tencent Cloud Chat SDK may only be imported '
-        'inside packages/morsecq_chat (façade: MorseChatService).',
+        'MorseCQ is offline and must not import chat or account transports.',
     forbiddenPrefixes: [
       'package:tim2tox_dart',
+      'package:morsecq_chat',
       'package:tencent_cloud_chat',
       'package:tencent_im',
     ],
-    allowedRoots: ['packages/morsecq_chat/'],
   ),
   ImportRule(
     name: 'pure-dart-engine',
     description:
-        'morse_core, morse_trainer, morse_dsp, radio_tools and '
-        'morsecq_chat_api are pure Dart and must not depend on Flutter.',
+        'morse_core, morse_trainer, morse_dsp and radio_tools '
+        'are pure Dart and must not depend on Flutter.',
     forbiddenPrefixes: ['package:flutter/', 'package:flutter_test/'],
     // The rule only applies inside these subtrees; everything else is exempt.
     appliesOnlyTo: [
@@ -34,7 +33,6 @@ const _rules = <ImportRule>[
       'packages/morse_trainer/',
       'packages/morse_dsp/',
       'packages/radio_tools/',
-      'packages/morsecq_chat_api/',
     ],
   ),
 ];

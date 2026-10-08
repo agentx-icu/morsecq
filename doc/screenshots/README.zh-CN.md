@@ -1,153 +1,24 @@
 [English](./README.md)
 
-# 截图
+# 离线产品截图
 
-由 `tool/screenshots/capture.sh`（见
-[tool/screenshots/README.zh-CN.md](../../tool/screenshots/README.zh-CN.md)）从真实
-应用截取：灌入演示数据、清爽现代风格、浅色主题、英文与简体中文。只有整个平台一次跑通才会发布，
-所以这里的帧永远是完整、一致的一套。UI 改动后重新生成，不要手工修改 PNG。
+真实无账号 Flutter 应用的十二个场景，每个平台均有英文与简体中文。六个平台共 144 张截图，包含第一课、完成后的抄报总结和引导发报。
 
-| 平台 | 状态 | 尺寸 |
-|---|---|---|
-| macOS | 2026-10-08 已截（教学流程） | 1280×800 @1x |
-| iOS（iPhone） | 2026-10-08 已截（教学流程，App Store 6.9 英寸） | 440×956 @3x（1320×2868 像素，RGB） |
-| iPad | 2026-10-08 已截（教学流程） | 1032×1376 @2x（2064×2752 像素，RGB） |
-| Android | 2026-10-08 已截（教学流程） | ≈412×915 @2x（823×1829 px） |
-| Linux | 2026-10-01 已截（CI，ubuntu-24.04 + Xvfb） | 1280×800 @1x |
-| Windows | 2026-10-01 已截（CI，windows-2022） | 1280×800 @1x |
+| 场景 | macos | ios | ipad | android | linux | windows |
+|---|---|---|---|---|---|---|
+| learn_home | [PNG](macos/zh/learn_home.png) | [PNG](ios/zh/learn_home.png) | [PNG](ipad/zh/learn_home.png) | [PNG](android/zh/learn_home.png) | [PNG](linux/zh/learn_home.png) | [PNG](windows/zh/learn_home.png) |
+| stats | [PNG](macos/zh/stats.png) | [PNG](ios/zh/stats.png) | [PNG](ipad/zh/stats.png) | [PNG](android/zh/stats.png) | [PNG](linux/zh/stats.png) | [PNG](windows/zh/stats.png) |
+| training_settings | [PNG](macos/zh/training_settings.png) | [PNG](ios/zh/training_settings.png) | [PNG](ipad/zh/training_settings.png) | [PNG](android/zh/training_settings.png) | [PNG](linux/zh/training_settings.png) | [PNG](windows/zh/training_settings.png) |
+| receive_drill | [PNG](macos/zh/receive_drill.png) | [PNG](ios/zh/receive_drill.png) | [PNG](ipad/zh/receive_drill.png) | [PNG](android/zh/receive_drill.png) | [PNG](linux/zh/receive_drill.png) | [PNG](windows/zh/receive_drill.png) |
+| send_practice | [PNG](macos/zh/send_practice.png) | [PNG](ios/zh/send_practice.png) | [PNG](ipad/zh/send_practice.png) | [PNG](android/zh/send_practice.png) | [PNG](linux/zh/send_practice.png) | [PNG](windows/zh/send_practice.png) |
+| first_lesson | [PNG](macos/zh/first_lesson.png) | [PNG](ios/zh/first_lesson.png) | [PNG](ipad/zh/first_lesson.png) | [PNG](android/zh/first_lesson.png) | [PNG](linux/zh/first_lesson.png) | [PNG](windows/zh/first_lesson.png) |
+| receive_summary | [PNG](macos/zh/receive_summary.png) | [PNG](ios/zh/receive_summary.png) | [PNG](ipad/zh/receive_summary.png) | [PNG](android/zh/receive_summary.png) | [PNG](linux/zh/receive_summary.png) | [PNG](windows/zh/receive_summary.png) |
+| guided_send | [PNG](macos/zh/guided_send.png) | [PNG](ios/zh/guided_send.png) | [PNG](ipad/zh/guided_send.png) | [PNG](android/zh/guided_send.png) | [PNG](linux/zh/guided_send.png) | [PNG](windows/zh/guided_send.png) |
+| reference | [PNG](macos/zh/reference.png) | [PNG](ios/zh/reference.png) | [PNG](ipad/zh/reference.png) | [PNG](android/zh/reference.png) | [PNG](linux/zh/reference.png) | [PNG](windows/zh/reference.png) |
+| translator | [PNG](macos/zh/translator.png) | [PNG](ios/zh/translator.png) | [PNG](ipad/zh/translator.png) | [PNG](android/zh/translator.png) | [PNG](linux/zh/translator.png) | [PNG](windows/zh/translator.png) |
+| listen | [PNG](macos/zh/listen.png) | [PNG](ios/zh/listen.png) | [PNG](ipad/zh/listen.png) | [PNG](android/zh/listen.png) | [PNG](linux/zh/listen.png) | [PNG](windows/zh/listen.png) |
+| me | [PNG](macos/zh/me.png) | [PNG](ios/zh/me.png) | [PNG](ipad/zh/me.png) | [PNG](android/zh/me.png) | [PNG](linux/zh/me.png) | [PNG](windows/zh/me.png) |
 
-Linux、Windows 截图来自成功的 [E2E 运行 36839181762](https://github.com/agentx-icu/morsecq/actions/runs/36839181762)，
-UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --from`
-执行相同发布校验后导入；本机目标已为教学 worktree 重新生成，实际日期见上表。
+桌面：1280×800；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 macOS/iPhone/iPad/Android 捕获及 Linux/Windows E2E 产物都从保留上游 `5631376` 教学功能的离线应用重新生成。Linux/Windows 截图来源：[教学整合 E2E 37733546823](https://github.com/agentx-icu/morsecq/actions/runs/37733546823)；最新 CI：[PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
 
-## macOS
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 欢迎（首次启动） | ![](macos/en/welcome.png) | ![](macos/zh/welcome.png) |
-| 创建身份 | ![](macos/en/create_identity.png) | ![](macos/zh/create_identity.png) |
-| 备份向导 | ![](macos/en/backup_wizard.png) | ![](macos/zh/backup_wizard.png) |
-| 学习首页 | ![](macos/en/learn_home.png) | ![](macos/zh/learn_home.png) |
-| 统计 | ![](macos/en/stats.png) | ![](macos/zh/stats.png) |
-| 训练设置 | ![](macos/en/training_settings.png) | ![](macos/zh/training_settings.png) |
-| 听抄练习 | ![](macos/en/receive_drill.png) | ![](macos/zh/receive_drill.png) |
-| 发报练习 | ![](macos/en/send_practice.png) | ![](macos/zh/send_practice.png) |
-| 入门试听 | ![](macos/en/first_lesson.png) | ![](macos/zh/first_lesson.png) |
-| 听抄小结 | ![](macos/en/receive_summary.png) | ![](macos/zh/receive_summary.png) |
-| 发报带练 | ![](macos/en/guided_send.png) | ![](macos/zh/guided_send.png) |
-| 会话列表 | ![](macos/en/chat_list.png) | ![](macos/zh/chat_list.png) |
-| 会话 | ![](macos/en/conversation.png) | ![](macos/zh/conversation.png) |
-| 联系人 | ![](macos/en/contacts.png) | ![](macos/zh/contacts.png) |
-| 群组 | ![](macos/en/groups.png) | ![](macos/zh/groups.png) |
-| 群会话 | ![](macos/en/group_conversation.png) | ![](macos/zh/group_conversation.png) |
-| 手册 | ![](macos/en/reference.png) | ![](macos/zh/reference.png) |
-| 翻译器 | ![](macos/en/translator.png) | ![](macos/zh/translator.png) |
-| 收听 | ![](macos/en/listen.png) | ![](macos/zh/listen.png) |
-| 我 | ![](macos/en/me.png) | ![](macos/zh/me.png) |
-
-## iOS（iPhone 17 Pro Max 模拟器）
-
-离线的 App Store 版本（`MORSECQ_SHOT_VARIANT=offline`）：没有聊天场景。
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 学习首页 | ![](ios/en/learn_home.png) | ![](ios/zh/learn_home.png) |
-| 统计 | ![](ios/en/stats.png) | ![](ios/zh/stats.png) |
-| 训练设置 | ![](ios/en/training_settings.png) | ![](ios/zh/training_settings.png) |
-| 听抄练习 | ![](ios/en/receive_drill.png) | ![](ios/zh/receive_drill.png) |
-| 发报练习 | ![](ios/en/send_practice.png) | ![](ios/zh/send_practice.png) |
-| 入门试听 | ![](ios/en/first_lesson.png) | ![](ios/zh/first_lesson.png) |
-| 听抄小结 | ![](ios/en/receive_summary.png) | ![](ios/zh/receive_summary.png) |
-| 发报带练 | ![](ios/en/guided_send.png) | ![](ios/zh/guided_send.png) |
-| 手册 | ![](ios/en/reference.png) | ![](ios/zh/reference.png) |
-| 翻译器 | ![](ios/en/translator.png) | ![](ios/zh/translator.png) |
-| 收听 | ![](ios/en/listen.png) | ![](ios/zh/listen.png) |
-| 我 | ![](ios/en/me.png) | ![](ios/zh/me.png) |
-
-## iPad（iPad Pro 13 英寸模拟器）
-
-离线的 App Store 版本（`MORSECQ_SHOT_VARIANT=offline`）：没有聊天场景。
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 学习首页 | ![](ipad/en/learn_home.png) | ![](ipad/zh/learn_home.png) |
-| 统计 | ![](ipad/en/stats.png) | ![](ipad/zh/stats.png) |
-| 训练设置 | ![](ipad/en/training_settings.png) | ![](ipad/zh/training_settings.png) |
-| 听抄练习 | ![](ipad/en/receive_drill.png) | ![](ipad/zh/receive_drill.png) |
-| 发报练习 | ![](ipad/en/send_practice.png) | ![](ipad/zh/send_practice.png) |
-| 入门试听 | ![](ipad/en/first_lesson.png) | ![](ipad/zh/first_lesson.png) |
-| 听抄小结 | ![](ipad/en/receive_summary.png) | ![](ipad/zh/receive_summary.png) |
-| 发报带练 | ![](ipad/en/guided_send.png) | ![](ipad/zh/guided_send.png) |
-| 手册 | ![](ipad/en/reference.png) | ![](ipad/zh/reference.png) |
-| 翻译器 | ![](ipad/en/translator.png) | ![](ipad/zh/translator.png) |
-| 收听 | ![](ipad/en/listen.png) | ![](ipad/zh/listen.png) |
-| 我 | ![](ipad/en/me.png) | ![](ipad/zh/me.png) |
-
-## Android（模拟器，API 36）
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 欢迎（首次启动） | ![](android/en/welcome.png) | ![](android/zh/welcome.png) |
-| 创建身份 | ![](android/en/create_identity.png) | ![](android/zh/create_identity.png) |
-| 备份向导 | ![](android/en/backup_wizard.png) | ![](android/zh/backup_wizard.png) |
-| 学习首页 | ![](android/en/learn_home.png) | ![](android/zh/learn_home.png) |
-| 统计 | ![](android/en/stats.png) | ![](android/zh/stats.png) |
-| 训练设置 | ![](android/en/training_settings.png) | ![](android/zh/training_settings.png) |
-| 听抄练习 | ![](android/en/receive_drill.png) | ![](android/zh/receive_drill.png) |
-| 发报练习 | ![](android/en/send_practice.png) | ![](android/zh/send_practice.png) |
-| 入门试听 | ![](android/en/first_lesson.png) | ![](android/zh/first_lesson.png) |
-| 听抄小结 | ![](android/en/receive_summary.png) | ![](android/zh/receive_summary.png) |
-| 发报带练 | ![](android/en/guided_send.png) | ![](android/zh/guided_send.png) |
-| 会话列表 | ![](android/en/chat_list.png) | ![](android/zh/chat_list.png) |
-| 会话 | ![](android/en/conversation.png) | ![](android/zh/conversation.png) |
-| 联系人 | ![](android/en/contacts.png) | ![](android/zh/contacts.png) |
-| 群组 | ![](android/en/groups.png) | ![](android/zh/groups.png) |
-| 群会话 | ![](android/en/group_conversation.png) | ![](android/zh/group_conversation.png) |
-| 手册 | ![](android/en/reference.png) | ![](android/zh/reference.png) |
-| 翻译器 | ![](android/en/translator.png) | ![](android/zh/translator.png) |
-| 收听 | ![](android/en/listen.png) | ![](android/zh/listen.png) |
-| 我 | ![](android/en/me.png) | ![](android/zh/me.png) |
-
-## Linux（CI：ubuntu-24.04，Xvfb）
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 欢迎（首次启动） | ![](linux/en/welcome.png) | ![](linux/zh/welcome.png) |
-| 创建身份 | ![](linux/en/create_identity.png) | ![](linux/zh/create_identity.png) |
-| 备份向导 | ![](linux/en/backup_wizard.png) | ![](linux/zh/backup_wizard.png) |
-| 学习首页 | ![](linux/en/learn_home.png) | ![](linux/zh/learn_home.png) |
-| 统计 | ![](linux/en/stats.png) | ![](linux/zh/stats.png) |
-| 训练设置 | ![](linux/en/training_settings.png) | ![](linux/zh/training_settings.png) |
-| 听抄练习 | ![](linux/en/receive_drill.png) | ![](linux/zh/receive_drill.png) |
-| 发报练习 | ![](linux/en/send_practice.png) | ![](linux/zh/send_practice.png) |
-| 会话列表 | ![](linux/en/chat_list.png) | ![](linux/zh/chat_list.png) |
-| 会话 | ![](linux/en/conversation.png) | ![](linux/zh/conversation.png) |
-| 联系人 | ![](linux/en/contacts.png) | ![](linux/zh/contacts.png) |
-| 群组 | ![](linux/en/groups.png) | ![](linux/zh/groups.png) |
-| 群会话 | ![](linux/en/group_conversation.png) | ![](linux/zh/group_conversation.png) |
-| 手册 | ![](linux/en/reference.png) | ![](linux/zh/reference.png) |
-| 翻译器 | ![](linux/en/translator.png) | ![](linux/zh/translator.png) |
-| 收听 | ![](linux/en/listen.png) | ![](linux/zh/listen.png) |
-| 我 | ![](linux/en/me.png) | ![](linux/zh/me.png) |
-
-## Windows（CI：windows-2022）
-
-| 场景 | English | 简体中文 |
-|---|---|---|
-| 欢迎（首次启动） | ![](windows/en/welcome.png) | ![](windows/zh/welcome.png) |
-| 创建身份 | ![](windows/en/create_identity.png) | ![](windows/zh/create_identity.png) |
-| 备份向导 | ![](windows/en/backup_wizard.png) | ![](windows/zh/backup_wizard.png) |
-| 学习首页 | ![](windows/en/learn_home.png) | ![](windows/zh/learn_home.png) |
-| 统计 | ![](windows/en/stats.png) | ![](windows/zh/stats.png) |
-| 训练设置 | ![](windows/en/training_settings.png) | ![](windows/zh/training_settings.png) |
-| 听抄练习 | ![](windows/en/receive_drill.png) | ![](windows/zh/receive_drill.png) |
-| 发报练习 | ![](windows/en/send_practice.png) | ![](windows/zh/send_practice.png) |
-| 会话列表 | ![](windows/en/chat_list.png) | ![](windows/zh/chat_list.png) |
-| 会话 | ![](windows/en/conversation.png) | ![](windows/zh/conversation.png) |
-| 联系人 | ![](windows/en/contacts.png) | ![](windows/zh/contacts.png) |
-| 群组 | ![](windows/en/groups.png) | ![](windows/zh/groups.png) |
-| 群会话 | ![](windows/en/group_conversation.png) | ![](windows/zh/group_conversation.png) |
-| 手册 | ![](windows/en/reference.png) | ![](windows/zh/reference.png) |
-| 翻译器 | ![](windows/en/translator.png) | ![](windows/zh/translator.png) |
-| 收听 | ![](windows/en/listen.png) | ![](windows/zh/listen.png) |
-| 我 | ![](windows/en/me.png) | ![](windows/zh/me.png) |
+[截图流程](../../tool/screenshots/README.zh-CN.md) · [产品设计](../designs/product-2026-10-08/README.zh-CN.md)

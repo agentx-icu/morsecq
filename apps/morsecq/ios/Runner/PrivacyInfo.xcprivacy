@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- MorseCQ app privacy manifest (doc/release/APP_STORE.md, "App privacy").
-     No tracking and no data collected by the developer: there is no server;
-     profiles, history and progress stay in the app container, and chat goes
-     peer to peer over Tox. Plugins and tim2tox_ffi.framework ship their own
-     manifests. Required-reason APIs used by the app's own code:
-     - UserDefaults (CA92.1): app settings via shared_preferences.
-     - File timestamps (C617.1): size / modification time of profile, backup
-       and history files inside the app container. -->
+<!-- MorseCQ stores learning data locally and collects no personal data. Plugins declare their required-reason APIs separately. -->
 <plist version="1.0">
 <dict>
 	<key>NSPrivacyTracking</key>

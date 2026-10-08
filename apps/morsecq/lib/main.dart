@@ -9,32 +9,25 @@ import 'package:provider/provider.dart';
 import 'desktop/desktop_platform.dart';
 import 'desktop/desktop_shell_controller.dart';
 import 'desktop/init_desktop_shell.dart';
-import 'di/app_features.dart';
 import 'di/app_scope.dart';
-import 'di/app_services.dart';
 import 'di/app_settings.dart';
-import 'di/backend_factory.dart';
 import 'di/desktop_store_adapter.dart';
 import 'i18n/current_strings.dart';
 import 'i18n/key_value_store.dart';
 import 'i18n/l10n_extension.dart';
 import 'i18n/locale_controller.dart';
 import 'lifecycle/background_task_api.dart';
-import 'notifications/app_badge_plus_api.dart';
-import 'notifications/flutter_local_notifications_api.dart';
-import 'startup/startup_gate.dart';
-import 'ui/account/account_routes.dart';
-import 'ui/account/backup_file_gateway.dart';
+import 'ui/settings/settings_routes.dart';
 import 'ui/learn/settings/training_settings_entry.dart';
 import 'ui/shell/app_shell.dart';
 import 'ui/theme.dart';
-import 'training/guest_profile.dart';
+import 'training/local_learning_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // One settings file for app-wide choices (language, theme, playback,
-  // notifications and window bounds). Learning data lives per identity.
+  // and window bounds). Learning data stays in the local profile.
   final KeyValueStore settingsStore = await _openSettingsStore();
 
   // Desktop only: window bounds, close-to-tray, tray menu. No-op elsewhere.
@@ -51,17 +44,10 @@ Future<void> main() async {
     );
   }
 
-  final backend = await resolveBackendFactory(AppFeatures.fromEnvironment);
-
   runApp(
     MorsecqApp(
-      backend: backend,
       localeStore: settingsStore,
       desktopShell: desktopShell,
-      notifications: NotificationApis(
-        notifications: FlutterLocalNotificationsApi(),
-        badge: AppBadgePlusApi(),
-      ),
       backgroundTasks: BackgroundTaskApi.forPlatform(),
     ),
   );
@@ -82,32 +68,18 @@ Future<KeyValueStore> _openSettingsStore() async {
   }
 }
 
-/// Root widget: services from [backend] via [AppScope], then Material 3 with
-/// light/dark following the system setting, and the [StartupGate] guarding
-/// the responsive [AppShell].
+/// Root widget: local services from [AppScope], Material 3 appearance,
+/// and the responsive [AppShell] opening learning directly.
 class MorsecqApp extends StatelessWidget {
   const MorsecqApp({
     super.key,
-    required this.backend,
-    this.backupFiles,
-    this.guestStore,
+    this.learningStore,
     this.localeStore,
     this.desktopShell,
-    this.notifications,
     this.backgroundTasks,
-    this.features = AppFeatures.fromEnvironment,
   });
 
-  final BackendFactory backend;
-
-  /// Build-time features (`MORSECQ_CHAT`); tests pass either variant.
-  final AppFeatures features;
-
-  /// Test hook: replaces the native save/pick dialogs.
-  final BackupFileGateway? backupFiles;
-
-  /// Guest learning storage; defaults to app support storage.
-  final GuestStore? guestStore;
+  final LocalLearningStore? learningStore;
 
   /// Persistence for app preferences; memory when null.
   final KeyValueStore? localeStore;
@@ -115,23 +87,16 @@ class MorsecqApp extends StatelessWidget {
   /// Initialised desktop shell (window + tray); null on mobile and in tests.
   final DesktopShellController? desktopShell;
 
-  /// Real notification plugins; null disables OS notifications (tests).
-  final NotificationApis? notifications;
-
   /// OS background-task bridge (iOS); null in tests.
   final BackgroundTaskApi? backgroundTasks;
 
   @override
   Widget build(BuildContext context) {
     return AppScope(
-      factory: backend,
-      backupFiles: backupFiles,
-      guestStore: guestStore,
+      learningStore: learningStore,
       localeStore: localeStore,
       desktopShell: desktopShell,
-      notificationApis: notifications,
       backgroundTasks: backgroundTasks,
-      features: features,
       child: Builder(
         builder: (context) {
           final appearance = context.watch<AppSettings>();
@@ -152,7 +117,7 @@ class MorsecqApp extends StatelessWidget {
             darkTheme: MorsecqTheme.dark(style: appearance.style),
             themeMode: appearance.themeMode,
             themeAnimationDuration: Duration.zero,
-            home: const StartupGate(child: AppShell()),
+            home: const AppShell(),
             routes: {
               kTrainingSettingsRoute: (_) => const TrainingSettingsEntry(),
             },

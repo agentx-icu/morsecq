@@ -59,7 +59,7 @@ void main() {
       testWidgets(
         'complete preview is visible before choices at $size/$scale',
         (tester) async {
-          final settings = AppSettings(backendLabel: 'test');
+          final settings = AppSettings();
           addTearDown(settings.dispose);
           tester.platformDispatcher.textScaleFactorTestValue = scale;
           addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -84,7 +84,7 @@ void main() {
 
   testWidgets('preview and brightness are staged until Apply', (tester) async {
     final store = InMemoryKeyValueStore();
-    final settings = AppSettings(backendLabel: 'test', store: store);
+    final settings = AppSettings(store: store);
     addTearDown(settings.dispose);
     await pumpAppearance(tester, settings);
     await _chooseStyle(tester, UiStyle.radio);
@@ -110,7 +110,7 @@ void main() {
   testWidgets('Restore defaults is staged and write failure is visible', (
     tester,
   ) async {
-    final settings = AppSettings(backendLabel: 'test', store: FailingStore());
+    final settings = AppSettings(store: FailingStore());
     addTearDown(settings.dispose);
     await pumpAppearance(tester, settings);
     await _chooseStyle(tester, UiStyle.cartoon);
@@ -138,7 +138,7 @@ void main() {
     tester,
   ) async {
     final store = InMemoryKeyValueStore();
-    final settings = AppSettings(backendLabel: 'test', store: store);
+    final settings = AppSettings(store: store);
     addTearDown(settings.dispose);
     await settings.applyAppearance(
       style: UiStyle.classic,
@@ -155,7 +155,7 @@ void main() {
     expect(settings.themeMode, ThemeMode.dark);
     await tester.tap(find.byKey(const ValueKey('appearance-apply')));
     await tester.pumpAndSettle();
-    final reopened = AppSettings(backendLabel: 'test', store: store);
+    final reopened = AppSettings(store: store);
     addTearDown(reopened.dispose);
     expect(reopened.style, UiStyle.modern);
     expect(reopened.themeMode, ThemeMode.system);
@@ -164,7 +164,7 @@ void main() {
   testWidgets(
     'discarding preview and applying later preserve underlying draft',
     (tester) async {
-      final settings = AppSettings(backendLabel: 'test');
+      final settings = AppSettings();
       addTearDown(settings.dispose);
       await pumpAppearance(tester, settings, startOnHome: true);
       await tester.enterText(find.byType(TextField), 'CQ CQ unfinished draft');
@@ -192,7 +192,7 @@ void main() {
     testWidgets('chooser remains usable at $size with large text', (
       tester,
     ) async {
-      final settings = AppSettings(backendLabel: 'test');
+      final settings = AppSettings();
       addTearDown(settings.dispose);
       tester.platformDispatcher.textScaleFactorTestValue = 1.8;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);

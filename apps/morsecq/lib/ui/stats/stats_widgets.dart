@@ -221,7 +221,7 @@ class OverviewTiles extends StatelessWidget {
 }
 
 /// Compact card the Learn home can embed: three numbers and an optional
-/// "View statistics" action. Renders sensibly for a fresh identity too.
+/// "View statistics" action. Renders sensibly for a new learning profile too.
 class StatsSummaryCard extends StatelessWidget {
   const StatsSummaryCard({
     super.key,
@@ -332,7 +332,7 @@ class _SummaryStat extends StatelessWidget {
   }
 }
 
-/// Shown for a fresh identity with no sessions in history.
+/// Shown for a new learning profile with no sessions in history.
 class StatsEmptyState extends StatelessWidget {
   const StatsEmptyState({super.key});
 

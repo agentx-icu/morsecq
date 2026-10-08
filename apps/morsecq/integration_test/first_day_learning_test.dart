@@ -5,18 +5,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:morsecq/di/app_features.dart';
-import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/main.dart';
-import 'package:morsecq/training/guest_profile.dart';
 import 'package:morsecq/training/training_controller.dart';
+import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
-import 'package:morsecq/ui/account/backup_file_gateway.dart';
 
 import 'support/pedagogy_walk.dart';
 import 'support/shot_harness.dart';
@@ -35,10 +32,7 @@ void main() {
         await tester.pumpWidget(
           MorsecqApp(
             key: ValueKey('first-day-$locale'),
-            features: const AppFeatures(chat: false),
-            backend: FakeBackendFactory(),
-            backupFiles: FakeBackupFileGateway(),
-            guestStore: GuestStore(root: () async => scratch.path),
+            learningStore: LocalLearningStore(root: () async => scratch.path),
             localeStore: InMemoryKeyValueStore({
               LocaleController.storageKey: locale,
             }),

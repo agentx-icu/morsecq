@@ -1,18 +1,7 @@
-# MorseCQ (app)
+# MorseCQ application
 
-The Flutter application shell for MorseCQ. Feature logic lives in the
-workspace packages (`packages/morse_core`, `packages/morse_trainer`,
-`packages/morse_io`, `packages/morsecq_chat`); this app wires them into a
-responsive Material 3 UI.
+The account-free offline Flutter app opens learning immediately. It wires the morse_core, morse_dsp, morse_io, morse_trainer and radio_tools packages into Learn / Reference / Me, with device-local preferences, learning data. No chat, account or transport package is required.
 
-Run from the repository root:
+From the workspace root, run `dart pub get --enforce-lockfile`, `flutter analyze apps/morsecq` and `(cd apps/morsecq && flutter test --no-pub)`. Start with `(cd apps/morsecq && flutter run -d macos)` or a supported device.
 
-```bash
-export PATH=/home/user/flutter/bin:$PATH
-dart pub get                      # workspace-wide resolution
-flutter analyze apps/morsecq
-(cd apps/morsecq && flutter test)
-(cd apps/morsecq && flutter run -d macos)   # or linux / windows / a device
-```
-
-See the root `README.md` and `CLAUDE.md` for layout and conventions.
+See the root [README](../../README.md), [offline architecture](../../doc/architecture/OFFLINE_LEARNING.md) and [build guide](../../doc/operations/BUILD_AND_DEPLOY.md).

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../i18n/l10n_extension.dart';
-import '../account/account_routes.dart';
-import '../account/account_widgets.dart';
+import '../settings/settings_routes.dart';
+import '../common/settings_body.dart';
 
 /// [url] (one of the `kSiteUrl` pages) in the reader's language: the site
 /// has English and Simplified Chinese pages; every other language reads the
@@ -36,8 +36,7 @@ Future<void> openSiteLink(BuildContext context, String url) async {
 }
 
 /// Privacy policy, terms of use and support: in the Me page's About section
-/// and on the guest Me page, so they are reachable with or without an
-/// identity (App Review 5.1.1: an easily accessible privacy policy).
+/// and on the Me page (App Review 5.1.1: an accessible privacy policy).
 class SiteLinksSection extends StatelessWidget {
   const SiteLinksSection({super.key});
 

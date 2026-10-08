@@ -38,19 +38,13 @@ void main() {
     expect(h.tray.menu[1].label, 'Sound on');
     expect(h.tray.menu.last.label, 'Quit MorseCQ');
 
-    h.controller.setUnreadCount(1);
-    await h.controller.flushTrayUpdates();
-    expect(h.tray.tooltip, 'MorseCQ — 1 unread message');
-    h.controller.setUnreadCount(3);
-    await h.controller.flushTrayUpdates();
-    expect(h.tray.tooltip, 'MorseCQ — 3 unread messages');
-    expect(h.window.title, '(3) MorseCQ');
+    expect(h.tray.tooltip, 'MorseCQ');
+    expect(h.window.title, 'MorseCQ');
   });
 
   test('updateStrings relabels the menu, tooltip and title', () async {
     final h = _shell(platform: TargetPlatform.macOS, strings: en);
     await h.controller.initialize();
-    h.controller.setUnreadCount(2);
     await h.controller.flushTrayUpdates();
     var notified = 0;
     h.controller.addListener(() => notified++);
@@ -64,12 +58,10 @@ void main() {
     expect(h.tray.menu.first.label, '隐藏 MorseCQ');
     expect(h.tray.menu[1].label, zh.desktopTraySoundOn);
     expect(h.tray.menu.last.label, '退出 MorseCQ');
-    expect(h.tray.tooltip, zh.desktopTrayTooltipUnread('MorseCQ', 2));
-    expect(h.tray.tooltip, 'MorseCQ — 2 条未读');
-    expect(h.window.title, zh.desktopWindowTitleUnread('2', 'MorseCQ'));
+    expect(h.tray.tooltip, 'MorseCQ');
     // The product name itself is never translated.
     expect(h.window.title, contains('MorseCQ'));
-    expect(h.tray.title, '2');
+    expect(h.tray.title, '');
 
     // Visibility relabelling keeps the new language.
     await h.controller.hideToTray();
@@ -98,11 +90,10 @@ void main() {
     final h = _shell(platform: TargetPlatform.android, strings: en);
     h.controller.updateStrings(zh);
     await h.controller.initialize();
-    h.controller.setUnreadCount(1);
     await h.controller.flushTrayUpdates();
 
     expect(h.controller.trayMenu.first.label, zh.desktopTrayShow('MorseCQ'));
-    expect(h.controller.windowTitle, '(1) MorseCQ');
+    expect(h.controller.windowTitle, 'MorseCQ');
     expect(h.window.calls, isEmpty);
     expect(h.tray.calls, isEmpty);
   });

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/l10n/generated/s.dart';
-import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq/ui/pages/offline_me_page.dart';
 
-import '../account/test_app.dart';
+import '../support/test_app.dart';
 
 void main() {
   testWidgets('Me opens an appearance chooser with five styles', (
     tester,
   ) async {
-    await pumpApp(tester, identity: seededIdentityService());
+    await pumpApp(tester);
     final s = lookupS(const Locale('en'));
     await tester.tap(
       find.descendant(
         of: find.byType(NavigationBar),
-        matching: find.text(MePage.title(s)),
+        matching: find.text(OfflineMePage.title(s)),
       ),
     );
     await settle(tester);

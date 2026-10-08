@@ -1,81 +1,12 @@
-[English](./README.md)
+# 当前文档
 
-# MorseCQ 文档
+- [本地学习架构](architecture/OFFLINE_LEARNING.zh-CN.md)
+- [构建与发布](operations/BUILD_AND_DEPLOY.zh-CN.md)
+- [测试金字塔](testing/TEST_PYRAMID.zh-CN.md)
+- [验证记录](VALIDATION.zh-CN.md)
+- [真实产品截图](screenshots/README.zh-CN.md)
+- [当前产品设计](designs/product-2026-10-08/README.zh-CN.md)
+- [添加界面语言](i18n/ADDING_A_LANGUAGE.zh-CN.md)
+- [App Store 构建](release/APP_STORE.zh-CN.md)
 
-## 惯例：双语，英文为默认
-
-本仓库的每份文档都成对存在：
-
-- `X.md` —— **英文，默认版本。** 链接、README 与 CI 均指向它。
-- `X.zh-CN.md` —— 简体中文。
-
-每个文件的第一行是指向对应语言版本的链接（英文文件中为 `[简体中文](./X.zh-CN.md)`，
-中文文件中为 `[English](./X.md)`）。新增文档时两份都要添加。两版不一致时，以先写成的
-那一份为准，并在文件顶部注明（例如：`BUILD_AND_DEPLOY.md` 英文版是中文版的
-精简摘要，以中文为准）。
-
-## 推荐阅读路径
-
-- **只想跑起来** —— [主 README](../README.zh-CN.md)「构建前提」→
-  [operations/BUILD_AND_DEPLOY.zh-CN.md](operations/BUILD_AND_DEPLOY.zh-CN.md)
-  了解本平台的原生库构建。
-- **贡献代码** —— [CLAUDE.md](../CLAUDE.md)（目录结构、门禁、工作约定）→
-  所改动的包或子区域的 README（见下）。
-- **改动范围或产品决策** —— 在对应包或应用文档中记录最终行为。`doc/plans/`
-  中的规划文档是本地工作记录，不纳入 Git。
-
-## 操作与构建
-
-- [rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md](rfcs/2026-09-30-tim2tox-message-annotation.zh-CN.md) /
-  [English](rfcs/2026-09-30-tim2tox-message-annotation.md) —— 给 Tim2Tox 的提案草案
-  （D 线）：随文本一起传输的按消息注解，是 v2 录制键控的前提。尚未提交上游。
-- [operations/BUILD_AND_DEPLOY.zh-CN.md](operations/BUILD_AND_DEPLOY.zh-CN.md) /
-  [English](operations/BUILD_AND_DEPLOY.md) —— 在 Linux、macOS、Windows、Android、
-  iOS 上构建 `libtim2tox_ffi` 原生库（默认 `--no-toxav`）；库在各平台包中的落点；
-  最低系统版本；`native.yml` CI 流程及其无法验证的部分。
-
-## 测试与截图
-
-- [testing/TEST_PYRAMID.zh-CN.md](testing/TEST_PYRAMID.zh-CN.md) /
-  [English](testing/TEST_PYRAMID.md) —— 四层（门禁、单元、控件、真实设备端到端）
-  各自证明什么、`tool/test_pyramid.sh`、以及只有顶层才发现的 bug。
-- [screenshots/README.zh-CN.md](screenshots/README.zh-CN.md) /
-  [English](screenshots/README.md) —— 按平台与语言提交的产品截图画廊；由
-  [tool/screenshots](../tool/screenshots/README.zh-CN.md) 生成。
-
-## 包（`packages/*`）
-
-每个包都有自己的 README（英文为默认；`.zh-CN.md` 对应版本在同一目录）。
-
-- [morse_core](../packages/morse_core/README.md) —— 纯 Dart 莫斯引擎：字母表与
-  prosign、PARIS / Farnsworth 时序、文本 → 时间轴编码器、手键输入的流式解码器。
-- [morse_trainer](../packages/morse_trainer/README.md) —— 纯 Dart 教学法：Koch 课程、
-  题目生成器、基于对齐的评分、间隔复习、发报练习诊断、学习进度。
-- [morse_dsp](../packages/morse_dsp/README.md) —— 纯 Dart 音频解码：Goertzel 音调检测、
-  自动调谐、包络门限、`AudioMorseDecoder`。
-- [morse_io](../packages/morse_io/README.md) —— Flutter I/O：`flutter_soloud` 侧音、
-  触觉、闪光、直键 / 双桨状态机，以及触屏与键盘的按键控件。
-- [morsecq_chat_api](../packages/morsecq_chat_api/README.md) —— UI 与聊天后端之间的
-  纯 Dart 契约（`IdentityService`、`ChatService`、模型、`testing.dart` 中的内存假实现）。
-- [morsecq_chat](../packages/morsecq_chat/README.md) —— 基于 Tim2Tox 的契约实现；
-  唯一允许 import Tim2Tox 或腾讯 SDK 的包。
-
-## App 子区域（`apps/morsecq`）
-
-- [apps/morsecq](../apps/morsecq/README.md) —— Flutter App 外壳。
-- [lib/notifications](../apps/morsecq/lib/notifications/README.md) —— 本地通知、
-  未读角标、前后台处理与移动端后台策略（`lib/lifecycle`）。
-- [lib/desktop](../apps/morsecq/lib/desktop/README.md) —— macOS / Windows / Linux 的
-  窗口管理、系统托盘与快捷键（移动端为 no-op）。
-- [lib/l10n](../apps/morsecq/lib/l10n/README.md) —— gen-l10n 配置、ARB 文件
-  （`app_en.arb` 模板、`app_zh.arb`）、`S` 类、译者词表与 UI 字面量守卫。
-- [doc/i18n/ADDING_A_LANGUAGE.zh-CN.md](./i18n/ADDING_A_LANGUAGE.zh-CN.md) —— UI 多语言方案说明与新增语言步骤（ARB、语言目录、参考内容行、平台语言清单）。
-
-## 跨项目联动
-
-- [主 README](../README.zh-CN.md) / [English](../README.md)
-- [CLAUDE.md](../CLAUDE.md) —— 约定、硬门禁、工作约定
-- **Tim2Tox**（上游 [agentx-icu/tim2tox](https://github.com/agentx-icu/tim2tox)，
-  以 `third_party/tim2tox` 子模块引入）：[文档索引](../third_party/tim2tox/doc/README.md)
-- **toxee**（姊妹项目，共用 Tim2Tox 线路协议）：
-  [github.com/agentx-icu/toxee](https://github.com/agentx-icu/toxee)
+实现计划属于本地工作记录，不作为产品文档发布。早期外观探索单独标注为概念；当前学习体验以最新产品设计与真实图库为准。

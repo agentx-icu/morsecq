@@ -17,7 +17,7 @@ enum MaterialKind {
       values.firstWhere((v) => v.name == name, orElse: () => MaterialKind.text);
 }
 
-/// Where a material came from. [localRef] (e.g. a chat message reference)
+/// Where a material came from. [localRef] (e.g. an imported material reference)
 /// is private: it is never written into shared exports.
 final class MaterialSource {
   const MaterialSource({required this.description, this.localRef});
@@ -162,7 +162,7 @@ final class TrainingMaterial {
   }
 }
 
-/// Engine-level symbol support shared by materials and chat practice.
+/// Engine-level symbol support shared by materials and receive practice.
 abstract final class MorseSupport {
   /// Whether a [MorseText] token can be keyed.
   static bool isSupported(String token) => token.startsWith('<')

@@ -1,7 +1,0 @@
-/// Intentionally empty.
-///
-/// This package exists only so that `tim2tox_dart`'s declared dependency on
-/// `tencent_cloud_chat_common` resolves. Nothing morsecq compiles imports the
-/// real package (only `Tim2ToxSdkPlatform` does, which morsecq never
-/// references). See `third_party/stubs/tencent_cloud_chat_common/pubspec.yaml`.
-library;
