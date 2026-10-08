@@ -18,4 +18,4 @@ Tags must match the numeric `X.Y.Z` part of the app pubspec: `1.0.0+1` uses tag 
 
 ## Platform scope
 
-Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS universal2, Linux x86_64 and Windows x64. The macOS Runner project declares 10.15, but that alone does not establish the floor of every bundled native library; supported deployment must account for the packaged native assets. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. Windows CI uses Windows Server 2022; acceptance on Windows 10/11 and physical mobile hardware remains part of distribution validation.
+Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled objective_c native framework’s verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. Windows CI uses Windows Server 2022; acceptance on Windows 10/11 and physical mobile hardware remains part of distribution validation.

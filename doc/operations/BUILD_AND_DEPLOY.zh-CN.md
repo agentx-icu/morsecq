@@ -18,4 +18,4 @@ Android 正式签名使用 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWOR
 
 ## 平台范围
 
-必需安装包面向 Android API 24+（arm64-v8a、armeabi-v7a、x86_64）、iOS 14+（arm64）、macOS universal2、Linux x86_64 和 Windows x64。macOS Runner 项目声明 10.15，但单凭该值不能证明所有随包原生库的最低系统版本；分发支持范围必须考虑实际原生产物。Linux 在 Ubuntu 24.04 与 GTK 3、ALSA、Ayatana appindicator 上验证运行；Windows CI 使用 Windows Server 2022，Windows 10/11 与真实移动设备仍需分发验收。
+必需安装包面向 Android API 24+（arm64-v8a、armeabi-v7a、x86_64）、iOS 14+（arm64）、macOS 13+ universal2、Linux x86_64 和 Windows x64。macOS Runner 和 Podfile 的最低版本与实际随包 objective_c 原生框架已验证的 13.0 要求一致。Linux 在 Ubuntu 24.04 与 GTK 3、ALSA、Ayatana appindicator 上验证运行；Windows CI 使用 Windows Server 2022，Windows 10/11 与真实移动设备仍需分发验收。
