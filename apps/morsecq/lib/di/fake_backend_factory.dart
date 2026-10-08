@@ -10,14 +10,18 @@ final class FakeBackendFactory extends BackendFactory {
   FakeBackendFactory({
     FakeIdentityService? identityService,
     ChatService Function(IdentityService identity)? chatService,
+    String label = 'In-memory fake (no network)',
   }) : _identityService = identityService,
-       _chatService = chatService;
+       _chatService = chatService,
+       _label = label;
+
+  final String _label;
 
   final FakeIdentityService? _identityService;
   final ChatService Function(IdentityService identity)? _chatService;
 
   @override
-  String get label => 'In-memory fake (no network)';
+  String get label => _label;
 
   @override
   bool get isAvailable => true;
@@ -48,3 +52,6 @@ final class FakeBackendFactory extends BackendFactory {
     ]);
   }
 }
+
+/// [BackendFactory.label] of the offline build (no chat, no network).
+const String kOfflineBackendLabel = 'Offline (no chat)';

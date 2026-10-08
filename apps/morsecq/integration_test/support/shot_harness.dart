@@ -10,7 +10,8 @@
 // Knobs (all `--dart-define`):
 //   MORSECQ_SHOT_PLATFORM     folder name in the report (default: the host OS)
 //   MORSECQ_SHOT_LOCALES      comma list, default `en,zh`
-//   MORSECQ_SHOT_PIXEL_RATIO  capture scale; default 1.0 on desktop, min(dpr, 2) on mobile
+//   MORSECQ_SHOT_PIXEL_RATIO  capture scale; default 1.0 on desktop, the native dpr on iOS
+//                             (App Store sizes), min(dpr, 2) on Android
 //   MORSECQ_SHOT_WINDOW       desktop window size `WxH`, default 1280x800
 //   MORSECQ_SHOT_THEME        light (default) | dark | system
 import 'dart:convert';
@@ -22,6 +23,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image/image.dart' as img;
 import 'package:integration_test/integration_test.dart';
 import 'package:morsecq/di/app_settings.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
@@ -241,6 +243,9 @@ class ShotHarness {
     final forced = parsePixelRatio(_pixelRatioDefine);
     if (forced != null) return forced;
     if (isDesktopHost) return 1.0;
+    // iOS frames go to App Store Connect, which only takes the device's
+    // native pixel size (6.9" iPhone @3x = 1320x2868, 13" iPad @2x).
+    if (Platform.isIOS) return tester.view.devicePixelRatio;
     return math.min(tester.view.devicePixelRatio, 2.0);
   }
 
@@ -272,17 +277,32 @@ class ShotHarness {
       throw StateError('screenshot boundary is not mounted');
     }
     final ui.Image image = await ro.toImage(pixelRatio: _pixelRatio(tester));
-    final ByteData? data = await image.toByteData(
-      format: ui.ImageByteFormat.png,
-    );
     final int width = image.width;
     final int height = image.height;
-    image.dispose();
-    if (data == null) throw StateError('PNG encoding failed for $scene');
-    final bytes = data.buffer.asUint8List(
-      data.offsetInBytes,
-      data.lengthInBytes,
-    );
+    final Uint8List bytes;
+    if (Platform.isIOS) {
+      // App Store Connect refuses screenshots with an alpha channel: encode
+      // RGB (the app paints opaque frames, so dropping alpha loses nothing).
+      final ByteData? raw = await image.toByteData();
+      image.dispose();
+      if (raw == null) throw StateError('pixel read failed for $scene');
+      bytes = img.encodePng(
+        img.Image.fromBytes(
+          width: width,
+          height: height,
+          bytes: raw.buffer,
+          bytesOffset: raw.offsetInBytes,
+          numChannels: 4,
+        ).convert(numChannels: 3),
+      );
+    } else {
+      final ByteData? data = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      image.dispose();
+      if (data == null) throw StateError('PNG encoding failed for $scene');
+      bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    }
     final name = '$platform/$locale/$scene';
     final Map<String, dynamic> report = binding.reportData ??=
         <String, dynamic>{};

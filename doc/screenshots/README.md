@@ -13,8 +13,8 @@ not edit the PNGs by hand.
 | platform | status | size |
 |---|---|---|
 | macOS | captured 2026-10-01 | 1280×800 @1x |
-| iOS (iPhone) | captured 2026-10-01 | 402×874 @2x |
-| iPad | captured 2026-10-01 | 834×1210 @2x |
+| iOS (iPhone) | captured 2026-10-05 (App Store 6.9") | 440×956 @3x (1320×2868 px, RGB) |
+| iPad | captured 2026-10-05 (App Store 13") | 1032×1376 @2x (2064×2752 px, RGB) |
 | Android | captured 2026-10-01 | ≈412×915 @2x (823×1829 px) |
 | Linux | captured 2026-10-01 (CI, ubuntu-24.04 + Xvfb) | 1280×800 @1x |
 | Windows | captured 2026-10-01 (CI, windows-2022) | 1280×800 @1x |
@@ -46,45 +46,33 @@ captured locally from that UI revision.
 | Listen | ![](macos/en/listen.png) | ![](macos/zh/listen.png) |
 | Me | ![](macos/en/me.png) | ![](macos/zh/me.png) |
 
-## iOS (iPhone 16 Pro simulator)
+## iOS (iPhone 17 Pro Max simulator)
+
+The offline App Store build (`MORSECQ_SHOT_VARIANT=offline`): no chat scenes.
 
 | scene | English | 简体中文 |
 |---|---|---|
-| Welcome (first run) | ![](ios/en/welcome.png) | ![](ios/zh/welcome.png) |
-| Create identity | ![](ios/en/create_identity.png) | ![](ios/zh/create_identity.png) |
-| Backup wizard | ![](ios/en/backup_wizard.png) | ![](ios/zh/backup_wizard.png) |
 | Learn home | ![](ios/en/learn_home.png) | ![](ios/zh/learn_home.png) |
 | Statistics | ![](ios/en/stats.png) | ![](ios/zh/stats.png) |
 | Training settings | ![](ios/en/training_settings.png) | ![](ios/zh/training_settings.png) |
 | Receive drill | ![](ios/en/receive_drill.png) | ![](ios/zh/receive_drill.png) |
 | Send practice | ![](ios/en/send_practice.png) | ![](ios/zh/send_practice.png) |
-| Chat list | ![](ios/en/chat_list.png) | ![](ios/zh/chat_list.png) |
-| Conversation | ![](ios/en/conversation.png) | ![](ios/zh/conversation.png) |
-| Contacts | ![](ios/en/contacts.png) | ![](ios/zh/contacts.png) |
-| Groups | ![](ios/en/groups.png) | ![](ios/zh/groups.png) |
-| Group conversation | ![](ios/en/group_conversation.png) | ![](ios/zh/group_conversation.png) |
 | Reference | ![](ios/en/reference.png) | ![](ios/zh/reference.png) |
 | Translator | ![](ios/en/translator.png) | ![](ios/zh/translator.png) |
 | Listen | ![](ios/en/listen.png) | ![](ios/zh/listen.png) |
 | Me | ![](ios/en/me.png) | ![](ios/zh/me.png) |
 
-## iPad (iPad Pro 11-inch simulator)
+## iPad (iPad Pro 13-inch simulator)
+
+The offline App Store build (`MORSECQ_SHOT_VARIANT=offline`): no chat scenes.
 
 | scene | English | 简体中文 |
 |---|---|---|
-| Welcome (first run) | ![](ipad/en/welcome.png) | ![](ipad/zh/welcome.png) |
-| Create identity | ![](ipad/en/create_identity.png) | ![](ipad/zh/create_identity.png) |
-| Backup wizard | ![](ipad/en/backup_wizard.png) | ![](ipad/zh/backup_wizard.png) |
 | Learn home | ![](ipad/en/learn_home.png) | ![](ipad/zh/learn_home.png) |
 | Statistics | ![](ipad/en/stats.png) | ![](ipad/zh/stats.png) |
 | Training settings | ![](ipad/en/training_settings.png) | ![](ipad/zh/training_settings.png) |
 | Receive drill | ![](ipad/en/receive_drill.png) | ![](ipad/zh/receive_drill.png) |
 | Send practice | ![](ipad/en/send_practice.png) | ![](ipad/zh/send_practice.png) |
-| Chat list | ![](ipad/en/chat_list.png) | ![](ipad/zh/chat_list.png) |
-| Conversation | ![](ipad/en/conversation.png) | ![](ipad/zh/conversation.png) |
-| Contacts | ![](ipad/en/contacts.png) | ![](ipad/zh/contacts.png) |
-| Groups | ![](ipad/en/groups.png) | ![](ipad/zh/groups.png) |
-| Group conversation | ![](ipad/en/group_conversation.png) | ![](ipad/zh/group_conversation.png) |
 | Reference | ![](ipad/en/reference.png) | ![](ipad/zh/reference.png) |
 | Translator | ![](ipad/en/translator.png) | ![](ipad/zh/translator.png) |
 | Listen | ![](ipad/en/listen.png) | ![](ipad/zh/listen.png) |

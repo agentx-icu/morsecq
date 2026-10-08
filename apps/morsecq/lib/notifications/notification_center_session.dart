@@ -18,6 +18,91 @@ extension _NotificationSession on NotificationCenter {
     unawaited(ensurePermission());
   }
 
+  /// A peer was blocked: their lines leave the banners still showing them.
+  /// A banner with nothing else left is withdrawn; one that still holds
+  /// other members' lines is re-posted with those, silently (blocking must
+  /// not alert again). Later messages never arrive (the service filters
+  /// them).
+  ///
+  /// Banners a previous run posted are not in [_inbox], so their lines are
+  /// unknown: a peer newly blocked in this run takes down their direct
+  /// conversation's banner and every group banner of this identity that is
+  /// not tracked here (the first replay only records the list).
+  void _onBlocked(Set<String> blocked) {
+    if (_disposed) return;
+    final Set<String>? seen = _blockedSeen;
+    _blockedSeen = {...blocked};
+    final Set<String> added = seen == null
+        ? const <String>{}
+        : blocked.difference(seen);
+    for (final String key in added) {
+      unawaited(_clearConversation('c2c_$key'));
+    }
+    if (added.isNotEmpty) {
+      for (final Group g in _chat.groups) {
+        final String id = 'group_${g.id}';
+        if (_inbox.containsKey(id)) continue;
+        unawaited(
+          _cancel(OpenConversationTarget(id, account: _account).encode()),
+        );
+      }
+    }
+    if (blocked.isEmpty) return;
+    bool hidden(ChatMessage m) =>
+        !m.isMine && blocked.contains(m.senderId.toUpperCase());
+    for (final String id in _inbox.keys.toList()) {
+      final List<ChatMessage> lines = _inbox[id]!;
+      if (!lines.any(hidden)) continue;
+      lines.removeWhere(hidden);
+      if (lines.isEmpty) {
+        unawaited(_clearConversation(id));
+      } else {
+        _repostSilently(id, lines);
+      }
+    }
+  }
+
+  void _repostSilently(String id, List<ChatMessage> recent) {
+    final ChatMessage latest = recent.last;
+    final Conversation? conversation = _conversationFor(id);
+    final bool isGroup =
+        (conversation?.kind ?? NotificationComposer.kindFromId(id)) ==
+        ConversationKind.group;
+    final NotificationRequest composed = _composer.message(
+      message: latest,
+      title:
+          conversation?.title ??
+          (isGroup
+              ? NotificationComposer.shortKey(
+                  NotificationComposer.peerFromId(id),
+                )
+              : NotificationComposer.senderLabel(latest)),
+      isGroup: isGroup,
+      lines: [
+        for (final ChatMessage m in recent)
+          _composer.inboxLine(m, isGroup: isGroup),
+      ],
+    );
+    final int generation = _ledger.posted(id, latest);
+    unawaited(
+      _post(
+        NotificationRequest(
+          id: composed.id,
+          channel: composed.channel,
+          title: composed.title,
+          body: composed.body,
+          payload: composed.payload,
+          groupKey: composed.groupKey,
+          lines: composed.lines,
+          summary: composed.summary,
+          sound: false,
+          silentUpdate: true,
+        ),
+        stillWanted: () => _ledger.isCurrent(id, generation),
+      ),
+    );
+  }
+
   /// Another identity (or none): everything posted belongs to the old one.
   /// The first identity to open after start is not a change (a cold-start
   /// tap waiting for it must survive).

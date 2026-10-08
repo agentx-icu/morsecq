@@ -5909,5 +5909,126 @@
   "conditionsAudioFailed": "The audio could not be started on this device. Practise with Clear conditions instead.",
   "@conditionsAudioFailed": {
     "description": "Receive drill: the conditions audio could not be started"
+  },
+  "moderationBlock": "Block",
+  "@moderationBlock": {
+    "description": "Block action (menus, friend request and invite buttons)"
+  },
+  "moderationBlockTitle": "Block {name}?",
+  "@moderationBlockTitle": {
+    "description": "Block confirmation title; name is the person (name or short key)",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moderationBlockFriendBody": "They are removed from your friends and your conversation with them is deleted. Their messages, friend requests and group invites no longer appear on this device. They are not notified.",
+  "@moderationBlockFriendBody": {
+    "description": "Block confirmation body for a friend or a friend request"
+  },
+  "moderationBlockMemberBody": "Their messages in this group no longer appear on this device. They are not notified. Tox gives every group member a separate key in each group, so this applies to this group only.",
+  "@moderationBlockMemberBody": {
+    "description": "Block confirmation body for a group member (NGC keys are per group)"
+  },
+  "moderationBlocked": "Blocked",
+  "@moderationBlocked": {
+    "description": "Snack bar after blocking"
+  },
+  "moderationUnblock": "Unblock",
+  "@moderationUnblock": {
+    "description": "Unblock action on the blocked people page"
+  },
+  "moderationUnblocked": "Unblocked",
+  "@moderationUnblocked": {
+    "description": "Snack bar after unblocking"
+  },
+  "moderationBlockedTitle": "Blocked people",
+  "@moderationBlockedTitle": {
+    "description": "Blocked people page title and Me tile"
+  },
+  "moderationBlockedSubtitle": "Their messages, requests and invites are hidden",
+  "@moderationBlockedSubtitle": {
+    "description": "Me tile subtitle for blocked people"
+  },
+  "moderationBlockedEmpty": "You have not blocked anyone.",
+  "@moderationBlockedEmpty": {
+    "description": "Blocked people page with nobody blocked"
+  },
+  "moderationBlockedNote": "Blocking works on this device: Tox has no central server, so blocked people can still try to reach you, but nothing of theirs is shown here.",
+  "@moderationBlockedNote": {
+    "description": "Blocked people page: how blocking works"
+  },
+  "termsGateTitle": "Community guidelines",
+  "@termsGateTitle": {
+    "description": "Terms gate (before chat) title"
+  },
+  "termsGateIntro": "MorseCQ chat connects you directly with other people, without a server. Before you start, please agree to these rules:",
+  "@termsGateIntro": {
+    "description": "Terms gate intro"
+  },
+  "termsGateRuleZero": "Zero tolerance: no harassment, hate, threats, sexual content involving minors, spam or anything illegal.",
+  "@termsGateRuleZero": {
+    "description": "Terms gate rule: zero tolerance"
+  },
+  "termsGateRuleContacts": "Only people you accept can message you; groups are joined by invitation or group ID.",
+  "@termsGateRuleContacts": {
+    "description": "Terms gate rule: only accepted contacts"
+  },
+  "termsGateRuleBlock": "Block anyone from a conversation, a group’s member list, a friend request or a group invite.",
+  "@termsGateRuleBlock": {
+    "description": "Terms gate rule: blocking"
+  },
+  "termsGateAgree": "Agree and continue",
+  "@termsGateAgree": {
+    "description": "Terms gate accept button"
+  },
+  "termsGateReadFull": "Read the full terms of use",
+  "@termsGateReadFull": {
+    "description": "Terms gate link to the full terms"
+  },
+  "termsGateSaveFailed": "Your answer could not be saved. Try again.",
+  "@termsGateSaveFailed": {
+    "description": "Terms gate: saving acceptance failed"
+  },
+  "aboutPrivacyPolicy": "Privacy policy",
+  "@aboutPrivacyPolicy": {
+    "description": "About: privacy policy link"
+  },
+  "aboutTermsOfUse": "Terms of use",
+  "@aboutTermsOfUse": {
+    "description": "About: terms of use link"
+  },
+  "aboutSupport": "Support and contact",
+  "@aboutSupport": {
+    "description": "About: support and contact link"
+  },
+  "aboutLinkFailed": "The link could not be opened, so it was copied.",
+  "@aboutLinkFailed": {
+    "description": "About: a link could not be opened and was copied"
+  },
+  "errorPeerBlocked": "You blocked this person. Unblock them under Me → Blocked people first.",
+  "@errorPeerBlocked": {
+    "description": "ChatException code peer_blocked"
+  },
+  "offlineClearData": "Clear learning data",
+  "@offlineClearData": {
+    "description": "Offline build Me: clear the local learning data"
+  },
+  "offlineClearDataBody": "Deletes your progress, plans and materials on this device.",
+  "@offlineClearDataBody": {
+    "description": "Offline build Me: what clearing removes"
+  },
+  "offlineCleared": "Learning data cleared.",
+  "@offlineCleared": {
+    "description": "Offline build Me: snack after clearing"
+  },
+  "offlineClearFailed": "Couldn’t clear the learning data.",
+  "@offlineClearFailed": {
+    "description": "Offline build Me: clearing failed"
+  },
+  "learnStorageUnavailable": "Your training data could not be opened on this device. Try again.",
+  "@learnStorageUnavailable": {
+    "description": "Offline build: the local learning data could not be opened"
   }
 }

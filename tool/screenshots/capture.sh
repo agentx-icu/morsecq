@@ -17,6 +17,13 @@
 #
 #   --platforms  comma list (default: macos). ios = iPhone simulator,
 #                ipad = iPad simulator, android = emulator/device.
+#                ios / ipad capture at App Store sizes: without --device the
+#                script boots the 6.9" iPhone (iPhone 17/16 Pro Max,
+#                1320x2868) or the 13" iPad (iPad Pro 13-inch, 2064x2752)
+#                simulator itself, and verify rejects any other frame size
+#                and any frame with an alpha channel.
+#                They show the offline App Store build (no chat): scenes
+#                OFFLINE_SCENES instead of CHAT_SCENES.
 #   --locales    comma list of en, zh (default: both). A subset is captured
 #                and verified but NOT published into the committed gallery
 #                (that must always hold every locale); pass --out to publish
@@ -71,9 +78,17 @@ err()  { echo -e "${RED}[capture]${NC} $*" >&2; }
 step() { echo -e "${CYAN}==>${NC} $*"; }
 
 # Must match kScenes in apps/morsecq/integration_test/support/scene_walk.dart.
-SCENES=(welcome create_identity backup_wizard learn_home stats training_settings
+CHAT_SCENES=(welcome create_identity backup_wizard learn_home stats training_settings
         receive_drill send_practice chat_list conversation contacts groups
         group_conversation reference translator listen me)
+# The offline App Store build (ios, ipad): must match kOfflineScenes.
+OFFLINE_SCENES=(learn_home stats training_settings receive_drill send_practice
+                reference translator listen me)
+SCENES=("${CHAT_SCENES[@]}")
+# ios / ipad capture the offline App Store build (AppFeatures(chat: false)).
+variant_for() {  # <platform>
+  case "$1" in ios|ipad) echo offline ;; *) echo chat ;; esac
+}
 MIN_BYTES=8192
 
 # ── argument validation (bash 3.2: an empty array is unbound under set -u) ──
@@ -194,14 +209,71 @@ sys.exit(1)
 ' "$platform" "$want_id"
 }
 
+# ── App Store simulators ─────────────────────────────────────────────────────
+# Prints the UDID of the simulator whose screen is an App Store screenshot
+# size for <platform> (ios: 6.9" iPhone, ipad: 13" iPad), booting it when it
+# is shut down. Newest model first; exit 1 when none is installed.
+store_simulator() {  # <platform>
+  local platform="$1" udid
+  command -v xcrun >/dev/null 2>&1 || { err "$platform: xcrun not found (App Store simulators need Xcode)"; return 1; }
+  udid="$(xcrun simctl list devices available --json | python3 -c '
+import json, sys
+names = {
+    "ios": ["iPhone 17 Pro Max", "iPhone 16 Pro Max"],
+    "ipad": ["iPad Pro 13-inch (M5)", "iPad Pro 13-inch (M4)"],
+}[sys.argv[1]]
+found = {}
+for runtime, rows in json.load(sys.stdin)["devices"].items():
+    for d in rows:
+        if d.get("isAvailable") and d.get("name") in names:
+            found.setdefault(d["name"], d["udid"])
+for name in names:
+    if name in found:
+        print(found[name]); sys.exit(0)
+sys.exit(1)
+' "$platform")" || { err "$platform: no App Store size simulator installed (see store_simulator in $0)"; return 1; }
+  if ! xcrun simctl list devices | grep -q "$udid) (Booted)"; then
+    info "$platform: booting simulator $udid" >&2  # stdout is the result
+    xcrun simctl boot "$udid" >/dev/null 2>&1 || true
+    xcrun simctl bootstatus "$udid" -b >/dev/null || { err "$platform: simulator $udid did not boot"; return 1; }
+  fi
+  printf '%s\n' "$udid"
+}
+
+# Accepted App Store screenshot sizes (portrait WxH) per platform; empty =
+# no size rule.
+store_sizes() {  # <platform>
+  case "$1" in
+    ios) echo "1320x2868 1290x2796" ;;   # 6.9" (required), 6.7"
+    ipad) echo "2064x2752 2048x2732" ;;  # 13" (required)
+    *) echo "" ;;
+  esac
+}
+
+# Prints a PNG's WxH and colour type from its IHDR chunk, e.g. "1320x2868 2"
+# (2 = RGB, 6 = RGBA; App Store Connect refuses an alpha channel).
+png_size() {  # <file>
+  python3 -c 'import struct,sys; d=open(sys.argv[1],"rb").read(26); print("%dx%d %d" % (struct.unpack(">II", d[16:24]) + (d[25],)))' "$1"
+}
+
 # ── verification: every scene of every locale present, non-trivial, distinct ─
 verify() {  # <platform>
-  local platform="$1" locale scene f size sum ok=1
+  local platform="$1" locale scene f size sum ok=1 sizes dims
   local -a sums=()
+  sizes="$(store_sizes "$platform")"
   for locale in "${SELECTED_LOCALES[@]}"; do
     for scene in "${SCENES[@]}"; do
       f="$STAGING/$platform/$locale/$scene.png"
       if [[ ! -s "$f" ]]; then err "$platform/$locale/$scene.png missing"; ok=0; continue; fi
+      if [[ -n "$sizes" ]]; then
+        dims="$(png_size "$f")" || { err "cannot read size of $f"; return 1; }
+        if [[ " $sizes " != *" ${dims% *} "* ]]; then
+          err "$platform/$locale/$scene.png is ${dims% *}, not an App Store size ($sizes)"; ok=0
+        fi
+        if [[ "${dims#* }" != "2" ]]; then
+          err "$platform/$locale/$scene.png has PNG colour type ${dims#* }, not RGB (2): App Store Connect refuses alpha"; ok=0
+        fi
+      fi
       size="$(wc -c < "$f")" || { err "cannot size $f"; return 1; }
       size="${size// /}"
       if [[ "$size" -lt "$MIN_BYTES" ]]; then err "$platform/$locale/$scene.png is only $size bytes"; ok=0; fi
@@ -252,8 +324,14 @@ export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
 
 capture_platform() {  # <platform>
   local platform="$1" device rc=0
+  local variant; variant="$(variant_for "$platform")"
+  if [[ "$variant" == "offline" ]]; then SCENES=("${OFFLINE_SCENES[@]}"); else SCENES=("${CHAT_SCENES[@]}"); fi
   if [[ -z "$FROM" ]]; then
-    device="$(pick_device "$platform" "$DEVICE")" || rc=$?
+    local want="$DEVICE"
+    if [[ -z "$want" && ( "$platform" == "ios" || "$platform" == "ipad" ) ]]; then
+      want="$(store_simulator "$platform")" || return 1
+    fi
+    device="$(pick_device "$platform" "$want")" || rc=$?
     if [[ $rc -eq 2 ]]; then return 1; fi
     if [[ $rc -ne 0 || -z "$device" ]]; then
       if [[ -n "$DEVICE" ]]; then err "$platform: device '$DEVICE' is not a $platform device (see: flutter devices)"
@@ -267,6 +345,7 @@ capture_platform() {  # <platform>
       -d "$device" \
       --dart-define=MORSECQ_FAKE_BACKEND=true \
       --dart-define=MORSECQ_SHOT_PLATFORM="$platform" \
+      --dart-define=MORSECQ_SHOT_VARIANT="$variant" \
       --dart-define=MORSECQ_SHOT_LOCALES="$LOCALES" \
       ${MORSECQ_SHOT_WINDOW:+--dart-define=MORSECQ_SHOT_WINDOW="$MORSECQ_SHOT_WINDOW"} \
       ${MORSECQ_SHOT_PIXEL_RATIO:+--dart-define=MORSECQ_SHOT_PIXEL_RATIO="$MORSECQ_SHOT_PIXEL_RATIO"} \

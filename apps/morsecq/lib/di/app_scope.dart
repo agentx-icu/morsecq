@@ -20,6 +20,7 @@ import '../ui/account/backup_file_gateway.dart';
 import '../ui/chat/morse_playback_settings.dart';
 import '../ui/listen/listen_preferences.dart';
 import '../ui/reference/reference_playback_settings.dart';
+import 'app_features.dart';
 import 'app_preferences.dart';
 import 'app_services.dart';
 import 'app_settings.dart';
@@ -46,9 +47,13 @@ class AppScope extends StatefulWidget {
     this.notificationApis,
     this.desktopShell,
     this.backgroundTasks,
+    this.features = AppFeatures.fromEnvironment,
   });
 
   final BackendFactory factory;
+
+  /// Build-time features; widget tests pass either variant.
+  final AppFeatures features;
   final Widget child;
 
   /// Override for the file save/pick gateway; tests pass a fake.
@@ -90,6 +95,7 @@ class _AppScopeState extends State<AppScope> {
   late final GuestStore _guest = widget.guestStore ?? GuestStore();
   late final StartupController _startup = StartupController(
     _identity,
+    chatEnabled: widget.features.chat,
     guest: GuestHooks(
       store: _guest,
       releaseGuestController: () => _training.releaseGuest(),
@@ -118,6 +124,7 @@ class _AppScopeState extends State<AppScope> {
       return _startup.connectionError;
     },
     desktopShell: widget.desktopShell,
+    chatEnabled: widget.features.chat,
   );
 
   late final TrainingControllerHost _training = TrainingControllerHost(
@@ -126,11 +133,16 @@ class _AppScopeState extends State<AppScope> {
     guestFactory: _guest.openController,
   );
 
+  /// Everything local that must reach disk before the app is suspended or
+  /// quits. Training is flushed here too: the identity service flushes it as
+  /// a registered data store only when it is persistent, which the offline
+  /// build's (and the guest's) learning profile must not depend on.
   Future<void> _flushSettings() async {
     await Future.wait([
       _preferences.flush(),
       _locale.flush(),
       _keyProfiles.flush(),
+      _training.flush(),
     ]);
   }
 
@@ -169,6 +181,7 @@ class _AppScopeState extends State<AppScope> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<AppFeatures>.value(value: widget.features),
         Provider<IdentityService>.value(value: _identity),
         Provider<ChatService>.value(value: _chat),
         Provider<BackupFileGateway>.value(value: _backupFiles),

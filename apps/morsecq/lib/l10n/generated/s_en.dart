@@ -4211,4 +4211,93 @@ class SEn extends S {
 
   @override
   String get conditionsAudioFailed => 'The audio could not be started on this device. Practise with Clear conditions instead.';
+
+  @override
+  String get moderationBlock => 'Block';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return 'Block $name?';
+  }
+
+  @override
+  String get moderationBlockFriendBody => 'They are removed from your friends and your conversation with them is deleted. Their messages, friend requests and group invites no longer appear on this device. They are not notified.';
+
+  @override
+  String get moderationBlockMemberBody => 'Their messages in this group no longer appear on this device. They are not notified. Tox gives every group member a separate key in each group, so this applies to this group only.';
+
+  @override
+  String get moderationBlocked => 'Blocked';
+
+  @override
+  String get moderationUnblock => 'Unblock';
+
+  @override
+  String get moderationUnblocked => 'Unblocked';
+
+  @override
+  String get moderationBlockedTitle => 'Blocked people';
+
+  @override
+  String get moderationBlockedSubtitle => 'Their messages, requests and invites are hidden';
+
+  @override
+  String get moderationBlockedEmpty => 'You have not blocked anyone.';
+
+  @override
+  String get moderationBlockedNote => 'Blocking works on this device: Tox has no central server, so blocked people can still try to reach you, but nothing of theirs is shown here.';
+
+  @override
+  String get termsGateTitle => 'Community guidelines';
+
+  @override
+  String get termsGateIntro => 'MorseCQ chat connects you directly with other people, without a server. Before you start, please agree to these rules:';
+
+  @override
+  String get termsGateRuleZero => 'Zero tolerance: no harassment, hate, threats, sexual content involving minors, spam or anything illegal.';
+
+  @override
+  String get termsGateRuleContacts => 'Only people you accept can message you; groups are joined by invitation or group ID.';
+
+  @override
+  String get termsGateRuleBlock => 'Block anyone from a conversation, a group’s member list, a friend request or a group invite.';
+
+  @override
+  String get termsGateAgree => 'Agree and continue';
+
+  @override
+  String get termsGateReadFull => 'Read the full terms of use';
+
+  @override
+  String get termsGateSaveFailed => 'Your answer could not be saved. Try again.';
+
+  @override
+  String get aboutPrivacyPolicy => 'Privacy policy';
+
+  @override
+  String get aboutTermsOfUse => 'Terms of use';
+
+  @override
+  String get aboutSupport => 'Support and contact';
+
+  @override
+  String get aboutLinkFailed => 'The link could not be opened, so it was copied.';
+
+  @override
+  String get errorPeerBlocked => 'You blocked this person. Unblock them under Me → Blocked people first.';
+
+  @override
+  String get offlineClearData => 'Clear learning data';
+
+  @override
+  String get offlineClearDataBody => 'Deletes your progress, plans and materials on this device.';
+
+  @override
+  String get offlineCleared => 'Learning data cleared.';
+
+  @override
+  String get offlineClearFailed => 'Couldn’t clear the learning data.';
+
+  @override
+  String get learnStorageUnavailable => 'Your training data could not be opened on this device. Try again.';
 }

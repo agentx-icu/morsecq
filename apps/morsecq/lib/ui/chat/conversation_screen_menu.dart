@@ -15,6 +15,7 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
   bool get _loading;
   set _loading(bool value);
   set _loadingOlder(bool value);
+  bool get _loadingOlderNow;
   set _hasMore(bool value);
   bool get _clearing;
   set _clearing(bool value);
@@ -240,11 +241,86 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
       widget.target.peerId,
     );
     if (!left || !mounted) return;
+    _closeConversation();
+  }
+
+  /// Leaves this screen: the master-detail owner clears its selection, a
+  /// pushed route is removed (even when another route sits above it).
+  void _closeConversation() {
     if (widget.embedded) {
       widget.onClosed?.call();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+    final ModalRoute<Object?>? route = ModalRoute.of(context);
+    if (route == null) return;
+    if (route.isCurrent) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).removeRoute(route);
+    }
+  }
+
+  /// The blocked keys this screen last applied (null before the first
+  /// replay of [ChatService.blockedPeerChanges]).
+  Set<String>? _blockedSeen;
+
+  /// A block (from this screen, a member list or anywhere else) hides at
+  /// once: a blocked peer's direct conversation closes; in a group their
+  /// rows go, queued or playing Morse of them included, and loads still in
+  /// flight are dropped and redone (they may have read the rows before the
+  /// block). An unblock reloads the history so their rows come back. The
+  /// service filters everything that arrives later.
+  void _onBlockedPeers(Set<String> blocked) {
+    if (!mounted) return;
+    final Set<String>? seen = _blockedSeen;
+    _blockedSeen = {...blocked};
+    final ConversationTarget target = widget.target;
+    if (!_isGroup) {
+      if (!target.isSelf && blocked.contains(target.peerId.toUpperCase())) {
+        _closeConversation();
+      }
+      return;
+    }
+    if (seen != null && seen.difference(blocked).isNotEmpty) {
+      _reloadAfterBlocking();
+      return;
+    }
+    bool hidden(ChatMessage m) =>
+        !m.isMine && blocked.contains(m.senderId.toUpperCase());
+    final Set<String> ids = {
+      for (final m in [..._older, ..._messages, ..._parked])
+        if (hidden(m)) m.id,
+    };
+    if (ids.isNotEmpty) {
+      _playback.cancelMessages(ids);
+      setState(() {
+        _older.removeWhere(hidden);
+        _messages.removeWhere(hidden);
+        _parked.removeWhere(hidden);
+        _revealed.removeAll(ids);
+      });
+    }
+    if (_loading || _loadingOlderNow) _reloadAfterBlocking();
+  }
+
+  /// Drops every outstanding page load and reads the live window again. A
+  /// search-jumped window is historical: like [_showLatest], it is dropped
+  /// whole so its rows are not merged after the latest page.
+  void _reloadAfterBlocking() {
+    final bool wasJumped = _jumpedAway;
+    _generation++;
+    _jumpedAway = false;
+    _parked.clear();
+    setState(() {
+      _older.clear();
+      if (wasJumped) {
+        _messages.clear();
+        _newMessages = 0;
+      }
+      _loadingOlder = false;
+      _loadingNewer = false;
+    });
+    unawaited(_load());
   }
 
   Future<void> _clearHistory() async {
@@ -341,6 +417,14 @@ mixin _ConversationMenuActions on State<ConversationScreen> {
         await ConnectionDiagnosticsPage.open(context, conversationId: _id);
       case 'clear':
         await _clearHistory();
+      case 'block':
+        await confirmAndBlock(
+          context,
+          service: _service,
+          publicKey: widget.target.peerId,
+          name: conversationTitleText(context.s, widget.target),
+          scope: BlockScope.contact,
+        );
       case 'listenOnly':
         final settings = MorsePlaybackSettings.of(context, listen: false);
         settings.listenOnly = !settings.listenOnly;

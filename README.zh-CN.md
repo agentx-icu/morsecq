@@ -35,7 +35,7 @@ import guard、UI 字面量守卫）和完整的测试金字塔（单元、控�
   <tr>
     <td><img src="doc/screenshots/ios/zh/receive_drill.png" width="200" alt="抄收练习"></td>
     <td><img src="doc/screenshots/ios/zh/send_practice.png" width="200" alt="发报练习"></td>
-    <td><img src="doc/screenshots/ios/zh/group_conversation.png" width="200" alt="群通联"></td>
+    <td><img src="doc/screenshots/android/zh/group_conversation.png" width="200" alt="群通联"></td>
     <td><img src="doc/screenshots/ios/zh/translator.png" width="200" alt="翻译器"></td>
   </tr>
   <tr>
@@ -49,6 +49,10 @@ import guard、UI 字面量守卫）和完整的测试金字塔（单元、控�
 macOS、Linux、Windows、iPhone、iPad、Android 上中英文的全部界面见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)。截图由 `tool/screenshots/capture.sh` 用演示数据自动生成，未经手工修改。
 
 ## 功能
+
+> **分发形态。** iOS App Store 版本是不含聊天的离线训练器（`--dart-define=MORSECQ_CHAT=false`，
+> 由 `tool/build_ios_store.sh` 构建；见 [doc/release/APP_STORE.zh-CN.md](doc/release/APP_STORE.zh-CN.md)）。
+> 其他所有版本都包含下文介绍的 Tox 聊天。
 
 App 有五个目的地——**Learn（学习）/ Chat（聊天）/ Groups（群组）/ Reference（手册）/
 Me（我）**——全部位于同一个启动门之后：首次启动时创建（或解锁）一个 Tox 身份用于聊天。

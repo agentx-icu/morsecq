@@ -21,6 +21,7 @@ import 'package:morsecq/ui/chat/conversation_screen.dart';
 import 'package:morsecq/ui/chat/message_bubble.dart';
 import 'package:morsecq/ui/contacts/add_friend_sheet.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
+import 'package:morsecq/ui/moderation/terms_gate_page.dart';
 import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/text_to_morse_view.dart';
 import 'package:morsecq/ui/reference/translator_screen.dart';
@@ -67,6 +68,13 @@ void main() {
     await tester.tap(find.byType(CheckboxListTile));
     await settle(tester);
     await tapText(tester, s().accountBackupContinue);
+    // First launch on this device: the community guidelines come before
+    // the shell (a device that accepted them earlier skips this).
+    if (find.byType(TermsGatePage).evaluate().isNotEmpty) {
+      expect(find.text(s().termsGateRuleZero), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('terms-agree')));
+      await settle(tester);
+    }
     expect(find.byType(AppShell), findsOneWidget);
 
     // Learn: home loaded, a lesson drill opens and closes.

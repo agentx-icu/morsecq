@@ -73,6 +73,7 @@ class StartupController extends ChangeNotifier {
     this._identity, {
     GuestHooks? guest,
     DateTime Function()? now,
+    this.chatEnabled = true,
   }) : _guest = guest,
        _now = now ?? DateTime.now {
     _identitySub = _identity.identityChanges.listen(_onIdentityChanged);
@@ -80,6 +81,11 @@ class StartupController extends ChangeNotifier {
 
   final IdentityService _identity;
   final GuestHooks? _guest;
+
+  /// False in the offline build (`AppFeatures.chat`): no identity is ever
+  /// inspected or created; learning always runs on the local (guest)
+  /// learning profile.
+  final bool chatEnabled;
   final DateTime Function() _now;
 
   /// True while the guest learning profile is in use; the training host
@@ -134,6 +140,10 @@ class StartupController extends ChangeNotifier {
 
   Future<void> _inspect() async {
     _set(StartupPhase.inspecting, error: null);
+    if (!chatEnabled) {
+      await _enterOfflineProfile();
+      return;
+    }
     // Guest mode resumes before anything touches an identity on disk: no
     // identity metadata or profile is read, decrypted or opened.
     if (await _guestWasActive()) {
@@ -183,6 +193,22 @@ class StartupController extends ChangeNotifier {
     }
   }
 
+  /// The offline build's only profile: the guest learning profile, made
+  /// active before the training host serves it. Never touches an identity.
+  Future<void> _enterOfflineProfile() async {
+    final guest = _guest;
+    if (guest != null) {
+      try {
+        await guest.store.finishCompletedMigrations();
+        await guest.store.setActive(true);
+      } on Object {
+        // Still usable this session.
+      }
+    }
+    guestMode.value = true;
+    _set(StartupPhase.guest);
+  }
+
   /// "Try learning first": learn on the guest profile. Never touches an
   /// identity on disk (an encrypted one stays locked).
   Future<void> enterGuest() async {
@@ -202,6 +228,7 @@ class StartupController extends ChangeNotifier {
   /// Back to creating / restoring / unlocking an identity: inspects the
   /// identity on disk only now that the learner asked for it.
   Future<void> leaveGuest() async {
+    if (!chatEnabled) return; // there is no identity to go to
     guestMode.value = false;
     try {
       await _guest?.store.setActive(false);

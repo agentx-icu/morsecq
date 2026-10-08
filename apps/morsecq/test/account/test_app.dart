@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/training/guest_profile.dart';
+import 'package:morsecq/di/app_settings.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
+import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
@@ -47,6 +49,12 @@ FakeIdentityService seededIdentityService({
   dataDirectoryPath: freshDataDirectory(),
 );
 
+/// A preferences store in which this device already accepted the community
+/// guidelines ([kTermsVersion]), plus [more] entries: the startup gate then
+/// opens the shell instead of the terms page.
+InMemoryKeyValueStore acceptedTermsStore([Map<String, String>? more]) =>
+    InMemoryKeyValueStore({AppSettings.termsKey: '$kTermsVersion', ...?more});
+
 /// Settles the tree while letting REAL asynchronous work finish.
 ///
 /// The Learn tab (inside the shell) loads its progress from files through
@@ -70,6 +78,7 @@ Future<void> pumpApp(
   FakeBackupFileGateway? backupFiles,
   Size size = kPhoneSize,
   GuestStore? guestStore,
+  bool termsAccepted = true,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
@@ -80,6 +89,7 @@ Future<void> pumpApp(
       backend: FakeBackendFactory(identityService: identity),
       backupFiles: backupFiles ?? FakeBackupFileGateway(),
       guestStore: guestStore,
+      localeStore: termsAccepted ? acceptedTermsStore() : null,
     ),
   );
   await settle(tester);

@@ -6,9 +6,10 @@ import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
+import '../moderation/block_actions.dart';
 import 'tox_id.dart';
 
-/// Pending inbound friend requests with accept / reject. Renders nothing
+/// Pending inbound friend requests with block / reject / accept. Renders nothing
 /// when the inbox is empty and [showWhenEmpty] is false. A request's buttons
 /// stay disabled while an answer to it is in flight, so a double tap cannot
 /// send a second accept (or race an accept against a reject).
@@ -85,6 +86,25 @@ class _FriendRequestInboxState extends State<FriendRequestInbox> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    IconButton(
+                      key: ValueKey<String>('req_block_${r.publicKey}'),
+                      tooltip: s.moderationBlock,
+                      icon: const Icon(Icons.block),
+                      onPressed: _busy.contains(r.publicKey)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                r.publicKey,
+                                () => confirmAndBlock(
+                                  context,
+                                  service: service,
+                                  publicKey: r.publicKey,
+                                  name: shortKey(r.publicKey, length: 16),
+                                  scope: BlockScope.contact,
+                                ),
+                              ),
+                            ),
+                    ),
                     IconButton(
                       tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),

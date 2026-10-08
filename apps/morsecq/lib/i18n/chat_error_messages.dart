@@ -13,6 +13,7 @@ String chatErrorMessage(S s, String code) => switch (code) {
   'own_id' => s.errorOwnId,
   'group_not_found' => s.errorGroupNotFound,
   'message_too_long' => s.errorMessageTooLong,
+  'peer_blocked' => s.errorPeerBlocked,
   _ => s.errorUnknown,
 };
 

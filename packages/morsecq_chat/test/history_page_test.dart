@@ -101,4 +101,35 @@ void main() {
     ];
     expect(visibleUnread(1, withFile), 0);
   });
+
+  test('hidden rows never shorten a page (shows applies before the limit)', () async {
+    // 60 rows, every other one from a blocked member.
+    final memory = [
+      for (var m = 0; m < 60; m++)
+        _row(m, id: 'm$m', from: m.isOdd ? 'BLOCKED' : 'PEER'),
+    ];
+    final page = await readHistoryPage(
+      memory,
+      limit: 20,
+      archive: () async => null,
+      shows: (r) => r.fromUserId != 'BLOCKED',
+    );
+    expect(page, hasLength(20));
+    expect(page.every((r) => r.fromUserId == 'PEER'), isTrue);
+    expect(page.last.msgID, 'm58');
+  });
+
+  test('unread counts only shown rows; rows past memory need countArchived', () {
+    final history = [
+      _row(1, from: 'PEER'),
+      _row(2, from: 'BLOCKED'),
+      _row(3, from: 'PEER'),
+    ];
+    bool shows(t2t.ChatMessage r) => r.fromUserId != 'BLOCKED';
+    expect(visibleUnread(3, history, shows: shows), 2);
+    // Five unread but only three in memory: two archived rows of unknown
+    // sender count only when nobody is blocked.
+    expect(visibleUnread(5, history, shows: shows), 4);
+    expect(visibleUnread(5, history, shows: shows, countArchived: false), 2);
+  });
 }

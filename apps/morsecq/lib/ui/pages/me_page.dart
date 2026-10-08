@@ -19,6 +19,8 @@ import '../appearance/appearance_page.dart';
 import '../appearance/style_labels.dart';
 import '../diagnostics/connection_diagnostics_page.dart';
 import '../keying/key_setup_page.dart';
+import '../moderation/blocked_people_page.dart';
+import '../moderation/site_links.dart';
 
 /// Profile, account, progress and settings.
 class MePage extends StatelessWidget {
@@ -114,6 +116,14 @@ class _MeBody extends StatelessWidget {
           ),
         ),
         ListTile(
+          key: const ValueKey('me-blocked-people'),
+          leading: const Icon(Icons.block),
+          title: Text(s.moderationBlockedTitle),
+          subtitle: Text(s.moderationBlockedSubtitle),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => BlockedPeoplePage.open(context),
+        ),
+        ListTile(
           key: const ValueKey('me-connection-diagnostics'),
           leading: const Icon(Icons.network_check),
           title: Text(s.diagTitle),
@@ -148,6 +158,7 @@ class _MeBody extends StatelessWidget {
           header: _SectionHeader(s.accountSectionNotifications),
         ),
         _SectionHeader(s.accountSectionAbout),
+        const SiteLinksSection(),
         ListTile(
           leading: const Icon(Icons.gavel_outlined),
           title: Text(s.accountAboutLicence),

@@ -12,6 +12,7 @@ import '../../../training/audio_material_store.dart';
 import '../../../training/guest_profile.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
+import '../../learn/learning_unavailable.dart';
 import 'recording_files.dart';
 import 'workbench_controller.dart';
 import 'workbench_decode_panel.dart';
@@ -78,6 +79,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   }
 
   Future<void> _setup() async {
+    if (_unavailable) setState(() => _unavailable = false);
     try {
       final dir =
           await (widget.profileRoot ?? () => _profileDirectory(context))();
@@ -86,14 +88,31 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
         library: RecordingLibrary(dir),
         player: _player,
       )..addListener(_changed);
+      // A retry replaces the controller of the failed attempt (the player
+      // is the screen's and stays).
+      final previous = _c;
       setState(() => _c = controller);
+      previous
+        ?..removeListener(_changed)
+        ..dispose();
     } on Object {
       if (mounted) setState(() => _unavailable = true);
       return;
     }
+    final TrainingController training;
     try {
-      final training = await (widget.training ?? _hostController)();
-      if (mounted) setState(() => _training = training);
+      training = await (widget.training ?? _hostController)();
+    } on Object {
+      // Chat builds without an identity: attempts are scored, not recorded.
+      // The offline build always has its profile, so a failure is a storage
+      // problem: say so and offer a retry.
+      if (mounted && learningRetryable(context)) {
+        setState(() => _unavailable = true);
+      }
+      return;
+    }
+    if (mounted) setState(() => _training = training);
+    try {
       // Nothing is importing or saving yet: drop recordings left behind by
       // entries deleted while their recording was open.
       final referenced = {
@@ -101,7 +120,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       };
       await _c?.library.pruneUnreferenced(referenced);
     } on Object {
-      // Without a profile controller attempts are scored, not recorded.
+      // Housekeeping only.
     }
   }
 
@@ -225,7 +244,28 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       ),
       body: SafeArea(
         child: _unavailable
-            ? Center(child: Text(s.learnIdentityRequired))
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        learningUnavailableText(context),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (learningRetryable(context)) ...[
+                        const SizedBox(height: 12),
+                        FilledButton.tonal(
+                          key: const ValueKey('workbench-retry'),
+                          onPressed: () => unawaited(_setup()),
+                          child: Text(s.actionRetry),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              )
             : c == null
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(

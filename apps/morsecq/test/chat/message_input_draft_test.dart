@@ -10,6 +10,15 @@ import 'test_support.dart';
 class _DelayedService implements ChatService {
   _DelayedService(this.delegate);
   final ChatService delegate;
+
+  @override
+  Set<String> get blockedPeers => delegate.blockedPeers;
+  @override
+  Stream<Set<String>> get blockedPeerChanges => delegate.blockedPeerChanges;
+  @override
+  Future<void> blockPeer(String publicKey) => delegate.blockPeer(publicKey);
+  @override
+  Future<void> unblockPeer(String publicKey) => delegate.unblockPeer(publicKey);
   final Completer<void> sent = Completer<void>();
   final List<String> writes = [];
   final List<Completer<void>> writeGates = [];

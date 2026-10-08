@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
+import '../../di/app_features.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../notifications/connection_banner_policy.dart';
 import '../../notifications/notification_center.dart';
@@ -38,6 +39,9 @@ class ShellDestination {
   /// Chat-side destinations need a real identity; in guest mode they show
   /// how to get one instead.
   final bool requiresIdentity;
+
+  /// Chat and Groups: absent from the offline build (`AppFeatures.chat`).
+  bool get isChat => page is ChatPage || page is GroupsPage;
   final bool isMe;
 
   final String Function(S s) label;
@@ -83,6 +87,13 @@ const List<ShellDestination> kShellDestinations = [
   ),
 ];
 
+/// The destinations of a build: every one of [kShellDestinations], minus
+/// Chat and Groups when [chat] is off (the offline App Store build).
+List<ShellDestination> shellDestinations({required bool chat}) => [
+  for (final d in kShellDestinations)
+    if (chat || !d.isChat) d,
+];
+
 /// Responsive root: bottom [NavigationBar] on compact widths, side
 /// [NavigationRail] otherwise. See `responsive.dart` for the breakpoint.
 ///
@@ -110,11 +121,16 @@ class _AppShellState extends State<AppShell> {
   /// positions, reference/translator input) was thrown away on rotation.
   final GlobalKey _bodyKey = GlobalKey(debugLabel: 'shell-body');
 
-  static int _tabOf(Type page) =>
-      kShellDestinations.indexWhere((d) => d.page.runtimeType == page);
+  late final bool _chat = context.read<AppFeatures>().chat;
+  late final List<ShellDestination> _destinations = shellDestinations(
+    chat: _chat,
+  );
+
+  int _tabOf(Type page) =>
+      _destinations.indexWhere((d) => d.page.runtimeType == page);
 
   void _select(int index) {
-    if (index == _selectedIndex) return;
+    if (index < 0 || index == _selectedIndex) return;
     setState(() => _selectedIndex = index);
   }
 
@@ -140,6 +156,9 @@ class _AppShellState extends State<AppShell> {
   void _routePendingTap() {
     if (!mounted) return;
     final NotificationTapTarget? tap = _center?.takePendingTap();
+    // Every tap target is a chat surface; a build without chat drops it
+    // (a stale payload from an earlier install must not reach a tab).
+    if (!_chat) return;
     switch (tap) {
       case null:
         return;
@@ -223,7 +242,7 @@ class _AppShellState extends State<AppShell> {
             // Hidden tabs keep their state but stop animating; a conversation
             // left open on another tab reads this to stay silent.
             children: [
-              for (final (i, d) in kShellDestinations.indexed)
+              for (final (i, d) in _destinations.indexed)
                 TickerMode(
                   enabled: i == _selectedIndex,
                   child: d.requiresIdentity
@@ -244,7 +263,7 @@ class _AppShellState extends State<AppShell> {
             selectedIndex: _selectedIndex,
             onDestinationSelected: _select,
             destinations: [
-              for (final d in kShellDestinations)
+              for (final d in _destinations)
                 NavigationDestination(
                   icon: Icon(d.icon),
                   selectedIcon: Icon(d.selectedIcon),
@@ -264,7 +283,7 @@ class _AppShellState extends State<AppShell> {
                 selectedIndex: _selectedIndex,
                 onDestinationSelected: _select,
                 destinations: [
-                  for (final d in kShellDestinations)
+                  for (final d in _destinations)
                     NavigationRailDestination(
                       icon: Icon(d.icon),
                       selectedIcon: Icon(d.selectedIcon),

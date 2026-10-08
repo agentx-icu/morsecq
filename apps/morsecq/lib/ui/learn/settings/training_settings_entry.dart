@@ -4,6 +4,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
 import '../learn_playback.dart';
+import '../learning_unavailable.dart';
 import 'training_settings_screen.dart';
 
 /// Named-route target for `/settings/training` (pushed from the Me page).
@@ -23,8 +24,11 @@ class TrainingSettingsEntry extends StatefulWidget {
 }
 
 class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
-  late final Future<TrainingController> _controller =
+  late Future<TrainingController> _controller =
       TrainingControllerHost.fromContext(context);
+
+  void _retry() =>
+      setState(() => _controller = TrainingControllerHost.fromContext(context));
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +48,22 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
             child: snapshot.hasError
                 ? Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      context.s.learnIdentityRequired,
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          learningUnavailableText(context),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (learningRetryable(context)) ...[
+                          const SizedBox(height: 12),
+                          FilledButton.tonal(
+                            key: const ValueKey('training-settings-retry'),
+                            onPressed: _retry,
+                            child: Text(context.s.actionRetry),
+                          ),
+                        ],
+                      ],
                     ),
                   )
                 : const CircularProgressIndicator(),

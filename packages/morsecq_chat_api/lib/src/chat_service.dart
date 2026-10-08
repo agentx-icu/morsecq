@@ -25,7 +25,7 @@ import 'models.dart';
 /// `empty_message`, `invalid_message`, `send_failed`, `self_conversation`,
 /// `invalid_name`, `invalid_chat_id`, `already_joined`, `join_failed`,
 /// `group_not_found`, `invite_failed`, `create_group_failed`,
-/// `leave_failed`, `timeout`.
+/// `leave_failed`, `timeout`, `peer_blocked`.
 abstract interface class ChatService {
   // ---- Session -------------------------------------------------------------
 
@@ -47,12 +47,46 @@ abstract interface class ChatService {
   Stream<List<FriendRequest>> get friendRequestChanges;
 
   /// Send a friend request to a Tox ID ([ToxAddress.isValid]: 76 hex with a
-  /// valid checksum). Throws `invalid_tox_id`, `already_friend`, `own_id`.
+  /// valid checksum). Throws `invalid_tox_id`, `already_friend`, `own_id`,
+  /// and `peer_blocked` when the key is in [blockedPeers] (unblock first).
   Future<void> addFriend(String toxId, {String message = 'morsecq CQ'});
 
   Future<void> acceptFriendRequest(String publicKey);
   Future<void> rejectFriendRequest(String publicKey);
   Future<void> removeFriend(String publicKey);
+
+  // ---- Blocking (App Review 1.2) -------------------------------------------
+
+  /// Public keys (64 hex, upper case) the open identity blocked. Empty
+  /// without a session. Replays the current value to new listeners.
+  ///
+  /// Blocking is a local, receive-side hide: Tox has no network block, so
+  /// a blocked peer can still send; this device drops it. From
+  /// [blockPeer] until [unblockPeer], nothing of theirs surfaces: no c2c
+  /// conversation row, no friend request, no group invite, and none of
+  /// their messages in [messageEvents], [loadHistory], [searchMessages],
+  /// [loadAround], conversation previews or unread counts (group
+  /// conversations included).
+  ///
+  /// Keys: a friend, a friend request or a group inviter is blocked by
+  /// their long-term key; a group member by [GroupMember.publicKey], which
+  /// Tox NGC mints per group. The two are independent: blocking a friend
+  /// does not hide them in groups, and blocking a member hides them in
+  /// that group only.
+  Set<String> get blockedPeers;
+  Stream<Set<String>> get blockedPeerChanges;
+
+  /// Blocks [publicKey] (64 hex or a 76-hex Tox ID): a friend is removed
+  /// (which deletes the conversation with them, as [removeFriend] does) and
+  /// their pending friend request and group invites are declined. Throws
+  /// `own_id` for our own key, `invalid_tox_id` for anything that is not a
+  /// key.
+  Future<void> blockPeer(String publicKey);
+
+  /// Shows [publicKey]'s future messages, requests and invites again, and
+  /// their group rows that were hidden. A deleted friendship and
+  /// conversation are not restored. A no-op when they are not blocked.
+  Future<void> unblockPeer(String publicKey);
 
   // ---- Conversations -------------------------------------------------------
 

@@ -45,6 +45,7 @@ void main() {
         backend: FakeBackendFactory(identityService: seededIdentityService()),
         backupFiles: FakeBackupFileGateway(),
         desktopShell: controller,
+        localeStore: acceptedTermsStore(),
       ),
     );
     await settle(tester);

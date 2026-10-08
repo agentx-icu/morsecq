@@ -29,6 +29,8 @@ Read it before changing scope; keep it in sync when scope changes.
 | `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
 | `doc/screenshots/` | committed frames per platform × locale, published only by `tool/screenshots/capture.sh` | never edit PNGs by hand; regenerate after UI changes |
 | `doc/plans/` | 方案 / plan documents | every edit appends to the doc's change-log section |
+| `doc/release/` | App Store submission checklist, metadata and questionnaire answers (`APP_STORE.md`) | keep in sync with `site/`, the privacy manifests and `Info.plist` |
+| `site/` | public GitHub Pages site (privacy policy, terms of use, support), deployed by `.github/workflows/pages.yml` | English + `zh-CN/` pages edited together; URLs referenced from `lib/ui/account/account_routes.dart` |
 | `.github/workflows/` | CI (`analyze.yml`; `e2e.yml` opt-in via `workflow_dispatch` or the `ci:e2e` label) | mirrors the local commands below exactly |
 
 ## Common commands
@@ -120,6 +122,21 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   moves guest progress (staged, validated, committed); restore/unlock never
   merges it silently. See `apps/morsecq/lib/training/guest_profile.dart` and
   `doc/plans/2026-10-03-functional-improvements.md` §8.
+- **Identity holders accept the community guidelines first** (App Review
+  1.2, 2026-10-05). `StartupGate` shows `TermsGatePage` instead of the whole
+  shell (Learn included; guest learning is not gated) until
+  `AppSettings.termsAccepted`; bump `kTermsVersion` with every material
+  change to `site/terms.md`. Blocking lives in `lib/ui/moderation/` (there
+  is no e-mail or report flow); the transport hides blocked peers
+  (`ChatService.blockedPeers`), and every new chat surface must honour it.
+- **The iOS App Store build has no chat** (2026-10-07). `AppFeatures.chat`
+  (`--dart-define=MORSECQ_CHAT=false`, `lib/di/app_features.dart`) builds an
+  offline trainer: no identity, no Tox, no notifications; the startup gate
+  goes straight to the local (guest) learning profile and the shell shows
+  Learn / Reference / Me. Only `tool/build_ios_store.sh` builds it (no
+  Tim2ToxFFI pod, `ITSAppUsesNonExemptEncryption = NO`). Every new feature
+  must say which build it belongs to; anything chat-only is gated on
+  `AppFeatures.chat`.
 - **Product name is MorseCQ** in every user-visible place (store labels,
   window titles, menus, installers, notifications, docs prose). Technical
   identifiers stay lowercase `morsecq` so existing profiles keep working:

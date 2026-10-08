@@ -11,15 +11,19 @@ import 'message_mapper.dart';
 /// paging past the in-memory window keeps working. Rows are de-duplicated
 /// across the two by their native id, or — for rows without one — by time,
 /// sender and text, so one id-less row never hides every other id-less row.
+///
+/// [shows] selects the rows that count (default: chat text); it is applied
+/// before [limit], so hidden rows (a blocked peer's) never shorten a page.
 Future<List<t2t.ChatMessage>> readHistoryPage(
   List<t2t.ChatMessage> memory, {
   required int limit,
   DateTime? before,
   required Future<List<t2t.ChatMessage>?> Function() archive,
+  bool Function(t2t.ChatMessage) shows = MessageMapper.isChatText,
 }) async {
   List<t2t.ChatMessage> window(Iterable<t2t.ChatMessage> rows) => [
     for (final r in rows)
-      if (MessageMapper.isChatText(r) &&
+      if (shows(r) &&
           (before == null || r.timestamp.isBefore(before)))
         r,
   ];
@@ -49,7 +53,16 @@ String historyRowKey(t2t.ChatMessage r) =>
 /// late message with an older timestamp is still among the unread ones, so
 /// the rows are NOT sorted by time here. Unread rows not in [history]
 /// (archived) count as they are.
-int visibleUnread(int unread, List<t2t.ChatMessage> history) {
+///
+/// [shows] selects the rows that count (default: chat text). Unread rows
+/// past [history] are counted only with [countArchived]; with blocked
+/// peers they may be hidden ones, so the count stops at what is known.
+int visibleUnread(
+  int unread,
+  List<t2t.ChatMessage> history, {
+  bool Function(t2t.ChatMessage) shows = MessageMapper.isChatText,
+  bool countArchived = true,
+}) {
   if (unread <= 0) return 0;
   final rows = history;
   var seen = 0;
@@ -58,7 +71,7 @@ int visibleUnread(int unread, List<t2t.ChatMessage> history) {
     final m = rows[i];
     if (m.isSelf) continue;
     seen++;
-    if (MessageMapper.isChatText(m)) visible++;
+    if (shows(m)) visible++;
   }
-  return visible + (unread - seen);
+  return countArchived ? visible + (unread - seen) : visible;
 }

@@ -23,6 +23,7 @@ final class NotificationRequest {
     this.lines = const <String>[],
     this.summary,
     this.sound = true,
+    this.silentUpdate = false,
   });
 
   final int id;
@@ -44,6 +45,12 @@ final class NotificationRequest {
   final String? summary;
 
   final bool sound;
+
+  /// Replaces a notification already on screen without alerting again: no
+  /// sound, vibration, banner or heads-up (Android `onlyAlertOnce` +
+  /// `silent`, Darwin passive and list-only). Used when blocking someone
+  /// takes their lines out of a stacked notification.
+  final bool silentUpdate;
 }
 
 /// The only surface through which the app touches the local-notifications

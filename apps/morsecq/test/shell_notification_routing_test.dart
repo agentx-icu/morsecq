@@ -51,6 +51,7 @@ Future<FakeLocalNotificationsApi> _pump(
         notifications: api,
         badge: FakeBadgeApi(),
       ),
+      localeStore: acceptedTermsStore(),
     ),
   );
   await settle(tester);

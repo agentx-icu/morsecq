@@ -4292,4 +4292,93 @@ class SRu extends S {
 
   @override
   String get conditionsAudioFailed => 'Не удалось запустить звук на этом устройстве. Занимайтесь в чистых условиях.';
+
+  @override
+  String get moderationBlock => 'Заблокировать';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return 'Заблокировать $name?';
+  }
+
+  @override
+  String get moderationBlockFriendBody => 'Человек будет удалён из друзей, а переписка с ним — удалена. Его сообщения, запросы дружбы и приглашения в группы больше не появятся на этом устройстве. Он не получит уведомления.';
+
+  @override
+  String get moderationBlockMemberBody => 'Его сообщения в этой группе больше не появятся на этом устройстве. Он не получит уведомления. Tox выдаёт участнику отдельный ключ в каждой группе, поэтому блокировка действует только в этой группе.';
+
+  @override
+  String get moderationBlocked => 'Заблокировано';
+
+  @override
+  String get moderationUnblock => 'Разблокировать';
+
+  @override
+  String get moderationUnblocked => 'Разблокировано';
+
+  @override
+  String get moderationBlockedTitle => 'Заблокированные';
+
+  @override
+  String get moderationBlockedSubtitle => 'Их сообщения, запросы и приглашения скрыты';
+
+  @override
+  String get moderationBlockedEmpty => 'Вы никого не заблокировали.';
+
+  @override
+  String get moderationBlockedNote => 'Блокировка действует на этом устройстве: у Tox нет центрального сервера, поэтому заблокированные могут пытаться связаться с вами, но здесь ничего от них не показывается.';
+
+  @override
+  String get termsGateTitle => 'Правила сообщества';
+
+  @override
+  String get termsGateIntro => 'Чат MorseCQ соединяет вас с людьми напрямую, без сервера. Прежде чем начать, примите эти правила:';
+
+  @override
+  String get termsGateRuleZero => 'Нулевая терпимость: никакой травли, ненависти, угроз, сексуального контента с участием несовершеннолетних, спама и ничего незаконного.';
+
+  @override
+  String get termsGateRuleContacts => 'Писать вам могут только те, кого вы приняли; в группы входят по приглашению или по ID группы.';
+
+  @override
+  String get termsGateRuleBlock => 'Блокируйте кого угодно из переписки, списка участников группы, запроса дружбы или приглашения.';
+
+  @override
+  String get termsGateAgree => 'Принять и продолжить';
+
+  @override
+  String get termsGateReadFull => 'Прочитать полные условия использования';
+
+  @override
+  String get termsGateSaveFailed => 'Не удалось сохранить ответ. Попробуйте ещё раз.';
+
+  @override
+  String get aboutPrivacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get aboutTermsOfUse => 'Условия использования';
+
+  @override
+  String get aboutSupport => 'Поддержка и контакты';
+
+  @override
+  String get aboutLinkFailed => 'Не удалось открыть ссылку, она скопирована.';
+
+  @override
+  String get errorPeerBlocked => 'Вы заблокировали этого человека. Сначала разблокируйте его в разделе Профиль → Заблокированные.';
+
+  @override
+  String get offlineClearData => 'Удалить данные обучения';
+
+  @override
+  String get offlineClearDataBody => 'Удаляет прогресс, планы и материалы на этом устройстве.';
+
+  @override
+  String get offlineCleared => 'Данные обучения удалены.';
+
+  @override
+  String get offlineClearFailed => 'Не удалось удалить данные обучения.';
+
+  @override
+  String get learnStorageUnavailable => 'Не удалось открыть данные тренировок на этом устройстве. Попробуйте ещё раз.';
 }

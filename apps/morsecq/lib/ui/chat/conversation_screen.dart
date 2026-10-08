@@ -10,6 +10,7 @@ import '../../notifications/notification_center.dart';
 import '../diagnostics/connection_diagnostics_page.dart';
 import '../groups/group_members_sheet.dart';
 import '../groups/practice/group_practice_page.dart';
+import '../moderation/block_actions.dart';
 import 'chat_layout.dart';
 import 'conversation_actions.dart';
 import 'conversation_attention.dart';
@@ -62,6 +63,7 @@ class _ConversationScreenState extends State<ConversationScreen>
   late final ConversationAttention _attention;
   bool _sessionStartedWhileLoading = false;
   late final StreamSubscription<ChatMessage> _events;
+  late final StreamSubscription<Set<String>> _blocked;
   @override
   late final LocalMessageSends _localSends;
   @override
@@ -79,6 +81,8 @@ class _ConversationScreenState extends State<ConversationScreen>
   bool _loading = true;
   @override
   bool _loadingOlder = false;
+  @override
+  bool get _loadingOlderNow => _loadingOlder;
   @override
   bool _hasMore = false;
   @override
@@ -121,6 +125,7 @@ class _ConversationScreenState extends State<ConversationScreen>
       if (mounted) _attention.start();
     });
     _events = _service.messageEvents.listen(_onEvent);
+    _blocked = _service.blockedPeerChanges.listen(_onBlockedPeers);
     _localSends = LocalMessageSends.forService(_service)
       ..addListener(_onLocalSend);
     _scroll.addListener(_onScroll);
@@ -141,6 +146,7 @@ class _ConversationScreenState extends State<ConversationScreen>
     _autoPlay.dispose();
     _attention.dispose();
     unawaited(_events.cancel());
+    unawaited(_blocked.cancel());
     _localSends.removeListener(_onLocalSend);
     _scroll.dispose();
     if (_ownsPlayback) {

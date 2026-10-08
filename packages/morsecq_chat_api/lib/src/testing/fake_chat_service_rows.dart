@@ -12,7 +12,8 @@ extension _FakeConversationRows on FakeChatService {
     if (!_sessionUp) return const <Conversation>[];
     final Map<String, Conversation> rows = <String, Conversation>{
       for (final MapEntry<String, Conversation> e in _conversations.entries)
-        if (!_hidden.contains(e.key)) e.key: e.value,
+        if (!_hidden.contains(e.key) && !_blockedRow(e.value))
+          e.key: _withoutBlockedPreview(e.value),
     };
     for (final Friend friend in _friends.values) {
       final String id = FakeChatService.c2cConversationId(friend.publicKey);
@@ -24,6 +25,80 @@ extension _FakeConversationRows on FakeChatService {
       );
     }
     return List<Conversation>.unmodifiable(rows.values);
+  }
+
+  /// A blocked peer's c2c conversation is not listed (blocking hides it).
+  bool _blockedRow(Conversation c) =>
+      c.kind == ConversationKind.c2c && !c.isSelf && _isBlocked(c.peerId);
+
+  /// A group row with a blocked member's rows shows the newest visible row
+  /// as its preview and does not count their rows as unread (like the
+  /// transport, which counts only shown rows).
+  Conversation _withoutBlockedPreview(Conversation c) {
+    if (_blocked.isEmpty || c.kind != ConversationKind.group) return c;
+    final List<ChatMessage> all = _messages[c.id] ?? const <ChatMessage>[];
+    // The unread rows are the newest c.unreadCount inbound rows.
+    final List<ChatMessage> inbound = [
+      for (final m in all)
+        if (!m.isMine) m,
+    ];
+    final int start = inbound.length > c.unreadCount
+        ? inbound.length - c.unreadCount
+        : 0;
+    final int hiddenUnread = inbound
+        .sublist(start)
+        .where((m) => _isBlocked(m.senderId))
+        .length;
+    final ChatMessage? last = c.lastMessage;
+    final bool previewHidden =
+        last != null && !last.isMine && _isBlocked(last.senderId);
+    if (hiddenUnread == 0 && !previewHidden) return c;
+    final List<ChatMessage> visible = _visibleRows(c.id);
+    return Conversation(
+      id: c.id,
+      kind: c.kind,
+      title: c.title,
+      lastMessage: previewHidden
+          ? (visible.isEmpty ? null : visible.last)
+          : last,
+      unreadCount: c.unreadCount - hiddenUnread,
+      pinned: c.pinned,
+      draft: c.draft,
+      isSelf: c.isSelf,
+    );
+  }
+
+  /// The newest [limit] visible rows strictly before [before], oldest first.
+  List<ChatMessage> _history(String id, int limit, DateTime? before) {
+    final List<ChatMessage> all = _visibleRows(id);
+    final List<ChatMessage> eligible = before == null
+        ? all
+        : all.where((m) => m.timestamp.isBefore(before)).toList();
+    final int start = eligible.length > limit ? eligible.length - limit : 0;
+    return List<ChatMessage>.unmodifiable(eligible.sublist(start));
+  }
+
+  void _clear(String conversationId) {
+    _messages.remove(conversationId);
+    final Conversation? existing = _conversations[conversationId];
+    if (existing == null) return;
+    _conversations[conversationId] = Conversation(
+      id: existing.id,
+      kind: existing.kind,
+      title: existing.title,
+      pinned: existing.pinned,
+      draft: existing.draft,
+      isSelf: existing.isSelf,
+    );
+    _publishConversations();
+  }
+
+  /// Everything a block or unblock changes.
+  void _publishBlocking() {
+    _blockedChanges.add(blockedPeers);
+    _friendRequestChanges.add(friendRequests);
+    _groupInviteChanges.add(groupInvites);
+    _publishConversations();
   }
 
   void _updateConversation(

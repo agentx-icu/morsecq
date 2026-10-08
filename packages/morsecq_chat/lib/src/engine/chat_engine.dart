@@ -11,6 +11,7 @@ import '../identity/identity_paths.dart';
 import '../logging/chat_logger.dart';
 import '../native/native_library.dart';
 import '../util/value_stream.dart';
+import 'morsecq_ffi_chat_service.dart';
 import 'native_callbacks.dart';
 
 /// Everything a Tim2Tox session needs to know about the identity it serves.
@@ -146,7 +147,7 @@ class Tim2ToxEngine extends ChatEngine {
     NativeLibrarySetup.ensure(libraryPathOverride: _libraryPathOverride);
     final scratch = IdentityScratchFileService(paths.scratchDirectory);
     _scratch = scratch;
-    return FfiChatService(
+    return MorsecqFfiChatService(
       preferencesService: Tim2ToxPreferencesAdapter(
         _store,
         accountPrefix: accountPrefix,

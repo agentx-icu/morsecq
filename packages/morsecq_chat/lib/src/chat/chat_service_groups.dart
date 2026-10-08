@@ -68,14 +68,16 @@ class _GroupsPart {
       a.topic == b.topic;
 
   Future<void> refreshInvites(FfiChatService svc) async {
+    final blocking = _owner._blockingPart;
     final next = <GroupInvite>[
       for (final i in svc.getPendingGroupInvites())
-        GroupInvite(
-          inviteId: i.id,
-          fromPublicKey: ConversationIds.normalizeKey(i.inviterUserId),
-          groupName: PeerText.singleLine(i.groupName),
-          kind: _kindOf(i.kind),
-        ),
+        if (!blocking.isBlocked(i.inviterUserId))
+          GroupInvite(
+            inviteId: i.id,
+            fromPublicKey: ConversationIds.normalizeKey(i.inviterUserId),
+            groupName: PeerText.singleLine(i.groupName),
+            kind: _kindOf(i.kind),
+          ),
     ];
     if (!listEqualsBy(invites.value, next, _sameInvite)) invites.force(next);
   }

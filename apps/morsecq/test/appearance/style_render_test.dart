@@ -105,6 +105,7 @@ void main() {
                   chatService: (_) => seed.chat,
                 ),
                 localeStore: InMemoryKeyValueStore({
+                  AppSettings.termsKey: '$kTermsVersion',
                   LocaleController.storageKey: 'zh',
                   AppSettings.storageKey: jsonEncode({
                     'style': style.name,

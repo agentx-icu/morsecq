@@ -9,6 +9,7 @@ import '../outbox.dart';
 import '../tox_address.dart';
 import 'replay_stream.dart';
 
+part 'fake_chat_service_blocking.dart';
 part 'fake_chat_service_hooks.dart';
 part 'fake_chat_service_messages.dart';
 part 'fake_chat_service_rows.dart';
@@ -29,7 +30,9 @@ part 'fake_chat_service_session.dart';
 /// note-to-self row is not listed; replacing or deleting the identity
 /// empties everything. A fake without an identity is always "connected".
 /// Test hooks live in [FakeChatServiceTestHooks] (`fake_chat_service_hooks.dart`).
-final class FakeChatService with _FakeMessageManagement implements ChatService {
+final class FakeChatService
+    with _FakeMessageManagement, _FakeBlocking
+    implements ChatService {
   FakeChatService({
     String? selfPublicKey,
     IdentityService? identity,
@@ -73,6 +76,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
   Completer<void>? holdAnswers;
 
   /// Our own 64-hex public key; `addFriend(<own id>)` throws `own_id`.
+  @override
   String get selfPublicKey => _selfKey;
   String _selfKey;
   String _selfName = '';
@@ -91,6 +95,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
 
   @override
   final Map<String, Friend> _friends = <String, Friend>{};
+  @override
   final List<FriendRequest> _friendRequests = <FriendRequest>[];
   @override
   final Map<String, Conversation> _conversations = <String, Conversation>{};
@@ -99,6 +104,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
       <String, List<ChatMessage>>{};
   final Map<String, Group> _groups = <String, Group>{};
   final Map<String, List<GroupMember>> _members = <String, List<GroupMember>>{};
+  @override
   final List<GroupInvite> _groupInvites = <GroupInvite>[];
 
   /// Tox IDs handed to [addFriend], oldest first (for assertions).
@@ -126,6 +132,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
     _conversationChanges,
     _groupChanges,
     _groupInviteChanges,
+    _blockedChanges,
   ];
 
   String _nextId(String prefix) => '${prefix}_${++_seq}';
@@ -165,6 +172,9 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
     }
     if (_friends.containsKey(pk)) {
       throw const ChatException('already_friend', 'Already a friend');
+    }
+    if (_isBlocked(pk)) {
+      throw const ChatException('peer_blocked', 'Unblock them first');
     }
     outgoingFriendRequests.add(id);
     _friends[pk] = Friend(publicKey: pk, displayName: _shortKey(pk));
@@ -215,6 +225,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
   }
 
   /// Friends change the conversation list too (every friend has a row).
+  @override
   void _publishFriends() {
     _friendChanges.add(friends);
     _publishConversations();
@@ -280,13 +291,7 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
     DateTime? before,
   }) async {
     _requireSession();
-    final List<ChatMessage> all =
-        _messages[conversationId] ?? const <ChatMessage>[];
-    final List<ChatMessage> eligible = before == null
-        ? all
-        : all.where((m) => m.timestamp.isBefore(before)).toList();
-    final int start = eligible.length > limit ? eligible.length - limit : 0;
-    return List<ChatMessage>.unmodifiable(eligible.sublist(start));
+    return _FakeConversationRows(this)._history(conversationId, limit, before);
   }
 
   @override
@@ -333,20 +338,11 @@ final class FakeChatService with _FakeMessageManagement implements ChatService {
   @override
   Future<void> clearHistory(String conversationId) async {
     _requireSession();
-    _messages.remove(conversationId);
-    final Conversation? existing = _conversations[conversationId];
-    if (existing != null) {
-      _conversations[conversationId] = Conversation(
-        id: existing.id,
-        kind: existing.kind,
-        title: existing.title,
-        pinned: existing.pinned,
-        draft: existing.draft,
-        isSelf: existing.isSelf,
-      );
-      _publishConversations();
-    }
+    _FakeConversationRows(this)._clear(conversationId);
   }
+
+  @override
+  void _publishBlocking() => _FakeConversationRows(this)._publishBlocking();
 
   /// The session check and status write the message-management mixin
   /// needs (row bookkeeping lives in `fake_chat_service_rows.dart`).

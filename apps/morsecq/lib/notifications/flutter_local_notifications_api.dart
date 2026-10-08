@@ -303,8 +303,10 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
       // app name shows until the device is unlocked.
       visibility: NotificationVisibility.private,
       groupKey: request.groupKey,
-      playSound: request.sound,
-      enableVibration: request.sound,
+      playSound: request.sound && !request.silentUpdate,
+      enableVibration: request.sound && !request.silentUpdate,
+      onlyAlertOnce: request.silentUpdate,
+      silent: request.silentUpdate,
       number: grouped ? request.lines.length : null,
       styleInformation: grouped
           ? InboxStyleInformation(
@@ -316,21 +318,26 @@ final class FlutterLocalNotificationsApi implements LocalNotificationsApi {
     );
     final DarwinNotificationDetails darwin = DarwinNotificationDetails(
       threadIdentifier: request.groupKey,
-      presentAlert: true,
-      presentBanner: true,
+      presentAlert: !request.silentUpdate,
+      presentBanner: !request.silentUpdate,
       presentList: true,
       presentBadge: true,
-      presentSound: request.sound,
+      presentSound: request.sound && !request.silentUpdate,
+      interruptionLevel: request.silentUpdate
+          ? InterruptionLevel.passive
+          : null,
     );
     final LinuxNotificationDetails linux = LinuxNotificationDetails(
       category: channel == NotificationChannelKind.messages
           ? LinuxNotificationCategory.imReceived
           : LinuxNotificationCategory.im,
-      suppressSound: !request.sound,
+      suppressSound: !request.sound || request.silentUpdate,
       defaultActionName: s.notificationOpen,
     );
     final WindowsNotificationDetails windows = WindowsNotificationDetails(
-      audio: request.sound ? null : WindowsNotificationAudio.silent(),
+      audio: request.sound && !request.silentUpdate
+          ? null
+          : WindowsNotificationAudio.silent(),
     );
     return NotificationDetails(
       android: android,

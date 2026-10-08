@@ -7,6 +7,8 @@ extension _SessionBinding on Tim2ToxChatService {
   void _bindSession(FfiChatService? svc) {
     _unbindSession();
     _service = svc;
+    // Before the session is published or any listener is installed.
+    _blockingPart.bind(svc);
     _session.add(svc != null);
     if (svc == null) {
       _friendsPart.reset();
@@ -49,6 +51,9 @@ extension _SessionBinding on Tim2ToxChatService {
     if (svc == null || _disposed || identical(_ticking, svc)) return;
     _ticking = svc;
     try {
+      // The blacklist filters everything published below.
+      await _blockingPart.ensureLoaded(svc);
+      if (!_isCurrent(svc)) return;
       await _friendsPart.refresh(svc);
       if (!_isCurrent(svc)) return;
       await _friendsPart.refreshRequests(svc);
@@ -78,6 +83,9 @@ extension _SessionBinding on Tim2ToxChatService {
     // MorseCQ has no file feature: a file a toxee peer pushed is not a
     // chat message here (and must not reach auto-play as an empty one).
     if (!MessageMapper.isChatText(m)) return;
+    // Blocked peers: Tim2Tox already drops their C2C rows; group rows it
+    // stores, so they are hidden here (and in every history read).
+    if (!_blockingPart.shows(m)) return;
     if (_meta.hidden.contains(conversationId)) {
       unawaited(_meta.unhide(conversationId));
     }

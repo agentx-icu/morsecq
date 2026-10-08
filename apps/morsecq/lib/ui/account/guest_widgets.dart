@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../di/app_features.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../i18n/language_settings_tile.dart';
 import '../../startup/startup_controller.dart';
 import '../appearance/appearance_page.dart';
+import '../moderation/site_links.dart';
+import '../pages/offline_me_page.dart';
 
 StartupController? _startup(BuildContext context, {bool listen = true}) {
   try {
@@ -42,6 +45,7 @@ class TryLearningFirstButton extends StatelessWidget {
 }
 
 /// The shell in guest mode: a slim banner over the normal destinations.
+/// The offline build has no identity to offer, so no banner.
 class GuestShell extends StatelessWidget {
   const GuestShell({super.key, required this.child});
 
@@ -49,6 +53,7 @@ class GuestShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.read<AppFeatures>().chat) return child;
     final s = context.s;
     final theme = Theme.of(context);
     return Column(
@@ -107,6 +112,10 @@ class IdentityRequiredGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isGuestMode(context)) return child;
+    // The offline build's only Me: settings of the learning profile.
+    if (!context.read<AppFeatures>().chat && isMe) {
+      return const OfflineMePage();
+    }
     final s = context.s;
     final theme = Theme.of(context);
     final controller = context.read<StartupController>();
@@ -141,6 +150,7 @@ class IdentityRequiredGate extends StatelessWidget {
               title: Text(s.appearanceTitle),
               onTap: () => AppearancePage.open(context),
             ),
+            const SiteLinksSection(),
             ListTile(
               key: const ValueKey('guest-clear'),
               leading: const Icon(Icons.delete_outline),
