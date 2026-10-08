@@ -2,7 +2,7 @@
 
 # Offline persistence audit — 2026-10-08
 
-MorseCQ's first release stores learning and preferences locally and opens directly into Learn. `<support>` is the application's platform support directory returned by path_provider; `<learning>` is `<support>/morsecq/guest`. Data is independent of the process working directory and the installed application bundle.
+MorseCQ stores learning and preferences locally and opens directly into Learn. `<support>` is the application's platform support directory returned by path_provider; `<learning>` is `<support>/morsecq/guest`. Data is independent of the process working directory and the installed application bundle.
 
 | Durable content | Location | Save/reopen behavior |
 | --- | --- | --- |
@@ -19,4 +19,4 @@ Live audio, microphone buffers, pressed keys, selected pages, translator scratch
 
 Regression coverage includes concurrent file writes, malformed JSON recovery, preference error/retry and appearance restart behavior; first launch, background flushing, clear durability and learning-UI reload; plus real-platform learning/preference reopening in `integration_test/persistence_test.dart`. The desktop E2E workflow executes that integration test and the actual UI walk on macOS, Linux and Windows. Fresh counts, CI links, device evidence and artifact verification are maintained in [the validation record](../VALIDATION.md), with [Chinese details](../VALIDATION.zh-CN.md). Reproduce gates and suites through `tool/test_pyramid.sh`; the screenshot and visual-matrix workflows are documented in [the screenshot guide](../../tool/screenshots/README.md).
 
-If application-support storage cannot open, preferences fall back to memory and log the error; they then cannot survive restart. Learning-store failures surface a retryable state. Atomic JSON replacement and previous-save files reduce incomplete-file failures; they do not prove power-loss or force-kill durability. Physical-device microphone, keying, haptics and persistence acceptance remains before distribution.
+If application-support storage cannot open, preferences fall back to memory and log the error; they then cannot survive restart. Learning-store failures surface a retryable state. Atomic JSON replacement and previous-save files reduce incomplete-file failures; they do not prove power-loss or force-kill durability.

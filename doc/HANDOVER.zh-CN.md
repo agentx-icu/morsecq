@@ -1,7 +1,9 @@
-# MorseCQ 离线应用交接
+[English](./HANDOVER.md)
 
-当前说明见 [README](../README.zh-CN.md)、[本地学习架构](architecture/OFFLINE_LEARNING.md)、[构建指南](operations/BUILD_AND_DEPLOY.zh-CN.md)和[测试金字塔](testing/TEST_PYRAMID.zh-CN.md)。
+# MorseCQ 维护指南
 
-已完成点划与 K/M 入门、分级引导抄发报、独立课程挑战与真实练习总结、模拟通联准备度提示、本地直接启动、移除注册与账号及聊天传输、确认后可靠清除本地学习数据、三个导航目标、五平台离线构建及通过门禁后生成草稿 Release。
+从 [README](../README.zh-CN.md)、[学习架构](architecture/OFFLINE_LEARNING.zh-CN.md)、[构建指南](operations/BUILD_AND_DEPLOY.zh-CN.md)和[测试金字塔](testing/TEST_PYRAMID.zh-CN.md)开始。已执行的检查见[验证记录](VALIDATION.zh-CN.md)。
 
-发布前须在最终提交上运行必需 CI，验收真实设备的麦克风、实体键、触觉反馈和本地持久化，并按分发需要提供商店签名及 Apple 公证配置。
+保持点划与 K/M、引导识别、引导发报和独立挑战的入门路径。课程升级依赖逐字符的独立练习证据。修改持久化时，覆盖进度重载、后台保存、失败重试及确认后清除学习数据。
+
+使用手机和桌面布局检查十种语言和五种风格。设备检查覆盖麦克风解码、键控时序、触觉反馈、学习素材选择和本地持久化。

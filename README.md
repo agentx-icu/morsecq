@@ -2,27 +2,25 @@
 
 [简体中文](README.zh-CN.md)
 
-MorseCQ is an account-free, offline Morse code trainer. Install it and start learning immediately. Chat has moved to the independent [DitMesh](https://github.com/agentx-icu/ditmesh) app.
+MorseCQ is an account-free offline Morse code trainer. Open the app and start learning. For Morse chat, use [DitMesh](https://github.com/agentx-icu/ditmesh).
 
-Begin with hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lesson challenges use per-symbol evidence to advance; summaries distinguish assisted practice from course mastery. Placement assessment, spaced review, simulated radio QSOs with readiness guidance, saved materials, statistics, Morse reference and translation, Chinese telegraph codes, microphone decoding, recorded-audio copying and amateur-radio tools remain available. Touch and physical keyboard keying work on phones, tablets and desktops. The interface supports ten locales and five visual styles.
+Start by hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lessons advance through challenges using per-character evidence. Practice summaries distinguish assisted exercises from course mastery. Assessment, spaced review, simulated QSOs with readiness hints, learning materials, statistics, reference, translation, Chinese telegraph codes, microphone decoding, recorded-audio workbench and amateur-radio tools support continued practice. Touch and physical keyboards work across phone, tablet and desktop, with ten interface languages and five visual styles.
 
-Navigation is **Learn / Reference / Me**. No registration, Tox identity, messaging SDK, contacts, groups, chat notifications or chat network service is included. Microphone permission is requested only for live audio decoding. File selection and sharing serve local learning materials.
+Use **Learn / Reference / Me** to navigate. Microphone access is requested when you start live audio decoding; file selection and sharing let you work with your learning materials.
 
-![MorseCQ offline product concept](doc/designs/product-2026-10-08/product-concept.png)
+![MorseCQ product concept](doc/designs/product-2026-10-08/product-concept.png)
 
-The [current product concept](doc/designs/product-2026-10-08/README.md) illustrates the offline first-lesson, guided-practice and independent-challenge path. Product screenshots come from real builds through the [capture pipeline](tool/screenshots/README.md); see the [screenshot gallery](doc/screenshots/README.md). Concepts are labelled separately from screenshots.
+See the [product design](doc/designs/product-2026-10-08/README.md) and [screenshot gallery](doc/screenshots/README.md).
 
-## Run and verify
+## Build and run
 
-Use Flutter **3.41.9** with Dart **3.11.5**, plus the host platform's normal Flutter build tools. Resolve this Pub workspace once at the repository root:
+Use Flutter **3.41.9** with Dart **3.11.5** and the host platform's Flutter build tools. Resolve the Pub workspace at the repository root:
 
 ```sh
 dart pub get --enforce-lockfile
 cd apps/morsecq
 flutter run -d macos
 ```
-
-No submodule checkout, chat bootstrap, Tox native library, backend flag or account setup is required.
 
 ```sh
 # From the repository root
@@ -33,19 +31,19 @@ bash tool/test_pyramid.sh --level widget
 bash tool/ci/package_artifacts.sh --target macos
 ```
 
-Android, iOS, macOS, Linux and Windows are required release targets. [Build and release instructions](doc/operations/BUILD_AND_DEPLOY.md) describe the CI jobs, output packages, signing and draft GitHub Releases.
+Supports Android 7.0+, iOS 14+, macOS 13+, Linux and Windows. See the [build guide](doc/operations/BUILD_AND_DEPLOY.md) for platform tools and packaging commands.
 
-## Local learning data
+## Your learning data
 
-Learning data is stored locally under `<application support>/morsecq/guest/`: `training/` contains progress, settings and learning documents; `media/recordings/` contains managed audio. App-wide preferences are stored in `settings.json`. Me’s clear action flushes pending writes and removes current learning data after confirmation. Android platform backup is disabled; uninstalling can remove local data.
+Progress, learning materials and recordings stay on your device. Use Me → Clear learning data to remove them after confirmation; language and appearance settings are preserved. Uninstalling the app may delete local data.
 
 ## Project layout
 
-- `packages/morse_core`: pure Dart alphabet, timing, encoder/decoder and Chinese telegraph codes.
-- `packages/morse_trainer`: pure Dart lessons, assessment, spaced review, scoring and simulated QSO models.
-- `packages/morse_dsp`: pure Dart audio decoding and WAV reading.
-- `packages/radio_tools`: pure Dart locator, distance, bands, CW speed and RST utilities.
-- `packages/morse_io`: Flutter audio, keying and haptics.
-- `apps/morsecq`: offline application, local persistence and desktop shell.
+- `packages/morse_core`: alphabet, timing, encoder/decoder and Chinese telegraph codes.
+- `packages/morse_trainer`: lessons, assessment, spaced review, scoring and simulated QSO models.
+- `packages/morse_dsp`: audio decoding and WAV reading.
+- `packages/radio_tools`: locator, distance, bands, CW speed and RST utilities.
+- `packages/morse_io`: audio, keying and haptics.
+- `apps/morsecq`: application, local persistence and desktop shell.
 
-[Local learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation record](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)
+[Learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)

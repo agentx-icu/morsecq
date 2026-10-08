@@ -2,27 +2,25 @@
 
 [English](README.md)
 
-MorseCQ 是无需账号的离线莫尔斯电码学习软件，安装后即可开始学习。聊天功能已迁移到独立应用 [DitMesh](https://github.com/agentx-icu/ditmesh)。
+MorseCQ 是无需账号的离线莫尔斯电码学习软件，打开应用即可开始学习。电码聊天请使用 [DitMesh](https://github.com/agentx-icu/ditmesh)。
 
-先从听辨点划与 K/M 开始，再练习引导识别、引导发报和独立抄报。科赫课程按逐字符证据通过挑战升级，练习总结明确区分辅助练习和课程掌握。保留水平测评、间隔复习、带准备度提示的模拟通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和五种视觉样式。
+先从听辨点划与 K/M 开始，再练习引导识别、引导发报和独立抄报。科赫课程按逐字符证据通过挑战升级，练习总结明确区分辅助练习和课程掌握。提供水平测评、间隔复习、带准备度提示的模拟通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和五种视觉样式。
 
-导航统一为 **学习 / 参考 / 我的**。不包含注册、Tox 身份、聊天 SDK、联系人、群组、聊天通知或聊天网络服务。仅实时音频解码申请麦克风权限；文件选择与分享用于本地学习素材。
+通过 **学习 / 参考 / 我的** 导航。启动实时音频解码时申请麦克风权限；文件选择与分享用于学习素材。
 
-![MorseCQ 离线产品设计图](doc/designs/product-2026-10-08/product-concept.png)
+![MorseCQ 产品概念图](doc/designs/product-2026-10-08/product-concept.png)
 
-[当前产品设计](doc/designs/product-2026-10-08/README.zh-CN.md)展示离线入门、引导练习与独立挑战的教学路径。真实截图由[截图流程](tool/screenshots/README.zh-CN.md)生成，见[截图说明](doc/screenshots/README.zh-CN.md)。设计概念图与真实运行截图分开标注。
+查看[产品设计](doc/designs/product-2026-10-08/README.zh-CN.md)和[截图库](doc/screenshots/README.zh-CN.md)。
 
-## 运行与验证
+## 构建与运行
 
-使用 Flutter **3.41.9** / Dart **3.11.5**，并安装目标平台常规 Flutter 构建工具。在仓库根目录统一解析 Pub workspace：
+使用 Flutter **3.41.9** / Dart **3.11.5** 及目标平台的 Flutter 构建工具。在仓库根目录解析 Pub workspace：
 
 ```sh
 dart pub get --enforce-lockfile
 cd apps/morsecq
 flutter run -d macos
 ```
-
-无需检出子模块、执行聊天依赖引导、编译 Tox 原生库、传入后端开关或创建账号。
 
 ```sh
 # 在仓库根目录执行
@@ -33,19 +31,19 @@ bash tool/test_pyramid.sh --level widget
 bash tool/ci/package_artifacts.sh --target macos
 ```
 
-Android、iOS、macOS、Linux 和 Windows 均为必需发布目标。[构建与发布说明](doc/operations/BUILD_AND_DEPLOY.zh-CN.md)涵盖 CI、安装包、签名及草稿 GitHub Release。
+支持 Android 7.0+、iOS 14+、macOS 13+、Linux 和 Windows。平台工具及打包命令见[构建指南](doc/operations/BUILD_AND_DEPLOY.zh-CN.md)。
 
-## 本地学习数据
+## 学习数据
 
-学习数据保存在本机 `<应用支持目录>/morsecq/guest/`：`training/` 保存进度、设置与学习文档，`media/recordings/` 保存托管录音；应用偏好位于 `settings.json`。“我的”中的清除操作在确认后写入待保存数据，再删除当前学习数据。Android 平台备份关闭，卸载可能删除本地数据。
+学习进度、素材和录音保存在设备上。在「我的 → 清除学习数据」中确认后可删除这些内容，语言和外观设置会保留。卸载应用可能删除本地数据。
 
 ## 仓库结构
 
-- `packages/morse_core`：纯 Dart 字母表、时序、编码解码与中文电报码。
+- `packages/morse_core`：字母表、时序、编码解码与中文电报码。
 - `packages/morse_trainer`：课程、测评、间隔复习、评分与模拟通联。
-- `packages/morse_dsp`：纯 Dart 音频解码与 WAV 读取。
+- `packages/morse_dsp`：音频解码与 WAV 读取。
 - `packages/radio_tools`：网格、距离、波段、CW 速度与 RST 工具。
-- `packages/morse_io`：Flutter 音频、键控与触觉反馈。
-- `apps/morsecq`：离线应用、本地持久化与桌面窗口服务。
+- `packages/morse_io`：音频、键控与触觉反馈。
+- `apps/morsecq`：应用、本地持久化与桌面窗口服务。
 
-[本地学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)
+[学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)

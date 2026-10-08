@@ -1,7 +1,9 @@
-# MorseCQ offline split handover
+[简体中文](./HANDOVER.zh-CN.md)
 
-See the current [README](../README.md), [architecture](architecture/OFFLINE_LEARNING.md), [build guide](operations/BUILD_AND_DEPLOY.md) and [test pyramid](testing/TEST_PYRAMID.md).
+# MorseCQ maintenance guide
 
-Implemented: first-day dit/dah and K/M onboarding, graded guided receive/send practice, independent lesson challenges and honest summaries, QSO readiness, local startup, no registration/identity/transport, confirmed durable local clear, three destinations, offline five-platform builds and gated draft Releases.
+Start with the [README](../README.md), [learning architecture](architecture/OFFLINE_LEARNING.md), [build guide](operations/BUILD_AND_DEPLOY.md) and [test pyramid](testing/TEST_PYRAMID.md). Executed checks are in the [validation record](VALIDATION.md).
 
-Before shipping: run required CI on the final commit, verify physical-device microphone/keying/haptics and local persistence, provide owner store signing and Apple notarization as needed.
+Preserve the first-lesson path from dit/dah and K/M to guided recognition, guided sending and independent challenges. Keep lesson advancement tied to independent per-character evidence. Cover progress reopening, background saves, retry behavior and confirmed learning-data removal when changing persistence.
+
+Use phone and desktop layouts to check all ten languages and five styles. Device checks cover microphone decoding, key timing, haptics, learning-material selection and local persistence.
