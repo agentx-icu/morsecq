@@ -27,7 +27,7 @@ import guard、UI 字面量守卫）和完整的测试金字塔（单元、控�
 |---|---|---|
 | Android | Android 7.0+（API 24）；arm64-v8a、armeabi-v7a、x86_64 | 学习与 Tox 聊天；CI 打包 APK/AAB，模拟器已验证首日学习流程和截图。 |
 | iOS / iPadOS | 14.0+；arm64 真机 | App Store 形态为离线训练器，由 `tool/build_ios_store.sh` 构建；已检查 iPhone/iPad 模拟器布局和 iPhone 首日流程。上架与真机听感验证待完成。 |
-| macOS | Apple Silicon：macOS 11+；Intel 源码部署目标：10.15+ | 学习与 Tox 聊天；应用打包为 arm64 `.pkg`/`.zip`，原生库覆盖 arm64/x86_64。本机 Apple Silicon 已验证启动、学习、存储和截图；旧系统与 Intel 应用尚未实机验证。 |
+| macOS | 当前 Apple Silicon 构建：macOS 13+；Intel 源码部署目标：10.15（整包兼容性未验证） | 学习与 Tox 聊天；应用打包为 arm64 `.pkg`/`.zip`，原生库覆盖 arm64/x86_64。本机 Apple Silicon 已验证启动、学习、存储和截图；当前 Debug 包中的 `objective_c` 原生依赖最低为 macOS 13，不能用较低的引擎/工程目标判断整包兼容性。旧系统与 Intel 应用尚未实机验证。 |
 | Linux | 当前应用构建和 UI 测试适配 **Ubuntu 24.04 LTS，x86_64** | 学习与 Tox 聊天；产物为 `.deb`、`.rpm`、`.tar.gz`，Ubuntu 桌面构建与 UI 测试在 CI 运行。Linux aarch64 目前仅有实验性原生库任务。 |
 | Windows | 桌面目标为 **Windows 10 / Windows 11，x64** | 学习与 Tox 聊天；产物为 `.msi`、`.zip`，CI 构建与 UI 测试使用 Windows Server 2022，不能代替客户端实机验证。Windows ARM64 目前仅有实验性原生库任务；不提供 32 位 Windows 应用。 |
 
