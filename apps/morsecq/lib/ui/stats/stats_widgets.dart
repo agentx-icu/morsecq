@@ -153,8 +153,19 @@ class OverviewTiles extends StatelessWidget {
       StatTile(
         icon: Icons.school_outlined,
         label: s.statsTileLesson,
-        value: s.statsLessonOf(snap.currentLesson, snap.lessonCount),
-        detail: s.statsCharsLearned(snap.learnedChars.length),
+        value: snap.courseCompleted
+            ? s.statsCoursePassed
+            : s.statsLessonOf(snap.currentLesson, snap.lessonCount),
+        detail: s.learnCharsIntroducedMastered(
+          snap.learnedChars.length,
+          snap.learnedChars
+              .where(
+                (c) =>
+                    LearnerStages.masteryOf(snap.progress.charStats[c]) ==
+                    CharMastery.mastered,
+              )
+              .length,
+        ),
       ),
       StatTile(
         icon: Icons.track_changes_outlined,

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/ui/shell/app_shell.dart';
+import 'package:morsecq/ui/learn/onboarding/first_lesson_screen.dart';
 import '../support/test_app.dart';
 
 void main() {
@@ -25,12 +26,12 @@ void main() {
       expect(find.byType(AppShell), findsOneWidget);
       final nav = tester.widget<NavigationBar>(find.byType(NavigationBar));
       expect(nav.destinations.length, 3);
-      expect(find.text('Continue lesson'), findsOneWidget);
+      final start = find.byKey(const ValueKey('start-here'));
+      expect(start.hitTestable(), findsOneWidget);
       expect(find.text('Create identity'), findsNothing);
-      expect(
-        find.byKey(const ValueKey('legacy-learning-import')),
-        findsNothing,
-      );
+      await tester.tap(start);
+      await settle(tester);
+      expect(find.byType(FirstLessonScreen), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
       await settle(tester);
     },

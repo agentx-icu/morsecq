@@ -20,3 +20,5 @@ tool/screenshots/capture.sh --locales en,zh,zh_Hant,ja,ko,de,fr,es,pt,ru --style
 按需运行的 **Visual matrix** 流水线通过手动触发或 PR 的 `ci:e2e` 标签启用。它加载真实 Noto CJK、等宽及衬线字体，生成 **38 个配置 / 76 张 PNG**：十种语言的手机 / 桌面 Modern 浅色界面，以及五种样式的手机 / 桌面浅色 / 深色英文界面；重复配置合并。代表场景为 `learn_home / reference`，分别覆盖各维度，避免把全部语言、样式、主题、平台相乘。产物包含 `manifest.json`，现有 E2E 仍在三种真实桌面主机上捕获完整产品场景。
 
 常规 Flutter 测试 `test/screenshots/shot_config_test.dart` 覆盖参数解析和实际样式应用；`python3 tool/screenshots/capture_import_test.py` 使用私有 PNG 验证导入和发布边界。实际矩阵导出按需开启（`MORSECQ_RENDER_MATRIX=true`、`MORSECQ_MATRIX_DIR`、`MORSECQ_MATRIX_FONT`，可另设等宽 / 衬线字体路径），常规应用测试不导出视觉资产。
+
+每个平台标准图库要求英文与简体中文各 **12 个场景，共 24 张 PNG**：`learn_home,stats,training_settings,receive_drill,send_practice,first_lesson,receive_summary,guided_send,reference,translator,listen,me`。三个教学场景来自实际页面，抄报总结在真实播放与答题完成后捕获。

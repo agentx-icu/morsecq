@@ -6,7 +6,7 @@ MorseCQ 首个发布版本在本地保存学习及偏好，安装后直接打开
 
 | 持久化内容 | 位置 | 保存与重载行为 |
 | --- | --- | --- |
-| 课程进度、SRS 卡片、计划步骤和完成的训练历史 | `<learning>/training/progress.json` | 校验后原子替换 JSON，保留上一次有效文件；新控制器恢复已提交数据。 |
+| 课程完成、入门时间、识别节奏、引导发报阶段、SRS 卡片、计划步骤和完成的训练历史 | `<learning>/training/progress.json` | 校验后原子替换 JSON，保留上一次有效文件；新控制器恢复已提交数据。 |
 | 训练速度、播放及教学默认值 | `<learning>/training/settings.json` | 本地设置经过校验并串行保存。 |
 | 素材、工作台文档及录音元数据 | `<learning>/training/docs/` | 命名 JSON 文档原子替换，并可恢复上一次保存。 |
 | 录音音频 | `<learning>/media/recordings/` | 元数据仅接受安全的相对录音文件名。 |

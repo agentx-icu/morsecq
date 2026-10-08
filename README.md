@@ -4,20 +4,20 @@
 
 MorseCQ is an account-free, offline Morse code trainer. Install it and start learning immediately. Chat has moved to the independent [DitMesh](https://github.com/agentx-icu/ditmesh) app.
 
-MorseCQ keeps Koch lessons, placement assessment, spaced review, receive drills, straight-key and iambic sending practice, simulated radio QSOs, saved materials, progress statistics, the Morse reference and translator, Chinese telegraph codes, microphone decoding, recorded-audio copying and amateur-radio tools. Touch and physical keyboard keying work on phones, tablets and desktops. The interface supports ten locales and five visual styles.
+Begin with hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lesson challenges use per-symbol evidence to advance; summaries distinguish assisted practice from course mastery. Placement assessment, spaced review, simulated radio QSOs with readiness guidance, saved materials, statistics, Morse reference and translation, Chinese telegraph codes, microphone decoding, recorded-audio copying and amateur-radio tools remain available. Touch and physical keyboard keying work on phones, tablets and desktops. The interface supports ten locales and five visual styles.
 
 Navigation is **Learn / Reference / Me**. No registration, Tox identity, messaging SDK, contacts, groups, chat notifications or chat network service is included. Microphone permission is requested only for live audio decoding. File selection and sharing serve local learning materials.
 
 ![MorseCQ offline product concept](doc/designs/product-2026-10-08/product-concept.png)
 
-The [current product concept](doc/designs/product-2026-10-08/README.md) describes the offline split. Product screenshots come from real builds through the [capture pipeline](tool/screenshots/README.md); see the [screenshot gallery](doc/screenshots/README.md). Concepts are labelled separately from screenshots.
+The [current product concept](doc/designs/product-2026-10-08/README.md) illustrates the offline first-lesson, guided-practice and independent-challenge path. Product screenshots come from real builds through the [capture pipeline](tool/screenshots/README.md); see the [screenshot gallery](doc/screenshots/README.md). Concepts are labelled separately from screenshots.
 
 ## Run and verify
 
 Use Flutter **3.41.9** with Dart **3.11.5**, plus the host platform's normal Flutter build tools. Resolve this Pub workspace once at the repository root:
 
 ```sh
-dart pub get
+dart pub get --enforce-lockfile
 cd apps/morsecq
 flutter run -d macos
 ```

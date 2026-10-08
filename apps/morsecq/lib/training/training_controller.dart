@@ -15,6 +15,8 @@ import 'training_settings_store.dart';
 
 export 'exercise_outcome.dart';
 export 'receive_recording.dart';
+export 'receive_session_start.dart';
+export 'receive_verdict.dart';
 export 'send_practice_start.dart';
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
@@ -39,12 +41,6 @@ final class TrainingController extends ChangeNotifier {
 
   /// Symbols one send-practice target contains.
   static const int sendTargetChars = 5;
-
-  /// Lesson from which QSO drills are offered (they need most letters).
-  static const int qsoFromLesson = DrillCatalog.qsoFromLesson;
-
-  /// Abbreviations / Q-codes needed before that drill is offered.
-  static const int minShorthandWords = DrillCatalog.minShorthandWords;
 
   final TrainerStore _progressStore;
   final TrainingSettingsStore _settingsStore;
@@ -84,7 +80,8 @@ final class TrainingController extends ChangeNotifier {
   /// The injected randomness (plans and simulators seed from it).
   Random get random => _random;
 
-  DrillCatalog get _catalog => DrillCatalog(
+  /// Which drill serves each kind for the learner's current state.
+  DrillCatalog get catalog => DrillCatalog(
     course: course,
     progress: _progress,
     settings: trainerSettings,
@@ -141,6 +138,10 @@ final class TrainingController extends ChangeNotifier {
 
   Future<void> setDailyGoal(int chars) =>
       _commit(_progress.copyWith(dailyGoalChars: chars));
+
+  /// Records that the guided first lesson was finished.
+  Future<void> markFirstLessonDone() =>
+      _commit(_progress.withFirstLessonDone(_now()));
 
   /// Jumps to [lesson] (clamped); for the lesson picker.
   Future<void> setLesson(int lesson) {
@@ -229,7 +230,41 @@ final class TrainingController extends ChangeNotifier {
 
   int get currentLesson => _progress.currentLesson;
   int get lessonCount => course.lessonCount;
-  bool get isCourseComplete => course.isLastLesson(currentLesson);
+
+  /// The last lesson's challenge was passed (not merely reached).
+  bool get isCourseComplete => _progress.courseCompleted;
+
+  /// On the last lesson: every symbol is unlocked, passed or not.
+  bool get allCharsUnlocked => course.isLastLesson(currentLesson);
+
+  /// Where the learner is on the staged path (plan mix, goal line, speed
+  /// advice follow it).
+  LearnerStage get learnerStage => LearnerStages.of(
+    _progress,
+    course,
+    now: now(),
+    characterWpm: trainerSettings.characterWpm,
+    effectiveWpm:
+        trainerSettings.toTiming().farnsworthWpm ??
+        trainerSettings.characterWpm,
+  );
+
+  RecentSymbolEvidence recentEvidenceOf(String char) =>
+      RecentPractice.forSymbol(
+        _progress.history,
+        char,
+        now: now(),
+        characterWpm: trainerSettings.characterWpm,
+        effectiveWpm:
+            trainerSettings.toTiming().farnsworthWpm ??
+            trainerSettings.characterWpm,
+      );
+
+  /// Current recognition, independently of the lifetime totals on Stats.
+  CharMastery masteryOf(String char) {
+    final e = recentEvidenceOf(char);
+    return LearnerStages.masteryOf(e.stats, insertions: e.insertions);
+  }
 
   /// Every symbol taught up to and including the current lesson.
   List<String> get learnedChars => course.charsForLesson(currentLesson);
@@ -253,7 +288,7 @@ final class TrainingController extends ChangeNotifier {
   /// Drill kinds the learned set can support right now.
   List<ReceiveDrillKind> get availableReceiveKinds {
     final chars = learnedChars;
-    final catalog = _catalog;
+    final catalog = this.catalog;
     return <ReceiveDrillKind>[
       for (final kind in ReceiveDrillKind.values)
         if (kind != ReceiveDrillKind.review &&
@@ -263,79 +298,7 @@ final class TrainingController extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // Sessions
-
-  /// The Koch lesson drill: weighted random groups over the learned set.
-  ReceiveSession startLessonSession() =>
-      startReceiveSession(ReceiveDrillKind.groups);
-
-  /// [preset] other than clear plays every round under simulated radio
-  /// conditions (F11) at the learner's own speeds; such a session never
-  /// counts toward the lesson.
-  ReceiveSession startReceiveSession(
-    ReceiveDrillKind kind, {
-    RadioPreset preset = RadioPreset.clear,
-  }) {
-    if (kind == ReceiveDrillKind.review) {
-      return startReviewSession();
-    }
-    final chars = learnedChars;
-    final t = trainerSettings;
-    final generator = _catalog.generatorFor(kind, chars);
-    final timing = t.toTiming();
-    final conditions = preset == RadioPreset.clear
-        ? null
-        : RadioScenario.preset(
-            preset,
-            seed: _random.nextInt(1 << 31),
-            characterWpm: timing.wpm,
-            effectiveWpm: timing.farnsworthWpm ?? timing.wpm,
-            toneHz: t.toneHz,
-          );
-    return ReceiveSession(
-      kind: kind,
-      generator: generator,
-      // QSO scripts are fixed text (names, rigs, <BT>, <SK>), not filtered
-      // to the lesson, so their keypad offers every symbol of the course.
-      chars: generator is QsoDrill ? course.order : chars,
-      timing: timing,
-      charBudget: t.sessionLengthChars,
-      timeBudget: t.sessionLengthSeconds == null
-          ? null
-          : Duration(seconds: t.sessionLengthSeconds!),
-      lesson: currentLesson,
-      countsTowardLesson: conditions == null,
-      conditions: conditions,
-      random: _random,
-      now: _now,
-    );
-  }
-
-  /// SRS review: due symbols only (falls back to the whole learned set when
-  /// nothing is due), weighted by weakness. Never advances the lesson.
-  ReceiveSession startReviewSession() {
-    final due = dueChars;
-    final pool = due.length >= 2 ? due : learnedChars;
-    final t = trainerSettings;
-    return ReceiveSession(
-      kind: ReceiveDrillKind.review,
-      generator: RandomGroupsDrill(
-        chars: pool,
-        groupCount: 1,
-        groupSize: t.groupSize,
-        weights: _catalog.weights(),
-      ),
-      chars: pool,
-      timing: t.toTiming(),
-      charBudget: t.sessionLengthChars,
-      timeBudget: t.sessionLengthSeconds == null
-          ? null
-          : Duration(seconds: t.sessionLengthSeconds!),
-      lesson: currentLesson,
-      random: _random,
-      now: _now,
-    );
-  }
+  // Sessions (starters live in receive_session_start.dart)
 
   /// The one commit path for every scored exercise (spec §3): builds the
   /// exercise record, applies [CreditPolicy], completes the daily-plan step

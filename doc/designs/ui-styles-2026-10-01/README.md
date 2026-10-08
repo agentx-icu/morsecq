@@ -1,4 +1,4 @@
-> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+> Archived pre-split appearance concepts. The Learn / Chat / Groups / Reference / Me navigation illustrated below belongs to the former combined design and is not current MorseCQ navigation. Current offline MorseCQ uses Learn / Reference / Me; see the [2026-10-08 product concept](../product-2026-10-08/README.md) and [current README](../../../README.md).
 
 [简体中文](./README.zh-CN.md)
 

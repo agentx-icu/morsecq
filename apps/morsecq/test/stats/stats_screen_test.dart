@@ -96,7 +96,7 @@ void main() {
       );
       expect(find.text(en.statsTileLesson), findsOneWidget);
       expect(find.text(en.statsLessonOf(3, 42)), findsOneWidget);
-      expect(find.text(en.statsCharsLearned(4)), findsOneWidget);
+      expect(find.text(en.learnCharsIntroducedMastered(4, 0)), findsOneWidget);
       expect(find.text(formatPercent(en, 34 / 36)), findsOneWidget);
       expect(
         find.text(formatPracticeDuration(en, const Duration(minutes: 6))),

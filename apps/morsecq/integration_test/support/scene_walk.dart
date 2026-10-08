@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/l10n/generated/s.dart';
+import 'package:morsecq/training/send_practice_start.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
-import 'package:morsecq/ui/learn/learn_home_widgets.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
@@ -17,6 +19,7 @@ import 'package:morsecq/ui/reference/translator_screen.dart';
 import 'package:morsecq/ui/shell/app_shell.dart';
 import 'package:morsecq/ui/stats/stats_screen.dart';
 import 'shot_harness.dart';
+import 'pedagogy_walk.dart';
 
 const kScenes = [
   'learn_home',
@@ -24,6 +27,9 @@ const kScenes = [
   'training_settings',
   'receive_drill',
   'send_practice',
+  'first_lesson',
+  'receive_summary',
+  'guided_send',
   'reference',
   'translator',
   'listen',
@@ -121,20 +127,24 @@ Future<void> walkLearn(
     },
   );
   await popIfCan(tester);
-  // The quick action, not today's plan step: in Chinese both read 发报练习,
-  // and the 6.9" iPhone shows the plan too.
-  await tapHittable(
-    tester,
-    find.descendant(
-      of: find.byType(QuickActions),
-      matching: find.text(s.learnSendPractice),
+  // Free sending and the guided first-use surface are distinct scenes.
+  final home = tester.widget<LearnHome>(find.byType(LearnHome));
+  unawaited(
+    Navigator.of(tester.element(find.byType(LearnHome))).push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => SendPracticeScreen(
+          controller: home.controller,
+          playback: home.playback,
+          session: home.controller.startFreeSendSession(),
+        ),
+      ),
     ),
-    'send practice quick action',
   );
   await settle(tester, extra: const Duration(milliseconds: 400));
   expectScreen(SendPracticeScreen);
   await shots.capture(tester, locale, 'send_practice');
   await popIfCan(tester);
+  await capturePedagogy(tester, shots, locale);
 }
 
 /// Reference: the handbook, the translator and Listen.

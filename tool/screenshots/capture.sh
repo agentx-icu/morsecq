@@ -24,7 +24,7 @@
 #                1320x2868) or the 13" iPad (iPad Pro 13-inch, 2064x2752)
 #                simulator itself, and verify rejects any other frame size
 #                and any frame with an alpha channel.
-#                All platforms use the same nine offline scenes.
+#                All platforms use the same twelve offline scenes.
 #   --locales    canonical comma list: en,zh,zh_Hant,ja,ko,de,fr,es,pt,ru.
 #                Default en,zh; custom language sets require --out.
 #   --style      classic|modern|radio|paper|cartoon|all (default modern).
@@ -87,7 +87,7 @@ err()  { echo -e "${RED}[capture]${NC} $*" >&2; }
 step() { echo -e "${CYAN}==>${NC} $*"; }
 
 # Must match kScenes in apps/morsecq/integration_test/support/scene_walk.dart.
-SCENES=(learn_home stats training_settings receive_drill send_practice reference translator listen me)
+SCENES=(learn_home stats training_settings receive_drill send_practice first_lesson receive_summary guided_send reference translator listen me)
 MIN_BYTES=8192
 
 # ── argument validation (bash 3.2: an empty array is unbound under set -u) ──

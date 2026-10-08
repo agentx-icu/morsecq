@@ -314,7 +314,10 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          QsoLabels.stage(s, _session.stage),
+          _session.scenario == QsoScenario.shortExchange &&
+                  _session.stage == QsoStage.exchange
+              ? s.learnQsoSignalReport
+              : QsoLabels.stage(s, _session.stage),
           style: theme.textTheme.titleMedium,
         ),
         Text(

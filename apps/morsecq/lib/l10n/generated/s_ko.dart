@@ -2340,7 +2340,7 @@ class SKo extends S {
   String get placementCheckLevel => '현재 수준 확인';
 
   @override
-  String get placementFromZero => '처음부터 시작';
+  String get placementFromZero => '소개 건너뛰기: 레슨 1 도전';
 
   @override
   String get placementOfferTitle => '모스가 처음인가요, 이미 받아 적을 수 있나요?';
@@ -2688,4 +2688,530 @@ class SKo extends S {
 
   @override
   String get materialsImportedSource => '가져온 출처';
+
+  @override
+  String get learnStartHereTitle => '처음이신가요? 3분짜리 첫 레슨부터 시작하세요';
+
+  @override
+  String get learnStartHereBody => '소리를 듣고 K와 M을 익힌 뒤 쉬운 문제 몇 개에 답합니다. 점수는 매기지 않습니다.';
+
+  @override
+  String get learnStartHere => '여기서 시작';
+
+  @override
+  String get learnReplayFirstLesson => '첫 레슨 다시 보기';
+
+  @override
+  String learnCharsIntroducedMastered(int introduced, int mastered) {
+    return '도입 $introduced개 · 숙달 $mastered개';
+  }
+
+  @override
+  String get learnChipNew => '새 문자';
+
+  @override
+  String get learnChipPractising => '연습 중';
+
+  @override
+  String get learnChipMastered => '숙달';
+
+  @override
+  String get learnChipWeak => '90% 미만';
+
+  @override
+  String get learnChipDue => '복습 예정';
+
+  @override
+  String get learnTapChipHint => '문자를 탭하면 소리를 들을 수 있습니다';
+
+  @override
+  String learnHearChar(String char) {
+    return '$char 듣기';
+  }
+
+  @override
+  String learnCompareWith(String a, String b) {
+    return '$a vs $b';
+  }
+
+  @override
+  String get learnGuidedPractice => '짧은 연습 (10개 문자)';
+
+  @override
+  String learnChallengeHint(int count, int min) {
+    return '레슨 도전: $count개 문자, 정확도 90%, 새 문자는 각각 최소 $min회. 통과하면 다음 문자가 열립니다.';
+  }
+
+  @override
+  String get learnAllUnlockedNotPassed => '모든 문자가 열렸습니다. 마지막 도전을 통과하면 과정이 완료됩니다.';
+
+  @override
+  String get learnGoalFirstUse => '지금 목표: 귀로 K와 M을 구별하기. 다음: 레슨 1 도전.';
+
+  @override
+  String learnGoalRecognition(String chars, int min, int lesson) {
+    return '지금 목표: $chars을(를) 확실히 알아듣기 ($min회, 90%). 다음: 레슨 $lesson 도전.';
+  }
+
+  @override
+  String learnGoalCopying(int lesson, String next) {
+    return '지금 목표: 레슨 $lesson 도전 통과. 다음: $next.';
+  }
+
+  @override
+  String learnGoalNextChar(String char) {
+    return '문자 $char';
+  }
+
+  @override
+  String get learnGoalNextOperating => '단어, 호출부호, 완전한 QSO';
+
+  @override
+  String get learnGoalOperating => '지금 목표: 실제 메시지 — 단어, 호출부호, QSO. 다음: 유효 속도를 한 단계씩 올리기.';
+
+  @override
+  String get learnMorePractice => '더 많은 연습';
+
+  @override
+  String get learnQsoReady => '준비됨';
+
+  @override
+  String get learnQsoPractiseFirst => '먼저 교신문 연습';
+
+  @override
+  String learnQsoSymbolsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개 문자 더 필요',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get learnGlossaryTitle => '이 용어들은 무슨 뜻인가요?';
+
+  @override
+  String get glossaryKoch => '코흐 방법: 문자를 처음부터 실제 속도로 배우고, 두 개로 시작해 레슨마다 하나씩 추가합니다. 90% 정확도면 다음으로 넘어갑니다.';
+
+  @override
+  String get glossaryWpm => 'WPM: 분당 단어 수, 표준 단어 PARIS 기준. 문자 속도는 각 문자 자체가 들리는 빠르기입니다.';
+
+  @override
+  String get glossaryFarnsworth => '판즈워스: 문자는 빠르게 유지하고 문자 사이 간격만 늘려 생각할 시간을 줍니다. 유효 속도는 그 간격까지 포함한 속도입니다.';
+
+  @override
+  String get glossaryQso => 'QSO: 두 국 사이의 한 번의 양방향 교신. CQ = 아무나 응답 바람, DE = ~로부터, K = 송신 바람.';
+
+  @override
+  String get glossaryRst => 'RST: 신호 보고 — 가독도, 신호 세기, 음조. 599는 완벽. 73은 안부 인사.';
+
+  @override
+  String get learnVerdictNotCredited => '기록 없음: 답한 문자가 없습니다.';
+
+  @override
+  String get learnVerdictAssisted => '도움 받은 연습';
+
+  @override
+  String get learnVerdictAssistedHint => '다시 듣기나 정답 보기를 사용했으므로 이번 시도는 연습으로만 기록됩니다. 잠금 해제와 복습 갱신은 없습니다. 다음에는 다시 듣기 없이 해 보세요.';
+
+  @override
+  String get learnVerdictPractice => '연습 기록됨';
+
+  @override
+  String get learnVerdictPracticeHint => '자유 연습은 통계와 복습을 갱신하지만 과정을 진행시키지는 않습니다. 학습 홈의 레슨 도전만 과정을 진행시킵니다.';
+
+  @override
+  String get learnVerdictCourseComplete => '마지막 도전 통과: 문자 과정을 모두 마쳤습니다.';
+
+  @override
+  String learnVerdictTooShort(int count, int min) {
+    return '완전한 도전이 아님: $min개 중 $count개';
+  }
+
+  @override
+  String learnVerdictTooShortHint(int min) {
+    return '도전은 최소 $min개 문자입니다. 학습 홈에서 레슨을 시작하거나 훈련 설정에서 세션 길이를 늘리세요.';
+  }
+
+  @override
+  String learnVerdictUncovered(String chars) {
+    return '$chars 횟수 부족';
+  }
+
+  @override
+  String learnVerdictUncoveredHint(int min) {
+    return '도전은 새 문자를 각각 최소 $min회 포함해야 합니다. 다시 해 보세요. 도전에는 일부러 포함되어 있습니다.';
+  }
+
+  @override
+  String learnVerdictNewSymbolWeak(String chars) {
+    return '새 문자 90% 미만: $chars';
+  }
+
+  @override
+  String get learnVerdictNewSymbolWeakHint => '나머지는 괜찮습니다. 새 문자가 레슨을 결정합니다. 비슷한 문자와 비교해 듣고 연습한 뒤 다시 도전하세요.';
+
+  @override
+  String get learnVerdictBelowAccuracyHint => '전체 정확도가 90% 미만입니다. 아래 약한 문자를 짧게 연습한 뒤 다시 도전하세요.';
+
+  @override
+  String get learnDrillWeak => '약한 문자 연습';
+
+  @override
+  String get learnRetryChallenge => '다시 도전';
+
+  @override
+  String get learnTakeChallenge => '레슨 도전 시작';
+
+  @override
+  String learnChallengeTitle(int lesson) {
+    return '레슨 $lesson 도전';
+  }
+
+  @override
+  String get learnPracticeTitle => '연습';
+
+  @override
+  String get learnMeaningsTitle => '뜻';
+
+  @override
+  String get firstLessonTitle => '첫 레슨';
+
+  @override
+  String firstLessonStep(int step, int total) {
+    return '$total단계 중 $step';
+  }
+
+  @override
+  String get firstLessonHearTitle => '들리나요?';
+
+  @override
+  String get firstLessonHearBody => '재생을 탭하세요. 짧은 신호음 패턴이 들려야 합니다 (화면 깜박임이나 진동을 켰다면 그것도).';
+
+  @override
+  String get firstLessonHeard => '들렸어요';
+
+  @override
+  String get firstLessonNotHeard => '아무것도 안 들려요';
+
+  @override
+  String get firstLessonNoSoundTitle => '소리가 안 나나요?';
+
+  @override
+  String get firstLessonNoSoundBody => '볼륨을 올리고 무음 스위치나 방해 금지 모드를 확인하세요. 소리 대신 화면 깜박임이나 진동을 사용할 수도 있습니다.';
+
+  @override
+  String get firstLessonUseFlash => '화면도 깜박이기';
+
+  @override
+  String get firstLessonUseVibration => '진동도 켜기';
+
+  @override
+  String get firstLessonPlay => '재생';
+
+  @override
+  String get firstLessonSoundsTitle => '짧은 소리와 긴 소리';
+
+  @override
+  String get firstLessonSoundsBody => '모스 부호의 소리는 두 가지입니다. 짧은 \"딧\"과 세 배 긴 \"다\". 문자는 이들의 조합이고, 문자 사이에는 짧은 침묵이 있습니다. 각각 탭해서 들어 보세요.';
+
+  @override
+  String get firstLessonDit => '딧 (짧게)';
+
+  @override
+  String get firstLessonDah => '다 (길게)';
+
+  @override
+  String get firstLessonWorkedTitle => '예시 풀이';
+
+  @override
+  String get firstLessonWorkedBody => '먼저 들어 보세요. 소리가 끝나면 정답이 나타납니다. 아직 답할 필요는 없습니다.';
+
+  @override
+  String firstLessonWorkedReveal(String char) {
+    return '방금 것은 $char였습니다';
+  }
+
+  @override
+  String get firstLessonTrialsTitle => 'K일까요, M일까요?';
+
+  @override
+  String get firstLessonTrialsBody => '듣고 나서 들린 문자를 탭하세요. 원하는 만큼 다시 들어도 됩니다. 시험이 아닙니다.';
+
+  @override
+  String firstLessonTrialRound(int round, int total) {
+    return '$total회 중 $round회';
+  }
+
+  @override
+  String firstLessonTrialCorrect(String char) {
+    return '맞아요, $char였습니다';
+  }
+
+  @override
+  String firstLessonTrialWrong(String char, String answer) {
+    return '방금 것은 $answer가 아니라 $char였습니다. 나란히 들어 보세요.';
+  }
+
+  @override
+  String get firstLessonTooFast => '너무 빠른가요? 초보자 속도(문자 사이 간격 더 길게) 사용';
+
+  @override
+  String get firstLessonNextTitle => '다음 단계';
+
+  @override
+  String firstLessonNextBody(int correct, int total) {
+    return '이번 라운드는 $total개 중 $correct개 정답입니다. 다음 단계를 선택하고 자신의 속도로 계속하세요.';
+  }
+
+  @override
+  String get firstLessonNextGuided => '짧은 연습: 문자 하나씩 10개';
+
+  @override
+  String get firstLessonNextSend => '송신해 보기';
+
+  @override
+  String get firstLessonSendGuide => '송신: 짧게 누르면 딧, 길게 누르면 다. 패들은 한쪽이 딧, 다른 쪽이 다입니다. 떼고, 문자 사이에 잠깐 쉬세요. 스트레이트 키나 아이앰빅 A/B는 나중에 바꿔도 됩니다. 지금은 중요하지 않아요.';
+
+  @override
+  String get firstLessonReplayAnytime => '이 레슨은 학습 홈에서 언제든 다시 볼 수 있습니다.';
+
+  @override
+  String get firstLessonContinue => '계속';
+
+  @override
+  String get firstLessonTrialNext => '다음 문제';
+
+  @override
+  String get sendFirstUseTitle => '처음 키잉하시나요?';
+
+  @override
+  String get sendFirstUseStraight => '키를 짧게 누르면 딧, 약 세 배 길게 누르면 다. 문자 사이는 잠깐, 단어 사이는 더 길게 쉬세요.';
+
+  @override
+  String get sendFirstUsePaddles => '점으로 표시된 패들을 눌러 점을, 선으로 표시된 패들을 눌러 선을 보냅니다. 키어가 길이를 맞춥니다. 문자 사이에는 짧게, 단어 사이에는 더 길게 쉽니다.';
+
+  @override
+  String get sendFirstUseDismiss => '알겠어요';
+
+  @override
+  String get learnSpeedPresets => '속도 프리셋';
+
+  @override
+  String get learnPresetBeginner => '초보자 20 / 6';
+
+  @override
+  String get learnPresetStandard => '표준 20 / 8';
+
+  @override
+  String get learnPresetHelp => '두 프리셋 모두 문자는 20 WPM으로 들립니다. 초보자 속도는 문자 사이 간격이 더 깁니다 (유효 6 WPM).';
+
+  @override
+  String get learnPlanStepIntro => '첫 레슨';
+
+  @override
+  String get learnPlanStepRecognition => '문자 하나씩';
+
+  @override
+  String get learnPlanReasonFirstLesson => '소리를 듣고 K와 M 구별하기 (약 3분)';
+
+  @override
+  String learnPlanReasonRecognition(String symbols) {
+    return '한 번에 한 문자: $symbols';
+  }
+
+  @override
+  String learnPlanReasonGuided(int count) {
+    return '$count개 문자의 짧은 혼합 그룹. 50개 문자 도전은 나중에';
+  }
+
+  @override
+  String learnPlanReasonSendOptional(int count) {
+    return '선택: 모범을 듣고 짧은 목표 $count개 키잉';
+  }
+
+  @override
+  String get learnQsoReadyTitle => 'QSO 준비 완료';
+
+  @override
+  String get learnQsoNotReadyTitle => '아직 배우지 않은 문자가 있습니다';
+
+  @override
+  String get learnQsoMissingBody => 'QSO에는 아직 배우지 않은 이 문자들이 나옵니다. 탭하면 들을 수 있습니다. 그래도 체험해 볼 수 있으며 키패드에 모든 문자가 표시됩니다.';
+
+  @override
+  String get learnQsoShorthandHint => '먼저 약어(CQ, DE, UR, RST, TNX, 73)를 연습하면 교신문이 이해됩니다.';
+
+  @override
+  String get learnQsoPractiseShorthand => '약어 연습';
+
+  @override
+  String get learnQsoHowTitle => 'QSO 진행 방식';
+
+  @override
+  String get learnQsoHowBody => '호출(CQ = 아무나, DE = ~로부터), 호출부호로 응답, 리포트(RST)·이름·QTH(위치) 교환, 그다음 73(안부)과 <SK>(끝). K는 송신 바람입니다.';
+
+  @override
+  String get learnQsoExploreLabel => '배우지 않은 문자 포함';
+
+  @override
+  String get statsCoursePassed => '과정 통과';
+
+  @override
+  String get firstLessonPlayAgain => '다시 재생';
+
+  @override
+  String firstLessonNextChallenge(int lesson, int count, String char) {
+    return '레슨 $lesson 도전: $count개 문자, 90%면 $char 해제';
+  }
+
+  @override
+  String firstLessonNextChallengeLast(int lesson, int count) {
+    return '레슨 $lesson 도전: $count개 문자 90%면 과정 완료';
+  }
+
+  @override
+  String get learnQsoShorthandTitle => '먼저 약어를 연습하세요';
+
+  @override
+  String get learnQsoExchangeTitle => '먼저 QSO 교신문을 연습하세요';
+
+  @override
+  String get learnQsoExchangeHint => '시뮬레이터에서 전체 QSO를 하기 전에 교신문을 한 줄씩(한 번의 교환씩) 받아 적어 보세요.';
+
+  @override
+  String get sendGuideTitle => '송신 따라 배우기';
+
+  @override
+  String sendGuideStep(int step, int total) {
+    return '총 $total 단계 중 $step 단계';
+  }
+
+  @override
+  String get sendGuideHear => '먼저 시범 듣기';
+
+  @override
+  String get sendGuideListening => '전체 리듬을 들어 보세요…';
+
+  @override
+  String get sendGuideTry => '이제 송신하기';
+
+  @override
+  String get sendGuideRetry => '같은 목표 다시 연습';
+
+  @override
+  String get sendGuidePassed => '정확하게 해독됐습니다. 다음 목표로 진행하세요.';
+
+  @override
+  String get sendGuideComplete => '두 문자와 그룹을 정확하게 송신했습니다. 자유 송신 연습으로 진행하세요.';
+
+  @override
+  String get sendGuideRhythm => '시범에 맞추세요: 점은 짧게, 선은 3 배 길게, 문자 사이에는 분명한 간격을 둡니다.';
+
+  @override
+  String get learnContinueToday => '오늘의 학습 계속하기';
+
+  @override
+  String get learnPlanDetails => '학습 계획 자세히 보기';
+
+  @override
+  String get learnGuidedSingle => '한 글자씩 · 10글자';
+
+  @override
+  String get learnGuidedShort => '3글자 짧은 묶음 · 15글자';
+
+  @override
+  String get learnGuidedGroups => '5글자 묶음 · 20글자';
+
+  @override
+  String get learnGuidedRecommended => '추천하는 다음 단계';
+
+  @override
+  String get learnGuidedProgressHint => '통과하면 짧은 묶음과 5글자 묶음으로 이어집니다. 안내 연습은 실력을 다지고, 과정 도전을 통과하면 다음 수업이 열립니다.';
+
+  @override
+  String get learnGuidedContinue => '안내 연습 계속하기';
+
+  @override
+  String get learnGuidedRetry => '이 단계 다시 연습하기';
+
+  @override
+  String get firstLessonZeroHint => '아직 정답이 없어도 괜찮아요. K와 M의 차이를 다시 듣고 시도해 보세요.';
+
+  @override
+  String get firstLessonPartialHint => '일부를 정확히 들었어요. K와 M을 다시 비교하고 자신의 속도로 계속하세요.';
+
+  @override
+  String get firstLessonPerfectHint => '이번 라운드는 모두 정답이에요. 다음에는 선택지 없는 받아쓰기 연습으로 다져 보세요.';
+
+  @override
+  String get firstLessonPaceLocked => '답변을 시작했으므로 이번 라운드의 속도는 유지됩니다. 다음 라운드는 설정에서 조정할 수 있어요.';
+
+  @override
+  String get learnRecentEvidenceHint => '학습 단계는 최근 14일간 같은 속도로 도움 없이 받아쓴 기록으로 판단합니다.';
+
+  @override
+  String get learnQsoConsolidateTitle => '배운 문자 다지기';
+
+  @override
+  String get learnQsoConsolidateHint => '잠금 해제와 숙달은 다릅니다. 한 글자씩 받아쓰며 최근의 독립적인 성적을 남기세요.';
+
+  @override
+  String get learnQsoPractiseSymbols => '이 문자들 연습하기';
+
+  @override
+  String get learnQsoProtocolTitle => '교신 용어 이해하기';
+
+  @override
+  String get learnQsoProtocolHint => '짧은 교신을 시작하기 전에 CQ, DE, RST, 73의 뜻을 확인하세요.';
+
+  @override
+  String get learnQsoProtocolStart => '용어 이해 확인하기';
+
+  @override
+  String learnQsoProtocolQuestion(String token) {
+    return '교신에서 $token은 무엇을 뜻하나요?';
+  }
+
+  @override
+  String get learnQsoGeneralCall => '아무 무선국이나 호출';
+
+  @override
+  String get learnQsoFromStation => '이 무선국으로부터';
+
+  @override
+  String get learnQsoSignalReport => '신호 보고';
+
+  @override
+  String get learnQsoBestRegards => '인사와 작별';
+
+  @override
+  String get learnQsoProtocolCorrect => '정답입니다';
+
+  @override
+  String learnQsoProtocolWrong(String meaning) {
+    return '올바른 뜻: $meaning';
+  }
+
+  @override
+  String get learnQsoProtocolPass => '네 용어를 모두 도움 없이 맞혔어요. 짧은 교신을 시도할 수 있습니다.';
+
+  @override
+  String get learnQsoProtocolPractice => '이 뜻들을 복습한 뒤 다시 확인하세요.';
+
+  @override
+  String get learnQsoProtocolRetry => '다시 확인하기';
+
+  @override
+  String get learnQsoShortExchange => '짧은 교신 연습하기';
+
+  @override
+  String get learnQsoShortExchangeHint => '호출부호 확인, 신호 보고 교환, 작별을 도움 없이 마친 뒤 전체 교신으로 진행하세요.';
+
+  @override
+  String get learnQsoExplorePending => '전체 교신 체험 · 아직 연습할 항목이 있어요';
+
+  @override
+  String get learnQsoReadyHint => '최근 독립적인 연습 기록을 갖췄습니다. 전체 모의 교신을 시작할 수 있어요.';
 }

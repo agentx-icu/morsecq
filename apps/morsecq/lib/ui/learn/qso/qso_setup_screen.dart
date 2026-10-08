@@ -2,12 +2,19 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:morse_core/morse_core.dart';
+import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/qso_practice.dart';
+import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
+import '../../../training/training_settings.dart';
 import '../learn_playback.dart';
+import '../receive/receive_drill_screen.dart';
+import 'qso_readiness_card.dart';
+import 'qso_protocol_screen.dart';
 import 'qso_screen.dart';
 
 /// Configure a simulated QSO: scenario and the learner's own callsign,
@@ -31,11 +38,94 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   final _call = TextEditingController();
   final _name = TextEditingController();
   final _qth = TextEditingController();
-  QsoScenario _scenario = QsoScenario.respondToCq;
+  QsoScenario _scenario = QsoScenario.shortExchange;
   QsoDraft? _draft;
   bool _loaded = false;
+  LearnPlayback? _playback;
+  TrainingSettings? _playbackSettings;
+  Future<LearnPlayback>? _creating;
 
   TrainingController get _c => widget.controller;
+
+  /// Plays one untaught symbol from the readiness card. The playback is
+  /// created on the first tap and rebuilt when the settings changed.
+  Future<void> _hear(String char) async {
+    final settings = _c.settings;
+    var p = _playback;
+    if (p != null && _playbackSettings != settings) {
+      _playback = null;
+      _creating = null;
+      p.player.stop();
+      await p.dispose();
+      p = null;
+    }
+    if (p == null) {
+      final creating = _creating ??= widget.playback.create(settings);
+      p = await creating;
+      // Several taps may await the same creation (see LessonCard).
+      if (identical(_creating, creating)) {
+        _creating = null;
+        if (!mounted) {
+          await p.dispose();
+          return;
+        }
+        setState(() {
+          _playback = p;
+          _playbackSettings = settings;
+        });
+      } else if (!identical(_playback, p)) {
+        await p.dispose();
+        return;
+      }
+      if (!mounted) return;
+    }
+    p.player.stop();
+    p.player.play(MorseEncoder.encode(char, _c.trainerSettings.toTiming()));
+  }
+
+  /// Opens the suggested drill and re-reads readiness on return.
+  VoidCallback? _drill(ReceiveDrillKind kind) =>
+      _c.availableReceiveKinds.contains(kind)
+      ? () async {
+          _playback?.player.stop();
+          await Navigator.of(context).push(
+            MaterialPageRoute<Object?>(
+              builder: (_) => ReceiveDrillScreen(
+                controller: _c,
+                playback: widget.playback,
+                session: _c.startReceiveSession(kind),
+              ),
+            ),
+          );
+          if (mounted) setState(() {});
+        }
+      : null;
+
+  Future<void> _practiseSymbols() async {
+    final session = _c.startQsoSymbolSession(_c.qsoReadiness.unmastered);
+    if (session == null) return;
+    _playback?.player.stop();
+    await Navigator.of(context).push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => ReceiveDrillScreen(
+          controller: _c,
+          playback: widget.playback,
+          session: session,
+        ),
+      ),
+    );
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _protocol() async {
+    _playback?.player.stop();
+    await Navigator.of(context).push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => QsoProtocolScreen(controller: _c),
+      ),
+    );
+    if (mounted) setState(() {});
+  }
 
   @override
   void initState() {
@@ -72,11 +162,13 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
 
   bool get _valid =>
       QsoStation.isValidCallsign(_call.text) &&
-      QsoStation.isValidWord(_name.text) &&
-      QsoStation.isValidWord(_qth.text);
+      (_scenario == QsoScenario.shortExchange ||
+          (QsoStation.isValidWord(_name.text) &&
+              QsoStation.isValidWord(_qth.text)));
 
   Future<void> _open(QsoSession session, {QsoDraft? resumed}) async {
-    await Navigator.of(context).pushReplacement(
+    _playback?.player.stop();
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => QsoScreen(
           controller: _c,
@@ -86,9 +178,10 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
         ),
       ),
     );
+    if (mounted) await _load();
   }
 
-  Future<void> _start() async {
+  Future<void> _start({QsoScenario? scenario}) async {
     final station = QsoStation(
       callsign: _call.text,
       name: _name.text,
@@ -104,7 +197,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     if (!mounted) return;
     await _open(
       QsoSession.start(
-        scenario: _scenario,
+        scenario: scenario ?? _scenario,
         seed: _c.random.nextInt(1 << 30),
         local: station,
         characterWpm: t.characterWpm,
@@ -115,6 +208,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
 
   @override
   void dispose() {
+    unawaited(_playback?.dispose());
     _call.dispose();
     _name.dispose();
     _qth.dispose();
@@ -125,59 +219,86 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: Text(s.learnQsoTitle)),
-      body: !_loaded
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 640),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        if (_draft != null) ...<Widget>[
-                          FilledButton.tonalIcon(
-                            key: const ValueKey('qso-resume'),
-                            onPressed: () =>
-                                _open(_draft!.session, resumed: _draft),
-                            icon: const Icon(Icons.restore),
-                            label: Text(s.learnQsoResume),
+    final flash = _playback?.flash;
+    final body = !_loaded
+        ? const Center(child: CircularProgressIndicator())
+        : SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // Follows the controller: practice recorded from
+                      // here (or elsewhere) updates the readiness.
+                      AnimatedBuilder(
+                        animation: _c,
+                        builder: (context, _) => QsoReadinessCard(
+                          readiness: _c.qsoReadiness,
+                          onHear: (c) => unawaited(_hear(c)),
+                          onPractiseShorthand: _drill(
+                            ReceiveDrillKind.abbreviations,
                           ),
-                          const SizedBox(height: 16),
-                        ],
-                        RadioGroup<QsoScenario>(
-                          groupValue: _scenario,
-                          onChanged: (v) => setState(() => _scenario = v!),
-                          child: Column(
-                            children: <Widget>[
-                              RadioListTile<QsoScenario>(
-                                value: QsoScenario.respondToCq,
-                                title: Text(s.learnQsoRespond),
-                                subtitle: Text(s.learnQsoRespondHint),
-                              ),
-                              RadioListTile<QsoScenario>(
-                                value: QsoScenario.callCq,
-                                title: Text(s.learnQsoCall),
-                                subtitle: Text(s.learnQsoCallHint),
-                              ),
-                            ],
-                          ),
+                          onPractiseSymbols: () =>
+                              unawaited(_practiseSymbols()),
+                          onPractiseProtocol: () => unawaited(_protocol()),
+                          onPractiseExchange:
+                              QsoStation.isValidCallsign(_call.text)
+                              ? () => unawaited(
+                                  _start(scenario: QsoScenario.shortExchange),
+                                )
+                              : null,
                         ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _call,
-                          textCapitalization: TextCapitalization.characters,
-                          autocorrect: false,
-                          decoration: InputDecoration(
-                            labelText: s.learnQsoYourCall,
-                            errorText: _callError(s),
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (_) => setState(() {}),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_draft != null) ...<Widget>[
+                        FilledButton.tonalIcon(
+                          key: const ValueKey('qso-resume'),
+                          onPressed: () =>
+                              _open(_draft!.session, resumed: _draft),
+                          icon: const Icon(Icons.restore),
+                          label: Text(s.learnQsoResume),
                         ),
+                        const SizedBox(height: 16),
+                      ],
+                      RadioGroup<QsoScenario>(
+                        groupValue: _scenario,
+                        onChanged: (v) => setState(() => _scenario = v!),
+                        child: Column(
+                          children: <Widget>[
+                            RadioListTile<QsoScenario>(
+                              value: QsoScenario.shortExchange,
+                              title: Text(s.learnQsoShortExchange),
+                              subtitle: Text(s.learnQsoShortExchangeHint),
+                            ),
+                            RadioListTile<QsoScenario>(
+                              value: QsoScenario.respondToCq,
+                              title: Text(s.learnQsoRespond),
+                              subtitle: Text(s.learnQsoRespondHint),
+                            ),
+                            RadioListTile<QsoScenario>(
+                              value: QsoScenario.callCq,
+                              title: Text(s.learnQsoCall),
+                              subtitle: Text(s.learnQsoCallHint),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _call,
+                        textCapitalization: TextCapitalization.characters,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          labelText: s.learnQsoYourCall,
+                          errorText: _callError(s),
+                          border: const OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      if (_scenario != QsoScenario.shortExchange) ...[
                         const SizedBox(height: 12),
                         TextField(
                           controller: _name,
@@ -202,29 +323,45 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           ),
                           onChanged: (_) => setState(() {}),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          s.learnQsoOffline,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          key: const ValueKey('qso-start'),
-                          onPressed: _valid ? _start : null,
-                          icon: const Icon(Icons.cell_tower),
-                          label: Text(s.learnQsoStart),
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
-                          ),
-                        ),
                       ],
-                    ),
+                      const SizedBox(height: 12),
+                      Text(
+                        s.learnQsoOffline,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      if (!_c.qsoReadiness.isReady)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            s.learnQsoExplorePending,
+                            key: const ValueKey('qso-explore-label'),
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.tertiary,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        key: const ValueKey('qso-start'),
+                        onPressed: _valid ? () => unawaited(_start()) : null,
+                        icon: const Icon(Icons.cell_tower),
+                        label: Text(s.learnQsoStart),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(52),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
+          );
+    return Scaffold(
+      appBar: AppBar(title: Text(s.learnQsoTitle)),
+      // Flash-only learners still see the symbol they tapped.
+      body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
   }
 }

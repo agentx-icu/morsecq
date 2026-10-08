@@ -78,7 +78,7 @@ final class ReceiveSession {
     required this.kind,
     required DrillGenerator generator,
     required Iterable<String> chars,
-    required this.timing,
+    required MorseTiming timing,
     required this.charBudget,
     required Random random,
     required DateTime Function() now,
@@ -96,6 +96,7 @@ final class ReceiveSession {
          conditions == null || !conditions.isClear,
          'clear playback is ordinary practice: pass no conditions',
        ),
+       _timing = timing,
        _generator = generator,
        _random = random,
        _now = now,
@@ -183,7 +184,17 @@ final class ReceiveSession {
   final List<String> chars;
 
   /// Timing every round is played at.
-  final MorseTiming timing;
+  MorseTiming _timing;
+  MorseTiming get timing => _timing;
+
+  /// A tutorial may offer a new pace before any answer. A graded attempt
+  /// must have one comparable speed for playback and the stored record.
+  void setTimingBeforeAnswer(MorseTiming timing) {
+    if (_rounds.isNotEmpty || isFinished) {
+      throw StateError('cannot change timing after answering');
+    }
+    _timing = timing;
+  }
 
   /// Symbols to play before the session ends (whole rounds; the last round
   /// may overshoot).
@@ -281,19 +292,18 @@ final class ReceiveSession {
 
   /// Aggregates every round into one [SessionScore]. Idempotent.
   ///
-  /// Rounds are joined with word gaps so the alignment works over the whole
-  /// session; a dropped or extra symbol in one round can only shift that
-  /// round's neighbours, never the whole copy.
+  /// The rounds were each scored on their own when they were answered and
+  /// are combined as they are: a copy that runs into the next round can
+  /// never borrow symbols from it, and a symbol missed in one round stays
+  /// missed (re-aligning the joined text could "find" it in a later round
+  /// and fabricate per-symbol evidence the lesson rule relies on).
   SessionScore finish() {
     final existing = _final;
     if (existing != null) {
       return existing;
     }
-    final target = _rounds.map((r) => r.drill.text).join(' ');
-    final answer = _rounds.map((r) => r.answer).join(' ');
-    final score = SessionScore.evaluate(
-      target,
-      answer,
+    final score = SessionScore.combine(
+      <SessionScore>[for (final r in _rounds) r.score],
       at: _now(),
       elapsed: elapsed,
       lesson: lesson,

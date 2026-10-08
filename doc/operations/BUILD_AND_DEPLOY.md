@@ -15,3 +15,7 @@ Android owner signing uses repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROI
 Physical-device microphone, haptics, keying and local persistence still require device acceptance. E2E CI verifies Windows/Linux execution and screenshots. Building a package does not publish to a store or complete signing.
 
 Tags must match the numeric `X.Y.Z` part of the app pubspec: `1.0.0+1` uses tag `v1.0.0`. Packaging refuses mismatched metadata. Before creating a draft release, `bash tool/ci/verify_release_assets.sh <dist-dir> v1.0.0` requires all ten platform assets, exactly one macOS architecture pair, and writes a portable SHA256SUMS manifest. Missing, empty, unexpected or symlinked assets fail the gate.
+
+## Platform scope
+
+Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS universal2, Linux x86_64 and Windows x64. The macOS Runner project declares 10.15, but that alone does not establish the floor of every bundled native library; supported deployment must account for the packaged native assets. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. Windows CI uses Windows Server 2022; acceptance on Windows 10/11 and physical mobile hardware remains part of distribution validation.

@@ -42,8 +42,7 @@ const kShellDestinations = [
 /// Responsive root: bottom [NavigationBar] on compact widths, side
 /// [NavigationRail] otherwise. See `responsive.dart` for the breakpoint.
 ///
-/// Responsive navigation for the local learning profile (functional spec §8,
-/// doc/plans/2026-10-03-functional-improvements.md).
+/// Responsive navigation for the local learning profile.
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 

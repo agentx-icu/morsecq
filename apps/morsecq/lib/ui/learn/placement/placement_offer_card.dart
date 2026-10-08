@@ -2,23 +2,32 @@ import 'package:flutter/material.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 
-/// For a brand-new learner: start from zero, or check the current level
-/// first (functional spec §8.3). Skippable; gone after the first session.
+/// For a brand-new learner: the guided first lesson first (hear, dit / dah,
+/// K / M), the level check second, and skipping straight to the lesson 1
+/// challenge as the explicit third choice. Gone after the first session or
+/// once the first lesson was done.
 class PlacementOfferCard extends StatelessWidget {
   const PlacementOfferCard({
     super.key,
     required this.controller,
+    required this.onStartHere,
     required this.onFromZero,
     required this.onCheckLevel,
   });
 
   final TrainingController controller;
+
+  /// Opens the guided first lesson.
+  final VoidCallback onStartHere;
+
+  /// Skips the intro: the lesson 1 challenge.
   final VoidCallback onFromZero;
   final VoidCallback onCheckLevel;
 
   static bool shows(TrainingController c) =>
-      c.progress.lifetimeSessions == 0 && c.currentLesson == 1;
+      c.learnerStage == LearnerStage.firstUse;
 
   @override
   Widget build(BuildContext context) {
@@ -32,22 +41,37 @@ class PlacementOfferCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(s.placementOfferTitle, style: theme.textTheme.titleMedium),
+            Text(s.learnStartHereTitle, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(s.learnStartHereBody, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              key: const ValueKey('start-here'),
+              onPressed: onStartHere,
+              icon: const Icon(Icons.flag_outlined),
+              label: Text(s.learnStartHere),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(s.placementOfferTitle, style: theme.textTheme.titleSmall),
             const SizedBox(height: 4),
             Text(s.placementOfferBody, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                FilledButton(
-                  onPressed: onFromZero,
-                  child: Text(s.placementFromZero),
-                ),
                 OutlinedButton(
                   key: const ValueKey('placement-check'),
                   onPressed: onCheckLevel,
                   child: Text(s.placementCheckLevel),
+                ),
+                TextButton(
+                  key: const ValueKey('placement-skip-intro'),
+                  onPressed: onFromZero,
+                  child: Text(s.placementFromZero),
                 ),
               ],
             ),

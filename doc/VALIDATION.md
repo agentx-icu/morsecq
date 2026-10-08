@@ -4,16 +4,16 @@ Scope: the first account-free, offline MorseCQ release, version **1.0.0+1**. Ins
 
 ## Code and regression checks
 
-- Application suite: **703 passed, 2 skipped**. The skips are opt-in style-preview and visual-matrix exporters, enabled with `MORSECQ_RENDER_STYLES` and `MORSECQ_RENDER_MATRIX` respectively.
-- All five retained package suites passed. The current trainer suite passed **212 tests** after removal of chat exercise metadata.
+- Application suite: **780 passed, 2 skipped**. The skips are opt-in style-preview and visual-matrix exporters, enabled with `MORSECQ_RENDER_STYLES` and `MORSECQ_RENDER_MATRIX` respectively.
+- All five retained package suites passed. The current trainer suite passed **270 tests** after removal of chat exercise metadata.
 - First-launch navigation, shared controller retry, background flush, confirmed clear durability and learning-UI reload regressions passed.
 - Root Flutter analysis reports zero issues. Import, UI-literal and complexity guards passed; actionlint, shellcheck and `git diff --check` passed.
-- Screenshot pipeline: **18 regression tests passed**. macOS installer component selection: **3 regression tests passed**. Complete release-asset validation: **7 regression tests passed**, including missing/empty/extra files, macOS architecture mixing, symlinks, tags and the checksum manifest.
+- Screenshot pipeline: **19 regression tests passed**. macOS installer component selection: **3 regression tests passed**. Complete release-asset validation: **7 regression tests passed**, including missing/empty/extra files, macOS architecture mixing, symlinks, tags and the checksum manifest.
 - Apple plugin cache cleanup: **4 regression tests passed**. Real CMake configuration reproduced a removed Xcode compiler path for both Apple platform directories, then succeeded after deleting only generated output. Source files, unrelated packages and the other platform remained intact.
 - Screenshot configuration: **4 regression tests passed**, covering ten locales (including the Traditional Chinese script), five styles, invalid parameters and actual appearance persistence. The real-font visual matrix generated **38 profiles / 76 PNGs** locally for learning and reference pages. Separate Visual matrix CI runs on manual dispatch or the `ci:e2e` label.
 - `dart pub get --enforce-lockfile` passed. The resolved graph contains 155 packages and no Tim2Tox, Tencent or MorseCQ chat package.
 
-Runtime/package implementation `8ff8dd4` passed [Analyze](https://github.com/agentx-icu/morsecq/actions/runs/37722463165), [all five required release builds](https://github.com/agentx-icu/morsecq/actions/runs/37722463344) and [all three desktop E2E jobs](https://github.com/agentx-icu/morsecq/actions/runs/37722463151). Subsequent `5ba1a57` also passed all five builds, analysis and three-desktop E2E. Current changes add language/style visual coverage and remove the pre-release theme fallback; latest CI is tracked in [PR #27](https://github.com/agentx-icu/morsecq/pull/27).
+Before the teaching integration, runtime/package implementation `8ff8dd4` passed [Analyze](https://github.com/agentx-icu/morsecq/actions/runs/37722463165), [all five required release builds](https://github.com/agentx-icu/morsecq/actions/runs/37722463344) and [all three desktop E2E jobs](https://github.com/agentx-icu/morsecq/actions/runs/37722463151). Subsequent `5ba1a57` also passed all five builds, analysis and three-desktop E2E. The current integration preserves upstream teaching commit `5631376` with offline first-day startup and twelve capture scenes. New CI and refreshed device captures are pending; latest CI is tracked in [PR #27](https://github.com/agentx-icu/morsecq/pull/27).
 
 ## Release artifacts
 
@@ -37,4 +37,4 @@ Use normal Flutter release build commands after integration tests: Flutter 3.41.
 
 All six current galleries contain **108 real frames**: nine scenes in English and Simplified Chinese for macOS, iPhone, iPad, Android, Linux and Windows. Four device/host galleries came from local captures; Linux/Windows came from the successful desktop E2E run. The [gallery](screenshots/README.md) records dimensions and capture provenance. The [product concept](designs/product-2026-10-08/README.md) is labelled separately.
 
-Version tags gate draft GitHub Releases and SHA256SUMS; the release job is intentionally skipped for PRs. Store distribution still needs owner Android/Apple signing, macOS Developer ID signing/notarization when required, and physical-device microphone, torch, keying, haptics and persistence acceptance. No store release has been published by this work.
+Version tags gate draft GitHub Releases and SHA256SUMS; the release job is intentionally skipped for PRs. Store distribution still needs owner Android/Apple signing, macOS Developer ID signing/notarization when required, and physical-device microphone, keying, haptics and persistence acceptance. No store release has been published by this work.

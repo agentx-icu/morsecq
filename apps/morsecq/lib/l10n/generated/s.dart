@@ -4073,7 +4073,7 @@ abstract class S {
   /// Placement: start the course at lesson one
   ///
   /// In en, this message translates to:
-  /// **'Start from zero'**
+  /// **'Skip the intro: lesson 1 challenge'**
   String get placementFromZero;
 
   /// Learn home: offer for brand-new learners
@@ -4669,6 +4669,936 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Imported source'**
   String get materialsImportedSource;
+
+  /// Learn home, new-learner card title
+  ///
+  /// In en, this message translates to:
+  /// **'New here? Start with a 3-minute first lesson'**
+  String get learnStartHereTitle;
+
+  /// Learn home, new-learner card body
+  ///
+  /// In en, this message translates to:
+  /// **'Hear the sounds, learn K and M, and answer a few easy rounds. Nothing is graded.'**
+  String get learnStartHereBody;
+
+  /// Learn home, new-learner card: primary button opening the first lesson
+  ///
+  /// In en, this message translates to:
+  /// **'Start here'**
+  String get learnStartHere;
+
+  /// Learn home: button that reopens the first lesson after it was done
+  ///
+  /// In en, this message translates to:
+  /// **'Replay the first lesson'**
+  String get learnReplayFirstLesson;
+
+  /// Lesson card: how many symbols were introduced and how many are mastered
+  ///
+  /// In en, this message translates to:
+  /// **'{introduced} introduced · {mastered} mastered'**
+  String learnCharsIntroducedMastered(int introduced, int mastered);
+
+  /// Lesson card legend: the symbol this lesson introduces
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get learnChipNew;
+
+  /// Lesson card legend: some attempts, not yet mastered
+  ///
+  /// In en, this message translates to:
+  /// **'Practising'**
+  String get learnChipPractising;
+
+  /// Lesson card legend: 10+ attempts at 90%+
+  ///
+  /// In en, this message translates to:
+  /// **'Mastered'**
+  String get learnChipMastered;
+
+  /// Lesson card legend: below 90% accuracy
+  ///
+  /// In en, this message translates to:
+  /// **'Below 90%'**
+  String get learnChipWeak;
+
+  /// Lesson card legend: due for spaced review
+  ///
+  /// In en, this message translates to:
+  /// **'Due for review'**
+  String get learnChipDue;
+
+  /// Lesson card: hint that the symbol chips play their sound when tapped
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a character to hear it'**
+  String get learnTapChipHint;
+
+  /// Button: play one symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Hear {char}'**
+  String learnHearChar(String char);
+
+  /// Button: play two symbols one after the other so they can be told apart
+  ///
+  /// In en, this message translates to:
+  /// **'{a} vs {b}'**
+  String learnCompareWith(String a, String b);
+
+  /// Lesson card: secondary button starting a short guided session
+  ///
+  /// In en, this message translates to:
+  /// **'Short practice (10 symbols)'**
+  String get learnGuidedPractice;
+
+  /// Lesson card: what the Continue lesson button starts and what passing requires
+  ///
+  /// In en, this message translates to:
+  /// **'The lesson challenge: {count} symbols at 90%, with each new symbol copied at least {min} times. Passing unlocks the next character.'**
+  String learnChallengeHint(int count, int min);
+
+  /// Lesson card: on the last lesson before its challenge is passed
+  ///
+  /// In en, this message translates to:
+  /// **'Every character is unlocked. Pass the final challenge to complete the course.'**
+  String get learnAllUnlockedNotPassed;
+
+  /// Lesson card goal line, stage: first use
+  ///
+  /// In en, this message translates to:
+  /// **'Now: tell K from M by ear. Next: the lesson 1 challenge.'**
+  String get learnGoalFirstUse;
+
+  /// Lesson card goal line, stage: recognising the new symbol(s)
+  ///
+  /// In en, this message translates to:
+  /// **'Now: recognise {chars} reliably ({min} copies at 90%). Next: the lesson {lesson} challenge.'**
+  String learnGoalRecognition(String chars, int min, int lesson);
+
+  /// Lesson card goal line, stage: ready for the lesson challenge
+  ///
+  /// In en, this message translates to:
+  /// **'Now: pass the lesson {lesson} challenge. Next: {next}.'**
+  String learnGoalCopying(int lesson, String next);
+
+  /// Fills learnGoalCopying {next}: the character the next lesson introduces
+  ///
+  /// In en, this message translates to:
+  /// **'the character {char}'**
+  String learnGoalNextChar(String char);
+
+  /// Fills learnGoalCopying {next} on the last lesson
+  ///
+  /// In en, this message translates to:
+  /// **'words, callsigns and a full QSO'**
+  String get learnGoalNextOperating;
+
+  /// Lesson card goal line, stage: course completed
+  ///
+  /// In en, this message translates to:
+  /// **'Now: real messages — words, callsigns, QSO. Next: raise the effective speed one step at a time.'**
+  String get learnGoalOperating;
+
+  /// Learn home: expandable section with the less common practice entries
+  ///
+  /// In en, this message translates to:
+  /// **'More practice'**
+  String get learnMorePractice;
+
+  /// Learn home QSO tile: every required symbol is learned
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get learnQsoReady;
+
+  /// Learn home QSO tile: symbols known but the abbreviations / QSO-lines drills not practised yet
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the lines first'**
+  String get learnQsoPractiseFirst;
+
+  /// Learn home QSO tile: symbols still to learn before a full QSO
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 symbol to learn} other{{count} symbols to learn}}'**
+  String learnQsoSymbolsToGo(int count);
+
+  /// Learn home / settings: plain-language glossary dialog title and tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'What do these words mean?'**
+  String get learnGlossaryTitle;
+
+  /// Glossary entry
+  ///
+  /// In en, this message translates to:
+  /// **'Koch method: characters are learned at full speed, two to start and one more per lesson, once you copy 90% correctly.'**
+  String get glossaryKoch;
+
+  /// Glossary entry
+  ///
+  /// In en, this message translates to:
+  /// **'WPM: words per minute, counted with the standard word PARIS. Character speed is how fast each character itself sounds.'**
+  String get glossaryWpm;
+
+  /// Glossary entry
+  ///
+  /// In en, this message translates to:
+  /// **'Farnsworth: characters stay fast, but the pauses between them are stretched so you have time to think. The effective speed counts those pauses.'**
+  String get glossaryFarnsworth;
+
+  /// Glossary entry
+  ///
+  /// In en, this message translates to:
+  /// **'QSO: one two-way contact between two stations. CQ = calling anyone, DE = from, K = over to you.'**
+  String get glossaryQso;
+
+  /// Glossary entry
+  ///
+  /// In en, this message translates to:
+  /// **'RST: a signal report — readability, strength, tone. 599 means perfect. 73 means best regards.'**
+  String get glossaryRst;
+
+  /// Receive summary: no symbol was answered
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded: no symbols were answered.'**
+  String get learnVerdictNotCredited;
+
+  /// Receive summary headline: replay / reveal was used
+  ///
+  /// In en, this message translates to:
+  /// **'Practice with help'**
+  String get learnVerdictAssisted;
+
+  /// Receive summary explanation for an assisted attempt
+  ///
+  /// In en, this message translates to:
+  /// **'Replays or reveals were used, so this attempt counts as practice only: no unlock, no review update. Try the next one without replays.'**
+  String get learnVerdictAssistedHint;
+
+  /// Receive summary headline: free practice (not a course challenge)
+  ///
+  /// In en, this message translates to:
+  /// **'Practice recorded'**
+  String get learnVerdictPractice;
+
+  /// Receive summary explanation: free practice never advances the course
+  ///
+  /// In en, this message translates to:
+  /// **'Free practice updates your statistics and reviews but never advances the course. The lesson challenge from the Learn home does.'**
+  String get learnVerdictPracticeHint;
+
+  /// Receive summary headline: the last lesson challenge was passed
+  ///
+  /// In en, this message translates to:
+  /// **'Final challenge passed: the whole character course is yours.'**
+  String get learnVerdictCourseComplete;
+
+  /// Receive summary headline: fewer symbols than a challenge needs
+  ///
+  /// In en, this message translates to:
+  /// **'Not a full challenge: {count} of {min} symbols'**
+  String learnVerdictTooShort(int count, int min);
+
+  /// Receive summary explanation for a too-short challenge
+  ///
+  /// In en, this message translates to:
+  /// **'A challenge is at least {min} symbols. Start the lesson from the Learn home or raise the session length in training settings.'**
+  String learnVerdictTooShortHint(int min);
+
+  /// Receive summary headline: the new symbol was not heard often enough
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough copies of {chars}'**
+  String learnVerdictUncovered(String chars);
+
+  /// Receive summary explanation for an uncovered new symbol
+  ///
+  /// In en, this message translates to:
+  /// **'A challenge needs at least {min} copies of each new symbol. Try again: the challenge includes them on purpose.'**
+  String learnVerdictUncoveredHint(int min);
+
+  /// Receive summary headline: the new symbol was below 90%
+  ///
+  /// In en, this message translates to:
+  /// **'New symbol below 90%: {chars}'**
+  String learnVerdictNewSymbolWeak(String chars);
+
+  /// Receive summary explanation when only the new symbol failed
+  ///
+  /// In en, this message translates to:
+  /// **'The rest was fine; the new symbol decides the lesson. Hear it against its neighbour and drill it before the next challenge.'**
+  String get learnVerdictNewSymbolWeakHint;
+
+  /// Receive summary explanation for an overall accuracy below 90%
+  ///
+  /// In en, this message translates to:
+  /// **'Below 90% overall. A short drill on the weak symbols below, then try the challenge again.'**
+  String get learnVerdictBelowAccuracyHint;
+
+  /// Receive summary action: short focus session on the weak symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Drill weak symbols'**
+  String get learnDrillWeak;
+
+  /// Receive summary action: start the lesson challenge again
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the challenge'**
+  String get learnRetryChallenge;
+
+  /// Receive summary action after free practice: start the lesson challenge
+  ///
+  /// In en, this message translates to:
+  /// **'Take the lesson challenge'**
+  String get learnTakeChallenge;
+
+  /// Receive drill screen title for a course challenge
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {lesson} challenge'**
+  String learnChallengeTitle(int lesson);
+
+  /// Receive drill screen title for free practice
+  ///
+  /// In en, this message translates to:
+  /// **'Practice'**
+  String get learnPracticeTitle;
+
+  /// Round result: heading over the meanings of the abbreviations just copied
+  ///
+  /// In en, this message translates to:
+  /// **'Meanings'**
+  String get learnMeaningsTitle;
+
+  /// First lesson screen title
+  ///
+  /// In en, this message translates to:
+  /// **'First lesson'**
+  String get firstLessonTitle;
+
+  /// First lesson: step counter
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String firstLessonStep(int step, int total);
+
+  /// First lesson step 1 title: audibility check
+  ///
+  /// In en, this message translates to:
+  /// **'Can you hear it?'**
+  String get firstLessonHearTitle;
+
+  /// First lesson step 1 body
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Play. You should hear a short pattern of beeps (or see a flash / feel a vibration if those are on).'**
+  String get firstLessonHearBody;
+
+  /// First lesson: confirm the sound was perceived
+  ///
+  /// In en, this message translates to:
+  /// **'I heard it'**
+  String get firstLessonHeard;
+
+  /// First lesson: the sound was not perceived
+  ///
+  /// In en, this message translates to:
+  /// **'I heard nothing'**
+  String get firstLessonNotHeard;
+
+  /// First lesson: recovery card title when nothing was heard
+  ///
+  /// In en, this message translates to:
+  /// **'No sound?'**
+  String get firstLessonNoSoundTitle;
+
+  /// First lesson: recovery tips when nothing was heard
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the volume up and check the silent switch or Do Not Disturb. You can also follow a screen flash or vibration instead of sound.'**
+  String get firstLessonNoSoundBody;
+
+  /// First lesson: switch enabling the screen flash modality
+  ///
+  /// In en, this message translates to:
+  /// **'Flash the screen too'**
+  String get firstLessonUseFlash;
+
+  /// First lesson: switch enabling vibration (phones)
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrate too'**
+  String get firstLessonUseVibration;
+
+  /// First lesson: play button
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get firstLessonPlay;
+
+  /// First lesson step 2 title: dit and dah
+  ///
+  /// In en, this message translates to:
+  /// **'Short and long'**
+  String get firstLessonSoundsTitle;
+
+  /// First lesson step 2 body
+  ///
+  /// In en, this message translates to:
+  /// **'Morse has two sounds: a short dit and a long dah, three times as long. A character is a pattern of them, and a short silence separates characters. Tap each one to hear it.'**
+  String get firstLessonSoundsBody;
+
+  /// First lesson: the short element
+  ///
+  /// In en, this message translates to:
+  /// **'dit'**
+  String get firstLessonDit;
+
+  /// First lesson: the long element
+  ///
+  /// In en, this message translates to:
+  /// **'dah'**
+  String get firstLessonDah;
+
+  /// First lesson step 3 title: worked example
+  ///
+  /// In en, this message translates to:
+  /// **'A worked answer'**
+  String get firstLessonWorkedTitle;
+
+  /// First lesson step 3 body
+  ///
+  /// In en, this message translates to:
+  /// **'Listen first; the answer appears after the sound. You don’t have to answer yet.'**
+  String get firstLessonWorkedBody;
+
+  /// First lesson: the revealed answer of the worked example
+  ///
+  /// In en, this message translates to:
+  /// **'That was {char}'**
+  String firstLessonWorkedReveal(String char);
+
+  /// First lesson step 4 title: two-choice trials
+  ///
+  /// In en, this message translates to:
+  /// **'K or M?'**
+  String get firstLessonTrialsTitle;
+
+  /// First lesson step 4 body
+  ///
+  /// In en, this message translates to:
+  /// **'Listen, then tap the character you heard. Replay as often as you like — this is not a test.'**
+  String get firstLessonTrialsBody;
+
+  /// First lesson: trial counter
+  ///
+  /// In en, this message translates to:
+  /// **'Round {round} of {total}'**
+  String firstLessonTrialRound(int round, int total);
+
+  /// First lesson: trial feedback, right answer
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, that was {char}'**
+  String firstLessonTrialCorrect(String char);
+
+  /// First lesson: trial feedback, wrong answer
+  ///
+  /// In en, this message translates to:
+  /// **'That was {char}, not {answer}. Hear them side by side.'**
+  String firstLessonTrialWrong(String char, String answer);
+
+  /// First lesson: switch to the beginner pace (longer pauses)
+  ///
+  /// In en, this message translates to:
+  /// **'Too fast? Use the beginner pace (longer pauses between characters)'**
+  String get firstLessonTooFast;
+
+  /// First lesson step 5 title
+  ///
+  /// In en, this message translates to:
+  /// **'What next'**
+  String get firstLessonNextTitle;
+
+  /// First lesson step 5 body with the trial result
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} / {total} correct this round. Choose your next step and continue at your own pace.'**
+  String firstLessonNextBody(int correct, int total);
+
+  /// First lesson next action: short guided session
+  ///
+  /// In en, this message translates to:
+  /// **'Short practice: 10 single symbols'**
+  String get firstLessonNextGuided;
+
+  /// First lesson next action: open send practice
+  ///
+  /// In en, this message translates to:
+  /// **'Try sending'**
+  String get firstLessonNextSend;
+
+  /// First lesson: first-use keying guidance
+  ///
+  /// In en, this message translates to:
+  /// **'Sending: hold the control briefly for a dit, longer for a dah. With paddles one side makes dits and the other dahs. Release, and pause briefly between characters. Straight key or iambic A / B can be changed later; it doesn’t matter yet.'**
+  String get firstLessonSendGuide;
+
+  /// First lesson: footer note
+  ///
+  /// In en, this message translates to:
+  /// **'You can replay this lesson any time from the Learn home.'**
+  String get firstLessonReplayAnytime;
+
+  /// First lesson: next step button
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get firstLessonContinue;
+
+  /// First lesson: next trial button
+  ///
+  /// In en, this message translates to:
+  /// **'Next round'**
+  String get firstLessonTrialNext;
+
+  /// Send practice: first-use hint card title
+  ///
+  /// In en, this message translates to:
+  /// **'First time keying?'**
+  String get sendFirstUseTitle;
+
+  /// Send practice first-use hint for the straight key
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the key briefly for a dit, about three times longer for a dah. Pause briefly between characters, longer between words.'**
+  String get sendFirstUseStraight;
+
+  /// Send practice first-use hint for paddles
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the paddle labelled dit for dits and the one labelled dah for dahs; the keyer times them for you. Pause briefly between characters, longer between words.'**
+  String get sendFirstUsePaddles;
+
+  /// Send practice first-use hint: dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get sendFirstUseDismiss;
+
+  /// Training settings: label over the pace presets
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
+  String get learnSpeedPresets;
+
+  /// Training settings preset: 20 WPM characters, 6 WPM effective
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner 20 / 6'**
+  String get learnPresetBeginner;
+
+  /// Training settings preset: 20 WPM characters, 8 WPM effective
+  ///
+  /// In en, this message translates to:
+  /// **'Standard 20 / 8'**
+  String get learnPresetStandard;
+
+  /// Training settings: what the two presets mean
+  ///
+  /// In en, this message translates to:
+  /// **'Characters sound at 20 WPM in both; the beginner pace leaves longer pauses between them (6 WPM effective).'**
+  String get learnPresetHelp;
+
+  /// Daily plan step title: the first lesson
+  ///
+  /// In en, this message translates to:
+  /// **'First lesson'**
+  String get learnPlanStepIntro;
+
+  /// Daily plan step title: single-symbol recognition
+  ///
+  /// In en, this message translates to:
+  /// **'Single symbols'**
+  String get learnPlanStepRecognition;
+
+  /// Daily plan reason for the first-lesson step
+  ///
+  /// In en, this message translates to:
+  /// **'Hear the sounds and tell K from M (about 3 minutes)'**
+  String get learnPlanReasonFirstLesson;
+
+  /// Daily plan reason for the recognition step
+  ///
+  /// In en, this message translates to:
+  /// **'One symbol at a time: {symbols}'**
+  String learnPlanReasonRecognition(String symbols);
+
+  /// Daily plan reason for guided (non-unlocking) copying
+  ///
+  /// In en, this message translates to:
+  /// **'Short mixed groups of {count} symbols; the 50-symbol challenge comes later'**
+  String learnPlanReasonGuided(int count);
+
+  /// Daily plan reason for the optional beginner sending step
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: hear the model, then key {count} short targets'**
+  String learnPlanReasonSendOptional(int count);
+
+  /// QSO setup readiness card: all symbols learned and abbreviations practised
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for a QSO'**
+  String get learnQsoReadyTitle;
+
+  /// QSO setup readiness card: some required symbols are not learned
+  ///
+  /// In en, this message translates to:
+  /// **'Not every symbol is learned yet'**
+  String get learnQsoNotReadyTitle;
+
+  /// QSO setup readiness card body listing untaught symbols
+  ///
+  /// In en, this message translates to:
+  /// **'A QSO uses these symbols you haven’t learned yet — tap one to hear it. You can explore anyway; the keypad shows every symbol.'**
+  String get learnQsoMissingBody;
+
+  /// QSO setup readiness card: abbreviations not practised yet
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the abbreviations first (CQ, DE, UR, RST, TNX, 73) so the lines make sense.'**
+  String get learnQsoShorthandHint;
+
+  /// QSO setup readiness card: button opening the abbreviations drill
+  ///
+  /// In en, this message translates to:
+  /// **'Practise abbreviations'**
+  String get learnQsoPractiseShorthand;
+
+  /// QSO setup: short protocol explainer title
+  ///
+  /// In en, this message translates to:
+  /// **'How a QSO goes'**
+  String get learnQsoHowTitle;
+
+  /// QSO setup: short protocol explainer body
+  ///
+  /// In en, this message translates to:
+  /// **'Call (CQ = anyone, DE = from), answer with callsigns, exchange a report (RST), name and QTH (location), then 73 (best regards) and <SK> (end). K means over to you.'**
+  String get learnQsoHowBody;
+
+  /// QSO drill / simulator label when untaught symbols are included
+  ///
+  /// In en, this message translates to:
+  /// **'Includes untaught symbols'**
+  String get learnQsoExploreLabel;
+
+  /// Statistics lesson tile value once the last lesson challenge was passed
+  ///
+  /// In en, this message translates to:
+  /// **'Course passed'**
+  String get statsCoursePassed;
+
+  /// First lesson: play button after the learner reported hearing nothing
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get firstLessonPlayAgain;
+
+  /// First lesson next action: the current lesson challenge, naming what it unlocks
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {lesson} challenge: {count} symbols, 90% unlocks {char}'**
+  String firstLessonNextChallenge(int lesson, int count, String char);
+
+  /// First lesson next action on the last lesson: passing completes the course
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {lesson} challenge: {count} symbols at 90% completes the course'**
+  String firstLessonNextChallengeLast(int lesson, int count);
+
+  /// QSO setup readiness card title: symbols known, abbreviations not practised
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the abbreviations first'**
+  String get learnQsoShorthandTitle;
+
+  /// QSO setup readiness card title: abbreviations practised, QSO lines not yet
+  ///
+  /// In en, this message translates to:
+  /// **'Practise QSO lines first'**
+  String get learnQsoExchangeTitle;
+
+  /// QSO setup readiness card body for the exchange level
+  ///
+  /// In en, this message translates to:
+  /// **'Copy single lines of a contact (one exchange at a time) before running a whole QSO in the simulator.'**
+  String get learnQsoExchangeHint;
+
+  /// Guided sending: sendGuideTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Learn to send'**
+  String get sendGuideTitle;
+
+  /// Guided sending: sendGuideStep
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String sendGuideStep(int step, int total);
+
+  /// Guided sending: sendGuideHear
+  ///
+  /// In en, this message translates to:
+  /// **'Hear the model'**
+  String get sendGuideHear;
+
+  /// Guided sending: sendGuideListening
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to the whole rhythm…'**
+  String get sendGuideListening;
+
+  /// Guided sending: sendGuideTry
+  ///
+  /// In en, this message translates to:
+  /// **'Now send it'**
+  String get sendGuideTry;
+
+  /// Guided sending: sendGuideRetry
+  ///
+  /// In en, this message translates to:
+  /// **'Practise this again'**
+  String get sendGuideRetry;
+
+  /// Guided sending: sendGuidePassed
+  ///
+  /// In en, this message translates to:
+  /// **'Decoded correctly. Continue to the next target.'**
+  String get sendGuidePassed;
+
+  /// Guided sending: sendGuideComplete
+  ///
+  /// In en, this message translates to:
+  /// **'You sent both symbols and the groups correctly. Continue with free sending practice.'**
+  String get sendGuideComplete;
+
+  /// Guided sending: sendGuideRhythm
+  ///
+  /// In en, this message translates to:
+  /// **'Match the model: short dits, dahs three times longer, and a clear pause between characters.'**
+  String get sendGuideRhythm;
+
+  /// Learning pedagogy: learnContinueToday
+  ///
+  /// In en, this message translates to:
+  /// **'Continue today\'s learning'**
+  String get learnContinueToday;
+
+  /// Learning pedagogy: learnPlanDetails
+  ///
+  /// In en, this message translates to:
+  /// **'View plan details'**
+  String get learnPlanDetails;
+
+  /// Learning pedagogy: learnGuidedSingle
+  ///
+  /// In en, this message translates to:
+  /// **'Single characters · 10 characters'**
+  String get learnGuidedSingle;
+
+  /// Learning pedagogy: learnGuidedShort
+  ///
+  /// In en, this message translates to:
+  /// **'3-character groups · 15 characters'**
+  String get learnGuidedShort;
+
+  /// Learning pedagogy: learnGuidedGroups
+  ///
+  /// In en, this message translates to:
+  /// **'5-character groups · 20 characters'**
+  String get learnGuidedGroups;
+
+  /// Learning pedagogy: learnGuidedRecommended
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended next step'**
+  String get learnGuidedRecommended;
+
+  /// Learning pedagogy: learnGuidedProgressHint
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to short groups and full groups after passing. Guided practice builds fluency; a course challenge unlocks the next lesson.'**
+  String get learnGuidedProgressHint;
+
+  /// Learning pedagogy: learnGuidedContinue
+  ///
+  /// In en, this message translates to:
+  /// **'Continue guided practice'**
+  String get learnGuidedContinue;
+
+  /// Learning pedagogy: learnGuidedRetry
+  ///
+  /// In en, this message translates to:
+  /// **'Practise this level again'**
+  String get learnGuidedRetry;
+
+  /// Learning pedagogy: firstLessonZeroHint
+  ///
+  /// In en, this message translates to:
+  /// **'No correct answers yet is okay. Listen to the difference between K and M again, then retry.'**
+  String get firstLessonZeroHint;
+
+  /// Learning pedagogy: firstLessonPartialHint
+  ///
+  /// In en, this message translates to:
+  /// **'You heard some correctly. Compare K and M again and continue at your own pace.'**
+  String get firstLessonPartialHint;
+
+  /// Learning pedagogy: firstLessonPerfectHint
+  ///
+  /// In en, this message translates to:
+  /// **'Every answer was correct this round. Reinforce this with copying practice without answer choices.'**
+  String get firstLessonPerfectHint;
+
+  /// Learning pedagogy: firstLessonPaceLocked
+  ///
+  /// In en, this message translates to:
+  /// **'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.'**
+  String get firstLessonPaceLocked;
+
+  /// Learning pedagogy: learnRecentEvidenceHint
+  ///
+  /// In en, this message translates to:
+  /// **'Stages use unassisted copying evidence from the last 14 days at the same speed.'**
+  String get learnRecentEvidenceHint;
+
+  /// Learning pedagogy: learnQsoConsolidateTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reinforce learned characters'**
+  String get learnQsoConsolidateTitle;
+
+  /// Learning pedagogy: learnQsoConsolidateHint
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked does not mean mastered. Start with single-character copying to build recent independent evidence.'**
+  String get learnQsoConsolidateHint;
+
+  /// Learning pedagogy: learnQsoPractiseSymbols
+  ///
+  /// In en, this message translates to:
+  /// **'Practise these characters'**
+  String get learnQsoPractiseSymbols;
+
+  /// Learning pedagogy: learnQsoProtocolTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Understand QSO terms'**
+  String get learnQsoProtocolTitle;
+
+  /// Learning pedagogy: learnQsoProtocolHint
+  ///
+  /// In en, this message translates to:
+  /// **'Check the meanings of CQ, DE, RST and 73 before starting a short QSO.'**
+  String get learnQsoProtocolHint;
+
+  /// Learning pedagogy: learnQsoProtocolStart
+  ///
+  /// In en, this message translates to:
+  /// **'Check term understanding'**
+  String get learnQsoProtocolStart;
+
+  /// Learning pedagogy: learnQsoProtocolQuestion
+  ///
+  /// In en, this message translates to:
+  /// **'What does {token} mean in a QSO?'**
+  String learnQsoProtocolQuestion(String token);
+
+  /// Learning pedagogy: learnQsoGeneralCall
+  ///
+  /// In en, this message translates to:
+  /// **'Calling any station'**
+  String get learnQsoGeneralCall;
+
+  /// Learning pedagogy: learnQsoFromStation
+  ///
+  /// In en, this message translates to:
+  /// **'From this station'**
+  String get learnQsoFromStation;
+
+  /// Learning pedagogy: learnQsoSignalReport
+  ///
+  /// In en, this message translates to:
+  /// **'Signal report'**
+  String get learnQsoSignalReport;
+
+  /// Learning pedagogy: learnQsoBestRegards
+  ///
+  /// In en, this message translates to:
+  /// **'Best regards and goodbye'**
+  String get learnQsoBestRegards;
+
+  /// Learning pedagogy: learnQsoProtocolCorrect
+  ///
+  /// In en, this message translates to:
+  /// **'Correct answer'**
+  String get learnQsoProtocolCorrect;
+
+  /// Learning pedagogy: learnQsoProtocolWrong
+  ///
+  /// In en, this message translates to:
+  /// **'Correct meaning: {meaning}'**
+  String learnQsoProtocolWrong(String meaning);
+
+  /// Learning pedagogy: learnQsoProtocolPass
+  ///
+  /// In en, this message translates to:
+  /// **'All four terms were answered correctly without help. You can try a short QSO.'**
+  String get learnQsoProtocolPass;
+
+  /// Learning pedagogy: learnQsoProtocolPractice
+  ///
+  /// In en, this message translates to:
+  /// **'Review these meanings before checking again.'**
+  String get learnQsoProtocolPractice;
+
+  /// Learning pedagogy: learnQsoProtocolRetry
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get learnQsoProtocolRetry;
+
+  /// Learning pedagogy: learnQsoShortExchange
+  ///
+  /// In en, this message translates to:
+  /// **'Practise a short QSO'**
+  String get learnQsoShortExchange;
+
+  /// Learning pedagogy: learnQsoShortExchangeHint
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm callsigns, exchange signal reports and close without help before moving to a full QSO.'**
+  String get learnQsoShortExchangeHint;
+
+  /// Learning pedagogy: learnQsoExplorePending
+  ///
+  /// In en, this message translates to:
+  /// **'Explore a full QSO · practice still needed'**
+  String get learnQsoExplorePending;
+
+  /// Learning pedagogy: learnQsoReadyHint
+  ///
+  /// In en, this message translates to:
+  /// **'You have recent independent practice evidence and can begin full simulated QSOs.'**
+  String get learnQsoReadyHint;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

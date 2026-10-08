@@ -94,6 +94,7 @@ app.*.map.json
 .claude/
 .cache/
 .worktrees/
+/doc/plans/
 
 # Local dependency overrides.
 pubspec_overrides.yaml

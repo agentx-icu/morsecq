@@ -4,20 +4,20 @@
 
 MorseCQ 是无需账号的离线莫尔斯电码学习软件，安装后即可开始学习。聊天功能已迁移到独立应用 [DitMesh](https://github.com/agentx-icu/ditmesh)。
 
-保留科赫课程、水平测评、间隔复习、抄报练习、直键与双桨发报练习、模拟无线电通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和五种视觉样式。
+先从听辨点划与 K/M 开始，再练习引导识别、引导发报和独立抄报。科赫课程按逐字符证据通过挑战升级，练习总结明确区分辅助练习和课程掌握。保留水平测评、间隔复习、带准备度提示的模拟通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和五种视觉样式。
 
 导航统一为 **学习 / 参考 / 我的**。不包含注册、Tox 身份、聊天 SDK、联系人、群组、聊天通知或聊天网络服务。仅实时音频解码申请麦克风权限；文件选择与分享用于本地学习素材。
 
 ![MorseCQ 离线产品设计图](doc/designs/product-2026-10-08/product-concept.png)
 
-[当前产品设计](doc/designs/product-2026-10-08/README.zh-CN.md)描述应用拆分后的职责。真实截图由[截图流程](tool/screenshots/README.zh-CN.md)生成，见[截图说明](doc/screenshots/README.zh-CN.md)。设计概念图与真实运行截图分开标注。
+[当前产品设计](doc/designs/product-2026-10-08/README.zh-CN.md)展示离线入门、引导练习与独立挑战的教学路径。真实截图由[截图流程](tool/screenshots/README.zh-CN.md)生成，见[截图说明](doc/screenshots/README.zh-CN.md)。设计概念图与真实运行截图分开标注。
 
 ## 运行与验证
 
 使用 Flutter **3.41.9** / Dart **3.11.5**，并安装目标平台常规 Flutter 构建工具。在仓库根目录统一解析 Pub workspace：
 
 ```sh
-dart pub get
+dart pub get --enforce-lockfile
 cd apps/morsecq
 flutter run -d macos
 ```
@@ -48,4 +48,4 @@ Android、iOS、macOS、Linux 和 Windows 均为必需发布目标。[构建与�
 - `packages/morse_io`：Flutter 音频、键控与触觉反馈。
 - `apps/morsecq`：离线应用、本地持久化与桌面窗口服务。
 
-[本地学习架构](doc/architecture/OFFLINE_LEARNING.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)
+[本地学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)

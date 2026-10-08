@@ -6,7 +6,7 @@ MorseCQ's first release stores learning and preferences locally and opens direct
 
 | Durable content | Location | Save/reopen behavior |
 | --- | --- | --- |
-| Course progress, SRS cards, plan steps and completed session history | `<learning>/training/progress.json` | Validated atomic JSON replacement with a previous-save backup; a fresh controller reloads committed data. |
+| Course completion, first-lesson timestamp, recognition pace, guided-send stage, SRS cards, plan steps and completed session history | `<learning>/training/progress.json` | Validated atomic JSON replacement with a previous-save backup; a fresh controller reloads committed data. |
 | Training speed, playback and pedagogy defaults | `<learning>/training/settings.json` | Validated and serialized local settings. |
 | Materials, workbench documents and recording metadata | `<learning>/training/docs/` | Named JSON documents with atomic replacement and previous-save recovery. |
 | Recorded audio | `<learning>/media/recordings/` | Metadata permits only safe relative recording filenames. |

@@ -17,8 +17,9 @@ import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
 import 'copy_from_memory_switch.dart';
-import 'keyer_legend.dart';
-import 'send_live_view.dart';
+import 'send_first_use_hint.dart';
+import 'send_guide_card.dart';
+import 'send_practice_body.dart';
 import 'send_result_view.dart';
 import 'send_targeted_practice.dart';
 import 'send_timeline_view.dart';
@@ -88,6 +89,14 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   /// (which do not rebuild this widget) without a rebuild per event.
   bool _hasInput = false;
 
+  /// First-use guidance, until dismissed or a send session exists.
+  bool _hintDismissed = false;
+  bool _modelHeard = false;
+  bool _modelPlaying = false;
+  StreamSubscription<PlayerEvent>? _modelEvents;
+
+  GuidedSendStage? get _guide => GuidedSendStage.fromKind(_session.drillKind);
+
   @override
   void initState() {
     super.initState();
@@ -115,6 +124,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     // The sidetone stops in the background; drop whatever is held so the
     // keyer stops sending and no key is stuck down on return.
     if (isDrillBackground(state) && _result == null && !_disposed) {
+      _playback?.player.stop();
       _session.pause();
       _buildKeyer();
       setState(() {});
@@ -142,6 +152,15 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       return;
     }
     _playback = playback;
+    _modelEvents = playback.player.events.listen((event) {
+      if (!_modelPlaying || _disposed) return;
+      if (event is PlayerCompleted || event is PlayerStopped) {
+        setState(() {
+          _modelPlaying = false;
+          if (event is PlayerCompleted) _modelHeard = true;
+        });
+      }
+    });
     _buildKeyer();
     _scheduleTick();
     setState(() {});
@@ -181,6 +200,18 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
       _session.tick(playback.clock.now());
       _scheduleTick();
     });
+  }
+
+  void _playStandard() {
+    final playback = _playback;
+    if (playback == null) return;
+    if (_guide != null) {
+      _buildKeyer();
+      setState(() => _modelPlaying = true);
+    }
+    playback.player.play(
+      MorseEncoder.encode(_session.target, _session.nominalTiming),
+    );
   }
 
   void _setMode(KeyerMode mode) {
@@ -244,9 +275,25 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     // A rhythm replay must not keep driving the sink the new keyer uses.
     _playback?.player.stop();
     final factory = widget.nextSession;
-    final next = factory == null
-        ? widget.controller.startSendSession()
-        : await factory();
+    final stage = _guide;
+    final passed = _result!.score.strictAccuracy == 1;
+    final SendSession next;
+    if (stage != null) {
+      final following = passed ? stage.next : stage;
+      next = following == null
+          ? factory == null
+                ? widget.controller.startFreeSendSession()
+                : await factory()
+          : widget.controller.startGuidedSendSession(
+              stage: following,
+              planStepId: _session.planStepId,
+              timing: _session.nominalTiming,
+            );
+    } else {
+      next = factory == null
+          ? widget.controller.startSendSession()
+          : await factory();
+    }
     if (_disposed) {
       next.dispose();
       return;
@@ -255,6 +302,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     _session = next;
     _watchSession();
     _result = null;
+    _modelHeard = false;
+    _modelPlaying = false;
     _recording = false;
     _wake.setActive(true);
     _buildKeyer();
@@ -280,6 +329,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     WidgetsBinding.instance.removeObserver(this);
     _wake.dispose();
     unawaited(_changesSub?.cancel());
+    unawaited(_modelEvents?.cancel());
     _tick?.cancel();
     _keyer?.dispose();
     _session.dispose();
@@ -320,9 +370,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
               tooltip: s.learnRhythmPlayStandard,
               icon: const Icon(Icons.hearing),
               // Hearing the standard first never counts as an attempt.
-              onPressed: () => _playback?.player.play(
-                MorseEncoder.encode(_session.target, _session.nominalTiming),
-              ),
+              onPressed: _modelPlaying ? null : _playStandard,
             ),
           CopyFromMemorySwitch(
             showLabel: CopyFromMemorySwitch.labelFits(
@@ -345,75 +393,34 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
 
   Widget _buildPractice(BuildContext context) {
     final playback = _playback;
-    final s = context.s;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SegmentedButton<KeyerMode>(
-          segments: <ButtonSegment<KeyerMode>>[
-            ButtonSegment(
-              value: KeyerMode.straight,
-              label: Text(s.learnKeyerStraight),
+    final stage = _guide;
+    return SendPracticeBody(
+      session: _session,
+      mode: _mode,
+      effectiveMode: _keyer?.mode,
+      onMode: _setMode,
+      hideTarget: _hideTarget,
+      showHint:
+          !_hintDismissed &&
+          SendFirstUseHint.needed(widget.controller.progress.history),
+      onDismissHint: () => setState(() => _hintDismissed = true),
+      onRestart: _restart,
+      onFinish: _finish,
+      canKey: stage == null || (_modelHeard && !_modelPlaying),
+      guide: stage == null
+          ? null
+          : SendGuideCard(
+              stage: stage,
+              heard: _modelHeard,
+              playing: _modelPlaying,
+              onHear: playback == null ? null : _playStandard,
             ),
-            ButtonSegment(
-              value: KeyerMode.iambicA,
-              label: Text(s.learnKeyerIambicA),
-            ),
-            ButtonSegment(
-              value: KeyerMode.iambicB,
-              label: Text(s.learnKeyerIambicB),
-            ),
-          ],
-          selected: <KeyerMode>{_mode},
-          onSelectionChanged: (s) => _setMode(s.first),
-          showSelectedIcon: false,
-        ),
-        const SizedBox(height: 16),
-        SendLiveView(session: _session, hideTarget: _hideTarget),
-        const SizedBox(height: 20),
-        if (playback == null)
-          const SizedBox(
-            height: 160,
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else
-          _buildKey(playback, s),
-        if (hasPhysicalKeyboardByDefault) ...<Widget>[
-          const SizedBox(height: 8),
-          KeyerLegend(mode: _keyer?.mode ?? _mode),
-        ],
-        const SizedBox(height: 20),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _restart,
-                icon: const Icon(Icons.refresh),
-                label: Text(s.learnRestart),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              // Enabled once there is something to evaluate; follows the
-              // session stream because key events do not rebuild this widget.
-              child: StreamBuilder<void>(
-                stream: _session.changes,
-                builder: (context, _) => FilledButton.icon(
-                  onPressed: _session.hasInput ? _finish : null,
-                  icon: const Icon(Icons.check),
-                  label: Text(s.learnDone),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+      keying: playback == null
+          ? const SizedBox(
+              height: 160,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : _buildKey(playback, context.s),
     );
   }
 
@@ -433,7 +440,9 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        SendResultView(diagnostics: _result!),
+        if (_guide != null)
+          SendGuideResult(stage: _guide!, diagnostics: _result!),
+        SendResultView(diagnostics: _result!, showIssues: _guide == null),
         if (_timeline != null) ...<Widget>[
           const SizedBox(height: 16),
           SendTimelineView(
@@ -470,7 +479,11 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
-                  child: Text(s.learnTryAnother),
+                  child: Text(
+                    _guide != null && _result!.score.strictAccuracy != 1
+                        ? s.sendGuideRetry
+                        : s.learnTryAnother,
+                  ),
                 ),
               ),
           ],

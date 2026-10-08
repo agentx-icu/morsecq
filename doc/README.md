@@ -9,4 +9,4 @@
 - [Adding a language](i18n/ADDING_A_LANGUAGE.md) / [中文](i18n/ADDING_A_LANGUAGE.zh-CN.md)
 - [App Store build](release/APP_STORE.md) / [中文](release/APP_STORE.zh-CN.md)
 
-Plans, RFCs and older design concepts are historical records of the pre-split product.
+Implementation plans are local working notes and are not published. Older appearance explorations are labelled as concepts; use the current product concept and real gallery for the present learning experience.
