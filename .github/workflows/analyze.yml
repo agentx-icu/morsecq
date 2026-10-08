@@ -72,6 +72,9 @@ jobs:
       - name: Complete release asset regression tests
         run: python3 tool/ci/verify_release_assets_test.py
 
+      - name: Apple plugin cache regression tests
+        run: python3 tool/ci/clean_apple_plugin_cache_test.py
+
       - name: Tests
         run: |
           set -euo pipefail

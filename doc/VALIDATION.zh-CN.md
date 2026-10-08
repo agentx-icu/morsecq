@@ -9,6 +9,7 @@
 - 首次启动导航、共享控制器重试、后台写入、确认清除的持久化及学习界面重载回归通过。
 - 根目录 Flutter 分析零问题。分层、本地化、复杂度门禁及 actionlint、shellcheck、`git diff --check` 均通过。
 - 截图流程 **12 项回归通过**；macOS 安装包组件选择 **3 项回归通过**；发布完整性 **7 项回归通过**，覆盖缺失、空文件、额外文件、macOS 架构混用、符号链接、标签及校验清单。
+- Apple 插件缓存清理 **4 项回归通过**。真实 CMake 在两个 Apple 平台目录中复现已移除的 Xcode 编译器路径，清理生成文件后重新配置成功；源码、其他包及另一平台保持完整。
 - `dart pub get --enforce-lockfile` 通过；解析图共 155 个包，不含 Tim2Tox、Tencent 或 MorseCQ 聊天包。
 
 运行时及打包实现 `8ff8dd4` 已通过[分析流水线](https://github.com/agentx-icu/morsecq/actions/runs/37722463165)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37722463344)和[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37722463151)。后续补全文档及发布完整性门禁，未更改应用代码；最新 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。

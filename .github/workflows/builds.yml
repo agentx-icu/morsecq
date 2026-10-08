@@ -40,6 +40,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+          # Apple plugin outputs contain absolute paths from the runner image.
+          pub-cache: ${{ matrix.platform != 'macos' }}
       - name: Linux dependencies
         if: runner.os == 'Linux'
         run: |
@@ -53,6 +55,9 @@ jobs:
           if (-not $wix) { throw 'WiX Toolset v3 missing' }
           Join-Path $wix.FullName 'bin' | Out-File $env:GITHUB_PATH -Encoding utf8 -Append
       - run: dart pub get --enforce-lockfile
+      - name: Drop generated Apple plugin output
+        if: runner.os == 'macOS'
+        run: bash tool/ci/clean_apple_plugin_cache.sh macos
       - name: Build offline application
         run: |
           flutter config --enable-${{ matrix.platform }}-desktop
@@ -127,7 +132,10 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+          pub-cache: false
       - run: dart pub get --enforce-lockfile
+      - name: Drop generated Apple plugin output
+        run: bash tool/ci/clean_apple_plugin_cache.sh ios
       - name: Build unsigned application
         run: |
           cd apps/morsecq
