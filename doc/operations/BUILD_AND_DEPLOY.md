@@ -10,6 +10,8 @@ Apple CI caches the Flutter SDK but disables Pub-cache reuse. Before building or
 
 After a local build, run `bash tool/ci/package_artifacts.sh --target <target>`; packages appear in `dist/<target>/`. macOS package names use the built executable’s architecture: arm64, x86_64 or universal2. Linux/Windows ARM application targets remain outside required builds.
 
+macOS packaging checks every embedded Mach-O architecture against the application's `LSMinimumSystemVersion` before creating either archive. Run `python3 tool/ci/macos_runtime.py <application.app>` to inspect a built bundle; a dependency requiring a newer OS fails packaging.
+
 Android owner signing uses repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, or local `android/key.properties`. Without them CI produces debug-key signed testing packages, unsuitable for stores. iOS Release packages are unsigned and require owner re-signing. `tool/build_ios_store.sh` builds a store IPA with the owner's Apple signing setup. macOS packages are not Developer ID signed/notarized by default.
 
 Physical-device microphone, haptics, keying and local persistence still require device acceptance. E2E CI verifies Windows/Linux execution and screenshots. Building a package does not publish to a store or complete signing.

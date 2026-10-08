@@ -116,6 +116,9 @@ package_macos() {
     'x86_64 arm64'|'arm64 x86_64') arch=universal2 ;;
     *) ci_die "Unexpected macOS executable architectures: $arches" ;;
   esac
+  # Every embedded framework and architecture must fit the app's declared OS.
+  ci_require_cmd python3
+  python3 "$SCRIPT_DIR/macos_runtime.py" "$app"
   # ditto keeps the bundle's symlinks, modes and signature intact.
   ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/$BASE-macos-$arch.zip"
 

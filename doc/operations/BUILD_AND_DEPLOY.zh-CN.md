@@ -10,6 +10,8 @@ Apple CI 保留 Flutter SDK 缓存，关闭 Pub 缓存复用；macOS 构建及�
 
 本地构建后运行 `bash tool/ci/package_artifacts.sh --target <目标>`，资产位于 `dist/<目标>/`。macOS 包名按可执行文件的实际架构标注为 arm64、x86_64 或 universal2。Linux/Windows ARM 暂不作为必需应用构建目标。
 
+macOS 创建任一归档前，会核对所有内嵌 Mach-O 架构与应用的 `LSMinimumSystemVersion`。可运行 `python3 tool/ci/macos_runtime.py <应用.app>` 检查已构建应用；任何依赖要求更高系统版本都会阻断打包。
+
 Android 正式签名使用 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 仓库 secrets，或本地 `android/key.properties`。缺少签名时生成 debug-key 签名的测试包，不可上传商店。iOS Release 默认 unsigned，须由拥有者重新签名。App Store 可使用 `tool/build_ios_store.sh`，但需要拥有者的 Apple 签名配置。macOS 默认未进行 Developer ID 分发签名/公证。
 
 真实设备麦克风、触觉、实体键和本地持久化仍需设备验收；Windows/Linux 的运行和截图由 E2E CI 验证。不要把构建成功等同于商店上架或签名完成。

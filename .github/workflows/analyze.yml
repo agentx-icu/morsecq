@@ -69,6 +69,9 @@ jobs:
       - name: macOS installer component regression tests
         run: python3 tool/ci/macos_components_test.py
 
+      - name: macOS runtime compatibility regression tests
+        run: python3 tool/ci/macos_runtime_test.py
+
       - name: Complete release asset regression tests
         run: python3 tool/ci/verify_release_assets_test.py
 

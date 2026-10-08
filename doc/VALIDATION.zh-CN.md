@@ -8,7 +8,7 @@
 - 保留包通过数：核心 **92**、DSP **107**、音频 I/O **124**、训练 **270**、无线电工具 **18**。DSP **2 项已有噪声底限制用例跳过**：异常安静的首个噪声块（包括 44.1 kHz 录音）可能产生多余前导字符。这是已有算法限制，不是原生平台测试跳过。
 - 首次安装直接提供第一课。测试覆盖引导节奏保存、真实抄报结论、逐字符近期独立证据、课程挑战升级、最终课程完成、每日计划重点、模拟通联准备度，以及两个新增进度字段的保存、重开与损坏回退。
 - 所有包 / 应用 / 工具分析零问题；复杂度、分层、本地化门禁通过（486 个源码文件 / 213 个 UI 文件），actionlint、shellcheck、`git diff --check` 通过。固定依赖图含 155 个包，不含 Tim2Tox、Tencent 或 MorseCQ 聊天包。
-- 截图导入 / 发布 **19**、Apple 插件缓存 **4**、macOS 安装包组件 **3**、发布资产完整性 **7** 项回归通过；语言 / 样式截图配置 **4** 项回归包含在应用测试中。
+- 截图导入 / 发布 **19**、Apple 插件缓存 **4**、macOS 安装包组件 **3**、macOS 运行时兼容性 **9**、发布资产完整性 **7** 项回归通过；语言 / 样式截图配置 **4** 项回归包含在应用测试中。
 
 整合后的运行时 `7cffd42` 通过[分析](https://github.com/agentx-icu/morsecq/actions/runs/37733546824)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37733547331)、[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37733546823)及[视觉矩阵](https://github.com/agentx-icu/morsecq/actions/runs/37733547328)。最终图库 / 文档提交的 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
 
@@ -33,5 +33,7 @@ macOS、Linux、Windows E2E 运行真实启动、本地持久化重开、英文 
 已下载构建流水线 `37733547331` 的全部 **10 个真实教学整合产物**，通过 `verify_release_assets.sh v1.0.0`、SHA256SUMS 与 ZIP/tar 完整性验证；归档不含 Tim2Tox/Tencent/toxcore 条目。最终 HEAD 产物替换被 Git 忽略的 `dist/release-v1.0.0/` 工作集；源码流水线证明保存在同样忽略的 `dist/release-proof-37733547331-v1.0.0/`。应用标识为 `icu.agentx.morsecq`，版本 1.0.0、构建号 1。实际 Mach-O 检查确认 objective_c 的 macOS 13.0 要求，最终打包已统一 Runner/Podfile 部署最低版本。源码 PKG 无重定位条目且只有一个主应用版本条目，universal2 应用深度签名验证通过。
 
 全部五平台构建、版本 / 标签匹配、十资产完整性和 SHA256SUMS 是草稿 GitHub Release 前置门禁；PR 正常跳过发布作业。未创建标签、公开 Release 或商店提交。缺少拥有者签名配置时 Android 使用 debug 测试签名，iOS IPA 未签名，macOS 未进行 Developer ID 分发签名 / 公证；拥有者分发签名及真实设备麦克风、实体键、触觉反馈和持久化验收仍需完成。
+
+创建 macOS ZIP 或 PKG 前，打包流程逐一扫描所有内嵌 Mach-O 及 universal 架构切片，核对 `LSMinimumSystemVersion`。教学整合源码包声明 10.15，低于 objective_c 框架的 13.0 要求，现能被门禁正确拒绝；应用部署最低版本已统一为 13.0。回归还覆盖旧式最低版本 load command、缺失或损坏的元数据、非 macOS 二进制与框架软链接。
 
 集成测试后使用标准 Flutter Release 构建命令；Flutter 3.41.9 的 `--no-pub` 可能保留开发用 Android 集成测试注册器，仓库构建与 CI 通过标准命令刷新。
