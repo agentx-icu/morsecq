@@ -77,8 +77,11 @@ abstract final class SpeedRecommender {
   };
 
   /// Evaluates [history] (oldest first) for the current speeds.
-  /// [currentLesson] restricts course evidence to the current symbol set so
-  /// new symbols and a higher speed are never combined.
+  /// [currentLesson] restricts evidence that carries a lesson (course,
+  /// review and focus sessions record the lesson they ran at) to the
+  /// current symbol set, so new symbols and a higher speed are never
+  /// combined and practice of an earlier lesson's set cannot argue for a
+  /// faster speed now.
   static SpeedAdvice evaluate(
     List<SessionSummary> history, {
     required double characterWpm,
@@ -101,7 +104,7 @@ abstract final class SpeedRecommender {
           !s.at.isBefore(since) &&
           s.totalChars >= minSymbols &&
           (currentLesson == null ||
-              source != ExerciseSource.course ||
+              s.lesson == null ||
               s.lesson == currentLesson);
     }).toList();
     SpeedAdvice same(SpeedAdviceKind kind, int n, {String? key, double? acc}) =>

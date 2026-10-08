@@ -59,7 +59,7 @@ void main() {
       await _pumpHome(tester, size: const Size(390, 844), progress: progress);
 
       expect(find.text(en.learnLessonOf(3, 42)), findsOneWidget);
-      expect(find.text(en.learnCharsLearned(4)), findsOneWidget);
+      expect(find.text(en.learnCharsIntroducedMastered(4, 0)), findsOneWidget);
       for (final c in <String>['K', 'M', 'R', 'S']) {
         expect(
           find.descendant(

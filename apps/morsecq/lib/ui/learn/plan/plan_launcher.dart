@@ -4,6 +4,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_plan.dart';
 import '../learn_playback.dart';
+import '../onboarding/first_lesson_screen.dart';
 import '../receive/receive_drill_screen.dart';
 import '../send/send_practice_screen.dart';
 
@@ -17,6 +18,19 @@ Future<void> openPlanStep(
   required PlanStep step,
 }) async {
   final navigator = Navigator.of(context);
+  if (step.kind == PlanStepKind.intro) {
+    final session = await controller.startPlanIntroStep(step);
+    await navigator.push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => FirstLessonScreen(
+          controller: controller,
+          playback: playback,
+          trialSession: session,
+        ),
+      ),
+    );
+    return;
+  }
   if (step.kind == PlanStepKind.send) {
     final session = await controller.startPlanSendStep(step);
     await navigator.push(

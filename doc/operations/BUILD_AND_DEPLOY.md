@@ -69,9 +69,18 @@ the overlay was not applied.
 
 ## Minimum OS versions
 
-macOS **10.15**, Windows **10**, Android **API 21**, iOS **14.0** (`file_picker_darwin` needs 14; raised from 13.0 on 2026-09-30) (enforced via
-`-mmacosx-version-min`, `ANDROID_PLATFORM=android-21`, `-target *-apple-ios14.0`,
-the Podfiles and the Xcode deployment targets).
+The application targets Windows **10/11**, Android **API 24** (Android 7.0,
+`flutter.minSdkVersion` with the pinned Flutter 3.41.9), and iOS **14.0**
+(`file_picker_darwin` needs 14). macOS has an Intel source deployment target
+of **10.15**, but whole-app compatibility is unverified there. The current
+Apple Silicon debug bundle includes an `objective_c` native asset with a
+**13.0** minimum, above the engine's 11.0 minimum. Use **macOS 13+** for this
+build. Deployment targets are not evidence of testing on every older OS;
+see the main README's availability matrix for actual verification.
+
+The native chat library is built with `-mmacosx-version-min=10.15`,
+`ANDROID_PLATFORM=android-21` and `-target *-apple-ios14.0`. Its Android API 21
+target does not lower the application's API 24 minimum.
 
 ## CI: `.github/workflows/native.yml`
 

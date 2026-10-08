@@ -9,9 +9,14 @@ import 'send_tips.dart';
 /// Finished send attempt: copy accuracy of the decoded text against the
 /// target, measured speed, and every rhythm issue with a plain-language tip.
 class SendResultView extends StatelessWidget {
-  const SendResultView({super.key, required this.diagnostics});
+  const SendResultView({
+    super.key,
+    required this.diagnostics,
+    this.showIssues = true,
+  });
 
   final SendDiagnostics diagnostics;
+  final bool showIssues;
 
   @override
   Widget build(BuildContext context) {
@@ -66,26 +71,31 @@ class SendResultView extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         AlignedSymbols(alignment: score.alignment, showTarget: false),
-        const SizedBox(height: 20),
-        Text(
-          s.learnSendIssues,
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: scheme.onSurfaceVariant,
+        if (showIssues) ...[
+          const SizedBox(height: 20),
+          Text(
+            s.learnSendIssues,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        if (issues.isEmpty)
-          Row(
-            children: <Widget>[
-              Icon(Icons.check_circle_outline, color: scheme.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(s.learnSendClean, style: theme.textTheme.bodyLarge),
-              ),
-            ],
-          )
-        else
-          for (final issue in issues) _IssueTile(issue: issue),
+          const SizedBox(height: 6),
+          if (issues.isEmpty)
+            Row(
+              children: <Widget>[
+                Icon(Icons.check_circle_outline, color: scheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    s.learnSendClean,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            )
+          else
+            for (final issue in issues) _IssueTile(issue: issue),
+        ],
       ],
     );
   }

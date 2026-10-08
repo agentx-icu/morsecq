@@ -225,6 +225,9 @@ final class QsoSession {
           remoteText: again,
         );
       case QsoIntent.slowDown:
+        // QRS requests another hearing as well as a slower pace. This
+        // remains assistance even when the minimum speed is already set.
+        repeats++;
         final lowered = max(minEffectiveWpm, _effectiveWpm - 1);
         final changed = lowered < _effectiveWpm;
         _effectiveWpm = lowered;
@@ -276,10 +279,12 @@ final class QsoSession {
       QsoStage.callConfirm =>
         level == 2 ? '$r DE $l K' : '<REMOTE> DE <LOCAL> K',
       QsoStage.exchange =>
-        (scenario == QsoScenario.callCq ? '$r DE $l ' : '') +
-            (level == 2
-                ? 'UR RST 599 NAME ${local.name} QTH ${local.qth} K'
-                : 'UR RST <RST> NAME <NAME> QTH <QTH> K'),
+        scenario == QsoScenario.shortExchange
+            ? 'UR RST 599 K'
+            : (scenario == QsoScenario.callCq ? '$r DE $l ' : '') +
+                  (level == 2
+                      ? 'UR RST 599 NAME ${local.name} QTH ${local.qth} K'
+                      : 'UR RST <RST> NAME <NAME> QTH <QTH> K'),
       QsoStage.confirmInfo =>
         level == 2 ? 'R R TNX ${remote.name}' : 'R R TNX <REMOTE NAME>',
       QsoStage.closing => 'TU 73 <SK>',

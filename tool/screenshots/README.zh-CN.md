@@ -84,7 +84,7 @@ tool/screenshots/capture.sh --platforms linux --from /path/to/artifact/screensho
 ## 场景
 
 `welcome`、`create_identity`、`backup_wizard`（首次启动），然后基于已有身份：
-`learn_home`、`stats`、`training_settings`、`receive_drill`、`send_practice`、
+`learn_home`、`stats`、`training_settings`、`receive_drill`、`send_practice`、`first_lesson`、`receive_summary`、`guided_send`、
 `chat_list`、`conversation`、`contacts`、`groups`、`group_conversation`、
 `reference`、`translator`、`listen`、`me`。
 
@@ -106,3 +106,9 @@ tool/screenshots/capture.sh --platforms linux --from /path/to/artifact/screensho
   `JAVA_HOME` 指向 arm64 的 JDK——非交互式 ssh 不会加载设置它的 profile。
 - 从 ssh 会话启动 macOS 窗口照样能渲染和截帧（Flutter 层不依赖合成器），但运行中
   不要抢焦点。
+
+教学场景包括入门试听 `first_lesson`、短听抄小结 `receive_summary`、先听示范的
+发报带练 `guided_send`，使用临时演示档案中的真实原生 UI 与播放器。
+`integration_test/first_day_learning_test.dart` 额外走通全新入门、试答、分级听抄
+和触屏发报，覆盖中英文。设备运行验证操作与播放器初始化；声音品质和零基础
+用户学习观察仍需独立人工验证。

@@ -10,7 +10,13 @@ enum PlanStepKind {
   course,
 
   /// Short sending practice.
-  send;
+  send,
+
+  /// The guided first lesson (hear, dit / dah, K / M trials); first use.
+  intro,
+
+  /// Single-symbol recognition rounds of the current lesson's set.
+  recognition;
 
   static PlanStepKind parse(String? name) => values.firstWhere(
     (v) => v.name == name,
@@ -50,7 +56,19 @@ enum PlanReason {
   /// The course moved on after the plan was made: this step practises the
   /// old lesson and cannot unlock the new one.
   courseOutdated,
-  sendRhythm;
+  sendRhythm,
+
+  /// First use: the guided first lesson.
+  firstLesson,
+
+  /// One symbol per round, for a new symbol that is not mastered yet.
+  recognition,
+
+  /// Short mixed groups for a beginner; deliberately too short to unlock.
+  courseGuided,
+
+  /// Optional sending for a beginner: hear the model, key a few targets.
+  sendOptional;
 
   static PlanReason parse(String? name) => values.firstWhere(
     (v) => v.name == name,
@@ -116,11 +134,22 @@ final class PlanStep {
     this.stale = false,
     this.seed = 0,
     this.settings,
-  }) : pool = List<String>.unmodifiable(pool);
+    this.groupSize,
+    this.optional = false,
+  }) : assert(groupSize == null || groupSize > 0, 'groupSize must be > 0'),
+       pool = List<String>.unmodifiable(pool);
 
   /// Stable per-step seed: reopening the step plays the same content even
   /// after other steps were refreshed or reordered.
   final int seed;
+
+  /// Symbols per round for this step; null = the plan's group size (plans
+  /// saved before the field existed behave as before).
+  final int? groupSize;
+
+  /// Not required for the plan to count as complete (a beginner's sending
+  /// step); still startable.
+  final bool optional;
 
   /// Speeds frozen when the step started (null until then: the plan's
   /// current settings apply).
@@ -182,6 +211,8 @@ final class PlanStep {
     stale: stale ?? this.stale,
     seed: seed,
     settings: settings ?? this.settings,
+    groupSize: groupSize,
+    optional: optional,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -199,6 +230,8 @@ final class PlanStep {
     'stale': stale,
     'seed': seed,
     if (settings != null) 'settings': settings!.toJson(),
+    if (groupSize != null) 'groupSize': groupSize,
+    if (optional) 'optional': true,
   };
 
   factory PlanStep.fromJson(Map<String, Object?> json) => PlanStep(
@@ -218,6 +251,11 @@ final class PlanStep {
     settings: json['settings'] is Map<String, Object?>
         ? PlanSettings.fromJson(json['settings']! as Map<String, Object?>)
         : null,
+    groupSize: switch ((json['groupSize'] as num?)?.toInt()) {
+      final int g when g > 0 => g,
+      _ => null,
+    },
+    optional: json['optional'] as bool? ?? false,
   );
 }
 
@@ -251,19 +289,25 @@ final class DailyPlan {
 
   bool isFor(DateTime now) => date == dateKey(now);
 
-  bool get isComplete => steps.every((s) => s.isDone);
+  /// Every required step is done. An optional step that was never started
+  /// does not hold the plan open; one that was started counts like any
+  /// other (it is part of the day's record then).
+  bool get isComplete => steps.every((s) => s.isDone || !_required(s));
 
   int get doneCount => steps.where((s) => s.isDone).length;
 
   double get estimatedMinutes => steps.fold(0.0, (a, s) => a + s.minutes);
 
-  /// The first step not done yet, or null when complete.
+  /// The first required step not done yet, or null when [isComplete].
   PlanStep? get nextStep {
     for (final step in steps) {
-      if (!step.isDone) return step;
+      if (!step.isDone && _required(step)) return step;
     }
     return null;
   }
+
+  static bool _required(PlanStep s) =>
+      !s.optional || s.state != PlanStepState.pending;
 
   PlanStep? stepById(String id) {
     for (final step in steps) {

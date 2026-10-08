@@ -97,7 +97,10 @@ void main() {
     expect(nav(s.navChat), findsNothing);
     expect(nav(s.navGroups), findsNothing);
     expect(find.text(s.guestBanner), findsNothing);
-    expect(find.text(s.learnContinueLesson), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('start-here')).hitTestable(),
+      findsOneWidget,
+    );
     expect(identity.current, isNull, reason: 'no identity opened');
     final controller = tester
         .element(find.byType(AppShell))

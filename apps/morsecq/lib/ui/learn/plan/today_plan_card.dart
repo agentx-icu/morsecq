@@ -18,10 +18,14 @@ class TodayPlanCard extends StatefulWidget {
     super.key,
     required this.controller,
     required this.playback,
+    this.compact = false,
+    this.secondaryAction = false,
   });
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
+  final bool compact;
+  final bool secondaryAction;
 
   @override
   State<TodayPlanCard> createState() => _TodayPlanCardState();
@@ -121,6 +125,33 @@ class _TodayPlanCardState extends State<TodayPlanCard>
     });
   }
 
+  Widget _action(S s, PlanStep? next, bool started) {
+    if (next == null) return _CompleteSummary(controller: _c);
+    final label = widget.compact
+        ? s.learnContinueToday
+        : started
+        ? s.learnPlanContinue
+        : s.learnPlanStart;
+    final onPressed = _busy ? null : () => _start(next);
+    final icon = const Icon(Icons.play_arrow);
+    if (widget.secondaryAction) {
+      return OutlinedButton.icon(
+        key: const ValueKey('plan-start'),
+        onPressed: onPressed,
+        icon: icon,
+        label: Text(label),
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+      );
+    }
+    return FilledButton.icon(
+      key: const ValueKey('plan-start'),
+      onPressed: onPressed,
+      icon: icon,
+      label: Text(label),
+      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = context.s;
@@ -158,47 +189,79 @@ class _TodayPlanCardState extends State<TodayPlanCard>
               ),
             ),
             const SizedBox(height: 12),
-            _BudgetSelector(
-              value: plan.budgetMinutes,
-              onChanged: _busy || plan.isComplete
-                  ? null
-                  : (m) => _guard(() => _c.setPlanBudget(m)),
-              started: started,
-            ),
-            if (plan.hasStaleSteps) ...<Widget>[
+            if (widget.compact) ...[
+              _action(s, next, started),
+              ExpansionTile(
+                key: const ValueKey('plan-details'),
+                title: Text(s.learnPlanDetails),
+                tilePadding: EdgeInsets.zero,
+                children: <Widget>[
+                  _BudgetSelector(
+                    value: plan.budgetMinutes,
+                    onChanged: _busy || plan.isComplete
+                        ? null
+                        : (m) => _guard(() => _c.setPlanBudget(m)),
+                    started: started,
+                  ),
+                  if (plan.hasStaleSteps) ...<Widget>[
+                    const SizedBox(height: 8),
+                    Text(s.learnPlanStale, style: theme.textTheme.bodySmall),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton(
+                        onPressed: _busy ? null : () => _guard(_c.refreshPlan),
+                        child: Text(s.learnPlanUpdate),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  for (final step in plan.steps)
+                    _StepTile(
+                      step: DailyPlanBuilder.effectiveStep(
+                        step,
+                        _c.currentLesson,
+                      ),
+                      isNext: next != null && step.id == next.id,
+                      sendDone: step.kind == PlanStepKind.send
+                          ? _c.sendAttemptsFor(step)
+                          : null,
+                      onTap: step.isDone || _busy ? null : () => _start(step),
+                    ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ] else ...[
+              _BudgetSelector(
+                value: plan.budgetMinutes,
+                onChanged: _busy || plan.isComplete
+                    ? null
+                    : (m) => _guard(() => _c.setPlanBudget(m)),
+                started: started,
+              ),
+              if (plan.hasStaleSteps) ...<Widget>[
+                const SizedBox(height: 8),
+                Text(s.learnPlanStale, style: theme.textTheme.bodySmall),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    onPressed: _busy ? null : () => _guard(_c.refreshPlan),
+                    child: Text(s.learnPlanUpdate),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
-              Text(s.learnPlanStale, style: theme.textTheme.bodySmall),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton(
-                  onPressed: _busy ? null : () => _guard(_c.refreshPlan),
-                  child: Text(s.learnPlanUpdate),
+              for (final step in plan.steps)
+                _StepTile(
+                  step: DailyPlanBuilder.effectiveStep(step, _c.currentLesson),
+                  isNext: next != null && step.id == next.id,
+                  sendDone: step.kind == PlanStepKind.send
+                      ? _c.sendAttemptsFor(step)
+                      : null,
+                  onTap: step.isDone || _busy ? null : () => _start(step),
                 ),
-              ),
+              const SizedBox(height: 8),
+              _action(s, next, started),
             ],
-            const SizedBox(height: 8),
-            for (final step in plan.steps)
-              _StepTile(
-                step: DailyPlanBuilder.effectiveStep(step, _c.currentLesson),
-                isNext: identical(step, next),
-                sendDone: step.kind == PlanStepKind.send
-                    ? _c.sendAttemptsFor(step)
-                    : null,
-                onTap: step.isDone || _busy ? null : () => _start(step),
-              ),
-            const SizedBox(height: 8),
-            if (next != null)
-              FilledButton.icon(
-                key: const ValueKey('plan-start'),
-                onPressed: _busy ? null : () => _start(next),
-                icon: const Icon(Icons.play_arrow),
-                label: Text(started ? s.learnPlanContinue : s.learnPlanStart),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                ),
-              )
-            else
-              _CompleteSummary(controller: _c),
             if (_c.speedAdvice.kind == SpeedAdviceKind.insufficient) ...[
               const SizedBox(height: 8),
               Text(

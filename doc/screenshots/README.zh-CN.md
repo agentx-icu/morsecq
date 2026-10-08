@@ -9,16 +9,16 @@
 
 | 平台 | 状态 | 尺寸 |
 |---|---|---|
-| macOS | 2026-10-01 已截 | 1280×800 @1x |
-| iOS（iPhone） | 2026-10-05 已截（App Store 6.9 英寸） | 440×956 @3x（1320×2868 像素，RGB） |
-| iPad | 2026-10-05 已截（App Store 13 英寸） | 1032×1376 @2x（2064×2752 像素，RGB） |
-| Android | 2026-10-01 已截 | ≈412×915 @2x（823×1829 px） |
+| macOS | 2026-10-08 已截（教学流程） | 1280×800 @1x |
+| iOS（iPhone） | 2026-10-08 已截（教学流程，App Store 6.9 英寸） | 440×956 @3x（1320×2868 像素，RGB） |
+| iPad | 2026-10-08 已截（教学流程） | 1032×1376 @2x（2064×2752 像素，RGB） |
+| Android | 2026-10-08 已截（教学流程） | ≈412×915 @2x（823×1829 px） |
 | Linux | 2026-10-01 已截（CI，ubuntu-24.04 + Xvfb） | 1280×800 @1x |
 | Windows | 2026-10-01 已截（CI，windows-2022） | 1280×800 @1x |
 
 Linux、Windows 截图来自成功的 [E2E 运行 36839181762](https://github.com/agentx-icu/morsecq/actions/runs/36839181762)，
 UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --from`
-执行相同发布校验后导入；其他四种目标设备在本机使用该 UI 版本生成。
+执行相同发布校验后导入；本机目标已为教学 worktree 重新生成，实际日期见上表。
 
 ## macOS
 
@@ -32,6 +32,9 @@ UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --f
 | 训练设置 | ![](macos/en/training_settings.png) | ![](macos/zh/training_settings.png) |
 | 听抄练习 | ![](macos/en/receive_drill.png) | ![](macos/zh/receive_drill.png) |
 | 发报练习 | ![](macos/en/send_practice.png) | ![](macos/zh/send_practice.png) |
+| 入门试听 | ![](macos/en/first_lesson.png) | ![](macos/zh/first_lesson.png) |
+| 听抄小结 | ![](macos/en/receive_summary.png) | ![](macos/zh/receive_summary.png) |
+| 发报带练 | ![](macos/en/guided_send.png) | ![](macos/zh/guided_send.png) |
 | 会话列表 | ![](macos/en/chat_list.png) | ![](macos/zh/chat_list.png) |
 | 会话 | ![](macos/en/conversation.png) | ![](macos/zh/conversation.png) |
 | 联系人 | ![](macos/en/contacts.png) | ![](macos/zh/contacts.png) |
@@ -53,6 +56,9 @@ UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --f
 | 训练设置 | ![](ios/en/training_settings.png) | ![](ios/zh/training_settings.png) |
 | 听抄练习 | ![](ios/en/receive_drill.png) | ![](ios/zh/receive_drill.png) |
 | 发报练习 | ![](ios/en/send_practice.png) | ![](ios/zh/send_practice.png) |
+| 入门试听 | ![](ios/en/first_lesson.png) | ![](ios/zh/first_lesson.png) |
+| 听抄小结 | ![](ios/en/receive_summary.png) | ![](ios/zh/receive_summary.png) |
+| 发报带练 | ![](ios/en/guided_send.png) | ![](ios/zh/guided_send.png) |
 | 手册 | ![](ios/en/reference.png) | ![](ios/zh/reference.png) |
 | 翻译器 | ![](ios/en/translator.png) | ![](ios/zh/translator.png) |
 | 收听 | ![](ios/en/listen.png) | ![](ios/zh/listen.png) |
@@ -69,6 +75,9 @@ UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --f
 | 训练设置 | ![](ipad/en/training_settings.png) | ![](ipad/zh/training_settings.png) |
 | 听抄练习 | ![](ipad/en/receive_drill.png) | ![](ipad/zh/receive_drill.png) |
 | 发报练习 | ![](ipad/en/send_practice.png) | ![](ipad/zh/send_practice.png) |
+| 入门试听 | ![](ipad/en/first_lesson.png) | ![](ipad/zh/first_lesson.png) |
+| 听抄小结 | ![](ipad/en/receive_summary.png) | ![](ipad/zh/receive_summary.png) |
+| 发报带练 | ![](ipad/en/guided_send.png) | ![](ipad/zh/guided_send.png) |
 | 手册 | ![](ipad/en/reference.png) | ![](ipad/zh/reference.png) |
 | 翻译器 | ![](ipad/en/translator.png) | ![](ipad/zh/translator.png) |
 | 收听 | ![](ipad/en/listen.png) | ![](ipad/zh/listen.png) |
@@ -86,6 +95,9 @@ UI 版本为 `0a83b325f8d9533340b851cf40672d129d4991fd`，通过 `capture.sh --f
 | 训练设置 | ![](android/en/training_settings.png) | ![](android/zh/training_settings.png) |
 | 听抄练习 | ![](android/en/receive_drill.png) | ![](android/zh/receive_drill.png) |
 | 发报练习 | ![](android/en/send_practice.png) | ![](android/zh/send_practice.png) |
+| 入门试听 | ![](android/en/first_lesson.png) | ![](android/zh/first_lesson.png) |
+| 听抄小结 | ![](android/en/receive_summary.png) | ![](android/zh/receive_summary.png) |
+| 发报带练 | ![](android/en/guided_send.png) | ![](android/zh/guided_send.png) |
 | 会话列表 | ![](android/en/chat_list.png) | ![](android/zh/chat_list.png) |
 | 会话 | ![](android/en/conversation.png) | ![](android/zh/conversation.png) |
 | 联系人 | ![](android/en/contacts.png) | ![](android/zh/contacts.png) |

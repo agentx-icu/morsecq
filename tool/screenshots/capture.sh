@@ -79,10 +79,10 @@ step() { echo -e "${CYAN}==>${NC} $*"; }
 
 # Must match kScenes in apps/morsecq/integration_test/support/scene_walk.dart.
 CHAT_SCENES=(welcome create_identity backup_wizard learn_home stats training_settings
-        receive_drill send_practice chat_list conversation contacts groups
+        receive_drill send_practice first_lesson receive_summary guided_send chat_list conversation contacts groups
         group_conversation reference translator listen me)
 # The offline App Store build (ios, ipad): must match kOfflineScenes.
-OFFLINE_SCENES=(learn_home stats training_settings receive_drill send_practice
+OFFLINE_SCENES=(learn_home stats training_settings receive_drill send_practice first_lesson receive_summary guided_send
                 reference translator listen me)
 SCENES=("${CHAT_SCENES[@]}")
 # ios / ipad capture the offline App Store build (AppFeatures(chat: false)).

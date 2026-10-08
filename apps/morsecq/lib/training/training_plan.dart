@@ -38,6 +38,31 @@ extension TrainingPlan on TrainingController {
     final char = t.characterWpm;
     final eff = t.isFarnsworth ? t.farnsworthWpm! : char;
     final due = progress.srs.dueChars(now());
+    final current = {for (final c in learnedChars) c: recentEvidenceOf(c)};
+    final planStats = <String, CharStats>{};
+    final pairs = ConfusionMatrix();
+    for (final entry in current.entries) {
+      final evidence = entry.value;
+      final stats = evidence.stats;
+      final sampled = stats.attempts >= DailyPlanBuilder.minAttemptsForWeakness;
+      // Plan-only weakness includes stray answers, after the genuine sample
+      // floor is met. Lifetime totals and mastery attempt counts stay intact.
+      planStats[entry.key] = sampled && evidence.insertions > 0
+          ? CharStats(
+              attempts: stats.attempts + evidence.insertions,
+              correct: stats.correct,
+            )
+          : stats;
+      if (!sampled ||
+          evidence.strictAccuracy >= DailyPlanBuilder.weakAccuracy) {
+        continue;
+      }
+      // Historical pairs are a contrast clue only while their target has
+      // current independent evidence of trouble. Recovered symbols leave focus.
+      for (final pair in progress.confusion.rowFor(entry.key).entries) {
+        pairs.record(entry.key, pair.key, times: pair.value);
+      }
+    }
     return PlanInputs(
       now: now(),
       profileKey: profileKey,
@@ -45,8 +70,8 @@ extension TrainingPlan on TrainingController {
       lesson: currentLesson,
       course: course,
       due: due,
-      charStats: progress.charStats,
-      confusion: progress.confusion,
+      charStats: planStats,
+      confusion: pairs,
       settings: PlanSettings(
         characterWpm: char,
         effectiveWpm: eff,
@@ -54,6 +79,8 @@ extension TrainingPlan on TrainingController {
         groupSize: t.groupSize,
       ),
       seed: seed ?? random.nextInt(1 << 31),
+      stage: learnerStage,
+      firstLessonDone: progress.firstLessonDone,
     );
   }
 
@@ -102,8 +129,13 @@ extension TrainingPlan on TrainingController {
   }
 
   /// Starts a receive step with the plan's frozen speeds and seed. Throws
-  /// [StateError] when the step is not part of this profile's plan today.
+  /// [StateError] when the step is not part of this profile's plan today,
+  /// or when it is an `intro` or `send` step (those have their own
+  /// starters).
   Future<ReceiveSession> startPlanReceiveStep(PlanStep step) async {
+    if (step.kind == PlanStepKind.intro || step.kind == PlanStepKind.send) {
+      throw StateError('${step.kind.name} steps are not receive sessions');
+    }
     final started = _ownPlan(step).start(step.id);
     await commitProgress((p) => p.withDailyPlan(started));
     final plan = started;
@@ -113,25 +145,46 @@ extension TrainingPlan on TrainingController {
     // after other steps changed, or after more practice, replays the same
     // questions (uniform weights, not live statistics).
     final seeded = Random(frozen.seed);
-    final kind = step.kind == PlanStepKind.review
-        ? ReceiveDrillKind.review
-        : ReceiveDrillKind.groups;
+    final groupSize = frozen.groupSize ?? plan.settingsOf(frozen).groupSize;
+    final challenge =
+        step.kind == PlanStepKind.course && effective.unlockEligible;
+    final kind = switch (step.kind) {
+      PlanStepKind.review => ReceiveDrillKind.review,
+      PlanStepKind.recognition => ReceiveDrillKind.characters,
+      _ => ReceiveDrillKind.groups,
+    };
+    final DrillGenerator generator = challenge
+        ? catalog.challengeDrill(
+            chars: step.pool,
+            lesson: step.lesson,
+            charBudget: step.charBudget,
+            groupSize: groupSize,
+            weighted: false,
+          )
+        : step.kind == PlanStepKind.recognition
+        ? LessonChallengeDrill(
+            chars: step.pool,
+            newChars: course.newCharsForLesson(step.lesson),
+            charBudget: step.charBudget,
+            groupSize: 1,
+            minRequiredAttempts: LearnerStages.masteryAttempts,
+          )
+        : RandomGroupsDrill(
+            chars: step.pool,
+            groupCount: 1,
+            groupSize: step.kind == PlanStepKind.recognition ? 1 : groupSize,
+          );
     return ReceiveSession(
       kind: kind,
-      generator: RandomGroupsDrill(
-        chars: step.pool,
-        groupCount: 1,
-        groupSize: plan.settingsOf(frozen).groupSize,
-      ),
+      generator: generator,
       chars: step.pool,
       timing: _timingOf(plan, frozen),
       charBudget: step.charBudget,
       lesson: step.lesson,
-      countsTowardLesson:
-          step.kind == PlanStepKind.course && effective.unlockEligible,
+      countsTowardLesson: challenge,
       source: switch (step.kind) {
         PlanStepKind.review => ExerciseSource.review,
-        PlanStepKind.focus => ExerciseSource.focus,
+        PlanStepKind.focus || PlanStepKind.recognition => ExerciseSource.focus,
         _ => ExerciseSource.course,
       },
       planStepId: step.id,
@@ -140,12 +193,29 @@ extension TrainingPlan on TrainingController {
     );
   }
 
+  /// Starts the plan's `intro` step: the first lesson's trials session,
+  /// bound to the step so finishing the trials completes it.
+  Future<ReceiveSession> startPlanIntroStep(PlanStep step) async {
+    if (step.kind != PlanStepKind.intro) {
+      throw StateError('${step.kind.name} is not the intro step');
+    }
+    final started = _ownPlan(step).start(step.id);
+    await commitProgress((p) => p.withDailyPlan(started));
+    return startOnboardingSession(planStepId: step.id);
+  }
+
   /// One target of a send step; the step completes after its number of
   /// keyed targets.
   Future<SendSession> startPlanSendStep(PlanStep step) async {
     final plan = _ownPlan(step).start(step.id);
     await commitProgress((p) => p.withDailyPlan(plan));
     final frozen = plan.stepById(step.id)!;
+    if (GuidedSending.needed(progress.history)) {
+      return startGuidedSendSession(
+        planStepId: step.id,
+        timing: _timingOf(plan, frozen),
+      );
+    }
     final done = progress.history.where((s) => s.planStepId == step.id).length;
     final seeded = Random(frozen.seed + done * 101);
     final words = WordDrill.commonWords(
@@ -213,8 +283,17 @@ extension TrainingPlan on TrainingController {
   }
 
   /// Advice worth showing: a change the learner has not seen for this
-  /// evidence batch.
+  /// evidence batch. Never while a new symbol is still being learnt: a
+  /// speed change and unfamiliar symbols are not combined.
   SpeedAdvice? get pendingSpeedAdvice {
+    switch (learnerStage) {
+      case LearnerStage.firstUse:
+      case LearnerStage.recognition:
+        return null;
+      case LearnerStage.copying:
+      case LearnerStage.coursePassed:
+        break;
+    }
     final advice = speedAdvice;
     if (!advice.isChange || advice.evidenceKey == progress.speedAdviceKey) {
       return null;

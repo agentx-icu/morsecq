@@ -13,46 +13,19 @@ The first line of each file is a language link to its counterpart
 (`[简体中文](./X.zh-CN.md)` in the English file, `[English](./X.md)` in the
 Chinese one). When adding a document, add both files. Where a pair disagrees,
 the file that was written first is authoritative and says so in a note at the
-top (today that is the Chinese original of the plan document and the English
-`BUILD_AND_DEPLOY.md`, which is a condensed summary of the Chinese one).
+top (for example, the English `BUILD_AND_DEPLOY.md` is a condensed summary
+of the Chinese one).
 
 ## Recommended reading path
 
-- **Taking over the project** — [HANDOVER.md](HANDOVER.md): state as of the
-  last session, traps, backlog, how the multi-agent work was run.
 - **Just want to run it** — [Main README](../README.md) "Build prerequisites"
   → [operations/BUILD_AND_DEPLOY.md](operations/BUILD_AND_DEPLOY.md) for the
   native library on your platform.
 - **Contributing code** — [CLAUDE.md](../CLAUDE.md) (layout, gates, working
-  agreement) → [plans/2026-09-30-morsecq-plan.md](plans/2026-09-30-morsecq-plan.md)
-  §3 "Technology choices and architecture decisions" → the README of the
-  package or sub-area you are touching (below).
-- **Changing scope or product decisions** — the plan document is the source of
-  truth; every edit appends to its change log.
-
-## Plans (方案)
-
-- [plans/2026-10-04-additional-functional-improvements-handoff.md](plans/2026-10-04-additional-functional-improvements-handoff.md) /
-  [zh-CN](plans/2026-10-04-additional-functional-improvements-handoff.zh-CN.md) — English-first
-  handoff and implementation record for six additional features (F09–F14): connection
-  diagnostics, complete encrypted migration, radio-condition training, external keys,
-  Chinese telegraph codes, and group practice; with acceptance criteria, decisions and
-  the verification that was and was not done.
-- [plans/2026-10-03-functional-improvements.md](plans/2026-10-03-functional-improvements.md) /
-  [zh-CN](plans/2026-10-03-functional-improvements.zh-CN.md) — Detailed specifications and AI
-  handoff for eight proposed features: daily plans, interactive QSO, chat practice,
-  rhythm replay, guest/placement, materials, message management, and audio workbench.
-  Includes data compatibility, acceptance criteria, and phased tasks; documentation
-  only, with no current product behavior changed.
-- [plans/2026-10-03-interface-languages.md](plans/2026-10-03-interface-languages.md) /
-  [zh-CN](plans/2026-10-03-interface-languages.zh-CN.md) — Eight additional interface
-  languages, complete ARB translations and mobile/desktop verification.
-- [plans/2026-09-30-morsecq-plan.md](plans/2026-09-30-morsecq-plan.md) /
-  [zh-CN](plans/2026-09-30-morsecq-plan.zh-CN.md) — Founding product and
-  architecture plan: naming, product definition, Tim2Tox facts, the four
-  options and the "variant B" decision, training and communication design,
-  milestones, risks, multi-agent orchestration, change log. **The Chinese file
-  is the original.**
+  agreement) → the README of the package or sub-area you are touching (below).
+- **Changing scope or product decisions** — document the resulting behavior
+  in the relevant package or app documentation. Planning documents under
+  `doc/plans/` are local working notes, excluded from Git.
 
 ## Operations and build
 

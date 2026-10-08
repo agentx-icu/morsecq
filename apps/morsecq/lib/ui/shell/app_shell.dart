@@ -99,8 +99,7 @@ List<ShellDestination> shellDestinations({required bool chat}) => [
 ///
 /// Rendered only behind `StartupGate`: with an identity, or on the guest
 /// learning profile, where Learn, Reference and the tools work and the chat
-/// destinations ask for an identity (functional spec §8,
-/// doc/plans/2026-10-03-functional-improvements.md).
+/// destinations ask for an identity.
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 

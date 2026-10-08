@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morsecq/training/receive_session.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/ui/learn/receive/answer_keypad.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/receive/receive_summary_view.dart';
@@ -102,7 +103,9 @@ void main() {
       expect(find.byType(ReceiveSummaryView), findsOneWidget);
       expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
       // 5 chars is below the 50-char Koch minimum, so no unlock.
-      expect(find.text(en.learnLessonNotPassed), findsOneWidget);
+      // Five symbols are far below a challenge: the summary says so.
+      expect(find.text(en.learnVerdictTooShort(5, 50)), findsOneWidget);
+      expect(find.text(en.learnVerdictTooShortHint(50)), findsOneWidget);
       expect(t.progressStore.saveCount, 1);
       expect(t.controller.progress.history.single.totalChars, 5);
       expect(t.controller.charsToday, 5);

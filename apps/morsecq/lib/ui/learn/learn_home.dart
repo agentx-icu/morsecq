@@ -8,11 +8,13 @@ import '../stats/stats_screen.dart';
 import '../appearance/appearance_page.dart';
 import '../appearance/style_tokens.dart';
 import '../appearance/ui_style.dart';
+import 'learn_glossary.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
 import 'conditions/conditions_playback.dart';
 import 'materials/materials_screen.dart';
+import 'onboarding/first_lesson_screen.dart';
 import 'placement/placement_offer_card.dart';
 import 'placement/placement_screen.dart';
 import 'plan/speed_advice_card.dart';
@@ -20,6 +22,7 @@ import 'qso/qso_setup_screen.dart';
 import 'plan/today_plan_card.dart';
 import 'receive/drill_picker_sheet.dart';
 import 'receive/receive_drill_screen.dart';
+import 'receive/guided_practice_sheet.dart';
 import 'review/review_screen.dart';
 import 'send/send_practice_screen.dart';
 import 'settings/training_settings_screen.dart';
@@ -45,6 +48,7 @@ class LearnHome extends StatelessWidget {
     context,
   ).push(MaterialPageRoute<Object?>(builder: (_) => screen));
 
+  /// The lesson challenge: the only session that can advance the course.
   void _continueLesson(BuildContext context) => _push(
     context,
     ReceiveDrillScreen(
@@ -52,6 +56,28 @@ class LearnHome extends StatelessWidget {
       playback: playback,
       session: controller.startLessonSession(),
     ),
+  );
+
+  /// A short guided session for the beginner stages (practice only).
+  Future<void> _guidedPractice(BuildContext context) async {
+    final level = await showGuidedPracticeSheet(
+      context,
+      controller.recommendedGuidedLevel,
+    );
+    if (level == null || !context.mounted) return;
+    await _push(
+      context,
+      ReceiveDrillScreen(
+        controller: controller,
+        playback: playback,
+        session: controller.startGuidedSession(level: level),
+      ),
+    );
+  }
+
+  void _firstLesson(BuildContext context) => _push(
+    context,
+    FirstLessonScreen(controller: controller, playback: playback),
   );
 
   Future<void> _receivePractice(BuildContext context) async {
@@ -94,6 +120,15 @@ class LearnHome extends StatelessWidget {
     SendPracticeScreen(controller: controller, playback: playback),
   );
 
+  void _guidedSend(BuildContext context) => _push(
+    context,
+    SendPracticeScreen(
+      controller: controller,
+      playback: playback,
+      session: controller.startGuidedSendSession(),
+    ),
+  );
+
   void _review(BuildContext context) =>
       _push(context, ReviewScreen(controller: controller, playback: playback));
 
@@ -108,6 +143,7 @@ class LearnHome extends StatelessWidget {
       appBar: AppBar(
         title: Text(s.navLearn),
         actions: <Widget>[
+          const LearnGlossaryButton(),
           IconButton(
             tooltip: s.appearanceTitle,
             icon: const Icon(Icons.palette_outlined),
@@ -189,16 +225,39 @@ class LearnHome extends StatelessWidget {
               ),
             ),
           ),
+        if (PlacementOfferCard.shows(controller))
+          PlacementOfferCard(
+            controller: controller,
+            onStartHere: () => _firstLesson(context),
+            onFromZero: () => _continueLesson(context),
+            onCheckLevel: () => _push(
+              context,
+              PlacementScreen(controller: controller, playback: playback),
+            ),
+          )
+        else
+          TodayPlanCard(
+            controller: controller,
+            playback: playback,
+            compact: true,
+          ),
+        const SizedBox(height: 12),
       ],
     );
   }
 
+  Widget _lessonCard(BuildContext context) => LessonCard(
+    controller: controller,
+    playback: playback,
+    onContinue: controller.learnerStage == LearnerStage.firstUse
+        ? null
+        : () => _continueLesson(context),
+    onGuided: () => _guidedPractice(context),
+  );
+
   Widget _status(BuildContext context) => Column(
     children: <Widget>[
-      LessonCard(
-        controller: controller,
-        onContinue: () => _continueLesson(context),
-      ),
+      _lessonCard(context),
       const SizedBox(height: 12),
       DailyGoalCard(controller: controller),
       ..._planCards(),
@@ -208,19 +267,27 @@ class LearnHome extends StatelessWidget {
   /// Today's plan and any pending speed advice, under the goal card.
   List<Widget> _planCards() => <Widget>[
     const SizedBox(height: 12),
-    if (PlacementOfferCard.shows(controller))
+    if (!PlacementOfferCard.shows(controller) &&
+        (controller.learnerStage == LearnerStage.firstUse ||
+            controller.learnerStage == LearnerStage.recognition))
       Builder(
-        builder: (context) => PlacementOfferCard(
-          controller: controller,
-          onFromZero: () => _continueLesson(context),
-          onCheckLevel: () => _push(
-            context,
-            PlacementScreen(controller: controller, playback: playback),
+        builder: (context) => Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            key: const ValueKey('replay-first-lesson'),
+            onPressed: () => _firstLesson(context),
+            icon: const Icon(Icons.flag_outlined),
+            label: Text(context.s.learnReplayFirstLesson),
           ),
         ),
       ),
     SpeedAdviceCard(controller: controller),
-    TodayPlanCard(controller: controller, playback: playback),
+    if (PlacementOfferCard.shows(controller))
+      TodayPlanCard(
+        controller: controller,
+        playback: playback,
+        secondaryAction: true,
+      ),
   ];
 
   Widget _actions(BuildContext context) => QuickActions(
@@ -229,12 +296,29 @@ class LearnHome extends StatelessWidget {
     onContinueLesson: () => _continueLesson(context),
     onReceivePractice: () => _receivePractice(context),
     onSendPractice: () => _sendPractice(context),
+    onGuidedSend: () => _guidedSend(context),
     onReview: () => _review(context),
-    onQso: _qsoAction(context),
-    qsoFromLesson: TrainingController.qsoFromLesson,
+    onQso: () => _qso(context),
+    qsoStatus: _qsoStatus(context.s),
     onMaterials: () => _materials(context),
     onTelegraph: () => _telegraph(context),
   );
+
+  /// Readiness label for the QSO entry: symbols to learn, lines to
+  /// practise, or ready. Never a lesson lock.
+  String _qsoStatus(S s) {
+    final readiness = controller.qsoReadiness;
+    return switch (readiness.level) {
+      QsoReadinessLevel.symbols => s.learnQsoSymbolsToGo(
+        readiness.missing.length,
+      ),
+      QsoReadinessLevel.consolidate ||
+      QsoReadinessLevel.protocol ||
+      QsoReadinessLevel.shorthand ||
+      QsoReadinessLevel.exchange => s.learnQsoPractiseFirst,
+      QsoReadinessLevel.ready => s.learnQsoReady,
+    };
+  }
 
   void _telegraph(BuildContext context) => _push(
     context,
@@ -246,12 +330,10 @@ class LearnHome extends StatelessWidget {
     MaterialsScreen(controller: controller, playback: playback),
   );
 
-  VoidCallback? _qsoAction(BuildContext context) => controller.qsoUnlocked
-      ? () => _push(
-          context,
-          QsoSetupScreen(controller: controller, playback: playback),
-        )
-      : null;
+  void _qso(BuildContext context) => _push(
+    context,
+    QsoSetupScreen(controller: controller, playback: playback),
+  );
 
   Widget _oneColumn(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -279,22 +361,8 @@ class LearnHome extends StatelessWidget {
   );
 
   Widget _styledLayout(BuildContext context, bool twoColumns) {
-    final lesson = LessonCard(
-      controller: controller,
-      onContinue: () => _continueLesson(context),
-    );
-    final actions = QuickActions(
-      showContinue: false,
-      dueCount: controller.dueChars.length,
-      onContinueLesson: () => _continueLesson(context),
-      onReceivePractice: () => _receivePractice(context),
-      onSendPractice: () => _sendPractice(context),
-      onReview: () => _review(context),
-      onQso: _qsoAction(context),
-      qsoFromLesson: TrainingController.qsoFromLesson,
-      onMaterials: () => _materials(context),
-      onTelegraph: () => _telegraph(context),
-    );
+    final lesson = _lessonCard(context);
+    final actions = _actions(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

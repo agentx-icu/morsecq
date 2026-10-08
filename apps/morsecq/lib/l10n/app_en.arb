@@ -1574,7 +1574,11 @@
   "toolsBandsRegionLabel": "Region {number}",
   "@toolsBandsRegionLabel": {
     "description": "IARU region segment label",
-    "placeholders": {"number": {"type": "int"}}
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
   },
   "toolsBandsRegionHelp": "1: Europe, Africa, Middle East - 2: the Americas - 3: Asia-Pacific",
   "@toolsBandsRegionHelp": {
@@ -1583,7 +1587,11 @@
   "toolsBandsInBand": "In the {band} amateur band",
   "@toolsBandsInBand": {
     "description": "Result when the frequency is inside a band",
-    "placeholders": {"band": {"type": "String"}}
+    "placeholders": {
+      "band": {
+        "type": "String"
+      }
+    }
   },
   "toolsBandsOutOfBand": "Outside the amateur bands",
   "@toolsBandsOutOfBand": {
@@ -1612,7 +1620,11 @@
   "toolsBandsQrp": "QRP CW {frequency}",
   "@toolsBandsQrp": {
     "description": "QRP calling frequency in the band table",
-    "placeholders": {"frequency": {"type": "String"}}
+    "placeholders": {
+      "frequency": {
+        "type": "String"
+      }
+    }
   },
   "toolsBandsDisclaimer": "ITU allocations. Your licence and national band plan may be narrower.",
   "@toolsBandsDisclaimer": {
@@ -4729,7 +4741,7 @@
   "@placementCheckLevel": {
     "description": "Placement offer: start the assessment"
   },
-  "placementFromZero": "Start from zero",
+  "placementFromZero": "Skip the intro: lesson 1 challenge",
   "@placementFromZero": {
     "description": "Placement: start the course at lesson one"
   },
@@ -6030,5 +6042,810 @@
   "learnStorageUnavailable": "Your training data could not be opened on this device. Try again.",
   "@learnStorageUnavailable": {
     "description": "Offline build: the local learning data could not be opened"
+  },
+  "learnStartHereTitle": "New here? Start with a 3-minute first lesson",
+  "@learnStartHereTitle": {
+    "description": "Learn home, new-learner card title"
+  },
+  "learnStartHereBody": "Hear the sounds, learn K and M, and answer a few easy rounds. Nothing is graded.",
+  "@learnStartHereBody": {
+    "description": "Learn home, new-learner card body"
+  },
+  "learnStartHere": "Start here",
+  "@learnStartHere": {
+    "description": "Learn home, new-learner card: primary button opening the first lesson"
+  },
+  "learnReplayFirstLesson": "Replay the first lesson",
+  "@learnReplayFirstLesson": {
+    "description": "Learn home: button that reopens the first lesson after it was done"
+  },
+  "learnCharsIntroducedMastered": "{introduced} introduced · {mastered} mastered",
+  "@learnCharsIntroducedMastered": {
+    "description": "Lesson card: how many symbols were introduced and how many are mastered",
+    "placeholders": {
+      "introduced": {
+        "type": "int"
+      },
+      "mastered": {
+        "type": "int"
+      }
+    }
+  },
+  "learnChipNew": "New",
+  "@learnChipNew": {
+    "description": "Lesson card legend: the symbol this lesson introduces"
+  },
+  "learnChipPractising": "Practising",
+  "@learnChipPractising": {
+    "description": "Lesson card legend: some attempts, not yet mastered"
+  },
+  "learnChipMastered": "Mastered",
+  "@learnChipMastered": {
+    "description": "Lesson card legend: 10+ attempts at 90%+"
+  },
+  "learnChipWeak": "Below 90%",
+  "@learnChipWeak": {
+    "description": "Lesson card legend: below 90% accuracy"
+  },
+  "learnChipDue": "Due for review",
+  "@learnChipDue": {
+    "description": "Lesson card legend: due for spaced review"
+  },
+  "learnTapChipHint": "Tap a character to hear it",
+  "@learnTapChipHint": {
+    "description": "Lesson card: hint that the symbol chips play their sound when tapped"
+  },
+  "learnHearChar": "Hear {char}",
+  "@learnHearChar": {
+    "description": "Button: play one symbol",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "learnCompareWith": "{a} vs {b}",
+  "@learnCompareWith": {
+    "description": "Button: play two symbols one after the other so they can be told apart",
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "learnGuidedPractice": "Short practice (10 symbols)",
+  "@learnGuidedPractice": {
+    "description": "Lesson card: secondary button starting a short guided session"
+  },
+  "learnChallengeHint": "The lesson challenge: {count} symbols at 90%, with each new symbol copied at least {min} times. Passing unlocks the next character.",
+  "@learnChallengeHint": {
+    "description": "Lesson card: what the Continue lesson button starts and what passing requires",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "learnAllUnlockedNotPassed": "Every character is unlocked. Pass the final challenge to complete the course.",
+  "@learnAllUnlockedNotPassed": {
+    "description": "Lesson card: on the last lesson before its challenge is passed"
+  },
+  "learnGoalFirstUse": "Now: tell K from M by ear. Next: the lesson 1 challenge.",
+  "@learnGoalFirstUse": {
+    "description": "Lesson card goal line, stage: first use"
+  },
+  "learnGoalRecognition": "Now: recognise {chars} reliably ({min} copies at 90%). Next: the lesson {lesson} challenge.",
+  "@learnGoalRecognition": {
+    "description": "Lesson card goal line, stage: recognising the new symbol(s)",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      },
+      "min": {
+        "type": "int"
+      },
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnGoalCopying": "Now: pass the lesson {lesson} challenge. Next: {next}.",
+  "@learnGoalCopying": {
+    "description": "Lesson card goal line, stage: ready for the lesson challenge",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "learnGoalNextChar": "the character {char}",
+  "@learnGoalNextChar": {
+    "description": "Fills learnGoalCopying {next}: the character the next lesson introduces",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "learnGoalNextOperating": "words, callsigns and a full QSO",
+  "@learnGoalNextOperating": {
+    "description": "Fills learnGoalCopying {next} on the last lesson"
+  },
+  "learnGoalOperating": "Now: real messages — words, callsigns, QSO. Next: raise the effective speed one step at a time.",
+  "@learnGoalOperating": {
+    "description": "Lesson card goal line, stage: course completed"
+  },
+  "learnMorePractice": "More practice",
+  "@learnMorePractice": {
+    "description": "Learn home: expandable section with the less common practice entries"
+  },
+  "learnQsoReady": "Ready",
+  "@learnQsoReady": {
+    "description": "Learn home QSO tile: every required symbol is learned"
+  },
+  "learnQsoPractiseFirst": "Practise the lines first",
+  "@learnQsoPractiseFirst": {
+    "description": "Learn home QSO tile: symbols known but the abbreviations / QSO-lines drills not practised yet"
+  },
+  "learnQsoSymbolsToGo": "{count, plural, =1{1 symbol to learn} other{{count} symbols to learn}}",
+  "@learnQsoSymbolsToGo": {
+    "description": "Learn home QSO tile: symbols still to learn before a full QSO",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnGlossaryTitle": "What do these words mean?",
+  "@learnGlossaryTitle": {
+    "description": "Learn home / settings: plain-language glossary dialog title and tooltip"
+  },
+  "glossaryKoch": "Koch method: characters are learned at full speed, two to start and one more per lesson, once you copy 90% correctly.",
+  "@glossaryKoch": {
+    "description": "Glossary entry"
+  },
+  "glossaryWpm": "WPM: words per minute, counted with the standard word PARIS. Character speed is how fast each character itself sounds.",
+  "@glossaryWpm": {
+    "description": "Glossary entry"
+  },
+  "glossaryFarnsworth": "Farnsworth: characters stay fast, but the pauses between them are stretched so you have time to think. The effective speed counts those pauses.",
+  "@glossaryFarnsworth": {
+    "description": "Glossary entry"
+  },
+  "glossaryQso": "QSO: one two-way contact between two stations. CQ = calling anyone, DE = from, K = over to you.",
+  "@glossaryQso": {
+    "description": "Glossary entry"
+  },
+  "glossaryRst": "RST: a signal report — readability, strength, tone. 599 means perfect. 73 means best regards.",
+  "@glossaryRst": {
+    "description": "Glossary entry"
+  },
+  "learnVerdictNotCredited": "Nothing recorded: no symbols were answered.",
+  "@learnVerdictNotCredited": {
+    "description": "Receive summary: no symbol was answered"
+  },
+  "learnVerdictAssisted": "Practice with help",
+  "@learnVerdictAssisted": {
+    "description": "Receive summary headline: replay / reveal was used"
+  },
+  "learnVerdictAssistedHint": "Replays or reveals were used, so this attempt counts as practice only: no unlock, no review update. Try the next one without replays.",
+  "@learnVerdictAssistedHint": {
+    "description": "Receive summary explanation for an assisted attempt"
+  },
+  "learnVerdictPractice": "Practice recorded",
+  "@learnVerdictPractice": {
+    "description": "Receive summary headline: free practice (not a course challenge)"
+  },
+  "learnVerdictPracticeHint": "Free practice updates your statistics and reviews but never advances the course. The lesson challenge from the Learn home does.",
+  "@learnVerdictPracticeHint": {
+    "description": "Receive summary explanation: free practice never advances the course"
+  },
+  "learnVerdictCourseComplete": "Final challenge passed: the whole character course is yours.",
+  "@learnVerdictCourseComplete": {
+    "description": "Receive summary headline: the last lesson challenge was passed"
+  },
+  "learnVerdictTooShort": "Not a full challenge: {count} of {min} symbols",
+  "@learnVerdictTooShort": {
+    "description": "Receive summary headline: fewer symbols than a challenge needs",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "learnVerdictTooShortHint": "A challenge is at least {min} symbols. Start the lesson from the Learn home or raise the session length in training settings.",
+  "@learnVerdictTooShortHint": {
+    "description": "Receive summary explanation for a too-short challenge",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "learnVerdictUncovered": "Not enough copies of {chars}",
+  "@learnVerdictUncovered": {
+    "description": "Receive summary headline: the new symbol was not heard often enough",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
+  },
+  "learnVerdictUncoveredHint": "A challenge needs at least {min} copies of each new symbol. Try again: the challenge includes them on purpose.",
+  "@learnVerdictUncoveredHint": {
+    "description": "Receive summary explanation for an uncovered new symbol",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "learnVerdictNewSymbolWeak": "New symbol below 90%: {chars}",
+  "@learnVerdictNewSymbolWeak": {
+    "description": "Receive summary headline: the new symbol was below 90%",
+    "placeholders": {
+      "chars": {
+        "type": "String"
+      }
+    }
+  },
+  "learnVerdictNewSymbolWeakHint": "The rest was fine; the new symbol decides the lesson. Hear it against its neighbour and drill it before the next challenge.",
+  "@learnVerdictNewSymbolWeakHint": {
+    "description": "Receive summary explanation when only the new symbol failed"
+  },
+  "learnVerdictBelowAccuracyHint": "Below 90% overall. A short drill on the weak symbols below, then try the challenge again.",
+  "@learnVerdictBelowAccuracyHint": {
+    "description": "Receive summary explanation for an overall accuracy below 90%"
+  },
+  "learnDrillWeak": "Drill weak symbols",
+  "@learnDrillWeak": {
+    "description": "Receive summary action: short focus session on the weak symbols"
+  },
+  "learnRetryChallenge": "Retry the challenge",
+  "@learnRetryChallenge": {
+    "description": "Receive summary action: start the lesson challenge again"
+  },
+  "learnTakeChallenge": "Take the lesson challenge",
+  "@learnTakeChallenge": {
+    "description": "Receive summary action after free practice: start the lesson challenge"
+  },
+  "learnChallengeTitle": "Lesson {lesson} challenge",
+  "@learnChallengeTitle": {
+    "description": "Receive drill screen title for a course challenge",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPracticeTitle": "Practice",
+  "@learnPracticeTitle": {
+    "description": "Receive drill screen title for free practice"
+  },
+  "learnMeaningsTitle": "Meanings",
+  "@learnMeaningsTitle": {
+    "description": "Round result: heading over the meanings of the abbreviations just copied"
+  },
+  "firstLessonTitle": "First lesson",
+  "@firstLessonTitle": {
+    "description": "First lesson screen title"
+  },
+  "firstLessonStep": "Step {step} of {total}",
+  "@firstLessonStep": {
+    "description": "First lesson: step counter",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "firstLessonHearTitle": "Can you hear it?",
+  "@firstLessonHearTitle": {
+    "description": "First lesson step 1 title: audibility check"
+  },
+  "firstLessonHearBody": "Tap Play. You should hear a short pattern of beeps (or see a flash / feel a vibration if those are on).",
+  "@firstLessonHearBody": {
+    "description": "First lesson step 1 body"
+  },
+  "firstLessonHeard": "I heard it",
+  "@firstLessonHeard": {
+    "description": "First lesson: confirm the sound was perceived"
+  },
+  "firstLessonNotHeard": "I heard nothing",
+  "@firstLessonNotHeard": {
+    "description": "First lesson: the sound was not perceived"
+  },
+  "firstLessonNoSoundTitle": "No sound?",
+  "@firstLessonNoSoundTitle": {
+    "description": "First lesson: recovery card title when nothing was heard"
+  },
+  "firstLessonNoSoundBody": "Turn the volume up and check the silent switch or Do Not Disturb. You can also follow a screen flash or vibration instead of sound.",
+  "@firstLessonNoSoundBody": {
+    "description": "First lesson: recovery tips when nothing was heard"
+  },
+  "firstLessonUseFlash": "Flash the screen too",
+  "@firstLessonUseFlash": {
+    "description": "First lesson: switch enabling the screen flash modality"
+  },
+  "firstLessonUseVibration": "Vibrate too",
+  "@firstLessonUseVibration": {
+    "description": "First lesson: switch enabling vibration (phones)"
+  },
+  "firstLessonPlay": "Play",
+  "@firstLessonPlay": {
+    "description": "First lesson: play button"
+  },
+  "firstLessonSoundsTitle": "Short and long",
+  "@firstLessonSoundsTitle": {
+    "description": "First lesson step 2 title: dit and dah"
+  },
+  "firstLessonSoundsBody": "Morse has two sounds: a short dit and a long dah, three times as long. A character is a pattern of them, and a short silence separates characters. Tap each one to hear it.",
+  "@firstLessonSoundsBody": {
+    "description": "First lesson step 2 body"
+  },
+  "firstLessonDit": "dit",
+  "@firstLessonDit": {
+    "description": "First lesson: the short element"
+  },
+  "firstLessonDah": "dah",
+  "@firstLessonDah": {
+    "description": "First lesson: the long element"
+  },
+  "firstLessonWorkedTitle": "A worked answer",
+  "@firstLessonWorkedTitle": {
+    "description": "First lesson step 3 title: worked example"
+  },
+  "firstLessonWorkedBody": "Listen first; the answer appears after the sound. You don’t have to answer yet.",
+  "@firstLessonWorkedBody": {
+    "description": "First lesson step 3 body"
+  },
+  "firstLessonWorkedReveal": "That was {char}",
+  "@firstLessonWorkedReveal": {
+    "description": "First lesson: the revealed answer of the worked example",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonTrialsTitle": "K or M?",
+  "@firstLessonTrialsTitle": {
+    "description": "First lesson step 4 title: two-choice trials"
+  },
+  "firstLessonTrialsBody": "Listen, then tap the character you heard. Replay as often as you like — this is not a test.",
+  "@firstLessonTrialsBody": {
+    "description": "First lesson step 4 body"
+  },
+  "firstLessonTrialRound": "Round {round} of {total}",
+  "@firstLessonTrialRound": {
+    "description": "First lesson: trial counter",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "firstLessonTrialCorrect": "Yes, that was {char}",
+  "@firstLessonTrialCorrect": {
+    "description": "First lesson: trial feedback, right answer",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonTrialWrong": "That was {char}, not {answer}. Hear them side by side.",
+  "@firstLessonTrialWrong": {
+    "description": "First lesson: trial feedback, wrong answer",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonTooFast": "Too fast? Use the beginner pace (longer pauses between characters)",
+  "@firstLessonTooFast": {
+    "description": "First lesson: switch to the beginner pace (longer pauses)"
+  },
+  "firstLessonNextTitle": "What next",
+  "@firstLessonNextTitle": {
+    "description": "First lesson step 5 title"
+  },
+  "firstLessonNextBody": "{correct} / {total} correct this round. Choose your next step and continue at your own pace.",
+  "@firstLessonNextBody": {
+    "description": "First lesson step 5 body with the trial result",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "firstLessonNextGuided": "Short practice: 10 single symbols",
+  "@firstLessonNextGuided": {
+    "description": "First lesson next action: short guided session"
+  },
+  "firstLessonNextSend": "Try sending",
+  "@firstLessonNextSend": {
+    "description": "First lesson next action: open send practice"
+  },
+  "firstLessonSendGuide": "Sending: hold the control briefly for a dit, longer for a dah. With paddles one side makes dits and the other dahs. Release, and pause briefly between characters. Straight key or iambic A / B can be changed later; it doesn’t matter yet.",
+  "@firstLessonSendGuide": {
+    "description": "First lesson: first-use keying guidance"
+  },
+  "firstLessonReplayAnytime": "You can replay this lesson any time from the Learn home.",
+  "@firstLessonReplayAnytime": {
+    "description": "First lesson: footer note"
+  },
+  "firstLessonContinue": "Continue",
+  "@firstLessonContinue": {
+    "description": "First lesson: next step button"
+  },
+  "firstLessonTrialNext": "Next round",
+  "@firstLessonTrialNext": {
+    "description": "First lesson: next trial button"
+  },
+  "sendFirstUseTitle": "First time keying?",
+  "@sendFirstUseTitle": {
+    "description": "Send practice: first-use hint card title"
+  },
+  "sendFirstUseStraight": "Hold the key briefly for a dit, about three times longer for a dah. Pause briefly between characters, longer between words.",
+  "@sendFirstUseStraight": {
+    "description": "Send practice first-use hint for the straight key"
+  },
+  "sendFirstUsePaddles": "Hold the paddle labelled dit for dits and the one labelled dah for dahs; the keyer times them for you. Pause briefly between characters, longer between words.",
+  "@sendFirstUsePaddles": {
+    "description": "Send practice first-use hint for paddles"
+  },
+  "sendFirstUseDismiss": "Got it",
+  "@sendFirstUseDismiss": {
+    "description": "Send practice first-use hint: dismiss button"
+  },
+  "learnSpeedPresets": "Pace",
+  "@learnSpeedPresets": {
+    "description": "Training settings: label over the pace presets"
+  },
+  "learnPresetBeginner": "Beginner 20 / 6",
+  "@learnPresetBeginner": {
+    "description": "Training settings preset: 20 WPM characters, 6 WPM effective"
+  },
+  "learnPresetStandard": "Standard 20 / 8",
+  "@learnPresetStandard": {
+    "description": "Training settings preset: 20 WPM characters, 8 WPM effective"
+  },
+  "learnPresetHelp": "Characters sound at 20 WPM in both; the beginner pace leaves longer pauses between them (6 WPM effective).",
+  "@learnPresetHelp": {
+    "description": "Training settings: what the two presets mean"
+  },
+  "learnPlanStepIntro": "First lesson",
+  "@learnPlanStepIntro": {
+    "description": "Daily plan step title: the first lesson"
+  },
+  "learnPlanStepRecognition": "Single symbols",
+  "@learnPlanStepRecognition": {
+    "description": "Daily plan step title: single-symbol recognition"
+  },
+  "learnPlanReasonFirstLesson": "Hear the sounds and tell K from M (about 3 minutes)",
+  "@learnPlanReasonFirstLesson": {
+    "description": "Daily plan reason for the first-lesson step"
+  },
+  "learnPlanReasonRecognition": "One symbol at a time: {symbols}",
+  "@learnPlanReasonRecognition": {
+    "description": "Daily plan reason for the recognition step",
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "learnPlanReasonGuided": "Short mixed groups of {count} symbols; the 50-symbol challenge comes later",
+  "@learnPlanReasonGuided": {
+    "description": "Daily plan reason for guided (non-unlocking) copying",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReasonSendOptional": "Optional: hear the model, then key {count} short targets",
+  "@learnPlanReasonSendOptional": {
+    "description": "Daily plan reason for the optional beginner sending step",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoReadyTitle": "Ready for a QSO",
+  "@learnQsoReadyTitle": {
+    "description": "QSO setup readiness card: all symbols learned and abbreviations practised"
+  },
+  "learnQsoNotReadyTitle": "Not every symbol is learned yet",
+  "@learnQsoNotReadyTitle": {
+    "description": "QSO setup readiness card: some required symbols are not learned"
+  },
+  "learnQsoMissingBody": "A QSO uses these symbols you haven’t learned yet — tap one to hear it. You can explore anyway; the keypad shows every symbol.",
+  "@learnQsoMissingBody": {
+    "description": "QSO setup readiness card body listing untaught symbols"
+  },
+  "learnQsoShorthandHint": "Practise the abbreviations first (CQ, DE, UR, RST, TNX, 73) so the lines make sense.",
+  "@learnQsoShorthandHint": {
+    "description": "QSO setup readiness card: abbreviations not practised yet"
+  },
+  "learnQsoPractiseShorthand": "Practise abbreviations",
+  "@learnQsoPractiseShorthand": {
+    "description": "QSO setup readiness card: button opening the abbreviations drill"
+  },
+  "learnQsoHowTitle": "How a QSO goes",
+  "@learnQsoHowTitle": {
+    "description": "QSO setup: short protocol explainer title"
+  },
+  "learnQsoHowBody": "Call (CQ = anyone, DE = from), answer with callsigns, exchange a report (RST), name and QTH (location), then 73 (best regards) and <SK> (end). K means over to you.",
+  "@learnQsoHowBody": {
+    "description": "QSO setup: short protocol explainer body"
+  },
+  "learnQsoExploreLabel": "Includes untaught symbols",
+  "@learnQsoExploreLabel": {
+    "description": "QSO drill / simulator label when untaught symbols are included"
+  },
+  "statsCoursePassed": "Course passed",
+  "@statsCoursePassed": {
+    "description": "Statistics lesson tile value once the last lesson challenge was passed"
+  },
+  "firstLessonPlayAgain": "Play again",
+  "@firstLessonPlayAgain": {
+    "description": "First lesson: play button after the learner reported hearing nothing"
+  },
+  "firstLessonNextChallenge": "Lesson {lesson} challenge: {count} symbols, 90% unlocks {char}",
+  "@firstLessonNextChallenge": {
+    "description": "First lesson next action: the current lesson challenge, naming what it unlocks",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      },
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonNextChallengeLast": "Lesson {lesson} challenge: {count} symbols at 90% completes the course",
+  "@firstLessonNextChallengeLast": {
+    "description": "First lesson next action on the last lesson: passing completes the course",
+    "placeholders": {
+      "lesson": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnQsoShorthandTitle": "Practise the abbreviations first",
+  "@learnQsoShorthandTitle": {
+    "description": "QSO setup readiness card title: symbols known, abbreviations not practised"
+  },
+  "learnQsoExchangeTitle": "Practise QSO lines first",
+  "@learnQsoExchangeTitle": {
+    "description": "QSO setup readiness card title: abbreviations practised, QSO lines not yet"
+  },
+  "learnQsoExchangeHint": "Copy single lines of a contact (one exchange at a time) before running a whole QSO in the simulator.",
+  "@learnQsoExchangeHint": {
+    "description": "QSO setup readiness card body for the exchange level"
+  },
+  "sendGuideTitle": "Learn to send",
+  "@sendGuideTitle": {
+    "description": "Guided sending: sendGuideTitle"
+  },
+  "sendGuideStep": "Step {step} of {total}",
+  "@sendGuideStep": {
+    "description": "Guided sending: sendGuideStep",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sendGuideHear": "Hear the model",
+  "@sendGuideHear": {
+    "description": "Guided sending: sendGuideHear"
+  },
+  "sendGuideListening": "Listen to the whole rhythm…",
+  "@sendGuideListening": {
+    "description": "Guided sending: sendGuideListening"
+  },
+  "sendGuideTry": "Now send it",
+  "@sendGuideTry": {
+    "description": "Guided sending: sendGuideTry"
+  },
+  "sendGuideRetry": "Practise this again",
+  "@sendGuideRetry": {
+    "description": "Guided sending: sendGuideRetry"
+  },
+  "sendGuidePassed": "Decoded correctly. Continue to the next target.",
+  "@sendGuidePassed": {
+    "description": "Guided sending: sendGuidePassed"
+  },
+  "sendGuideComplete": "You sent both symbols and the groups correctly. Continue with free sending practice.",
+  "@sendGuideComplete": {
+    "description": "Guided sending: sendGuideComplete"
+  },
+  "sendGuideRhythm": "Match the model: short dits, dahs three times longer, and a clear pause between characters.",
+  "@sendGuideRhythm": {
+    "description": "Guided sending: sendGuideRhythm"
+  },
+  "learnContinueToday": "Continue today's learning",
+  "@learnContinueToday": {
+    "description": "Learning pedagogy: learnContinueToday"
+  },
+  "learnPlanDetails": "View plan details",
+  "@learnPlanDetails": {
+    "description": "Learning pedagogy: learnPlanDetails"
+  },
+  "learnGuidedSingle": "Single characters · 10 characters",
+  "@learnGuidedSingle": {
+    "description": "Learning pedagogy: learnGuidedSingle"
+  },
+  "learnGuidedShort": "3-character groups · 15 characters",
+  "@learnGuidedShort": {
+    "description": "Learning pedagogy: learnGuidedShort"
+  },
+  "learnGuidedGroups": "5-character groups · 20 characters",
+  "@learnGuidedGroups": {
+    "description": "Learning pedagogy: learnGuidedGroups"
+  },
+  "learnGuidedRecommended": "Recommended next step",
+  "@learnGuidedRecommended": {
+    "description": "Learning pedagogy: learnGuidedRecommended"
+  },
+  "learnGuidedProgressHint": "Continue to short groups and full groups after passing. Guided practice builds fluency; a course challenge unlocks the next lesson.",
+  "@learnGuidedProgressHint": {
+    "description": "Learning pedagogy: learnGuidedProgressHint"
+  },
+  "learnGuidedContinue": "Continue guided practice",
+  "@learnGuidedContinue": {
+    "description": "Learning pedagogy: learnGuidedContinue"
+  },
+  "learnGuidedRetry": "Practise this level again",
+  "@learnGuidedRetry": {
+    "description": "Learning pedagogy: learnGuidedRetry"
+  },
+  "firstLessonZeroHint": "No correct answers yet is okay. Listen to the difference between K and M again, then retry.",
+  "@firstLessonZeroHint": {
+    "description": "Learning pedagogy: firstLessonZeroHint"
+  },
+  "firstLessonPartialHint": "You heard some correctly. Compare K and M again and continue at your own pace.",
+  "@firstLessonPartialHint": {
+    "description": "Learning pedagogy: firstLessonPartialHint"
+  },
+  "firstLessonPerfectHint": "Every answer was correct this round. Reinforce this with copying practice without answer choices.",
+  "@firstLessonPerfectHint": {
+    "description": "Learning pedagogy: firstLessonPerfectHint"
+  },
+  "firstLessonPaceLocked": "This round has started, so its speed stays fixed. You can change the speed in settings for the next round.",
+  "@firstLessonPaceLocked": {
+    "description": "Learning pedagogy: firstLessonPaceLocked"
+  },
+  "learnRecentEvidenceHint": "Stages use unassisted copying evidence from the last 14 days at the same speed.",
+  "@learnRecentEvidenceHint": {
+    "description": "Learning pedagogy: learnRecentEvidenceHint"
+  },
+  "learnQsoConsolidateTitle": "Reinforce learned characters",
+  "@learnQsoConsolidateTitle": {
+    "description": "Learning pedagogy: learnQsoConsolidateTitle"
+  },
+  "learnQsoConsolidateHint": "Unlocked does not mean mastered. Start with single-character copying to build recent independent evidence.",
+  "@learnQsoConsolidateHint": {
+    "description": "Learning pedagogy: learnQsoConsolidateHint"
+  },
+  "learnQsoPractiseSymbols": "Practise these characters",
+  "@learnQsoPractiseSymbols": {
+    "description": "Learning pedagogy: learnQsoPractiseSymbols"
+  },
+  "learnQsoProtocolTitle": "Understand QSO terms",
+  "@learnQsoProtocolTitle": {
+    "description": "Learning pedagogy: learnQsoProtocolTitle"
+  },
+  "learnQsoProtocolHint": "Check the meanings of CQ, DE, RST and 73 before starting a short QSO.",
+  "@learnQsoProtocolHint": {
+    "description": "Learning pedagogy: learnQsoProtocolHint"
+  },
+  "learnQsoProtocolStart": "Check term understanding",
+  "@learnQsoProtocolStart": {
+    "description": "Learning pedagogy: learnQsoProtocolStart"
+  },
+  "learnQsoProtocolQuestion": "What does {token} mean in a QSO?",
+  "@learnQsoProtocolQuestion": {
+    "description": "Learning pedagogy: learnQsoProtocolQuestion",
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoGeneralCall": "Calling any station",
+  "@learnQsoGeneralCall": {
+    "description": "Learning pedagogy: learnQsoGeneralCall"
+  },
+  "learnQsoFromStation": "From this station",
+  "@learnQsoFromStation": {
+    "description": "Learning pedagogy: learnQsoFromStation"
+  },
+  "learnQsoSignalReport": "Signal report",
+  "@learnQsoSignalReport": {
+    "description": "Learning pedagogy: learnQsoSignalReport"
+  },
+  "learnQsoBestRegards": "Best regards and goodbye",
+  "@learnQsoBestRegards": {
+    "description": "Learning pedagogy: learnQsoBestRegards"
+  },
+  "learnQsoProtocolCorrect": "Correct answer",
+  "@learnQsoProtocolCorrect": {
+    "description": "Learning pedagogy: learnQsoProtocolCorrect"
+  },
+  "learnQsoProtocolWrong": "Correct meaning: {meaning}",
+  "@learnQsoProtocolWrong": {
+    "description": "Learning pedagogy: learnQsoProtocolWrong",
+    "placeholders": {
+      "meaning": {
+        "type": "String"
+      }
+    }
+  },
+  "learnQsoProtocolPass": "All four terms were answered correctly without help. You can try a short QSO.",
+  "@learnQsoProtocolPass": {
+    "description": "Learning pedagogy: learnQsoProtocolPass"
+  },
+  "learnQsoProtocolPractice": "Review these meanings before checking again.",
+  "@learnQsoProtocolPractice": {
+    "description": "Learning pedagogy: learnQsoProtocolPractice"
+  },
+  "learnQsoProtocolRetry": "Check again",
+  "@learnQsoProtocolRetry": {
+    "description": "Learning pedagogy: learnQsoProtocolRetry"
+  },
+  "learnQsoShortExchange": "Practise a short QSO",
+  "@learnQsoShortExchange": {
+    "description": "Learning pedagogy: learnQsoShortExchange"
+  },
+  "learnQsoShortExchangeHint": "Confirm callsigns, exchange signal reports and close without help before moving to a full QSO.",
+  "@learnQsoShortExchangeHint": {
+    "description": "Learning pedagogy: learnQsoShortExchangeHint"
+  },
+  "learnQsoExplorePending": "Explore a full QSO · practice still needed",
+  "@learnQsoExplorePending": {
+    "description": "Learning pedagogy: learnQsoExplorePending"
+  },
+  "learnQsoReadyHint": "You have recent independent practice evidence and can begin full simulated QSOs.",
+  "@learnQsoReadyHint": {
+    "description": "Learning pedagogy: learnQsoReadyHint"
   }
 }

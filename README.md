@@ -20,6 +20,35 @@ test pyramid (unit, widget, and real-UI launch tests on macOS, iOS simulator
 and Android emulator; see [doc/testing/TEST_PYRAMID.md](doc/testing/TEST_PYRAMID.md)).
 There is no usable release yet. Expect breaking changes everywhere.
 
+## Platform availability
+
+The following describes the current source builds and CI artifacts; no public
+release or App Store listing is available yet. All five platforms provide
+learning, reference material and radio tools; the iOS App Store build omits chat.
+
+| Platform | System and architecture | Availability and verification |
+|---|---|---|
+| Android | Android 7.0+ (API 24); arm64-v8a, armeabi-v7a and x86_64 | Learning and Tox chat; APK/AAB packaging in CI, with the first-day learning flow and screenshots checked on an emulator. |
+| iOS / iPadOS | 14.0+; arm64 devices | Offline trainer for the App Store, built with `tool/build_ios_store.sh`; iPhone/iPad simulator layouts and iPhone first-day flow checked. Store publication and physical-device listening checks are pending. |
+| macOS | Current Apple Silicon build: macOS 13+; Intel source deployment target: 10.15 (whole-app compatibility unverified) | Learning and Tox chat; arm64 `.pkg`/`.zip` app packaging, native-library builds for arm64 and x86_64. Apple Silicon app launch, learning, storage and screenshots checked locally. The bundled `objective_c` native asset requires macOS 13 in the current debug build; the lower engine/project targets do not establish whole-app compatibility. Older OS versions and an Intel app have not been validated on physical hardware. |
+| Linux | **Ubuntu 24.04 LTS, x86_64** is the current app-build and UI-test target | Learning and Tox chat; `.deb`, `.rpm` and `.tar.gz` artifacts. Ubuntu desktop builds and UI tests run in CI. Linux aarch64 currently has an experimental native-library job only. |
+| Windows | **Windows 10 and Windows 11, x64** are the desktop targets | Learning and Tox chat; `.msi` and `.zip` artifacts. Builds and UI tests use Windows Server 2022 in CI; that runner does not establish client-device behavior. Windows ARM64 currently has an experimental native-library job only; no 32-bit Windows app. |
+
+**Linux distributions.** Ubuntu 24.04 LTS is the verified distribution. Debian,
+other Ubuntu releases and derivatives (including Linux Mint), Fedora/RHEL,
+openSUSE and Arch Linux have not been verified. A `.deb` or `.rpm` extension
+alone does not establish compatibility: the binaries inherit the build host's
+glibc/libstdc++ requirements. Rebuild on the intended distribution and check
+GTK 3, ALSA, libsecret with a Secret Service/keyring, and the tray indicator;
+the `.deb` records versioned ELF dependencies. Alpine/musl is not a supported
+binary target. Desktop sound, notifications, tray behavior and secure storage
+still need checks in the actual desktop session.
+
+Windows 10/11 targets follow the [Flutter deployment platform matrix](https://docs.flutter.dev/reference/supported-platforms).
+Build details, dependency setup and CI coverage are documented in
+[Build and deploy](doc/operations/BUILD_AND_DEPLOY.md) and the
+[Native](.github/workflows/native.yml) / [E2E](.github/workflows/e2e.yml) workflows.
+
 ## Screenshots
 
 <table>
@@ -199,10 +228,8 @@ Screenshots of every screen, per platform and language, are in
 to run them are in [doc/testing/TEST_PYRAMID.md](doc/testing/TEST_PYRAMID.md).
 
 Conventions, gates and the working agreement are in [CLAUDE.md](CLAUDE.md).
-The product and architecture plan is
-[doc/plans/2026-09-30-morsecq-plan.md](doc/plans/2026-09-30-morsecq-plan.md)
-(the Chinese original is
-[doc/plans/2026-09-30-morsecq-plan.zh-CN.md](doc/plans/2026-09-30-morsecq-plan.zh-CN.md)).
+Planning documents in `doc/plans/` are local working notes and are excluded
+from Git.
 
 ## Licence
 

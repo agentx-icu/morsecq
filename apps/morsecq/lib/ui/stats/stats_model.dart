@@ -136,6 +136,9 @@ final class StatsSnapshot {
   final KochCourse course;
   final DateTime now;
 
+  /// The last lesson's challenge was passed (reaching it is not enough).
+  bool get courseCompleted => progress.courseCompleted;
+
   /// Symbols known at the current lesson, in Koch order.
   final List<String> learnedChars;
 

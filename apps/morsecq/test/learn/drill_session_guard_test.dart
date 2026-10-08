@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/training/receive_session.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/send_session.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';

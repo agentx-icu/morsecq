@@ -5,15 +5,16 @@ import 'receive_session.dart';
 /// Which drill generator serves each [ReceiveDrillKind] for a learner's
 /// current state. Single source of truth for both the drill picker and the
 /// sessions that are started.
+///
+/// Availability follows the learned symbol set, never a lesson number: a
+/// drill is offered as soon as the learned symbols can carry it, and its
+/// content never leaves them (pedagogy review A5).
 final class DrillCatalog {
   const DrillCatalog({
     required this.course,
     required this.progress,
     required this.settings,
   });
-
-  /// Lesson from which QSO drills are offered (they need most letters).
-  static const int qsoFromLesson = 30;
 
   /// Abbreviations / Q-codes needed before that drill is offered.
   static const int minShorthandWords = 3;
@@ -29,17 +30,37 @@ final class DrillCatalog {
     recent: course.recentCharsForLesson(lesson),
   );
 
+  /// The lesson challenge drill: weighted groups over [chars] that cover
+  /// the new symbols of [lesson] often enough for the lesson rule.
+  LessonChallengeDrill challengeDrill({
+    required List<String> chars,
+    required int lesson,
+    required int charBudget,
+    required int groupSize,
+    bool weighted = true,
+  }) => LessonChallengeDrill(
+    chars: chars,
+    newChars: course.isValidLesson(lesson)
+        ? course.newCharsForLesson(lesson)
+        : const <String>[],
+    charBudget: charBudget,
+    groupSize: groupSize,
+    minRequiredAttempts: course.isValidLesson(lesson)
+        ? course.requiredNewCharAttempts(lesson)
+        : 0,
+    weights: weighted ? weights() : null,
+  );
+
   /// The drill for [kind], falling back to lesson groups when [chars]
   /// cannot support it yet.
   DrillGenerator generatorFor(ReceiveDrillKind kind, List<String> chars) =>
       drillFor(kind, chars) ?? drillFor(ReceiveDrillKind.groups, chars)!;
 
-  /// The drill for [kind] over [chars], or null when [chars] (or the
-  /// current lesson) cannot support it.
+  /// The drill for [kind] over [chars], or null when [chars] cannot
+  /// support it.
   DrillGenerator? drillFor(ReceiveDrillKind kind, List<String> chars) {
     final allowed = chars.toSet();
     final t = settings;
-    final lateLessons = lesson >= qsoFromLesson;
     switch (kind) {
       case ReceiveDrillKind.groups:
       case ReceiveDrillKind.review:
@@ -88,10 +109,13 @@ final class DrillCatalog {
         );
         return pairs.canGenerate ? pairs : null;
       case ReceiveDrillKind.qso:
-        return lateLessons ? QsoDrill() : null;
+        // Short phrases first, whole lines as their symbols arrive; the
+        // text never leaves the learned set.
+        final qso = QsoDrill.progressive(allowedChars: allowed);
+        return qso.canGenerate ? qso : null;
       case ReceiveDrillKind.contest:
         final contest = ContestExchangeDrill(allowedChars: allowed);
-        return lateLessons && contest.canGenerate ? contest : null;
+        return contest.canGenerate ? contest : null;
     }
   }
 }

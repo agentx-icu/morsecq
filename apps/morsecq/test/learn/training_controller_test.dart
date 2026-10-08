@@ -118,8 +118,11 @@ void main() {
       session.submit(session.currentDrill.text);
     }
     final outcome = await c.recordReceiveSession(session);
-    expect(outcome.passed, isTrue);
+    // A perfect review is practice, never a passed challenge.
+    expect(outcome.passed, isFalse);
+    expect(outcome.challenge, isFalse);
     expect(outcome.advanced, isFalse);
+    expect(verdictOf(outcome, session), ReceiveVerdict.reviewRecorded);
     expect(c.currentLesson, 1);
   });
 
@@ -174,7 +177,7 @@ void main() {
     () async {
       final t = await TestTraining.create();
       final c = t.controller;
-      final session = c.startSendSession();
+      final session = c.startFreeSendSession();
       expect(session.target, isNotEmpty);
       expect(session.target.split(''), everyElement(isIn(<String>['K', 'M'])));
       // One dit: an answered (if wrong) attempt. An attempt with no keyed
@@ -223,7 +226,7 @@ void main() {
     );
   });
 
-  test('digit and late-lesson drills unlock at their lessons', () async {
+  test('drills unlock when the learned set can carry them', () async {
     Future<List<ReceiveDrillKind>> kindsAt(int lesson) async =>
         (await TestTraining.create(
           progress: TrainerProgress(currentLesson: lesson),
@@ -231,11 +234,15 @@ void main() {
     // Lesson 17 adds 0, lesson 22 adds 5 (Koch order).
     expect(await kindsAt(17), isNot(contains(ReceiveDrillKind.numbers)));
     expect(await kindsAt(22), contains(ReceiveDrillKind.numbers));
-    final beforeQso = await kindsAt(TrainingController.qsoFromLesson - 1);
-    expect(beforeQso, isNot(contains(ReceiveDrillKind.qso)));
-    expect(beforeQso, isNot(contains(ReceiveDrillKind.contest)));
+    // QSO lines and contest exchanges follow their symbols, not lesson 30:
+    // no QSO phrase fits the first ten lessons; by lesson 26 (Q known) a
+    // phrase does, and the whole set carries everything.
+    final early = await kindsAt(10);
+    expect(early, isNot(contains(ReceiveDrillKind.qso)));
+    expect(early, isNot(contains(ReceiveDrillKind.contest)));
+    expect(await kindsAt(26), contains(ReceiveDrillKind.qso));
     expect(
-      await kindsAt(TrainingController.qsoFromLesson),
+      await kindsAt(42),
       containsAll(<ReceiveDrillKind>[
         ReceiveDrillKind.qso,
         ReceiveDrillKind.contest,

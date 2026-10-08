@@ -9,8 +9,8 @@ the backend only through the `morsecq_chat_api` contract and to the plugins
 only through two interfaces (`LocalNotificationsApi`, `BadgeApi`) with
 recording fakes under `testing/`.
 
-Plan references: `doc/plans/2026-09-30-morsecq-plan.zh-CN.md` §5.6 (mobile
-background) and §7 (risk: no `voip` mode, shorter iOS window than toxee).
+The mobile policy uses no `voip` background mode; the iOS background window
+is shorter than toxee's. See the platform behavior and lifecycle details below.
 
 ## Plugins
 

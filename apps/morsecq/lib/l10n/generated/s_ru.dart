@@ -3387,7 +3387,7 @@ class SRu extends S {
   String get placementCheckLevel => 'Проверить текущий уровень';
 
   @override
-  String get placementFromZero => 'Начать с нуля';
+  String get placementFromZero => 'Пропустить введение: испытание урока 1';
 
   @override
   String get placementOfferTitle => 'Новичок или уже принимаете?';
@@ -4381,4 +4381,532 @@ class SRu extends S {
 
   @override
   String get learnStorageUnavailable => 'Не удалось открыть данные тренировок на этом устройстве. Попробуйте ещё раз.';
+
+  @override
+  String get learnStartHereTitle => 'Впервые здесь? Начните с первого урока на 3 минуты';
+
+  @override
+  String get learnStartHereBody => 'Послушайте звуки, выучите K и M и ответьте на несколько простых раундов. Ничего не оценивается.';
+
+  @override
+  String get learnStartHere => 'Начать здесь';
+
+  @override
+  String get learnReplayFirstLesson => 'Повторить первый урок';
+
+  @override
+  String learnCharsIntroducedMastered(int introduced, int mastered) {
+    return 'Введено: $introduced · освоено: $mastered';
+  }
+
+  @override
+  String get learnChipNew => 'Новый';
+
+  @override
+  String get learnChipPractising => 'В работе';
+
+  @override
+  String get learnChipMastered => 'Освоен';
+
+  @override
+  String get learnChipWeak => 'Ниже 90 %';
+
+  @override
+  String get learnChipDue => 'К повторению';
+
+  @override
+  String get learnTapChipHint => 'Нажмите на символ, чтобы услышать его';
+
+  @override
+  String learnHearChar(String char) {
+    return 'Прослушать $char';
+  }
+
+  @override
+  String learnCompareWith(String a, String b) {
+    return '$a и $b';
+  }
+
+  @override
+  String get learnGuidedPractice => 'Короткая тренировка (10 символов)';
+
+  @override
+  String learnChallengeHint(int count, int min) {
+    return 'Испытание урока: $count символов с точностью 90 %, каждый новый символ не менее $min раз. Успех открывает следующий символ.';
+  }
+
+  @override
+  String get learnAllUnlockedNotPassed => 'Все символы открыты. Пройдите последнее испытание, чтобы завершить курс.';
+
+  @override
+  String get learnGoalFirstUse => 'Сейчас: отличать K от M на слух. Дальше: испытание урока 1.';
+
+  @override
+  String learnGoalRecognition(String chars, int min, int lesson) {
+    return 'Сейчас: уверенно узнавать $chars ($min приёмов с точностью 90 %). Дальше: испытание урока $lesson.';
+  }
+
+  @override
+  String learnGoalCopying(int lesson, String next) {
+    return 'Сейчас: пройти испытание урока $lesson. Дальше: $next.';
+  }
+
+  @override
+  String learnGoalNextChar(String char) {
+    return 'символ $char';
+  }
+
+  @override
+  String get learnGoalNextOperating => 'слова, позывные и полное QSO';
+
+  @override
+  String get learnGoalOperating => 'Сейчас: настоящие тексты — слова, позывные, QSO. Дальше: повышать эффективную скорость шаг за шагом.';
+
+  @override
+  String get learnMorePractice => 'Ещё упражнения';
+
+  @override
+  String get learnQsoReady => 'Готово';
+
+  @override
+  String get learnQsoPractiseFirst => 'Сначала потренируйте строки';
+
+  @override
+  String learnQsoSymbolsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Осталось $count символов',
+      few: 'Осталось $count символа',
+      one: 'Остался 1 символ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get learnGlossaryTitle => 'Что означают эти слова?';
+
+  @override
+  String get glossaryKoch => 'Метод Коха: символы учат сразу на полной скорости, сначала два, затем по одному за урок, как только вы принимаете 90 % верно.';
+
+  @override
+  String get glossaryWpm => 'WPM: слов в минуту, считается по стандартному слову PARIS. Скорость символов — как быстро звучит каждый символ сам по себе.';
+
+  @override
+  String get glossaryFarnsworth => 'Фарнсворт: символы звучат быстро, а паузы между ними растянуты, чтобы было время подумать. Эффективная скорость учитывает эти паузы.';
+
+  @override
+  String get glossaryQso => 'QSO: один сеанс связи между двумя станциями. CQ = общий вызов, DE = от, K = приём.';
+
+  @override
+  String get glossaryRst => 'RST: рапорт о сигнале — разборчивость, сила, тон. 599 — идеально. 73 — наилучшие пожелания.';
+
+  @override
+  String get learnVerdictNotCredited => 'Ничего не записано: ни один символ не был принят.';
+
+  @override
+  String get learnVerdictAssisted => 'Тренировка с подсказками';
+
+  @override
+  String get learnVerdictAssistedHint => 'Были повторы или подсказки, поэтому попытка засчитана только как тренировка: без открытия урока и без обновления повторений. В следующий раз попробуйте без повторов.';
+
+  @override
+  String get learnVerdictPractice => 'Тренировка записана';
+
+  @override
+  String get learnVerdictPracticeHint => 'Свободная тренировка обновляет статистику и повторения, но никогда не продвигает курс. Это делает только испытание урока с главной страницы обучения.';
+
+  @override
+  String get learnVerdictCourseComplete => 'Последнее испытание пройдено: весь курс символов освоен.';
+
+  @override
+  String learnVerdictTooShort(int count, int min) {
+    return 'Неполное испытание: $count из $min символов';
+  }
+
+  @override
+  String learnVerdictTooShortHint(int min) {
+    return 'Испытание — не менее $min символов. Начните урок с главной страницы обучения или увеличьте длину сессии в настройках.';
+  }
+
+  @override
+  String learnVerdictUncovered(String chars) {
+    return 'Слишком мало приёмов $chars';
+  }
+
+  @override
+  String learnVerdictUncoveredHint(int min) {
+    return 'Испытание требует не менее $min приёмов каждого нового символа. Попробуйте снова: испытание включает их намеренно.';
+  }
+
+  @override
+  String learnVerdictNewSymbolWeak(String chars) {
+    return 'Новый символ ниже 90 %: $chars';
+  }
+
+  @override
+  String get learnVerdictNewSymbolWeakHint => 'Остальное было хорошо; урок решает новый символ. Послушайте его рядом с похожим и потренируйте перед следующим испытанием.';
+
+  @override
+  String get learnVerdictBelowAccuracyHint => 'В целом ниже 90 %. Короткая тренировка слабых символов ниже — и снова на испытание.';
+
+  @override
+  String get learnDrillWeak => 'Тренировать слабые символы';
+
+  @override
+  String get learnRetryChallenge => 'Повторить испытание';
+
+  @override
+  String get learnTakeChallenge => 'Пройти испытание урока';
+
+  @override
+  String learnChallengeTitle(int lesson) {
+    return 'Испытание урока $lesson';
+  }
+
+  @override
+  String get learnPracticeTitle => 'Тренировка';
+
+  @override
+  String get learnMeaningsTitle => 'Значения';
+
+  @override
+  String get firstLessonTitle => 'Первый урок';
+
+  @override
+  String firstLessonStep(int step, int total) {
+    return 'Шаг $step из $total';
+  }
+
+  @override
+  String get firstLessonHearTitle => 'Слышно?';
+
+  @override
+  String get firstLessonHearBody => 'Нажмите «Играть». Вы должны услышать короткий сигнал (или увидеть вспышку / почувствовать вибрацию, если они включены).';
+
+  @override
+  String get firstLessonHeard => 'Слышу';
+
+  @override
+  String get firstLessonNotHeard => 'Ничего не слышно';
+
+  @override
+  String get firstLessonNoSoundTitle => 'Нет звука?';
+
+  @override
+  String get firstLessonNoSoundBody => 'Увеличьте громкость, проверьте переключатель беззвучного режима и «Не беспокоить». Вместо звука можно следить за вспышкой экрана или вибрацией.';
+
+  @override
+  String get firstLessonUseFlash => 'Также мигать экраном';
+
+  @override
+  String get firstLessonUseVibration => 'Также вибрировать';
+
+  @override
+  String get firstLessonPlay => 'Играть';
+
+  @override
+  String get firstLessonSoundsTitle => 'Короткий и длинный';
+
+  @override
+  String get firstLessonSoundsBody => 'В азбуке Морзе два звука: короткий «ти» и втрое длиннее «та». Символ — это их последовательность, а между символами короткая пауза. Нажмите на каждый, чтобы услышать.';
+
+  @override
+  String get firstLessonDit => 'ти';
+
+  @override
+  String get firstLessonDah => 'та';
+
+  @override
+  String get firstLessonWorkedTitle => 'Разобранный пример';
+
+  @override
+  String get firstLessonWorkedBody => 'Сначала послушайте; ответ появится после звука. Отвечать пока не нужно.';
+
+  @override
+  String firstLessonWorkedReveal(String char) {
+    return 'Это было $char';
+  }
+
+  @override
+  String get firstLessonTrialsTitle => 'K или M?';
+
+  @override
+  String get firstLessonTrialsBody => 'Послушайте и нажмите на услышанный символ. Повторяйте сколько угодно — это не экзамен.';
+
+  @override
+  String firstLessonTrialRound(int round, int total) {
+    return 'Раунд $round из $total';
+  }
+
+  @override
+  String firstLessonTrialCorrect(String char) {
+    return 'Да, это было $char';
+  }
+
+  @override
+  String firstLessonTrialWrong(String char, String answer) {
+    return 'Это было $char, а не $answer. Послушайте их рядом.';
+  }
+
+  @override
+  String get firstLessonTooFast => 'Слишком быстро? Темп для новичка (длиннее паузы между символами)';
+
+  @override
+  String get firstLessonNextTitle => 'Что дальше';
+
+  @override
+  String firstLessonNextBody(int correct, int total) {
+    return 'В этом раунде верно $correct / $total. Выберите следующий шаг и продолжайте в своём темпе.';
+  }
+
+  @override
+  String get firstLessonNextGuided => 'Короткая тренировка: 10 одиночных символов';
+
+  @override
+  String get firstLessonNextSend => 'Попробовать передачу';
+
+  @override
+  String get firstLessonSendGuide => 'Передача: короткое нажатие — «ти», длинное — «та». У манипулятора одна сторона даёт «ти», другая «та». Отпускайте и делайте короткую паузу между символами. Простой ключ или ямбический A / B можно сменить позже; сейчас это неважно.';
+
+  @override
+  String get firstLessonReplayAnytime => 'Этот урок можно повторить в любое время с главной страницы обучения.';
+
+  @override
+  String get firstLessonContinue => 'Далее';
+
+  @override
+  String get firstLessonTrialNext => 'Следующий раунд';
+
+  @override
+  String get sendFirstUseTitle => 'Впервые работаете ключом?';
+
+  @override
+  String get sendFirstUseStraight => 'Короткое нажатие — «ти», примерно втрое дольше — «та». Короткая пауза между символами, длиннее — между словами.';
+
+  @override
+  String get sendFirstUsePaddles => 'Удерживайте лепесток с меткой точки для точек, с меткой тире для тире; длительность задаёт ключ. Делайте паузу между символами, длиннее — между словами.';
+
+  @override
+  String get sendFirstUseDismiss => 'Понятно';
+
+  @override
+  String get learnSpeedPresets => 'Темп';
+
+  @override
+  String get learnPresetBeginner => 'Новичок 20 / 6';
+
+  @override
+  String get learnPresetStandard => 'Стандарт 20 / 8';
+
+  @override
+  String get learnPresetHelp => 'В обоих вариантах символы звучат на 20 WPM; темп для новичка делает паузы между ними длиннее (6 WPM эффективно).';
+
+  @override
+  String get learnPlanStepIntro => 'Первый урок';
+
+  @override
+  String get learnPlanStepRecognition => 'Одиночные символы';
+
+  @override
+  String get learnPlanReasonFirstLesson => 'Послушать звуки и отличить K от M (около 3 минут)';
+
+  @override
+  String learnPlanReasonRecognition(String symbols) {
+    return 'По одному символу: $symbols';
+  }
+
+  @override
+  String learnPlanReasonGuided(int count) {
+    return 'Короткие смешанные группы по $count символа; испытание на 50 символов — позже';
+  }
+
+  @override
+  String learnPlanReasonSendOptional(int count) {
+    return 'По желанию: послушайте образец, затем передайте $count коротких заданий';
+  }
+
+  @override
+  String get learnQsoReadyTitle => 'Готовы к QSO';
+
+  @override
+  String get learnQsoNotReadyTitle => 'Выучены ещё не все символы';
+
+  @override
+  String get learnQsoMissingBody => 'В QSO встречаются эти ещё не выученные символы — нажмите, чтобы услышать. Можно всё равно попробовать; на клавиатуре показаны все символы.';
+
+  @override
+  String get learnQsoShorthandHint => 'Сначала потренируйте сокращения (CQ, DE, UR, RST, TNX, 73), чтобы понимать строки.';
+
+  @override
+  String get learnQsoPractiseShorthand => 'Тренировать сокращения';
+
+  @override
+  String get learnQsoHowTitle => 'Как проходит QSO';
+
+  @override
+  String get learnQsoHowBody => 'Вызов (CQ = всем, DE = от), ответ позывными, обмен рапортом (RST), именем и QTH (место), затем 73 (наилучшие пожелания) и <SK> (конец). K означает «приём».';
+
+  @override
+  String get learnQsoExploreLabel => 'Содержит невыученные символы';
+
+  @override
+  String get statsCoursePassed => 'Курс пройден';
+
+  @override
+  String get firstLessonPlayAgain => 'Сыграть ещё раз';
+
+  @override
+  String firstLessonNextChallenge(int lesson, int count, String char) {
+    return 'Испытание урока $lesson: $count символов, 90 % открывает $char';
+  }
+
+  @override
+  String firstLessonNextChallengeLast(int lesson, int count) {
+    return 'Испытание урока $lesson: $count символов на 90 % завершают курс';
+  }
+
+  @override
+  String get learnQsoShorthandTitle => 'Сначала потренируйте сокращения';
+
+  @override
+  String get learnQsoExchangeTitle => 'Сначала потренируйте строки QSO';
+
+  @override
+  String get learnQsoExchangeHint => 'Принимайте отдельные строки связи (по одному обмену), прежде чем проводить целое QSO в симуляторе.';
+
+  @override
+  String get sendGuideTitle => 'Учимся передавать';
+
+  @override
+  String sendGuideStep(int step, int total) {
+    return 'Шаг $step из $total';
+  }
+
+  @override
+  String get sendGuideHear => 'Сначала послушать образец';
+
+  @override
+  String get sendGuideListening => 'Послушайте ритм до конца…';
+
+  @override
+  String get sendGuideTry => 'Теперь передайте';
+
+  @override
+  String get sendGuideRetry => 'Повторить эту цель';
+
+  @override
+  String get sendGuidePassed => 'Декодировано верно. Переходите к следующей цели.';
+
+  @override
+  String get sendGuideComplete => 'Оба символа и группы переданы верно. Продолжайте свободную тренировку передачи.';
+
+  @override
+  String get sendGuideRhythm => 'Повторяйте образец: короткие точки, тире втрое длиннее и чёткая пауза между символами.';
+
+  @override
+  String get learnContinueToday => 'Продолжить обучение на сегодня';
+
+  @override
+  String get learnPlanDetails => 'Посмотреть подробности плана';
+
+  @override
+  String get learnGuidedSingle => 'По одному знаку · 10 знаков';
+
+  @override
+  String get learnGuidedShort => 'Группы по 3 · 15 знаков';
+
+  @override
+  String get learnGuidedGroups => 'Группы по 5 · 20 знаков';
+
+  @override
+  String get learnGuidedRecommended => 'Рекомендуемый следующий шаг';
+
+  @override
+  String get learnGuidedProgressHint => 'После успешного уровня переходите к коротким и полным группам. Тренировка закрепляет навык, а испытание курса открывает следующий урок.';
+
+  @override
+  String get learnGuidedContinue => 'Продолжить тренировку';
+
+  @override
+  String get learnGuidedRetry => 'Повторить этот уровень';
+
+  @override
+  String get firstLessonZeroHint => 'Пока нет верных ответов — это нормально. Ещё раз послушайте разницу между K и M и повторите попытку.';
+
+  @override
+  String get firstLessonPartialHint => 'Некоторые знаки вы услышали верно. Ещё раз сравните K и M и продолжайте в своём темпе.';
+
+  @override
+  String get firstLessonPerfectHint => 'В этом раунде все ответы верны. Закрепите результат приёмом без вариантов ответа.';
+
+  @override
+  String get firstLessonPaceLocked => 'Ответы уже начаты, поэтому скорость этого раунда фиксирована. Для следующего раунда её можно изменить в настройках.';
+
+  @override
+  String get learnRecentEvidenceHint => 'Этап определяется по приёму без подсказок за последние 14 дней на той же скорости.';
+
+  @override
+  String get learnQsoConsolidateTitle => 'Закрепить изученные знаки';
+
+  @override
+  String get learnQsoConsolidateHint => 'Открытый знак ещё не означает освоенный. Начните с одиночных знаков, чтобы получить свежие самостоятельные результаты.';
+
+  @override
+  String get learnQsoPractiseSymbols => 'Тренировать эти знаки';
+
+  @override
+  String get learnQsoProtocolTitle => 'Понять термины QSO';
+
+  @override
+  String get learnQsoProtocolHint => 'Проверьте значения CQ, DE, RST и 73 перед коротким QSO.';
+
+  @override
+  String get learnQsoProtocolStart => 'Проверить понимание терминов';
+
+  @override
+  String learnQsoProtocolQuestion(String token) {
+    return 'Что означает $token в QSO?';
+  }
+
+  @override
+  String get learnQsoGeneralCall => 'Вызов любой станции';
+
+  @override
+  String get learnQsoFromStation => 'От этой станции';
+
+  @override
+  String get learnQsoSignalReport => 'Рапорт о сигнале';
+
+  @override
+  String get learnQsoBestRegards => 'Наилучшие пожелания и прощание';
+
+  @override
+  String get learnQsoProtocolCorrect => 'Верный ответ';
+
+  @override
+  String learnQsoProtocolWrong(String meaning) {
+    return 'Верное значение: $meaning';
+  }
+
+  @override
+  String get learnQsoProtocolPass => 'Все четыре термина отвечены верно без помощи. Можно попробовать короткое QSO.';
+
+  @override
+  String get learnQsoProtocolPractice => 'Повторите эти значения перед новой проверкой.';
+
+  @override
+  String get learnQsoProtocolRetry => 'Проверить снова';
+
+  @override
+  String get learnQsoShortExchange => 'Тренировать короткое QSO';
+
+  @override
+  String get learnQsoShortExchangeHint => 'Самостоятельно подтвердите позывные, обменяйтесь рапортами и завершите связь, затем переходите к полному QSO.';
+
+  @override
+  String get learnQsoExplorePending => 'Попробовать полное QSO · ещё нужна практика';
+
+  @override
+  String get learnQsoReadyHint => 'Есть свежие самостоятельные результаты. Можно начинать полные учебные QSO.';
 }

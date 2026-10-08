@@ -3312,7 +3312,7 @@ class SZh extends S {
   String get placementCheckLevel => '测试我现在的水平';
 
   @override
-  String get placementFromZero => '从零开始';
+  String get placementFromZero => '跳过引导：直接第 1 课挑战';
 
   @override
   String get placementOfferTitle => '刚接触莫尔斯码，还是已经会抄收？';
@@ -4258,6 +4258,532 @@ class SZh extends S {
 
   @override
   String get learnStorageUnavailable => '无法在此设备上打开你的训练数据，请重试。';
+
+  @override
+  String get learnStartHereTitle => '刚开始？先上一节 3 分钟的第一课';
+
+  @override
+  String get learnStartHereBody => '听听声音，认识 K 和 M，再做几轮简单练习。不计成绩。';
+
+  @override
+  String get learnStartHere => '从这里开始';
+
+  @override
+  String get learnReplayFirstLesson => '重温第一课';
+
+  @override
+  String learnCharsIntroducedMastered(int introduced, int mastered) {
+    return '已引入 $introduced 个 · 已掌握 $mastered 个';
+  }
+
+  @override
+  String get learnChipNew => '新字符';
+
+  @override
+  String get learnChipPractising => '练习中';
+
+  @override
+  String get learnChipMastered => '已掌握';
+
+  @override
+  String get learnChipWeak => '低于 90%';
+
+  @override
+  String get learnChipDue => '待复习';
+
+  @override
+  String get learnTapChipHint => '点按字符即可试听';
+
+  @override
+  String learnHearChar(String char) {
+    return '听 $char';
+  }
+
+  @override
+  String learnCompareWith(String a, String b) {
+    return '$a 对比 $b';
+  }
+
+  @override
+  String get learnGuidedPractice => '简短练习（10 个字符）';
+
+  @override
+  String learnChallengeHint(int count, int min) {
+    return '本课挑战：$count 个字符、正确率 90%，且每个新字符至少抄收 $min 次。通过即可解锁下一个字符。';
+  }
+
+  @override
+  String get learnAllUnlockedNotPassed => '所有字符都已解锁。通过最后一课的挑战即可完成课程。';
+
+  @override
+  String get learnGoalFirstUse => '当前目标：用耳朵分辨 K 和 M。下一步：第 1 课挑战。';
+
+  @override
+  String learnGoalRecognition(String chars, int min, int lesson) {
+    return '当前目标：稳定认出 $chars（$min 次抄收、正确率 90%）。下一步：第 $lesson 课挑战。';
+  }
+
+  @override
+  String learnGoalCopying(int lesson, String next) {
+    return '当前目标：通过第 $lesson 课挑战。下一步：$next。';
+  }
+
+  @override
+  String learnGoalNextChar(String char) {
+    return '字符 $char';
+  }
+
+  @override
+  String get learnGoalNextOperating => '单词、呼号和完整 QSO';
+
+  @override
+  String get learnGoalOperating => '当前目标：真实报文——单词、呼号、QSO。下一步：逐级提高有效速度。';
+
+  @override
+  String get learnMorePractice => '更多练习';
+
+  @override
+  String get learnQsoReady => '已就绪';
+
+  @override
+  String get learnQsoPractiseFirst => '先练习报文行';
+
+  @override
+  String learnQsoSymbolsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '还差 $count 个字符',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get learnGlossaryTitle => '这些术语是什么意思？';
+
+  @override
+  String get glossaryKoch => 'Koch 法：字符一开始就按全速学习，先学两个，每课再加一个；抄收正确率达到 90% 才进入下一课。';
+
+  @override
+  String get glossaryWpm => 'WPM：每分钟词数，以标准词 PARIS 计算。字符速度指每个字符本身响起的快慢。';
+
+  @override
+  String get glossaryFarnsworth => 'Farnsworth：字符保持快速，但字符之间的停顿被拉长，给你时间反应。有效速度把这些停顿算在内。';
+
+  @override
+  String get glossaryQso => 'QSO：两个电台之间的一次双向通联。CQ = 呼叫任意电台，DE = 来自，K = 请讲。';
+
+  @override
+  String get glossaryRst => 'RST：信号报告——可辨度、强度、音调。599 表示完美。73 表示致意。';
+
+  @override
+  String get learnVerdictNotCredited => '未记录：没有抄收任何字符。';
+
+  @override
+  String get learnVerdictAssisted => '辅助练习';
+
+  @override
+  String get learnVerdictAssistedHint => '使用了重播或揭示答案，所以本次只计入练习量：不解锁课程，也不更新复习。下一次试试不重播。';
+
+  @override
+  String get learnVerdictPractice => '练习已记录';
+
+  @override
+  String get learnVerdictPracticeHint => '自由练习会更新统计和复习，但不会推进课程。课程只通过学习主页的本课挑战推进。';
+
+  @override
+  String get learnVerdictCourseComplete => '最后一课挑战通过：整个字符课程已完成。';
+
+  @override
+  String learnVerdictTooShort(int count, int min) {
+    return '未达到完整挑战：$count / $min 个字符';
+  }
+
+  @override
+  String learnVerdictTooShortHint(int min) {
+    return '一次挑战至少 $min 个字符。请从学习主页开始本课，或在训练设置中加长练习长度。';
+  }
+
+  @override
+  String learnVerdictUncovered(String chars) {
+    return '$chars 抄收次数不足';
+  }
+
+  @override
+  String learnVerdictUncoveredHint(int min) {
+    return '挑战要求每个新字符至少抄收 $min 次。再试一次：挑战会特意包含它们。';
+  }
+
+  @override
+  String learnVerdictNewSymbolWeak(String chars) {
+    return '新字符低于 90%：$chars';
+  }
+
+  @override
+  String get learnVerdictNewSymbolWeakHint => '其余都不错；新字符决定本课结果。先听它和相近字符的对比，再练一练，然后重新挑战。';
+
+  @override
+  String get learnVerdictBelowAccuracyHint => '总体正确率低于 90%。先针对下面的薄弱字符做个简短练习，再重新挑战。';
+
+  @override
+  String get learnDrillWeak => '练习薄弱字符';
+
+  @override
+  String get learnRetryChallenge => '重新挑战';
+
+  @override
+  String get learnTakeChallenge => '开始本课挑战';
+
+  @override
+  String learnChallengeTitle(int lesson) {
+    return '第 $lesson 课挑战';
+  }
+
+  @override
+  String get learnPracticeTitle => '练习';
+
+  @override
+  String get learnMeaningsTitle => '含义';
+
+  @override
+  String get firstLessonTitle => '第一课';
+
+  @override
+  String firstLessonStep(int step, int total) {
+    return '第 $step / $total 步';
+  }
+
+  @override
+  String get firstLessonHearTitle => '能听到吗？';
+
+  @override
+  String get firstLessonHearBody => '点按播放。你应该能听到一小段哔哔声（如果开启了闪屏或振动，也会看到或感觉到）。';
+
+  @override
+  String get firstLessonHeard => '听到了';
+
+  @override
+  String get firstLessonNotHeard => '什么都没听到';
+
+  @override
+  String get firstLessonNoSoundTitle => '没有声音？';
+
+  @override
+  String get firstLessonNoSoundBody => '请调高音量，检查静音开关或勿扰模式。你也可以改用屏幕闪烁或振动来代替声音。';
+
+  @override
+  String get firstLessonUseFlash => '同时闪烁屏幕';
+
+  @override
+  String get firstLessonUseVibration => '同时振动';
+
+  @override
+  String get firstLessonPlay => '播放';
+
+  @override
+  String get firstLessonSoundsTitle => '短与长';
+
+  @override
+  String get firstLessonSoundsBody => '莫尔斯码只有两种声音：短的\"滴\"和长的\"嗒\"，嗒是滴的三倍长。字符是它们的组合，字符之间用短暂的停顿隔开。点按每一个试听。';
+
+  @override
+  String get firstLessonDit => '滴（短）';
+
+  @override
+  String get firstLessonDah => '嗒（长）';
+
+  @override
+  String get firstLessonWorkedTitle => '看一个示范';
+
+  @override
+  String get firstLessonWorkedBody => '先听，声音结束后会显示答案。现在还不需要作答。';
+
+  @override
+  String firstLessonWorkedReveal(String char) {
+    return '刚才是 $char';
+  }
+
+  @override
+  String get firstLessonTrialsTitle => 'K 还是 M？';
+
+  @override
+  String get firstLessonTrialsBody => '听完后点按你听到的字符。想重播多少次都可以——这不是考试。';
+
+  @override
+  String firstLessonTrialRound(int round, int total) {
+    return '第 $round / $total 轮';
+  }
+
+  @override
+  String firstLessonTrialCorrect(String char) {
+    return '对，刚才是 $char';
+  }
+
+  @override
+  String firstLessonTrialWrong(String char, String answer) {
+    return '刚才是 $char，不是 $answer。听听两者的对比。';
+  }
+
+  @override
+  String get firstLessonTooFast => '太快了？改用入门节奏（字符之间停顿更长）';
+
+  @override
+  String get firstLessonNextTitle => '接下来';
+
+  @override
+  String firstLessonNextBody(int correct, int total) {
+    return '本轮答对 $correct / $total。选择下一步，按自己的节奏继续。';
+  }
+
+  @override
+  String get firstLessonNextGuided => '简短练习：10 个单字符';
+
+  @override
+  String get firstLessonNextSend => '试试发报';
+
+  @override
+  String get firstLessonSendGuide => '发报：短按是滴，长按是嗒。用拨片时，一侧发滴、另一侧发嗒。松开，并在字符之间稍作停顿。手键或 iambic A / B 以后可以再改，现在不重要。';
+
+  @override
+  String get firstLessonReplayAnytime => '随时可以从学习主页重温这一课。';
+
+  @override
+  String get firstLessonContinue => '继续';
+
+  @override
+  String get firstLessonTrialNext => '下一轮';
+
+  @override
+  String get sendFirstUseTitle => '第一次发报？';
+
+  @override
+  String get sendFirstUseStraight => '短按电键是滴，大约三倍长是嗒。字符之间稍作停顿，单词之间停顿更长。';
+
+  @override
+  String get sendFirstUsePaddles => '按住标有“点”的键发点，按住标有“划”的键发划；键控器会自动控制时长。字符间稍作停顿，单词间停顿更长。';
+
+  @override
+  String get sendFirstUseDismiss => '知道了';
+
+  @override
+  String get learnSpeedPresets => '节奏';
+
+  @override
+  String get learnPresetBeginner => '入门 20 / 6';
+
+  @override
+  String get learnPresetStandard => '标准 20 / 8';
+
+  @override
+  String get learnPresetHelp => '两种节奏的字符都按 20 WPM 发出；入门节奏在字符之间留更长的停顿（有效速度 6 WPM）。';
+
+  @override
+  String get learnPlanStepIntro => '第一课';
+
+  @override
+  String get learnPlanStepRecognition => '单字符识别';
+
+  @override
+  String get learnPlanReasonFirstLesson => '听声音，分辨 K 和 M（约 3 分钟）';
+
+  @override
+  String learnPlanReasonRecognition(String symbols) {
+    return '一次一个字符：$symbols';
+  }
+
+  @override
+  String learnPlanReasonGuided(int count) {
+    return '$count 个字符的短混合组；50 字符挑战稍后再说';
+  }
+
+  @override
+  String learnPlanReasonSendOptional(int count) {
+    return '可选：先听示范，再发 $count 个短目标';
+  }
+
+  @override
+  String get learnQsoReadyTitle => '可以开始 QSO 了';
+
+  @override
+  String get learnQsoNotReadyTitle => '还有字符没学到';
+
+  @override
+  String get learnQsoMissingBody => 'QSO 会用到这些你还没学的字符——点按即可试听。你也可以先体验：键盘会显示全部字符。';
+
+  @override
+  String get learnQsoShorthandHint => '先练习缩语（CQ、DE、UR、RST、TNX、73），这样报文才看得懂。';
+
+  @override
+  String get learnQsoPractiseShorthand => '练习缩语';
+
+  @override
+  String get learnQsoHowTitle => 'QSO 是怎么进行的';
+
+  @override
+  String get learnQsoHowBody => '呼叫（CQ = 任意电台，DE = 来自），用呼号应答，交换信号报告（RST）、姓名和 QTH（地点），最后 73（致意）和 <SK>（结束）。K 表示请讲。';
+
+  @override
+  String get learnQsoExploreLabel => '包含未学字符';
+
+  @override
+  String get statsCoursePassed => '课程已通过';
+
+  @override
+  String get firstLessonPlayAgain => '再播一次';
+
+  @override
+  String firstLessonNextChallenge(int lesson, int count, String char) {
+    return '第 $lesson 课挑战：$count 个字符，90% 即可解锁 $char';
+  }
+
+  @override
+  String firstLessonNextChallengeLast(int lesson, int count) {
+    return '第 $lesson 课挑战：$count 个字符、90% 即完成课程';
+  }
+
+  @override
+  String get learnQsoShorthandTitle => '先练习缩语';
+
+  @override
+  String get learnQsoExchangeTitle => '先练习 QSO 报文行';
+
+  @override
+  String get learnQsoExchangeHint => '先逐行抄收通联内容（一次一个交换），再到模拟器里跑完整 QSO。';
+
+  @override
+  String get sendGuideTitle => '发报带练';
+
+  @override
+  String sendGuideStep(int step, int total) {
+    return '第 $step 步，共 $total 步';
+  }
+
+  @override
+  String get sendGuideHear => '先听示范';
+
+  @override
+  String get sendGuideListening => '先听完整节奏…';
+
+  @override
+  String get sendGuideTry => '现在试着发';
+
+  @override
+  String get sendGuideRetry => '重练这个目标';
+
+  @override
+  String get sendGuidePassed => '解码正确，可以继续下一个目标。';
+
+  @override
+  String get sendGuideComplete => '两个字符和短组都已正确发出，可以继续自由发报练习。';
+
+  @override
+  String get sendGuideRhythm => '跟随示范节奏：点要短，划约为点的三倍，字符之间留清晰的停顿。';
+
+  @override
+  String get learnContinueToday => '继续今天的学习';
+
+  @override
+  String get learnPlanDetails => '查看计划详情';
+
+  @override
+  String get learnGuidedSingle => '单字符 · 10 字符';
+
+  @override
+  String get learnGuidedShort => '3 字符短组 · 15 字符';
+
+  @override
+  String get learnGuidedGroups => '5 字符一组 · 20 字符';
+
+  @override
+  String get learnGuidedRecommended => '推荐下一步';
+
+  @override
+  String get learnGuidedProgressHint => '通过后继续短组和完整组。带练用于巩固，通关挑战才会解锁下一课。';
+
+  @override
+  String get learnGuidedContinue => '继续带练';
+
+  @override
+  String get learnGuidedRetry => '再练这一档';
+
+  @override
+  String get firstLessonZeroHint => '还没有答对也没关系。先再听一遍 K 和 M 的差别，然后重试。';
+
+  @override
+  String get firstLessonPartialHint => '已经听对了一部分。再比较一下 K 和 M，按自己的节奏继续。';
+
+  @override
+  String get firstLessonPerfectHint => '这轮全部答对了。接着用不显示选项的听抄练习巩固。';
+
+  @override
+  String get firstLessonPaceLocked => '本轮已开始作答，速度保持不变；下一轮可在设置中调整。';
+
+  @override
+  String get learnRecentEvidenceHint => '阶段按近 14 天、同速且无辅助的听抄证据判断。';
+
+  @override
+  String get learnQsoConsolidateTitle => '巩固已学字符';
+
+  @override
+  String get learnQsoConsolidateHint => '已解锁不代表已掌握。先用单字符听抄取得近期独立成绩。';
+
+  @override
+  String get learnQsoPractiseSymbols => '练习这些字符';
+
+  @override
+  String get learnQsoProtocolTitle => '理解通联用语';
+
+  @override
+  String get learnQsoProtocolHint => '确认 CQ、DE、RST 和 73 的含义，再开始短通联。';
+
+  @override
+  String get learnQsoProtocolStart => '检查用语理解';
+
+  @override
+  String learnQsoProtocolQuestion(String token) {
+    return '$token 在通联中表示什么？';
+  }
+
+  @override
+  String get learnQsoGeneralCall => '呼叫任意电台';
+
+  @override
+  String get learnQsoFromStation => '来自这个电台';
+
+  @override
+  String get learnQsoSignalReport => '信号报告';
+
+  @override
+  String get learnQsoBestRegards => '致意并告别';
+
+  @override
+  String get learnQsoProtocolCorrect => '回答正确';
+
+  @override
+  String learnQsoProtocolWrong(String meaning) {
+    return '正确含义：$meaning';
+  }
+
+  @override
+  String get learnQsoProtocolPass => '四个用语均独立答对，可以尝试短通联。';
+
+  @override
+  String get learnQsoProtocolPractice => '先复习这些含义，再重新检查。';
+
+  @override
+  String get learnQsoProtocolRetry => '重新检查';
+
+  @override
+  String get learnQsoShortExchange => '练习短通联';
+
+  @override
+  String get learnQsoShortExchangeHint => '独立完成呼号确认、信号报告和告别，再进行完整通联。';
+
+  @override
+  String get learnQsoExplorePending => '自由体验完整通联 · 仍有待练项目';
+
+  @override
+  String get learnQsoReadyHint => '已具备近期独立练习证据，可以开始完整模拟通联。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7568,7 +8094,7 @@ class SZhHant extends SZh {
   String get placementCheckLevel => '測試我現在的程度';
 
   @override
-  String get placementFromZero => '從零開始';
+  String get placementFromZero => '跳過引導：直接第 1 課挑戰';
 
   @override
   String get placementOfferTitle => '剛接觸摩斯碼，還是已經會抄收？';
@@ -8514,4 +9040,530 @@ class SZhHant extends SZh {
 
   @override
   String get learnStorageUnavailable => '無法在此裝置上開啟你的訓練資料，請再試一次。';
+
+  @override
+  String get learnStartHereTitle => '剛開始？先上一節 3 分鐘的第一課';
+
+  @override
+  String get learnStartHereBody => '聽聽聲音，認識 K 和 M，再做幾輪簡單練習。不計成績。';
+
+  @override
+  String get learnStartHere => '從這裡開始';
+
+  @override
+  String get learnReplayFirstLesson => '重溫第一課';
+
+  @override
+  String learnCharsIntroducedMastered(int introduced, int mastered) {
+    return '已引入 $introduced 個 · 已掌握 $mastered 個';
+  }
+
+  @override
+  String get learnChipNew => '新字元';
+
+  @override
+  String get learnChipPractising => '練習中';
+
+  @override
+  String get learnChipMastered => '已掌握';
+
+  @override
+  String get learnChipWeak => '低於 90%';
+
+  @override
+  String get learnChipDue => '待複習';
+
+  @override
+  String get learnTapChipHint => '點按字元即可試聽';
+
+  @override
+  String learnHearChar(String char) {
+    return '聽 $char';
+  }
+
+  @override
+  String learnCompareWith(String a, String b) {
+    return '$a 對比 $b';
+  }
+
+  @override
+  String get learnGuidedPractice => '簡短練習（10 個字元）';
+
+  @override
+  String learnChallengeHint(int count, int min) {
+    return '本課挑戰：$count 個字元、正確率 90%，且每個新字元至少抄收 $min 次。通過即可解鎖下一個字元。';
+  }
+
+  @override
+  String get learnAllUnlockedNotPassed => '所有字元都已解鎖。通過最後一課的挑戰即可完成課程。';
+
+  @override
+  String get learnGoalFirstUse => '當前目標：用耳朵分辨 K 和 M。下一步：第 1 課挑戰。';
+
+  @override
+  String learnGoalRecognition(String chars, int min, int lesson) {
+    return '當前目標：穩定認出 $chars（$min 次抄收、正確率 90%）。下一步：第 $lesson 課挑戰。';
+  }
+
+  @override
+  String learnGoalCopying(int lesson, String next) {
+    return '當前目標：通過第 $lesson 課挑戰。下一步：$next。';
+  }
+
+  @override
+  String learnGoalNextChar(String char) {
+    return '字元 $char';
+  }
+
+  @override
+  String get learnGoalNextOperating => '單字、呼號和完整 QSO';
+
+  @override
+  String get learnGoalOperating => '當前目標：真實報文——單字、呼號、QSO。下一步：逐級提高有效速度。';
+
+  @override
+  String get learnMorePractice => '更多練習';
+
+  @override
+  String get learnQsoReady => '已就緒';
+
+  @override
+  String get learnQsoPractiseFirst => '先練習報文行';
+
+  @override
+  String learnQsoSymbolsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '還差 $count 個字元',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get learnGlossaryTitle => '這些術語是什麼意思？';
+
+  @override
+  String get glossaryKoch => 'Koch 法：字元一開始就按全速學習，先學兩個，每課再加一個；抄收正確率達到 90% 才進入下一課。';
+
+  @override
+  String get glossaryWpm => 'WPM：每分鐘詞數，以標準詞 PARIS 計算。字元速度指每個字元本身響起的快慢。';
+
+  @override
+  String get glossaryFarnsworth => 'Farnsworth：字元保持快速，但字元之間的停頓被拉長，給你時間反應。有效速度把這些停頓算在內。';
+
+  @override
+  String get glossaryQso => 'QSO：兩個電台之間的一次雙向通聯。CQ = 呼叫任意電台，DE = 來自，K = 請講。';
+
+  @override
+  String get glossaryRst => 'RST：信號報告——可辨度、強度、音調。599 表示完美。73 表示致意。';
+
+  @override
+  String get learnVerdictNotCredited => '未記錄：沒有抄收任何字元。';
+
+  @override
+  String get learnVerdictAssisted => '輔助練習';
+
+  @override
+  String get learnVerdictAssistedHint => '使用了重播或揭示答案，所以本次只計入練習量：不解鎖課程，也不更新複習。下一次試試不重播。';
+
+  @override
+  String get learnVerdictPractice => '練習已記錄';
+
+  @override
+  String get learnVerdictPracticeHint => '自由練習會更新統計和複習，但不會推進課程。課程只透過學習主頁的本課挑戰推進。';
+
+  @override
+  String get learnVerdictCourseComplete => '最後一課挑戰通過：整個字元課程已完成。';
+
+  @override
+  String learnVerdictTooShort(int count, int min) {
+    return '未達到完整挑戰：$count / $min 個字元';
+  }
+
+  @override
+  String learnVerdictTooShortHint(int min) {
+    return '一次挑戰至少 $min 個字元。請從學習主頁開始本課，或在訓練設定中加長練習長度。';
+  }
+
+  @override
+  String learnVerdictUncovered(String chars) {
+    return '$chars 抄收次數不足';
+  }
+
+  @override
+  String learnVerdictUncoveredHint(int min) {
+    return '挑戰要求每個新字元至少抄收 $min 次。再試一次：挑戰會特意包含它們。';
+  }
+
+  @override
+  String learnVerdictNewSymbolWeak(String chars) {
+    return '新字元低於 90%：$chars';
+  }
+
+  @override
+  String get learnVerdictNewSymbolWeakHint => '其餘都不錯；新字元決定本課結果。先聽它和相近字元的對比，再練一練，然後重新挑戰。';
+
+  @override
+  String get learnVerdictBelowAccuracyHint => '總體正確率低於 90%。先針對下面的薄弱字元做個簡短練習，再重新挑戰。';
+
+  @override
+  String get learnDrillWeak => '練習薄弱字元';
+
+  @override
+  String get learnRetryChallenge => '重新挑戰';
+
+  @override
+  String get learnTakeChallenge => '開始本課挑戰';
+
+  @override
+  String learnChallengeTitle(int lesson) {
+    return '第 $lesson 課挑戰';
+  }
+
+  @override
+  String get learnPracticeTitle => '練習';
+
+  @override
+  String get learnMeaningsTitle => '含義';
+
+  @override
+  String get firstLessonTitle => '第一課';
+
+  @override
+  String firstLessonStep(int step, int total) {
+    return '第 $step / $total 步';
+  }
+
+  @override
+  String get firstLessonHearTitle => '能聽到嗎？';
+
+  @override
+  String get firstLessonHearBody => '點按播放。你應該能聽到一小段嗶嗶聲（如果開啟了閃屏或震動，也會看到或感覺到）。';
+
+  @override
+  String get firstLessonHeard => '聽到了';
+
+  @override
+  String get firstLessonNotHeard => '什麼都沒聽到';
+
+  @override
+  String get firstLessonNoSoundTitle => '沒有聲音？';
+
+  @override
+  String get firstLessonNoSoundBody => '請調高音量，檢查靜音開關或勿擾模式。你也可以改用螢幕閃爍或震動來代替聲音。';
+
+  @override
+  String get firstLessonUseFlash => '同時閃爍螢幕';
+
+  @override
+  String get firstLessonUseVibration => '同時震動';
+
+  @override
+  String get firstLessonPlay => '播放';
+
+  @override
+  String get firstLessonSoundsTitle => '短與長';
+
+  @override
+  String get firstLessonSoundsBody => '摩斯密碼只有兩種聲音：短的「滴」和長的「答」，答是滴的三倍長。字元是它們的組合，字元之間用短暫的停頓隔開。點按每一個試聽。';
+
+  @override
+  String get firstLessonDit => '滴（短）';
+
+  @override
+  String get firstLessonDah => '答（長）';
+
+  @override
+  String get firstLessonWorkedTitle => '看一個示範';
+
+  @override
+  String get firstLessonWorkedBody => '先聽，聲音結束後會顯示答案。現在還不需要作答。';
+
+  @override
+  String firstLessonWorkedReveal(String char) {
+    return '剛才是 $char';
+  }
+
+  @override
+  String get firstLessonTrialsTitle => 'K 還是 M？';
+
+  @override
+  String get firstLessonTrialsBody => '聽完後點按你聽到的字元。想重播多少次都可以——這不是考試。';
+
+  @override
+  String firstLessonTrialRound(int round, int total) {
+    return '第 $round / $total 輪';
+  }
+
+  @override
+  String firstLessonTrialCorrect(String char) {
+    return '對，剛才是 $char';
+  }
+
+  @override
+  String firstLessonTrialWrong(String char, String answer) {
+    return '剛才是 $char，不是 $answer。聽聽兩者的對比。';
+  }
+
+  @override
+  String get firstLessonTooFast => '太快了？改用入門節奏（字元之間停頓更長）';
+
+  @override
+  String get firstLessonNextTitle => '接下來';
+
+  @override
+  String firstLessonNextBody(int correct, int total) {
+    return '本輪答對 $correct / $total。選擇下一步，按自己的節奏繼續。';
+  }
+
+  @override
+  String get firstLessonNextGuided => '簡短練習：10 個單字元';
+
+  @override
+  String get firstLessonNextSend => '試試發報';
+
+  @override
+  String get firstLessonSendGuide => '發報：短按是滴，長按是答。用撥片時，一側發滴、另一側發答。鬆開，並在字元之間稍作停頓。手鍵或 iambic A / B 以後可以再改，現在不重要。';
+
+  @override
+  String get firstLessonReplayAnytime => '隨時可以從學習主頁重溫這一課。';
+
+  @override
+  String get firstLessonContinue => '繼續';
+
+  @override
+  String get firstLessonTrialNext => '下一輪';
+
+  @override
+  String get sendFirstUseTitle => '第一次發報？';
+
+  @override
+  String get sendFirstUseStraight => '短按電鍵是滴，大約三倍長是答。字元之間稍作停頓，單字之間停頓更長。';
+
+  @override
+  String get sendFirstUsePaddles => '按住標有「點」的鍵發點，按住標有「劃」的鍵發劃；鍵控器會自動控制時長。字元間稍作停頓，單詞間停頓更長。';
+
+  @override
+  String get sendFirstUseDismiss => '知道了';
+
+  @override
+  String get learnSpeedPresets => '節奏';
+
+  @override
+  String get learnPresetBeginner => '入門 20 / 6';
+
+  @override
+  String get learnPresetStandard => '標準 20 / 8';
+
+  @override
+  String get learnPresetHelp => '兩種節奏的字元都按 20 WPM 發出；入門節奏在字元之間留更長的停頓（有效速度 6 WPM）。';
+
+  @override
+  String get learnPlanStepIntro => '第一課';
+
+  @override
+  String get learnPlanStepRecognition => '單字元辨識';
+
+  @override
+  String get learnPlanReasonFirstLesson => '聽聲音，分辨 K 和 M（約 3 分鐘）';
+
+  @override
+  String learnPlanReasonRecognition(String symbols) {
+    return '一次一個字元：$symbols';
+  }
+
+  @override
+  String learnPlanReasonGuided(int count) {
+    return '$count 個字元的短混合組；50 字元挑戰稍後再說';
+  }
+
+  @override
+  String learnPlanReasonSendOptional(int count) {
+    return '可選：先聽示範，再發 $count 個短目標';
+  }
+
+  @override
+  String get learnQsoReadyTitle => '可以開始 QSO 了';
+
+  @override
+  String get learnQsoNotReadyTitle => '還有字元沒學到';
+
+  @override
+  String get learnQsoMissingBody => 'QSO 會用到這些你還沒學的字元——點按即可試聽。你也可以先體驗：鍵盤會顯示全部字元。';
+
+  @override
+  String get learnQsoShorthandHint => '先練習縮語（CQ、DE、UR、RST、TNX、73），這樣報文才看得懂。';
+
+  @override
+  String get learnQsoPractiseShorthand => '練習縮語';
+
+  @override
+  String get learnQsoHowTitle => 'QSO 是怎麼進行的';
+
+  @override
+  String get learnQsoHowBody => '呼叫（CQ = 任意電台，DE = 來自），用呼號應答，交換信號報告（RST）、姓名和 QTH（地點），最後 73（致意）和 <SK>（結束）。K 表示請講。';
+
+  @override
+  String get learnQsoExploreLabel => '包含未學字元';
+
+  @override
+  String get statsCoursePassed => '課程已通過';
+
+  @override
+  String get firstLessonPlayAgain => '再播一次';
+
+  @override
+  String firstLessonNextChallenge(int lesson, int count, String char) {
+    return '第 $lesson 課挑戰：$count 個字元，90% 即可解鎖 $char';
+  }
+
+  @override
+  String firstLessonNextChallengeLast(int lesson, int count) {
+    return '第 $lesson 課挑戰：$count 個字元、90% 即完成課程';
+  }
+
+  @override
+  String get learnQsoShorthandTitle => '先練習縮語';
+
+  @override
+  String get learnQsoExchangeTitle => '先練習 QSO 報文行';
+
+  @override
+  String get learnQsoExchangeHint => '先逐行抄收通聯內容（一次一個交換），再到模擬器裡跑完整 QSO。';
+
+  @override
+  String get sendGuideTitle => '發報帶練';
+
+  @override
+  String sendGuideStep(int step, int total) {
+    return '第 $step 步，共 $total 步';
+  }
+
+  @override
+  String get sendGuideHear => '先聽示範';
+
+  @override
+  String get sendGuideListening => '先聽完整節奏…';
+
+  @override
+  String get sendGuideTry => '現在試著發';
+
+  @override
+  String get sendGuideRetry => '重練這個目標';
+
+  @override
+  String get sendGuidePassed => '解碼正確，可以繼續下一個目標。';
+
+  @override
+  String get sendGuideComplete => '兩個字元和短組都已正確發出，可以繼續自由發報練習。';
+
+  @override
+  String get sendGuideRhythm => '跟隨示範節奏：點要短，劃約為點的三倍，字元之間留清晰的停頓。';
+
+  @override
+  String get learnContinueToday => '繼續今天的學習';
+
+  @override
+  String get learnPlanDetails => '查看計畫詳情';
+
+  @override
+  String get learnGuidedSingle => '單字元 · 10 字元';
+
+  @override
+  String get learnGuidedShort => '3 字元短組 · 15 字元';
+
+  @override
+  String get learnGuidedGroups => '5 字元一組 · 20 字元';
+
+  @override
+  String get learnGuidedRecommended => '推薦下一步';
+
+  @override
+  String get learnGuidedProgressHint => '通過後繼續短組和完整組。帶練用於鞏固，通關挑戰才會解鎖下一課。';
+
+  @override
+  String get learnGuidedContinue => '繼續帶練';
+
+  @override
+  String get learnGuidedRetry => '再練這一級';
+
+  @override
+  String get firstLessonZeroHint => '還沒有答對也沒關係。先再聽一遍 K 和 M 的差別，然後重試。';
+
+  @override
+  String get firstLessonPartialHint => '已經聽對了一部分。再比較一下 K 和 M，按自己的節奏繼續。';
+
+  @override
+  String get firstLessonPerfectHint => '這輪全部答對了。接著用不顯示選項的聽抄練習鞏固。';
+
+  @override
+  String get firstLessonPaceLocked => '本輪已開始作答，速度保持不變；下一輪可在設定中調整。';
+
+  @override
+  String get learnRecentEvidenceHint => '階段按近 14 天、同速且無輔助的聽抄證據判斷。';
+
+  @override
+  String get learnQsoConsolidateTitle => '鞏固已學字元';
+
+  @override
+  String get learnQsoConsolidateHint => '已解鎖不代表已掌握。先用單字元聽抄取得近期獨立成績。';
+
+  @override
+  String get learnQsoPractiseSymbols => '練習這些字元';
+
+  @override
+  String get learnQsoProtocolTitle => '理解通聯用語';
+
+  @override
+  String get learnQsoProtocolHint => '確認 CQ、DE、RST 和 73 的含義，再開始短通聯。';
+
+  @override
+  String get learnQsoProtocolStart => '檢查用語理解';
+
+  @override
+  String learnQsoProtocolQuestion(String token) {
+    return '$token 在通聯中表示什麼？';
+  }
+
+  @override
+  String get learnQsoGeneralCall => '呼叫任意電臺';
+
+  @override
+  String get learnQsoFromStation => '來自這個電臺';
+
+  @override
+  String get learnQsoSignalReport => '訊號報告';
+
+  @override
+  String get learnQsoBestRegards => '致意並告別';
+
+  @override
+  String get learnQsoProtocolCorrect => '回答正確';
+
+  @override
+  String learnQsoProtocolWrong(String meaning) {
+    return '正確含義：$meaning';
+  }
+
+  @override
+  String get learnQsoProtocolPass => '四個用語均獨立答對，可以嘗試短通聯。';
+
+  @override
+  String get learnQsoProtocolPractice => '先複習這些含義，再重新檢查。';
+
+  @override
+  String get learnQsoProtocolRetry => '重新檢查';
+
+  @override
+  String get learnQsoShortExchange => '練習短通聯';
+
+  @override
+  String get learnQsoShortExchangeHint => '獨立完成呼號確認、訊號報告和告別，再進行完整通聯。';
+
+  @override
+  String get learnQsoExplorePending => '自由體驗完整通聯 · 仍有待練項目';
+
+  @override
+  String get learnQsoReadyHint => '已具備近期獨立練習證據，可以開始完整模擬通聯。';
 }
