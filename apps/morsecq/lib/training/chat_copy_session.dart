@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
-import 'receive_session.dart';
-import 'training_controller.dart';
 
 /// Copying one received chat message (functional spec §6.2). The message
 /// text is frozen when practice starts; unsupported characters are listed
@@ -88,35 +86,4 @@ final class ChatCopySession {
   /// Scores the copy once; later calls return the first score.
   SessionScore submit(String answer, DateTime now) => _score ??=
       SessionScore.evaluate(target, answer, at: now, drillKind: 'chat');
-}
-
-/// Practice of a session's errors on learned symbols only.
-extension FocusedPractice on TrainingController {
-  /// A focused drill on [symbols] restricted to the learned set (topped up
-  /// to two symbols), or null when none of them is learned.
-  ReceiveSession? startFocusSession(Iterable<String> symbols) {
-    final learned = learnedChars;
-    final pool = symbols.where(learned.contains).toSet().toList();
-    if (pool.isEmpty) return null;
-    for (final c in learned.reversed) {
-      if (pool.length >= 2) break;
-      if (!pool.contains(c)) pool.add(c);
-    }
-    final t = trainerSettings;
-    return ReceiveSession(
-      kind: ReceiveDrillKind.groups,
-      generator: RandomGroupsDrill(
-        chars: pool,
-        groupCount: 1,
-        groupSize: t.groupSize,
-      ),
-      chars: pool,
-      timing: t.toTiming(),
-      charBudget: t.sessionLengthChars,
-      lesson: currentLesson,
-      source: ExerciseSource.focus,
-      random: random,
-      now: now,
-    );
-  }
 }

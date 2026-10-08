@@ -88,11 +88,19 @@ void main() {
     });
 
     test('nextLesson advances only on pass and never past the end', () {
-      final pass = SessionScore.evaluate(repeat('K', 50), repeat('K', 50));
-      final fail = SessionScore.evaluate(repeat('K', 50), repeat('M', 50));
+      // Lesson 1 introduces K and M: a passing session covers both.
+      final pass = SessionScore.evaluate(repeat('KM', 25), repeat('KM', 25));
+      final fail = SessionScore.evaluate(repeat('KM', 25), repeat('K', 50));
       expect(course.nextLesson(1, pass), 2);
       expect(course.nextLesson(1, fail), 1);
-      expect(course.nextLesson(7, pass), 7);
+      // A K-only session says nothing about M, however clean it is.
+      final kOnly = SessionScore.evaluate(repeat('K', 50), repeat('K', 50));
+      expect(course.nextLesson(1, kOnly), 1);
+      expect(course.evaluate(kOnly, 1), LessonVerdict.newSymbolsUncovered);
+      // The last lesson (new symbol T) never advances past the end.
+      final last = SessionScore.evaluate(repeat('KT', 25), repeat('KT', 25));
+      expect(course.evaluate(last, 7), LessonVerdict.passed);
+      expect(course.nextLesson(7, last), 7);
     });
   });
 }

@@ -79,8 +79,11 @@ void main() {
 
     // Learn: home loaded, a lesson drill opens and closes.
     await settle(tester, extra: const Duration(milliseconds: 500));
-    expect(find.text(s().learnContinueLesson), findsOneWidget);
-    await tapText(tester, s().learnContinueLesson);
+    await tapHittable(
+      tester,
+      find.byKey(const ValueKey('placement-skip-intro')),
+      'explicitly skip first lesson and open challenge',
+    );
     await settle(tester, extra: const Duration(milliseconds: 800));
     expect(find.byType(ReceiveDrillScreen), findsOneWidget);
     await popIfCan(tester);
@@ -178,10 +181,12 @@ void main() {
 /// The chat composer is keyed, not typed, and its draft field is read-only:
 /// put [text] in it the way decoded keying does.
 Future<void> keyIntoComposer(WidgetTester tester, String text) async {
-  tester.widget<TextField>(find.byType(TextField).last).controller!.value =
-      TextEditingValue(
-        text: text,
-        selection: TextSelection.collapsed(offset: text.length),
-      );
+  tester
+      .widget<TextField>(find.byType(TextField).last)
+      .controller!
+      .value = TextEditingValue(
+    text: text,
+    selection: TextSelection.collapsed(offset: text.length),
+  );
   await tester.pump();
 }

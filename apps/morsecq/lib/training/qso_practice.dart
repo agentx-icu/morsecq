@@ -13,8 +13,37 @@ extension QsoPractice on TrainingController {
   static const String draftDoc = 'qso_draft';
   static const String stationDoc = 'qso_station';
 
-  /// Whether the course is far enough along for the simulator.
-  bool get qsoUnlocked => currentLesson >= TrainingController.qsoFromLesson;
+  /// Staged readiness for the simulator: symbols, shorthand practised, one
+  /// exchange practised. Never a lesson number.
+  QsoReadiness get qsoReadiness => QsoReadiness.of(
+    learned: learnedChars,
+    history: progress.history,
+    now: now(),
+    characterWpm: trainerSettings.characterWpm,
+    effectiveWpm: trainerSettings.farnsworthWpm ?? trainerSettings.characterWpm,
+  );
+
+  /// Protocol meanings earn activity, never copying statistics or unlocks.
+  Future<ReceiveOutcome> recordQsoProtocol(
+    QsoProtocolAttempt attempt, {
+    required MorseTiming timing,
+    Duration active = Duration.zero,
+  }) => recordExercise(
+    score: SessionScore.evaluate(
+      attempt.targetText,
+      attempt.answerText,
+      at: attempt.at,
+      drillKind: QsoProtocolAttempt.drillKind,
+    ),
+    id: attempt.id,
+    source: ExerciseSource.qso,
+    sourceRef: attempt.sourceRef,
+    assistance: const {},
+    completed: attempt.completed,
+    answered: attempt.answered > 0,
+    timing: timing,
+    active: active,
+  );
 
   Future<QsoStation?> loadQsoStation() async {
     try {
@@ -139,6 +168,8 @@ extension QsoPractice on TrainingController {
       score: score,
       id: 'qso_${session.scenario.name}_${session.seed}',
       source: ExerciseSource.qso,
+      sourceRef:
+          'qso:${session.scenario.name}:${session.firstTryStages}/${session.answerStages}',
       assistance: <Assistance>{
         if (session.hints > 0) Assistance.hint,
         if (session.repeats > 0) Assistance.replay,

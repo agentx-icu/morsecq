@@ -3,13 +3,18 @@ import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
+import 'shorthand_meanings.dart';
+import 'word_meanings.dart';
 
 /// Shows one answered round: the sent text against the copy, column by
 /// column from the alignment, with misses and substitutions highlighted.
+/// Word meanings and CW shorthand definitions follow the submitted copy,
+/// so the vocabulary is explained without revealing the answer first.
 class RoundResultView extends StatelessWidget {
-  const RoundResultView({super.key, required this.round});
+  const RoundResultView({super.key, required this.round, this.kind});
 
   final ReceiveRound round;
+  final ReceiveDrillKind? kind;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +24,12 @@ class RoundResultView extends StatelessWidget {
     final headline = score.isPerfect
         ? s.learnRoundPerfect
         : s.learnRoundScore(score.correctChars, score.totalChars);
+    final locale = Localizations.localeOf(context);
+    final meanings = kind == ReceiveDrillKind.words
+        ? wordMeanings(round.drill.text, locale)
+        : kShorthandDrillKinds.contains(kind)
+        ? shorthandMeanings(round.drill.text, locale)
+        : const <(String, String)>[];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -37,6 +48,20 @@ class RoundResultView extends StatelessWidget {
           label: s.learnYourCopy,
           child: AlignedSymbols(alignment: score.alignment, showTarget: false),
         ),
+        if (meanings.isNotEmpty) ...<Widget>[
+          const SizedBox(height: 12),
+          _LabelledRow(
+            label: s.learnMeaningsTitle,
+            child: Column(
+              key: const ValueKey('round-meanings'),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                for (final (word, meaning) in meanings)
+                  Text('$word — $meaning', style: theme.textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

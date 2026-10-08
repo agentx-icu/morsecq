@@ -104,7 +104,7 @@ uses it that way.
 
 `welcome`, `create_identity`, `backup_wizard` (first run), then from a seeded
 identity: `learn_home`, `stats`, `training_settings`, `receive_drill`,
-`send_practice`, `chat_list`, `conversation`, `contacts`, `groups`,
+`send_practice`, `first_lesson`, `receive_summary`, `guided_send`, `chat_list`, `conversation`, `contacts`, `groups`,
 `group_conversation`, `reference`, `translator`, `listen`, `me`.
 
 Adding a scene: navigate + `shots.capture(tester, locale, 'name')` in
@@ -130,3 +130,11 @@ Adding a scene: navigate + `shots.capture(tester, locale, 'name')` in
 - From an ssh session the macOS window still renders and captures (the
   Flutter layer does not depend on the compositor), but do not steal focus
   while a run is in progress.
+
+The pedagogy scenes show the guided sound check (`first_lesson`), a completed
+short receive practice (`receive_summary`) and the model-first sending guide
+(`guided_send`). They use the real native UI and player with temporary demo
+profiles. `integration_test/first_day_learning_test.dart` additionally walks
+the fresh intro, trials, graded receive levels and touch-keyed sending in
+English and Chinese. Device execution verifies controls and playback startup;
+human sound quality and novice learning observations remain separate checks.

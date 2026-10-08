@@ -18,6 +18,31 @@ import guard、UI 字面量守卫）和完整的测试金字塔（单元、控�
 模拟器上的真实 UI 启动测试；见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)）。
 尚无可用的发布版本，任何地方都可能发生破坏性变更。
 
+## 五平台可用性
+
+下表描述当前源码构建与 CI 产物；尚无公开发布版本或 App Store 上架版本。
+五个平台都提供学习、手册和无线电工具，iOS App Store 版本不含聊天。
+
+| 平台 | 系统与架构 | 可用范围与验证情况 |
+|---|---|---|
+| Android | Android 7.0+（API 24）；arm64-v8a、armeabi-v7a、x86_64 | 学习与 Tox 聊天；CI 打包 APK/AAB，模拟器已验证首日学习流程和截图。 |
+| iOS / iPadOS | 14.0+；arm64 真机 | App Store 形态为离线训练器，由 `tool/build_ios_store.sh` 构建；已检查 iPhone/iPad 模拟器布局和 iPhone 首日流程。上架与真机听感验证待完成。 |
+| macOS | Apple Silicon：macOS 11+；Intel 源码部署目标：10.15+ | 学习与 Tox 聊天；应用打包为 arm64 `.pkg`/`.zip`，原生库覆盖 arm64/x86_64。本机 Apple Silicon 已验证启动、学习、存储和截图；旧系统与 Intel 应用尚未实机验证。 |
+| Linux | 当前应用构建和 UI 测试适配 **Ubuntu 24.04 LTS，x86_64** | 学习与 Tox 聊天；产物为 `.deb`、`.rpm`、`.tar.gz`，Ubuntu 桌面构建与 UI 测试在 CI 运行。Linux aarch64 目前仅有实验性原生库任务。 |
+| Windows | 桌面目标为 **Windows 10 / Windows 11，x64** | 学习与 Tox 聊天；产物为 `.msi`、`.zip`，CI 构建与 UI 测试使用 Windows Server 2022，不能代替客户端实机验证。Windows ARM64 目前仅有实验性原生库任务；不提供 32 位 Windows 应用。 |
+
+**Linux 发行版。** 当前已验证的发行版是 Ubuntu 24.04 LTS。Debian、其他 Ubuntu
+版本及其衍生版（含 Linux Mint）、Fedora/RHEL、openSUSE、Arch Linux 尚未验证。
+提供 `.deb` 或 `.rpm` 不代表这些发行版已经兼容：二进制的 glibc/libstdc++ 要求
+取决于构建环境。其他发行版需在目标系统重新构建，并检查 GTK 3、ALSA、libsecret
+与 Secret Service/keyring、托盘指示器；`.deb` 会记录 ELF 的版本化依赖。
+Alpine/musl 不属于支持的二进制目标。实际桌面会话中的声音、通知、托盘和安全存储
+仍需检查。
+
+Windows 10/11 的系统目标依据 [Flutter 部署平台说明](https://docs.flutter.dev/reference/supported-platforms)。
+构建方法、依赖安装与 CI 覆盖见[构建与部署](doc/operations/BUILD_AND_DEPLOY.zh-CN.md)、
+[Native](.github/workflows/native.yml) 和 [E2E](.github/workflows/e2e.yml) 工作流。
+
 ## 截图
 
 <table>
@@ -159,10 +184,8 @@ dart run tool/ui_literal_guard.dart
 各平台、各语言的全部界面截图见 [doc/screenshots/README.zh-CN.md](doc/screenshots/README.zh-CN.md)；
 测试分层与运行方法见 [doc/testing/TEST_PYRAMID.zh-CN.md](doc/testing/TEST_PYRAMID.zh-CN.md)。
 
-约定、门禁与工作约定见 [CLAUDE.md](CLAUDE.md)。产品与架构规划见
-[doc/plans/2026-09-30-morsecq-plan.zh-CN.md](doc/plans/2026-09-30-morsecq-plan.zh-CN.md)
-（中文为原稿；英文版为
-[doc/plans/2026-09-30-morsecq-plan.md](doc/plans/2026-09-30-morsecq-plan.md)）。
+约定、门禁与工作约定见 [CLAUDE.md](CLAUDE.md)。`doc/plans/` 中的规划文档
+作为本地工作记录保留，不纳入 Git。
 
 ## 许可证
 

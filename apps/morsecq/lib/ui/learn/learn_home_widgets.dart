@@ -1,25 +1,48 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_io/morse_io.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
+import '../../training/training_settings.dart';
 import '../appearance/radio_mascot.dart';
 import '../appearance/style_tokens.dart';
 import '../appearance/ui_style.dart';
 import 'goal_ring.dart';
+import 'learn_playback.dart';
+import 'lesson_card_extras.dart';
 import 'styled_goal_card.dart';
 
 export 'goal_ring.dart' show GoalRing;
+export 'lesson_card_extras.dart';
+export 'quick_actions.dart';
 
-/// Koch position: lesson n / total, the learned set with the newest symbol
-/// highlighted.
+/// Koch position: lesson n / total, the symbol set with honest states
+/// (new, practising, mastered, weak, due), the newest symbol playable and
+/// comparable with its neighbour, the stage goal, and the lesson challenge.
 class LessonCard extends StatefulWidget {
-  const LessonCard({super.key, required this.controller, this.onContinue});
+  const LessonCard({
+    super.key,
+    required this.controller,
+    this.onContinue,
+    this.onGuided,
+    this.playback,
+  });
 
   final TrainingController controller;
+
+  /// Starts the lesson challenge.
   final VoidCallback? onContinue;
+
+  /// Starts a short guided session (beginner stages).
+  final VoidCallback? onGuided;
+
+  /// When given, chips and the new-symbol row play through it.
+  final LearnPlaybackFactory? playback;
 
   @override
   State<LessonCard> createState() => _LessonCardState();
@@ -27,9 +50,64 @@ class LessonCard extends StatefulWidget {
 
 class _LessonCardState extends State<LessonCard> {
   bool _expanded = false;
+  LearnPlayback? _player;
+
+  /// The settings [_player] was built from: a bundle is a settings snapshot
+  /// and must be rebuilt once sound, flash, haptics or tone change.
+  TrainingSettings? _playerSettings;
+  Future<LearnPlayback>? _creating;
 
   TrainingController get controller => widget.controller;
   VoidCallback? get onContinue => widget.onContinue;
+
+  @override
+  void dispose() {
+    unawaited(_player?.dispose());
+    super.dispose();
+  }
+
+  /// Plays [text] at the learner's speeds; the playback is created on the
+  /// first tap so opening the home never touches the audio engine, and
+  /// rebuilt when the settings it was built from changed.
+  Future<void> _play(String text) async {
+    final factory = widget.playback;
+    if (factory == null) return;
+    final settings = controller.settings;
+    var player = _player;
+    if (player != null && _playerSettings != settings) {
+      _player = null;
+      _creating = null;
+      player.player.stop();
+      await player.dispose();
+      player = null;
+    }
+    if (player == null) {
+      final creating = _creating ??= factory.create(settings);
+      player = await creating;
+      // Several taps may await the same creation: the first installs the
+      // bundle, the others reuse it; only a creation that was superseded
+      // (settings changed meanwhile) is thrown away.
+      if (identical(_creating, creating)) {
+        _creating = null;
+        if (!mounted) {
+          await player.dispose();
+          return;
+        }
+        setState(() {
+          _player = player;
+          _playerSettings = settings;
+        });
+      } else if (!identical(_player, player)) {
+        await player.dispose();
+        return;
+      }
+      if (!mounted) return;
+    }
+    player.player.stop();
+    player.player.play(
+      MorseEncoder.encode(text, controller.trainerSettings.toTiming()),
+    );
+  }
 
   double _labelWidth(BuildContext context, String char) {
     final painter = TextPainter(
@@ -49,10 +127,20 @@ class _LessonCardState extends State<LessonCard> {
 
   Widget _continueButton(BuildContext context) => SizedBox(
     width: double.infinity,
-    child: FilledButton.icon(
+    child: OutlinedButton.icon(
       onPressed: onContinue,
       icon: const Icon(Icons.play_arrow),
       label: Text(context.s.learnContinueLesson),
+    ),
+  );
+
+  Widget _guidedButton(BuildContext context) => SizedBox(
+    width: double.infinity,
+    child: OutlinedButton.icon(
+      key: const ValueKey('guided-practice'),
+      onPressed: widget.onGuided,
+      icon: const Icon(Icons.bolt),
+      label: Text(context.s.learnGuidedPractice),
     ),
   );
 
@@ -72,7 +160,19 @@ class _LessonCardState extends State<LessonCard> {
         ? learned.sublist(learned.length - 10).reversed.toList()
         : learned;
     final newest = controller.newestChar;
-    return Card(
+    final states = <String, CharChipState>{
+      for (final c in learned)
+        c: chipStateOf(controller, c, isNewest: c == newest),
+    };
+    // Mastery is independent of how a chip is coloured (the newest and due
+    // states win the colour, not the count).
+    final mastered = learned
+        .where((c) => controller.masteryOf(c) == CharMastery.mastered)
+        .length;
+    final t = controller.trainerSettings;
+    final showGuided = widget.onGuided != null;
+    final flash = _player?.flash;
+    final card = Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -106,12 +206,15 @@ class _LessonCardState extends State<LessonCard> {
               borderRadius: BorderRadius.circular(3),
             ),
             const SizedBox(height: 12),
-            if (classic && onContinue != null) ...[
+            // Intro/today's learning leads the home. The challenge remains
+            // available as a secondary, deliberate assessment.
+            if (onContinue != null) ...[
               _continueButton(context),
               const SizedBox(height: 8),
             ],
             Text(
-              s.learnCharsLearned(learned.length),
+              s.learnCharsIntroducedMastered(learned.length, mastered),
+              key: const ValueKey('chars-introduced'),
               style: theme.textTheme.bodyMedium,
             ),
             SizedBox(height: classic ? 4 : 8),
@@ -123,8 +226,8 @@ class _LessonCardState extends State<LessonCard> {
                   for (final c in visible)
                     LearnedCharChip(
                       char: c,
-                      isNewest: c == newest,
-                      accuracy: controller.accuracyOf(c),
+                      state: states[c]!,
+                      onTap: widget.playback == null ? null : () => _play(c),
                       width: math.max(
                         math.max(
                           ((constraints.maxWidth - 24) / 5).clamp(36.0, 52.0),
@@ -139,6 +242,15 @@ class _LessonCardState extends State<LessonCard> {
                 ],
               ),
             ),
+            const SizedBox(height: 6),
+            ChipLegend(states: states.values.toSet()),
+            if (widget.playback != null)
+              Text(
+                s.learnTapChipHint,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
             if (collapsible)
               TextButton(
                 key: const ValueKey('learned-chars-toggle'),
@@ -153,37 +265,71 @@ class _LessonCardState extends State<LessonCard> {
             Text(
               controller.isCourseComplete
                   ? s.learnCourseComplete
+                  : controller.allCharsUnlocked
+                  ? s.learnAllUnlockedNotPassed
                   : s.learnNewestCharIs(newest),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
             ),
-            if (!classic && onContinue != null) ...[
-              const SizedBox(height: 16),
-              _continueButton(context),
+            if (widget.playback != null && !controller.isCourseComplete) ...[
+              const SizedBox(height: 8),
+              NewSymbolDemo(
+                char: newest,
+                neighbour: confusableNeighbourOf(newest, learned),
+                onPlay: _play,
+              ),
+            ],
+            const SizedBox(height: 10),
+            Text(
+              stageGoalText(s, controller),
+              key: const ValueKey('stage-goal'),
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 4),
+            Text(s.learnRecentEvidenceHint, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 4),
+            Text(
+              s.learnChallengeHint(
+                t.sessionLengthChars,
+                controller.course.requiredNewCharAttempts(
+                  controller.currentLesson,
+                ),
+              ),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            if (showGuided) ...[
+              const SizedBox(height: 8),
+              _guidedButton(context),
             ],
           ],
         ),
       ),
     );
+    // Flash-only learners (or a sidetone that failed to start) still see
+    // the symbol they tapped.
+    return flash == null ? card : FlashOverlay(isOn: flash, child: card);
   }
 }
 
-/// One learned symbol. The newest is filled with the primary colour; the
-/// others tint by lifetime accuracy so weak symbols stand out at a glance.
+/// One symbol of the course, coloured by [state]; tappable to hear it.
 class LearnedCharChip extends StatelessWidget {
   const LearnedCharChip({
     super.key,
     required this.char,
-    required this.isNewest,
-    this.accuracy,
+    required this.state,
+    this.onTap,
     this.width = 52,
   });
 
   final String char;
-  final bool isNewest;
-  final double? accuracy;
+  final CharChipState state;
+  final VoidCallback? onTap;
   final double width;
+
+  bool get isNewest => state == CharChipState.newest;
 
   @override
   Widget build(BuildContext context) {
@@ -191,55 +337,61 @@ class LearnedCharChip extends StatelessWidget {
     final scheme = theme.colorScheme;
     final tokens = StyleTokens.of(context);
     final styled = tokens != null && tokens.style != UiStyle.classic;
-    final Color background;
-    final Color foreground;
-    if (isNewest) {
-      background = styled ? tokens.newest : scheme.primary;
-      foreground = styled ? tokens.onNewest : scheme.onPrimary;
-    } else if (accuracy != null && accuracy! < 0.9) {
-      background = scheme.errorContainer;
-      foreground = scheme.onErrorContainer;
-    } else {
-      background = scheme.surfaceContainerHighest;
-      foreground = scheme.onSurface;
-    }
+    final (background, foreground) = chipColors(context, state);
+    final radius = BorderRadius.circular(tokens?.chipRadius ?? 8);
+    final label = isNewest
+        ? context.s.learnCharNewSemantics(char)
+        : '$char, ${chipStateLabel(context.s, state)}';
     return Semantics(
-      label: isNewest ? context.s.learnCharNewSemantics(char) : char,
-      child: Container(
-        width: width,
-        constraints: BoxConstraints(minWidth: 36, minHeight: styled ? 68 : 36),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(tokens?.chipRadius ?? 8),
-          border: isNewest ? Border.all(color: scheme.primary, width: 2) : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              char,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: foreground,
-                fontWeight: isNewest ? FontWeight.bold : FontWeight.w500,
-              ),
+      label: label,
+      button: onTap != null,
+      child: Material(
+        color: background,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Container(
+            width: width,
+            constraints: BoxConstraints(
+              minWidth: 36,
+              minHeight: styled ? 68 : 36,
             ),
-            if (styled) ...[
-              const SizedBox(height: 4),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  MorseEncoder.toPattern(char),
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 12,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              border: isNewest
+                  ? Border.all(color: scheme.primary, width: 2)
+                  : null,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  char,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     color: foreground,
+                    fontWeight: isNewest ? FontWeight.bold : FontWeight.w500,
                   ),
                 ),
-              ),
-            ],
-          ],
+                if (styled) ...[
+                  const SizedBox(height: 4),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      MorseEncoder.toPattern(char),
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: foreground,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -329,143 +481,6 @@ class DailyGoalCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// The four entry points into practice.
-class QuickActions extends StatelessWidget {
-  const QuickActions({
-    super.key,
-    required this.dueCount,
-    required this.onContinueLesson,
-    required this.onReceivePractice,
-    required this.onSendPractice,
-    required this.onReview,
-    this.showContinue = true,
-    this.onQso,
-    this.qsoFromLesson,
-    this.onMaterials,
-    this.onTelegraph,
-  });
-
-  /// Opens My materials.
-  final VoidCallback? onMaterials;
-
-  /// Opens Chinese telegraph-code practice (F13).
-  final VoidCallback? onTelegraph;
-
-  /// Opens the QSO simulator; null while it is locked.
-  final VoidCallback? onQso;
-
-  /// Shown as the unlock lesson while [onQso] is null.
-  final int? qsoFromLesson;
-
-  final int dueCount;
-  final VoidCallback onContinueLesson;
-  final VoidCallback onReceivePractice;
-  final VoidCallback onSendPractice;
-  final VoidCallback onReview;
-  final bool showContinue;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = context.s;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (showContinue)
-          FilledButton.icon(
-            onPressed: onContinueLesson,
-            icon: const Icon(Icons.play_arrow),
-            label: Text(s.learnContinueLesson),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(56),
-            ),
-          ),
-        if (showContinue) const SizedBox(height: 10),
-        _ActionTile(
-          icon: Icons.hearing,
-          label: s.learnReceivePractice,
-          onTap: onReceivePractice,
-          color: StyleTokens.of(context)?.receiveSurface,
-        ),
-        _ActionTile(
-          icon: Icons.touch_app_outlined,
-          label: s.learnSendPractice,
-          onTap: onSendPractice,
-          color: StyleTokens.of(context)?.sendSurface,
-        ),
-        _ActionTile(
-          icon: Icons.replay,
-          label: s.learnReviewDue,
-          trailing: s.learnReviewDueCount(dueCount),
-          onTap: onReview,
-        ),
-        if (onMaterials != null)
-          _ActionTile(
-            icon: Icons.library_books_outlined,
-            label: s.materialsTitle,
-            onTap: onMaterials,
-          ),
-        if (onTelegraph != null)
-          _ActionTile(
-            icon: Icons.translate,
-            label: s.telegraphTitle,
-            onTap: onTelegraph,
-          ),
-        _ActionTile(
-          icon: Icons.cell_tower,
-          label: s.learnQsoAction,
-          trailing: onQso == null && qsoFromLesson != null
-              ? s.learnQsoLocked(qsoFromLesson!)
-              : null,
-          onTap: onQso,
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.trailing,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final String? trailing;
-  final VoidCallback? onTap;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      color: color,
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        minTileHeight: 56,
-        leading: Icon(icon, color: theme.colorScheme.primary),
-        title: trailing == null
-            ? Text(label)
-            : Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 16,
-                runSpacing: 4,
-                children: [
-                  Text(label),
-                  Text(trailing!, style: theme.textTheme.labelLarge),
-                ],
-              ),
-        trailing: trailing == null ? const Icon(Icons.chevron_right) : null,
-        onTap: onTap,
       ),
     );
   }

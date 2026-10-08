@@ -11,6 +11,8 @@ abstract final class PlanLabels {
     PlanStepKind.focus => s.learnPlanStepFocus,
     PlanStepKind.course => s.learnPlanStepCourse(step.lesson),
     PlanStepKind.send => s.learnPlanStepSend,
+    PlanStepKind.intro => s.learnPlanStepIntro,
+    PlanStepKind.recognition => s.learnPlanStepRecognition,
   };
 
   static IconData icon(PlanStepKind kind) => switch (kind) {
@@ -18,6 +20,8 @@ abstract final class PlanLabels {
     PlanStepKind.focus => Icons.center_focus_strong_outlined,
     PlanStepKind.course => Icons.school_outlined,
     PlanStepKind.send => Icons.touch_app_outlined,
+    PlanStepKind.intro => Icons.flag_outlined,
+    PlanStepKind.recognition => Icons.hearing,
   };
 
   static String reason(S s, PlanStep step) {
@@ -31,6 +35,12 @@ abstract final class PlanLabels {
       PlanReason.courseConsolidate => s.learnPlanReasonConsolidate,
       PlanReason.courseOutdated => s.learnPlanReasonOutdated(step.lesson),
       PlanReason.sendRhythm => s.learnPlanReasonSend(step.charBudget),
+      PlanReason.firstLesson => s.learnPlanReasonFirstLesson,
+      PlanReason.recognition => s.learnPlanReasonRecognition(symbols),
+      PlanReason.courseGuided => s.learnPlanReasonGuided(step.charBudget),
+      PlanReason.sendOptional => s.learnPlanReasonSendOptional(
+        step.charBudget,
+      ),
     };
   }
 }

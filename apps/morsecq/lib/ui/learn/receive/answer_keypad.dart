@@ -137,3 +137,14 @@ class _Key extends StatelessWidget {
     );
   }
 }
+
+/// [text] without its last symbol: a whole `<XX>` prosign token when that
+/// is what ends the text, otherwise one character.
+String backspaceAnswer(String text) {
+  if (text.isEmpty) return text;
+  if (text.endsWith('>')) {
+    final open = text.lastIndexOf('<');
+    if (open >= 0) return text.substring(0, open);
+  }
+  return text.substring(0, text.length - 1);
+}

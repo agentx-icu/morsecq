@@ -28,6 +28,8 @@ final class TrainerProgress {
     this.dailyPlan,
     this.previousPlan,
     this.speedAdviceKey,
+    this.courseCompleted = false,
+    this.firstLessonDoneAt,
   }) : assert(currentLesson >= 1, 'currentLesson must be >= 1'),
        assert(streakDays >= 0, 'streakDays must be >= 0'),
        assert(dailyGoalChars >= 0, 'dailyGoalChars must be >= 0'),
@@ -99,6 +101,18 @@ final class TrainerProgress {
 
   /// Evidence batch the last speed recommendation was shown or applied for.
   final String? speedAdviceKey;
+
+  /// The last lesson's challenge was passed. Reaching the last lesson only
+  /// unlocks its symbol; this records the pass. Sticky: choosing an earlier
+  /// lesson or adopting a placement result never clears it.
+  final bool courseCompleted;
+
+  /// When the guided first lesson (hear, dit / dah, K / M trials) was
+  /// finished, or null. Learning progress, not a preference, so it travels
+  /// with the profile.
+  final DateTime? firstLessonDoneAt;
+
+  bool get firstLessonDone => firstLessonDoneAt != null;
 
   bool hasCommitted(String id) => committedIds.contains(id);
 
@@ -214,16 +228,26 @@ final class TrainerProgress {
     );
   }
 
-  /// Moves to [course]'s next lesson when [score] passes, otherwise unchanged.
+  /// Applies [score] as a challenge of [currentLesson]: moves to [course]'s
+  /// next lesson when it passes the lesson rule, records [courseCompleted]
+  /// when the last lesson passes, otherwise unchanged.
   TrainerProgress advanceIfPassed(KochCourse course, SessionScore score) {
     if (!course.isValidLesson(currentLesson)) {
       return this;
     }
-    final next = course.nextLesson(currentLesson, score);
-    return next == currentLesson ? this : copyWith(currentLesson: next);
+    if (!course.passes(score, lesson: currentLesson)) return this;
+    if (course.isLastLesson(currentLesson)) {
+      return courseCompleted ? this : copyWith(courseCompleted: true);
+    }
+    return copyWith(currentLesson: currentLesson + 1);
   }
 
   TrainerProgress withLesson(int lesson) => copyWith(currentLesson: lesson);
+
+  /// Records that the guided first lesson was finished at [now] (kept at
+  /// the first completion when done again).
+  TrainerProgress withFirstLessonDone(DateTime now) =>
+      firstLessonDone ? this : copyWith(firstLessonDoneAt: now);
 
   /// Credits one exercise according to [credit] (spec §3.3), exactly once
   /// per [SessionSummary.id]: a repeated submission of the same id returns
@@ -313,6 +337,8 @@ final class TrainerProgress {
     DailyPlan? dailyPlan,
     DailyPlan? previousPlan,
     String? speedAdviceKey,
+    bool? courseCompleted,
+    DateTime? firstLessonDoneAt,
   }) => TrainerProgress(
     currentLesson: currentLesson ?? this.currentLesson,
     charStats: charStats ?? this.charStats,
@@ -329,6 +355,8 @@ final class TrainerProgress {
     dailyPlan: dailyPlan ?? this.dailyPlan,
     previousPlan: previousPlan ?? this.previousPlan,
     speedAdviceKey: speedAdviceKey ?? this.speedAdviceKey,
+    courseCompleted: courseCompleted ?? this.courseCompleted,
+    firstLessonDoneAt: firstLessonDoneAt ?? this.firstLessonDoneAt,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -348,6 +376,9 @@ final class TrainerProgress {
     if (dailyPlan != null) 'dailyPlan': dailyPlan!.toJson(),
     if (previousPlan != null) 'previousPlan': previousPlan!.toJson(),
     if (speedAdviceKey != null) 'speedAdviceKey': speedAdviceKey,
+    if (courseCompleted) 'courseCompleted': true,
+    if (firstLessonDoneAt != null)
+      'firstLessonDoneAt': firstLessonDoneAt!.toIso8601String(),
   };
 
   /// Reads [toJson] output. Values are taken as stored, so a store can
@@ -394,6 +425,14 @@ final class TrainerProgress {
           ? DailyPlan.fromJson(rawPrevious)
           : null,
       speedAdviceKey: json['speedAdviceKey'] as String?,
+      // Absent in files written before the flag existed: nobody had passed
+      // the last lesson's challenge then, however far they had come.
+      courseCompleted: json['courseCompleted'] as bool? ?? false,
+      // A value of the wrong type is a corrupt file, not "unknown": the
+      // cast throws and the store falls back to its backup.
+      firstLessonDoneAt: json['firstLessonDoneAt'] == null
+          ? null
+          : DateTime.parse(json['firstLessonDoneAt']! as String),
     );
   }
 

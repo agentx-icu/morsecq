@@ -95,7 +95,7 @@ void main() {
           greaterThanOrEqualTo(fontSize * 1.8 + 20),
         );
       }
-      final button = find.widgetWithText(FilledButton, en.learnContinueLesson);
+      final button = find.widgetWithText(OutlinedButton, en.learnContinueLesson);
       await tester.ensureVisible(button);
       await tester.pumpAndSettle();
       expect(button.hitTestable(), findsOneWidget);
@@ -131,8 +131,9 @@ void main() {
           )
           .toList();
       expect(positions.map((p) => p.dy).toSet(), hasLength(1));
-      final button = find.widgetWithText(FilledButton, en.learnContinueLesson);
-      expect(tester.getRect(button).bottom, lessThan(600));
+      final button = find.byKey(const ValueKey('plan-start'));
+      expect(button.hitTestable(), findsOneWidget);
+      expect(tester.getRect(button).bottom, lessThan(400));
       expect(find.text('..-'), findsOneWidget);
       if (style == UiStyle.cartoon) {
         expect(find.byType(RadioMascot), findsOneWidget);

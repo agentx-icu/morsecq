@@ -147,9 +147,9 @@ Dart 侧有两个加载器，都以 **`tim2tox_ffi`** 为名：
 
 | 平台 | 最低版本 | 落实处 |
 |---|---|---|
-| macOS | **10.15** | `-mmacosx-version-min=10.15` / `CMAKE_OSX_DEPLOYMENT_TARGET`；`macos/Podfile` `platform :osx, '10.15'`；Runner.xcodeproj `MACOSX_DEPLOYMENT_TARGET = 10.15` |
+| macOS | Intel 源码部署目标 **10.15**；Apple Silicon **11.0+** | `-mmacosx-version-min=10.15` / `CMAKE_OSX_DEPLOYMENT_TARGET`；`macos/Podfile` `platform :osx, '10.15'`；Runner.xcodeproj `MACOSX_DEPLOYMENT_TARGET = 10.15`。部署目标不能代替旧系统实机验证，实际验证范围见主 README |
 | Windows | **10** | MSVC 默认目标 |
-| Android | **API 21**（Android 5.0） | `ANDROID_PLATFORM=android-21`，libsodium 以 API 21 clang 编译；`minSdk = flutter.minSdkVersion`（Flutter 3.41 默认 ≥ 21） |
+| Android | 应用 **API 24**（Android 7.0） | `minSdk = flutter.minSdkVersion`（固定的 Flutter 3.41.9 为 24）；原生库和 libsodium 以 `ANDROID_PLATFORM=android-21` 编译，其 API 21 目标不降低应用最低版本 |
 | iOS | **14.0**（`file_picker_darwin` 要求 14；2026-09-30 从 13.0 提高） | `-target arm64-apple-ios14.0[-simulator]`、framework `MinimumOSVersion=14.0`；`ios/Podfile` `platform :ios, '14.0'`；Runner.xcodeproj `IPHONEOS_DEPLOYMENT_TARGET = 14.0` |
 
 ## 6. GitHub Actions：native.yml

@@ -85,6 +85,68 @@ final class _NoWake implements ScreenWakeApi {
 }
 
 void main() {
+  testWidgets(
+    'short exchange keys all three stages and records first-try evidence',
+    (tester) async {
+      final t = await _training();
+      final playback = FakeLearnPlaybackFactory();
+      final session = _session(scenario: QsoScenario.shortExchange);
+      await _pumpScreen(tester, t, session, playback);
+      for (final text in [
+        '${session.remote.callsign} DE BD1XYZ K',
+        'UR RST 599 K',
+        'TU 73 <SK>',
+      ]) {
+        await _finishPlayback(tester, playback.clock);
+        await _key(tester, playback.clock, text);
+        await tester.tap(find.byKey(const ValueKey('qso-send')));
+        await tester.pumpAndSettle();
+        if (session.stage == QsoStage.exchange) {
+          expect(find.text(en.learnQsoSignalReport), findsOneWidget);
+          expect(
+            find.text(en.learnQsoStageExchange),
+            findsNothing,
+            reason: 'the short exchange does not ask for a name or QTH',
+          );
+        }
+      }
+      expect(session.isDone, isTrue);
+      expect(session.firstTryStages, 3);
+      final row = t.controller.progress.history.single;
+      expect(row.sourceRef, QsoReadiness.shortExchangeSourceRef);
+      expect(row.isKnownUnassisted, isTrue);
+      expect(t.controller.progress.charStats, isEmpty);
+      expect(t.controller.currentLesson, 30);
+    },
+  );
+
+  test(
+    'errors and QRS remain distinct from successful first-try exchange',
+    () async {
+      final t = await _training();
+      for (var seed = 21; seed <= 22; seed++) {
+        final s = QsoSession.start(
+          scenario: QsoScenario.shortExchange,
+          seed: seed,
+          local: _me,
+          characterWpm: 20,
+          effectiveWpm: 8,
+        );
+        s.submit('help', seed == 21 ? 'QRS' : 'WRONG');
+        s.submit('call', '${s.remote.callsign} DE BD1XYZ K');
+        s.submit('rst', 'UR RST 599 K');
+        s.submit('end', 'TU 73 <SK>');
+        await t.controller.recordQso(s, Duration.zero);
+      }
+      final qrs = t.controller.progress.history[0];
+      final wrong = t.controller.progress.history[1];
+      expect(qrs.assistance, contains(Assistance.replay));
+      expect(qrs.sourceRef, QsoReadiness.shortExchangeSourceRef);
+      expect(wrong.sourceRef, 'qso:shortExchange:2/3');
+      expect(t.controller.qsoReadiness.exchangePractised, isFalse);
+    },
+  );
+
   testWidgets('remote text stays hidden until revealed; reveal is a hint', (
     tester,
   ) async {
@@ -123,6 +185,11 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('qso-send')));
     await tester.pump();
     expect(session.stage, QsoStage.exchange);
+    expect(
+      find.text(en.learnQsoStageExchange),
+      findsOneWidget,
+      reason: 'the full exchange still asks for report, name and QTH',
+    );
     expect(find.text(en.learnQsoRemoteSending), findsOneWidget);
     await _finishPlayback(tester, playback.clock);
     expect(await t.controller.loadQsoDraft(), isNotNull);

@@ -54,6 +54,9 @@ enum Assistance {
   /// A single symbol was revealed.
   hint,
 
+  /// A tutorial supplied a small set of candidate answers.
+  answerOptions,
+
   /// An automatic decoder's output was visible while copying.
   decoder;
 

@@ -9,8 +9,9 @@ Guidance for coding agents and contributors working in this repository.
 It is a sibling of **toxee** (same org, same Tim2Tox bridge) and interoperates
 with it on the wire. Licence: GPL-3.0.
 
-The authoritative plan (方案) is `doc/plans/2026-09-30-morsecq-plan.zh-CN.md`.
-Read it before changing scope; keep it in sync when scope changes.
+Planning documents (方案) under `doc/plans/` are local working notes, ignored
+by Git. They are optional context; repository behavior and contributor rules
+are documented here and in the package READMEs.
 
 ## Layout (pub workspace — one `dart pub get` at the root)
 
@@ -28,7 +29,7 @@ Read it before changing scope; keep it in sync when scope changes.
 | `tool/` | repo gates: `check_complexity.dart`, `import_guard.dart`, `ui_literal_guard.dart` (tests in `apps/morsecq/test/i18n/`); `test_pyramid.sh` (all test tiers in order); `screenshots/capture.sh` (product screenshots on every platform) | scanned by the complexity gate too; analyzed with `dart analyze --fatal-infos tool` (deps from the root `pubspec.yaml` `dev_dependencies`) |
 | `apps/morsecq/integration_test` + `test_driver` | top of the test pyramid: the real `main()` click-through and the screenshot scene walk, on a real device / desktop window with the fake backend | always `--dart-define=MORSECQ_FAKE_BACKEND=true`; see `doc/testing/TEST_PYRAMID.md` |
 | `doc/screenshots/` | committed frames per platform × locale, published only by `tool/screenshots/capture.sh` | never edit PNGs by hand; regenerate after UI changes |
-| `doc/plans/` | 方案 / plan documents | every edit appends to the doc's change-log section |
+| `doc/plans/` | local 方案 / plan documents | ignored by Git; never stage these files |
 | `doc/release/` | App Store submission checklist, metadata and questionnaire answers (`APP_STORE.md`) | keep in sync with `site/`, the privacy manifests and `Info.plist` |
 | `site/` | public GitHub Pages site (privacy policy, terms of use, support), deployed by `.github/workflows/pages.yml` | English + `zh-CN/` pages edited together; URLs referenced from `lib/ui/account/account_routes.dart` |
 | `.github/workflows/` | CI (`analyze.yml`; `e2e.yml` opt-in via `workflow_dispatch` or the `ci:e2e` label) | mirrors the local commands below exactly |
@@ -121,7 +122,7 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   identity; Chat/Groups/Me ask for an identity there. Creating an identity
   moves guest progress (staged, validated, committed); restore/unlock never
   merges it silently. See `apps/morsecq/lib/training/guest_profile.dart` and
-  `doc/plans/2026-10-03-functional-improvements.md` §8.
+  the tests alongside `guest_profile.dart` for the storage contract.
 - **Identity holders accept the community guidelines first** (App Review
   1.2, 2026-10-05). `StartupGate` shows `TermsGatePage` instead of the whole
   shell (Learn included; guest learning is not gated) until
@@ -144,6 +145,17 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   data directories, notification channel ids, and the Windows `ProductName`
   (path_provider derives `%APPDATA%\icu.agentx\morsecq` from it). macOS is the
   one bundle renamed: `MorseCQ.app`, same bundle id.
+- **Only a lesson challenge advances the course** (pedagogy review,
+  2026-10-08). `startLessonSession()` and an unlock-eligible daily-plan
+  course step are the only sessions with `countsTowardLesson`; they use
+  `LessonChallengeDrill` so the lesson's new symbols are covered, and
+  `KochCourse.evaluate` demands 50 symbols at 90 % *and* each new symbol
+  copied at least 10 times at 90 %. Free practice (`startReceiveSession`,
+  guided and focus sessions) is `ExerciseSource.focus` and never unlocks;
+  the summary verdict comes from `ReceiveVerdict`, never from the score
+  alone. `TrainerProgress.courseCompleted` records the final pass; reaching
+  lesson 42 is not completion. Drill availability (QSO included) follows
+  the learned symbol set, never a lesson number.
 - **No Tencent Cloud IM.** The backend is Tox P2P via Tim2Tox. Anything assuming
   an IM server is wrong for this repo.
 
@@ -154,8 +166,8 @@ the workspace — wait and retry rather than running pub inside a sub-package.
   If the real fix is large, scope it and say so.
 - **Tests accompany behaviour.** New behaviour lands with tests in the same
   change; a bugfix lands with the regression test that would have caught it.
-- **Plan docs carry a change-log.** Every edit to a `doc/plans/*.md` file
-  appends an entry (date, what changed, why) to that doc's change-log section.
+- **Plans stay local.** `doc/plans/` is ignored and must not be committed;
+  published documentation must not link to files in that directory.
 - **Docs are bilingual:** `X.md` (English, default) + `X.zh-CN.md`; add both
   when adding a doc.
 - **Independent review on every change.** Draft → second opinion → apply

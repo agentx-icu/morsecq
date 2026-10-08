@@ -12,6 +12,10 @@ final class ReceiveOutcome {
     this.credit = ExerciseCredit.none,
     this.duplicate = false,
     this.exerciseId,
+    this.challenge = false,
+    this.attemptedLesson,
+    this.lessonVerdict,
+    this.courseCompleted = false,
   });
 
   final SessionScore score;
@@ -32,6 +36,10 @@ final class ReceiveOutcome {
     credit: credit,
     duplicate: duplicate,
     exerciseId: exerciseId,
+    challenge: challenge,
+    attemptedLesson: attemptedLesson,
+    lessonVerdict: lessonVerdict,
+    courseCompleted: courseCompleted,
   );
 
   /// Whether the attempt was assisted (no SRS, unlock or speed evidence).
@@ -42,7 +50,9 @@ final class ReceiveOutcome {
   /// successful save.
   final bool saved;
 
-  /// Whether the Koch unlock rule was met (regardless of [advanced]).
+  /// The attempt was an eligible course challenge **and** met the lesson
+  /// rule ([KochCourse.evaluate]). Free practice, assisted attempts and
+  /// attempts at another lesson are never "passed", whatever their score.
   final bool passed;
 
   /// Whether the current lesson moved forward.
@@ -50,6 +60,22 @@ final class ReceiveOutcome {
 
   /// Lesson after recording.
   final int lesson;
+
+  /// The attempt was committed as a course challenge: unlock credit, the
+  /// session counted toward the lesson, and it was an attempt at the
+  /// lesson the learner is on. Exactly the condition under which the Koch
+  /// rule was applied.
+  final bool challenge;
+
+  /// The lesson the attempt was made at (before any advance).
+  final int? attemptedLesson;
+
+  /// How the lesson rule judged the score at [attemptedLesson]; null when
+  /// the lesson is unknown or invalid.
+  final LessonVerdict? lessonVerdict;
+
+  /// Whether the course is completed after recording.
+  final bool courseCompleted;
 }
 
 /// What recording a send session did.
@@ -125,6 +151,7 @@ TrainerProgress completePlanStep(
         lesson: progress.currentLesson,
         duplicate: true,
         exerciseId: id,
+        courseCompleted: progress.courseCompleted,
       ),
     );
   }
@@ -159,11 +186,13 @@ TrainerProgress completePlanStep(
     learned: learned,
   );
   final before = next.currentLesson;
-  final mayUnlock =
-      credit.unlock &&
-      countsTowardLesson &&
-      (lesson == null || lesson == before);
-  if (mayUnlock) next = next.advanceIfPassed(course, score);
+  final attempted = lesson ?? before;
+  // The one place that decides whether an attempt is a course challenge.
+  final challenge = credit.unlock && countsTowardLesson && attempted == before;
+  final verdict = course.isValidLesson(attempted)
+      ? course.evaluate(score, attempted)
+      : null;
+  if (challenge) next = next.advanceIfPassed(course, score);
   // A plan step only completes with credited activity (no blank runs).
   if (credit.activity) next = completePlanStep(next, planStepId, id, score);
   if (next.currentLesson != before && next.dailyPlan != null) {
@@ -173,11 +202,15 @@ TrainerProgress completePlanStep(
     next,
     ReceiveOutcome(
       score: score,
-      passed: course.passes(score),
+      passed: challenge && verdict == LessonVerdict.passed,
       advanced: next.currentLesson != before,
       lesson: next.currentLesson,
       credit: credit,
       exerciseId: id,
+      challenge: challenge,
+      attemptedLesson: attempted,
+      lessonVerdict: verdict,
+      courseCompleted: next.courseCompleted,
     ),
   );
 }

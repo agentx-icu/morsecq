@@ -9,6 +9,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 
@@ -178,6 +179,10 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     final body = ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: <Widget>[
+        _PresetRow(
+          trainer: _t,
+          onPick: (t) => _applyTrainer(t),
+        ),
         _SliderTile(
           title: s.learnCharacterSpeed,
           value: _wpm(s, _t.characterWpm),
@@ -368,6 +373,80 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         onChangeEnd: (v) =>
             _applyTrainer(_t.copyWith(farnsworthWpm: v.roundToDouble())),
+      ),
+    );
+  }
+}
+
+/// Plain presets over the two speed sliders: the beginner pace stretches
+/// the pauses (20 / 6), the standard one is the Koch default (20 / 8).
+/// The glossary explains character vs effective speed.
+class _PresetRow extends StatelessWidget {
+  const _PresetRow({required this.trainer, required this.onPick});
+
+  final TrainerSettings trainer;
+  final ValueChanged<TrainerSettings> onPick;
+
+  static const double presetCharacterWpm = 20;
+  static const double beginnerEffectiveWpm = 6;
+  static const double standardEffectiveWpm = 8;
+
+  bool _matches(double effective) =>
+      trainer.characterWpm == presetCharacterWpm &&
+      trainer.farnsworthWpm == effective;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.s;
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(s.learnSpeedPresets, style: theme.textTheme.titleSmall),
+              ),
+              const LearnGlossaryButton(),
+            ],
+          ),
+          Wrap(
+            spacing: 8,
+            children: <Widget>[
+              ChoiceChip(
+                key: const ValueKey('preset-beginner'),
+                label: Text(s.learnPresetBeginner),
+                selected: _matches(beginnerEffectiveWpm),
+                onSelected: (_) => onPick(
+                  trainer.copyWith(
+                    characterWpm: presetCharacterWpm,
+                    farnsworthWpm: beginnerEffectiveWpm,
+                  ),
+                ),
+              ),
+              ChoiceChip(
+                key: const ValueKey('preset-standard'),
+                label: Text(s.learnPresetStandard),
+                selected: _matches(standardEffectiveWpm),
+                onSelected: (_) => onPick(
+                  trainer.copyWith(
+                    characterWpm: presetCharacterWpm,
+                    farnsworthWpm: standardEffectiveWpm,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            s.learnPresetHelp,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

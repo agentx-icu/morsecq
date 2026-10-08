@@ -5,6 +5,9 @@ import '../word_lists.dart';
 
 /// The two initial simulator scenarios (functional spec §5.1).
 enum QsoScenario {
+  /// A first interactive exchange: callsigns, signal report and closing.
+  shortExchange,
+
   /// The remote station calls CQ; the learner answers.
   respondToCq,
 
@@ -116,6 +119,11 @@ abstract final class QsoScript {
   ];
 
   static List<QsoStage> stagesFor(QsoScenario scenario) => switch (scenario) {
+    QsoScenario.shortExchange => const <QsoStage>[
+      QsoStage.callConfirm,
+      QsoStage.exchange,
+      QsoStage.closing,
+    ],
     QsoScenario.respondToCq => const <QsoStage>[
       QsoStage.callConfirm,
       QsoStage.exchange,
@@ -142,6 +150,12 @@ abstract final class QsoScript {
     final l = local.callsign;
     final r = remote.callsign;
     switch ((scenario, stage)) {
+      case (QsoScenario.shortExchange, QsoStage.callConfirm):
+        return 'CQ CQ DE $r $r K';
+      case (QsoScenario.shortExchange, QsoStage.exchange):
+        return '$l DE $r UR RST $report K';
+      case (QsoScenario.shortExchange, QsoStage.closing):
+        return 'R TU 73 $l DE $r <SK>';
       case (QsoScenario.respondToCq, QsoStage.callConfirm):
         return 'CQ CQ CQ DE $r $r K';
       case (QsoScenario.respondToCq, QsoStage.exchange):

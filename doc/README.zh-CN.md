@@ -11,37 +11,18 @@
 
 每个文件的第一行是指向对应语言版本的链接（英文文件中为 `[简体中文](./X.zh-CN.md)`，
 中文文件中为 `[English](./X.md)`）。新增文档时两份都要添加。两版不一致时，以先写成的
-那一份为准，并在文件顶部注明（目前是：规划文档以中文原稿为准；`BUILD_AND_DEPLOY.md`
-英文版是中文版的精简摘要，以中文为准）。
+那一份为准，并在文件顶部注明（例如：`BUILD_AND_DEPLOY.md` 英文版是中文版的
+精简摘要，以中文为准）。
 
 ## 推荐阅读路径
 
-- **接手项目** —— [HANDOVER.zh-CN.md](HANDOVER.zh-CN.md)：上一会话结束时的状态、坑、待办、多代理开发方式。
 - **只想跑起来** —— [主 README](../README.zh-CN.md)「构建前提」→
   [operations/BUILD_AND_DEPLOY.zh-CN.md](operations/BUILD_AND_DEPLOY.zh-CN.md)
   了解本平台的原生库构建。
 - **贡献代码** —— [CLAUDE.md](../CLAUDE.md)（目录结构、门禁、工作约定）→
-  [plans/2026-09-30-morsecq-plan.zh-CN.md](plans/2026-09-30-morsecq-plan.zh-CN.md)
-  §3「技术选型与架构决策」→ 所改动的包或子区域的 README（见下）。
-- **改动范围或产品决策** —— 规划文档是唯一事实来源；每次编辑都要在其变更记录中追加一条。
-
-## 规划（方案）
-
-- [plans/2026-10-04-additional-functional-improvements-handoff.md](plans/2026-10-04-additional-functional-improvements-handoff.md) /
-  [中文](plans/2026-10-04-additional-functional-improvements-handoff.zh-CN.md) —— 以英文为主的
-  六项补充功能 F09–F14 交接与实现记录：连接诊断、完整加密迁移、电台环境训练、外接电键、
-  中文电码和群组带练；含验收条件、实现决策以及已做与未做的验证。
-- [plans/2026-10-03-functional-improvements.zh-CN.md](plans/2026-10-03-functional-improvements.zh-CN.md) /
-  [English](plans/2026-10-03-functional-improvements.md) —— 八项待实现功能的详细规格与 AI
-  交接：每日计划、交互 QSO、聊天练习、节奏回放、体验与水平测试、素材、消息管理、
-  音频工作台；含数据兼容、验收条件和分阶段实施任务。仅文档，未改变当前产品行为。
-- [plans/2026-10-03-interface-languages.zh-CN.md](plans/2026-10-03-interface-languages.zh-CN.md) /
-  [English](plans/2026-10-03-interface-languages.md) —— 新增八种界面语言、完整 ARB
-  翻译与手机/桌面验证。
-- [plans/2026-09-30-morsecq-plan.zh-CN.md](plans/2026-09-30-morsecq-plan.zh-CN.md) /
-  [English](plans/2026-09-30-morsecq-plan.md) —— 立项产品与架构规划：命名、产品定义、
-  Tim2Tox 关键事实、四个方案与「B 变体」决策、训练与通信设计、里程碑、风险、多代理
-  编排、变更记录。**中文为原稿。**
+  所改动的包或子区域的 README（见下）。
+- **改动范围或产品决策** —— 在对应包或应用文档中记录最终行为。`doc/plans/`
+  中的规划文档是本地工作记录，不纳入 Git。
 
 ## 操作与构建
 

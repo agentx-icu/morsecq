@@ -111,6 +111,10 @@ abstract final class QsoEvaluator {
           _checkCalls(w, local, remote, issues);
         }
         _checkRst(w, issues);
+        if (scenario == QsoScenario.shortExchange) {
+          _checkEnding(w, issues);
+          break;
+        }
         _checkField(
           w,
           'NAME',

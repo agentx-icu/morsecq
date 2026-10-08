@@ -145,10 +145,26 @@ void main() {
           effectiveWpm: 8,
           insertions: 0,
           assistance: const {},
+          perChar: {
+            KochCourse().newCharForLesson(10): const CharStats(
+              attempts: 20,
+              correct: 20,
+            ),
+          },
         ),
     ].reversed.toList();
+    // Speed advice waits until the lesson's new symbol is mastered.
     final t = await _training(
-      progress: TrainerProgress(currentLesson: 10, history: history),
+      progress: TrainerProgress(
+        currentLesson: 10,
+        history: history,
+        charStats: <String, CharStats>{
+          KochCourse().newCharForLesson(10): const CharStats(
+            attempts: 20,
+            correct: 20,
+          ),
+        },
+      ),
     );
     final c = t.controller;
     final advice = c.pendingSpeedAdvice!;
@@ -191,10 +207,15 @@ void main() {
     expect(find.text(en.learnPlanStepCourse(10)), findsOneWidget);
     expect(find.text(en.learnPlanStepSend), findsOneWidget);
     expect(find.byKey(const ValueKey('speed-advice-card')), findsNothing);
+    // Without mastery evidence the plan opens with single-symbol
+    // recognition, which is practice; the challenge comes later.
+    expect(find.text(en.learnPlanStepRecognition), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('plan-start')));
     await tester.pumpAndSettle();
-    expect(find.text(en.learnReceiveTitle), findsOneWidget);
-    expect(t.controller.todayPlan!.steps.first.state, PlanStepState.active);
+    expect(find.text(en.learnPracticeTitle), findsOneWidget);
+    final first = t.controller.todayPlan!.steps.first;
+    expect(first.kind, PlanStepKind.recognition);
+    expect(first.state, PlanStepState.active);
   });
 
   test('plan settings snapshot uses effective <= character speed', () async {
@@ -206,7 +227,6 @@ void main() {
     );
     final plan = await t.controller.ensureTodayPlan();
     expect(plan.settings.effectiveWpm, 18);
-    expect(TrainingController.qsoFromLesson, 30);
   });
 
   test('blank submissions earn no credit and do not complete a step', () async {

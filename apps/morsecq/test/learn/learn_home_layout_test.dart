@@ -54,10 +54,13 @@ void main() {
           final first = tester.getRect(chips.at(0));
           final second = tester.getRect(chips.at(1));
           final action = tester.getRect(find.text(en.learnContinueLesson));
+          final primary = find.byKey(const ValueKey('plan-start'));
           expect(first.width, lessThan(80));
           expect(second.top, first.top);
           expect(action.bottom, lessThan(first.top));
-          expect(action.bottom, lessThan(size.height));
+          expect(tester.getRect(primary).bottom, lessThan(size.height));
+          expect(primary.hitTestable(), findsOneWidget);
+          expect(tester.getRect(primary).bottom, lessThan(action.top));
           expect(find.text(en.learnContinueLesson), findsOneWidget);
           expect(tester.takeException(), isNull);
         },
@@ -88,12 +91,12 @@ void main() {
         LearnedCharChip,
         training.controller.newestChar,
       );
-      expect(tester.getRect(newestChip).bottom, lessThanOrEqualTo(640));
+      final primary = find.byKey(const ValueKey('plan-start'));
+      expect(primary.hitTestable(), findsOneWidget);
+      expect(tester.getRect(primary).bottom, lessThan(640));
+      await tester.ensureVisible(newestChip);
+      await tester.pumpAndSettle();
       expect(newestChip.hitTestable(), findsOneWidget);
-      expect(
-        tester.getRect(find.text(en.learnContinueLesson)).bottom,
-        lessThan(640),
-      );
       final toggle = find.byKey(const ValueKey('learned-chars-toggle'));
       await tester.ensureVisible(toggle);
       await tester.tap(toggle);

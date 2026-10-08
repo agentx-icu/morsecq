@@ -6,8 +6,8 @@
 `lib/lifecycle/` 跟踪前台/后台并驱动移动端后台策略。两者都只通过 `morsecq_chat_api` 契约与后端对话，
 只通过两个接口（`LocalNotificationsApi`、`BadgeApi`）与插件对话，`testing/` 下有记录式假实现。
 
-方案引用：`doc/plans/2026-09-30-morsecq-plan.zh-CN.md` §5.6（移动端后台）和 §7
-（风险：没有 `voip` 模式，iOS 窗口比 toxee 更短）。
+移动端策略不使用 `voip` 后台模式，iOS 的后台窗口比 toxee 更短。
+各平台行为和生命周期约束见下文。
 
 ## 插件
 

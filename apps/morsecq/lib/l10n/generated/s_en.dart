@@ -3338,7 +3338,7 @@ class SEn extends S {
   String get placementCheckLevel => 'Check my current level';
 
   @override
-  String get placementFromZero => 'Start from zero';
+  String get placementFromZero => 'Skip the intro: lesson 1 challenge';
 
   @override
   String get placementOfferTitle => 'New to Morse, or already copying?';
@@ -4300,4 +4300,531 @@ class SEn extends S {
 
   @override
   String get learnStorageUnavailable => 'Your training data could not be opened on this device. Try again.';
+
+  @override
+  String get learnStartHereTitle => 'New here? Start with a 3-minute first lesson';
+
+  @override
+  String get learnStartHereBody => 'Hear the sounds, learn K and M, and answer a few easy rounds. Nothing is graded.';
+
+  @override
+  String get learnStartHere => 'Start here';
+
+  @override
+  String get learnReplayFirstLesson => 'Replay the first lesson';
+
+  @override
+  String learnCharsIntroducedMastered(int introduced, int mastered) {
+    return '$introduced introduced · $mastered mastered';
+  }
+
+  @override
+  String get learnChipNew => 'New';
+
+  @override
+  String get learnChipPractising => 'Practising';
+
+  @override
+  String get learnChipMastered => 'Mastered';
+
+  @override
+  String get learnChipWeak => 'Below 90%';
+
+  @override
+  String get learnChipDue => 'Due for review';
+
+  @override
+  String get learnTapChipHint => 'Tap a character to hear it';
+
+  @override
+  String learnHearChar(String char) {
+    return 'Hear $char';
+  }
+
+  @override
+  String learnCompareWith(String a, String b) {
+    return '$a vs $b';
+  }
+
+  @override
+  String get learnGuidedPractice => 'Short practice (10 symbols)';
+
+  @override
+  String learnChallengeHint(int count, int min) {
+    return 'The lesson challenge: $count symbols at 90%, with each new symbol copied at least $min times. Passing unlocks the next character.';
+  }
+
+  @override
+  String get learnAllUnlockedNotPassed => 'Every character is unlocked. Pass the final challenge to complete the course.';
+
+  @override
+  String get learnGoalFirstUse => 'Now: tell K from M by ear. Next: the lesson 1 challenge.';
+
+  @override
+  String learnGoalRecognition(String chars, int min, int lesson) {
+    return 'Now: recognise $chars reliably ($min copies at 90%). Next: the lesson $lesson challenge.';
+  }
+
+  @override
+  String learnGoalCopying(int lesson, String next) {
+    return 'Now: pass the lesson $lesson challenge. Next: $next.';
+  }
+
+  @override
+  String learnGoalNextChar(String char) {
+    return 'the character $char';
+  }
+
+  @override
+  String get learnGoalNextOperating => 'words, callsigns and a full QSO';
+
+  @override
+  String get learnGoalOperating => 'Now: real messages — words, callsigns, QSO. Next: raise the effective speed one step at a time.';
+
+  @override
+  String get learnMorePractice => 'More practice';
+
+  @override
+  String get learnQsoReady => 'Ready';
+
+  @override
+  String get learnQsoPractiseFirst => 'Practise the lines first';
+
+  @override
+  String learnQsoSymbolsToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count symbols to learn',
+      one: '1 symbol to learn',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get learnGlossaryTitle => 'What do these words mean?';
+
+  @override
+  String get glossaryKoch => 'Koch method: characters are learned at full speed, two to start and one more per lesson, once you copy 90% correctly.';
+
+  @override
+  String get glossaryWpm => 'WPM: words per minute, counted with the standard word PARIS. Character speed is how fast each character itself sounds.';
+
+  @override
+  String get glossaryFarnsworth => 'Farnsworth: characters stay fast, but the pauses between them are stretched so you have time to think. The effective speed counts those pauses.';
+
+  @override
+  String get glossaryQso => 'QSO: one two-way contact between two stations. CQ = calling anyone, DE = from, K = over to you.';
+
+  @override
+  String get glossaryRst => 'RST: a signal report — readability, strength, tone. 599 means perfect. 73 means best regards.';
+
+  @override
+  String get learnVerdictNotCredited => 'Nothing recorded: no symbols were answered.';
+
+  @override
+  String get learnVerdictAssisted => 'Practice with help';
+
+  @override
+  String get learnVerdictAssistedHint => 'Replays or reveals were used, so this attempt counts as practice only: no unlock, no review update. Try the next one without replays.';
+
+  @override
+  String get learnVerdictPractice => 'Practice recorded';
+
+  @override
+  String get learnVerdictPracticeHint => 'Free practice updates your statistics and reviews but never advances the course. The lesson challenge from the Learn home does.';
+
+  @override
+  String get learnVerdictCourseComplete => 'Final challenge passed: the whole character course is yours.';
+
+  @override
+  String learnVerdictTooShort(int count, int min) {
+    return 'Not a full challenge: $count of $min symbols';
+  }
+
+  @override
+  String learnVerdictTooShortHint(int min) {
+    return 'A challenge is at least $min symbols. Start the lesson from the Learn home or raise the session length in training settings.';
+  }
+
+  @override
+  String learnVerdictUncovered(String chars) {
+    return 'Not enough copies of $chars';
+  }
+
+  @override
+  String learnVerdictUncoveredHint(int min) {
+    return 'A challenge needs at least $min copies of each new symbol. Try again: the challenge includes them on purpose.';
+  }
+
+  @override
+  String learnVerdictNewSymbolWeak(String chars) {
+    return 'New symbol below 90%: $chars';
+  }
+
+  @override
+  String get learnVerdictNewSymbolWeakHint => 'The rest was fine; the new symbol decides the lesson. Hear it against its neighbour and drill it before the next challenge.';
+
+  @override
+  String get learnVerdictBelowAccuracyHint => 'Below 90% overall. A short drill on the weak symbols below, then try the challenge again.';
+
+  @override
+  String get learnDrillWeak => 'Drill weak symbols';
+
+  @override
+  String get learnRetryChallenge => 'Retry the challenge';
+
+  @override
+  String get learnTakeChallenge => 'Take the lesson challenge';
+
+  @override
+  String learnChallengeTitle(int lesson) {
+    return 'Lesson $lesson challenge';
+  }
+
+  @override
+  String get learnPracticeTitle => 'Practice';
+
+  @override
+  String get learnMeaningsTitle => 'Meanings';
+
+  @override
+  String get firstLessonTitle => 'First lesson';
+
+  @override
+  String firstLessonStep(int step, int total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String get firstLessonHearTitle => 'Can you hear it?';
+
+  @override
+  String get firstLessonHearBody => 'Tap Play. You should hear a short pattern of beeps (or see a flash / feel a vibration if those are on).';
+
+  @override
+  String get firstLessonHeard => 'I heard it';
+
+  @override
+  String get firstLessonNotHeard => 'I heard nothing';
+
+  @override
+  String get firstLessonNoSoundTitle => 'No sound?';
+
+  @override
+  String get firstLessonNoSoundBody => 'Turn the volume up and check the silent switch or Do Not Disturb. You can also follow a screen flash or vibration instead of sound.';
+
+  @override
+  String get firstLessonUseFlash => 'Flash the screen too';
+
+  @override
+  String get firstLessonUseVibration => 'Vibrate too';
+
+  @override
+  String get firstLessonPlay => 'Play';
+
+  @override
+  String get firstLessonSoundsTitle => 'Short and long';
+
+  @override
+  String get firstLessonSoundsBody => 'Morse has two sounds: a short dit and a long dah, three times as long. A character is a pattern of them, and a short silence separates characters. Tap each one to hear it.';
+
+  @override
+  String get firstLessonDit => 'dit';
+
+  @override
+  String get firstLessonDah => 'dah';
+
+  @override
+  String get firstLessonWorkedTitle => 'A worked answer';
+
+  @override
+  String get firstLessonWorkedBody => 'Listen first; the answer appears after the sound. You don’t have to answer yet.';
+
+  @override
+  String firstLessonWorkedReveal(String char) {
+    return 'That was $char';
+  }
+
+  @override
+  String get firstLessonTrialsTitle => 'K or M?';
+
+  @override
+  String get firstLessonTrialsBody => 'Listen, then tap the character you heard. Replay as often as you like — this is not a test.';
+
+  @override
+  String firstLessonTrialRound(int round, int total) {
+    return 'Round $round of $total';
+  }
+
+  @override
+  String firstLessonTrialCorrect(String char) {
+    return 'Yes, that was $char';
+  }
+
+  @override
+  String firstLessonTrialWrong(String char, String answer) {
+    return 'That was $char, not $answer. Hear them side by side.';
+  }
+
+  @override
+  String get firstLessonTooFast => 'Too fast? Use the beginner pace (longer pauses between characters)';
+
+  @override
+  String get firstLessonNextTitle => 'What next';
+
+  @override
+  String firstLessonNextBody(int correct, int total) {
+    return '$correct / $total correct this round. Choose your next step and continue at your own pace.';
+  }
+
+  @override
+  String get firstLessonNextGuided => 'Short practice: 10 single symbols';
+
+  @override
+  String get firstLessonNextSend => 'Try sending';
+
+  @override
+  String get firstLessonSendGuide => 'Sending: hold the control briefly for a dit, longer for a dah. With paddles one side makes dits and the other dahs. Release, and pause briefly between characters. Straight key or iambic A / B can be changed later; it doesn’t matter yet.';
+
+  @override
+  String get firstLessonReplayAnytime => 'You can replay this lesson any time from the Learn home.';
+
+  @override
+  String get firstLessonContinue => 'Continue';
+
+  @override
+  String get firstLessonTrialNext => 'Next round';
+
+  @override
+  String get sendFirstUseTitle => 'First time keying?';
+
+  @override
+  String get sendFirstUseStraight => 'Hold the key briefly for a dit, about three times longer for a dah. Pause briefly between characters, longer between words.';
+
+  @override
+  String get sendFirstUsePaddles => 'Hold the paddle labelled dit for dits and the one labelled dah for dahs; the keyer times them for you. Pause briefly between characters, longer between words.';
+
+  @override
+  String get sendFirstUseDismiss => 'Got it';
+
+  @override
+  String get learnSpeedPresets => 'Pace';
+
+  @override
+  String get learnPresetBeginner => 'Beginner 20 / 6';
+
+  @override
+  String get learnPresetStandard => 'Standard 20 / 8';
+
+  @override
+  String get learnPresetHelp => 'Characters sound at 20 WPM in both; the beginner pace leaves longer pauses between them (6 WPM effective).';
+
+  @override
+  String get learnPlanStepIntro => 'First lesson';
+
+  @override
+  String get learnPlanStepRecognition => 'Single symbols';
+
+  @override
+  String get learnPlanReasonFirstLesson => 'Hear the sounds and tell K from M (about 3 minutes)';
+
+  @override
+  String learnPlanReasonRecognition(String symbols) {
+    return 'One symbol at a time: $symbols';
+  }
+
+  @override
+  String learnPlanReasonGuided(int count) {
+    return 'Short mixed groups of $count symbols; the 50-symbol challenge comes later';
+  }
+
+  @override
+  String learnPlanReasonSendOptional(int count) {
+    return 'Optional: hear the model, then key $count short targets';
+  }
+
+  @override
+  String get learnQsoReadyTitle => 'Ready for a QSO';
+
+  @override
+  String get learnQsoNotReadyTitle => 'Not every symbol is learned yet';
+
+  @override
+  String get learnQsoMissingBody => 'A QSO uses these symbols you haven’t learned yet — tap one to hear it. You can explore anyway; the keypad shows every symbol.';
+
+  @override
+  String get learnQsoShorthandHint => 'Practise the abbreviations first (CQ, DE, UR, RST, TNX, 73) so the lines make sense.';
+
+  @override
+  String get learnQsoPractiseShorthand => 'Practise abbreviations';
+
+  @override
+  String get learnQsoHowTitle => 'How a QSO goes';
+
+  @override
+  String get learnQsoHowBody => 'Call (CQ = anyone, DE = from), answer with callsigns, exchange a report (RST), name and QTH (location), then 73 (best regards) and <SK> (end). K means over to you.';
+
+  @override
+  String get learnQsoExploreLabel => 'Includes untaught symbols';
+
+  @override
+  String get statsCoursePassed => 'Course passed';
+
+  @override
+  String get firstLessonPlayAgain => 'Play again';
+
+  @override
+  String firstLessonNextChallenge(int lesson, int count, String char) {
+    return 'Lesson $lesson challenge: $count symbols, 90% unlocks $char';
+  }
+
+  @override
+  String firstLessonNextChallengeLast(int lesson, int count) {
+    return 'Lesson $lesson challenge: $count symbols at 90% completes the course';
+  }
+
+  @override
+  String get learnQsoShorthandTitle => 'Practise the abbreviations first';
+
+  @override
+  String get learnQsoExchangeTitle => 'Practise QSO lines first';
+
+  @override
+  String get learnQsoExchangeHint => 'Copy single lines of a contact (one exchange at a time) before running a whole QSO in the simulator.';
+
+  @override
+  String get sendGuideTitle => 'Learn to send';
+
+  @override
+  String sendGuideStep(int step, int total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String get sendGuideHear => 'Hear the model';
+
+  @override
+  String get sendGuideListening => 'Listen to the whole rhythm…';
+
+  @override
+  String get sendGuideTry => 'Now send it';
+
+  @override
+  String get sendGuideRetry => 'Practise this again';
+
+  @override
+  String get sendGuidePassed => 'Decoded correctly. Continue to the next target.';
+
+  @override
+  String get sendGuideComplete => 'You sent both symbols and the groups correctly. Continue with free sending practice.';
+
+  @override
+  String get sendGuideRhythm => 'Match the model: short dits, dahs three times longer, and a clear pause between characters.';
+
+  @override
+  String get learnContinueToday => 'Continue today\'s learning';
+
+  @override
+  String get learnPlanDetails => 'View plan details';
+
+  @override
+  String get learnGuidedSingle => 'Single characters · 10 characters';
+
+  @override
+  String get learnGuidedShort => '3-character groups · 15 characters';
+
+  @override
+  String get learnGuidedGroups => '5-character groups · 20 characters';
+
+  @override
+  String get learnGuidedRecommended => 'Recommended next step';
+
+  @override
+  String get learnGuidedProgressHint => 'Continue to short groups and full groups after passing. Guided practice builds fluency; a course challenge unlocks the next lesson.';
+
+  @override
+  String get learnGuidedContinue => 'Continue guided practice';
+
+  @override
+  String get learnGuidedRetry => 'Practise this level again';
+
+  @override
+  String get firstLessonZeroHint => 'No correct answers yet is okay. Listen to the difference between K and M again, then retry.';
+
+  @override
+  String get firstLessonPartialHint => 'You heard some correctly. Compare K and M again and continue at your own pace.';
+
+  @override
+  String get firstLessonPerfectHint => 'Every answer was correct this round. Reinforce this with copying practice without answer choices.';
+
+  @override
+  String get firstLessonPaceLocked => 'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.';
+
+  @override
+  String get learnRecentEvidenceHint => 'Stages use unassisted copying evidence from the last 14 days at the same speed.';
+
+  @override
+  String get learnQsoConsolidateTitle => 'Reinforce learned characters';
+
+  @override
+  String get learnQsoConsolidateHint => 'Unlocked does not mean mastered. Start with single-character copying to build recent independent evidence.';
+
+  @override
+  String get learnQsoPractiseSymbols => 'Practise these characters';
+
+  @override
+  String get learnQsoProtocolTitle => 'Understand QSO terms';
+
+  @override
+  String get learnQsoProtocolHint => 'Check the meanings of CQ, DE, RST and 73 before starting a short QSO.';
+
+  @override
+  String get learnQsoProtocolStart => 'Check term understanding';
+
+  @override
+  String learnQsoProtocolQuestion(String token) {
+    return 'What does $token mean in a QSO?';
+  }
+
+  @override
+  String get learnQsoGeneralCall => 'Calling any station';
+
+  @override
+  String get learnQsoFromStation => 'From this station';
+
+  @override
+  String get learnQsoSignalReport => 'Signal report';
+
+  @override
+  String get learnQsoBestRegards => 'Best regards and goodbye';
+
+  @override
+  String get learnQsoProtocolCorrect => 'Correct answer';
+
+  @override
+  String learnQsoProtocolWrong(String meaning) {
+    return 'Correct meaning: $meaning';
+  }
+
+  @override
+  String get learnQsoProtocolPass => 'All four terms were answered correctly without help. You can try a short QSO.';
+
+  @override
+  String get learnQsoProtocolPractice => 'Review these meanings before checking again.';
+
+  @override
+  String get learnQsoProtocolRetry => 'Check again';
+
+  @override
+  String get learnQsoShortExchange => 'Practise a short QSO';
+
+  @override
+  String get learnQsoShortExchangeHint => 'Confirm callsigns, exchange signal reports and close without help before moving to a full QSO.';
+
+  @override
+  String get learnQsoExplorePending => 'Explore a full QSO · practice still needed';
+
+  @override
+  String get learnQsoReadyHint => 'You have recent independent practice evidence and can begin full simulated QSOs.';
 }

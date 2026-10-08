@@ -4,6 +4,7 @@ import 'char_stats.dart';
 import 'confusion_matrix.dart';
 import 'daily_plan.dart';
 import 'koch_course.dart';
+import 'learner_stage.dart';
 
 /// Everything a plan is generated from. Injected so a fixed input always
 /// produces the same plan.
@@ -19,6 +20,8 @@ final class PlanInputs {
     required this.confusion,
     required this.settings,
     required this.seed,
+    this.stage = LearnerStage.copying,
+    this.firstLessonDone = false,
   });
 
   final DateTime now;
@@ -33,6 +36,12 @@ final class PlanInputs {
   final ConfusionMatrix confusion;
   final PlanSettings settings;
   final int seed;
+
+  /// Where the learner is (see [LearnerStage]); decides the step mix.
+  final LearnerStage stage;
+
+  /// Whether the guided first lesson was finished (no intro step then).
+  final bool firstLessonDone;
 }
 
 /// Pure plan generator (functional spec §4.2). It owns every decision; the
@@ -41,13 +50,45 @@ abstract final class DailyPlanBuilder {
   /// Budgets offered to the learner.
   static const List<int> budgets = <int>[5, 10, 15];
 
-  /// Minutes per category for a 10-minute plan; scaled for other budgets.
+  /// Minutes per category for a 10-minute plan once the learner is past the
+  /// beginner stages; scaled for other budgets.
   static const Map<PlanStepKind, double> allocation = <PlanStepKind, double>{
     PlanStepKind.review: 3,
     PlanStepKind.focus: 2,
     PlanStepKind.course: 3,
     PlanStepKind.send: 2,
   };
+
+  /// First day: demonstrations, single symbols, short mixed groups, and a
+  /// little optional sending instead of 40 % unfamiliar keying.
+  static const Map<PlanStepKind, double> firstUseAllocation =
+      <PlanStepKind, double>{
+        PlanStepKind.intro: 1.5,
+        PlanStepKind.recognition: 2.5,
+        PlanStepKind.course: 4,
+        PlanStepKind.send: 2,
+      };
+
+  /// A new symbol not mastered yet: recognition first, then the usual mix
+  /// with a shorter, optional sending step.
+  static const Map<PlanStepKind, double> recognitionAllocation =
+      <PlanStepKind, double>{
+        PlanStepKind.recognition: 2,
+        PlanStepKind.review: 2,
+        PlanStepKind.focus: 1.5,
+        PlanStepKind.course: 3,
+        PlanStepKind.send: 1.5,
+      };
+
+  /// Symbols per round of a guided (first-use) course step, and the most
+  /// symbols such a step asks for: a first day copies 10-30 symbols in
+  /// short groups, never a 50-symbol test.
+  static const int guidedGroupSize = 3;
+  static const int guidedMaxChars = 30;
+  static const int guidedMinChars = 10;
+
+  /// Rounds of the first lesson's K / M trials.
+  static const int introTrials = 6;
 
   /// Evidence needed before a symbol is a focus candidate.
   static const int minConfusions = 3;
@@ -68,6 +109,16 @@ abstract final class DailyPlanBuilder {
   static double minutesFor(int chars, double effectiveWpm) =>
       chars / (effectiveWpm * 5 * listenShare);
 
+  /// The time split for a learner at [stage].
+  static Map<PlanStepKind, double> allocationFor(
+    LearnerStage stage, {
+    required bool firstLessonDone,
+  }) => switch (stage) {
+    LearnerStage.firstUse when !firstLessonDone => firstUseAllocation,
+    LearnerStage.firstUse || LearnerStage.recognition => recognitionAllocation,
+    LearnerStage.copying || LearnerStage.coursePassed => allocation,
+  };
+
   static DailyPlan build(PlanInputs inputs) {
     final date = DailyPlan.dateKey(inputs.now);
     final id = 'plan_${date}_${inputs.seed.toRadixString(36)}';
@@ -83,7 +134,9 @@ abstract final class DailyPlanBuilder {
   }
 
   /// Rebuilds the steps that have not started, keeping done and active
-  /// steps (and their snapshots) untouched.
+  /// steps (and their snapshots) untouched. Matching is by kind: a started
+  /// guided course step keeps its place for the day even when the learner
+  /// has since become eligible for a challenge.
   static DailyPlan refreshPending(DailyPlan plan, PlanInputs inputs) {
     final kept = plan.steps
         .where((s) => s.state != PlanStepState.pending)
@@ -140,22 +193,36 @@ abstract final class DailyPlanBuilder {
     final hasConfusions = focus.any(
       (c) => inputs.confusion.errorsFor(c) >= minConfusions,
     );
+    final shares = allocationFor(
+      inputs.stage,
+      firstLessonDone: inputs.firstLessonDone,
+    );
+    final guided =
+        inputs.stage == LearnerStage.firstUse && !inputs.firstLessonDone;
+    final beginner =
+        inputs.stage == LearnerStage.firstUse ||
+        inputs.stage == LearnerStage.recognition;
 
     final available = <PlanStepKind>{
-      if (due.isNotEmpty) PlanStepKind.review,
-      if (focus.isNotEmpty) PlanStepKind.focus,
+      if (shares.containsKey(PlanStepKind.intro)) PlanStepKind.intro,
+      if (shares.containsKey(PlanStepKind.recognition))
+        PlanStepKind.recognition,
+      if (shares.containsKey(PlanStepKind.review) && due.isNotEmpty)
+        PlanStepKind.review,
+      if (shares.containsKey(PlanStepKind.focus) && focus.isNotEmpty)
+        PlanStepKind.focus,
       PlanStepKind.course,
       PlanStepKind.send,
     };
     final scale = inputs.budgetMinutes / 10;
-    final missing = allocation.entries
+    final missing = shares.entries
         .where((e) => !available.contains(e.key))
         .fold(0.0, (a, e) => a + e.value);
-    final present = allocation.entries
+    final present = shares.entries
         .where((e) => available.contains(e.key))
         .fold(0.0, (a, e) => a + e.value);
     double minutesOf(PlanStepKind kind) =>
-        allocation[kind]! * (1 + missing / present) * scale;
+        shares[kind]! * (1 + missing / present) * scale;
 
     final random = Random(inputs.seed);
     final eff = inputs.settings.effectiveWpm;
@@ -164,7 +231,40 @@ abstract final class DailyPlanBuilder {
     int nextSeed() =>
         (inputs.seed * 31 + (offset + steps.length + 1) * 7919) & 0x3fffffff;
 
-    // Priority order (spec §4.2.2): review, focus, course, send.
+    // Priority order (spec §4.2.2, extended for beginners): first lesson,
+    // single symbols, review, focus, course, send.
+    if (available.contains(PlanStepKind.intro)) {
+      steps.add(
+        PlanStep(
+          id: nextId(),
+          seed: nextSeed(),
+          kind: PlanStepKind.intro,
+          pool: course.charsForLesson(course.firstLesson),
+          minutes: minutesOf(PlanStepKind.intro),
+          charBudget: introTrials,
+          lesson: lesson,
+          reason: PlanReason.firstLesson,
+          groupSize: 1,
+        ),
+      );
+    }
+    if (available.contains(PlanStepKind.recognition)) {
+      final minutes = minutesOf(PlanStepKind.recognition);
+      steps.add(
+        PlanStep(
+          id: nextId(),
+          seed: nextSeed(),
+          kind: PlanStepKind.recognition,
+          pool: learned,
+          minutes: minutes,
+          // Single-symbol rounds spend most of their time on answering.
+          charBudget: max(10, charsFor(minutes, eff) ~/ 2),
+          lesson: lesson,
+          reason: PlanReason.recognition,
+          groupSize: 1,
+        ),
+      );
+    }
     if (available.contains(PlanStepKind.review)) {
       final minutes = minutesOf(PlanStepKind.review);
       final pool = due.length >= 2 ? due : _withFallback(due, learned, random);
@@ -199,7 +299,28 @@ abstract final class DailyPlanBuilder {
         ),
       );
     }
-    {
+    if (guided) {
+      // Short mixed groups, deliberately below the challenge length: a
+      // first day has no business failing a 50-symbol test.
+      final minutes = minutesOf(PlanStepKind.course);
+      steps.add(
+        PlanStep(
+          id: nextId(),
+          seed: nextSeed(),
+          kind: PlanStepKind.course,
+          pool: learned,
+          minutes: minutes,
+          // Beginners need thinking time: half the listening rate, capped.
+          charBudget: (charsFor(minutes, eff) ~/ 2).clamp(
+            guidedMinChars,
+            guidedMaxChars,
+          ),
+          lesson: lesson,
+          reason: PlanReason.courseGuided,
+          groupSize: guidedGroupSize,
+        ),
+      );
+    } else {
       var minutes = minutesOf(PlanStepKind.course);
       var chars = charsFor(minutes, eff);
       final minChars = course.minCharsPerSession;
@@ -240,7 +361,8 @@ abstract final class DailyPlanBuilder {
           minutes: minutes,
           charBudget: max(2, (minutes * sendTargetsPerMinute).round()),
           lesson: lesson,
-          reason: PlanReason.sendRhythm,
+          reason: beginner ? PlanReason.sendOptional : PlanReason.sendRhythm,
+          optional: beginner,
         ),
       );
     }

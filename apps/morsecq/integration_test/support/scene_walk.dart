@@ -4,11 +4,14 @@
 // conversations open as pushed routes; on desktop/tablet a NavigationRail
 // and an inline detail pane. Every navigation goes through the same widgets
 // a user taps, found by localized text/tooltip or by the app's stable keys.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/l10n/generated/s.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/startup/startup_controller.dart';
 import 'package:morsecq/startup/startup_gate.dart';
 import 'package:morsecq/ui/account/backup_wizard_page.dart';
@@ -20,7 +23,6 @@ import 'package:morsecq/ui/chat/message_bubble.dart';
 import 'package:morsecq/ui/contacts/contacts_page.dart';
 import 'package:morsecq/ui/groups/group_list.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
-import 'package:morsecq/ui/learn/learn_home_widgets.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
@@ -37,6 +39,7 @@ import 'package:provider/provider.dart';
 
 import 'seed_data.dart';
 import 'shot_harness.dart';
+import 'pedagogy_walk.dart';
 
 /// Every scene the offline App Store build's run produces (`ios`, `ipad`),
 /// in capture order. `tool/screenshots/capture.sh` checks the same list.
@@ -46,6 +49,9 @@ const List<String> kOfflineScenes = <String>[
   'training_settings',
   'receive_drill',
   'send_practice',
+  'first_lesson',
+  'receive_summary',
+  'guided_send',
   'reference',
   'translator',
   'listen',
@@ -63,6 +69,9 @@ const List<String> kScenes = <String>[
   'training_settings',
   'receive_drill',
   'send_practice',
+  'first_lesson',
+  'receive_summary',
+  'guided_send',
   'chat_list',
   'conversation',
   'contacts',
@@ -77,9 +86,8 @@ const List<String> kScenes = <String>[
 /// Index into [kShellDestinations].
 enum ShellTab { learn, chat, groups, reference, me }
 
-Finder _navHost() => find.byWidgetPredicate(
-  (w) => w is NavigationRail || w is NavigationBar,
-);
+Finder _navHost() =>
+    find.byWidgetPredicate((w) => w is NavigationRail || w is NavigationBar);
 
 /// Taps a shell destination by its icon (rail labels are hidden on desktop,
 /// and the bar label text also appears as the page's app-bar title).
@@ -144,13 +152,19 @@ Future<void> dumpStartupState(WidgetTester tester) async {
   final gate = find.byType(StartupGate);
   if (gate.evaluate().isNotEmpty) {
     final controller = tester.element(gate).read<StartupController>();
-    debugPrint('[shot] startup phase=${controller.phase} '
-        'error=${controller.error} connection=${controller.connectionError}');
+    debugPrint(
+      '[shot] startup phase=${controller.phase} '
+      'error=${controller.error} connection=${controller.connectionError}',
+    );
   }
-  final texts = find.byType(Text).evaluate().map((e) {
-    final t = e.widget as Text;
-    return t.data ?? t.textSpan?.toPlainText() ?? '';
-  }).where((t) => t.isNotEmpty);
+  final texts = find
+      .byType(Text)
+      .evaluate()
+      .map((e) {
+        final t = e.widget as Text;
+        return t.data ?? t.textSpan?.toPlainText() ?? '';
+      })
+      .where((t) => t.isNotEmpty);
   debugPrint('[shot] visible text: ${texts.join(' | ')}');
 }
 
@@ -283,26 +297,36 @@ Future<void> walkLearn(
   expectScreen(ReceiveDrillScreen);
   // Without an audio device (CI runners) the drill falls back to the
   // full-screen flash; capture between flashes.
-  await shots.capture(tester, locale, 'receive_drill', until: () {
-    return tester
-        .widgetList<FlashOverlay>(find.byType(FlashOverlay))
-        .every((w) => !w.isOn.value);
-  });
-  await popIfCan(tester);
-  // The quick action, not today's plan step: in Chinese both read 发报练习,
-  // and the 6.9" iPhone shows the plan too.
-  await tapHittable(
+  await shots.capture(
     tester,
-    find.descendant(
-      of: find.byType(QuickActions),
-      matching: find.text(s.learnSendPractice),
+    locale,
+    'receive_drill',
+    until: () {
+      return tester
+          .widgetList<FlashOverlay>(find.byType(FlashOverlay))
+          .every((w) => !w.isOn.value);
+    },
+  );
+  await popIfCan(tester);
+  // Seeded profiles have never sent. Default first send now opens the guide;
+  // this gallery scene explicitly demonstrates the separate free surface.
+  final home = tester.widget<LearnHome>(find.byType(LearnHome));
+  unawaited(
+    Navigator.of(tester.element(find.byType(LearnHome))).push(
+      MaterialPageRoute<Object?>(
+        builder: (_) => SendPracticeScreen(
+          controller: home.controller,
+          playback: home.playback,
+          session: home.controller.startFreeSendSession(),
+        ),
+      ),
     ),
-    'send practice quick action',
   );
   await settle(tester, extra: const Duration(milliseconds: 400));
   expectScreen(SendPracticeScreen);
   await shots.capture(tester, locale, 'send_practice');
   await popIfCan(tester);
+  await capturePedagogy(tester, shots, locale);
 }
 
 /// Reference: the handbook, the translator and Listen. Shared by the chat
@@ -324,7 +348,9 @@ Future<void> walkReference(
   await settle(tester);
   final pattern = MorseEncoder.toPattern(plain);
   expect(
-    find.byWidgetPredicate((w) => w is MorsePatternText && w.pattern == pattern),
+    find.byWidgetPredicate(
+      (w) => w is MorsePatternText && w.pattern == pattern,
+    ),
     findsOneWidget,
     reason: 'translator output for "$plain"',
   );

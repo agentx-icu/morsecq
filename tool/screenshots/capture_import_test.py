@@ -51,7 +51,7 @@ class CaptureImportTest(unittest.TestCase):
         result = self.run_import()
         self.assertEqual(snapshot(self.output), before)
         self.assertEqual(snapshot(self.source), before)
-        self.assertEqual(len(before), 34)
+        self.assertEqual(len(before), 40)
         self.assertIn("from completed CI capture", result.stdout)
 
     def test_missing_frame_keeps_previous_gallery(self):
@@ -96,7 +96,7 @@ class CaptureImportTest(unittest.TestCase):
         before = snapshot(self.source), snapshot(self.output)
         self.run_import(expected=64)
         self.assertEqual((snapshot(self.source), snapshot(self.output)), before)
-        self.assertEqual(len(list(seed.glob("*.png"))), 17)
+        self.assertEqual(len(list(seed.glob("*.png"))), 20)
 
     def test_source_platform_symlink_is_rejected(self):
         linked = self.root / "linked-platform"
@@ -120,7 +120,7 @@ class CaptureImportTest(unittest.TestCase):
     def test_partial_locale_can_publish_only_to_explicit_output(self):
         before = snapshot(self.source)
         self.run_import(extra=("--locales", "en"))
-        self.assertEqual(len(list(self.output.rglob("*.png"))), 17)
+        self.assertEqual(len(list(self.output.rglob("*.png"))), 20)
         self.assertFalse((self.output / "macos/zh").exists())
         self.assertEqual(snapshot(self.source), before)
 

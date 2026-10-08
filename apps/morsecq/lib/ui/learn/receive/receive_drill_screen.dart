@@ -16,6 +16,7 @@ import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
 import 'answer_keypad.dart';
+import 'receive_next_steps.dart';
 import 'receive_summary_view.dart';
 import 'round_result_view.dart';
 
@@ -265,21 +266,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _answer.text = '${_answer.text}$c';
   }
 
-  void _backspace() {
-    final text = _answer.text;
-    if (text.isEmpty) {
-      return;
-    }
-    // Remove a whole `<XX>` prosign token if that is what ends the text.
-    if (text.endsWith('>')) {
-      final open = text.lastIndexOf('<');
-      if (open >= 0) {
-        _answer.text = text.substring(0, open);
-        return;
-      }
-    }
-    _answer.text = text.substring(0, text.length - 1);
-  }
+  void _backspace() => _answer.text = backspaceAnswer(_answer.text);
 
   @override
   void dispose() {
@@ -297,11 +284,14 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    // A challenge says so in its title; everything else is practice.
     final title =
         widget.title ??
         (_session.kind == ReceiveDrillKind.review
             ? s.learnReviewTitle
-            : s.learnReceiveTitle);
+            : _session.countsTowardLesson && _session.lesson != null
+            ? s.learnChallengeTitle(_session.lesson!)
+            : s.learnPracticeTitle);
     final body = SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -450,7 +440,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        RoundResultView(round: round),
+        RoundResultView(round: round, kind: _session.kind),
         if (_session.conditions != null)
           CleanReferenceButton(onPressed: () => _playCleanReference(round)),
         const SizedBox(height: 24),
@@ -475,6 +465,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
         ReceiveSummaryView(
           session: _session,
           outcome: outcome,
+          course: widget.controller.course,
           unlockedChar: _unlockedChar,
         ),
         if (_session.conditions case final RadioScenario c)
@@ -483,11 +474,12 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
             history: widget.controller.progress.history,
           ),
         const SizedBox(height: 24),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(outcome),
-          autofocus: true,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(context.s.learnDone),
+        ReceiveNextSteps(
+          controller: widget.controller,
+          playbackFactory: widget.playback,
+          playback: _playback,
+          session: _session,
+          outcome: outcome,
         ),
       ],
     );
