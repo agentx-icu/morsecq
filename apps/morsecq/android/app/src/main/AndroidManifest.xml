@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-feature android:name="android.hardware.microphone" android:required="false"/>
     <!-- Learning data is local; platform backup is disabled. -->
+    <!-- Predictive back: with targetSdk 36, Android 16 routes the back gesture
+         through OnBackInvokedCallback by default; declaring it makes Android
+         13–15 behave the same (system back-to-home animation, no legacy
+         onBackPressed). Flutter receives it through PopScope
+         (ui/learn/drill_session_guard.dart; the app has no WillPopScope). -->
     <application
         android:label="MorseCQ"
         android:name="${applicationName}"
@@ -12,6 +17,7 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:localeConfig="@xml/locale_config">
         <activity
             android:name=".MainActivity"
