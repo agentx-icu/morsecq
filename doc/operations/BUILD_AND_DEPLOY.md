@@ -12,4 +12,4 @@ Android owner signing uses repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROI
 
 Physical-device microphone, haptics, keying and local persistence still require device acceptance. E2E CI verifies Windows/Linux execution and screenshots. Building a package does not publish to a store or complete signing.
 
-Tags must be `v<pubspec version>`; packaging refuses mismatched tag/application version metadata. / 发布标签须为 `v<pubspec 版本>`，打包流程拒绝版本不匹配。
+Tags must be `v<pubspec version>`; packaging refuses mismatched tag/application version metadata.

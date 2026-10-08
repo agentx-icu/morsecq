@@ -19,7 +19,7 @@ if [[ -z "$platform" ]]; then
 fi
 case "$platform" in macos|linux|windows|android|ios) ;; *) echo 'Invalid platform' >&2; exit 64 ;; esac
 cd "$repo"
-dart pub get
+dart pub get --enforce-lockfile
 cd apps/morsecq
 if [[ "$clean" == 1 ]]; then flutter clean; fi
 case "$platform" in

@@ -106,7 +106,7 @@ package_windows() {
 }
 
 package_macos() {
-  local app="$BUILD_DIR/macos/Build/Products/Release/MorseCQ.app" root plist scripts arch arches
+  local app="$BUILD_DIR/macos/Build/Products/Release/MorseCQ.app" root plist arch arches
   [[ -d "$app" ]] || ci_die "macOS app not found: $app"
 
   arches="$(lipo -archs "$app/Contents/MacOS/MorseCQ")"
@@ -131,27 +131,10 @@ package_macos() {
   # inventory. Select the application by path and pin every child bundle.
   ci_require_cmd python3
   python3 "$SCRIPT_DIR/macos_components.py" "$plist"
-  # Pre-rename installs shipped /Applications/morsecq.app. On a case-insensitive
-  # volume Installer would upgrade that bundle in place and keep the lowercase
-  # folder name, so rename it to the new case first (data lives under the
-  # unchanged bundle id, so nothing else moves).
-  scripts="$DIST_DIR/.scripts"
-  mkdir -p "$scripts"
-  cat >"$scripts/preinstall" <<'EOF'
-#!/bin/sh
-# $3 is the target volume ("/" for the boot volume).
-apps="${3%/}/Applications"
-if ls "$apps" 2>/dev/null | grep -qx 'morsecq\.app' &&
-   ! ls "$apps" 2>/dev/null | grep -qx 'MorseCQ\.app'; then
-  mv "$apps/morsecq.app" "$apps/MorseCQ.app" || true
-fi
-exit 0
-EOF
-  chmod 755 "$scripts/preinstall"
-  pkgbuild --root "$root" --component-plist "$plist" --scripts "$scripts" \
+  pkgbuild --root "$root" --component-plist "$plist" \
     --identifier icu.agentx.morsecq --version "$VERSION" \
     --install-location /Applications "$DIST_DIR/$BASE-macos-$arch.pkg"
-  rm -rf "$root" "$plist" "$scripts"
+  rm -rf "$root" "$plist"
 }
 
 package_android() {

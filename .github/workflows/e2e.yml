@@ -84,7 +84,7 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # Same package set as the native workflow's Linux app build, plus a
+      # Same package set as the build workflow's Linux app build, plus a
       # virtual X server for the real window and a CJK font: the runner image
       # has none, so the zh frames would render every Chinese glyph as tofu
       # (a Chinese-locale desktop ships one; Flutter uses the system fonts).

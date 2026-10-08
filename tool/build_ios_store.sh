@@ -3,6 +3,6 @@
 set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo"
-dart pub get
+dart pub get --enforce-lockfile
 cd apps/morsecq
 flutter build ipa --release "$@"

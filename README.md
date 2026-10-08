@@ -48,4 +48,4 @@ Learning data is stored locally under `<application support>/morsecq/guest/`: `t
 - `packages/morse_io`: Flutter audio, keying and haptics.
 - `apps/morsecq`: offline application, local persistence and desktop shell.
 
-[Local learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)
+[Local learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation record](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)

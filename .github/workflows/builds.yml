@@ -96,7 +96,7 @@ jobs:
             printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
             echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
           elif [[ "$count" == 0 ]]; then
-            echo '::warning::No Android signing secrets: artifacts use the debug key and cannot upgrade a signed production install.'
+            echo '::warning::No Android signing secrets: artifacts use the debug key for testing; configure owner signing for distribution.'
           else
             echo 'All four Android signing secrets must be provided together.' >&2
             exit 1

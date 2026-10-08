@@ -26,7 +26,7 @@
   },
   "actionCancel": "Cancel",
   "@actionCancel": {
-    "description": "Generic button that dismisses a dialog or sheet without changing anything (e.g. delete-identity dialog, chat layout)"
+    "description": "Generic button that dismisses a dialog or sheet without changing anything"
   },
   "actionSave": "Save",
   "@actionSave": {
@@ -38,11 +38,11 @@
   },
   "actionRetry": "Retry",
   "@actionRetry": {
-    "description": "Button on the startup error screen that retries opening the identity"
+    "description": "Button that retries loading local data after a storage error"
   },
   "actionClose": "Close",
   "@actionClose": {
-    "description": "Generic button that closes a dialog (Tox ID QR dialog, language picker)"
+    "description": "Generic button that closes a dialog, such as the language picker"
   },
   "languageTitle": "Language",
   "@languageTitle": {

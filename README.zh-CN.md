@@ -48,4 +48,4 @@ Android、iOS、macOS、Linux 和 Windows 均为必需发布目标。[构建与�
 - `packages/morse_io`：Flutter 音频、键控与触觉反馈。
 - `apps/morsecq`：离线应用、本地持久化与桌面窗口服务。
 
-[本地学习架构](doc/architecture/OFFLINE_LEARNING.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)
+[本地学习架构](doc/architecture/OFFLINE_LEARNING.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)

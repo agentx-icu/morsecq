@@ -146,7 +146,7 @@ abstract class S {
   /// **'Alphabet, prosigns, Q-codes, abbreviations and a two-way translator.'**
   String get navReferenceDescription;
 
-  /// Generic button that dismisses a dialog or sheet without changing anything (e.g. delete-identity dialog, chat layout)
+  /// Generic button that dismisses a dialog or sheet without changing anything
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
@@ -164,13 +164,13 @@ abstract class S {
   /// **'Delete'**
   String get actionDelete;
 
-  /// Button on the startup error screen that retries opening the identity
+  /// Button that retries loading local data after a storage error
   ///
   /// In en, this message translates to:
   /// **'Retry'**
   String get actionRetry;
 
-  /// Generic button that closes a dialog (Tox ID QR dialog, language picker)
+  /// Generic button that closes a dialog, such as the language picker
   ///
   /// In en, this message translates to:
   /// **'Close'**

@@ -1,7 +1,7 @@
-# MorseCQ offline split handover
+# MorseCQ 离线应用交接
 
-See the current [README](../README.md), [architecture](architecture/OFFLINE_LEARNING.md), [build guide](operations/BUILD_AND_DEPLOY.md) and [test pyramid](testing/TEST_PYRAMID.md). Earlier trainer+chat plans are historical.
+当前说明见 [README](../README.zh-CN.md)、[本地学习架构](architecture/OFFLINE_LEARNING.md)、[构建指南](operations/BUILD_AND_DEPLOY.zh-CN.md)和[测试金字塔](testing/TEST_PYRAMID.zh-CN.md)。早期学习与聊天合并的设计计划仅作为历史记录保留。
 
-Implemented: local startup, no registration/identity/transport, confirmed durable local clear, three destinations, offline five-platform builds and gated draft Releases.
+已完成本地直接启动、移除注册与账号及聊天传输、确认后可靠清除本地学习数据、三个导航目标、五平台离线构建及通过门禁后生成草稿 Release。
 
-Before shipping: run required CI on the final commit, verify physical-device microphone/keying/haptics and local persistence, provide owner store signing and Apple notarization as needed.
+发布前须在最终提交上运行必需 CI，验收真实设备的麦克风、实体键、触觉反馈和本地持久化，并按分发需要提供商店签名及 Apple 公证配置。
