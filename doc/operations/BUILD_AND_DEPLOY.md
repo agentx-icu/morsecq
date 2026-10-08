@@ -12,4 +12,4 @@ Android owner signing uses repository secrets `ANDROID_KEYSTORE_BASE64`, `ANDROI
 
 Physical-device microphone, haptics, keying and local persistence still require device acceptance. E2E CI verifies Windows/Linux execution and screenshots. Building a package does not publish to a store or complete signing.
 
-Tags must be `v<pubspec version>`; packaging refuses mismatched tag/application version metadata.
+Tags must match the numeric `X.Y.Z` part of the app pubspec: `1.0.0+1` uses tag `v1.0.0`. Packaging refuses mismatched metadata. Before creating a draft release, `bash tool/ci/verify_release_assets.sh <dist-dir> v1.0.0` requires all ten platform assets, exactly one macOS architecture pair, and writes a portable SHA256SUMS manifest. Missing, empty, unexpected or symlinked assets fail the gate.

@@ -8,10 +8,10 @@
 - 保留的五个包测试均通过；移除聊天练习元数据后，训练包当前 **212 项测试通过**。
 - 首次启动导航、共享控制器重试、后台写入、确认清除的持久化及学习界面重载回归通过。
 - 根目录 Flutter 分析零问题。分层、本地化、复杂度门禁及 actionlint、shellcheck、`git diff --check` 均通过。
-- 截图流程 **12 项回归通过**；macOS 安装包组件选择 **3 项回归通过**。
+- 截图流程 **12 项回归通过**；macOS 安装包组件选择 **3 项回归通过**；发布完整性 **7 项回归通过**，覆盖缺失、空文件、额外文件、macOS 架构混用、符号链接、标签及校验清单。
 - `dart pub get --enforce-lockfile` 通过；解析图共 155 个包，不含 Tim2Tox、Tencent 或 MorseCQ 聊天包。
 
-初始实现提交 `396a7c1` 已通过[分析流水线](https://github.com/agentx-icu/morsecq/actions/runs/37721025673)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37721026135)和[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37721025982)。后续修改更新文档及不影响渲染的本地化描述、在本地构建中强制锁文件，并删除历史安装包改名脚本。最终提交 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
+运行时及打包实现 `8ff8dd4` 已通过[分析流水线](https://github.com/agentx-icu/morsecq/actions/runs/37722463165)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37722463344)和[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37722463151)。后续补全文档及发布完整性门禁，未更改应用代码；最新 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
 
 ## 发布产物
 
@@ -24,6 +24,8 @@
 | Windows | CI Release MSI 与 ZIP 打包通过。 |
 
 本地产物位于 `dist/<平台>/`。应用标识均为 `icu.agentx.morsecq`，版本 1.0.0、构建号 1。macOS 深度签名验证及 ZIP 完整性通过。展开的 PKG 固定安装到 `/Applications/MorseCQ.app`，重定位条目为零、应用版本条目只有一个，且不含历史改名脚本。IPA/APK/AAB 完整性及 APK、AAB 签名验证通过。Android 使用本地 debug 测试签名；iOS 未签名；macOS 应用为 ad hoc 签名，安装包未签名。
+
+已从构建流水线 `37722463344` 下载全部 **10 个当前 CI 产物** 到被 Git 忽略的 `dist/release-v1.0.0/`。`verify_release_assets.sh` 生成 SHA256SUMS，`shasum -a 256 -c SHA256SUMS` 对全部文件验证通过；ZIP/tar 完整性及无聊天传输组件检查亦通过。未创建版本标签或 GitHub Release。
 
 Android Release 仅申请 `RECORD_AUDIO`、`VIBRATE` 和本包作用域的动态接收器权限，不含网络、相机或聊天通知权限。本地 macOS、iOS、Android 归档均不含 Tim2Tox、Tencent 或 toxcore 条目。
 

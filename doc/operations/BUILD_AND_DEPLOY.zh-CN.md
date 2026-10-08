@@ -12,4 +12,4 @@ Android 正式签名使用 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWOR
 
 真实设备麦克风、触觉、实体键和本地持久化仍需设备验收；Windows/Linux 的运行和截图由 E2E CI 验证。不要把构建成功等同于商店上架或签名完成。
 
-发布标签须为 `v<pubspec 版本>`，打包流程拒绝标签与应用版本不匹配。
+发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：`1.0.0+1` 对应 `v1.0.0`；打包流程拒绝元数据不匹配。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> v1.0.0` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。

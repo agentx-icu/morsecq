@@ -146,17 +146,19 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*
           path: dist
           merge-multiple: true
+      - name: Verify complete release assets and checksum manifest
+        run: bash tool/ci/verify_release_assets.sh dist "$GITHUB_REF_NAME"
       - name: Create or update draft release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          (cd dist && sha256sum -- * > SHA256SUMS)
           if gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             [[ "$(gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" == true ]] || { echo 'Existing release is published; refusing to replace assets.' >&2; exit 1; }
             gh release upload "$GITHUB_REF_NAME" dist/* --clobber -R "$GITHUB_REPOSITORY"

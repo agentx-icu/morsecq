@@ -1,5 +1,5 @@
-# Offline desktop shell
+# 离线桌面外壳
 
-The desktop shell owns window size/position, close-to-tray, localized show/hide/sound/quit menus and the fixed MorseCQ title. AppServices updates tray strings when the locale changes and flushes local learning/settings before quit. There is no unread-message state or chat routing. Physical key bindings remain device-local and are editable in Me.
+桌面外壳管理窗口大小和位置、关闭到托盘、显示/隐藏/声音/退出菜单及固定的 MorseCQ 标题。AppServices 在语言变化时更新托盘文案，并在退出前等待本地学习数据与设置写入。实体键绑定保存在本机，可在“我的”编辑。
 
-Plugins: window_manager, tray_manager, screen_retriever. Mobile platforms keep these adapters inert. Plugin-free window/tray/screen fakes cover persistence, failure tolerance and localization in tests.
+使用 window_manager、tray_manager、screen_retriever 插件；移动平台不启用这些适配器。窗口、托盘及屏幕测试替身验证持久化、故障处理和本地化。
