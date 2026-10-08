@@ -95,15 +95,31 @@ Future<void> keyGuidedK(WidgetTester tester) async {
   expect(key, findsOneWidget);
   await tester.ensureVisible(key);
   await tester.pump();
-  const dit = Duration(milliseconds: 60);
-  for (final mark in [dit * 3, dit, dit * 3]) {
-    final gesture = await tester.startGesture(tester.getCenter(key));
-    await Future<void>.delayed(mark);
-    await gesture.up();
-    await Future<void>.delayed(dit);
+  final live = tester.widget<SendLiveView>(find.byType(SendLiveView));
+  final dit = live.session.nominalTiming.dit;
+  final binding = tester.binding;
+  final policy = binding is LiveTestWidgetsFlutterBinding
+      ? binding.framePolicy
+      : null;
+  // Live pointer-fade frames can exceed a 60 ms dit on a loaded CI Mac.
+  // Render on explicit pumps during the scripted sequence; device audio,
+  // decoder ticks and the monotonic key clock still run in real time.
+  if (binding is LiveTestWidgetsFlutterBinding) {
+    binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.onlyPumps;
+  }
+  try {
+    for (final mark in [dit * 3, dit, dit * 3]) {
+      final gesture = await tester.startGesture(tester.getCenter(key));
+      await Future<void>.delayed(mark);
+      await gesture.up();
+      await Future<void>.delayed(dit);
+    }
+  } finally {
+    if (binding is LiveTestWidgetsFlutterBinding && policy != null) {
+      binding.framePolicy = policy;
+    }
   }
   await settle(tester, extra: const Duration(milliseconds: 300));
-  final live = tester.widget<SendLiveView>(find.byType(SendLiveView));
   expect(live.session.decodedText.trim(), 'K');
   final s = S.of(tester.element(find.byType(SendPracticeScreen)));
   await tapText(tester, s.learnDone);
