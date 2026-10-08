@@ -4,14 +4,13 @@
 #
 #   linux    morsecq-<v>-linux-x86_64.{deb,rpm,tar.gz}   (CPack, tool/ci/linux-installer)
 #   windows  morsecq-<v>-windows-x64.{msi,zip}           (CPack + WiX v3, tool/ci/windows-installer)
-#   macos    morsecq-<v>-macos-arm64.{pkg,zip}           (pkgbuild into /Applications; ditto zip)
+#   macos    morsecq-<v>-macos-<arch>.{pkg,zip}           (pkgbuild into /Applications; ditto zip)
 #   android  morsecq-<v>-android.{apk,aab}
 #   ios      morsecq-<v>-ios-unsigned.ipa                (no signing identity on CI)
 #
 # Run from anywhere after the matching `flutter build <target> --release`
-# (the Native workflow does both). <v> is the tag without its "v" on a tag
-# build, else the version in apps/morsecq/pubspec.yaml. Every package must
-# carry the Tox backend (libtim2tox_ffi); a build without it is refused.
+# (the Builds and release workflow does both). <v> is the tag without its "v" on a tag
+# build, else the version in apps/morsecq/pubspec.yaml. Every package contains only offline learning functionality.
 #
 #   tool/ci/package_artifacts.sh --target <linux|windows|macos|android|ios>
 set -euo pipefail
@@ -38,7 +37,11 @@ ci_reset_dir "$DIST_DIR"
 
 release_version() {
   if [[ "${GITHUB_REF_TYPE:-}" == "tag" && "${GITHUB_REF_NAME:-}" == v* ]]; then
-    printf '%s\n' "${GITHUB_REF_NAME#v}"
+    local declared tagged
+    declared="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$APP_DIR/pubspec.yaml" | head -n 1)"
+    tagged="${GITHUB_REF_NAME#v}"
+    [[ "$tagged" == "$declared" ]] || ci_die "tag $GITHUB_REF_NAME must match pubspec version $declared"
+    printf '%s\n' "$tagged"
     return
   fi
   sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$APP_DIR/pubspec.yaml" | head -n 1
@@ -57,17 +60,9 @@ copy_one() {  # <dir> <glob> <dest>
   cp "${hits[0]}" "$3"
 }
 
-# The Tox backend must be inside what ships, and must not carry the Tim2Tox
-# auto_tests-only hooks.
-require_ffi() {  # <path> <label>
-  [[ -e "$1" ]] || ci_die "$2: libtim2tox_ffi missing at $1 -- refusing to package a build without the Tox backend"
-  bash "$SCRIPT_DIR/assert_no_test_hooks.sh" "$1"
-}
-
 package_linux() {
   local bundle="$BUILD_DIR/linux/x64/release/bundle" stage installer
   [[ -x "$bundle/morsecq" ]] || ci_die "Linux bundle not found: $bundle"
-  require_ffi "$bundle/lib/libtim2tox_ffi.so" linux
 
   stage="$DIST_DIR/.stage/morsecq"
   mkdir -p "$stage"
@@ -92,7 +87,6 @@ package_linux() {
 package_windows() {
   local runner="$BUILD_DIR/windows/x64/runner/Release" stage installer
   [[ -f "$runner/morsecq.exe" ]] || ci_die "Windows runner not found: $runner"
-  require_ffi "$runner/tim2tox_ffi.dll" windows
 
   stage="$DIST_DIR/.stage/morsecq"
   mkdir -p "$stage"
@@ -112,12 +106,18 @@ package_windows() {
 }
 
 package_macos() {
-  local app="$BUILD_DIR/macos/Build/Products/Release/MorseCQ.app" root plist scripts
+  local app="$BUILD_DIR/macos/Build/Products/Release/MorseCQ.app" root plist scripts arch arches
   [[ -d "$app" ]] || ci_die "macOS app not found: $app"
-  require_ffi "$app/Contents/Frameworks/libtim2tox_ffi.dylib" macos
 
+  arches="$(lipo -archs "$app/Contents/MacOS/MorseCQ")"
+  case "$arches" in
+    'arm64') arch=arm64 ;;
+    'x86_64') arch=x86_64 ;;
+    'x86_64 arm64'|'arm64 x86_64') arch=universal2 ;;
+    *) ci_die "Unexpected macOS executable architectures: $arches" ;;
+  esac
   # ditto keeps the bundle's symlinks, modes and signature intact.
-  ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/$BASE-macos-arm64.zip"
+  ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/$BASE-macos-$arch.zip"
 
   # Installer package into /Applications. Not relocatable: without this,
   # Installer "upgrades" any other copy of the bundle id it finds on disk
@@ -127,9 +127,10 @@ package_macos() {
   mkdir -p "$root"
   ditto "$app" "$root/MorseCQ.app"
   pkgbuild --analyze --root "$root" "$plist" >/dev/null
-  # Newer pkgbuild omits the key (so Installer uses its relocatable default).
-  /usr/libexec/PlistBuddy -c "Delete :0:BundleIsRelocatable" "$plist" >/dev/null 2>&1 || true
-  /usr/libexec/PlistBuddy -c "Add :0:BundleIsRelocatable bool false" "$plist"
+  # Framework privacy bundles may precede the root application in pkgbuild's
+  # inventory. Select the application by path and pin every child bundle.
+  ci_require_cmd python3
+  python3 "$SCRIPT_DIR/macos_components.py" "$plist"
   # Pre-rename installs shipped /Applications/morsecq.app. On a case-insensitive
   # volume Installer would upgrade that bundle in place and keep the lowercase
   # folder name, so rename it to the new case first (data lives under the
@@ -149,7 +150,7 @@ EOF
   chmod 755 "$scripts/preinstall"
   pkgbuild --root "$root" --component-plist "$plist" --scripts "$scripts" \
     --identifier icu.agentx.morsecq --version "$VERSION" \
-    --install-location /Applications "$DIST_DIR/$BASE-macos-arm64.pkg"
+    --install-location /Applications "$DIST_DIR/$BASE-macos-$arch.pkg"
   rm -rf "$root" "$plist" "$scripts"
 }
 
@@ -158,13 +159,6 @@ package_android() {
   local aab="$BUILD_DIR/app/outputs/bundle/release/app-release.aab"
   [[ -f "$apk" ]] || ci_die "Android APK not found: $apk"
   [[ -f "$aab" ]] || ci_die "Android App Bundle not found: $aab"
-  # Listing captured first: `unzip | grep -q` under pipefail can SIGPIPE unzip.
-  local listing lib
-  listing="$(unzip -l "$apk")"
-  for lib in libtim2tox_ffi.so libc++_shared.so; do
-    grep -F "lib/arm64-v8a/$lib" <<<"$listing" >/dev/null ||
-      ci_die "android: the APK carries no arm64-v8a $lib -- refusing to package"
-  done
   cp "$apk" "$DIST_DIR/$BASE-android.apk"
   cp "$aab" "$DIST_DIR/$BASE-android.aab"
 }
@@ -172,7 +166,6 @@ package_android() {
 package_ios() {
   local app="$BUILD_DIR/ios/iphoneos/Runner.app" payload
   [[ -d "$app" ]] || ci_die "iOS app not found: $app"
-  require_ffi "$app/Frameworks/tim2tox_ffi.framework/tim2tox_ffi" ios
   # Unsigned: sideload tools (AltStore, Sideloadly) or a re-sign step sign it.
   payload="$DIST_DIR/.ipa/Payload"
   mkdir -p "$payload"

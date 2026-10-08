@@ -5,22 +5,24 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../i18n/language_settings_tile.dart';
-import '../../startup/startup_controller.dart';
-import '../account/account_routes.dart';
-import '../account/account_widgets.dart';
+import '../../training/training_controller_host.dart';
+import '../settings/settings_routes.dart';
+import '../common/settings_body.dart';
 import '../appearance/appearance_page.dart';
-import '../chat/chat_layout.dart';
+import '../common/feedback.dart';
 import '../keying/key_setup_page.dart';
 import '../moderation/site_links.dart';
 
-/// Me in the offline build (`AppFeatures.chat` off): settings for the local
+/// Me in the offline build (all platforms): settings for the local
 /// learning profile. No identity, account, connection or chat entries exist.
 class OfflineMePage extends StatelessWidget {
   const OfflineMePage({super.key});
+  static String title(S s) => s.navMe;
 
   Future<void> _clear(BuildContext context) async {
     final S s = context.s;
-    final StartupController controller = context.read<StartupController>();
+    final TrainingControllerHost controller = context
+        .read<TrainingControllerHost>();
     final bool ok = await confirm(
       context,
       title: s.offlineClearData,
@@ -29,7 +31,7 @@ class OfflineMePage extends StatelessWidget {
     );
     if (!ok || !context.mounted) return;
     try {
-      await controller.clearGuestData();
+      await controller.clear();
       if (context.mounted) showSnack(context, s.offlineCleared);
     } on Object {
       if (context.mounted) showSnack(context, s.offlineClearFailed);
@@ -51,7 +53,7 @@ class OfflineMePage extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(title: Text(s.navMe)),
-      body: AccountPageBody(
+      body: SettingsBody(
         maxWidth: 640,
         children: [
           header(s.accountSectionTraining),

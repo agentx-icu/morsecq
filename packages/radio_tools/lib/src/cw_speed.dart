@@ -3,7 +3,7 @@ import 'package:morse_core/morse_core.dart';
 /// What a CW speed means in milliseconds, on the PARIS standard.
 ///
 /// Wraps [MorseTiming] so the numbers shown in the speed tool are exactly the
-/// ones the trainer and the chat play at.
+/// ones the trainer and reference player play at.
 final class CwSpeed {
   CwSpeed({required double wpm, double? farnsworthWpm})
     : timing = MorseTiming(wpm: wpm, farnsworthWpm: farnsworthWpm);

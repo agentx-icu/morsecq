@@ -11,13 +11,10 @@ import 'package:morsecq/ui/learn/learn_home_widgets.dart';
 import 'package:morsecq/ui/learn/learn_scope.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/pages/learn_page.dart';
-import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:path/path.dart' as p;
-import 'package:provider/provider.dart';
 
 import 'helpers/fake_playback.dart';
 import 'helpers/l10n.dart';
-import 'helpers/stub_identity_service.dart';
 import 'helpers/test_controller.dart';
 
 Future<void> _setSize(WidgetTester tester, Size size) async {
@@ -121,7 +118,7 @@ void main() {
         l10nApp(home: LearnPage(playback: FakeLearnPlaybackFactory())),
       );
       await tester.pumpAndSettle();
-      expect(find.text(en.learnIdentityRequired), findsOneWidget);
+      expect(find.text(en.learnStorageUnavailable), findsOneWidget);
       expect(find.text(LearnPage.description(en)), findsOneWidget);
       expect(find.byType(LearnHome), findsNothing);
     });
@@ -130,59 +127,36 @@ void main() {
     // one widget test: real file I/O racing the widget tester's fake clock
     // is flaky on a loaded box, and an exception inside `runAsync` is only
     // reported, never propagated, so such a test hangs instead of failing.
-    test('controllerForIdentity reads <dataDirectory>/training/progress.json',
-        () async {
-      final tmp = await Directory.systemTemp.createTemp('morsecq_learn_');
-      addTearDown(() => tmp.delete(recursive: true));
-      await FileTrainerStore.inDataDirectory(
-        tmp.path,
-      ).save(TrainerProgress(currentLesson: 5));
-      final identity = StubIdentityService(tmp.path);
+    test(
+      'controllerForIdentity reads <dataDirectory>/training/progress.json',
+      () async {
+        final tmp = await Directory.systemTemp.createTemp('morsecq_learn_');
+        addTearDown(() => tmp.delete(recursive: true));
+        await FileTrainerStore.inDataDirectory(
+          tmp.path,
+        ).save(TrainerProgress(currentLesson: 5));
 
-      final controller = await LearnScope.controllerForIdentity(identity);
-      addTearDown(controller.dispose);
+        final controller = await LearnScope.controllerForDirectory(
+          tmp.path,
+          profileKey: 'guest',
+        );
+        addTearDown(controller.dispose);
 
-      expect(identity.dataDirectoryCalls, 1);
-      expect(controller.isLoaded, isTrue);
-      expect(controller.loadError, isNull);
-      expect(controller.currentLesson, 5);
-      // Settings had never been saved: defaults, and saving lands beside
-      // the progress file.
-      expect(controller.settings, TrainingSettings.defaults);
-      await controller.updateSettings(
-        const TrainingSettings(keyerMode: KeyerMode.straight),
-      );
-      expect(
-        await File(p.join(tmp.path, 'training', 'settings.json')).exists(),
-        isTrue,
-      );
-    });
-
-    testWidgets('the Provider-supplied IdentityService reaches the scope', (
-      tester,
-    ) async {
-      await _setSize(tester, const Size(390, 844));
-      final identity = StubIdentityService('/unused');
-      IdentityService? seen;
-      final t = await TestTraining.create();
-      await tester.pumpWidget(
-        Provider<IdentityService>.value(
-          value: identity,
-          child: l10nApp(
-            home: LearnPage(
-              playback: FakeLearnPlaybackFactory(),
-              controllerFactory: (context) async {
-                seen = context.read<IdentityService>();
-                return t.controller;
-              },
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(seen, same(identity));
-      expect(find.byType(LearnHome), findsOneWidget);
-    });
+        expect(controller.isLoaded, isTrue);
+        expect(controller.loadError, isNull);
+        expect(controller.currentLesson, 5);
+        // Settings had never been saved: defaults, and saving lands beside
+        // the progress file.
+        expect(controller.settings, TrainingSettings.defaults);
+        await controller.updateSettings(
+          const TrainingSettings(keyerMode: KeyerMode.straight),
+        );
+        expect(
+          await File(p.join(tmp.path, 'training', 'settings.json')).exists(),
+          isTrue,
+        );
+      },
+    );
 
     testWidgets('controllerFactory bypasses the identity lookup', (
       tester,

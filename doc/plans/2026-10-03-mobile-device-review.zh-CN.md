@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 # 移动设备特性评审
 
 **目标：** 找出手机与平板的特性（系统生命周期、音频会话、触控与屏幕尺寸、平台政策）在 iOS/Android 上让 MorseCQ 出错的地方，并在根因处修掉真实缺陷。

@@ -15,12 +15,6 @@ class SZh extends S {
   String get navLearn => '学习';
 
   @override
-  String get navChat => '聊天';
-
-  @override
-  String get navGroups => '群组';
-
-  @override
   String get navMe => '我';
 
   @override
@@ -30,22 +24,7 @@ class SZh extends S {
   String get navLearnDescription => 'Koch 课程、发报练习与听抄练习。';
 
   @override
-  String get navChatDescription => '基于 Tox P2P 的无服务器一对一莫尔斯通联。';
-
-  @override
-  String get navGroupsDescription => '群组网络 — 多位报务员在同一共享频道上拍发。';
-
-  @override
   String get navReferenceDescription => '字母表、规程符号、Q 简语、缩写，以及双向翻译器。';
-
-  @override
-  String get navMeDescription => '你的呼号、Tox 身份、进度与设置。';
-
-  @override
-  String get shellOfflineBanner => '离线：未连接到 Tox 网络。消息将在你恢复在线后发送。';
-
-  @override
-  String get actionOk => '确定';
 
   @override
   String get actionCancel => '取消';
@@ -57,70 +36,10 @@ class SZh extends S {
   String get actionDelete => '删除';
 
   @override
-  String get actionCopy => '复制';
-
-  @override
-  String get actionShare => '分享';
-
-  @override
   String get actionRetry => '重试';
 
   @override
   String get actionClose => '关闭';
-
-  @override
-  String get actionSearch => '搜索';
-
-  @override
-  String get actionSettings => '设置';
-
-  @override
-  String get connectionConnecting => '连接中…';
-
-  @override
-  String get connectionOnline => '在线';
-
-  @override
-  String get connectionOffline => '离线';
-
-  @override
-  String get messageStatusPending => '已排队 — 对方离线';
-
-  @override
-  String get messageStatusPendingDetail => 'Tox 没有服务器：消息会在对方上线后送达。';
-
-  @override
-  String get messageStatusSending => '发送中';
-
-  @override
-  String get messageStatusSent => '已发送';
-
-  @override
-  String get messageStatusFailed => '发送失败';
-
-  @override
-  String get errorWrongPassword => '密码错误，请重试。';
-
-  @override
-  String get errorPeerOffline => '该好友离线。Tox 没有服务器，消息会等到对方上线后再送达。';
-
-  @override
-  String get errorInvalidToxId => '这不是有效的 Tox ID（应为 76 位十六进制字符）。';
-
-  @override
-  String get errorAlreadyFriend => '这个 Tox ID 已在你的好友列表中。';
-
-  @override
-  String get errorOwnId => '这是你自己的 Tox ID。';
-
-  @override
-  String get errorGroupNotFound => '未找到该群组。';
-
-  @override
-  String get errorMessageTooLong => '消息超出单条 Tox 消息的长度上限。';
-
-  @override
-  String get errorUnknown => '出了点问题';
 
   @override
   String get languageTitle => '语言';
@@ -446,262 +365,16 @@ class SZh extends S {
   }
 
   @override
-  String get accountCopied => 'Tox ID 已复制到剪贴板';
-
-  @override
-  String get accountShowQr => '显示二维码';
-
-  @override
-  String get accountToxId => 'Tox ID';
-
-  @override
-  String get accountDisplayName => '显示名称';
-
-  @override
-  String get accountDisplayNameHint => '你的呼号或昵称';
-
-  @override
-  String get accountDisplayNameRequired => '请输入显示名称';
-
-  @override
-  String get accountStatusMessage => '状态消息';
-
-  @override
-  String get accountPassword => '密码';
-
-  @override
-  String get accountPasswordOptional => '密码（可选）';
-
-  @override
-  String get accountConfirmPassword => '确认密码';
-
-  @override
-  String get accountPasswordsDoNotMatch => '两次输入的密码不一致';
-
-  @override
-  String get accountShowPassword => '显示密码';
-
-  @override
-  String get accountHidePassword => '隐藏密码';
-
-  @override
-  String get accountStrengthWeak => '弱：至少使用 8 个字符';
-
-  @override
-  String get accountStrengthFair => '一般：12 个以上字符并混合多种类型更好';
-
-  @override
-  String get accountStrengthStrong => '强';
-
-  @override
-  String get accountStartupInspecting => '正在检查你的身份…';
-
-  @override
-  String get accountStartupOpening => '正在打开你的身份…';
-
-  @override
-  String get accountStartupFailedTitle => '无法启动';
-
-  @override
-  String get accountStartupFailedBody => 'MorseCQ 无法读取你的身份。没有做任何更改；你可以重试。';
-
-  @override
-  String get accountConnectionTapToReconnect => '点按重新连接';
-
-  @override
-  String get accountWelcomeTitle => '你的身份只保存在这台设备上';
-
-  @override
-  String get accountWelcomeIntro => 'MorseCQ 使用 Tox 点对点网络。没有服务器，也无需注册账号：你的身份是一对只保存在本机的密钥。';
-
-  @override
-  String get accountWelcomePointNoServer => '没有服务器，不需要手机号或电子邮件。报务员之间直接用莫尔斯电码通联。';
-
-  @override
-  String get accountWelcomePointTraining => '训练进度随身份一起保存，因此可以备份并在设备间迁移。';
-
-  @override
-  String get accountWelcomePointBackup => '没有人能为你找回身份。创建后请立即备份，否则设备丢失时身份也会一起丢失。';
-
-  @override
-  String get accountCreateIdentity => '创建身份';
-
-  @override
-  String get accountRestoreFromBackup => '从备份恢复';
-
-  @override
-  String get accountCreateTitle => '创建你的身份';
-
-  @override
-  String get accountCreateBody => '取一个别人能看到的名字。密码用于加密本机上的身份文件；如果你希望不输密码就能打开应用，可以留空。';
-
-  @override
-  String get accountCreateButton => '创建';
-
-  @override
-  String get accountCreating => '创建中…';
-
-  @override
-  String get accountBackupTitle => '现在就备份你的身份';
-
-  @override
-  String get accountBackupBody => '你的身份只存在于这台设备上。如果设备丢失、重置或被盗，将无法找回：好友不会认出新的身份，训练进度也会丢失。';
-
-  @override
-  String get accountBackupWhatIsInside => '备份文件包含用密码加密的身份密钥和你的训练进度。请把它保存在本机以外的安全位置。';
-
-  @override
-  String get accountBackupWhatIsInsidePlain => '备份文件包含未加密的身份密钥和你的训练进度。拿到这个文件的人都能使用你的身份：如需加密密钥，请先设置密码，并把文件保存在安全位置。';
-
-  @override
-  String get accountPasswordScope => '密码用于加密你的身份密钥。消息记录在磁盘上仍未加密，可借助设备加密来保护。';
-
-  @override
-  String get accountSectionNotifications => '通知';
-
-  @override
-  String get accountNotificationsEnable => '显示通知';
-
-  @override
-  String get accountNotificationsEnableSubtitle => '新消息、好友请求和群组邀请';
-
-  @override
-  String get accountNotificationsContent => '显示消息内容';
-
-  @override
-  String get accountNotificationsContentSubtitle => '在横幅和锁屏上显示文字和摩尔斯码。关闭后只提示收到了消息。';
-
-  @override
-  String get accountNotificationsAllow => '允许通知';
-
-  @override
-  String get accountNotificationsAllowSubtitle => '向系统请求通知权限';
-
-  @override
-  String get accountNotificationsDenied => 'MorseCQ 的通知已在系统设置中关闭。';
-
-  @override
-  String get accountBackupSaveFile => '保存备份文件';
-
-  @override
-  String get accountBackupShareFile => '分享备份文件';
-
-  @override
-  String get accountBackupSaved => '备份已保存';
-
-  @override
-  String get accountBackupNotSaved => '备份未保存';
-
-  @override
-  String get accountBackupFailed => '无法写入备份';
-
-  @override
-  String get accountBackupAcknowledge => '我了解：没有这份备份，我的身份将无法找回。';
-
-  @override
-  String get accountBackupContinue => '进入 MorseCQ';
-
-  @override
-  String get accountBackupShowQrHint => '朋友通过你的 Tox ID 添加你。可以以文本或二维码的形式分享。';
-
-  @override
-  String get accountRestoreTitle => '从备份恢复';
-
-  @override
-  String get accountRestoreBody => '选择一个由 MorseCQ 导出的备份文件。如果该身份设置了密码，这里需要输入。';
-
-  @override
-  String get accountRestoreChooseFile => '选择备份文件';
-
-  @override
-  String get accountRestoreNoFile => '请先选择备份文件';
-
-  @override
-  String get accountRestoreButton => '恢复';
-
-  @override
-  String get accountRestoring => '恢复中…';
-
-  @override
-  String get accountRestoreInvalidFile => '这个文件不是 MorseCQ 备份。';
-
-  @override
-  String get accountRestoreReplacesWarning => '恢复将替换当前设备上的身份。';
-
-  @override
-  String get accountUnlockTitle => '解锁你的身份';
-
-  @override
-  String get accountUnlockBody => '你的身份文件已加密。请输入密码继续。';
-
-  @override
-  String get accountUnlockButton => '解锁';
-
-  @override
-  String get accountUnlocking => '解锁中…';
-
-  @override
-  String get accountUnlockRestoreInstead => '改为从备份恢复';
-
-  @override
-  String get accountMeNoIdentity => '未加载身份';
-
-  @override
-  String get accountSectionAccount => '账户';
-
-  @override
   String get accountSectionTraining => '训练';
 
   @override
   String get accountSectionAbout => '关于';
 
   @override
-  String get accountSectionDanger => '危险操作';
-
-  @override
-  String get accountEditProfile => '编辑资料';
-
-  @override
-  String get accountEditProfileBody => '会显示给 Tox 网络上的好友。';
-
-  @override
-  String get accountSetPassword => '设置密码';
-
-  @override
-  String get accountChangePassword => '修改密码';
-
-  @override
-  String get accountRemovePassword => '移除密码';
-
-  @override
-  String get accountCurrentPassword => '当前密码';
-
-  @override
-  String get accountNewPassword => '新密码';
-
-  @override
-  String get accountPasswordUpdated => '密码已更新';
-
-  @override
-  String get accountPasswordRemoved => '密码已移除';
-
-  @override
-  String get accountProfileUpdated => '资料已更新';
-
-  @override
-  String get accountExportBackup => '导出备份';
-
-  @override
-  String get accountExportBackupSubtitle => '把你的身份和训练进度保存到文件';
-
-  @override
   String get accountTrainingDefaults => '播放与训练默认值';
 
   @override
   String get accountTrainingDefaultsSubtitle => '速度、音调、Farnsworth 间距';
-
-  @override
-  String get accountTrainingDefaultsPlaceholder => '速度、音调和 Farnsworth 默认值将放在这里。';
 
   @override
   String get accountAboutLicence => '许可证';
@@ -716,285 +389,7 @@ class SZh extends S {
   String get accountAboutSourceCopied => '源代码链接已复制';
 
   @override
-  String get accountAboutBackend => '后端';
-
-  @override
-  String get accountDeleteIdentity => '删除身份';
-
-  @override
-  String get accountDeleteIdentitySubtitle => '从本机抹除这个身份、聊天记录和训练进度';
-
-  @override
-  String get accountDeleteDialogTitle => '删除这个身份？';
-
-  @override
-  String get accountDeleteDialogBody => '这会从本机删除你的身份、聊天记录和训练进度。没有备份将无法找回。输入 DELETE 以确认。';
-
-  @override
-  String get accountDeleteConfirmWord => 'DELETE';
-
-  @override
-  String get accountDeleteConfirmHint => '输入 DELETE';
-
-  @override
-  String get accountDeleteButton => '删除';
-
-  @override
-  String accountRestoreFileChosenSize(int bytes) {
-    return '已选择备份文件（$bytes 字节）';
-  }
-
-  @override
-  String get chatSearchConversations => '搜索会话';
-
-  @override
-  String get chatNoConversations => '还没有会话';
-
-  @override
-  String get chatNoSearchResults => '没有匹配的会话';
-
-  @override
-  String get chatPin => '置顶';
-
-  @override
-  String get chatUnpin => '取消置顶';
-
-  @override
-  String get chatMarkRead => '标为已读';
-
-  @override
-  String get chatDelete => '删除';
-
-  @override
-  String get chatDeleteConversationTitle => '删除会话？';
-
-  @override
-  String get chatDeleteConversationBody => '将删除本机上这个会话的历史记录。Tox 不保留副本。';
-
-  @override
-  String get chatDraftPrefix => '草稿：';
-
-  @override
-  String get chatSelectConversation => '选择一个会话';
-
-  @override
-  String get chatContacts => '联系人';
-
-  @override
-  String get chatNoMessages => '还没有消息 — 呼叫 CQ 开始通联。';
-
-  @override
-  String get chatTrainingMode => '训练模式';
-
-  @override
-  String get chatTrainingModeOn => '训练模式已开：隐藏文本';
-
-  @override
-  String get chatTrainingModeOff => '训练模式已关';
-
-  @override
-  String get chatAutoPlay => '自动播放收到的电码';
-
-  @override
-  String get chatAutoPlayOn => '自动播放已开：新消息到达即播放';
-
-  @override
-  String get chatAutoPlayOff => '自动播放已关';
-
-  @override
-  String get chatReveal => '显示';
-
-  @override
-  String get chatHiddenText => '先听，再显示';
-
-  @override
-  String get chatPlay => '播放莫尔斯';
-
-  @override
-  String get chatStop => '停止';
-
-  @override
-  String get chatPlaybackSettings => '播放设置';
-
-  @override
-  String get chatCharacterSpeed => '字符速度';
-
-  @override
-  String get chatFarnsworthSpeed => 'Farnsworth 速度';
-
-  @override
-  String get chatTone => '音调';
-
-  @override
-  String get chatWpm => 'WPM';
-
-  @override
-  String get chatHz => 'Hz';
-
-  @override
-  String get chatMembers => '成员';
-
-  @override
-  String get chatLeaveGroup => '退出群组';
-
-  @override
-  String get chatLeaveGroupTitle => '退出这个群组？';
-
-  @override
-  String get chatLeaveGroupBody => '你将不再收到消息。之后可凭 chat id 重新加入。';
-
-  @override
-  String get chatLeave => '退出';
-
-  @override
-  String get chatConferenceNote => '旧式会议群：此处无法使用莫尔斯键控元数据（v2）。文本仍然可用。';
-
-  @override
-  String get chatClearHistory => '清空历史记录';
-
-  @override
-  String get chatModeStraightKey => '直键';
-
-  @override
-  String get chatModePaddles => '双桨';
-
-  @override
-  String get chatKeyMessage => '用电键拍发消息';
-
-  @override
   String get chatSend => '发送';
-
-  @override
-  String get chatTooLong => '超出单条 Tox 消息的长度上限';
-
-  @override
-  String get chatKeyHint => '在电键区按键，或按空格';
-
-  @override
-  String get chatPaddleHint => '点按双桨，或按住 Ctrl（左 点，右 划）';
-
-  @override
-  String get chatDeleteLast => '删除最后一个字符';
-
-  @override
-  String get chatNoFriends => '还没有好友。用对方的 Tox ID 添加一位。';
-
-  @override
-  String get chatNoRequests => '没有待处理的请求';
-
-  @override
-  String get chatAddFriend => '添加好友';
-
-  @override
-  String get chatMyToxId => '我的 Tox ID';
-
-  @override
-  String get chatToxIdLabel => 'Tox ID（76 位十六进制字符）';
-
-  @override
-  String get chatToxIdInvalid => 'Tox ID 必须正好是 76 位十六进制字符';
-
-  @override
-  String get chatToxIdOwn => '这是你自己的 Tox ID';
-
-  @override
-  String get chatToxIdAlreadyFriend => '已在你的好友列表中';
-
-  @override
-  String get chatRequestMessage => '附言';
-
-  @override
-  String get chatDefaultRequestMessage => 'MorseCQ CQ';
-
-  @override
-  String get chatSendRequest => '发送请求';
-
-  @override
-  String get chatRequestSent => '好友请求已发送';
-
-  @override
-  String get chatScanQr => '扫描二维码';
-
-  @override
-  String get chatScanQrDesktopHint => '扫描二维码需要手机摄像头';
-
-  @override
-  String get chatScanQrTitle => '扫描 Tox ID';
-
-  @override
-  String get chatScanQrNotToxId => '这个二维码不是 Tox ID';
-
-  @override
-  String get chatAccept => '接受';
-
-  @override
-  String get chatReject => '拒绝';
-
-  @override
-  String get chatCopied => '已复制到剪贴板';
-
-  @override
-  String get chatNoIdentity => '未加载身份';
-
-  @override
-  String get chatRemoveFriend => '删除好友';
-
-  @override
-  String get chatRemoveFriendTitle => '删除这位好友？';
-
-  @override
-  String get chatRemoveFriendBody => '对方将无法再给你发消息。';
-
-  @override
-  String get chatRemove => '删除';
-
-  @override
-  String get chatNoGroups => '还没有群组。创建一个，或凭 chat id 加入。';
-
-  @override
-  String get chatCreateGroup => '创建群组';
-
-  @override
-  String get chatJoinGroup => '加入群组';
-
-  @override
-  String get chatGroupName => '群组名称';
-
-  @override
-  String get chatGroupNameRequired => '请给群组取个名字';
-
-  @override
-  String get chatAdvanced => '高级';
-
-  @override
-  String get chatLegacyConference => '旧式会议群（兼容旧客户端）';
-
-  @override
-  String get chatLegacyConferenceHint => '不推荐：没有固定 chat id，也没有莫尔斯元数据。';
-
-  @override
-  String get chatCreate => '创建';
-
-  @override
-  String get chatChatIdLabel => 'Chat id（64 位十六进制字符）';
-
-  @override
-  String get chatChatIdInvalid => 'Chat id 必须正好是 64 位十六进制字符';
-
-  @override
-  String get chatPassword => '密码（可选）';
-
-  @override
-  String get chatJoin => '加入';
-
-  @override
-  String get chatJoinRequested => '加入中 — 找到一位成员后群组就会出现。';
-
-  @override
-  String get chatConferenceBadge => '会议群';
-
-  @override
-  String get chatCopyChatId => '复制 chat id';
 
   @override
   String get learnLessonCardTitle => 'Koch 课程';
@@ -1028,9 +423,6 @@ class SZh extends S {
 
   @override
   String get learnLoading => '正在加载你的进度...';
-
-  @override
-  String get learnIdentityRequired => '创建或解锁身份后即可开始训练。进度随身份保存，会一同进入备份。';
 
   @override
   String get learnLoadFailed => '无法读取已保存的进度。将从头开始；旧文件已保留为 .corrupt。';
@@ -1956,33 +1348,6 @@ class SZh extends S {
   String get learnSeveritySevere => '严重';
 
   @override
-  String get notificationOpen => '打开';
-
-  @override
-  String get notificationChannelMessages => '消息';
-
-  @override
-  String get notificationChannelMessagesDescription => '来自好友和群组的新莫尔斯电码消息';
-
-  @override
-  String get notificationChannelFriendRequests => '好友请求';
-
-  @override
-  String get notificationChannelFriendRequestsDescription => '有人想添加你为好友';
-
-  @override
-  String get notificationChannelGroupInvites => '群组邀请';
-
-  @override
-  String get notificationChannelGroupInvitesDescription => '好友邀请你加入群组';
-
-  @override
-  String get notificationNewMessage => '新消息';
-
-  @override
-  String get notificationFriendRequestTitle => '新的好友请求';
-
-  @override
   String learnNewestCharIs(String char) {
     return '本课新字符：$char';
   }
@@ -2088,51 +1453,6 @@ class SZh extends S {
   }
 
   @override
-  String get accountNewPasswordRequired => '请输入新密码';
-
-  @override
-  String get accountToxIdQrSemantics => 'Tox ID 二维码';
-
-  @override
-  String get accountBackupSaveDialogTitle => '保存 MorseCQ 备份';
-
-  @override
-  String get accountBackupShareSubject => 'MorseCQ 身份备份';
-
-  @override
-  String get accountBackupChooseDialogTitle => '选择 MorseCQ 备份';
-
-  @override
-  String notificationNewMessages(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 条新消息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String notificationFriendRequestFrom(String name) {
-    return '来自 $name 的好友请求';
-  }
-
-  @override
-  String notificationFriendRequestBody(String name, String message) {
-    return '$name：$message';
-  }
-
-  @override
-  String notificationGroupInviteTitle(String group) {
-    return '邀请加入 $group';
-  }
-
-  @override
-  String notificationGroupInviteBody(String name) {
-    return '$name 邀请你加入';
-  }
-
-  @override
   String desktopTrayShow(String app) {
     return '显示 $app';
   }
@@ -2154,80 +1474,10 @@ class SZh extends S {
   }
 
   @override
-  String desktopTrayTooltipUnread(String app, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 条未读',
-    );
-    return '$app — $_temp0';
-  }
-
-  @override
-  String desktopWindowTitleUnread(String badge, String app) {
-    return '($badge) $app';
-  }
-
-  @override
   String get listenStateOn => '开';
 
   @override
   String get listenStateOff => '关';
-
-  @override
-  String chatBytesLeftCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '剩余 $count 字节',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatMemberCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 位成员',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatFriendsCount(int count) {
-    return '好友（$count）';
-  }
-
-  @override
-  String chatFriendRequestsCount(int count) {
-    return '好友请求（$count）';
-  }
-
-  @override
-  String chatGroupInvitesCount(int count) {
-    return '群组邀请（$count）';
-  }
-
-  @override
-  String chatMembersTitleCount(int count) {
-    return '成员 · $count';
-  }
-
-  @override
-  String chatInvitedByName(String name) {
-    return '邀请人：$name';
-  }
-
-  @override
-  String chatMemberSelf(String name) {
-    return '$name（你）';
-  }
-
-  @override
-  String chatSliderValue(String label, int value, String unit) {
-    return '$label：$value $unit';
-  }
 
   @override
   String referenceTelegraphCodes(String codes) {
@@ -2292,38 +1542,9 @@ class SZh extends S {
   String get appearanceDark => '深色';
 
   @override
-  String get appearanceSubtitle => '五种风格，支持浅色与深色';
-
-  @override
-  String get chatClearHistoryBody => '删除当前会话在本机保存的历史记录？其他设备上的副本不受影响。此操作无法撤销。';
-
-  @override
-  String get chatLoadEarlier => '加载更早消息';
-
-  @override
-  String get chatHistoryLoadFailed => '更早消息加载失败，点击重试。';
-
-  @override
-  String get chatRetryHistory => '重试';
-
-  @override
-  String chatNewMessages(int count) {
-    return '$count 条新消息';
-  }
-
-  @override
   String learnShowAllChars(int count) {
     return '显示全部 $count 个字符';
   }
-
-  @override
-  String get chatSelfMe => '我';
-
-  @override
-  String get chatSelfLocalOnly => '仅保存在本机';
-
-  @override
-  String get chatSelfContactSubtitle => '草稿、练习与备忘 · 不会发送';
 
   @override
   String get learnShowFewerChars => '收起字符';
@@ -2336,12 +1557,6 @@ class SZh extends S {
 
   @override
   String get learnLeaveDrillConfirm => '退出';
-
-  @override
-  String get chatScanQrPermissionDenied => 'MorseCQ 需要相机权限才能扫描二维码，请在系统设置中允许。';
-
-  @override
-  String get chatScanQrCameraUnavailable => '此设备的相机不可用。';
 
   @override
   String get learnReplayAssistedNote => '已重播：本次练习计入练习量，但不会解锁课程或更新复习。';
@@ -2452,11 +1667,6 @@ class SZh extends S {
 
   @override
   String get learnPlanTomorrow => '明天会生成新计划。自由练习随时可用。';
-
-  @override
-  String learnPlanNext(String step) {
-    return '下一步：$step';
-  }
 
   @override
   String learnPlanEarlier(int done, int total) {
@@ -2692,75 +1902,6 @@ class SZh extends S {
   String get learnQsoSummaryNote => 'QSO 成绩与抄收正确率分开统计，不会解锁课程。';
 
   @override
-  String get messageStatusCancelled => '已取消——未发送';
-
-  @override
-  String get chatMessageLearnActions => '消息操作';
-
-  @override
-  String get chatPracticeMessage => '练习抄收这条消息';
-
-  @override
-  String get chatSaveAsMaterial => '保存为训练素材';
-
-  @override
-  String get chatSavedAsMaterial => '已保存到“我的素材”';
-
-  @override
-  String get chatSaveMaterialFailed => '保存素材失败，请重试。';
-
-  @override
-  String get chatListenOnly => '纯听训练';
-
-  @override
-  String get chatListenOnlyHidden => '纯听模式：点播放收听';
-
-  @override
-  String chatClearHistoryMaterials(int count) {
-    return '此会话中有 $count 条消息已保存为训练素材。这些副本会保留，直到你在“学习 › 我的素材”中删除。';
-  }
-
-  @override
-  String get chatPracticeTitle => '抄收练习';
-
-  @override
-  String chatPracticeUnsupported(String chars) {
-    return '这条消息包含无法用莫尔斯码拍发的字符：$chars。练习时会略过它们。';
-  }
-
-  @override
-  String chatPracticeTrainableCount(int count) {
-    return '可练习 $count 个字符。';
-  }
-
-  @override
-  String get chatPracticeNothingTrainable => '这条消息中没有可用莫尔斯码练习的内容。';
-
-  @override
-  String get chatPracticeConfirm => '练习其余部分';
-
-  @override
-  String get chatPracticeHint => '提示';
-
-  @override
-  String chatPracticeHintShown(String symbols) {
-    return '提示：$symbols …';
-  }
-
-  @override
-  String get chatPracticeAssisted => '已使用辅助：计入练习量，但不用于复习或速度建议。';
-
-  @override
-  String chatPracticeErrors(int wrong, int missed, int extra) {
-    return '$wrong 个错误 · $missed 个遗漏 · $extra 个多余';
-  }
-
-  @override
-  String chatPracticeErrorsAction(String symbols) {
-    return '练习出错字符：$symbols';
-  }
-
-  @override
   String get learnTipDahTooLongTitle => '划太长';
 
   @override
@@ -2814,74 +1955,6 @@ class SZh extends S {
   String get learnRhythmZoomOut => '缩小';
 
   @override
-  String get chatSearchMessages => '搜索消息';
-
-  @override
-  String get chatSearchHint => '在此会话中搜索';
-
-  @override
-  String get chatSearchAnyone => '所有人';
-
-  @override
-  String get chatSearchMe => '我';
-
-  @override
-  String get chatSearchThem => '对方';
-
-  @override
-  String get chatSearchAnyDate => '任何日期';
-
-  @override
-  String chatSearchDateRange(String from, String to) {
-    return '$from – $to';
-  }
-
-  @override
-  String get chatSearchBookmarked => '已收藏';
-
-  @override
-  String get chatSearchNoResults => '没有匹配的消息。';
-
-  @override
-  String get chatSearchMore => '加载更多';
-
-  @override
-  String get chatAddBookmark => '收藏';
-
-  @override
-  String get chatRemoveBookmark => '取消收藏';
-
-  @override
-  String get chatBookmarked => '已收藏';
-
-  @override
-  String get chatBookmarkFailed => '无法保存收藏。';
-
-  @override
-  String get chatRetrySend => '重新发送';
-
-  @override
-  String get chatCancelSend => '取消发送';
-
-  @override
-  String get chatRetryQueued => '已重新排队，联系人上线后发送。';
-
-  @override
-  String get chatSendCancelled => '已取消，消息未发送。';
-
-  @override
-  String get chatRetryNotNeeded => '这条消息已不再是失败状态，无需重试。';
-
-  @override
-  String get chatCancelTooLate => '无法取消：消息已交给网络，可能会送达。';
-
-  @override
-  String get chatSendControlUnavailable => '此消息不支持该操作。';
-
-  @override
-  String get chatSendControlFailed => '操作未完成，消息保持原状态，请重试。';
-
-  @override
   String get workbenchTitle => '录音工作台';
 
   @override
@@ -2897,7 +1970,7 @@ class SZh extends S {
   String get workbenchFormats => 'WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。';
 
   @override
-  String get workbenchBackupNote => '录音保存在本设备上，除非导出备份时选择包含，否则不会进入身份备份。已保存选段的标题、备注和位置始终会备份。';
+  String get workbenchBackupNote => '录音保存在本机。清除学习数据或卸载前请保留副本。已保存的选段保留标题、笔记和位置。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2909,9 +1982,6 @@ class SZh extends S {
 
   @override
   String get workbenchStereo => '立体声';
-
-  @override
-  String get workbenchTruncated => '文件提前结束，只使用已有的音频。';
 
   @override
   String get workbenchErrorNotWav => '这不是 WAV 文件。';
@@ -3139,15 +2209,12 @@ class SZh extends S {
   String get materialsUnfavorite => '取消收藏';
 
   @override
-  String get materialsEmpty => '还没有素材。添加你自己的文本、单词表或呼号，或保存一条聊天消息。';
+  String get materialsEmpty => '暂无素材。可添加自己的文本、词表或呼号。';
 
   @override
   String materialsItems(int count) {
     return '$count 项';
   }
-
-  @override
-  String get materialsFromChat => '来自聊天';
 
   @override
   String get materialsActions => '素材操作';
@@ -3264,46 +2331,7 @@ class SZh extends S {
   String get materialsPracticeNothing => '此模式下没有可练习的条目。';
 
   @override
-  String get guestTryLearning => '先试试学习';
-
-  @override
-  String get guestBanner => '访客学习：进度保存在本设备。聊天需要身份。';
-
-  @override
-  String get guestGetIdentity => '设置身份';
-
-  @override
-  String get guestIdentityTitle => '需要身份';
-
-  @override
-  String get guestIdentityBody => '通过 Tox 聊天需要你自己的身份。可以新建、从备份恢复，或解锁本设备上的身份。新建身份时，访客学习进度会自动转移过去。';
-
-  @override
-  String get guestClearData => '清除访客学习数据';
-
-  @override
-  String get guestClearDataBody => '删除你在本设备以访客身份产生的进度、计划和素材。不影响任何身份。';
-
-  @override
   String get guestClearConfirm => '清除';
-
-  @override
-  String get guestCleared => '已清除访客学习数据。';
-
-  @override
-  String get guestClearFailed => '无法清除访客数据。';
-
-  @override
-  String get guestMigrationFailed => '身份已就绪，但访客学习进度尚未转移，数据仍安全保存在本设备。';
-
-  @override
-  String get guestChoiceBody => '你还有访客学习进度。当前使用的是恢复身份的进度，没有合并任何内容。';
-
-  @override
-  String get guestChoiceKeep => '保留恢复的进度';
-
-  @override
-  String get guestChoiceUseGuest => '改用访客进度';
 
   @override
   String get placementTitle => '测试我的水平';
@@ -3365,431 +2393,12 @@ class SZh extends S {
   }
 
   @override
-  String get chatJumpToLatest => '最新消息';
-
-  @override
-  String get chatMessageGone => '该消息已不在此会话中。';
-
-  @override
-  String get chatListenOnlyPreview => '新消息——请收听抄收';
-
-  @override
-  String get chatSaveMaterialConfirm => '保存其余部分';
-
-  @override
   String materialsImportConfirm(int count) {
     return '导入 $count 个素材？';
   }
 
   @override
   String get materialsExportTxt => '导出为文本（TXT）';
-
-  @override
-  String get accountBackupMediaTitle => '包含已保存的录音吗？';
-
-  @override
-  String accountBackupMediaBody(int count, String size) {
-    return '已保存 $count 段录音（$size MB）。标题、备注和位置始终在备份中；音频仅在你选择包含时才会加入。';
-  }
-
-  @override
-  String accountBackupMediaTooLarge(String size) {
-    return '已保存的录音（$size MB）太大，无法放入备份；只会包含标题、备注和位置。';
-  }
-
-  @override
-  String get accountBackupMediaInclude => '包含录音';
-
-  @override
-  String get accountBackupMediaSkip => '不含录音';
-
-  @override
-  String get diagTitle => '连接诊断';
-
-  @override
-  String get diagOpenSubtitle => '消息为何在等待，以及如何重新连接';
-
-  @override
-  String get diagBannerDetails => '详情';
-
-  @override
-  String get diagSummaryNoIdentity => '尚未打开身份，没有可检查的连接。';
-
-  @override
-  String get diagSummaryOnlinePeerOnline => '你已连接到 Tox 网络，且该联系人在线。消息会直接送达对方。';
-
-  @override
-  String get diagSummaryOnlinePeerOffline => '你已连接，但该联系人离线。消息会留在本机的待发队列中，对方上线后自动发送。';
-
-  @override
-  String get diagSummaryOnline => '你已连接到 Tox 网络。';
-
-  @override
-  String get diagSummaryConnecting => '正在连接 Tox 网络。应用启动或网络切换后可能需要一分钟左右。';
-
-  @override
-  String get diagSummaryOffline => '你未连接到 Tox 网络。连接恢复前无法收发任何消息。';
-
-  @override
-  String get diagLocalLabel => '本机连接';
-
-  @override
-  String diagSinceChanged(String time) {
-    return '自 $time 起';
-  }
-
-  @override
-  String diagSinceFirst(String time) {
-    return '自 $time 起观察到';
-  }
-
-  @override
-  String diagSinceResumed(String time) {
-    return '自 $time 回到应用后观察到';
-  }
-
-  @override
-  String get diagLastOnlineLabel => '最近一次观察到的连接';
-
-  @override
-  String get diagLastOnlineNow => '当前已连接';
-
-  @override
-  String get diagLastOnlineNone => '尚未观察到连接。';
-
-  @override
-  String get diagLastOnlineHint => '这是本机最后一次观察到自身连接的时间，并非消息送达对方的时间。';
-
-  @override
-  String get diagPeerLabel => '联系人';
-
-  @override
-  String get diagUnknown => '未知';
-
-  @override
-  String get diagPeerUnknownHint => '只有在你已连接时才能看到联系人是否在线。';
-
-  @override
-  String get diagPeerGroupHint => '群成员是否在线请查看成员列表。';
-
-  @override
-  String get diagPendingLabel => '待发送';
-
-  @override
-  String get diagPendingNone => '没有待发消息';
-
-  @override
-  String diagPendingCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 条消息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String diagPendingOldest(String time) {
-    return '最早一条排队于 $time';
-  }
-
-  @override
-  String get diagPendingUnknown => '聊天连接后才能得知';
-
-  @override
-  String get diagPendingHint => '排队的消息保存在本机，对方可达时会自动发送。诊断页面不会丢弃或重发它们。';
-
-  @override
-  String get diagReconnect => '重新连接';
-
-  @override
-  String get diagReconnecting => '正在重新连接…';
-
-  @override
-  String diagReconnectFailed(String reason) {
-    return '重新连接失败：$reason';
-  }
-
-  @override
-  String get diagReconnectNote => '重新连接会重新发起连接尝试。上线仍可能需要一段时间，届时本页会自动更新。';
-
-  @override
-  String get diagAboutTitle => 'MorseCQ 如何连接';
-
-  @override
-  String get diagAboutBody => 'MorseCQ 没有服务器。你的设备通过 Tox 点对点网络直接与联系人通信，因此双方必须同时在线消息才能送达。手机会暂停后台应用：MorseCQ 在后台无法保持连接，回到应用时会重新连接。';
-
-  @override
-  String get diagDetailsTitle => '技术详情';
-
-  @override
-  String get diagDetailIdentity => '身份';
-
-  @override
-  String get diagDetailStatus => '状态';
-
-  @override
-  String get diagDetailObserved => '观察时间';
-
-  @override
-  String get diagDetailQueued => '队列条目';
-
-  @override
-  String get diagDetailError => '最近错误代码';
-
-  @override
-  String get backupXTitle => '加密备份';
-
-  @override
-  String get backupXIntro => '选择要带到其他设备的内容。整个文件都会用你在此设置的口令加密。';
-
-  @override
-  String get backupXCategoryIdentity => '身份与 Tox 配置文件';
-
-  @override
-  String get backupXCategoryTraining => '训练进度与素材';
-
-  @override
-  String get backupXCategoryChat => '聊天记录（含给自己的笔记）';
-
-  @override
-  String get backupXCategoryMeta => '草稿、置顶与书签';
-
-  @override
-  String get backupXCategoryPrefs => '应用偏好设置';
-
-  @override
-  String get backupXPrefsHint => '播放、通知、外观与语言。不含窗口位置和按键绑定。';
-
-  @override
-  String get backupXCategoryMedia => '已保存的录音';
-
-  @override
-  String get backupXMediaHint => '默认不包含：录音可能很大。不包含时只带走标题和备注。';
-
-  @override
-  String get backupXCategoryPending => '未发送的消息';
-
-  @override
-  String get backupXPendingHint => '恢复后仅供查看，绝不会自动发送。';
-
-  @override
-  String get backupXRequired => '必选';
-
-  @override
-  String backupXSizeLine(int count, String size) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 项',
-    );
-    return '$_temp0 · $size';
-  }
-
-  @override
-  String backupXSizeKb(String size) {
-    return '$size KB';
-  }
-
-  @override
-  String backupXSizeMb(String size) {
-    return '$size MB';
-  }
-
-  @override
-  String backupXMediaTooLarge(String size) {
-    return '太大，无法包含（$size）';
-  }
-
-  @override
-  String backupXInvitesNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 个等待离线好友的群邀请不会被带走。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get backupXIdentityPasswordNote => '身份密码仍保留在配置文件上：新设备除备份口令外还会要求输入它。';
-
-  @override
-  String backupXTotal(String size) {
-    return '总计约 $size';
-  }
-
-  @override
-  String get backupXPassphrase => '备份口令';
-
-  @override
-  String get backupXPassphraseConfirm => '再次输入口令';
-
-  @override
-  String get backupXPassphraseHint => '至少 8 个字符。它与身份密码相互独立，且无法找回。';
-
-  @override
-  String get backupXPassphraseTooShort => '请至少使用 8 个字符';
-
-  @override
-  String get backupXPassphraseMismatch => '两次输入的口令不一致';
-
-  @override
-  String get backupXExport => '创建加密备份';
-
-  @override
-  String get backupXExporting => '正在创建备份…';
-
-  @override
-  String get backupXMigrationNote => '要换设备？在新设备恢复后，请停止在本机使用此身份：同一身份的两台设备可能把同一条消息发送两次。';
-
-  @override
-  String get backupXBusy => '备份过程中数据持续变化，请重试。';
-
-  @override
-  String get backupXTooLarge => '备份太大。请去掉录音后重试。';
-
-  @override
-  String get restoreXWrongPassphrase => '口令错误，或文件已被修改、不完整。';
-
-  @override
-  String get restoreXUnsupported => '此备份由更新版本的 MorseCQ 创建。';
-
-  @override
-  String get restoreXCheck => '打开备份';
-
-  @override
-  String get restoreXPreviewTitle => '备份内容';
-
-  @override
-  String restoreXCreated(String date) {
-    return '创建于 $date';
-  }
-
-  @override
-  String get restoreXIncluded => '包含';
-
-  @override
-  String get restoreXExcluded => '不在此备份中';
-
-  @override
-  String restoreXPendingIncluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 条未发送的消息将恢复供你查看，不会自动发送。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXPendingExcluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '旧设备上的 $count 条未发送消息不在此备份中。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXIdentityPassword => '身份密码';
-
-  @override
-  String get restoreXIdentityPasswordNote => '此备份中的身份另设有密码，请一并输入。';
-
-  @override
-  String get restoreXConfirmTitle => '替换本机上的身份？';
-
-  @override
-  String get restoreXConfirmBody => '本机上的身份和数据将被备份替换。在此连接之前，请先停止在旧设备上使用该身份。';
-
-  @override
-  String get restoreXConfirm => '替换并恢复';
-
-  @override
-  String get restoreXReportTitle => '恢复完成';
-
-  @override
-  String get restoreXReportRestored => '已恢复';
-
-  @override
-  String get restoreXReportNotIncluded => '未恢复';
-
-  @override
-  String get restoreXReportPrefsFailed => '偏好设置未能应用，已保留原有设置。';
-
-  @override
-  String restoreXReportPendingReview(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 条未发送的消息在“聊天”中等你查看。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportPendingNotResumed(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '旧设备上的 $count 条未发送消息未被带过来。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportInvites(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 个排队中的群邀请未重新发送。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXReportStopOld => '请停止在旧设备上使用此身份。';
-
-  @override
-  String get restoreXReportDone => '完成';
-
-  @override
-  String pendingReviewBanner(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '来自旧设备的 $count 条未发送消息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get pendingReviewTitle => '未发送的消息';
-
-  @override
-  String get pendingReviewBody => '这些消息在旧设备上等待发送。MorseCQ 绝不会自动发送；如仍需要，请重新拍发。';
-
-  @override
-  String pendingReviewQueuedAt(String time) {
-    return '于 $time 在旧设备上排队';
-  }
-
-  @override
-  String get pendingReviewDismiss => '忽略';
-
-  @override
-  String get pendingReviewDismissAll => '全部忽略';
-
-  @override
-  String get pendingReviewEmpty => '没有需要查看的内容了。';
-
-  @override
-  String get backupXWizardInside => '备份文件会用你自选的口令整体加密，包含身份密钥和训练进度。请把文件和口令保存在本机以外的安全位置。';
-
-  @override
-  String get backupXMeSubtitle => '包含身份、聊天和进度的加密文件，可留存或迁移到其他设备';
 
   @override
   String get conditionsTitle => '收听环境';
@@ -4030,9 +2639,6 @@ class SZh extends S {
   }
 
   @override
-  String get telegraphInterpretAction => '按中文电码解读';
-
-  @override
   String get telegraphInterpretTitle => '电码解读';
 
   @override
@@ -4051,183 +2657,7 @@ class SZh extends S {
   String get telegraphAmbiguous => '多个字共用此码';
 
   @override
-  String get groupPracticeTitle => '群组带练';
-
-  @override
-  String get groupPracticeIntro => '带练者照常在群聊中拍发练习内容。每位成员在此选择练习消息，按自己的速度抄收。答案和成绩只保存在本机，不会发送到群里。';
-
-  @override
-  String get groupPracticeNew => '新建练习';
-
-  @override
-  String get groupPracticeTitleField => '标题';
-
-  @override
-  String get groupPracticeCreate => '创建';
-
-  @override
-  String get groupPracticeInstructor => '带练者';
-
-  @override
-  String get groupPracticeParticipant => '参与者';
-
-  @override
-  String get groupPracticeInstructorHint => '在群聊中拍发每道练习，在此添加为一轮并勾选完成；轮次请在群聊里通知。';
-
-  @override
-  String get groupPracticeParticipantHint => '把带练者的练习消息添加为轮次，并在此逐一抄收。';
-
-  @override
-  String get groupPracticeLocalNote => '仅限本机：轮次、角色和成绩不会与其他成员同步，错过的消息也不一定能送达所有人。';
-
-  @override
-  String get groupPracticeAddRound => '添加练习';
-
-  @override
-  String get groupPracticeNoMessages => '最近记录中没有可添加的消息。';
-
-  @override
-  String get groupPracticeNotConnected => '聊天连接后才能读取群记录。';
-
-  @override
-  String get groupPracticeRoundOpen => '待完成';
-
-  @override
-  String get groupPracticeRoundDone => '已完成';
-
-  @override
-  String get groupPracticeRoundUnavailable => '不可用';
-
-  @override
-  String get groupPracticeSourceGone => '该练习消息已不在记录中。';
-
-  @override
-  String get groupPracticeSourceLoading => '正在查找消息…';
-
-  @override
-  String groupPracticeAttemptResult(int accuracy, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '抄收：$accuracy%（$count 次）',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get groupPracticeCopy => '抄收';
-
-  @override
-  String get groupPracticeRemoveRound => '移除本轮';
-
-  @override
-  String get groupPracticeSummary => '小结';
-
-  @override
-  String groupPracticeRoundsDone(int done, int total) {
-    return '已完成 $done/$total 轮';
-  }
-
-  @override
-  String groupPracticeUnavailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 轮不可用',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeAccuracy(int accuracy) {
-    return '抄收正确率：$accuracy%';
-  }
-
-  @override
-  String groupPracticeAssisted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 次使用了提示',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeShareHint(int done, int total, int accuracy) {
-    return '如需分享，请自行在群聊中拍发成绩，例如 $done/$total $accuracy%。不会自动发送。';
-  }
-
-  @override
-  String get groupPracticeComplete => '结束练习';
-
-  @override
-  String get groupPracticeDeleteTitle => '删除这次练习？';
-
-  @override
-  String get groupPracticeDeleteBody => '本机上的轮次和成绩将被删除；训练记录和群消息保留。';
-
-  @override
   String get conditionsAudioFailed => '本设备无法播放音频。请改用“清晰”环境练习。';
-
-  @override
-  String get moderationBlock => '屏蔽';
-
-  @override
-  String moderationBlockTitle(String name) {
-    return '屏蔽 $name？';
-  }
-
-  @override
-  String get moderationBlockFriendBody => '对方将被移出好友，与其的会话也会被删除。此后其消息、好友请求和群组邀请都不会再出现在此设备上。对方不会收到通知。';
-
-  @override
-  String get moderationBlockMemberBody => '此后其在本群组的消息都不会再出现在此设备上。对方不会收到通知。Tox 为每位群成员在每个群组中使用不同的密钥，因此仅对本群组生效。';
-
-  @override
-  String get moderationBlocked => '已屏蔽';
-
-  @override
-  String get moderationUnblock => '解除屏蔽';
-
-  @override
-  String get moderationUnblocked => '已解除屏蔽';
-
-  @override
-  String get moderationBlockedTitle => '已屏蔽的人';
-
-  @override
-  String get moderationBlockedSubtitle => '隐藏其消息、请求和邀请';
-
-  @override
-  String get moderationBlockedEmpty => '你还没有屏蔽任何人。';
-
-  @override
-  String get moderationBlockedNote => '屏蔽在此设备上生效：Tox 没有中心服务器，被屏蔽的人仍可能尝试联系你，但他们的任何内容都不会在这里显示。';
-
-  @override
-  String get termsGateTitle => '社区准则';
-
-  @override
-  String get termsGateIntro => 'MorseCQ 聊天让你与他人直接连接，中间没有服务器。开始之前，请同意以下规则：';
-
-  @override
-  String get termsGateRuleZero => '零容忍：禁止骚扰、仇恨、威胁、涉及未成年人的性内容、垃圾信息以及任何违法内容。';
-
-  @override
-  String get termsGateRuleContacts => '只有你接受的人才能给你发消息；群组须通过邀请或群组 ID 加入。';
-
-  @override
-  String get termsGateRuleBlock => '可以在会话、群成员列表、好友请求或群组邀请中屏蔽任何人。';
-
-  @override
-  String get termsGateAgree => '同意并继续';
-
-  @override
-  String get termsGateReadFull => '阅读完整使用条款';
-
-  @override
-  String get termsGateSaveFailed => '无法保存你的选择，请重试。';
 
   @override
   String get aboutPrivacyPolicy => '隐私政策';
@@ -4240,9 +2670,6 @@ class SZh extends S {
 
   @override
   String get aboutLinkFailed => '无法打开链接，已复制链接。';
-
-  @override
-  String get errorPeerBlocked => '你已屏蔽此人。请先在“我 → 已屏蔽的人”中解除屏蔽。';
 
   @override
   String get offlineClearData => '清除学习数据';
@@ -4258,6 +2685,9 @@ class SZh extends S {
 
   @override
   String get learnStorageUnavailable => '无法在此设备上打开你的训练数据，请重试。';
+
+  @override
+  String get materialsImportedSource => '导入来源';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -4271,12 +2701,6 @@ class SZhHant extends SZh {
   String get navLearn => '學習';
 
   @override
-  String get navChat => '聊天';
-
-  @override
-  String get navGroups => '群組';
-
-  @override
   String get navMe => '我';
 
   @override
@@ -4286,22 +2710,7 @@ class SZhHant extends SZh {
   String get navLearnDescription => 'Koch 課程、發報練習與聽抄練習。';
 
   @override
-  String get navChatDescription => '基於 Tox P2P 的無伺服器一對一摩斯通聯。';
-
-  @override
-  String get navGroupsDescription => '群組網路 — 多位報務員在同一共享頻道上拍發。';
-
-  @override
   String get navReferenceDescription => '字母表、規程符號、Q 簡語、縮寫，以及雙向翻譯器。';
-
-  @override
-  String get navMeDescription => '你的呼號、Tox 身分、進度與設定。';
-
-  @override
-  String get shellOfflineBanner => '離線：未連線至 Tox 網路。重新上線後便會傳送訊息。';
-
-  @override
-  String get actionOk => '確定';
 
   @override
   String get actionCancel => '取消';
@@ -4313,70 +2722,10 @@ class SZhHant extends SZh {
   String get actionDelete => '刪除';
 
   @override
-  String get actionCopy => '複製';
-
-  @override
-  String get actionShare => '分享';
-
-  @override
   String get actionRetry => '重試';
 
   @override
   String get actionClose => '關閉';
-
-  @override
-  String get actionSearch => '搜尋';
-
-  @override
-  String get actionSettings => '設定';
-
-  @override
-  String get connectionConnecting => '連線中…';
-
-  @override
-  String get connectionOnline => '上線';
-
-  @override
-  String get connectionOffline => '離線';
-
-  @override
-  String get messageStatusPending => '已排隊 — 對方離線';
-
-  @override
-  String get messageStatusPendingDetail => 'Tox 沒有伺服器：訊息會在對方上線後送達。';
-
-  @override
-  String get messageStatusSending => '傳送中';
-
-  @override
-  String get messageStatusSent => '已傳送';
-
-  @override
-  String get messageStatusFailed => '傳送失敗';
-
-  @override
-  String get errorWrongPassword => '密碼錯誤，請重試。';
-
-  @override
-  String get errorPeerOffline => '該聯絡人離線。Tox 沒有伺服器，訊息會等到對方上線後再送達。';
-
-  @override
-  String get errorInvalidToxId => '這不是有效的 Tox ID（應為 76 位十六進位字元）。';
-
-  @override
-  String get errorAlreadyFriend => '這個 Tox ID 已在你的好友列表中。';
-
-  @override
-  String get errorOwnId => '這是你自己的 Tox ID。';
-
-  @override
-  String get errorGroupNotFound => '未找到該群組。';
-
-  @override
-  String get errorMessageTooLong => '訊息超出單條 Tox 訊息的長度上限。';
-
-  @override
-  String get errorUnknown => '出了點問題';
 
   @override
   String get languageTitle => '語言';
@@ -4702,262 +3051,16 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get accountCopied => 'Tox ID 已複製到剪貼簿';
-
-  @override
-  String get accountShowQr => '顯示QR 碼';
-
-  @override
-  String get accountToxId => 'Tox ID';
-
-  @override
-  String get accountDisplayName => '顯示名稱';
-
-  @override
-  String get accountDisplayNameHint => '你的呼號或暱稱';
-
-  @override
-  String get accountDisplayNameRequired => '請輸入顯示名稱';
-
-  @override
-  String get accountStatusMessage => '狀態訊息';
-
-  @override
-  String get accountPassword => '密碼';
-
-  @override
-  String get accountPasswordOptional => '密碼（可選）';
-
-  @override
-  String get accountConfirmPassword => '確認密碼';
-
-  @override
-  String get accountPasswordsDoNotMatch => '兩次輸入的密碼不一致';
-
-  @override
-  String get accountShowPassword => '顯示密碼';
-
-  @override
-  String get accountHidePassword => '隱藏密碼';
-
-  @override
-  String get accountStrengthWeak => '弱：至少使用 8 個字元';
-
-  @override
-  String get accountStrengthFair => '一般：12 個以上字元並混合多種類型更好';
-
-  @override
-  String get accountStrengthStrong => '強';
-
-  @override
-  String get accountStartupInspecting => '正在檢查你的身分…';
-
-  @override
-  String get accountStartupOpening => '正在開啟你的身分…';
-
-  @override
-  String get accountStartupFailedTitle => '無法啟動';
-
-  @override
-  String get accountStartupFailedBody => 'MorseCQ 無法讀取你的身分。沒有做任何更改；你可以重試。';
-
-  @override
-  String get accountConnectionTapToReconnect => '點按重新連線';
-
-  @override
-  String get accountWelcomeTitle => '你的身分只儲存在這台裝置上';
-
-  @override
-  String get accountWelcomeIntro => 'MorseCQ 使用 Tox 點對點網路。沒有伺服器，也無需註冊帳號：你的身分是一對只儲存在本機的密鑰。';
-
-  @override
-  String get accountWelcomePointNoServer => '沒有伺服器，不需要手機號或電子郵件。報務員之間直接用摩斯電碼通聯。';
-
-  @override
-  String get accountWelcomePointTraining => '訓練進度隨身分一起儲存，因此可以備份並在裝置間遷移。';
-
-  @override
-  String get accountWelcomePointBackup => '沒有人能為你找回身分。建立後請立即備份，以免裝置遺失時連同身分一起遺失。';
-
-  @override
-  String get accountCreateIdentity => '建立身分';
-
-  @override
-  String get accountRestoreFromBackup => '從備份還原';
-
-  @override
-  String get accountCreateTitle => '建立你的身分';
-
-  @override
-  String get accountCreateBody => '取一個別人能看到的名字。密碼用於加密本機上的身分檔案；如果你希望不輸密碼就能開啟應用程式，可以留空。';
-
-  @override
-  String get accountCreateButton => '建立';
-
-  @override
-  String get accountCreating => '建立中…';
-
-  @override
-  String get accountBackupTitle => '現在就備份你的身分';
-
-  @override
-  String get accountBackupBody => '你的身分只存在於這台裝置上。若裝置遺失、重設或遭竊，身分將無法找回：聯絡人不會認出新的身分，訓練進度也會遺失。';
-
-  @override
-  String get accountBackupWhatIsInside => '備份檔案包含以密碼加密的身分金鑰和你的訓練進度。請把它儲存在本機以外的安全位置。';
-
-  @override
-  String get accountBackupWhatIsInsidePlain => '備份檔案包含未加密的身分金鑰和你的訓練進度。取得這個檔案的人都能使用你的身分：如需加密金鑰，請先設定密碼，並把檔案儲存在安全位置。';
-
-  @override
-  String get accountPasswordScope => '密碼用於加密你的身分金鑰。訊息記錄在磁碟上仍未加密，可藉由裝置加密來保護。';
-
-  @override
-  String get accountSectionNotifications => '通知';
-
-  @override
-  String get accountNotificationsEnable => '顯示通知';
-
-  @override
-  String get accountNotificationsEnableSubtitle => '新訊息、好友請求和群組邀請';
-
-  @override
-  String get accountNotificationsContent => '顯示訊息內容';
-
-  @override
-  String get accountNotificationsContentSubtitle => '在橫幅和鎖定畫面上顯示文字和摩斯碼。關閉後只提示收到了訊息。';
-
-  @override
-  String get accountNotificationsAllow => '允許通知';
-
-  @override
-  String get accountNotificationsAllowSubtitle => '向系統請求通知權限';
-
-  @override
-  String get accountNotificationsDenied => 'MorseCQ 的通知已在系統設定中關閉。';
-
-  @override
-  String get accountBackupSaveFile => '儲存備份檔案';
-
-  @override
-  String get accountBackupShareFile => '分享備份檔案';
-
-  @override
-  String get accountBackupSaved => '備份已儲存';
-
-  @override
-  String get accountBackupNotSaved => '備份未儲存';
-
-  @override
-  String get accountBackupFailed => '無法寫入備份';
-
-  @override
-  String get accountBackupAcknowledge => '我瞭解：沒有這份備份，我的身分將無法找回。';
-
-  @override
-  String get accountBackupContinue => '進入 MorseCQ';
-
-  @override
-  String get accountBackupShowQrHint => '朋友通過你的 Tox ID 新增你。可以以文字或QR 碼的形式分享。';
-
-  @override
-  String get accountRestoreTitle => '從備份還原';
-
-  @override
-  String get accountRestoreBody => '選擇一個由 MorseCQ 匯出的備份檔案。如果該身分設定了密碼，這裡需要輸入。';
-
-  @override
-  String get accountRestoreChooseFile => '選擇備份檔案';
-
-  @override
-  String get accountRestoreNoFile => '請先選擇備份檔案';
-
-  @override
-  String get accountRestoreButton => '還原';
-
-  @override
-  String get accountRestoring => '還原中…';
-
-  @override
-  String get accountRestoreInvalidFile => '這個檔案不是 MorseCQ 備份。';
-
-  @override
-  String get accountRestoreReplacesWarning => '還原將替換當前裝置上的身分。';
-
-  @override
-  String get accountUnlockTitle => '解鎖你的身分';
-
-  @override
-  String get accountUnlockBody => '你的身分檔案已加密。請輸入密碼繼續。';
-
-  @override
-  String get accountUnlockButton => '解鎖';
-
-  @override
-  String get accountUnlocking => '解鎖中…';
-
-  @override
-  String get accountUnlockRestoreInstead => '改為從備份還原';
-
-  @override
-  String get accountMeNoIdentity => '未載入身分';
-
-  @override
-  String get accountSectionAccount => '帳戶';
-
-  @override
   String get accountSectionTraining => '訓練';
 
   @override
   String get accountSectionAbout => '關於';
 
   @override
-  String get accountSectionDanger => '危險操作';
-
-  @override
-  String get accountEditProfile => '編輯資料';
-
-  @override
-  String get accountEditProfileBody => '會顯示給 Tox 網路上的聯絡人。';
-
-  @override
-  String get accountSetPassword => '設定密碼';
-
-  @override
-  String get accountChangePassword => '修改密碼';
-
-  @override
-  String get accountRemovePassword => '移除密碼';
-
-  @override
-  String get accountCurrentPassword => '當前密碼';
-
-  @override
-  String get accountNewPassword => '新密碼';
-
-  @override
-  String get accountPasswordUpdated => '密碼已更新';
-
-  @override
-  String get accountPasswordRemoved => '密碼已移除';
-
-  @override
-  String get accountProfileUpdated => '資料已更新';
-
-  @override
-  String get accountExportBackup => '匯出備份';
-
-  @override
-  String get accountExportBackupSubtitle => '把你的身分和訓練進度儲存到檔案';
-
-  @override
   String get accountTrainingDefaults => '播放與訓練預設值';
 
   @override
   String get accountTrainingDefaultsSubtitle => '速度、音調、Farnsworth 間距';
-
-  @override
-  String get accountTrainingDefaultsPlaceholder => '速度、音調和 Farnsworth 預設值將放在這裡。';
 
   @override
   String get accountAboutLicence => '授權條款';
@@ -4972,285 +3075,7 @@ class SZhHant extends SZh {
   String get accountAboutSourceCopied => '原始碼連結已複製';
 
   @override
-  String get accountAboutBackend => '後端';
-
-  @override
-  String get accountDeleteIdentity => '刪除身分';
-
-  @override
-  String get accountDeleteIdentitySubtitle => '從本機抹除這個身分、聊天紀錄和訓練進度';
-
-  @override
-  String get accountDeleteDialogTitle => '刪除這個身分？';
-
-  @override
-  String get accountDeleteDialogBody => '這會從本機刪除你的身分、聊天紀錄和訓練進度。沒有備份將無法找回。輸入 DELETE 以確認。';
-
-  @override
-  String get accountDeleteConfirmWord => 'DELETE';
-
-  @override
-  String get accountDeleteConfirmHint => '輸入 DELETE';
-
-  @override
-  String get accountDeleteButton => '刪除';
-
-  @override
-  String accountRestoreFileChosenSize(int bytes) {
-    return '已選擇備份檔案（$bytes 位元組）';
-  }
-
-  @override
-  String get chatSearchConversations => '搜尋對話';
-
-  @override
-  String get chatNoConversations => '還沒有對話';
-
-  @override
-  String get chatNoSearchResults => '沒有匹配的對話';
-
-  @override
-  String get chatPin => '置頂';
-
-  @override
-  String get chatUnpin => '取消置頂';
-
-  @override
-  String get chatMarkRead => '標為已讀';
-
-  @override
-  String get chatDelete => '刪除';
-
-  @override
-  String get chatDeleteConversationTitle => '刪除對話？';
-
-  @override
-  String get chatDeleteConversationBody => '將刪除本機上這個對話的歷史紀錄。Tox 不保留副本。';
-
-  @override
-  String get chatDraftPrefix => '草稿：';
-
-  @override
-  String get chatSelectConversation => '選擇一個對話';
-
-  @override
-  String get chatContacts => '聯絡人';
-
-  @override
-  String get chatNoMessages => '還沒有訊息 — 呼叫 CQ 開始通聯。';
-
-  @override
-  String get chatTrainingMode => '訓練模式';
-
-  @override
-  String get chatTrainingModeOn => '訓練模式已開：隱藏文字';
-
-  @override
-  String get chatTrainingModeOff => '訓練模式已關';
-
-  @override
-  String get chatAutoPlay => '自動播放收到的電碼';
-
-  @override
-  String get chatAutoPlayOn => '自動播放已開啟：新訊息到達即播放';
-
-  @override
-  String get chatAutoPlayOff => '自動播放已關閉';
-
-  @override
-  String get chatReveal => '顯示';
-
-  @override
-  String get chatHiddenText => '先聽，再顯示';
-
-  @override
-  String get chatPlay => '播放摩斯';
-
-  @override
-  String get chatStop => '停止';
-
-  @override
-  String get chatPlaybackSettings => '播放設定';
-
-  @override
-  String get chatCharacterSpeed => '字元速度';
-
-  @override
-  String get chatFarnsworthSpeed => 'Farnsworth 速度';
-
-  @override
-  String get chatTone => '音調';
-
-  @override
-  String get chatWpm => 'WPM';
-
-  @override
-  String get chatHz => 'Hz';
-
-  @override
-  String get chatMembers => '成員';
-
-  @override
-  String get chatLeaveGroup => '離開群組';
-
-  @override
-  String get chatLeaveGroupTitle => '離開這個群組？';
-
-  @override
-  String get chatLeaveGroupBody => '你將不再收到訊息。之後可憑 chat id 重新加入。';
-
-  @override
-  String get chatLeave => '離開';
-
-  @override
-  String get chatConferenceNote => '舊式會議群：此處無法使用摩斯鍵控中繼資料（v2）。文字仍然可用。';
-
-  @override
-  String get chatClearHistory => '清空歷史紀錄';
-
-  @override
-  String get chatModeStraightKey => '直鍵';
-
-  @override
-  String get chatModePaddles => '雙槳';
-
-  @override
-  String get chatKeyMessage => '用電鍵拍發訊息';
-
-  @override
   String get chatSend => '傳送';
-
-  @override
-  String get chatTooLong => '超出單條 Tox 訊息的長度上限';
-
-  @override
-  String get chatKeyHint => '在電鍵區按鍵，或按空格';
-
-  @override
-  String get chatPaddleHint => '點按雙槳，或按住 Ctrl（左 點，右 劃）';
-
-  @override
-  String get chatDeleteLast => '刪除最後一個字元';
-
-  @override
-  String get chatNoFriends => '還沒有好友。用對方的 Tox ID 新增一位。';
-
-  @override
-  String get chatNoRequests => '沒有待處理的請求';
-
-  @override
-  String get chatAddFriend => '新增好友';
-
-  @override
-  String get chatMyToxId => '我的 Tox ID';
-
-  @override
-  String get chatToxIdLabel => 'Tox ID（76 位十六進位字元）';
-
-  @override
-  String get chatToxIdInvalid => 'Tox ID 必須正好是 76 位十六進位字元';
-
-  @override
-  String get chatToxIdOwn => '這是你自己的 Tox ID';
-
-  @override
-  String get chatToxIdAlreadyFriend => '已在你的好友列表中';
-
-  @override
-  String get chatRequestMessage => '附言';
-
-  @override
-  String get chatDefaultRequestMessage => 'MorseCQ CQ';
-
-  @override
-  String get chatSendRequest => '傳送請求';
-
-  @override
-  String get chatRequestSent => '好友請求已傳送';
-
-  @override
-  String get chatScanQr => '掃描QR 碼';
-
-  @override
-  String get chatScanQrDesktopHint => '掃描 QR 碼需要手機相機';
-
-  @override
-  String get chatScanQrTitle => '掃描 Tox ID';
-
-  @override
-  String get chatScanQrNotToxId => '這個QR 碼不是 Tox ID';
-
-  @override
-  String get chatAccept => '接受';
-
-  @override
-  String get chatReject => '拒絕';
-
-  @override
-  String get chatCopied => '已複製到剪貼簿';
-
-  @override
-  String get chatNoIdentity => '未載入身分';
-
-  @override
-  String get chatRemoveFriend => '刪除好友';
-
-  @override
-  String get chatRemoveFriendTitle => '刪除這位好友？';
-
-  @override
-  String get chatRemoveFriendBody => '對方將無法再給你發訊息。';
-
-  @override
-  String get chatRemove => '刪除';
-
-  @override
-  String get chatNoGroups => '還沒有群組。建立一個，或憑 chat id 加入。';
-
-  @override
-  String get chatCreateGroup => '建立群組';
-
-  @override
-  String get chatJoinGroup => '加入群組';
-
-  @override
-  String get chatGroupName => '群組名稱';
-
-  @override
-  String get chatGroupNameRequired => '請給群組取個名字';
-
-  @override
-  String get chatAdvanced => '進階';
-
-  @override
-  String get chatLegacyConference => '舊式會議群（相容舊客戶端）';
-
-  @override
-  String get chatLegacyConferenceHint => '不推薦：沒有固定 chat id，也沒有摩斯中繼資料。';
-
-  @override
-  String get chatCreate => '建立';
-
-  @override
-  String get chatChatIdLabel => 'Chat id（64 位十六進位字元）';
-
-  @override
-  String get chatChatIdInvalid => 'Chat id 必須正好是 64 位十六進位字元';
-
-  @override
-  String get chatPassword => '密碼（可選）';
-
-  @override
-  String get chatJoin => '加入';
-
-  @override
-  String get chatJoinRequested => '加入中 — 找到一位成員後群組就會出現。';
-
-  @override
-  String get chatConferenceBadge => '會議群';
-
-  @override
-  String get chatCopyChatId => '複製 chat id';
 
   @override
   String get learnLessonCardTitle => 'Koch 課程';
@@ -5284,9 +3109,6 @@ class SZhHant extends SZh {
 
   @override
   String get learnLoading => '正在載入你的進度...';
-
-  @override
-  String get learnIdentityRequired => '建立或解鎖身分後即可開始訓練。進度隨身分儲存，會一同進入備份。';
 
   @override
   String get learnLoadFailed => '無法讀取已儲存的進度。將從頭開始；舊檔案已保留為 .corrupt。';
@@ -6212,33 +4034,6 @@ class SZhHant extends SZh {
   String get learnSeveritySevere => '嚴重';
 
   @override
-  String get notificationOpen => '開啟';
-
-  @override
-  String get notificationChannelMessages => '訊息';
-
-  @override
-  String get notificationChannelMessagesDescription => '來自好友和群組的新摩斯電碼訊息';
-
-  @override
-  String get notificationChannelFriendRequests => '好友請求';
-
-  @override
-  String get notificationChannelFriendRequestsDescription => '有人想新增你為好友';
-
-  @override
-  String get notificationChannelGroupInvites => '群組邀請';
-
-  @override
-  String get notificationChannelGroupInvitesDescription => '好友邀請你加入群組';
-
-  @override
-  String get notificationNewMessage => '新訊息';
-
-  @override
-  String get notificationFriendRequestTitle => '新的好友請求';
-
-  @override
   String learnNewestCharIs(String char) {
     return '本課新字元：$char';
   }
@@ -6344,51 +4139,6 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get accountNewPasswordRequired => '請輸入新密碼';
-
-  @override
-  String get accountToxIdQrSemantics => 'Tox ID QR 碼';
-
-  @override
-  String get accountBackupSaveDialogTitle => '儲存 MorseCQ 備份';
-
-  @override
-  String get accountBackupShareSubject => 'MorseCQ 身分備份';
-
-  @override
-  String get accountBackupChooseDialogTitle => '選擇 MorseCQ 備份';
-
-  @override
-  String notificationNewMessages(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 條新訊息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String notificationFriendRequestFrom(String name) {
-    return '來自 $name 的好友請求';
-  }
-
-  @override
-  String notificationFriendRequestBody(String name, String message) {
-    return '$name：$message';
-  }
-
-  @override
-  String notificationGroupInviteTitle(String group) {
-    return '邀請加入 $group';
-  }
-
-  @override
-  String notificationGroupInviteBody(String name) {
-    return '$name 邀請你加入';
-  }
-
-  @override
   String desktopTrayShow(String app) {
     return '顯示 $app';
   }
@@ -6410,80 +4160,10 @@ class SZhHant extends SZh {
   }
 
   @override
-  String desktopTrayTooltipUnread(String app, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 條未讀',
-    );
-    return '$app — $_temp0';
-  }
-
-  @override
-  String desktopWindowTitleUnread(String badge, String app) {
-    return '($badge) $app';
-  }
-
-  @override
   String get listenStateOn => '開';
 
   @override
   String get listenStateOff => '關';
-
-  @override
-  String chatBytesLeftCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '剩餘 $count 位元組',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatMemberCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 位成員',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatFriendsCount(int count) {
-    return '好友（$count）';
-  }
-
-  @override
-  String chatFriendRequestsCount(int count) {
-    return '好友請求（$count）';
-  }
-
-  @override
-  String chatGroupInvitesCount(int count) {
-    return '群組邀請（$count）';
-  }
-
-  @override
-  String chatMembersTitleCount(int count) {
-    return '成員 · $count';
-  }
-
-  @override
-  String chatInvitedByName(String name) {
-    return '邀請人：$name';
-  }
-
-  @override
-  String chatMemberSelf(String name) {
-    return '$name（你）';
-  }
-
-  @override
-  String chatSliderValue(String label, int value, String unit) {
-    return '$label：$value $unit';
-  }
 
   @override
   String referenceTelegraphCodes(String codes) {
@@ -6548,38 +4228,9 @@ class SZhHant extends SZh {
   String get appearanceDark => '深色';
 
   @override
-  String get appearanceSubtitle => '五種風格，支援淺色與深色';
-
-  @override
-  String get chatClearHistoryBody => '刪除當前對話在本機儲存的歷史紀錄？其他裝置上的副本不受影響。此操作無法撤銷。';
-
-  @override
-  String get chatLoadEarlier => '載入更早訊息';
-
-  @override
-  String get chatHistoryLoadFailed => '更早訊息載入失敗，點選重試。';
-
-  @override
-  String get chatRetryHistory => '重試';
-
-  @override
-  String chatNewMessages(int count) {
-    return '$count 條新訊息';
-  }
-
-  @override
   String learnShowAllChars(int count) {
     return '顯示全部 $count 個字元';
   }
-
-  @override
-  String get chatSelfMe => '我';
-
-  @override
-  String get chatSelfLocalOnly => '僅儲存在本機';
-
-  @override
-  String get chatSelfContactSubtitle => '草稿、練習與備忘 · 不會傳送';
 
   @override
   String get learnShowFewerChars => '收起字元';
@@ -6592,12 +4243,6 @@ class SZhHant extends SZh {
 
   @override
   String get learnLeaveDrillConfirm => '退出';
-
-  @override
-  String get chatScanQrPermissionDenied => 'MorseCQ 需要相機權限才能掃描 QR 碼，請在系統設定中允許。';
-
-  @override
-  String get chatScanQrCameraUnavailable => '此裝置的相機無法使用。';
 
   @override
   String get learnReplayAssistedNote => '已重播：本次練習計入練習量，但不會解鎖課程或更新複習。';
@@ -6708,11 +4353,6 @@ class SZhHant extends SZh {
 
   @override
   String get learnPlanTomorrow => '明天會產生新計畫。自由練習隨時可用。';
-
-  @override
-  String learnPlanNext(String step) {
-    return '下一步：$step';
-  }
 
   @override
   String learnPlanEarlier(int done, int total) {
@@ -6948,75 +4588,6 @@ class SZhHant extends SZh {
   String get learnQsoSummaryNote => 'QSO 成績與抄收正確率分開統計，不會解鎖課程。';
 
   @override
-  String get messageStatusCancelled => '已取消——未發送';
-
-  @override
-  String get chatMessageLearnActions => '訊息操作';
-
-  @override
-  String get chatPracticeMessage => '練習抄收這則訊息';
-
-  @override
-  String get chatSaveAsMaterial => '儲存為訓練素材';
-
-  @override
-  String get chatSavedAsMaterial => '已儲存到「我的素材」';
-
-  @override
-  String get chatSaveMaterialFailed => '儲存素材失敗，請重試。';
-
-  @override
-  String get chatListenOnly => '純聽訓練';
-
-  @override
-  String get chatListenOnlyHidden => '純聽模式：點播放收聽';
-
-  @override
-  String chatClearHistoryMaterials(int count) {
-    return '此對話中有 $count 則訊息已儲存為訓練素材。這些副本會保留，直到你在「學習 › 我的素材」中刪除。';
-  }
-
-  @override
-  String get chatPracticeTitle => '抄收練習';
-
-  @override
-  String chatPracticeUnsupported(String chars) {
-    return '這則訊息包含無法用摩斯碼拍發的字元：$chars。練習時會略過它們。';
-  }
-
-  @override
-  String chatPracticeTrainableCount(int count) {
-    return '可練習 $count 個字元。';
-  }
-
-  @override
-  String get chatPracticeNothingTrainable => '這則訊息中沒有可用摩斯碼練習的內容。';
-
-  @override
-  String get chatPracticeConfirm => '練習其餘部分';
-
-  @override
-  String get chatPracticeHint => '提示';
-
-  @override
-  String chatPracticeHintShown(String symbols) {
-    return '提示：$symbols …';
-  }
-
-  @override
-  String get chatPracticeAssisted => '已使用輔助：計入練習量，但不用於複習或速度建議。';
-
-  @override
-  String chatPracticeErrors(int wrong, int missed, int extra) {
-    return '$wrong 個錯誤 · $missed 個遺漏 · $extra 個多餘';
-  }
-
-  @override
-  String chatPracticeErrorsAction(String symbols) {
-    return '練習出錯字元：$symbols';
-  }
-
-  @override
   String get learnTipDahTooLongTitle => '劃太長';
 
   @override
@@ -7070,74 +4641,6 @@ class SZhHant extends SZh {
   String get learnRhythmZoomOut => '縮小';
 
   @override
-  String get chatSearchMessages => '搜尋訊息';
-
-  @override
-  String get chatSearchHint => '在此對話中搜尋';
-
-  @override
-  String get chatSearchAnyone => '所有人';
-
-  @override
-  String get chatSearchMe => '我';
-
-  @override
-  String get chatSearchThem => '對方';
-
-  @override
-  String get chatSearchAnyDate => '任何日期';
-
-  @override
-  String chatSearchDateRange(String from, String to) {
-    return '$from – $to';
-  }
-
-  @override
-  String get chatSearchBookmarked => '已收藏';
-
-  @override
-  String get chatSearchNoResults => '沒有符合的訊息。';
-
-  @override
-  String get chatSearchMore => '載入更多';
-
-  @override
-  String get chatAddBookmark => '收藏';
-
-  @override
-  String get chatRemoveBookmark => '取消收藏';
-
-  @override
-  String get chatBookmarked => '已收藏';
-
-  @override
-  String get chatBookmarkFailed => '無法儲存收藏。';
-
-  @override
-  String get chatRetrySend => '重新傳送';
-
-  @override
-  String get chatCancelSend => '取消傳送';
-
-  @override
-  String get chatRetryQueued => '已重新排入佇列，聯絡人上線後傳送。';
-
-  @override
-  String get chatSendCancelled => '已取消，訊息未傳送。';
-
-  @override
-  String get chatRetryNotNeeded => '這則訊息已不是失敗狀態，無需重試。';
-
-  @override
-  String get chatCancelTooLate => '無法取消：訊息已交給網路，可能會送達。';
-
-  @override
-  String get chatSendControlUnavailable => '此訊息不支援此操作。';
-
-  @override
-  String get chatSendControlFailed => '操作未完成，訊息保持原狀態，請重試。';
-
-  @override
   String get workbenchTitle => '錄音工作台';
 
   @override
@@ -7153,7 +4656,7 @@ class SZhHant extends SZh {
   String get workbenchFormats => 'WAV，16 位元 PCM，單聲道或立體聲，8/16/44.1/48 kHz；最大 50 MB、20 分鐘。';
 
   @override
-  String get workbenchBackupNote => '錄音儲存在本裝置上，除非匯出備份時選擇包含，否則不會進入身分備份。已儲存選段的標題、備註和位置一律會備份。';
+  String get workbenchBackupNote => '錄音保存在本機。清除學習資料或解除安裝前請保留副本。已儲存的選段保留標題、筆記和位置。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -7165,9 +4668,6 @@ class SZhHant extends SZh {
 
   @override
   String get workbenchStereo => '立體聲';
-
-  @override
-  String get workbenchTruncated => '檔案提前結束，只使用已有的音訊。';
 
   @override
   String get workbenchErrorNotWav => '這不是 WAV 檔案。';
@@ -7395,15 +4895,12 @@ class SZhHant extends SZh {
   String get materialsUnfavorite => '取消收藏';
 
   @override
-  String get materialsEmpty => '還沒有素材。新增你自己的文字、單字表或呼號，或儲存一則聊天訊息。';
+  String get materialsEmpty => '尚無素材。可加入自己的文字、詞表或呼號。';
 
   @override
   String materialsItems(int count) {
     return '$count 項';
   }
-
-  @override
-  String get materialsFromChat => '來自聊天';
 
   @override
   String get materialsActions => '素材操作';
@@ -7520,46 +5017,7 @@ class SZhHant extends SZh {
   String get materialsPracticeNothing => '此模式下沒有可練習的條目。';
 
   @override
-  String get guestTryLearning => '先試試學習';
-
-  @override
-  String get guestBanner => '訪客學習：進度儲存在本裝置。聊天需要身分。';
-
-  @override
-  String get guestGetIdentity => '設定身分';
-
-  @override
-  String get guestIdentityTitle => '需要身分';
-
-  @override
-  String get guestIdentityBody => '透過 Tox 聊天需要你自己的身分。可以新建、從備份還原，或解鎖本裝置上的身分。新建身分時，訪客學習進度會自動轉移過去。';
-
-  @override
-  String get guestClearData => '清除訪客學習資料';
-
-  @override
-  String get guestClearDataBody => '刪除你在本裝置以訪客身分產生的進度、計畫和素材。不影響任何身分。';
-
-  @override
   String get guestClearConfirm => '清除';
-
-  @override
-  String get guestCleared => '已清除訪客學習資料。';
-
-  @override
-  String get guestClearFailed => '無法清除訪客資料。';
-
-  @override
-  String get guestMigrationFailed => '身分已就緒，但訪客學習進度尚未轉移，資料仍安全儲存在本裝置。';
-
-  @override
-  String get guestChoiceBody => '你還有訪客學習進度。目前使用的是還原身分的進度，沒有合併任何內容。';
-
-  @override
-  String get guestChoiceKeep => '保留還原的進度';
-
-  @override
-  String get guestChoiceUseGuest => '改用訪客進度';
 
   @override
   String get placementTitle => '測試我的程度';
@@ -7621,431 +5079,12 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get chatJumpToLatest => '最新訊息';
-
-  @override
-  String get chatMessageGone => '該訊息已不在此對話中。';
-
-  @override
-  String get chatListenOnlyPreview => '新訊息——請收聽抄收';
-
-  @override
-  String get chatSaveMaterialConfirm => '儲存其餘部分';
-
-  @override
   String materialsImportConfirm(int count) {
     return '匯入 $count 個素材？';
   }
 
   @override
   String get materialsExportTxt => '匯出為文字（TXT）';
-
-  @override
-  String get accountBackupMediaTitle => '包含已儲存的錄音嗎？';
-
-  @override
-  String accountBackupMediaBody(int count, String size) {
-    return '已儲存 $count 段錄音（$size MB）。標題、備註和位置一律在備份中；音訊僅在你選擇包含時才會加入。';
-  }
-
-  @override
-  String accountBackupMediaTooLarge(String size) {
-    return '已儲存的錄音（$size MB）太大，無法放入備份；只會包含標題、備註和位置。';
-  }
-
-  @override
-  String get accountBackupMediaInclude => '包含錄音';
-
-  @override
-  String get accountBackupMediaSkip => '不含錄音';
-
-  @override
-  String get diagTitle => '連線診斷';
-
-  @override
-  String get diagOpenSubtitle => '訊息為何在等待，以及如何重新連線';
-
-  @override
-  String get diagBannerDetails => '詳情';
-
-  @override
-  String get diagSummaryNoIdentity => '尚未開啟身分，沒有可檢查的連線。';
-
-  @override
-  String get diagSummaryOnlinePeerOnline => '你已連線到 Tox 網路，且該聯絡人在線。訊息會直接送達對方。';
-
-  @override
-  String get diagSummaryOnlinePeerOffline => '你已連線，但該聯絡人離線。訊息會留在本機的待發佇列中，對方上線後自動傳送。';
-
-  @override
-  String get diagSummaryOnline => '你已連線到 Tox 網路。';
-
-  @override
-  String get diagSummaryConnecting => '正在連線 Tox 網路。應用程式啟動或網路切換後可能需要一分鐘左右。';
-
-  @override
-  String get diagSummaryOffline => '你未連線到 Tox 網路。連線恢復前無法收發任何訊息。';
-
-  @override
-  String get diagLocalLabel => '本機連線';
-
-  @override
-  String diagSinceChanged(String time) {
-    return '自 $time 起';
-  }
-
-  @override
-  String diagSinceFirst(String time) {
-    return '自 $time 起觀察到';
-  }
-
-  @override
-  String diagSinceResumed(String time) {
-    return '自 $time 回到應用程式後觀察到';
-  }
-
-  @override
-  String get diagLastOnlineLabel => '最近一次觀察到的連線';
-
-  @override
-  String get diagLastOnlineNow => '目前已連線';
-
-  @override
-  String get diagLastOnlineNone => '尚未觀察到連線。';
-
-  @override
-  String get diagLastOnlineHint => '這是本機最後一次觀察到自身連線的時間，並非訊息送達對方的時間。';
-
-  @override
-  String get diagPeerLabel => '聯絡人';
-
-  @override
-  String get diagUnknown => '未知';
-
-  @override
-  String get diagPeerUnknownHint => '只有在你已連線時才能看到聯絡人是否在線。';
-
-  @override
-  String get diagPeerGroupHint => '群組成員是否在線請查看成員列表。';
-
-  @override
-  String get diagPendingLabel => '待傳送';
-
-  @override
-  String get diagPendingNone => '沒有待傳訊息';
-
-  @override
-  String diagPendingCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 則訊息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String diagPendingOldest(String time) {
-    return '最早一則排隊於 $time';
-  }
-
-  @override
-  String get diagPendingUnknown => '聊天連線後才能得知';
-
-  @override
-  String get diagPendingHint => '排隊的訊息保存在本機，對方可達時會自動傳送。診斷頁面不會捨棄或重送它們。';
-
-  @override
-  String get diagReconnect => '重新連線';
-
-  @override
-  String get diagReconnecting => '正在重新連線…';
-
-  @override
-  String diagReconnectFailed(String reason) {
-    return '重新連線失敗：$reason';
-  }
-
-  @override
-  String get diagReconnectNote => '重新連線會重新發起連線嘗試。上線仍可能需要一段時間，屆時本頁會自動更新。';
-
-  @override
-  String get diagAboutTitle => 'MorseCQ 如何連線';
-
-  @override
-  String get diagAboutBody => 'MorseCQ 沒有伺服器。你的裝置透過 Tox 點對點網路直接與聯絡人通訊，因此雙方必須同時在線訊息才能送達。手機會暫停背景應用程式：MorseCQ 在背景無法保持連線，回到應用程式時會重新連線。';
-
-  @override
-  String get diagDetailsTitle => '技術詳情';
-
-  @override
-  String get diagDetailIdentity => '身分';
-
-  @override
-  String get diagDetailStatus => '狀態';
-
-  @override
-  String get diagDetailObserved => '觀察時間';
-
-  @override
-  String get diagDetailQueued => '佇列項目';
-
-  @override
-  String get diagDetailError => '最近錯誤代碼';
-
-  @override
-  String get backupXTitle => '加密備份';
-
-  @override
-  String get backupXIntro => '選擇要帶到其他裝置的內容。整個檔案都會用你在此設定的通關密語加密。';
-
-  @override
-  String get backupXCategoryIdentity => '身分與 Tox 設定檔';
-
-  @override
-  String get backupXCategoryTraining => '訓練進度與素材';
-
-  @override
-  String get backupXCategoryChat => '聊天紀錄（含給自己的筆記）';
-
-  @override
-  String get backupXCategoryMeta => '草稿、置頂與書籤';
-
-  @override
-  String get backupXCategoryPrefs => '應用程式偏好設定';
-
-  @override
-  String get backupXPrefsHint => '播放、通知、外觀與語言。不含視窗位置與按鍵綁定。';
-
-  @override
-  String get backupXCategoryMedia => '已儲存的錄音';
-
-  @override
-  String get backupXMediaHint => '預設不包含：錄音可能很大。不包含時只帶走標題與備註。';
-
-  @override
-  String get backupXCategoryPending => '未傳送的訊息';
-
-  @override
-  String get backupXPendingHint => '還原後僅供查看，絕不會自動傳送。';
-
-  @override
-  String get backupXRequired => '必選';
-
-  @override
-  String backupXSizeLine(int count, String size) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 項',
-    );
-    return '$_temp0 · $size';
-  }
-
-  @override
-  String backupXSizeKb(String size) {
-    return '$size KB';
-  }
-
-  @override
-  String backupXSizeMb(String size) {
-    return '$size MB';
-  }
-
-  @override
-  String backupXMediaTooLarge(String size) {
-    return '太大，無法包含（$size）';
-  }
-
-  @override
-  String backupXInvitesNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 個等待離線好友的群組邀請不會被帶走。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get backupXIdentityPasswordNote => '身分密碼仍保留在設定檔上：新裝置除備份通關密語外還會要求輸入它。';
-
-  @override
-  String backupXTotal(String size) {
-    return '總計約 $size';
-  }
-
-  @override
-  String get backupXPassphrase => '備份通關密語';
-
-  @override
-  String get backupXPassphraseConfirm => '再次輸入通關密語';
-
-  @override
-  String get backupXPassphraseHint => '至少 8 個字元。它與身分密碼相互獨立，且無法找回。';
-
-  @override
-  String get backupXPassphraseTooShort => '請至少使用 8 個字元';
-
-  @override
-  String get backupXPassphraseMismatch => '兩次輸入的通關密語不一致';
-
-  @override
-  String get backupXExport => '建立加密備份';
-
-  @override
-  String get backupXExporting => '正在建立備份…';
-
-  @override
-  String get backupXMigrationNote => '要換裝置？在新裝置還原後，請停止在本機使用此身分：同一身分的兩台裝置可能把同一則訊息傳送兩次。';
-
-  @override
-  String get backupXBusy => '備份過程中資料持續變化，請重試。';
-
-  @override
-  String get backupXTooLarge => '備份太大。請去掉錄音後重試。';
-
-  @override
-  String get restoreXWrongPassphrase => '通關密語錯誤，或檔案已被修改、不完整。';
-
-  @override
-  String get restoreXUnsupported => '此備份由更新版本的 MorseCQ 建立。';
-
-  @override
-  String get restoreXCheck => '開啟備份';
-
-  @override
-  String get restoreXPreviewTitle => '備份內容';
-
-  @override
-  String restoreXCreated(String date) {
-    return '建立於 $date';
-  }
-
-  @override
-  String get restoreXIncluded => '包含';
-
-  @override
-  String get restoreXExcluded => '不在此備份中';
-
-  @override
-  String restoreXPendingIncluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 則未傳送的訊息將還原供你查看，不會自動傳送。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXPendingExcluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '舊裝置上的 $count 則未傳送訊息不在此備份中。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXIdentityPassword => '身分密碼';
-
-  @override
-  String get restoreXIdentityPasswordNote => '此備份中的身分另設有密碼，請一併輸入。';
-
-  @override
-  String get restoreXConfirmTitle => '取代本機上的身分？';
-
-  @override
-  String get restoreXConfirmBody => '本機上的身分與資料將被備份取代。在此連線之前，請先停止在舊裝置上使用該身分。';
-
-  @override
-  String get restoreXConfirm => '取代並還原';
-
-  @override
-  String get restoreXReportTitle => '還原完成';
-
-  @override
-  String get restoreXReportRestored => '已還原';
-
-  @override
-  String get restoreXReportNotIncluded => '未還原';
-
-  @override
-  String get restoreXReportPrefsFailed => '偏好設定未能套用，已保留原有設定。';
-
-  @override
-  String restoreXReportPendingReview(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 則未傳送的訊息在「聊天」中等你查看。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportPendingNotResumed(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '舊裝置上的 $count 則未傳送訊息未被帶過來。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportInvites(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '有 $count 個排隊中的群組邀請未重新傳送。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXReportStopOld => '請停止在舊裝置上使用此身分。';
-
-  @override
-  String get restoreXReportDone => '完成';
-
-  @override
-  String pendingReviewBanner(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '來自舊裝置的 $count 則未傳送訊息',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get pendingReviewTitle => '未傳送的訊息';
-
-  @override
-  String get pendingReviewBody => '這些訊息在舊裝置上等待傳送。MorseCQ 絕不會自動傳送；如仍需要，請重新拍發。';
-
-  @override
-  String pendingReviewQueuedAt(String time) {
-    return '於 $time 在舊裝置上排隊';
-  }
-
-  @override
-  String get pendingReviewDismiss => '忽略';
-
-  @override
-  String get pendingReviewDismissAll => '全部忽略';
-
-  @override
-  String get pendingReviewEmpty => '沒有需要查看的內容了。';
-
-  @override
-  String get backupXWizardInside => '備份檔案會用你自選的通關密語整體加密，包含身分金鑰與訓練進度。請把檔案與通關密語保存在本機以外的安全位置。';
-
-  @override
-  String get backupXMeSubtitle => '包含身分、聊天與進度的加密檔案，可留存或移轉到其他裝置';
 
   @override
   String get conditionsTitle => '收聽環境';
@@ -8286,9 +5325,6 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get telegraphInterpretAction => '按中文電碼解讀';
-
-  @override
   String get telegraphInterpretTitle => '電碼解讀';
 
   @override
@@ -8307,183 +5343,7 @@ class SZhHant extends SZh {
   String get telegraphAmbiguous => '多個字共用此碼';
 
   @override
-  String get groupPracticeTitle => '群組帶練';
-
-  @override
-  String get groupPracticeIntro => '帶練者照常在群聊中拍發練習內容。每位成員在此選擇練習訊息，按自己的速度抄收。答案與成績只保存在本機，不會傳送到群組。';
-
-  @override
-  String get groupPracticeNew => '新增練習';
-
-  @override
-  String get groupPracticeTitleField => '標題';
-
-  @override
-  String get groupPracticeCreate => '建立';
-
-  @override
-  String get groupPracticeInstructor => '帶練者';
-
-  @override
-  String get groupPracticeParticipant => '參與者';
-
-  @override
-  String get groupPracticeInstructorHint => '在群聊中拍發每道練習，在此新增為一輪並勾選完成；輪次請在群聊裡通知。';
-
-  @override
-  String get groupPracticeParticipantHint => '把帶練者的練習訊息新增為輪次，並在此逐一抄收。';
-
-  @override
-  String get groupPracticeLocalNote => '僅限本機：輪次、角色與成績不會與其他成員同步，錯過的訊息也不一定能送達所有人。';
-
-  @override
-  String get groupPracticeAddRound => '新增練習';
-
-  @override
-  String get groupPracticeNoMessages => '最近紀錄中沒有可新增的訊息。';
-
-  @override
-  String get groupPracticeNotConnected => '聊天連線後才能讀取群組紀錄。';
-
-  @override
-  String get groupPracticeRoundOpen => '待完成';
-
-  @override
-  String get groupPracticeRoundDone => '已完成';
-
-  @override
-  String get groupPracticeRoundUnavailable => '不可用';
-
-  @override
-  String get groupPracticeSourceGone => '該練習訊息已不在紀錄中。';
-
-  @override
-  String get groupPracticeSourceLoading => '正在尋找訊息…';
-
-  @override
-  String groupPracticeAttemptResult(int accuracy, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '抄收：$accuracy%（$count 次）',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get groupPracticeCopy => '抄收';
-
-  @override
-  String get groupPracticeRemoveRound => '移除本輪';
-
-  @override
-  String get groupPracticeSummary => '小結';
-
-  @override
-  String groupPracticeRoundsDone(int done, int total) {
-    return '已完成 $done/$total 輪';
-  }
-
-  @override
-  String groupPracticeUnavailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 輪不可用',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeAccuracy(int accuracy) {
-    return '抄收正確率：$accuracy%';
-  }
-
-  @override
-  String groupPracticeAssisted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 次使用了提示',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeShareHint(int done, int total, int accuracy) {
-    return '如需分享，請自行在群聊中拍發成績，例如 $done/$total $accuracy%。不會自動傳送。';
-  }
-
-  @override
-  String get groupPracticeComplete => '結束練習';
-
-  @override
-  String get groupPracticeDeleteTitle => '刪除這次練習？';
-
-  @override
-  String get groupPracticeDeleteBody => '本機上的輪次與成績將被刪除；訓練紀錄與群組訊息保留。';
-
-  @override
   String get conditionsAudioFailed => '本裝置無法播放音訊。請改用「清晰」環境練習。';
-
-  @override
-  String get moderationBlock => '封鎖';
-
-  @override
-  String moderationBlockTitle(String name) {
-    return '封鎖 $name？';
-  }
-
-  @override
-  String get moderationBlockFriendBody => '對方將被移出好友，與其的對話也會被刪除。此後其訊息、好友請求和群組邀請都不會再出現在此裝置上。對方不會收到通知。';
-
-  @override
-  String get moderationBlockMemberBody => '此後其在本群組的訊息都不會再出現在此裝置上。對方不會收到通知。Tox 為每位群組成員在每個群組中使用不同的金鑰，因此僅對本群組生效。';
-
-  @override
-  String get moderationBlocked => '已封鎖';
-
-  @override
-  String get moderationUnblock => '解除封鎖';
-
-  @override
-  String get moderationUnblocked => '已解除封鎖';
-
-  @override
-  String get moderationBlockedTitle => '已封鎖的人';
-
-  @override
-  String get moderationBlockedSubtitle => '隱藏其訊息、請求和邀請';
-
-  @override
-  String get moderationBlockedEmpty => '你尚未封鎖任何人。';
-
-  @override
-  String get moderationBlockedNote => '封鎖在此裝置上生效：Tox 沒有中央伺服器，被封鎖的人仍可能嘗試聯絡你，但他們的任何內容都不會在這裡顯示。';
-
-  @override
-  String get termsGateTitle => '社群準則';
-
-  @override
-  String get termsGateIntro => 'MorseCQ 聊天讓你與他人直接連線，中間沒有伺服器。開始之前，請同意以下規則：';
-
-  @override
-  String get termsGateRuleZero => '零容忍：禁止騷擾、仇恨、威脅、涉及未成年人的性內容、垃圾訊息以及任何違法內容。';
-
-  @override
-  String get termsGateRuleContacts => '只有你接受的人才能傳訊息給你；群組須透過邀請或群組 ID 加入。';
-
-  @override
-  String get termsGateRuleBlock => '可以在對話、群組成員清單、好友請求或群組邀請中封鎖任何人。';
-
-  @override
-  String get termsGateAgree => '同意並繼續';
-
-  @override
-  String get termsGateReadFull => '閱讀完整使用條款';
-
-  @override
-  String get termsGateSaveFailed => '無法儲存你的選擇，請再試一次。';
 
   @override
   String get aboutPrivacyPolicy => '隱私權政策';
@@ -8496,9 +5356,6 @@ class SZhHant extends SZh {
 
   @override
   String get aboutLinkFailed => '無法開啟連結，已複製連結。';
-
-  @override
-  String get errorPeerBlocked => '你已封鎖此人。請先在「我 → 已封鎖的人」中解除封鎖。';
 
   @override
   String get offlineClearData => '清除學習資料';
@@ -8514,4 +5371,7 @@ class SZhHant extends SZh {
 
   @override
   String get learnStorageUnavailable => '無法在此裝置上開啟你的訓練資料，請再試一次。';
+
+  @override
+  String get materialsImportedSource => '匯入來源';
 }

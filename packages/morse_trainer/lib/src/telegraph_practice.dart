@@ -82,7 +82,7 @@ final class TelegraphDigitsDrill implements DrillGenerator {
        });
 
   /// Builds a drill over exactly these four-digit [codes] (e.g. the groups
-  /// of a chat message); anything that is not four digits is ignored.
+  /// of a custom material); anything that is not four digits is ignored.
   TelegraphDigitsDrill.ofCodes(
     Iterable<String> codes, {
     this.codebook = TelegraphCodebook.mainland,

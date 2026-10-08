@@ -1,3 +1,5 @@
+> Historical audit of the former trainer + chat application (2026-10-01). Account, transport and chat inventory below no longer applies to MorseCQ. Current storage and migration behavior is documented in [Offline learning architecture](../architecture/OFFLINE_LEARNING.md).
+
 [English](./PERSISTENCE_AUDIT.md)
 
 # 持久化审计 — 2026-10-01

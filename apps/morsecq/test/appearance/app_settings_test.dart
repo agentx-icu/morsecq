@@ -15,7 +15,6 @@ void main() {
       '{"style":"future","mode":"unknown"}',
     ]) {
       final settings = AppSettings(
-        backendLabel: 'test',
         store: InMemoryKeyValueStore(
           saved == null ? null : {AppSettings.storageKey: saved},
         ),
@@ -30,13 +29,12 @@ void main() {
     'all five styles persist with independent brightness across restart',
     () async {
       final store = InMemoryKeyValueStore();
-      final settings = AppSettings(backendLabel: 'test', store: store);
+      final settings = AppSettings(store: store);
       addTearDown(settings.dispose);
       for (final style in UiStyle.values) {
         for (final mode in ThemeMode.values) {
           await settings.applyAppearance(style: style, themeMode: mode);
           final reopened = AppSettings(
-            backendLabel: 'another identity',
             store: store,
           );
           expect(reopened.style, style);
@@ -48,7 +46,7 @@ void main() {
   );
 
   test('failed saving leaves the visible appearance unchanged', () async {
-    final settings = AppSettings(backendLabel: 'test', store: FailingStore());
+    final settings = AppSettings(store: FailingStore());
     addTearDown(settings.dispose);
     var notifications = 0;
     settings.addListener(() => notifications++);
@@ -63,7 +61,7 @@ void main() {
 
   test('concurrent saves retain the last chosen appearance', () async {
     final store = InMemoryKeyValueStore();
-    final settings = AppSettings(backendLabel: 'test', store: store);
+    final settings = AppSettings(store: store);
     addTearDown(settings.dispose);
     await Future.wait([
       settings.applyAppearance(style: UiStyle.radio, themeMode: ThemeMode.dark),
@@ -72,7 +70,7 @@ void main() {
         themeMode: ThemeMode.light,
       ),
     ]);
-    final reopened = AppSettings(backendLabel: 'test', store: store);
+    final reopened = AppSettings(store: store);
     addTearDown(reopened.dispose);
     expect(reopened.style, UiStyle.cartoon);
     expect(reopened.themeMode, ThemeMode.light);
@@ -94,7 +92,7 @@ void main() {
     final reopened = await JsonFileKeyValueStore.open(file);
     expect(reopened.getString('i18n.locale'), 'zh');
     expect(reopened.getString('window.bounds'), '1280x800');
-    final settings = AppSettings(backendLabel: 'test', store: reopened);
+    final settings = AppSettings(store: reopened);
     addTearDown(settings.dispose);
     expect(settings.style, UiStyle.cartoon);
     expect(settings.themeMode, ThemeMode.dark);
@@ -105,7 +103,7 @@ void main() {
     addTearDown(() => dir.delete(recursive: true));
     final file = File('${dir.path}/settings.json');
     final store = await JsonFileKeyValueStore.open(file);
-    final settings = AppSettings(backendLabel: 'test', store: store);
+    final settings = AppSettings(store: store);
     addTearDown(settings.dispose);
     await settings.applyAppearance(
       style: UiStyle.modern,
@@ -125,7 +123,7 @@ void main() {
     await blocked.delete();
     await store.setString('i18n.locale', 'zh');
     final reopenedStore = await JsonFileKeyValueStore.open(file);
-    final reopened = AppSettings(backendLabel: 'test', store: reopenedStore);
+    final reopened = AppSettings(store: reopenedStore);
     addTearDown(reopened.dispose);
     expect(reopened.style, UiStyle.modern);
     expect(reopened.themeMode, ThemeMode.light);

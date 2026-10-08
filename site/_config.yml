@@ -2,7 +2,7 @@
 # linked from the app (Me > About) and from App Store Connect.
 # Built and deployed by .github/workflows/pages.yml (Jekyll, this directory).
 title: MorseCQ
-description: Morse code trainer. The iOS App Store version is offline only; other builds add serverless Morse chat over Tox.
+description: Account-free offline Morse code learning, reference, audio decoding and radio tools on every platform.
 lang: en
 # Project site: every page lives under /morsecq (the URLs the app opens).
 baseurl: /morsecq

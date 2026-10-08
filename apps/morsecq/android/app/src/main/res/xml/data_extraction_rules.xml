@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Android 12+ (API 31) backup policy for MorseCQ: nothing leaves the device
-  through Google cloud backup or device-to-device transfer. The Tox profile
-  (private key), chat history and training data live in the app's files dir;
-  the encrypted in-app .mcqbackup export is the only supported way to move an
-  identity. See the comment on <application> in AndroidManifest.xml.
--->
+<!-- Learning data stays local; platform backup and device transfer are disabled. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root"/>

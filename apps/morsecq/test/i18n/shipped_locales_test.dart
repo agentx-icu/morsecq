@@ -87,15 +87,10 @@ void main() {
       expect(strings.s.languageTitle, isNot('Language'));
       expect(strings.s.desktopTrayShow('MorseCQ'), contains('MorseCQ'));
       expect(
-        strings.s.notificationGroupInviteBody('N0CALL'),
-        contains('N0CALL'),
-      );
-      expect(
         strings.s.learnLessonOf(3, 40),
         allOf(contains('3'), contains('40')),
       );
       expect(strings.s.statsDays(22), contains('22'));
-      expect(strings.s.chatBytesLeftCount(-2), contains('-2'));
       expect(strings.s.appName, 'MorseCQ');
     });
   }

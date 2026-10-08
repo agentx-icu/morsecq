@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 [简体中文](./2026-10-01-ui-styles-implementation.zh-CN.md)
 
 # UI styles implementation plan

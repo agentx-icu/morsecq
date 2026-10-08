@@ -9,7 +9,7 @@ import '../learn/learn_scope.dart';
 
 /// Morse training: lessons, keying drills, copy practice.
 ///
-/// Wires the per-identity [TrainingController] through [LearnScope] and
+/// Wires the local [TrainingController] through [LearnScope] and
 /// renders [LearnHome]. Both hooks exist for tests: [controllerFactory]
 /// swaps the file stores for in-memory ones and [playback] swaps the device
 /// sidetone for a recording sink.
@@ -34,7 +34,7 @@ class LearnPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.s;
     return LearnScope(
-      // Shared per-identity controller when the app provides a host (so the
+      // Shared local controller when the app provides a host (so the
       // Me page's training-defaults route edits the same instance); tests may
       // inject their own factory.
       controllerFactory:

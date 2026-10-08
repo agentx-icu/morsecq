@@ -1,2 +1,0 @@
-# morsecq overlay: the plugin class must survive shrinking (registered by name).
--keep class com.tencent.chat.tencent_cloud_chat_sdk.** { *; }

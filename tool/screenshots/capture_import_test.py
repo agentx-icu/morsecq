@@ -29,7 +29,14 @@ class CaptureImportTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / "source"
         self.output = self.root / "output"
-        shutil.copytree(REPO / "doc/screenshots/macos", self.source / "macos")
+        scenes = ("learn_home", "stats", "training_settings", "receive_drill", "send_practice", "reference", "translator", "listen", "me")
+        # Synthetic private fixtures keep import-boundary tests independent
+        # of real product captures and unavailable platform hosts.
+        for locale in ("en", "zh"):
+            folder = self.source / "macos" / locale
+            folder.mkdir(parents=True)
+            for index, scene in enumerate(scenes):
+                (folder / (scene + ".png")).write_bytes((f"fixture:{locale}:{index}:".encode() + bytes(range(256))) * 40)
 
     def run_import(self, *, source=None, output=None, extra=(), expected=0):
         result = subprocess.run(
@@ -51,19 +58,19 @@ class CaptureImportTest(unittest.TestCase):
         result = self.run_import()
         self.assertEqual(snapshot(self.output), before)
         self.assertEqual(snapshot(self.source), before)
-        self.assertEqual(len(before), 34)
+        self.assertEqual(len(before), 18)
         self.assertIn("from completed CI capture", result.stdout)
 
     def test_missing_frame_keeps_previous_gallery(self):
         before = self.protect_destination()
-        (self.source / "macos/zh/welcome.png").unlink()
+        (self.source / "macos/zh/learn_home.png").unlink()
         self.run_import(expected=1)
         self.assertEqual(snapshot(self.output), before)
 
     def test_duplicate_frames_keep_previous_gallery(self):
         before = self.protect_destination()
-        shutil.copyfile(self.source / "macos/en/welcome.png",
-                        self.source / "macos/en/create_identity.png")
+        shutil.copyfile(self.source / "macos/en/learn_home.png",
+                        self.source / "macos/en/stats.png")
         self.run_import(expected=1)
         self.assertEqual(snapshot(self.output), before)
 
@@ -96,7 +103,7 @@ class CaptureImportTest(unittest.TestCase):
         before = snapshot(self.source), snapshot(self.output)
         self.run_import(expected=64)
         self.assertEqual((snapshot(self.source), snapshot(self.output)), before)
-        self.assertEqual(len(list(seed.glob("*.png"))), 17)
+        self.assertEqual(len(list(seed.glob("*.png"))), 9)
 
     def test_source_platform_symlink_is_rejected(self):
         linked = self.root / "linked-platform"
@@ -108,7 +115,7 @@ class CaptureImportTest(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
     def test_source_png_symlink_is_rejected(self):
-        frame = self.source / "macos/en/welcome.png"
+        frame = self.source / "macos/en/learn_home.png"
         linked = self.root / "linked-frame.png"
         shutil.move(frame, linked)
         frame.symlink_to(linked)
@@ -120,7 +127,7 @@ class CaptureImportTest(unittest.TestCase):
     def test_partial_locale_can_publish_only_to_explicit_output(self):
         before = snapshot(self.source)
         self.run_import(extra=("--locales", "en"))
-        self.assertEqual(len(list(self.output.rglob("*.png"))), 17)
+        self.assertEqual(len(list(self.output.rglob("*.png"))), 9)
         self.assertFalse((self.output / "macos/zh").exists())
         self.assertEqual(snapshot(self.source), before)
 

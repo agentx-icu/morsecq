@@ -11,7 +11,7 @@ void main() {
         'app.theme': 'dark',
         AppSettings.storageKey: ?saved,
       });
-      final settings = AppSettings(backendLabel: 'test', store: store);
+      final settings = AppSettings(store: store);
       addTearDown(settings.dispose);
       expect(settings.themeMode, ThemeMode.dark);
       expect(settings.style, UiStyle.modern);
@@ -23,7 +23,7 @@ void main() {
       'app.theme': 'dark',
       AppSettings.storageKey: '{"style":"paper","mode":"light"}',
     });
-    final settings = AppSettings(backendLabel: 'test', store: store);
+    final settings = AppSettings(store: store);
     addTearDown(settings.dispose);
     expect(settings.style, UiStyle.paper);
     expect(settings.themeMode, ThemeMode.light);
@@ -31,7 +31,7 @@ void main() {
       style: UiStyle.radio,
       themeMode: ThemeMode.system,
     );
-    final reopened = AppSettings(backendLabel: 'test', store: store);
+    final reopened = AppSettings(store: store);
     addTearDown(reopened.dispose);
     expect(reopened.style, UiStyle.radio);
     expect(reopened.themeMode, ThemeMode.system);

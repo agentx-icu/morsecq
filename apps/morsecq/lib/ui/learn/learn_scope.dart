@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
@@ -15,14 +14,8 @@ import '../../training/training_settings_store.dart';
 import 'learn_playback.dart';
 import 'learning_unavailable.dart';
 
-/// Builds the [TrainingController] for the current identity and hands it to
-/// [builder].
-///
-/// Progress is stored per identity (product decision), so the scope asks the
-/// app's [IdentityService] for `dataDirectory()` and points the file stores
-/// there. Without a provided service, or before the identity is ready, it
-/// shows [LearnScope.identityRequired] instead of the home. When the
-/// identity changes the controller is rebuilt for the new directory.
+/// Resolves the shared local learning controller and renders its loading,
+/// ready or retryable storage-error state. Tests may inject a controller.
 class LearnScope extends StatefulWidget {
   const LearnScope({
     super.key,
@@ -33,7 +26,7 @@ class LearnScope extends StatefulWidget {
     this.description,
   });
 
-  /// Builds the controller; defaults to the per-identity file stores. Tests
+  /// Builds the controller; defaults to the local file stores. Tests
   /// pass a factory that returns an in-memory controller.
   final Future<TrainingController> Function(BuildContext context)?
   controllerFactory;
@@ -46,21 +39,12 @@ class LearnScope extends StatefulWidget {
   )
   builder;
 
-  /// Shown in the loading / identity-required placeholder; defaults to the
+  /// Shown in the loading / storage-error placeholder; defaults to the
   /// localised Learn destination label.
   final String? title;
   final String? description;
 
-  /// Default factory: file stores under `<dataDirectory>/training/`.
-  static Future<TrainingController> controllerForIdentity(
-    IdentityService identity,
-  ) async => controllerForDirectory(
-    await identity.dataDirectory(),
-    profileKey: _profileKeyOf(identity),
-  );
-
-  /// File stores under `<dir>/training/` for any learning profile (an
-  /// identity's data directory, or the guest's).
+  /// File stores under `<dir>/training/` for the local learning profile.
   static Future<TrainingController> controllerForDirectory(
     String dir, {
     required String profileKey,
@@ -77,27 +61,15 @@ class LearnScope extends StatefulWidget {
     return controller;
   }
 
-  /// The identity's public key; '' when the service cannot tell (minimal
-  /// test stubs only implement `dataDirectory`).
-  static String _profileKeyOf(IdentityService identity) {
-    try {
-      return identity.current?.publicKey ?? '';
-    } on Object {
-      return '';
-    }
-  }
-
   @override
   State<LearnScope> createState() => _LearnScopeState();
 }
 
-enum _ScopeState { loading, ready, identityRequired }
+enum _ScopeState { loading, ready, storageError }
 
 class _LearnScopeState extends State<LearnScope> {
   _ScopeState _state = _ScopeState.loading;
   TrainingController? _controller;
-  bool _ownsController = false;
-  StreamSubscription<Identity?>? _identitySub;
   int _generation = 0;
 
   @override
@@ -113,45 +85,29 @@ class _LearnScopeState extends State<LearnScope> {
     // A controller obtained from a factory is owned by whoever backs the
     // factory (e.g. the app-wide TrainingControllerHost shares one instance
     // with the settings route); only self-created controllers are disposed.
-    final owns = factory == null;
     try {
-      final identity = _identityService();
-      if (identity != null) _watchIdentity(identity);
       _watchReloads();
-      if (factory != null) {
-        controller = await factory(context);
-      } else {
-        if (identity == null) {
-          controller = null;
-        } else {
-          controller = await LearnScope.controllerForIdentity(identity);
-        }
-      }
+      controller = await (factory == null
+          ? TrainingControllerHost.fromContext(context)
+          : factory(context));
     } on Object {
-      // No identity yet (dataDirectory threw) or a factory failure: fall
-      // back to the placeholder rather than crash the tab.
+      // A local storage or factory failure has a retryable placeholder.
       controller = null;
     }
     if (!mounted || generation != _generation) {
-      if (owns) controller?.dispose();
       return;
     }
-    final previous = _controller;
-    final previousOwned = _ownsController;
     setState(() {
       _controller = controller;
-      _ownsController = owns;
       _state = controller == null
-          ? _ScopeState.identityRequired
+          ? _ScopeState.storageError
           : _ScopeState.ready;
     });
-    if (previousOwned && !identical(previous, controller)) previous?.dispose();
   }
 
   ValueListenable<int>? _reloads;
 
-  /// The shared host announces when files under its controller were
-  /// replaced (guest migration, cleared guest data): load again.
+  /// Clearing local files retires the shared controller; load again.
   void _watchReloads() {
     if (_reloads != null) return;
     try {
@@ -166,30 +122,9 @@ class _LearnScopeState extends State<LearnScope> {
     if (mounted) unawaited(_load());
   }
 
-  IdentityService? _identityService() {
-    try {
-      return context.read<IdentityService>();
-    } on ProviderNotFoundException {
-      return null;
-    }
-  }
-
-  void _watchIdentity(IdentityService identity) {
-    if (_identitySub != null) {
-      return;
-    }
-    try {
-      _identitySub = identity.identityChanges.listen((_) => _load());
-    } on Object {
-      // A service without change notifications (test stubs) is fine.
-    }
-  }
-
   @override
   void dispose() {
     _reloads?.removeListener(_onReload);
-    unawaited(_identitySub?.cancel());
-    if (_ownsController) _controller?.dispose();
     super.dispose();
   }
 
@@ -206,7 +141,7 @@ class _LearnScopeState extends State<LearnScope> {
           message: context.s.learnLoading,
           busy: true,
         );
-      case _ScopeState.identityRequired:
+      case _ScopeState.storageError:
         return _Placeholder(
           title: widget.title ?? context.s.navLearn,
           description: widget.description,

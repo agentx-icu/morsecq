@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 # Learn feature review
 
 **Goal:** review the whole Learn tab (the `morse_core` engine, the `morse_trainer` pedagogy, `morse_io` keying and audio, the app's training layer and the Learn screens) and fix the real defects at their cause.

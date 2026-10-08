@@ -15,12 +15,6 @@ class SKo extends S {
   String get navLearn => '학습';
 
   @override
-  String get navChat => '채팅';
-
-  @override
-  String get navGroups => '그룹';
-
-  @override
   String get navMe => '내 정보';
 
   @override
@@ -30,22 +24,7 @@ class SKo extends S {
   String get navLearnDescription => 'Koch 방식 강의, 송신 연습과 수신 받아쓰기 연습.';
 
   @override
-  String get navChatDescription => 'Tox P2P를 통한 서버 없는 일대일 모스 통신.';
-
-  @override
-  String get navGroupsDescription => '그룹 통신망 — 여러 운용자가 하나의 채널을 공유하며 송신합니다.';
-
-  @override
   String get navReferenceDescription => '문자표, 절차 부호, Q 부호, 약어와 양방향 변환기.';
-
-  @override
-  String get navMeDescription => '콜사인, Tox 신원 정보, 학습 진도와 설정.';
-
-  @override
-  String get shellOfflineBanner => '오프라인: Tox 네트워크에 연결되지 않았습니다. 온라인으로 돌아오면 메시지를 보냅니다.';
-
-  @override
-  String get actionOk => '확인';
 
   @override
   String get actionCancel => '취소';
@@ -57,70 +36,10 @@ class SKo extends S {
   String get actionDelete => '삭제';
 
   @override
-  String get actionCopy => '복사';
-
-  @override
-  String get actionShare => '공유';
-
-  @override
   String get actionRetry => '다시 시도';
 
   @override
   String get actionClose => '닫기';
-
-  @override
-  String get actionSearch => '검색';
-
-  @override
-  String get actionSettings => '설정';
-
-  @override
-  String get connectionConnecting => '연결 중…';
-
-  @override
-  String get connectionOnline => '온라인';
-
-  @override
-  String get connectionOffline => '오프라인';
-
-  @override
-  String get messageStatusPending => '전송 대기 — 상대방이 오프라인입니다';
-
-  @override
-  String get messageStatusPendingDetail => 'Tox에는 서버가 없습니다. 상대방이 온라인이 되면 메시지가 전달됩니다.';
-
-  @override
-  String get messageStatusSending => '전송 중';
-
-  @override
-  String get messageStatusSent => '전송됨';
-
-  @override
-  String get messageStatusFailed => '전송 실패';
-
-  @override
-  String get errorWrongPassword => '비밀번호가 올바르지 않습니다. 다시 시도하세요.';
-
-  @override
-  String get errorPeerOffline => '이 연락처는 오프라인입니다. Tox에는 서버가 없으므로 상대방이 돌아올 때까지 메시지가 대기합니다.';
-
-  @override
-  String get errorInvalidToxId => '유효한 Tox ID가 아닙니다(16진수 문자 76개여야 합니다).';
-
-  @override
-  String get errorAlreadyFriend => '이 Tox ID는 이미 친구 목록에 있습니다.';
-
-  @override
-  String get errorOwnId => '본인의 Tox ID입니다.';
-
-  @override
-  String get errorGroupNotFound => '그룹을 찾을 수 없습니다.';
-
-  @override
-  String get errorMessageTooLong => '메시지가 Tox 메시지 한 건의 길이 제한을 초과합니다.';
-
-  @override
-  String get errorUnknown => '문제가 발생했습니다';
 
   @override
   String get languageTitle => '언어';
@@ -446,262 +365,16 @@ class SKo extends S {
   }
 
   @override
-  String get accountCopied => 'Tox ID를 클립보드에 복사했습니다';
-
-  @override
-  String get accountShowQr => 'QR 코드 보기';
-
-  @override
-  String get accountToxId => 'Tox ID';
-
-  @override
-  String get accountDisplayName => '표시 이름';
-
-  @override
-  String get accountDisplayNameHint => '콜사인 또는 별명';
-
-  @override
-  String get accountDisplayNameRequired => '표시 이름을 입력하세요';
-
-  @override
-  String get accountStatusMessage => '상태 메시지';
-
-  @override
-  String get accountPassword => '비밀번호';
-
-  @override
-  String get accountPasswordOptional => '비밀번호(선택 사항)';
-
-  @override
-  String get accountConfirmPassword => '비밀번호 확인';
-
-  @override
-  String get accountPasswordsDoNotMatch => '비밀번호가 일치하지 않습니다';
-
-  @override
-  String get accountShowPassword => '비밀번호 표시';
-
-  @override
-  String get accountHidePassword => '비밀번호 숨기기';
-
-  @override
-  String get accountStrengthWeak => '약함: 8자 이상 사용하세요';
-
-  @override
-  String get accountStrengthFair => '보통: 12자 이상으로 여러 문자 종류를 섞으면 더 안전합니다';
-
-  @override
-  String get accountStrengthStrong => '강함';
-
-  @override
-  String get accountStartupInspecting => '신원 정보 확인 중…';
-
-  @override
-  String get accountStartupOpening => '신원 정보 여는 중…';
-
-  @override
-  String get accountStartupFailedTitle => '시작할 수 없습니다';
-
-  @override
-  String get accountStartupFailedBody => 'MorseCQ가 신원 정보를 읽지 못했습니다. 변경된 내용은 없습니다. 다시 시도할 수 있습니다.';
-
-  @override
-  String get accountConnectionTapToReconnect => '탭하여 다시 연결';
-
-  @override
-  String get accountWelcomeTitle => '신원 정보는 이 기기에 저장됩니다';
-
-  @override
-  String get accountWelcomeIntro => 'MorseCQ는 Tox P2P 네트워크를 사용합니다. 서버도 계정 가입도 없습니다. 신원 정보는 이 기기에만 저장되는 키 쌍입니다.';
-
-  @override
-  String get accountWelcomePointNoServer => '서버, 전화번호, 이메일이 필요 없습니다. 운용자끼리 모스 부호로 직접 통신합니다.';
-
-  @override
-  String get accountWelcomePointTraining => '학습 진도는 신원 정보와 함께 저장되므로 백업하고 다른 기기로 옮길 수 있습니다.';
-
-  @override
-  String get accountWelcomePointBackup => '다른 누구도 신원 정보를 복구해 줄 수 없습니다. 생성 후 바로 백업하세요. 백업이 없으면 기기를 잃을 때 신원 정보도 잃게 됩니다.';
-
-  @override
-  String get accountCreateIdentity => '신원 정보 생성';
-
-  @override
-  String get accountRestoreFromBackup => '백업에서 복원';
-
-  @override
-  String get accountCreateTitle => '내 신원 정보 생성';
-
-  @override
-  String get accountCreateBody => '다른 사람에게 보일 이름을 정하세요. 비밀번호는 이 기기의 신원 정보 파일을 암호화합니다. 비밀번호 없이 앱을 열려면 비워 두세요.';
-
-  @override
-  String get accountCreateButton => '생성';
-
-  @override
-  String get accountCreating => '생성 중…';
-
-  @override
-  String get accountBackupTitle => '지금 신원 정보를 백업하세요';
-
-  @override
-  String get accountBackupBody => '신원 정보는 이 기기에만 있습니다. 기기를 잃어버리거나 초기화하거나 도난당하면 복구할 수 없습니다. 연락처는 새로운 신원 정보를 알아보지 못하고 학습 진도도 사라집니다.';
-
-  @override
-  String get accountBackupWhatIsInside => '백업 파일에는 비밀번호로 암호화된 신원 키와 학습 진도가 들어 있습니다. 이 기기 밖의 안전한 곳에 보관하세요.';
-
-  @override
-  String get accountBackupWhatIsInsidePlain => '백업 파일에는 암호화되지 않은 신원 키와 학습 진도가 들어 있습니다. 이 파일을 가진 사람은 누구나 당신의 신원을 사용할 수 있습니다. 키를 암호화하려면 먼저 비밀번호를 설정하고, 파일은 안전한 곳에 보관하세요.';
-
-  @override
-  String get accountPasswordScope => '비밀번호는 신원 키를 암호화합니다. 메시지 기록은 디스크에 암호화되지 않은 채로 남으며, 기기 암호화로 보호할 수 있습니다.';
-
-  @override
-  String get accountSectionNotifications => '알림';
-
-  @override
-  String get accountNotificationsEnable => '알림 표시';
-
-  @override
-  String get accountNotificationsEnableSubtitle => '새 메시지, 친구 요청, 그룹 초대';
-
-  @override
-  String get accountNotificationsContent => '메시지 내용 표시';
-
-  @override
-  String get accountNotificationsContentSubtitle => '배너와 잠금 화면에 텍스트와 모스 부호를 표시합니다. 끄면 메시지가 왔다는 것만 알립니다.';
-
-  @override
-  String get accountNotificationsAllow => '알림 허용';
-
-  @override
-  String get accountNotificationsAllowSubtitle => '시스템에 알림 권한을 요청합니다';
-
-  @override
-  String get accountNotificationsDenied => '시스템 설정에서 MorseCQ 알림이 꺼져 있습니다.';
-
-  @override
-  String get accountBackupSaveFile => '백업 파일 저장';
-
-  @override
-  String get accountBackupShareFile => '백업 파일 공유';
-
-  @override
-  String get accountBackupSaved => '백업이 저장되었습니다';
-
-  @override
-  String get accountBackupNotSaved => '백업이 저장되지 않았습니다';
-
-  @override
-  String get accountBackupFailed => '백업을 기록할 수 없습니다';
-
-  @override
-  String get accountBackupAcknowledge => '이 백업이 없으면 신원 정보를 복구할 수 없음을 이해했습니다.';
-
-  @override
-  String get accountBackupContinue => 'MorseCQ 시작';
-
-  @override
-  String get accountBackupShowQrHint => '친구는 Tox ID로 나를 추가합니다. 텍스트나 QR 코드로 공유할 수 있습니다.';
-
-  @override
-  String get accountRestoreTitle => '백업에서 복원';
-
-  @override
-  String get accountRestoreBody => 'MorseCQ에서 내보낸 백업 파일을 선택하세요. 신원 정보에 비밀번호를 설정했다면 여기서 입력해야 합니다.';
-
-  @override
-  String get accountRestoreChooseFile => '백업 파일 선택';
-
-  @override
-  String get accountRestoreNoFile => '먼저 백업 파일을 선택하세요';
-
-  @override
-  String get accountRestoreButton => '복원';
-
-  @override
-  String get accountRestoring => '복원 중…';
-
-  @override
-  String get accountRestoreInvalidFile => '이 파일은 MorseCQ 백업이 아닙니다.';
-
-  @override
-  String get accountRestoreReplacesWarning => '복원하면 이 기기의 현재 신원 정보가 교체됩니다.';
-
-  @override
-  String get accountUnlockTitle => '신원 정보 잠금 해제';
-
-  @override
-  String get accountUnlockBody => '신원 정보 파일이 암호화되어 있습니다. 계속하려면 비밀번호를 입력하세요.';
-
-  @override
-  String get accountUnlockButton => '잠금 해제';
-
-  @override
-  String get accountUnlocking => '잠금 해제 중…';
-
-  @override
-  String get accountUnlockRestoreInstead => '대신 백업에서 복원';
-
-  @override
-  String get accountMeNoIdentity => '신원 정보가 불러와지지 않았습니다';
-
-  @override
-  String get accountSectionAccount => '계정';
-
-  @override
   String get accountSectionTraining => '훈련';
 
   @override
   String get accountSectionAbout => '앱 정보';
 
   @override
-  String get accountSectionDanger => '위험한 작업';
-
-  @override
-  String get accountEditProfile => '프로필 편집';
-
-  @override
-  String get accountEditProfileBody => 'Tox 네트워크의 연락처에게 표시됩니다.';
-
-  @override
-  String get accountSetPassword => '비밀번호 설정';
-
-  @override
-  String get accountChangePassword => '비밀번호 변경';
-
-  @override
-  String get accountRemovePassword => '비밀번호 제거';
-
-  @override
-  String get accountCurrentPassword => '현재 비밀번호';
-
-  @override
-  String get accountNewPassword => '새 비밀번호';
-
-  @override
-  String get accountPasswordUpdated => '비밀번호가 변경되었습니다';
-
-  @override
-  String get accountPasswordRemoved => '비밀번호가 제거되었습니다';
-
-  @override
-  String get accountProfileUpdated => '프로필이 수정되었습니다';
-
-  @override
-  String get accountExportBackup => '백업 내보내기';
-
-  @override
-  String get accountExportBackupSubtitle => '신원 정보와 학습 진도를 파일에 저장';
-
-  @override
   String get accountTrainingDefaults => '재생 및 훈련 기본 설정';
 
   @override
   String get accountTrainingDefaultsSubtitle => '속도, 음높이, Farnsworth 간격';
-
-  @override
-  String get accountTrainingDefaultsPlaceholder => '속도, 음높이, Farnsworth 간격의 기본 설정이 여기에 표시됩니다.';
 
   @override
   String get accountAboutLicence => '라이선스';
@@ -716,285 +389,7 @@ class SKo extends S {
   String get accountAboutSourceCopied => '소스 코드 링크를 복사했습니다';
 
   @override
-  String get accountAboutBackend => '백엔드';
-
-  @override
-  String get accountDeleteIdentity => '신원 정보 삭제';
-
-  @override
-  String get accountDeleteIdentitySubtitle => '이 기기에서 신원 정보, 기록과 학습 진도 삭제';
-
-  @override
-  String get accountDeleteDialogTitle => '이 신원 정보를 삭제할까요?';
-
-  @override
-  String get accountDeleteDialogBody => '이 기기에서 신원 정보, 채팅 기록과 학습 진도를 삭제합니다. 백업이 없으면 복구할 수 없습니다. 확인하려면 DELETE를 입력하세요.';
-
-  @override
-  String get accountDeleteConfirmWord => 'DELETE';
-
-  @override
-  String get accountDeleteConfirmHint => 'DELETE 입력';
-
-  @override
-  String get accountDeleteButton => '삭제';
-
-  @override
-  String accountRestoreFileChosenSize(int bytes) {
-    return '백업 파일 선택됨($bytes바이트)';
-  }
-
-  @override
-  String get chatSearchConversations => '대화 검색';
-
-  @override
-  String get chatNoConversations => '아직 대화가 없습니다';
-
-  @override
-  String get chatNoSearchResults => '일치하는 대화가 없습니다';
-
-  @override
-  String get chatPin => '고정';
-
-  @override
-  String get chatUnpin => '고정 해제';
-
-  @override
-  String get chatMarkRead => '읽음으로 표시';
-
-  @override
-  String get chatDelete => '삭제';
-
-  @override
-  String get chatDeleteConversationTitle => '대화를 삭제할까요?';
-
-  @override
-  String get chatDeleteConversationBody => '이 기기에 저장된 대화 기록이 삭제됩니다. Tox에는 사본이 없습니다.';
-
-  @override
-  String get chatDraftPrefix => '초안: ';
-
-  @override
-  String get chatSelectConversation => '대화 선택';
-
-  @override
-  String get chatContacts => '연락처';
-
-  @override
-  String get chatNoMessages => '아직 메시지가 없습니다. CQ를 보내 통신을 시작하세요.';
-
-  @override
-  String get chatTrainingMode => '훈련 모드';
-
-  @override
-  String get chatTrainingModeOn => '훈련 모드 켜짐: 텍스트 숨김';
-
-  @override
-  String get chatTrainingModeOff => '훈련 모드 꺼짐';
-
-  @override
-  String get chatAutoPlay => '받은 모스 부호 자동 재생';
-
-  @override
-  String get chatAutoPlayOn => '자동 재생 켜짐: 새 메시지가 도착하면 재생됩니다';
-
-  @override
-  String get chatAutoPlayOff => '자동 재생 꺼짐';
-
-  @override
-  String get chatReveal => '보기';
-
-  @override
-  String get chatHiddenText => '먼저 듣고 나서 보기';
-
-  @override
-  String get chatPlay => '모스 부호 재생';
-
-  @override
-  String get chatStop => '정지';
-
-  @override
-  String get chatPlaybackSettings => '재생 설정';
-
-  @override
-  String get chatCharacterSpeed => '문자 속도';
-
-  @override
-  String get chatFarnsworthSpeed => 'Farnsworth 속도';
-
-  @override
-  String get chatTone => '음높이';
-
-  @override
-  String get chatWpm => 'WPM';
-
-  @override
-  String get chatHz => 'Hz';
-
-  @override
-  String get chatMembers => '회원';
-
-  @override
-  String get chatLeaveGroup => '그룹 나가기';
-
-  @override
-  String get chatLeaveGroupTitle => '이 그룹에서 나갈까요?';
-
-  @override
-  String get chatLeaveGroupBody => '더 이상 메시지를 받지 않습니다. 나중에 채팅 ID로 다시 참여할 수 있습니다.';
-
-  @override
-  String get chatLeave => '나가기';
-
-  @override
-  String get chatConferenceNote => '구형 회의: 여기서는 모스 전건 조작 메타데이터(v2)를 사용할 수 없습니다. 텍스트는 사용할 수 있습니다.';
-
-  @override
-  String get chatClearHistory => '기록 지우기';
-
-  @override
-  String get chatModeStraightKey => '수동 전건';
-
-  @override
-  String get chatModePaddles => '패들';
-
-  @override
-  String get chatKeyMessage => '전건으로 메시지를 입력하세요';
-
-  @override
   String get chatSend => '보내기';
-
-  @override
-  String get chatTooLong => 'Tox 메시지 한 건의 길이 제한을 초과합니다';
-
-  @override
-  String get chatKeyHint => '전건 영역을 누르거나 스페이스 키를 누르세요';
-
-  @override
-  String get chatPaddleHint => '패들을 탭하거나 Ctrl을 누르세요(왼쪽: 단점, 오른쪽: 장점)';
-
-  @override
-  String get chatDeleteLast => '마지막 문자 삭제';
-
-  @override
-  String get chatNoFriends => '아직 친구가 없습니다. 상대방의 Tox ID로 추가하세요.';
-
-  @override
-  String get chatNoRequests => '대기 중인 요청이 없습니다';
-
-  @override
-  String get chatAddFriend => '친구 추가';
-
-  @override
-  String get chatMyToxId => '내 Tox ID';
-
-  @override
-  String get chatToxIdLabel => 'Tox ID(16진수 문자 76개)';
-
-  @override
-  String get chatToxIdInvalid => 'Tox ID는 정확히 76개의 16진수 문자여야 합니다';
-
-  @override
-  String get chatToxIdOwn => '본인의 Tox ID입니다';
-
-  @override
-  String get chatToxIdAlreadyFriend => '이미 친구 목록에 있습니다';
-
-  @override
-  String get chatRequestMessage => '메시지';
-
-  @override
-  String get chatDefaultRequestMessage => 'MorseCQ CQ';
-
-  @override
-  String get chatSendRequest => '요청 보내기';
-
-  @override
-  String get chatRequestSent => '친구 요청을 보냈습니다';
-
-  @override
-  String get chatScanQr => 'QR 코드 스캔';
-
-  @override
-  String get chatScanQrDesktopHint => 'QR 코드 스캔에는 휴대폰 카메라가 필요합니다';
-
-  @override
-  String get chatScanQrTitle => 'Tox ID 스캔';
-
-  @override
-  String get chatScanQrNotToxId => '이 QR 코드는 Tox ID가 아닙니다';
-
-  @override
-  String get chatAccept => '수락';
-
-  @override
-  String get chatReject => '거절';
-
-  @override
-  String get chatCopied => '클립보드에 복사했습니다';
-
-  @override
-  String get chatNoIdentity => '신원 정보가 불러와지지 않았습니다';
-
-  @override
-  String get chatRemoveFriend => '친구 삭제';
-
-  @override
-  String get chatRemoveFriendTitle => '이 친구를 삭제할까요?';
-
-  @override
-  String get chatRemoveFriendBody => '상대방이 더 이상 나에게 메시지를 보낼 수 없습니다.';
-
-  @override
-  String get chatRemove => '삭제';
-
-  @override
-  String get chatNoGroups => '아직 그룹이 없습니다. 그룹을 만들거나 채팅 ID로 참여하세요.';
-
-  @override
-  String get chatCreateGroup => '그룹 만들기';
-
-  @override
-  String get chatJoinGroup => '그룹 참여';
-
-  @override
-  String get chatGroupName => '그룹 이름';
-
-  @override
-  String get chatGroupNameRequired => '그룹 이름을 입력하세요';
-
-  @override
-  String get chatAdvanced => '고급';
-
-  @override
-  String get chatLegacyConference => '구형 회의(이전 클라이언트용)';
-
-  @override
-  String get chatLegacyConferenceHint => '권장하지 않음: 고정 채팅 ID와 모스 메타데이터가 없습니다.';
-
-  @override
-  String get chatCreate => '만들기';
-
-  @override
-  String get chatChatIdLabel => '채팅 ID(16진수 문자 64개)';
-
-  @override
-  String get chatChatIdInvalid => '채팅 ID는 정확히 64개의 16진수 문자여야 합니다';
-
-  @override
-  String get chatPassword => '비밀번호(선택 사항)';
-
-  @override
-  String get chatJoin => '참여';
-
-  @override
-  String get chatJoinRequested => '참여 중 — 회원을 찾으면 그룹이 표시됩니다.';
-
-  @override
-  String get chatConferenceBadge => '회의';
-
-  @override
-  String get chatCopyChatId => '채팅 ID 복사';
 
   @override
   String get learnLessonCardTitle => 'Koch 강의';
@@ -1028,9 +423,6 @@ class SKo extends S {
 
   @override
   String get learnLoading => '학습 진도 불러오는 중…';
-
-  @override
-  String get learnIdentityRequired => '훈련을 시작하려면 신원 정보를 생성하거나 잠금을 해제하세요. 진도는 신원 정보와 함께 저장되며 백업에도 포함됩니다.';
 
   @override
   String get learnLoadFailed => '저장된 진도를 읽을 수 없습니다. 처음부터 시작합니다. 기존 파일은 .corrupt로 보관되었습니다.';
@@ -1956,33 +1348,6 @@ class SKo extends S {
   String get learnSeveritySevere => '심함';
 
   @override
-  String get notificationOpen => '열기';
-
-  @override
-  String get notificationChannelMessages => '메시지';
-
-  @override
-  String get notificationChannelMessagesDescription => '친구와 그룹이 보내는 새 모스 메시지';
-
-  @override
-  String get notificationChannelFriendRequests => '친구 요청';
-
-  @override
-  String get notificationChannelFriendRequestsDescription => '누군가 나를 친구로 추가하려고 합니다';
-
-  @override
-  String get notificationChannelGroupInvites => '그룹 초대';
-
-  @override
-  String get notificationChannelGroupInvitesDescription => '친구가 그룹에 초대했습니다';
-
-  @override
-  String get notificationNewMessage => '새 메시지';
-
-  @override
-  String get notificationFriendRequestTitle => '새 친구 요청';
-
-  @override
   String learnNewestCharIs(String char) {
     return '이번 강의의 새 문자: $char';
   }
@@ -2088,51 +1453,6 @@ class SKo extends S {
   }
 
   @override
-  String get accountNewPasswordRequired => '새 비밀번호를 입력하세요';
-
-  @override
-  String get accountToxIdQrSemantics => 'Tox ID QR 코드';
-
-  @override
-  String get accountBackupSaveDialogTitle => 'MorseCQ 백업 저장';
-
-  @override
-  String get accountBackupShareSubject => 'MorseCQ 신원 정보 백업';
-
-  @override
-  String get accountBackupChooseDialogTitle => 'MorseCQ 백업 선택';
-
-  @override
-  String notificationNewMessages(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '새 메시지 $count개',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String notificationFriendRequestFrom(String name) {
-    return '$name님의 친구 요청';
-  }
-
-  @override
-  String notificationFriendRequestBody(String name, String message) {
-    return '$name: $message';
-  }
-
-  @override
-  String notificationGroupInviteTitle(String group) {
-    return '$group 초대';
-  }
-
-  @override
-  String notificationGroupInviteBody(String name) {
-    return '$name님이 초대했습니다';
-  }
-
-  @override
   String desktopTrayShow(String app) {
     return '$app 표시';
   }
@@ -2154,80 +1474,10 @@ class SKo extends S {
   }
 
   @override
-  String desktopTrayTooltipUnread(String app, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '읽지 않은 메시지 $count개',
-    );
-    return '$app — $_temp0';
-  }
-
-  @override
-  String desktopWindowTitleUnread(String badge, String app) {
-    return '($badge) $app';
-  }
-
-  @override
   String get listenStateOn => '켜짐';
 
   @override
   String get listenStateOff => '꺼짐';
-
-  @override
-  String chatBytesLeftCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count바이트 남음',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatMemberCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '회원 $count명',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatFriendsCount(int count) {
-    return '친구($count)';
-  }
-
-  @override
-  String chatFriendRequestsCount(int count) {
-    return '친구 요청($count)';
-  }
-
-  @override
-  String chatGroupInvitesCount(int count) {
-    return '그룹 초대($count)';
-  }
-
-  @override
-  String chatMembersTitleCount(int count) {
-    return '회원 · $count';
-  }
-
-  @override
-  String chatInvitedByName(String name) {
-    return '초대한 사람: $name';
-  }
-
-  @override
-  String chatMemberSelf(String name) {
-    return '$name(나)';
-  }
-
-  @override
-  String chatSliderValue(String label, int value, String unit) {
-    return '$label: $value $unit';
-  }
 
   @override
   String referenceTelegraphCodes(String codes) {
@@ -2292,38 +1542,9 @@ class SKo extends S {
   String get appearanceDark => '어둡게';
 
   @override
-  String get appearanceSubtitle => '밝은 모드와 어두운 모드를 지원하는 다섯 가지 스타일';
-
-  @override
-  String get chatClearHistoryBody => '이 기기에 저장된 대화 기록을 삭제할까요? 다른 기기의 사본에는 영향을 주지 않습니다. 되돌릴 수 없습니다.';
-
-  @override
-  String get chatLoadEarlier => '이전 메시지 불러오기';
-
-  @override
-  String get chatHistoryLoadFailed => '이전 메시지를 불러올 수 없습니다. 탭하여 다시 시도하세요.';
-
-  @override
-  String get chatRetryHistory => '다시 시도';
-
-  @override
-  String chatNewMessages(int count) {
-    return '새 메시지 $count개';
-  }
-
-  @override
   String learnShowAllChars(int count) {
     return '문자 $count개 모두 보기';
   }
-
-  @override
-  String get chatSelfMe => '나';
-
-  @override
-  String get chatSelfLocalOnly => '이 기기에만 저장';
-
-  @override
-  String get chatSelfContactSubtitle => '초안, 연습과 메모 · 전송되지 않음';
 
   @override
   String get learnShowFewerChars => '문자 접기';
@@ -2336,12 +1557,6 @@ class SKo extends S {
 
   @override
   String get learnLeaveDrillConfirm => '나가기';
-
-  @override
-  String get chatScanQrPermissionDenied => 'QR 코드를 스캔하려면 MorseCQ에 카메라 접근 권한이 필요합니다. 시스템 설정에서 허용하세요.';
-
-  @override
-  String get chatScanQrCameraUnavailable => '이 기기에서는 카메라를 사용할 수 없습니다.';
 
   @override
   String get learnReplayAssistedNote => '다시 들음: 연습으로는 집계되지만 레슨 해제나 복습 갱신에는 반영되지 않습니다.';
@@ -2452,11 +1667,6 @@ class SKo extends S {
 
   @override
   String get learnPlanTomorrow => '내일 새 계획이 만들어집니다. 자유 연습은 언제든 가능합니다.';
-
-  @override
-  String learnPlanNext(String step) {
-    return '다음: $step';
-  }
 
   @override
   String learnPlanEarlier(int done, int total) {
@@ -2692,75 +1902,6 @@ class SKo extends S {
   String get learnQsoSummaryNote => 'QSO 결과는 수신 정확도와 따로 집계되며 레슨을 열지 않습니다.';
 
   @override
-  String get messageStatusCancelled => '취소됨 — 전송되지 않음';
-
-  @override
-  String get chatMessageLearnActions => '메시지 작업';
-
-  @override
-  String get chatPracticeMessage => '이 메시지 수신 연습';
-
-  @override
-  String get chatSaveAsMaterial => '연습 자료로 저장';
-
-  @override
-  String get chatSavedAsMaterial => '내 자료에 저장했습니다';
-
-  @override
-  String get chatSaveMaterialFailed => '자료를 저장하지 못했습니다. 다시 시도하세요.';
-
-  @override
-  String get chatListenOnly => '듣기 전용 훈련';
-
-  @override
-  String get chatListenOnlyHidden => '듣기 전용: 재생을 눌러 들으세요';
-
-  @override
-  String chatClearHistoryMaterials(int count) {
-    return '이 대화의 메시지 $count개가 연습 자료로 저장되어 있습니다. 사본은 학습 › 내 자료에서 삭제할 때까지 남습니다.';
-  }
-
-  @override
-  String get chatPracticeTitle => '수신 연습';
-
-  @override
-  String chatPracticeUnsupported(String chars) {
-    return '이 메시지에 모스로 칠 수 없는 문자가 있습니다: $chars. 연습에서 제외됩니다.';
-  }
-
-  @override
-  String chatPracticeTrainableCount(int count) {
-    return '$count자를 연습할 수 있습니다.';
-  }
-
-  @override
-  String get chatPracticeNothingTrainable => '이 메시지에는 모스로 연습할 내용이 없습니다.';
-
-  @override
-  String get chatPracticeConfirm => '나머지 연습';
-
-  @override
-  String get chatPracticeHint => '힌트';
-
-  @override
-  String chatPracticeHintShown(String symbols) {
-    return '힌트: $symbols …';
-  }
-
-  @override
-  String get chatPracticeAssisted => '보조 사용: 연습으로는 집계되지만 복습이나 속도 조언에는 쓰이지 않습니다.';
-
-  @override
-  String chatPracticeErrors(int wrong, int missed, int extra) {
-    return '틀림 $wrong · 빠짐 $missed · 추가 $extra';
-  }
-
-  @override
-  String chatPracticeErrorsAction(String symbols) {
-    return '틀린 문자 연습: $symbols';
-  }
-
-  @override
   String get learnTipDahTooLongTitle => '장점이 너무 김';
 
   @override
@@ -2814,74 +1955,6 @@ class SKo extends S {
   String get learnRhythmZoomOut => '축소';
 
   @override
-  String get chatSearchMessages => '메시지 검색';
-
-  @override
-  String get chatSearchHint => '이 대화에서 검색';
-
-  @override
-  String get chatSearchAnyone => '모두';
-
-  @override
-  String get chatSearchMe => '나';
-
-  @override
-  String get chatSearchThem => '상대';
-
-  @override
-  String get chatSearchAnyDate => '모든 날짜';
-
-  @override
-  String chatSearchDateRange(String from, String to) {
-    return '$from – $to';
-  }
-
-  @override
-  String get chatSearchBookmarked => '북마크';
-
-  @override
-  String get chatSearchNoResults => '일치하는 메시지가 없습니다.';
-
-  @override
-  String get chatSearchMore => '더 보기';
-
-  @override
-  String get chatAddBookmark => '북마크';
-
-  @override
-  String get chatRemoveBookmark => '북마크 해제';
-
-  @override
-  String get chatBookmarked => '북마크됨';
-
-  @override
-  String get chatBookmarkFailed => '북마크를 저장하지 못했습니다.';
-
-  @override
-  String get chatRetrySend => '다시 보내기';
-
-  @override
-  String get chatCancelSend => '전송 취소';
-
-  @override
-  String get chatRetryQueued => '다시 대기열에 넣었습니다. 상대가 온라인이 되면 보냅니다.';
-
-  @override
-  String get chatSendCancelled => '취소했습니다. 메시지는 전송되지 않았습니다.';
-
-  @override
-  String get chatRetryNotNeeded => '이 메시지는 더 이상 실패 상태가 아닙니다.';
-
-  @override
-  String get chatCancelTooLate => '취소하기에 늦었습니다. 메시지가 이미 네트워크로 넘어가 도착할 수 있습니다.';
-
-  @override
-  String get chatSendControlUnavailable => '이 메시지에는 사용할 수 없습니다.';
-
-  @override
-  String get chatSendControlFailed => '실패했습니다. 메시지 상태는 그대로입니다. 다시 시도하세요.';
-
-  @override
   String get workbenchTitle => '녹음 작업대';
 
   @override
@@ -2897,7 +1970,7 @@ class SKo extends S {
   String get workbenchFormats => 'WAV, 16비트 PCM, 모노 또는 스테레오, 8/16/44.1/48 kHz, 최대 50MB·20분.';
 
   @override
-  String get workbenchBackupNote => '녹음은 이 기기에 남으며, 백업을 내보낼 때 포함하기로 선택하지 않으면 신원 백업에 들어가지 않습니다. 저장한 구간의 제목, 메모, 위치는 항상 백업됩니다.';
+  String get workbenchBackupNote => '녹음은 이 기기에 저장됩니다. 학습 데이터를 지우거나 앱을 삭제하기 전에 사본을 보관하세요. 저장된 구간은 제목, 메모와 위치를 유지합니다.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2909,9 +1982,6 @@ class SKo extends S {
 
   @override
   String get workbenchStereo => '스테레오';
-
-  @override
-  String get workbenchTruncated => '파일이 일찍 끝납니다. 있는 오디오만 사용합니다.';
 
   @override
   String get workbenchErrorNotWav => 'WAV 파일이 아닙니다.';
@@ -3139,15 +2209,12 @@ class SKo extends S {
   String get materialsUnfavorite => '즐겨찾기에서 제거';
 
   @override
-  String get materialsEmpty => '아직 자료가 없습니다. 직접 텍스트, 단어 목록, 호출부호를 추가하거나 채팅 메시지를 저장하세요.';
+  String get materialsEmpty => '아직 자료가 없습니다. 텍스트, 단어 목록이나 호출 부호를 추가하세요.';
 
   @override
   String materialsItems(int count) {
     return '$count개 항목';
   }
-
-  @override
-  String get materialsFromChat => '채팅에서';
 
   @override
   String get materialsActions => '자료 작업';
@@ -3264,46 +2331,7 @@ class SKo extends S {
   String get materialsPracticeNothing => '이 모드에서 연습할 항목이 없습니다.';
 
   @override
-  String get guestTryLearning => '먼저 학습해 보기';
-
-  @override
-  String get guestBanner => '게스트 학습: 진행 상황은 이 기기에 남습니다. 채팅에는 신원이 필요합니다.';
-
-  @override
-  String get guestGetIdentity => '신원 설정';
-
-  @override
-  String get guestIdentityTitle => '신원 필요';
-
-  @override
-  String get guestIdentityBody => 'Tox 채팅에는 자신의 신원이 필요합니다. 새로 만들거나 백업을 복원하거나 이 기기의 신원을 잠금 해제하세요. 새 신원을 만들면 게스트 학습 진행 상황이 자동으로 옮겨집니다.';
-
-  @override
-  String get guestClearData => '게스트 학습 데이터 삭제';
-
-  @override
-  String get guestClearDataBody => '이 기기에서 게스트로 만든 진행 상황, 계획, 자료를 삭제합니다. 신원에는 영향이 없습니다.';
-
-  @override
   String get guestClearConfirm => '삭제';
-
-  @override
-  String get guestCleared => '게스트 학습 데이터를 삭제했습니다.';
-
-  @override
-  String get guestClearFailed => '게스트 데이터를 삭제하지 못했습니다.';
-
-  @override
-  String get guestMigrationFailed => '신원은 준비되었지만 게스트 학습 진행 상황이 아직 옮겨지지 않았습니다. 이 기기에 안전하게 남아 있습니다.';
-
-  @override
-  String get guestChoiceBody => '게스트 학습 진행 상황도 있습니다. 복원한 신원의 진행 상황을 사용 중이며 합치지 않았습니다.';
-
-  @override
-  String get guestChoiceKeep => '복원본 유지';
-
-  @override
-  String get guestChoiceUseGuest => '게스트 진행 상황 사용';
 
   @override
   String get placementTitle => '내 수준 확인';
@@ -3365,431 +2393,12 @@ class SKo extends S {
   }
 
   @override
-  String get chatJumpToLatest => '최신 메시지';
-
-  @override
-  String get chatMessageGone => '그 메시지는 더 이상 이 대화에 없습니다.';
-
-  @override
-  String get chatListenOnlyPreview => '새 메시지 — 들으며 받아 적으세요';
-
-  @override
-  String get chatSaveMaterialConfirm => '나머지 저장';
-
-  @override
   String materialsImportConfirm(int count) {
     return '자료 $count개를 가져올까요?';
   }
 
   @override
   String get materialsExportTxt => '텍스트로 내보내기(TXT)';
-
-  @override
-  String get accountBackupMediaTitle => '저장한 녹음을 포함할까요?';
-
-  @override
-  String accountBackupMediaBody(int count, String size) {
-    return '저장한 녹음 $count개(${size}MB). 제목, 메모, 위치는 항상 백업되며, 오디오는 포함할 때만 들어갑니다.';
-  }
-
-  @override
-  String accountBackupMediaTooLarge(String size) {
-    return '저장한 녹음(${size}MB)은 너무 커서 백업에 넣을 수 없습니다. 제목, 메모, 위치만 포함됩니다.';
-  }
-
-  @override
-  String get accountBackupMediaInclude => '녹음 포함';
-
-  @override
-  String get accountBackupMediaSkip => '녹음 없이';
-
-  @override
-  String get diagTitle => '연결 진단';
-
-  @override
-  String get diagOpenSubtitle => '메시지가 대기 중인 이유와 다시 연결하는 방법';
-
-  @override
-  String get diagBannerDetails => '자세히';
-
-  @override
-  String get diagSummaryNoIdentity => '열린 ID가 없어 확인할 연결이 없습니다.';
-
-  @override
-  String get diagSummaryOnlinePeerOnline => 'Tox 네트워크에 연결되어 있고 이 연락처도 온라인입니다. 메시지가 바로 전달됩니다.';
-
-  @override
-  String get diagSummaryOnlinePeerOffline => '연결되어 있지만 이 연락처는 오프라인입니다. 메시지는 이 기기의 보낼 편지함에서 기다리다가 상대가 온라인이 되면 전송됩니다.';
-
-  @override
-  String get diagSummaryOnline => 'Tox 네트워크에 연결되어 있습니다.';
-
-  @override
-  String get diagSummaryConnecting => 'Tox 네트워크에 연결하는 중입니다. 앱 시작 직후나 네트워크가 바뀐 뒤에는 1분 정도 걸릴 수 있습니다.';
-
-  @override
-  String get diagSummaryOffline => 'Tox 네트워크에 연결되어 있지 않습니다. 연결이 돌아올 때까지 아무것도 주고받을 수 없습니다.';
-
-  @override
-  String get diagLocalLabel => '내 연결';
-
-  @override
-  String diagSinceChanged(String time) {
-    return '$time부터';
-  }
-
-  @override
-  String diagSinceFirst(String time) {
-    return '$time부터 관찰됨';
-  }
-
-  @override
-  String diagSinceResumed(String time) {
-    return '$time에 앱으로 돌아온 뒤부터 관찰됨';
-  }
-
-  @override
-  String get diagLastOnlineLabel => '마지막으로 확인된 연결';
-
-  @override
-  String get diagLastOnlineNow => '지금 연결됨';
-
-  @override
-  String get diagLastOnlineNone => '아직 확인된 연결이 없습니다.';
-
-  @override
-  String get diagLastOnlineHint => '이 기기가 자신의 연결을 마지막으로 확인한 시각입니다. 메시지가 상대에게 도착한 시각이 아닙니다.';
-
-  @override
-  String get diagPeerLabel => '연락처';
-
-  @override
-  String get diagUnknown => '알 수 없음';
-
-  @override
-  String get diagPeerUnknownHint => '연락처의 접속 여부는 내가 연결되어 있을 때만 볼 수 있습니다.';
-
-  @override
-  String get diagPeerGroupHint => '그룹 멤버의 접속 여부는 멤버 목록에 표시됩니다.';
-
-  @override
-  String get diagPendingLabel => '전송 대기';
-
-  @override
-  String get diagPendingNone => '대기 중인 메시지 없음';
-
-  @override
-  String diagPendingCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '메시지 $count개',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String diagPendingOldest(String time) {
-    return '가장 오래된 메시지: $time';
-  }
-
-  @override
-  String get diagPendingUnknown => '채팅이 연결될 때까지 알 수 없음';
-
-  @override
-  String get diagPendingHint => '대기 중인 메시지는 이 기기에 남아 있다가 상대에게 닿을 수 있을 때 자동으로 전송됩니다. 진단은 메시지를 삭제하거나 다시 보내지 않습니다.';
-
-  @override
-  String get diagReconnect => '다시 연결';
-
-  @override
-  String get diagReconnecting => '다시 연결하는 중…';
-
-  @override
-  String diagReconnectFailed(String reason) {
-    return '다시 연결하지 못했습니다: $reason';
-  }
-
-  @override
-  String get diagReconnectNote => '다시 연결하면 연결 시도를 새로 시작합니다. 온라인이 되기까지 시간이 걸릴 수 있으며, 그때 이 페이지가 갱신됩니다.';
-
-  @override
-  String get diagAboutTitle => 'MorseCQ의 연결 방식';
-
-  @override
-  String get diagAboutBody => 'MorseCQ에는 서버가 없습니다. 기기가 Tox P2P 네트워크로 연락처와 직접 통신하므로, 메시지가 도착하려면 양쪽이 동시에 온라인이어야 합니다. 휴대폰은 백그라운드 앱을 일시 중지하므로 그동안 MorseCQ는 연결을 유지할 수 없고, 돌아오면 다시 연결합니다.';
-
-  @override
-  String get diagDetailsTitle => '기술 세부 정보';
-
-  @override
-  String get diagDetailIdentity => 'ID';
-
-  @override
-  String get diagDetailStatus => '상태';
-
-  @override
-  String get diagDetailObserved => '관찰 시각';
-
-  @override
-  String get diagDetailQueued => '대기열 항목';
-
-  @override
-  String get diagDetailError => '마지막 오류 코드';
-
-  @override
-  String get backupXTitle => '암호화 백업';
-
-  @override
-  String get backupXIntro => '다른 기기로 가져갈 항목을 고르세요. 파일 전체가 여기서 정한 암호 문구로 암호화됩니다.';
-
-  @override
-  String get backupXCategoryIdentity => 'ID와 Tox 프로필';
-
-  @override
-  String get backupXCategoryTraining => '연습 진도와 자료';
-
-  @override
-  String get backupXCategoryChat => '채팅 기록(나에게 쓴 메모 포함)';
-
-  @override
-  String get backupXCategoryMeta => '임시 저장, 고정, 북마크';
-
-  @override
-  String get backupXCategoryPrefs => '앱 환경설정';
-
-  @override
-  String get backupXPrefsHint => '재생, 알림, 모양, 언어. 창 위치나 키 할당은 포함하지 않습니다.';
-
-  @override
-  String get backupXCategoryMedia => '저장한 녹음';
-
-  @override
-  String get backupXMediaHint => '기본값은 꺼짐: 녹음은 클 수 있습니다. 제외하면 제목과 메모만 옮겨집니다.';
-
-  @override
-  String get backupXCategoryPending => '보내지 않은 메시지';
-
-  @override
-  String get backupXPendingHint => '검토용으로만 돌아오며 자동으로 전송되지 않습니다.';
-
-  @override
-  String get backupXRequired => '필수';
-
-  @override
-  String backupXSizeLine(int count, String size) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count개',
-    );
-    return '$_temp0 · $size';
-  }
-
-  @override
-  String backupXSizeKb(String size) {
-    return '${size}KB';
-  }
-
-  @override
-  String backupXSizeMb(String size) {
-    return '${size}MB';
-  }
-
-  @override
-  String backupXMediaTooLarge(String size) {
-    return '너무 커서 포함할 수 없음($size)';
-  }
-
-  @override
-  String backupXInvitesNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '오프라인 친구를 기다리는 그룹 초대 $count건은 옮겨지지 않습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get backupXIdentityPasswordNote => 'ID 비밀번호는 프로필에 그대로 남습니다. 새 기기에서 백업 암호 문구와 함께 물어봅니다.';
-
-  @override
-  String backupXTotal(String size) {
-    return '합계 약 $size';
-  }
-
-  @override
-  String get backupXPassphrase => '백업 암호 문구';
-
-  @override
-  String get backupXPassphraseConfirm => '암호 문구 다시 입력';
-
-  @override
-  String get backupXPassphraseHint => '8자 이상. ID 비밀번호와 별개이며 복구할 수 없습니다.';
-
-  @override
-  String get backupXPassphraseTooShort => '8자 이상 입력하세요';
-
-  @override
-  String get backupXPassphraseMismatch => '암호 문구가 일치하지 않습니다';
-
-  @override
-  String get backupXExport => '암호화 백업 만들기';
-
-  @override
-  String get backupXExporting => '백업 만드는 중…';
-
-  @override
-  String get backupXMigrationNote => '기기를 옮기시나요? 새 기기에서 복원한 뒤에는 이 기기에서 이 ID를 쓰지 마세요. 같은 ID를 쓰는 기기가 둘이면 같은 메시지가 두 번 전송될 수 있습니다.';
-
-  @override
-  String get backupXBusy => '백업하는 동안 데이터가 계속 바뀌었습니다. 다시 시도하세요.';
-
-  @override
-  String get backupXTooLarge => '백업이 너무 큽니다. 녹음을 빼고 다시 시도하세요.';
-
-  @override
-  String get restoreXWrongPassphrase => '암호 문구가 틀렸거나 파일이 변경되었거나 불완전합니다.';
-
-  @override
-  String get restoreXUnsupported => '이 백업은 더 새로운 버전의 MorseCQ로 만들어졌습니다.';
-
-  @override
-  String get restoreXCheck => '백업 열기';
-
-  @override
-  String get restoreXPreviewTitle => '백업 내용';
-
-  @override
-  String restoreXCreated(String date) {
-    return '만든 시각 $date';
-  }
-
-  @override
-  String get restoreXIncluded => '포함됨';
-
-  @override
-  String get restoreXExcluded => '이 백업에 없음';
-
-  @override
-  String restoreXPendingIncluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '보내지 않은 메시지 $count개가 검토용으로 돌아옵니다. 자동으로 전송되지 않습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXPendingExcluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '이전 기기의 보내지 않은 메시지 $count개는 이 백업에 없습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXIdentityPassword => 'ID 비밀번호';
-
-  @override
-  String get restoreXIdentityPasswordNote => '이 백업의 ID에는 별도 비밀번호가 있습니다. 함께 입력하세요.';
-
-  @override
-  String get restoreXConfirmTitle => '이 기기의 ID를 바꿀까요?';
-
-  @override
-  String get restoreXConfirmBody => '이 기기의 ID와 데이터가 백업으로 바뀝니다. 여기서 연결하기 전에 이전 기기에서 이 ID 사용을 멈추세요.';
-
-  @override
-  String get restoreXConfirm => '바꾸고 복원';
-
-  @override
-  String get restoreXReportTitle => '복원 완료';
-
-  @override
-  String get restoreXReportRestored => '복원됨';
-
-  @override
-  String get restoreXReportNotIncluded => '복원되지 않음';
-
-  @override
-  String get restoreXReportPrefsFailed => '환경설정을 적용하지 못했습니다. 이전 설정이 유지됩니다.';
-
-  @override
-  String restoreXReportPendingReview(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '보내지 않은 메시지 $count개가 채팅에서 검토를 기다리고 있습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportPendingNotResumed(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '이전 기기의 보내지 않은 메시지 $count개는 옮겨지지 않았습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportInvites(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '대기 중이던 그룹 초대 $count건은 다시 보내지 않았습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXReportStopOld => '이전 기기에서는 이 ID를 더 이상 쓰지 마세요.';
-
-  @override
-  String get restoreXReportDone => '완료';
-
-  @override
-  String pendingReviewBanner(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '이전 기기의 보내지 않은 메시지 $count개',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get pendingReviewTitle => '보내지 않은 메시지';
-
-  @override
-  String get pendingReviewBody => '이전 기기에서 전송을 기다리던 메시지입니다. MorseCQ는 자동으로 보내지 않습니다. 아직 필요하면 다시 키잉하세요.';
-
-  @override
-  String pendingReviewQueuedAt(String time) {
-    return '이전 기기에서 $time에 대기열에 추가됨';
-  }
-
-  @override
-  String get pendingReviewDismiss => '닫기';
-
-  @override
-  String get pendingReviewDismissAll => '모두 닫기';
-
-  @override
-  String get pendingReviewEmpty => '더 검토할 항목이 없습니다.';
-
-  @override
-  String get backupXWizardInside => '백업 파일은 직접 정한 암호 문구로 통째로 암호화되며 ID 키와 연습 진도를 담습니다. 파일과 암호 문구를 이 기기 밖의 안전한 곳에 보관하세요.';
-
-  @override
-  String get backupXMeSubtitle => 'ID, 채팅, 진도를 담은 암호화 파일. 보관하거나 다른 기기로 옮길 때 사용';
 
   @override
   String get conditionsTitle => '수신 환경';
@@ -4030,9 +2639,6 @@ class SKo extends S {
   }
 
   @override
-  String get telegraphInterpretAction => '중국어 전신 부호로 해석';
-
-  @override
   String get telegraphInterpretTitle => '전신 부호 해석';
 
   @override
@@ -4051,183 +2657,7 @@ class SKo extends S {
   String get telegraphAmbiguous => '여러 글자가 이 부호를 함께 씁니다';
 
   @override
-  String get groupPracticeTitle => '그룹 연습';
-
-  @override
-  String get groupPracticeIntro => '강사는 평소처럼 그룹 채팅에서 연습 문제를 키잉합니다. 각 멤버는 여기서 연습 메시지를 골라 자기 속도로 받아 적습니다. 답과 점수는 이 기기에만 남고 그룹에 아무것도 보내지 않습니다.';
-
-  @override
-  String get groupPracticeNew => '새 세션';
-
-  @override
-  String get groupPracticeTitleField => '제목';
-
-  @override
-  String get groupPracticeCreate => '만들기';
-
-  @override
-  String get groupPracticeInstructor => '강사';
-
-  @override
-  String get groupPracticeParticipant => '참가자';
-
-  @override
-  String get groupPracticeInstructorHint => '각 연습을 그룹 채팅에서 키잉하고 여기에 라운드로 추가해 체크하세요. 차례는 채팅에서 알리세요.';
-
-  @override
-  String get groupPracticeParticipantHint => '강사의 연습 메시지를 라운드로 추가하고 여기서 하나씩 받아 적으세요.';
-
-  @override
-  String get groupPracticeLocalNote => '이 기기에만 남습니다. 라운드·역할·결과는 다른 멤버와 동기화되지 않으며, 놓친 메시지가 모두에게 도착한다는 보장은 없습니다.';
-
-  @override
-  String get groupPracticeAddRound => '연습 추가';
-
-  @override
-  String get groupPracticeNoMessages => '최근 기록에 추가할 메시지가 없습니다.';
-
-  @override
-  String get groupPracticeNotConnected => '채팅이 연결될 때까지 그룹 기록을 쓸 수 없습니다.';
-
-  @override
-  String get groupPracticeRoundOpen => '할 일';
-
-  @override
-  String get groupPracticeRoundDone => '완료';
-
-  @override
-  String get groupPracticeRoundUnavailable => '사용 불가';
-
-  @override
-  String get groupPracticeSourceGone => '연습 메시지가 더 이상 기록에 없습니다.';
-
-  @override
-  String get groupPracticeSourceLoading => '메시지를 찾는 중…';
-
-  @override
-  String groupPracticeAttemptResult(int accuracy, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '받아쓰기: $accuracy% ($count회)',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get groupPracticeCopy => '받아쓰기';
-
-  @override
-  String get groupPracticeRemoveRound => '라운드 삭제';
-
-  @override
-  String get groupPracticeSummary => '요약';
-
-  @override
-  String groupPracticeRoundsDone(int done, int total) {
-    return '$total라운드 중 $done 완료';
-  }
-
-  @override
-  String groupPracticeUnavailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '사용할 수 없는 라운드 $count개',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeAccuracy(int accuracy) {
-    return '받아쓰기 정확도: $accuracy%';
-  }
-
-  @override
-  String groupPracticeAssisted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '도움 받은 시도 $count회',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeShareHint(int done, int total, int accuracy) {
-    return '공유하려면 결과를 직접 그룹 채팅에 키잉하세요(예: $done/$total $accuracy%). 자동으로 보내지지 않습니다.';
-  }
-
-  @override
-  String get groupPracticeComplete => '세션 마치기';
-
-  @override
-  String get groupPracticeDeleteTitle => '이 세션을 삭제할까요?';
-
-  @override
-  String get groupPracticeDeleteBody => '라운드와 이 기기의 결과가 삭제됩니다. 연습 기록과 그룹 메시지는 남습니다.';
-
-  @override
   String get conditionsAudioFailed => '이 기기에서 오디오를 시작하지 못했습니다. 깨끗한 환경으로 연습하세요.';
-
-  @override
-  String get moderationBlock => '차단';
-
-  @override
-  String moderationBlockTitle(String name) {
-    return '$name님을 차단할까요?';
-  }
-
-  @override
-  String get moderationBlockFriendBody => '친구에서 삭제되고 대화도 삭제됩니다. 이후 상대의 메시지, 친구 요청, 그룹 초대가 이 기기에 표시되지 않습니다. 상대에게는 알림이 가지 않습니다.';
-
-  @override
-  String get moderationBlockMemberBody => '이후 이 그룹에서 상대의 메시지가 이 기기에 표시되지 않습니다. 상대에게는 알림이 가지 않습니다. Tox는 그룹마다 회원에게 다른 키를 쓰므로 이 그룹에만 적용됩니다.';
-
-  @override
-  String get moderationBlocked => '차단했습니다';
-
-  @override
-  String get moderationUnblock => '차단 해제';
-
-  @override
-  String get moderationUnblocked => '차단을 해제했습니다';
-
-  @override
-  String get moderationBlockedTitle => '차단한 사용자';
-
-  @override
-  String get moderationBlockedSubtitle => '메시지, 요청, 초대를 숨김';
-
-  @override
-  String get moderationBlockedEmpty => '차단한 사용자가 없습니다.';
-
-  @override
-  String get moderationBlockedNote => '차단은 이 기기에서 적용됩니다. Tox에는 중앙 서버가 없어 상대가 연락을 시도할 수는 있지만, 그 내용은 여기에 표시되지 않습니다.';
-
-  @override
-  String get termsGateTitle => '커뮤니티 가이드라인';
-
-  @override
-  String get termsGateIntro => 'MorseCQ 채팅은 서버 없이 다른 사람과 직접 연결됩니다. 시작하기 전에 다음 규칙에 동의해 주세요.';
-
-  @override
-  String get termsGateRuleZero => '무관용: 괴롭힘, 혐오, 협박, 미성년자 관련 성적 콘텐츠, 스팸 및 모든 불법 행위를 금지합니다.';
-
-  @override
-  String get termsGateRuleContacts => '내가 수락한 사람만 메시지를 보낼 수 있으며, 그룹은 초대나 그룹 ID로 참여합니다.';
-
-  @override
-  String get termsGateRuleBlock => '대화, 그룹 회원 목록, 친구 요청, 그룹 초대에서 누구든 차단할 수 있습니다.';
-
-  @override
-  String get termsGateAgree => '동의하고 계속';
-
-  @override
-  String get termsGateReadFull => '이용약관 전문 보기';
-
-  @override
-  String get termsGateSaveFailed => '답변을 저장하지 못했습니다. 다시 시도하세요.';
 
   @override
   String get aboutPrivacyPolicy => '개인정보 처리방침';
@@ -4240,9 +2670,6 @@ class SKo extends S {
 
   @override
   String get aboutLinkFailed => '링크를 열 수 없어 복사했습니다.';
-
-  @override
-  String get errorPeerBlocked => '이 사용자를 차단했습니다. 먼저 내 정보 → 차단한 사용자에서 차단을 해제하세요.';
 
   @override
   String get offlineClearData => '학습 데이터 지우기';
@@ -4258,4 +2685,7 @@ class SKo extends S {
 
   @override
   String get learnStorageUnavailable => '이 기기에서 훈련 데이터를 열 수 없습니다. 다시 시도하세요.';
+
+  @override
+  String get materialsImportedSource => '가져온 출처';
 }

@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 # 持久化审计实施计划
 
 在独立 `codex/persistence-audit` worktree 中执行，实施前及交付前使用 Claude Opus 只读评审。

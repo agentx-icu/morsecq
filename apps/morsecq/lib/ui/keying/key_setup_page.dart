@@ -343,8 +343,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
 }
 
 /// Learn keeps its keyer mode in the training settings: follow the active
-/// profile so every keying surface runs the same mode. Without an identity
-/// or guest profile yet, Learn picks it up from the next save or selection.
+/// profile so every keying surface runs the same mode. Learn picks it up from the next save or selection.
 Future<void> syncLearnKeyerMode(
   TrainingControllerHost? host,
   KeyerMode mode,

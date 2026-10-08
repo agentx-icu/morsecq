@@ -4,14 +4,6 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
-	<!-- Tox P2P (outbound + inbound DHT/UDP), QR scan, audio Morse decoding,
-	     backup file save/restore. -->
-	<key>com.apple.security.network.client</key>
-	<true/>
-	<key>com.apple.security.network.server</key>
-	<true/>
-	<key>com.apple.security.device.camera</key>
-	<true/>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
 	<key>com.apple.security.files.user-selected.read-write</key>

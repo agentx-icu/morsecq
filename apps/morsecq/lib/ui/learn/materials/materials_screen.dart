@@ -398,7 +398,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
         [
           MaterialLabels.kind(s, m.kind),
           s.materialsItems(m.normalizedItems.length),
-          if (m.source != null) s.materialsFromChat,
+          if (m.source != null) s.materialsImportedSource,
           ...m.tags,
         ].join(' · '),
         maxLines: 2,

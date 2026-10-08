@@ -47,11 +47,10 @@ void main() {
       }
     });
 
-    test('review/chat/material never unlock but feed stats', () {
+    test('review/material never unlock but feed stats', () {
       for (final source in [
         ExerciseSource.review,
         ExerciseSource.focus,
-        ExerciseSource.chat,
         ExerciseSource.material,
       ]) {
         final c = CreditPolicy.decide(
@@ -223,7 +222,7 @@ void main() {
       final s = SessionSummary.exercise(
         score,
         id: 'ex9',
-        source: ExerciseSource.chat,
+        source: ExerciseSource.material,
         at: now,
         assistance: {Assistance.hint},
         characterWpm: 20,
@@ -231,17 +230,17 @@ void main() {
         toneHz: 650,
         active: const Duration(seconds: 42),
         planStepId: 'p/1',
-        sourceRef: 'chat:a/b/c',
+        sourceRef: 'material:a/b/c',
       );
       final back = SessionSummary.fromJson(s.toJson());
       expect(back.id, 'ex9');
-      expect(back.source, ExerciseSource.chat);
+      expect(back.source, ExerciseSource.material);
       expect(back.assistance, {Assistance.hint});
       expect(back.insertions, 1);
       expect(back.strictAccuracy, closeTo(5 / 6, 1e-9));
       expect(back.active, const Duration(seconds: 42));
       expect(back.perChar!['I']!.attempts, 1);
-      expect(back.sourceRef, 'chat:a/b/c');
+      expect(back.sourceRef, 'material:a/b/c');
     });
 
     test('legacy summaries load with unknown metadata', () {

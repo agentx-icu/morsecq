@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 [English](./2026-09-30-tim2tox-message-annotation.md)
 
 # RFC：消息注解上线（Tim2Tox D 线第 1 项）

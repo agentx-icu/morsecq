@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-08",
+  "use_case": "ui-mockup",
+  "prompt": "Use case: ui-mockup. Asset type: GitHub README product concept board for MorseCQ offline learning app. Generate a polished landscape product design image with one desktop interface at left and one mobile interface at right for MorseCQ. Calm muted teal Material 3 accent, warm gray/off-white background, restrained rounded panels, clear text. Exact headline 'MorseCQ'. Subtitle 'Learn Morse. Start offline.' The app is installed and immediately usable, no account, no registration, no Tox. Navigation has EXACTLY Learn, Reference, Me; NO Chat, Groups, friends or identities. Desktop learning dashboard has Today's plan, Koch course, Receive practice, Send practice, Accuracy 92%, 15 min goal and a small weekly practice plot. Mobile send practice shows target 'CQ', readable Morse '-.-. --.-', Straight key / Paddles selector and a large keying pad. Small footer 'Product design concept · October 2026'. The design should be believable existing application UI, not photo. No writable chat field, avatar accounts, cloud, badges or claims of screenshots."
+}

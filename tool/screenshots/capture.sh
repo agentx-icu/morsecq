@@ -8,7 +8,7 @@
 #
 # For each platform it runs apps/morsecq/integration_test/screenshots_test.dart
 # through `flutter drive` on a real device/simulator/desktop window with the
-# in-memory backend (--dart-define=MORSECQ_FAKE_BACKEND=true), seeded with
+# local learning profile, seeded with
 # demo data, in every locale. The app captures its own Flutter layer (no OS
 # permission, no window grab) and the driver writes the PNGs to a staging
 # directory. A platform is published into doc/screenshots/<platform>/<locale>/
@@ -22,8 +22,7 @@
 #                1320x2868) or the 13" iPad (iPad Pro 13-inch, 2064x2752)
 #                simulator itself, and verify rejects any other frame size
 #                and any frame with an alpha channel.
-#                They show the offline App Store build (no chat): scenes
-#                OFFLINE_SCENES instead of CHAT_SCENES.
+#                All platforms use the same nine offline scenes.
 #   --locales    comma list of en, zh (default: both). A subset is captured
 #                and verified but NOT published into the committed gallery
 #                (that must always hold every locale); pass --out to publish
@@ -78,17 +77,7 @@ err()  { echo -e "${RED}[capture]${NC} $*" >&2; }
 step() { echo -e "${CYAN}==>${NC} $*"; }
 
 # Must match kScenes in apps/morsecq/integration_test/support/scene_walk.dart.
-CHAT_SCENES=(welcome create_identity backup_wizard learn_home stats training_settings
-        receive_drill send_practice chat_list conversation contacts groups
-        group_conversation reference translator listen me)
-# The offline App Store build (ios, ipad): must match kOfflineScenes.
-OFFLINE_SCENES=(learn_home stats training_settings receive_drill send_practice
-                reference translator listen me)
-SCENES=("${CHAT_SCENES[@]}")
-# ios / ipad capture the offline App Store build (AppFeatures(chat: false)).
-variant_for() {  # <platform>
-  case "$1" in ios|ipad) echo offline ;; *) echo chat ;; esac
-}
+SCENES=(learn_home stats training_settings receive_drill send_practice reference translator listen me)
 MIN_BYTES=8192
 
 # ── argument validation (bash 3.2: an empty array is unbound under set -u) ──
@@ -310,22 +299,14 @@ publish() {  # <platform>
     rm -rf "$dst" || return 1
     mv "$tmp" "$dst" || { err "publish: could not move $tmp into place"; return 1; }
     # Post-condition on the result, not on the exit codes above.
-    local n; n="$(ls "$dst"/*.png 2>/dev/null | wc -l)"; n="${n// /}"
+    local n; n="$(find "$dst" -maxdepth 1 -type f -name '*.png' | wc -l)"; n="${n// /}"
     [[ "$n" == "${#SCENES[@]}" ]] || { err "publish: $dst holds $n frames, expected ${#SCENES[@]}"; return 1; }
   done
   info "published $platform → $OUT/$platform/{${LOCALES}}/"
 }
 
-# Android: the Gradle build refuses to package without libtim2tox_ffi.so
-# unless morsecqAllowMissingFfi is set; the screenshots run the in-memory
-# backend and never load the library, so allow the UI-only build here
-# (Gradle reads ORG_GRADLE_PROJECT_<name> as a project property).
-export ORG_GRADLE_PROJECT_morsecqAllowMissingFfi=true
-
 capture_platform() {  # <platform>
   local platform="$1" device rc=0
-  local variant; variant="$(variant_for "$platform")"
-  if [[ "$variant" == "offline" ]]; then SCENES=("${OFFLINE_SCENES[@]}"); else SCENES=("${CHAT_SCENES[@]}"); fi
   if [[ -z "$FROM" ]]; then
     local want="$DEVICE"
     if [[ -z "$want" && ( "$platform" == "ios" || "$platform" == "ipad" ) ]]; then
@@ -343,9 +324,7 @@ capture_platform() {  # <platform>
       --driver=test_driver/integration_test.dart \
       --target=integration_test/screenshots_test.dart \
       -d "$device" \
-      --dart-define=MORSECQ_FAKE_BACKEND=true \
       --dart-define=MORSECQ_SHOT_PLATFORM="$platform" \
-      --dart-define=MORSECQ_SHOT_VARIANT="$variant" \
       --dart-define=MORSECQ_SHOT_LOCALES="$LOCALES" \
       ${MORSECQ_SHOT_WINDOW:+--dart-define=MORSECQ_SHOT_WINDOW="$MORSECQ_SHOT_WINDOW"} \
       ${MORSECQ_SHOT_PIXEL_RATIO:+--dart-define=MORSECQ_SHOT_PIXEL_RATIO="$MORSECQ_SHOT_PIXEL_RATIO"} \

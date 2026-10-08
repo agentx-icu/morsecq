@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 # Persistence audit implementation plan
 
 > Execute in the isolated `codex/persistence-audit` worktree. Review the plan and final diff with Claude Opus in read-only mode before implementation and delivery.

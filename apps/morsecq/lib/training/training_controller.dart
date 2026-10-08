@@ -51,7 +51,7 @@ final class TrainingController extends ChangeNotifier {
   final TrainingDocStore _docs;
   final KochCourse course;
 
-  /// The learning profile this controller belongs to (identity public key,
+  /// The learning profile this controller belongs to (local profile key,
   /// or `guest`); plans are only executed by their own profile.
   final String profileKey;
   final DateTime Function() _now;

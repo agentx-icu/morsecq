@@ -19,7 +19,7 @@ set(_app_dir "${CMAKE_CURRENT_LIST_DIR}/../../../apps/morsecq")
 # The .msi file name (CPACK_PACKAGE_FILE_NAME) and morsecq.exe stay lowercase.
 set(CPACK_PACKAGE_NAME "MorseCQ")
 set(CPACK_PACKAGE_VENDOR "agentx-icu")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Morse code trainer and serverless Morse chat over Tox")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Offline Morse code trainer")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/agentx-icu/morsecq")
 set(CPACK_PACKAGE_VERSION "${MORSECQ_RELEASE_VERSION}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "MorseCQ")

@@ -1,3 +1,5 @@
+> Historical pre-split document. Current MorseCQ is the offline trainer described in [README](../../README.md); chat belongs to DitMesh.
+
 # Mobile-device review
 
 **Goal:** find where phone and tablet characteristics (OS lifecycle, audio sessions, touch and screen size, platform policy) break MorseCQ on iOS/Android, and fix the real defects at their cause.

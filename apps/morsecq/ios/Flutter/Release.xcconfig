@@ -1,8 +1,4 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
 
-// The Runner Info.plist. tool/build_ios_store.sh writes the gitignored
-// Store.xcconfig (and Runner/Info-Store.plist, derived from Info.plist with
-// ITSAppUsesNonExemptEncryption = NO) for the offline App Store build.
 MORSECQ_INFOPLIST = Runner/Info.plist
-#include? "Store.xcconfig"

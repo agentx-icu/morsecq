@@ -15,12 +15,6 @@ class SEn extends S {
   String get navLearn => 'Learn';
 
   @override
-  String get navChat => 'Chat';
-
-  @override
-  String get navGroups => 'Groups';
-
-  @override
   String get navMe => 'Me';
 
   @override
@@ -30,22 +24,7 @@ class SEn extends S {
   String get navLearnDescription => 'Koch-method lessons, keying drills and copy practice.';
 
   @override
-  String get navChatDescription => 'Serverless one-to-one Morse conversations over Tox P2P.';
-
-  @override
-  String get navGroupsDescription => 'Group nets — many operators keying on one shared channel.';
-
-  @override
   String get navReferenceDescription => 'Alphabet, prosigns, Q-codes, abbreviations and a two-way translator.';
-
-  @override
-  String get navMeDescription => 'Your callsign, Tox identity, progress and settings.';
-
-  @override
-  String get shellOfflineBanner => 'Offline: not connected to the Tox network. Messages will be sent when you are back online.';
-
-  @override
-  String get actionOk => 'OK';
 
   @override
   String get actionCancel => 'Cancel';
@@ -57,70 +36,10 @@ class SEn extends S {
   String get actionDelete => 'Delete';
 
   @override
-  String get actionCopy => 'Copy';
-
-  @override
-  String get actionShare => 'Share';
-
-  @override
   String get actionRetry => 'Retry';
 
   @override
   String get actionClose => 'Close';
-
-  @override
-  String get actionSearch => 'Search';
-
-  @override
-  String get actionSettings => 'Settings';
-
-  @override
-  String get connectionConnecting => 'Connecting…';
-
-  @override
-  String get connectionOnline => 'Online';
-
-  @override
-  String get connectionOffline => 'Offline';
-
-  @override
-  String get messageStatusPending => 'Queued — peer is offline';
-
-  @override
-  String get messageStatusPendingDetail => 'Tox has no server: the message is delivered when the peer comes online.';
-
-  @override
-  String get messageStatusSending => 'Sending';
-
-  @override
-  String get messageStatusSent => 'Sent';
-
-  @override
-  String get messageStatusFailed => 'Failed to send';
-
-  @override
-  String get errorWrongPassword => 'Wrong password. Try again.';
-
-  @override
-  String get errorPeerOffline => 'This contact is offline. Tox has no server, so the message waits until they come back.';
-
-  @override
-  String get errorInvalidToxId => 'That is not a valid Tox ID (76 hex characters).';
-
-  @override
-  String get errorAlreadyFriend => 'This Tox ID is already in your friend list.';
-
-  @override
-  String get errorOwnId => 'That is your own Tox ID.';
-
-  @override
-  String get errorGroupNotFound => 'Group not found.';
-
-  @override
-  String get errorMessageTooLong => 'Message is too long for one Tox message.';
-
-  @override
-  String get errorUnknown => 'Something went wrong';
 
   @override
   String get languageTitle => 'Language';
@@ -462,262 +381,16 @@ class SEn extends S {
   }
 
   @override
-  String get accountCopied => 'Tox ID copied to clipboard';
-
-  @override
-  String get accountShowQr => 'Show QR code';
-
-  @override
-  String get accountToxId => 'Tox ID';
-
-  @override
-  String get accountDisplayName => 'Display name';
-
-  @override
-  String get accountDisplayNameHint => 'Your callsign or nickname';
-
-  @override
-  String get accountDisplayNameRequired => 'Enter a display name';
-
-  @override
-  String get accountStatusMessage => 'Status message';
-
-  @override
-  String get accountPassword => 'Password';
-
-  @override
-  String get accountPasswordOptional => 'Password (optional)';
-
-  @override
-  String get accountConfirmPassword => 'Confirm password';
-
-  @override
-  String get accountPasswordsDoNotMatch => 'Passwords do not match';
-
-  @override
-  String get accountShowPassword => 'Show password';
-
-  @override
-  String get accountHidePassword => 'Hide password';
-
-  @override
-  String get accountStrengthWeak => 'Weak: use at least 8 characters';
-
-  @override
-  String get accountStrengthFair => 'Fair: 12+ characters with mixed types is better';
-
-  @override
-  String get accountStrengthStrong => 'Strong';
-
-  @override
-  String get accountStartupInspecting => 'Checking your identity…';
-
-  @override
-  String get accountStartupOpening => 'Opening your identity…';
-
-  @override
-  String get accountStartupFailedTitle => 'Could not start';
-
-  @override
-  String get accountStartupFailedBody => 'MorseCQ could not read your identity. Nothing was changed; you can try again.';
-
-  @override
-  String get accountConnectionTapToReconnect => 'Tap to reconnect';
-
-  @override
-  String get accountWelcomeTitle => 'Your identity lives on this device';
-
-  @override
-  String get accountWelcomeIntro => 'MorseCQ uses the Tox peer-to-peer network. There is no server and no account to sign up for: your identity is a key pair stored only here.';
-
-  @override
-  String get accountWelcomePointNoServer => 'No server, no phone number, no e-mail. Peers talk to each other directly, in Morse.';
-
-  @override
-  String get accountWelcomePointTraining => 'Training progress is saved with your identity, so it can be backed up and moved between devices.';
-
-  @override
-  String get accountWelcomePointBackup => 'Nobody can recover an identity for you. Back it up right after creating it, or you will lose it with the device.';
-
-  @override
-  String get accountCreateIdentity => 'Create identity';
-
-  @override
-  String get accountRestoreFromBackup => 'Restore from backup';
-
-  @override
-  String get accountCreateTitle => 'Create your identity';
-
-  @override
-  String get accountCreateBody => 'Pick a name others will see. A password encrypts the identity file on this device; leave it empty if you prefer to open the app without one.';
-
-  @override
-  String get accountCreateButton => 'Create';
-
-  @override
-  String get accountCreating => 'Creating…';
-
-  @override
-  String get accountBackupTitle => 'Back up your identity now';
-
-  @override
-  String get accountBackupBody => 'Your identity exists only on this device. If it is lost, reset or stolen, there is no way to recover it: your contacts will not recognise a new identity and your training progress is gone.';
-
-  @override
-  String get accountBackupWhatIsInside => 'The backup file contains your identity key, encrypted with your password, and your training progress. Keep it somewhere safe, outside this device.';
-
-  @override
-  String get accountBackupWhatIsInsidePlain => 'The backup file contains your identity key unencrypted, and your training progress. Anyone who gets this file can use your identity: set a password first if you want the key encrypted, and keep the file somewhere safe.';
-
-  @override
-  String get accountPasswordScope => 'Your password encrypts your identity key. Message history remains unencrypted on disk; device encryption can protect it.';
-
-  @override
-  String get accountSectionNotifications => 'Notifications';
-
-  @override
-  String get accountNotificationsEnable => 'Show notifications';
-
-  @override
-  String get accountNotificationsEnableSubtitle => 'New messages, friend requests and group invites';
-
-  @override
-  String get accountNotificationsContent => 'Show message content';
-
-  @override
-  String get accountNotificationsContentSubtitle => 'Text and Morse in banners and on the lock screen. Off: only that a message arrived.';
-
-  @override
-  String get accountNotificationsAllow => 'Allow notifications';
-
-  @override
-  String get accountNotificationsAllowSubtitle => 'Ask the system for permission';
-
-  @override
-  String get accountNotificationsDenied => 'Notifications are off for MorseCQ in the system settings.';
-
-  @override
-  String get accountBackupSaveFile => 'Save backup file';
-
-  @override
-  String get accountBackupShareFile => 'Share backup file';
-
-  @override
-  String get accountBackupSaved => 'Backup saved';
-
-  @override
-  String get accountBackupNotSaved => 'Backup was not saved';
-
-  @override
-  String get accountBackupFailed => 'Could not write the backup';
-
-  @override
-  String get accountBackupAcknowledge => 'I understand that without this backup my identity cannot be recovered.';
-
-  @override
-  String get accountBackupContinue => 'Continue to MorseCQ';
-
-  @override
-  String get accountBackupShowQrHint => 'Your Tox ID is how friends add you. Share it as text or as a QR code.';
-
-  @override
-  String get accountRestoreTitle => 'Restore from backup';
-
-  @override
-  String get accountRestoreBody => 'Choose a backup file exported from MorseCQ. If the identity was protected with a password you will need it here.';
-
-  @override
-  String get accountRestoreChooseFile => 'Choose backup file';
-
-  @override
-  String get accountRestoreNoFile => 'Choose a backup file first';
-
-  @override
-  String get accountRestoreButton => 'Restore';
-
-  @override
-  String get accountRestoring => 'Restoring…';
-
-  @override
-  String get accountRestoreInvalidFile => 'This file is not a MorseCQ backup.';
-
-  @override
-  String get accountRestoreReplacesWarning => 'Restoring replaces the identity currently on this device.';
-
-  @override
-  String get accountUnlockTitle => 'Unlock your identity';
-
-  @override
-  String get accountUnlockBody => 'Your identity file is encrypted. Enter the password to continue.';
-
-  @override
-  String get accountUnlockButton => 'Unlock';
-
-  @override
-  String get accountUnlocking => 'Unlocking…';
-
-  @override
-  String get accountUnlockRestoreInstead => 'Restore from backup instead';
-
-  @override
-  String get accountMeNoIdentity => 'No identity loaded';
-
-  @override
-  String get accountSectionAccount => 'Account';
-
-  @override
   String get accountSectionTraining => 'Training';
 
   @override
   String get accountSectionAbout => 'About';
 
   @override
-  String get accountSectionDanger => 'Danger zone';
-
-  @override
-  String get accountEditProfile => 'Edit profile';
-
-  @override
-  String get accountEditProfileBody => 'Shown to your contacts on the Tox network.';
-
-  @override
-  String get accountSetPassword => 'Set password';
-
-  @override
-  String get accountChangePassword => 'Change password';
-
-  @override
-  String get accountRemovePassword => 'Remove password';
-
-  @override
-  String get accountCurrentPassword => 'Current password';
-
-  @override
-  String get accountNewPassword => 'New password';
-
-  @override
-  String get accountPasswordUpdated => 'Password updated';
-
-  @override
-  String get accountPasswordRemoved => 'Password removed';
-
-  @override
-  String get accountProfileUpdated => 'Profile updated';
-
-  @override
-  String get accountExportBackup => 'Export backup';
-
-  @override
-  String get accountExportBackupSubtitle => 'Save your identity and training progress to a file';
-
-  @override
   String get accountTrainingDefaults => 'Playback & training defaults';
 
   @override
   String get accountTrainingDefaultsSubtitle => 'Speed, tone, Farnsworth spacing';
-
-  @override
-  String get accountTrainingDefaultsPlaceholder => 'Speed, tone and Farnsworth defaults will live here.';
 
   @override
   String get accountAboutLicence => 'Licence';
@@ -732,285 +405,7 @@ class SEn extends S {
   String get accountAboutSourceCopied => 'Source link copied';
 
   @override
-  String get accountAboutBackend => 'Backend';
-
-  @override
-  String get accountDeleteIdentity => 'Delete identity';
-
-  @override
-  String get accountDeleteIdentitySubtitle => 'Erase this identity, history and progress from this device';
-
-  @override
-  String get accountDeleteDialogTitle => 'Delete this identity?';
-
-  @override
-  String get accountDeleteDialogBody => 'This removes your identity, chat history and training progress from this device. Without a backup it cannot be recovered. Type DELETE to confirm.';
-
-  @override
-  String get accountDeleteConfirmWord => 'DELETE';
-
-  @override
-  String get accountDeleteConfirmHint => 'Type DELETE';
-
-  @override
-  String get accountDeleteButton => 'Delete';
-
-  @override
-  String accountRestoreFileChosenSize(int bytes) {
-    return 'Backup file selected ($bytes bytes)';
-  }
-
-  @override
-  String get chatSearchConversations => 'Search conversations';
-
-  @override
-  String get chatNoConversations => 'No conversations yet';
-
-  @override
-  String get chatNoSearchResults => 'No conversations match';
-
-  @override
-  String get chatPin => 'Pin';
-
-  @override
-  String get chatUnpin => 'Unpin';
-
-  @override
-  String get chatMarkRead => 'Mark as read';
-
-  @override
-  String get chatDelete => 'Delete';
-
-  @override
-  String get chatDeleteConversationTitle => 'Delete conversation?';
-
-  @override
-  String get chatDeleteConversationBody => 'Local history for this conversation is removed. Tox keeps no copy.';
-
-  @override
-  String get chatDraftPrefix => 'Draft: ';
-
-  @override
-  String get chatSelectConversation => 'Select a conversation';
-
-  @override
-  String get chatContacts => 'Contacts';
-
-  @override
-  String get chatNoMessages => 'No messages yet — send CQ to start.';
-
-  @override
-  String get chatTrainingMode => 'Training mode';
-
-  @override
-  String get chatTrainingModeOn => 'Training mode on: text hidden';
-
-  @override
-  String get chatTrainingModeOff => 'Training mode off';
-
-  @override
-  String get chatAutoPlay => 'Auto-play received Morse';
-
-  @override
-  String get chatAutoPlayOn => 'Auto-play on: new messages play as they arrive';
-
-  @override
-  String get chatAutoPlayOff => 'Auto-play off';
-
-  @override
-  String get chatReveal => 'Reveal';
-
-  @override
-  String get chatHiddenText => 'Listen first, then reveal';
-
-  @override
-  String get chatPlay => 'Play Morse';
-
-  @override
-  String get chatStop => 'Stop';
-
-  @override
-  String get chatPlaybackSettings => 'Playback settings';
-
-  @override
-  String get chatCharacterSpeed => 'Character speed';
-
-  @override
-  String get chatFarnsworthSpeed => 'Farnsworth speed';
-
-  @override
-  String get chatTone => 'Tone';
-
-  @override
-  String get chatWpm => 'WPM';
-
-  @override
-  String get chatHz => 'Hz';
-
-  @override
-  String get chatMembers => 'Members';
-
-  @override
-  String get chatLeaveGroup => 'Leave group';
-
-  @override
-  String get chatLeaveGroupTitle => 'Leave this group?';
-
-  @override
-  String get chatLeaveGroupBody => 'You will stop receiving messages. Rejoin later with the chat id.';
-
-  @override
-  String get chatLeave => 'Leave';
-
-  @override
-  String get chatConferenceNote => 'Legacy conference: Morse keying metadata (v2) will not be available here. Text still works.';
-
-  @override
-  String get chatClearHistory => 'Clear history';
-
-  @override
-  String get chatModeStraightKey => 'Straight key';
-
-  @override
-  String get chatModePaddles => 'Paddles';
-
-  @override
-  String get chatKeyMessage => 'Key your message';
-
-  @override
   String get chatSend => 'Send';
-
-  @override
-  String get chatTooLong => 'Too long for one Tox message';
-
-  @override
-  String get chatKeyHint => 'Key on the pad or press Space';
-
-  @override
-  String get chatPaddleHint => 'Tap the paddles or hold Ctrl (left dit, right dah)';
-
-  @override
-  String get chatDeleteLast => 'Delete last character';
-
-  @override
-  String get chatNoFriends => 'No friends yet. Add one with their Tox ID.';
-
-  @override
-  String get chatNoRequests => 'No pending requests';
-
-  @override
-  String get chatAddFriend => 'Add friend';
-
-  @override
-  String get chatMyToxId => 'My Tox ID';
-
-  @override
-  String get chatToxIdLabel => 'Tox ID (76 hex characters)';
-
-  @override
-  String get chatToxIdInvalid => 'Tox ID must be exactly 76 hex characters';
-
-  @override
-  String get chatToxIdOwn => 'That is your own Tox ID';
-
-  @override
-  String get chatToxIdAlreadyFriend => 'Already in your friend list';
-
-  @override
-  String get chatRequestMessage => 'Message';
-
-  @override
-  String get chatDefaultRequestMessage => 'MorseCQ CQ';
-
-  @override
-  String get chatSendRequest => 'Send request';
-
-  @override
-  String get chatRequestSent => 'Friend request sent';
-
-  @override
-  String get chatScanQr => 'Scan QR';
-
-  @override
-  String get chatScanQrDesktopHint => 'QR scanning needs a phone camera';
-
-  @override
-  String get chatScanQrTitle => 'Scan a Tox ID';
-
-  @override
-  String get chatScanQrNotToxId => 'That QR code is not a Tox ID';
-
-  @override
-  String get chatAccept => 'Accept';
-
-  @override
-  String get chatReject => 'Reject';
-
-  @override
-  String get chatCopied => 'Copied to clipboard';
-
-  @override
-  String get chatNoIdentity => 'No identity loaded';
-
-  @override
-  String get chatRemoveFriend => 'Remove friend';
-
-  @override
-  String get chatRemoveFriendTitle => 'Remove this friend?';
-
-  @override
-  String get chatRemoveFriendBody => 'They will no longer be able to message you.';
-
-  @override
-  String get chatRemove => 'Remove';
-
-  @override
-  String get chatNoGroups => 'No groups yet. Create one or join by chat id.';
-
-  @override
-  String get chatCreateGroup => 'Create group';
-
-  @override
-  String get chatJoinGroup => 'Join group';
-
-  @override
-  String get chatGroupName => 'Group name';
-
-  @override
-  String get chatGroupNameRequired => 'Give the group a name';
-
-  @override
-  String get chatAdvanced => 'Advanced';
-
-  @override
-  String get chatLegacyConference => 'Legacy conference (old clients)';
-
-  @override
-  String get chatLegacyConferenceHint => 'Not recommended: no persistent chat id, no Morse metadata.';
-
-  @override
-  String get chatCreate => 'Create';
-
-  @override
-  String get chatChatIdLabel => 'Chat id (64 hex characters)';
-
-  @override
-  String get chatChatIdInvalid => 'Chat id must be exactly 64 hex characters';
-
-  @override
-  String get chatPassword => 'Password (optional)';
-
-  @override
-  String get chatJoin => 'Join';
-
-  @override
-  String get chatJoinRequested => 'Joining — the group appears once a peer is found.';
-
-  @override
-  String get chatConferenceBadge => 'Conference';
-
-  @override
-  String get chatCopyChatId => 'Copy chat id';
 
   @override
   String get learnLessonCardTitle => 'Koch lesson';
@@ -1044,9 +439,6 @@ class SEn extends S {
 
   @override
   String get learnLoading => 'Loading your progress...';
-
-  @override
-  String get learnIdentityRequired => 'Create or unlock your identity to start training. Progress is stored with your identity so it travels with your backup.';
 
   @override
   String get learnLoadFailed => 'Your saved progress could not be read. Starting fresh; the old file was kept as .corrupt.';
@@ -1972,33 +1364,6 @@ class SEn extends S {
   String get learnSeveritySevere => 'major';
 
   @override
-  String get notificationOpen => 'Open';
-
-  @override
-  String get notificationChannelMessages => 'Messages';
-
-  @override
-  String get notificationChannelMessagesDescription => 'New Morse messages from friends and groups';
-
-  @override
-  String get notificationChannelFriendRequests => 'Friend requests';
-
-  @override
-  String get notificationChannelFriendRequestsDescription => 'Someone wants to add you as a friend';
-
-  @override
-  String get notificationChannelGroupInvites => 'Group invites';
-
-  @override
-  String get notificationChannelGroupInvitesDescription => 'A friend invited you to a group';
-
-  @override
-  String get notificationNewMessage => 'New message';
-
-  @override
-  String get notificationFriendRequestTitle => 'New friend request';
-
-  @override
   String learnNewestCharIs(String char) {
     return 'New this lesson: $char';
   }
@@ -2104,52 +1469,6 @@ class SEn extends S {
   }
 
   @override
-  String get accountNewPasswordRequired => 'Enter a new password';
-
-  @override
-  String get accountToxIdQrSemantics => 'Tox ID QR code';
-
-  @override
-  String get accountBackupSaveDialogTitle => 'Save MorseCQ backup';
-
-  @override
-  String get accountBackupShareSubject => 'MorseCQ identity backup';
-
-  @override
-  String get accountBackupChooseDialogTitle => 'Choose MorseCQ backup';
-
-  @override
-  String notificationNewMessages(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count new messages',
-      one: '1 new message',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String notificationFriendRequestFrom(String name) {
-    return 'Friend request from $name';
-  }
-
-  @override
-  String notificationFriendRequestBody(String name, String message) {
-    return '$name: $message';
-  }
-
-  @override
-  String notificationGroupInviteTitle(String group) {
-    return 'Invite to $group';
-  }
-
-  @override
-  String notificationGroupInviteBody(String name) {
-    return '$name invited you';
-  }
-
-  @override
   String desktopTrayShow(String app) {
     return 'Show $app';
   }
@@ -2171,83 +1490,10 @@ class SEn extends S {
   }
 
   @override
-  String desktopTrayTooltipUnread(String app, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unread messages',
-      one: '1 unread message',
-    );
-    return '$app — $_temp0';
-  }
-
-  @override
-  String desktopWindowTitleUnread(String badge, String app) {
-    return '($badge) $app';
-  }
-
-  @override
   String get listenStateOn => 'On';
 
   @override
   String get listenStateOff => 'Off';
-
-  @override
-  String chatBytesLeftCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count bytes left',
-      one: '1 byte left',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatMemberCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count members',
-      one: '1 member',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String chatFriendsCount(int count) {
-    return 'Friends ($count)';
-  }
-
-  @override
-  String chatFriendRequestsCount(int count) {
-    return 'Friend requests ($count)';
-  }
-
-  @override
-  String chatGroupInvitesCount(int count) {
-    return 'Group invites ($count)';
-  }
-
-  @override
-  String chatMembersTitleCount(int count) {
-    return 'Members · $count';
-  }
-
-  @override
-  String chatInvitedByName(String name) {
-    return 'Invited by $name';
-  }
-
-  @override
-  String chatMemberSelf(String name) {
-    return '$name (You)';
-  }
-
-  @override
-  String chatSliderValue(String label, int value, String unit) {
-    return '$label: $value $unit';
-  }
 
   @override
   String referenceTelegraphCodes(String codes) {
@@ -2312,38 +1558,9 @@ class SEn extends S {
   String get appearanceDark => 'Dark';
 
   @override
-  String get appearanceSubtitle => 'Five styles with light and dark modes';
-
-  @override
-  String get chatClearHistoryBody => 'Delete this conversation’s history on this device? Copies on other devices are unaffected. This cannot be undone.';
-
-  @override
-  String get chatLoadEarlier => 'Load earlier messages';
-
-  @override
-  String get chatHistoryLoadFailed => 'Could not load earlier messages. Tap to retry.';
-
-  @override
-  String get chatRetryHistory => 'Retry';
-
-  @override
-  String chatNewMessages(int count) {
-    return '$count new messages';
-  }
-
-  @override
   String learnShowAllChars(int count) {
     return 'Show all $count characters';
   }
-
-  @override
-  String get chatSelfMe => 'Me';
-
-  @override
-  String get chatSelfLocalOnly => 'Saved on this device only';
-
-  @override
-  String get chatSelfContactSubtitle => 'Drafts, practice and notes · never sent';
 
   @override
   String get learnShowFewerChars => 'Show fewer characters';
@@ -2356,12 +1573,6 @@ class SEn extends S {
 
   @override
   String get learnLeaveDrillConfirm => 'Leave';
-
-  @override
-  String get chatScanQrPermissionDenied => 'MorseCQ needs camera access to scan a QR code. Allow it in the system settings.';
-
-  @override
-  String get chatScanQrCameraUnavailable => 'The camera is not available on this device.';
 
   @override
   String get learnReplayAssistedNote => 'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.';
@@ -2472,11 +1683,6 @@ class SEn extends S {
 
   @override
   String get learnPlanTomorrow => 'A new plan arrives tomorrow. Free practice is always open.';
-
-  @override
-  String learnPlanNext(String step) {
-    return 'Next: $step';
-  }
 
   @override
   String learnPlanEarlier(int done, int total) {
@@ -2712,81 +1918,6 @@ class SEn extends S {
   String get learnQsoSummaryNote => 'QSO results are kept apart from copying accuracy and never unlock lessons.';
 
   @override
-  String get messageStatusCancelled => 'Cancelled — never sent';
-
-  @override
-  String get chatMessageLearnActions => 'Message actions';
-
-  @override
-  String get chatPracticeMessage => 'Practice this message';
-
-  @override
-  String get chatSaveAsMaterial => 'Save as training material';
-
-  @override
-  String get chatSavedAsMaterial => 'Saved to My materials';
-
-  @override
-  String get chatSaveMaterialFailed => 'Couldn\'t save the material. Try again.';
-
-  @override
-  String get chatListenOnly => 'Listen-only training';
-
-  @override
-  String get chatListenOnlyHidden => 'Listen-only: tap play to hear it';
-
-  @override
-  String chatClearHistoryMaterials(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count messages from this chat were saved as training material. Those copies stay until you delete them in Learn › My materials.',
-      one: '1 message from this chat was saved as training material. That copy stays until you delete it in Learn › My materials.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get chatPracticeTitle => 'Copy practice';
-
-  @override
-  String chatPracticeUnsupported(String chars) {
-    return 'This message contains characters Morse can\'t key: $chars. They will be left out.';
-  }
-
-  @override
-  String chatPracticeTrainableCount(int count) {
-    return '$count symbols can be practised.';
-  }
-
-  @override
-  String get chatPracticeNothingTrainable => 'Nothing in this message can be practised in Morse.';
-
-  @override
-  String get chatPracticeConfirm => 'Practice the rest';
-
-  @override
-  String get chatPracticeHint => 'Hint';
-
-  @override
-  String chatPracticeHintShown(String symbols) {
-    return 'Hint: $symbols …';
-  }
-
-  @override
-  String get chatPracticeAssisted => 'Assisted: counts as practice, not for reviews or speed advice.';
-
-  @override
-  String chatPracticeErrors(int wrong, int missed, int extra) {
-    return '$wrong wrong · $missed missed · $extra extra';
-  }
-
-  @override
-  String chatPracticeErrorsAction(String symbols) {
-    return 'Practice errors: $symbols';
-  }
-
-  @override
   String get learnTipDahTooLongTitle => 'Dahs too long';
 
   @override
@@ -2840,74 +1971,6 @@ class SEn extends S {
   String get learnRhythmZoomOut => 'Zoom out';
 
   @override
-  String get chatSearchMessages => 'Search messages';
-
-  @override
-  String get chatSearchHint => 'Search this conversation';
-
-  @override
-  String get chatSearchAnyone => 'Anyone';
-
-  @override
-  String get chatSearchMe => 'Me';
-
-  @override
-  String get chatSearchThem => 'Them';
-
-  @override
-  String get chatSearchAnyDate => 'Any date';
-
-  @override
-  String chatSearchDateRange(String from, String to) {
-    return '$from – $to';
-  }
-
-  @override
-  String get chatSearchBookmarked => 'Bookmarked';
-
-  @override
-  String get chatSearchNoResults => 'No matching messages.';
-
-  @override
-  String get chatSearchMore => 'Load more';
-
-  @override
-  String get chatAddBookmark => 'Bookmark';
-
-  @override
-  String get chatRemoveBookmark => 'Remove bookmark';
-
-  @override
-  String get chatBookmarked => 'Bookmarked';
-
-  @override
-  String get chatBookmarkFailed => 'Couldn\'t save the bookmark.';
-
-  @override
-  String get chatRetrySend => 'Retry sending';
-
-  @override
-  String get chatCancelSend => 'Cancel sending';
-
-  @override
-  String get chatRetryQueued => 'Queued again. It will be sent when your contact is online.';
-
-  @override
-  String get chatSendCancelled => 'Cancelled. The message was never sent.';
-
-  @override
-  String get chatRetryNotNeeded => 'This message is no longer failed; nothing to retry.';
-
-  @override
-  String get chatCancelTooLate => 'Too late to cancel: the message was already handed to the network and may arrive.';
-
-  @override
-  String get chatSendControlUnavailable => 'Not available for this message.';
-
-  @override
-  String get chatSendControlFailed => 'That didn\'t work. The message keeps its current state; try again.';
-
-  @override
   String get workbenchTitle => 'Recording workbench';
 
   @override
@@ -2923,7 +1986,7 @@ class SEn extends S {
   String get workbenchFormats => 'WAV, 16-bit PCM, mono or stereo, 8/16/44.1/48 kHz; up to 50 MB and 20 minutes.';
 
   @override
-  String get workbenchBackupNote => 'Recordings stay on this device and are left out of identity backups unless you choose to include them when exporting a backup. Saved selections always back up their titles, notes and positions.';
+  String get workbenchBackupNote => 'Recordings stay on this device. Keep copies before clearing learning data or uninstalling. Saved selections retain their titles, notes and positions.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2935,9 +1998,6 @@ class SEn extends S {
 
   @override
   String get workbenchStereo => 'stereo';
-
-  @override
-  String get workbenchTruncated => 'The file ends early; only the audio present is used.';
 
   @override
   String get workbenchErrorNotWav => 'This is not a WAV file.';
@@ -3165,15 +2225,12 @@ class SEn extends S {
   String get materialsUnfavorite => 'Remove from favourites';
 
   @override
-  String get materialsEmpty => 'No materials yet. Add your own texts, word lists or callsigns, or save a chat message.';
+  String get materialsEmpty => 'No materials yet. Add your own texts, word lists or callsigns.';
 
   @override
   String materialsItems(int count) {
     return '$count items';
   }
-
-  @override
-  String get materialsFromChat => 'From chat';
 
   @override
   String get materialsActions => 'Material actions';
@@ -3290,46 +2347,7 @@ class SEn extends S {
   String get materialsPracticeNothing => 'No entries can be practised in this mode.';
 
   @override
-  String get guestTryLearning => 'Try learning first';
-
-  @override
-  String get guestBanner => 'Guest learning: progress stays on this device. Chat needs an identity.';
-
-  @override
-  String get guestGetIdentity => 'Set up identity';
-
-  @override
-  String get guestIdentityTitle => 'Identity needed';
-
-  @override
-  String get guestIdentityBody => 'Chatting over Tox needs your own identity. Create a new one, restore a backup, or unlock the one on this device. Your guest learning progress moves to a new identity automatically.';
-
-  @override
-  String get guestClearData => 'Clear guest learning data';
-
-  @override
-  String get guestClearDataBody => 'Deletes the progress, plans and materials you made as a guest on this device. Identities are not affected.';
-
-  @override
   String get guestClearConfirm => 'Clear';
-
-  @override
-  String get guestCleared => 'Guest learning data cleared.';
-
-  @override
-  String get guestClearFailed => 'Couldn\'t clear the guest data.';
-
-  @override
-  String get guestMigrationFailed => 'Your identity is ready, but your guest learning progress hasn\'t moved to it yet. It is safe on this device.';
-
-  @override
-  String get guestChoiceBody => 'You also have guest learning progress. The restored identity\'s progress is in use; nothing was merged.';
-
-  @override
-  String get guestChoiceKeep => 'Keep restored';
-
-  @override
-  String get guestChoiceUseGuest => 'Use guest progress';
 
   @override
   String get placementTitle => 'Check my level';
@@ -3391,440 +2409,12 @@ class SEn extends S {
   }
 
   @override
-  String get chatJumpToLatest => 'Latest messages';
-
-  @override
-  String get chatMessageGone => 'That message is no longer in this conversation.';
-
-  @override
-  String get chatListenOnlyPreview => 'New message — listen to copy it';
-
-  @override
-  String get chatSaveMaterialConfirm => 'Save the rest';
-
-  @override
   String materialsImportConfirm(int count) {
     return 'Import $count materials?';
   }
 
   @override
   String get materialsExportTxt => 'Export as text (TXT)';
-
-  @override
-  String get accountBackupMediaTitle => 'Include saved recordings?';
-
-  @override
-  String accountBackupMediaBody(int count, String size) {
-    return '$count saved recordings ($size MB). Their titles, notes and positions are always in the backup; the audio only if you include it.';
-  }
-
-  @override
-  String accountBackupMediaTooLarge(String size) {
-    return 'Saved recordings ($size MB) are too large to put in a backup; only their titles, notes and positions are included.';
-  }
-
-  @override
-  String get accountBackupMediaInclude => 'Include recordings';
-
-  @override
-  String get accountBackupMediaSkip => 'Without recordings';
-
-  @override
-  String get diagTitle => 'Connection diagnostics';
-
-  @override
-  String get diagOpenSubtitle => 'Why messages are waiting and how to reconnect';
-
-  @override
-  String get diagBannerDetails => 'Details';
-
-  @override
-  String get diagSummaryNoIdentity => 'No identity is open, so there is no connection to inspect.';
-
-  @override
-  String get diagSummaryOnlinePeerOnline => 'You are connected to the Tox network and this contact is online. Messages go straight to them.';
-
-  @override
-  String get diagSummaryOnlinePeerOffline => 'You are connected, but this contact is offline. Messages wait in the outbox on this device and are sent when the contact comes online.';
-
-  @override
-  String get diagSummaryOnline => 'You are connected to the Tox network.';
-
-  @override
-  String get diagSummaryConnecting => 'Connecting to the Tox network. This can take a minute after the app starts or the network changes.';
-
-  @override
-  String get diagSummaryOffline => 'You are not connected to the Tox network. Nothing can be sent or received until the connection is back.';
-
-  @override
-  String get diagLocalLabel => 'Your connection';
-
-  @override
-  String diagSinceChanged(String time) {
-    return 'Since $time';
-  }
-
-  @override
-  String diagSinceFirst(String time) {
-    return 'Observed since $time';
-  }
-
-  @override
-  String diagSinceResumed(String time) {
-    return 'Observed since returning to the app at $time';
-  }
-
-  @override
-  String get diagLastOnlineLabel => 'Last connection observed';
-
-  @override
-  String get diagLastOnlineNow => 'Connected now';
-
-  @override
-  String get diagLastOnlineNone => 'No connection observed yet.';
-
-  @override
-  String get diagLastOnlineHint => 'When this device last saw its own connection. It is not when a message reached anyone.';
-
-  @override
-  String get diagPeerLabel => 'Contact';
-
-  @override
-  String get diagUnknown => 'Unknown';
-
-  @override
-  String get diagPeerUnknownHint => 'A contact\'s presence can only be seen while you are connected.';
-
-  @override
-  String get diagPeerGroupHint => 'Group members\' presence is shown in the member list.';
-
-  @override
-  String get diagPendingLabel => 'Waiting to send';
-
-  @override
-  String get diagPendingNone => 'Nothing waiting';
-
-  @override
-  String diagPendingCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count messages',
-      one: '1 message',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String diagPendingOldest(String time) {
-    return 'Oldest queued $time';
-  }
-
-  @override
-  String get diagPendingUnknown => 'Unknown until chat is connected';
-
-  @override
-  String get diagPendingHint => 'Queued messages stay on this device and are sent automatically when the contact is reachable. Diagnostics never discards or resends them.';
-
-  @override
-  String get diagReconnect => 'Reconnect';
-
-  @override
-  String get diagReconnecting => 'Reconnecting…';
-
-  @override
-  String diagReconnectFailed(String reason) {
-    return 'Reconnect failed: $reason';
-  }
-
-  @override
-  String get diagReconnectNote => 'Reconnecting restarts the connection attempt. Coming online can still take a while; this page updates when it does.';
-
-  @override
-  String get diagAboutTitle => 'How MorseCQ connects';
-
-  @override
-  String get diagAboutBody => 'MorseCQ has no server. Your device talks to your contacts directly over the Tox peer-to-peer network, so both of you must be online at the same time for a message to arrive. Phones pause apps in the background: MorseCQ cannot stay connected there and reconnects when you return.';
-
-  @override
-  String get diagDetailsTitle => 'Technical details';
-
-  @override
-  String get diagDetailIdentity => 'Identity';
-
-  @override
-  String get diagDetailStatus => 'Status';
-
-  @override
-  String get diagDetailObserved => 'Observed at';
-
-  @override
-  String get diagDetailQueued => 'Queue entries';
-
-  @override
-  String get diagDetailError => 'Last error code';
-
-  @override
-  String get backupXTitle => 'Encrypted backup';
-
-  @override
-  String get backupXIntro => 'Choose what to take to another device. The whole file is encrypted with a passphrase you set here.';
-
-  @override
-  String get backupXCategoryIdentity => 'Identity and Tox profile';
-
-  @override
-  String get backupXCategoryTraining => 'Training progress and materials';
-
-  @override
-  String get backupXCategoryChat => 'Chat history, including notes to self';
-
-  @override
-  String get backupXCategoryMeta => 'Drafts, pins and bookmarks';
-
-  @override
-  String get backupXCategoryPrefs => 'App preferences';
-
-  @override
-  String get backupXPrefsHint => 'Playback, notifications, appearance and language. Never window positions or key bindings.';
-
-  @override
-  String get backupXCategoryMedia => 'Saved recordings';
-
-  @override
-  String get backupXMediaHint => 'Off by default: recordings can be large. Without them, only their titles and notes come along.';
-
-  @override
-  String get backupXCategoryPending => 'Unsent messages';
-
-  @override
-  String get backupXPendingHint => 'They come back for review only and are never sent automatically.';
-
-  @override
-  String get backupXRequired => 'Required';
-
-  @override
-  String backupXSizeLine(int count, String size) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count items',
-      one: '1 item',
-    );
-    return '$_temp0 · $size';
-  }
-
-  @override
-  String backupXSizeKb(String size) {
-    return '$size KB';
-  }
-
-  @override
-  String backupXSizeMb(String size) {
-    return '$size MB';
-  }
-
-  @override
-  String backupXMediaTooLarge(String size) {
-    return 'Too large to include ($size)';
-  }
-
-  @override
-  String backupXInvitesNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count group invitations waiting for offline friends are not carried over.',
-      one: '1 group invitation waiting for an offline friend is not carried over.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get backupXIdentityPasswordNote => 'Your identity password stays on the profile: the new device asks for it as well as for the backup passphrase.';
-
-  @override
-  String backupXTotal(String size) {
-    return 'About $size in total';
-  }
-
-  @override
-  String get backupXPassphrase => 'Backup passphrase';
-
-  @override
-  String get backupXPassphraseConfirm => 'Repeat passphrase';
-
-  @override
-  String get backupXPassphraseHint => 'At least 8 characters. It is separate from your identity password and cannot be recovered.';
-
-  @override
-  String get backupXPassphraseTooShort => 'Use at least 8 characters';
-
-  @override
-  String get backupXPassphraseMismatch => 'The passphrases do not match';
-
-  @override
-  String get backupXExport => 'Create encrypted backup';
-
-  @override
-  String get backupXExporting => 'Creating backup…';
-
-  @override
-  String get backupXMigrationNote => 'Moving to a new device? After restoring there, stop using this identity here: two devices with one identity can send the same message twice.';
-
-  @override
-  String get backupXBusy => 'Your data kept changing while the backup was taken. Try again.';
-
-  @override
-  String get backupXTooLarge => 'The backup is too large. Leave out recordings and try again.';
-
-  @override
-  String get restoreXWrongPassphrase => 'Wrong passphrase, or the file was changed or is incomplete.';
-
-  @override
-  String get restoreXUnsupported => 'This backup was made by a newer version of MorseCQ.';
-
-  @override
-  String get restoreXCheck => 'Open backup';
-
-  @override
-  String get restoreXPreviewTitle => 'Backup contents';
-
-  @override
-  String restoreXCreated(String date) {
-    return 'Created $date';
-  }
-
-  @override
-  String get restoreXIncluded => 'Included';
-
-  @override
-  String get restoreXExcluded => 'Not in this backup';
-
-  @override
-  String restoreXPendingIncluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unsent messages come back for review. They will not be sent automatically.',
-      one: '1 unsent message comes back for review. It will not be sent automatically.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXPendingExcluded(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unsent messages on the old device are not in this backup.',
-      one: '1 unsent message on the old device is not in this backup.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXIdentityPassword => 'Identity password';
-
-  @override
-  String get restoreXIdentityPasswordNote => 'The identity in this backup has its own password. Enter it as well.';
-
-  @override
-  String get restoreXConfirmTitle => 'Replace the identity on this device?';
-
-  @override
-  String get restoreXConfirmBody => 'Any identity and data on this device are replaced by the backup. Stop using the identity on the old device before connecting here.';
-
-  @override
-  String get restoreXConfirm => 'Replace and restore';
-
-  @override
-  String get restoreXReportTitle => 'Restore complete';
-
-  @override
-  String get restoreXReportRestored => 'Restored';
-
-  @override
-  String get restoreXReportNotIncluded => 'Not restored';
-
-  @override
-  String get restoreXReportPrefsFailed => 'Preferences could not be applied; your previous preferences were kept.';
-
-  @override
-  String restoreXReportPendingReview(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unsent messages are waiting for your review in Chat.',
-      one: '1 unsent message is waiting for your review in Chat.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportPendingNotResumed(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unsent messages from the old device were not brought over.',
-      one: '1 unsent message from the old device was not brought over.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String restoreXReportInvites(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count queued group invitations were not resent.',
-      one: '1 queued group invitation was not resent.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get restoreXReportStopOld => 'Stop using this identity on the old device.';
-
-  @override
-  String get restoreXReportDone => 'Done';
-
-  @override
-  String pendingReviewBanner(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count unsent messages from your previous device',
-      one: '1 unsent message from your previous device',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get pendingReviewTitle => 'Unsent messages';
-
-  @override
-  String get pendingReviewBody => 'These were waiting to be sent on your previous device. MorseCQ never sends them automatically; key one again if it still matters.';
-
-  @override
-  String pendingReviewQueuedAt(String time) {
-    return 'Queued $time on the previous device';
-  }
-
-  @override
-  String get pendingReviewDismiss => 'Dismiss';
-
-  @override
-  String get pendingReviewDismissAll => 'Dismiss all';
-
-  @override
-  String get pendingReviewEmpty => 'Nothing left to review.';
-
-  @override
-  String get backupXWizardInside => 'The backup file is encrypted as a whole with a passphrase you choose, and holds your identity key and training progress. Keep the file and the passphrase somewhere safe, outside this device.';
-
-  @override
-  String get backupXMeSubtitle => 'An encrypted file with your identity, chats and progress, to keep or to move to another device';
 
   @override
   String get conditionsTitle => 'Conditions';
@@ -4069,9 +2659,6 @@ class SEn extends S {
   }
 
   @override
-  String get telegraphInterpretAction => 'Interpret as Chinese telegraph code';
-
-  @override
   String get telegraphInterpretTitle => 'Telegraph code interpretation';
 
   @override
@@ -4090,186 +2677,7 @@ class SEn extends S {
   String get telegraphAmbiguous => 'Several characters share this code';
 
   @override
-  String get groupPracticeTitle => 'Group practice';
-
-  @override
-  String get groupPracticeIntro => 'The instructor keys exercises in the group chat as usual. Each member picks an exercise message here and copies it at their own speed. Answers and scores stay on your device; nothing is sent to the group.';
-
-  @override
-  String get groupPracticeNew => 'New session';
-
-  @override
-  String get groupPracticeTitleField => 'Title';
-
-  @override
-  String get groupPracticeCreate => 'Create';
-
-  @override
-  String get groupPracticeInstructor => 'Instructor';
-
-  @override
-  String get groupPracticeParticipant => 'Participant';
-
-  @override
-  String get groupPracticeInstructorHint => 'Key each exercise in the group chat, add it here as a round and tick it off; announce turns in the chat.';
-
-  @override
-  String get groupPracticeParticipantHint => 'Add the instructor\'s exercise messages as rounds and copy each one here.';
-
-  @override
-  String get groupPracticeLocalNote => 'Local only: rounds, roles and results are not synchronised with other members, and missed messages may never reach everyone.';
-
-  @override
-  String get groupPracticeAddRound => 'Add exercise';
-
-  @override
-  String get groupPracticeNoMessages => 'No suitable messages in the recent history.';
-
-  @override
-  String get groupPracticeNotConnected => 'Group history is not available until chat is connected.';
-
-  @override
-  String get groupPracticeRoundOpen => 'To do';
-
-  @override
-  String get groupPracticeRoundDone => 'Done';
-
-  @override
-  String get groupPracticeRoundUnavailable => 'Unavailable';
-
-  @override
-  String get groupPracticeSourceGone => 'The exercise message is no longer in the history.';
-
-  @override
-  String get groupPracticeSourceLoading => 'Looking for the message…';
-
-  @override
-  String groupPracticeAttemptResult(int accuracy, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Copied: $accuracy% ($count attempts)',
-      one: 'Copied: $accuracy%',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get groupPracticeCopy => 'Copy';
-
-  @override
-  String get groupPracticeRemoveRound => 'Remove round';
-
-  @override
-  String get groupPracticeSummary => 'Summary';
-
-  @override
-  String groupPracticeRoundsDone(int done, int total) {
-    return '$done of $total rounds done';
-  }
-
-  @override
-  String groupPracticeUnavailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count rounds unavailable',
-      one: '1 round unavailable',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeAccuracy(int accuracy) {
-    return 'Copy accuracy: $accuracy%';
-  }
-
-  @override
-  String groupPracticeAssisted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count attempts with help',
-      one: '1 attempt with help',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String groupPracticeShareHint(int done, int total, int accuracy) {
-    return 'To share, key your result in the group chat yourself, e.g. $done/$total $accuracy%. Nothing is sent automatically.';
-  }
-
-  @override
-  String get groupPracticeComplete => 'Finish session';
-
-  @override
-  String get groupPracticeDeleteTitle => 'Delete this session?';
-
-  @override
-  String get groupPracticeDeleteBody => 'Its rounds and local results are removed from this device. Your training history and the group\'s messages stay.';
-
-  @override
   String get conditionsAudioFailed => 'The audio could not be started on this device. Practise with Clear conditions instead.';
-
-  @override
-  String get moderationBlock => 'Block';
-
-  @override
-  String moderationBlockTitle(String name) {
-    return 'Block $name?';
-  }
-
-  @override
-  String get moderationBlockFriendBody => 'They are removed from your friends and your conversation with them is deleted. Their messages, friend requests and group invites no longer appear on this device. They are not notified.';
-
-  @override
-  String get moderationBlockMemberBody => 'Their messages in this group no longer appear on this device. They are not notified. Tox gives every group member a separate key in each group, so this applies to this group only.';
-
-  @override
-  String get moderationBlocked => 'Blocked';
-
-  @override
-  String get moderationUnblock => 'Unblock';
-
-  @override
-  String get moderationUnblocked => 'Unblocked';
-
-  @override
-  String get moderationBlockedTitle => 'Blocked people';
-
-  @override
-  String get moderationBlockedSubtitle => 'Their messages, requests and invites are hidden';
-
-  @override
-  String get moderationBlockedEmpty => 'You have not blocked anyone.';
-
-  @override
-  String get moderationBlockedNote => 'Blocking works on this device: Tox has no central server, so blocked people can still try to reach you, but nothing of theirs is shown here.';
-
-  @override
-  String get termsGateTitle => 'Community guidelines';
-
-  @override
-  String get termsGateIntro => 'MorseCQ chat connects you directly with other people, without a server. Before you start, please agree to these rules:';
-
-  @override
-  String get termsGateRuleZero => 'Zero tolerance: no harassment, hate, threats, sexual content involving minors, spam or anything illegal.';
-
-  @override
-  String get termsGateRuleContacts => 'Only people you accept can message you; groups are joined by invitation or group ID.';
-
-  @override
-  String get termsGateRuleBlock => 'Block anyone from a conversation, a group’s member list, a friend request or a group invite.';
-
-  @override
-  String get termsGateAgree => 'Agree and continue';
-
-  @override
-  String get termsGateReadFull => 'Read the full terms of use';
-
-  @override
-  String get termsGateSaveFailed => 'Your answer could not be saved. Try again.';
 
   @override
   String get aboutPrivacyPolicy => 'Privacy policy';
@@ -4282,9 +2690,6 @@ class SEn extends S {
 
   @override
   String get aboutLinkFailed => 'The link could not be opened, so it was copied.';
-
-  @override
-  String get errorPeerBlocked => 'You blocked this person. Unblock them under Me → Blocked people first.';
 
   @override
   String get offlineClearData => 'Clear learning data';
@@ -4300,4 +2705,7 @@ class SEn extends S {
 
   @override
   String get learnStorageUnavailable => 'Your training data could not be opened on this device. Try again.';
+
+  @override
+  String get materialsImportedSource => 'Imported source';
 }

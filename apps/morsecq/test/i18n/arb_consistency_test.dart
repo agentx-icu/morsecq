@@ -37,7 +37,8 @@ void main() {
       expect(
         enKeys.difference(keys),
         isEmpty,
-        reason: 'keys missing from $file — translate every key of '
+        reason:
+            'keys missing from $file — translate every key of '
             'app_en.arb in $file',
       );
     });
@@ -100,13 +101,17 @@ void main() {
   test('every template message has a translator description', () {
     for (final key in _messageKeys(en)) {
       final meta = en['@$key'];
-      expect(meta, isA<Map<String, Object?>>(),
-          reason: 'app_en.arb has no "@$key" entry');
+      expect(
+        meta,
+        isA<Map<String, Object?>>(),
+        reason: 'app_en.arb has no "@$key" entry',
+      );
       final description = (meta as Map<String, Object?>)['description'];
       expect(
         description is String && description.trim().isNotEmpty,
         isTrue,
-        reason: '"@$key" needs a description saying where the string is '
+        reason:
+            '"@$key" needs a description saying where the string is '
             'shown and what it means',
       );
     }
@@ -124,43 +129,26 @@ void main() {
   });
 
   test('the nav destinations and app name exist', () {
-    for (final key in [
-      'appName',
-      'navLearn',
-      'navChat',
-      'navGroups',
-      'navReference',
-      'navMe',
-    ]) {
+    for (final key in ['appName', 'navLearn', 'navReference', 'navMe']) {
       expect(en.containsKey(key), isTrue, reason: key);
     }
     others.forEach((file, arb) {
-      expect(arb['appName'], en['appName'],
-          reason: 'product name is not translated ($file)');
+      expect(
+        arb['appName'],
+        en['appName'],
+        reason: 'product name is not translated ($file)',
+      );
     });
-  });
-
-  test('every ChatException code has an error message', () {
-    const codes = [
-      'errorWrongPassword',
-      'errorPeerOffline',
-      'errorInvalidToxId',
-      'errorAlreadyFriend',
-      'errorOwnId',
-      'errorGroupNotFound',
-      'errorMessageTooLong',
-      'errorUnknown',
-    ];
-    for (final key in codes) {
-      expect(en.containsKey(key), isTrue, reason: key);
-    }
   });
 }
 
 List<String> _arbFiles() {
   final dir = Directory('lib/l10n');
-  expect(dir.existsSync(), isTrue,
-      reason: 'missing lib/l10n (cwd ${Directory.current.path})');
+  expect(
+    dir.existsSync(),
+    isTrue,
+    reason: 'missing lib/l10n (cwd ${Directory.current.path})',
+  );
   return dir
       .listSync()
       .whereType<File>()
@@ -172,8 +160,11 @@ List<String> _arbFiles() {
 
 Map<String, Object?> _readArb(String path) {
   final file = File(path);
-  expect(file.existsSync(), isTrue,
-      reason: 'missing $path (cwd ${Directory.current.path})');
+  expect(
+    file.existsSync(),
+    isTrue,
+    reason: 'missing $path (cwd ${Directory.current.path})',
+  );
   final decoded = jsonDecode(file.readAsStringSync());
   expect(decoded, isA<Map<String, Object?>>());
   return decoded as Map<String, Object?>;

@@ -72,7 +72,6 @@ abstract final class SpeedRecommender {
     ExerciseSource.course,
     ExerciseSource.review,
     ExerciseSource.focus,
-    ExerciseSource.chat,
     ExerciseSource.material,
   };
 

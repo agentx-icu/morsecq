@@ -23,9 +23,9 @@ set(_app_dir "${CMAKE_CURRENT_LIST_DIR}/../../../apps/morsecq")
 set(CPACK_PACKAGE_NAME "morsecq")
 set(CPACK_PACKAGE_VENDOR "agentx-icu")
 set(CPACK_PACKAGE_CONTACT "agentx-icu <https://github.com/agentx-icu/morsecq>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Morse code trainer and serverless Morse chat over Tox")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Offline Morse code trainer")
 set(CPACK_PACKAGE_DESCRIPTION
-  "Learn Morse code with the Koch method and key it to friends and groups over the Tox peer-to-peer network. No server, no account.")
+  "Learn Morse code with Koch lessons, receive/send practice, audio decoding and radio tools. No account or registration.")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/agentx-icu/morsecq")
 set(CPACK_PACKAGE_VERSION "${MORSECQ_RELEASE_VERSION}")
 set(CPACK_PACKAGE_FILE_NAME "morsecq-${MORSECQ_RELEASE_VERSION}-linux-${MORSECQ_PACKAGE_ARCH}")
@@ -44,13 +44,13 @@ set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS_PRIVATE_DIRS "opt/morsecq/lib")
 # Plus what is only loaded at run time (dlopen), so shlibdeps cannot see it:
-# the tray indicator, secure storage and ALSA for the sidetone.
+# the tray indicator and ALSA for the sidetone.
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-  "libayatana-appindicator3-1, libsecret-1-0, libasound2t64 | libasound2")
+  "libayatana-appindicator3-1, libasound2t64 | libasound2")
 
 set(CPACK_RPM_PACKAGE_ARCHITECTURE "${MORSECQ_RPM_ARCH}")
 set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-only")
-set(CPACK_RPM_PACKAGE_GROUP "Applications/Communications")
+set(CPACK_RPM_PACKAGE_GROUP "Applications/Education")
 set(CPACK_RPM_COMPRESSION_TYPE "xz")
 set(CPACK_RPM_PACKAGE_URL "https://github.com/agentx-icu/morsecq")
 # rpmbuild derives Requires from the ELF files; the libraries bundled under
