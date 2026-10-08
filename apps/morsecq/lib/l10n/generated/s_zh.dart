@@ -4169,6 +4169,95 @@ class SZh extends S {
 
   @override
   String get conditionsAudioFailed => '本设备无法播放音频。请改用“清晰”环境练习。';
+
+  @override
+  String get moderationBlock => '屏蔽';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return '屏蔽 $name？';
+  }
+
+  @override
+  String get moderationBlockFriendBody => '对方将被移出好友，与其的会话也会被删除。此后其消息、好友请求和群组邀请都不会再出现在此设备上。对方不会收到通知。';
+
+  @override
+  String get moderationBlockMemberBody => '此后其在本群组的消息都不会再出现在此设备上。对方不会收到通知。Tox 为每位群成员在每个群组中使用不同的密钥，因此仅对本群组生效。';
+
+  @override
+  String get moderationBlocked => '已屏蔽';
+
+  @override
+  String get moderationUnblock => '解除屏蔽';
+
+  @override
+  String get moderationUnblocked => '已解除屏蔽';
+
+  @override
+  String get moderationBlockedTitle => '已屏蔽的人';
+
+  @override
+  String get moderationBlockedSubtitle => '隐藏其消息、请求和邀请';
+
+  @override
+  String get moderationBlockedEmpty => '你还没有屏蔽任何人。';
+
+  @override
+  String get moderationBlockedNote => '屏蔽在此设备上生效：Tox 没有中心服务器，被屏蔽的人仍可能尝试联系你，但他们的任何内容都不会在这里显示。';
+
+  @override
+  String get termsGateTitle => '社区准则';
+
+  @override
+  String get termsGateIntro => 'MorseCQ 聊天让你与他人直接连接，中间没有服务器。开始之前，请同意以下规则：';
+
+  @override
+  String get termsGateRuleZero => '零容忍：禁止骚扰、仇恨、威胁、涉及未成年人的性内容、垃圾信息以及任何违法内容。';
+
+  @override
+  String get termsGateRuleContacts => '只有你接受的人才能给你发消息；群组须通过邀请或群组 ID 加入。';
+
+  @override
+  String get termsGateRuleBlock => '可以在会话、群成员列表、好友请求或群组邀请中屏蔽任何人。';
+
+  @override
+  String get termsGateAgree => '同意并继续';
+
+  @override
+  String get termsGateReadFull => '阅读完整使用条款';
+
+  @override
+  String get termsGateSaveFailed => '无法保存你的选择，请重试。';
+
+  @override
+  String get aboutPrivacyPolicy => '隐私政策';
+
+  @override
+  String get aboutTermsOfUse => '使用条款';
+
+  @override
+  String get aboutSupport => '技术支持与联系';
+
+  @override
+  String get aboutLinkFailed => '无法打开链接，已复制链接。';
+
+  @override
+  String get errorPeerBlocked => '你已屏蔽此人。请先在“我 → 已屏蔽的人”中解除屏蔽。';
+
+  @override
+  String get offlineClearData => '清除学习数据';
+
+  @override
+  String get offlineClearDataBody => '删除此设备上的学习进度、计划和材料。';
+
+  @override
+  String get offlineCleared => '学习数据已清除。';
+
+  @override
+  String get offlineClearFailed => '无法清除学习数据。';
+
+  @override
+  String get learnStorageUnavailable => '无法在此设备上打开你的训练数据，请重试。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8336,4 +8425,93 @@ class SZhHant extends SZh {
 
   @override
   String get conditionsAudioFailed => '本裝置無法播放音訊。請改用「清晰」環境練習。';
+
+  @override
+  String get moderationBlock => '封鎖';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return '封鎖 $name？';
+  }
+
+  @override
+  String get moderationBlockFriendBody => '對方將被移出好友，與其的對話也會被刪除。此後其訊息、好友請求和群組邀請都不會再出現在此裝置上。對方不會收到通知。';
+
+  @override
+  String get moderationBlockMemberBody => '此後其在本群組的訊息都不會再出現在此裝置上。對方不會收到通知。Tox 為每位群組成員在每個群組中使用不同的金鑰，因此僅對本群組生效。';
+
+  @override
+  String get moderationBlocked => '已封鎖';
+
+  @override
+  String get moderationUnblock => '解除封鎖';
+
+  @override
+  String get moderationUnblocked => '已解除封鎖';
+
+  @override
+  String get moderationBlockedTitle => '已封鎖的人';
+
+  @override
+  String get moderationBlockedSubtitle => '隱藏其訊息、請求和邀請';
+
+  @override
+  String get moderationBlockedEmpty => '你尚未封鎖任何人。';
+
+  @override
+  String get moderationBlockedNote => '封鎖在此裝置上生效：Tox 沒有中央伺服器，被封鎖的人仍可能嘗試聯絡你，但他們的任何內容都不會在這裡顯示。';
+
+  @override
+  String get termsGateTitle => '社群準則';
+
+  @override
+  String get termsGateIntro => 'MorseCQ 聊天讓你與他人直接連線，中間沒有伺服器。開始之前，請同意以下規則：';
+
+  @override
+  String get termsGateRuleZero => '零容忍：禁止騷擾、仇恨、威脅、涉及未成年人的性內容、垃圾訊息以及任何違法內容。';
+
+  @override
+  String get termsGateRuleContacts => '只有你接受的人才能傳訊息給你；群組須透過邀請或群組 ID 加入。';
+
+  @override
+  String get termsGateRuleBlock => '可以在對話、群組成員清單、好友請求或群組邀請中封鎖任何人。';
+
+  @override
+  String get termsGateAgree => '同意並繼續';
+
+  @override
+  String get termsGateReadFull => '閱讀完整使用條款';
+
+  @override
+  String get termsGateSaveFailed => '無法儲存你的選擇，請再試一次。';
+
+  @override
+  String get aboutPrivacyPolicy => '隱私權政策';
+
+  @override
+  String get aboutTermsOfUse => '使用條款';
+
+  @override
+  String get aboutSupport => '技術支援與聯絡';
+
+  @override
+  String get aboutLinkFailed => '無法開啟連結，已複製連結。';
+
+  @override
+  String get errorPeerBlocked => '你已封鎖此人。請先在「我 → 已封鎖的人」中解除封鎖。';
+
+  @override
+  String get offlineClearData => '清除學習資料';
+
+  @override
+  String get offlineClearDataBody => '刪除此裝置上的學習進度、計畫和材料。';
+
+  @override
+  String get offlineCleared => '學習資料已清除。';
+
+  @override
+  String get offlineClearFailed => '無法清除學習資料。';
+
+  @override
+  String get learnStorageUnavailable => '無法在此裝置上開啟你的訓練資料，請再試一次。';
 }

@@ -242,6 +242,73 @@ void main() {
       expect(n.lines, isEmpty); // single message: no inbox yet
     });
 
+    test('blocking a group member withdraws a banner showing them', () async {
+      final Harness h = await harness();
+      final Group g = h.chat.addFakeGroup(
+        const Group(id: 'tox_1', name: 'Net', kind: GroupKind.group),
+      );
+      h.chat.receiveMessage(
+        FakeChatService.groupConversationId(g.id),
+        'SPAM',
+        senderId: kBob,
+        senderName: 'Bob',
+      );
+      await pumpEventQueue();
+      expect(h.api.active, hasLength(1));
+      await h.chat.blockPeer(kBob);
+      await pumpEventQueue();
+      expect(h.api.active, isEmpty);
+      h.chat.receiveMessage(
+        FakeChatService.groupConversationId(g.id),
+        'MORE SPAM',
+        senderId: kBob,
+      );
+      await pumpEventQueue();
+      expect(h.api.active, isEmpty, reason: 'filtered at the service');
+    });
+
+    test(
+      'a new block takes down group banners a previous run posted',
+      () async {
+        final Harness h = await harness();
+        h.chat.addFakeGroup(
+          const Group(id: 'tox_9', name: 'Old net', kind: GroupKind.group),
+        );
+        await pumpEventQueue();
+        final int before = h.api.cancelled.length;
+        await h.chat.blockPeer(kBob);
+        await pumpEventQueue();
+        expect(
+          h.api.cancelled.length,
+          greaterThan(before),
+          reason: 'untracked group banner (and the direct one) cancelled',
+        );
+      },
+    );
+
+    test(
+      'blocking one member keeps the other lines, re-posted silently',
+      () async {
+        final Harness h = await harness();
+        final Group g = h.chat.addFakeGroup(
+          const Group(id: 'tox_1', name: 'Net', kind: GroupKind.group),
+        );
+        final String cid = FakeChatService.groupConversationId(g.id);
+        h.chat.receiveMessage(cid, 'GM', senderId: kAnn, senderName: 'Ann');
+        await pumpEventQueue();
+        h.chat.receiveMessage(cid, 'SPAM', senderId: kBob, senderName: 'Bob');
+        await pumpEventQueue();
+        expect(h.api.active.single.lines, hasLength(2));
+        await h.chat.blockPeer(kBob);
+        await pumpEventQueue();
+        final NotificationRequest n = h.api.active.single;
+        expect(n.lines, isEmpty, reason: 'one line left: no inbox');
+        expect(n.body, startsWith('Ann: '));
+        expect(n.sound, isFalse, reason: 'blocking must not alert again');
+        expect(n.silentUpdate, isTrue, reason: 'no banner or heads-up either');
+      },
+    );
+
     test(
       'group message from a nameless peer falls back to the short key',
       () async {

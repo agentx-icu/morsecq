@@ -10,6 +10,7 @@ mixin _FakeMessageManagement implements ChatService, OutboxInspector {
   Map<String, Friend> get _friends;
   Set<String> get _disconnectedGroups;
   void _applyStatus(String messageId, MessageStatus status);
+  List<ChatMessage> _visibleRows(String conversationId);
 
   /// Like history, every operation here needs a live session.
   void _requireSession();
@@ -48,7 +49,7 @@ mixin _FakeMessageManagement implements ChatService, OutboxInspector {
     _requireSession();
     if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
     return MessageOrder.page(
-      _messages[conversationId] ?? const <ChatMessage>[],
+      _visibleRows(conversationId),
       query,
       cursor: cursor,
       limit: limit,
@@ -64,7 +65,7 @@ mixin _FakeMessageManagement implements ChatService, OutboxInspector {
   }) async {
     _requireSession();
     return MessageOrder.around(
-      _messages[conversationId] ?? const <ChatMessage>[],
+      _visibleRows(conversationId),
       messageId,
       before: before,
       after: after,

@@ -35,6 +35,8 @@ PODS:
   - Tim2ToxFFI (0.1.0)
   - tray_manager (0.0.1):
     - FlutterMacOS
+  - url_launcher_macos (0.0.1):
+    - FlutterMacOS
   - wakelock_plus (0.0.1):
     - FlutterMacOS
   - window_manager (0.5.0):
@@ -58,6 +60,7 @@ DEPENDENCIES:
   - tencent_cloud_chat_sdk (from `Flutter/ephemeral/.symlinks/plugins/tencent_cloud_chat_sdk/macos`)
   - Tim2ToxFFI (from `Frameworks`)
   - tray_manager (from `Flutter/ephemeral/.symlinks/plugins/tray_manager/macos`)
+  - url_launcher_macos (from `Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos`)
   - wakelock_plus (from `Flutter/ephemeral/.symlinks/plugins/wakelock_plus/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
 
@@ -96,6 +99,8 @@ EXTERNAL SOURCES:
     :path: Frameworks
   tray_manager:
     :path: Flutter/ephemeral/.symlinks/plugins/tray_manager/macos
+  url_launcher_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
   wakelock_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/wakelock_plus/macos
   window_manager:
@@ -119,6 +124,7 @@ SPEC CHECKSUMS:
   tencent_cloud_chat_sdk: ab0b7ab7513131d059b9e9c0dda68c057a8c78f0
   Tim2ToxFFI: 3fb099786288ddac8435b04f66b3b8c5e5aaa894
   tray_manager: 19c369010e59c073f13b82354d78a35f7972d609
+  url_launcher_macos: f87a979182d112f911de6820aefddaf56ee9fbfd
   wakelock_plus: 917609be14d812ddd9e9528876538b2263aaa03b
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 

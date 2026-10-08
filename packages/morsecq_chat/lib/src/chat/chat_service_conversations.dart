@@ -37,6 +37,13 @@ class _ConversationsPart {
       for (final f in friendById.keys) ConversationIds.c2c(f),
       for (final g in groupIds) ConversationIds.group(g),
     }..removeAll(hidden);
+    // A blocked peer's c2c conversation is not listed.
+    final blocking = _owner._blockingPart;
+    ids.removeWhere(
+      (id) =>
+          !ConversationIds.isGroup(id) &&
+          blocking.isBlocked(ConversationIds.peerOf(id)),
+    );
     // Note to self: always listed, never hidden (it cannot be deleted).
     if (selfId != null) ids.add(selfId);
 
@@ -48,7 +55,7 @@ class _ConversationsPart {
       if (!isGroup && !ConversationIds.publicKey.hasMatch(peer)) {
         continue; // foreign history key (e.g. an IRC channel), not a peer
       }
-      final last = _lastMessage(svc, peer);
+      final last = _lastMessage(svc, peer, blocking.shows);
       final isSelf = id == selfId;
       final title = isSelf
           ? (_owner._identity.current?.displayName ?? '')
@@ -66,7 +73,15 @@ class _ConversationsPart {
           lastMessage: last == null
               ? null
               : mapper.map(last, conversationId: id),
-          unreadCount: visibleUnread(svc.getUnreadOf(peer), svc.getHistory(peer)),
+          unreadCount: visibleUnread(
+            svc.getUnreadOf(peer),
+            svc.getHistory(peer),
+            shows: blocking.shows,
+            // Rows past the in-memory window may be a blocked member's;
+            // only group histories can hold them (Tim2Tox drops blocked
+            // C2C rows before storing them).
+            countArchived: !isGroup || blocking.blocked.value.isEmpty,
+          ),
           pinned: pinned.contains(id),
           draft: meta.draft(id),
           isSelf: isSelf,
@@ -79,13 +94,20 @@ class _ConversationsPart {
     }
   }
 
-  /// Newest text row: a file row a toxee peer pushed is not a preview.
-  static t2t.ChatMessage? _lastMessage(FfiChatService svc, String peer) {
+  /// Newest row [shows] accepts: a file row a toxee peer pushed, or a
+  /// blocked group member's message, is not a preview. Only the in-memory
+  /// window (Tim2Tox keeps the newest 1000 rows) is searched on this hot
+  /// path: when all of those are hidden, the row has no preview.
+  static t2t.ChatMessage? _lastMessage(
+    FfiChatService svc,
+    String peer,
+    bool Function(t2t.ChatMessage) shows,
+  ) {
     final cached = svc.lastMessages[peer];
-    if (cached != null && MessageMapper.isChatText(cached)) return cached;
+    if (cached != null && shows(cached)) return cached;
     t2t.ChatMessage? newest;
     for (final m in svc.getHistory(peer)) {
-      if (!MessageMapper.isChatText(m)) continue;
+      if (!shows(m)) continue;
       if (newest == null || !m.timestamp.isBefore(newest.timestamp)) {
         newest = m;
       }

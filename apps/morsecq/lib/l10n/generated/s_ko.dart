@@ -4169,4 +4169,93 @@ class SKo extends S {
 
   @override
   String get conditionsAudioFailed => '이 기기에서 오디오를 시작하지 못했습니다. 깨끗한 환경으로 연습하세요.';
+
+  @override
+  String get moderationBlock => '차단';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return '$name님을 차단할까요?';
+  }
+
+  @override
+  String get moderationBlockFriendBody => '친구에서 삭제되고 대화도 삭제됩니다. 이후 상대의 메시지, 친구 요청, 그룹 초대가 이 기기에 표시되지 않습니다. 상대에게는 알림이 가지 않습니다.';
+
+  @override
+  String get moderationBlockMemberBody => '이후 이 그룹에서 상대의 메시지가 이 기기에 표시되지 않습니다. 상대에게는 알림이 가지 않습니다. Tox는 그룹마다 회원에게 다른 키를 쓰므로 이 그룹에만 적용됩니다.';
+
+  @override
+  String get moderationBlocked => '차단했습니다';
+
+  @override
+  String get moderationUnblock => '차단 해제';
+
+  @override
+  String get moderationUnblocked => '차단을 해제했습니다';
+
+  @override
+  String get moderationBlockedTitle => '차단한 사용자';
+
+  @override
+  String get moderationBlockedSubtitle => '메시지, 요청, 초대를 숨김';
+
+  @override
+  String get moderationBlockedEmpty => '차단한 사용자가 없습니다.';
+
+  @override
+  String get moderationBlockedNote => '차단은 이 기기에서 적용됩니다. Tox에는 중앙 서버가 없어 상대가 연락을 시도할 수는 있지만, 그 내용은 여기에 표시되지 않습니다.';
+
+  @override
+  String get termsGateTitle => '커뮤니티 가이드라인';
+
+  @override
+  String get termsGateIntro => 'MorseCQ 채팅은 서버 없이 다른 사람과 직접 연결됩니다. 시작하기 전에 다음 규칙에 동의해 주세요.';
+
+  @override
+  String get termsGateRuleZero => '무관용: 괴롭힘, 혐오, 협박, 미성년자 관련 성적 콘텐츠, 스팸 및 모든 불법 행위를 금지합니다.';
+
+  @override
+  String get termsGateRuleContacts => '내가 수락한 사람만 메시지를 보낼 수 있으며, 그룹은 초대나 그룹 ID로 참여합니다.';
+
+  @override
+  String get termsGateRuleBlock => '대화, 그룹 회원 목록, 친구 요청, 그룹 초대에서 누구든 차단할 수 있습니다.';
+
+  @override
+  String get termsGateAgree => '동의하고 계속';
+
+  @override
+  String get termsGateReadFull => '이용약관 전문 보기';
+
+  @override
+  String get termsGateSaveFailed => '답변을 저장하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get aboutPrivacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get aboutTermsOfUse => '이용약관';
+
+  @override
+  String get aboutSupport => '지원 및 문의';
+
+  @override
+  String get aboutLinkFailed => '링크를 열 수 없어 복사했습니다.';
+
+  @override
+  String get errorPeerBlocked => '이 사용자를 차단했습니다. 먼저 내 정보 → 차단한 사용자에서 차단을 해제하세요.';
+
+  @override
+  String get offlineClearData => '학습 데이터 지우기';
+
+  @override
+  String get offlineClearDataBody => '이 기기의 진도, 계획, 자료를 삭제합니다.';
+
+  @override
+  String get offlineCleared => '학습 데이터를 지웠습니다.';
+
+  @override
+  String get offlineClearFailed => '학습 데이터를 지우지 못했습니다.';
+
+  @override
+  String get learnStorageUnavailable => '이 기기에서 훈련 데이터를 열 수 없습니다. 다시 시도하세요.';
 }

@@ -4169,4 +4169,93 @@ class SJa extends S {
 
   @override
   String get conditionsAudioFailed => 'この端末では音声を開始できませんでした。「クリア」で練習してください。';
+
+  @override
+  String get moderationBlock => 'ブロック';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return '$name をブロックしますか？';
+  }
+
+  @override
+  String get moderationBlockFriendBody => '友達から削除され、その人との会話も削除されます。以後、その人のメッセージ、友達リクエスト、グループへの招待はこの端末に表示されません。相手には通知されません。';
+
+  @override
+  String get moderationBlockMemberBody => '以後、このグループでのその人のメッセージはこの端末に表示されません。相手には通知されません。Tox ではグループごとにメンバーの鍵が異なるため、このグループにのみ適用されます。';
+
+  @override
+  String get moderationBlocked => 'ブロックしました';
+
+  @override
+  String get moderationUnblock => 'ブロック解除';
+
+  @override
+  String get moderationUnblocked => 'ブロックを解除しました';
+
+  @override
+  String get moderationBlockedTitle => 'ブロック中のユーザー';
+
+  @override
+  String get moderationBlockedSubtitle => 'メッセージ・リクエスト・招待を非表示';
+
+  @override
+  String get moderationBlockedEmpty => 'ブロック中のユーザーはいません。';
+
+  @override
+  String get moderationBlockedNote => 'ブロックはこの端末で機能します。Tox には中央サーバーがないため、相手は連絡を試みることはできますが、その内容はここに表示されません。';
+
+  @override
+  String get termsGateTitle => 'コミュニティガイドライン';
+
+  @override
+  String get termsGateIntro => 'MorseCQ のチャットはサーバーを介さず、相手と直接つながります。始める前に、次のルールに同意してください。';
+
+  @override
+  String get termsGateRuleZero => '一切容認しません：嫌がらせ、ヘイト、脅迫、未成年者が関わる性的コンテンツ、スパム、違法なもの。';
+
+  @override
+  String get termsGateRuleContacts => 'メッセージを送れるのはあなたが承認した人だけです。グループには招待かグループ ID で参加します。';
+
+  @override
+  String get termsGateRuleBlock => '会話、グループのメンバー一覧、友達リクエスト、グループへの招待から誰でもブロックできます。';
+
+  @override
+  String get termsGateAgree => '同意して続ける';
+
+  @override
+  String get termsGateReadFull => '利用規約の全文を読む';
+
+  @override
+  String get termsGateSaveFailed => '回答を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get aboutPrivacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get aboutTermsOfUse => '利用規約';
+
+  @override
+  String get aboutSupport => 'サポート・お問い合わせ';
+
+  @override
+  String get aboutLinkFailed => 'リンクを開けなかったため、コピーしました。';
+
+  @override
+  String get errorPeerBlocked => 'この人をブロックしています。先に「自分 → ブロック中のユーザー」で解除してください。';
+
+  @override
+  String get offlineClearData => '学習データを消去';
+
+  @override
+  String get offlineClearDataBody => 'この端末の進捗、プラン、教材を削除します。';
+
+  @override
+  String get offlineCleared => '学習データを消去しました。';
+
+  @override
+  String get offlineClearFailed => '学習データを消去できませんでした。';
+
+  @override
+  String get learnStorageUnavailable => 'この端末でトレーニングデータを開けませんでした。もう一度お試しください。';
 }

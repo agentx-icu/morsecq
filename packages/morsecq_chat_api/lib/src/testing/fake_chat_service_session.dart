@@ -51,6 +51,7 @@ extension _FakeSession on FakeChatService {
     _friendRequestChanges.add(friendRequests);
     _groupChanges.add(groups);
     _groupInviteChanges.add(groupInvites);
+    _blockedChanges.add(blockedPeers);
     _publishConversations();
   }
 
@@ -67,10 +68,12 @@ extension _FakeSession on FakeChatService {
     _groupInvites.clear();
     _hidden.clear();
     _disconnectedGroups.clear();
+    _blocked.clear();
     outgoingFriendRequests.clear();
     _friendChanges.add(friends);
     _friendRequestChanges.add(friendRequests);
     _groupChanges.add(groups);
     _groupInviteChanges.add(groupInvites);
+    _blockedChanges.add(blockedPeers);
   }
 }

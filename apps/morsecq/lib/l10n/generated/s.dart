@@ -7255,6 +7255,180 @@ abstract class S {
   /// In en, this message translates to:
   /// **'The audio could not be started on this device. Practise with Clear conditions instead.'**
   String get conditionsAudioFailed;
+
+  /// Block action (menus, friend request and invite buttons)
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get moderationBlock;
+
+  /// Block confirmation title; name is the person (name or short key)
+  ///
+  /// In en, this message translates to:
+  /// **'Block {name}?'**
+  String moderationBlockTitle(String name);
+
+  /// Block confirmation body for a friend or a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'They are removed from your friends and your conversation with them is deleted. Their messages, friend requests and group invites no longer appear on this device. They are not notified.'**
+  String get moderationBlockFriendBody;
+
+  /// Block confirmation body for a group member (NGC keys are per group)
+  ///
+  /// In en, this message translates to:
+  /// **'Their messages in this group no longer appear on this device. They are not notified. Tox gives every group member a separate key in each group, so this applies to this group only.'**
+  String get moderationBlockMemberBody;
+
+  /// Snack bar after blocking
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get moderationBlocked;
+
+  /// Unblock action on the blocked people page
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get moderationUnblock;
+
+  /// Snack bar after unblocking
+  ///
+  /// In en, this message translates to:
+  /// **'Unblocked'**
+  String get moderationUnblocked;
+
+  /// Blocked people page title and Me tile
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked people'**
+  String get moderationBlockedTitle;
+
+  /// Me tile subtitle for blocked people
+  ///
+  /// In en, this message translates to:
+  /// **'Their messages, requests and invites are hidden'**
+  String get moderationBlockedSubtitle;
+
+  /// Blocked people page with nobody blocked
+  ///
+  /// In en, this message translates to:
+  /// **'You have not blocked anyone.'**
+  String get moderationBlockedEmpty;
+
+  /// Blocked people page: how blocking works
+  ///
+  /// In en, this message translates to:
+  /// **'Blocking works on this device: Tox has no central server, so blocked people can still try to reach you, but nothing of theirs is shown here.'**
+  String get moderationBlockedNote;
+
+  /// Terms gate (before chat) title
+  ///
+  /// In en, this message translates to:
+  /// **'Community guidelines'**
+  String get termsGateTitle;
+
+  /// Terms gate intro
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ chat connects you directly with other people, without a server. Before you start, please agree to these rules:'**
+  String get termsGateIntro;
+
+  /// Terms gate rule: zero tolerance
+  ///
+  /// In en, this message translates to:
+  /// **'Zero tolerance: no harassment, hate, threats, sexual content involving minors, spam or anything illegal.'**
+  String get termsGateRuleZero;
+
+  /// Terms gate rule: only accepted contacts
+  ///
+  /// In en, this message translates to:
+  /// **'Only people you accept can message you; groups are joined by invitation or group ID.'**
+  String get termsGateRuleContacts;
+
+  /// Terms gate rule: blocking
+  ///
+  /// In en, this message translates to:
+  /// **'Block anyone from a conversation, a group’s member list, a friend request or a group invite.'**
+  String get termsGateRuleBlock;
+
+  /// Terms gate accept button
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and continue'**
+  String get termsGateAgree;
+
+  /// Terms gate link to the full terms
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full terms of use'**
+  String get termsGateReadFull;
+
+  /// Terms gate: saving acceptance failed
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer could not be saved. Try again.'**
+  String get termsGateSaveFailed;
+
+  /// About: privacy policy link
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get aboutPrivacyPolicy;
+
+  /// About: terms of use link
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of use'**
+  String get aboutTermsOfUse;
+
+  /// About: support and contact link
+  ///
+  /// In en, this message translates to:
+  /// **'Support and contact'**
+  String get aboutSupport;
+
+  /// About: a link could not be opened and was copied
+  ///
+  /// In en, this message translates to:
+  /// **'The link could not be opened, so it was copied.'**
+  String get aboutLinkFailed;
+
+  /// ChatException code peer_blocked
+  ///
+  /// In en, this message translates to:
+  /// **'You blocked this person. Unblock them under Me → Blocked people first.'**
+  String get errorPeerBlocked;
+
+  /// Offline build Me: clear the local learning data
+  ///
+  /// In en, this message translates to:
+  /// **'Clear learning data'**
+  String get offlineClearData;
+
+  /// Offline build Me: what clearing removes
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes your progress, plans and materials on this device.'**
+  String get offlineClearDataBody;
+
+  /// Offline build Me: snack after clearing
+  ///
+  /// In en, this message translates to:
+  /// **'Learning data cleared.'**
+  String get offlineCleared;
+
+  /// Offline build Me: clearing failed
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t clear the learning data.'**
+  String get offlineClearFailed;
+
+  /// Offline build: the local learning data could not be opened
+  ///
+  /// In en, this message translates to:
+  /// **'Your training data could not be opened on this device. Try again.'**
+  String get learnStorageUnavailable;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

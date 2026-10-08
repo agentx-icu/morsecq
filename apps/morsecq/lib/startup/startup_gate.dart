@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../di/app_settings.dart';
 import '../i18n/l10n_extension.dart';
 import '../ui/account/backup_wizard_page.dart';
 import '../ui/account/connection_chip.dart';
 import '../ui/account/guest_widgets.dart';
 import '../ui/account/unlock_page.dart';
 import '../ui/account/welcome_page.dart';
+import '../ui/moderation/terms_gate_page.dart';
 import 'startup_controller.dart';
 import 'startup_screens.dart';
 
@@ -16,7 +18,9 @@ import 'startup_screens.dart';
 /// [StartupController] provided by `AppScope` and kicks it off once.
 ///
 /// While [StartupPhase.ready], [child] is shown below a [ConnectionStrip]
-/// that carries the connection chip whenever the node is not online.
+/// that carries the connection chip whenever the node is not online — once
+/// the community guidelines ([kTermsVersion]) are accepted on this device;
+/// until then [TermsGatePage] stands in for the whole shell.
 class StartupGate extends StatefulWidget {
   const StartupGate({super.key, required this.child});
 
@@ -39,6 +43,9 @@ class _StartupGateState extends State<StartupGate> {
     final s = context.s;
     final controller = context.watch<StartupController>();
     final phase = controller.phase;
+    final bool termsAccepted = context.select<AppSettings, bool>(
+      (settings) => settings.termsAccepted,
+    );
     final Widget page = switch (phase) {
       StartupPhase.inspecting => StartupSplash(
         message: s.accountStartupInspecting,
@@ -51,6 +58,7 @@ class _StartupGateState extends State<StartupGate> {
         error: controller.error,
         onRetry: () => controller.retry().ignore(),
       ),
+      StartupPhase.ready when !termsAccepted => const TermsGatePage(),
       StartupPhase.ready => ConnectionStrip(
         child: GuestDataBanner(child: widget.child),
       ),
@@ -59,7 +67,10 @@ class _StartupGateState extends State<StartupGate> {
     };
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: KeyedSubtree(key: ValueKey(phase), child: page),
+      child: KeyedSubtree(
+        key: ValueKey((phase, phase != StartupPhase.ready || termsAccepted)),
+        child: page,
+      ),
     );
   }
 }

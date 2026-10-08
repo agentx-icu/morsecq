@@ -4212,4 +4212,93 @@ class SDe extends S {
 
   @override
   String get conditionsAudioFailed => 'Der Ton ließ sich auf diesem Gerät nicht starten. Übe stattdessen mit klaren Bedingungen.';
+
+  @override
+  String get moderationBlock => 'Blockieren';
+
+  @override
+  String moderationBlockTitle(String name) {
+    return '$name blockieren?';
+  }
+
+  @override
+  String get moderationBlockFriendBody => 'Die Person wird aus deinen Freunden entfernt und eure Unterhaltung gelöscht. Ihre Nachrichten, Freundschaftsanfragen und Gruppeneinladungen erscheinen auf diesem Gerät nicht mehr. Sie wird nicht benachrichtigt.';
+
+  @override
+  String get moderationBlockMemberBody => 'Ihre Nachrichten in dieser Gruppe erscheinen auf diesem Gerät nicht mehr. Sie wird nicht benachrichtigt. Tox gibt jedem Mitglied in jeder Gruppe einen eigenen Schlüssel, daher gilt das nur für diese Gruppe.';
+
+  @override
+  String get moderationBlocked => 'Blockiert';
+
+  @override
+  String get moderationUnblock => 'Freigeben';
+
+  @override
+  String get moderationUnblocked => 'Freigegeben';
+
+  @override
+  String get moderationBlockedTitle => 'Blockierte Personen';
+
+  @override
+  String get moderationBlockedSubtitle => 'Ihre Nachrichten, Anfragen und Einladungen sind ausgeblendet';
+
+  @override
+  String get moderationBlockedEmpty => 'Du hast niemanden blockiert.';
+
+  @override
+  String get moderationBlockedNote => 'Blockieren wirkt auf diesem Gerät: Tox hat keinen zentralen Server, blockierte Personen können es also weiter versuchen, aber hier wird nichts von ihnen angezeigt.';
+
+  @override
+  String get termsGateTitle => 'Community-Richtlinien';
+
+  @override
+  String get termsGateIntro => 'Der MorseCQ-Chat verbindet dich ohne Server direkt mit anderen. Bitte stimme vorher diesen Regeln zu:';
+
+  @override
+  String get termsGateRuleZero => 'Null Toleranz: keine Belästigung, kein Hass, keine Drohungen, keine sexuellen Inhalte mit Minderjährigen, kein Spam, nichts Illegales.';
+
+  @override
+  String get termsGateRuleContacts => 'Nur Personen, die du annimmst, können dir schreiben; Gruppen betrittst du per Einladung oder Gruppen-ID.';
+
+  @override
+  String get termsGateRuleBlock => 'Blockiere jede Person aus einer Unterhaltung, der Mitgliederliste einer Gruppe, einer Freundschaftsanfrage oder einer Einladung.';
+
+  @override
+  String get termsGateAgree => 'Zustimmen und weiter';
+
+  @override
+  String get termsGateReadFull => 'Vollständige Nutzungsbedingungen lesen';
+
+  @override
+  String get termsGateSaveFailed => 'Deine Antwort konnte nicht gespeichert werden. Versuche es erneut.';
+
+  @override
+  String get aboutPrivacyPolicy => 'Datenschutzerklärung';
+
+  @override
+  String get aboutTermsOfUse => 'Nutzungsbedingungen';
+
+  @override
+  String get aboutSupport => 'Hilfe und Kontakt';
+
+  @override
+  String get aboutLinkFailed => 'Der Link ließ sich nicht öffnen und wurde kopiert.';
+
+  @override
+  String get errorPeerBlocked => 'Du hast diese Person blockiert. Gib sie zuerst unter Ich → Blockierte Personen frei.';
+
+  @override
+  String get offlineClearData => 'Lerndaten löschen';
+
+  @override
+  String get offlineClearDataBody => 'Löscht deinen Fortschritt, deine Pläne und Materialien auf diesem Gerät.';
+
+  @override
+  String get offlineCleared => 'Lerndaten gelöscht.';
+
+  @override
+  String get offlineClearFailed => 'Die Lerndaten konnten nicht gelöscht werden.';
+
+  @override
+  String get learnStorageUnavailable => 'Deine Trainingsdaten ließen sich auf diesem Gerät nicht öffnen. Versuche es erneut.';
 }

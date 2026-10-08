@@ -1,7 +1,7 @@
 name: morsecq
 description: "Morse code trainer + serverless Tox P2P Morse chat."
 publish_to: 'none'
-version: 0.2.0+3
+version: 1.0.0+4
 resolution: workspace
 
 environment:
@@ -33,6 +33,9 @@ dependencies:
   file_picker: ^13.1.0
   share_plus: ^13.3.0
   qr_flutter: ^4.1.0
+  # Opens the privacy policy / terms / support pages from Me → About (App
+  # Review 5.1.1) and the guidelines page; no mail, no other scheme.
+  url_launcher: ^6.3.2
   mobile_scanner: ^7.4.2
   # Desktop shell (lib/desktop/): window persistence + system tray. All calls
   # are gated on defaultTargetPlatform; the plugins federate to no-ops on mobile.
@@ -58,6 +61,10 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   # Native persistence tests force an uncached read of backend preferences.
   shared_preferences: ^2.2.2
+  # test/moderation/: a fake UrlLauncherPlatform records the site links
+  # instead of opening a browser.
+  url_launcher_platform_interface: ^2.3.2
+  plugin_platform_interface: ^2.1.8
   # Used only by tool/gen_tray_icons.dart to render assets/tray/*.png|ico.
   image: ^4.10.1
 

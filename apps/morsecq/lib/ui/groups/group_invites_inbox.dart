@@ -7,8 +7,9 @@ import '../../i18n/chat_error_messages.dart';
 import '../../i18n/l10n_extension.dart';
 import '../chat/chat_layout.dart';
 import '../contacts/tox_id.dart';
+import '../moderation/block_actions.dart';
 
-/// Pending group invites with accept / reject; hidden when empty. An
+/// Pending group invites with block / reject / accept; hidden when empty. An
 /// invite's buttons stay disabled while an answer to it is in flight.
 class GroupInvitesInbox extends StatefulWidget {
   const GroupInvitesInbox({super.key, required this.service});
@@ -76,6 +77,25 @@ class _GroupInvitesInboxState extends State<GroupInvitesInbox> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    IconButton(
+                      key: ValueKey<String>('invite_block_${i.inviteId}'),
+                      tooltip: s.moderationBlock,
+                      icon: const Icon(Icons.block),
+                      onPressed: _busy.contains(i.inviteId)
+                          ? null
+                          : () => unawaited(
+                              _run(
+                                i.inviteId,
+                                () => confirmAndBlock(
+                                  context,
+                                  service: service,
+                                  publicKey: i.fromPublicKey,
+                                  name: shortKey(i.fromPublicKey, length: 12),
+                                  scope: BlockScope.contact,
+                                ),
+                              ),
+                            ),
+                    ),
                     IconButton(
                       tooltip: s.chatReject,
                       icon: Icon(Icons.close, color: theme.colorScheme.error),

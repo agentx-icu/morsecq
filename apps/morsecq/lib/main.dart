@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'desktop/desktop_platform.dart';
 import 'desktop/desktop_shell_controller.dart';
 import 'desktop/init_desktop_shell.dart';
+import 'di/app_features.dart';
 import 'di/app_scope.dart';
 import 'di/app_services.dart';
 import 'di/app_settings.dart';
@@ -50,7 +51,7 @@ Future<void> main() async {
     );
   }
 
-  final backend = await resolveBackendFactory();
+  final backend = await resolveBackendFactory(AppFeatures.fromEnvironment);
 
   runApp(
     MorsecqApp(
@@ -94,9 +95,13 @@ class MorsecqApp extends StatelessWidget {
     this.desktopShell,
     this.notifications,
     this.backgroundTasks,
+    this.features = AppFeatures.fromEnvironment,
   });
 
   final BackendFactory backend;
+
+  /// Build-time features (`MORSECQ_CHAT`); tests pass either variant.
+  final AppFeatures features;
 
   /// Test hook: replaces the native save/pick dialogs.
   final BackupFileGateway? backupFiles;
@@ -126,6 +131,7 @@ class MorsecqApp extends StatelessWidget {
       desktopShell: desktopShell,
       notificationApis: notifications,
       backgroundTasks: backgroundTasks,
+      features: features,
       child: Builder(
         builder: (context) {
           final appearance = context.watch<AppSettings>();

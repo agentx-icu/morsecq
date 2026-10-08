@@ -68,6 +68,7 @@ Future<void> bootApp(WidgetTester tester) async {
     MorsecqApp(
       backend: FakeBackendFactory(identityService: identity),
       backupFiles: FakeBackupFileGateway(),
+      localeStore: acceptedTermsStore(),
     ),
   );
   await settle(tester);

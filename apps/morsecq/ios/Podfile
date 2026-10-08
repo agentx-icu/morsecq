@@ -42,8 +42,15 @@ target 'Runner' do
   # exists so a pure-UI build (--dart-define=MORSECQ_FAKE_BACKEND=true) or a
   # `flutter test` run still resolves; a missing artifact is a loud warning here
   # and a load failure at first chat use.
+  #
+  # MORSECQ_CHAT=false (tool/build_ios_store.sh, the offline App Store build)
+  # leaves the pod out: the store binary carries no c-toxcore / libsodium.
+  # The store script runs `pod install` itself in both directions, because
+  # Flutter's pod fingerprint does not include this variable.
   tim2tox_xcframework = File.join(__dir__, 'Frameworks', 'tim2tox_ffi.xcframework')
-  if File.directory?(tim2tox_xcframework)
+  if ENV.fetch('MORSECQ_CHAT', 'true') == 'false'
+    Pod::UI.message 'morsecq: MORSECQ_CHAT=false — offline build, Tim2ToxFFI not installed.'
+  elsif File.directory?(tim2tox_xcframework)
     pod 'Tim2ToxFFI', :path => 'Frameworks'
   else
     Pod::UI.warn "morsecq: #{tim2tox_xcframework} not found — the iOS app will have NO Tox backend. Run tool/build_ios_ffi.sh first."

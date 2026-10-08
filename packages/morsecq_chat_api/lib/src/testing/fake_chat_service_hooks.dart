@@ -66,6 +66,8 @@ extension FakeChatServiceTestHooks on FakeChatService {
       _setStatus(messageId, MessageStatus.sending);
 
   /// Delivers an inbound message; bumps the conversation's unread count.
+  /// From a blocked sender it is dropped like the transport drops it: the
+  /// row is returned but never stored, counted or emitted.
   ChatMessage receiveMessage(
     String conversationId,
     String text, {
@@ -92,6 +94,7 @@ extension FakeChatServiceTestHooks on FakeChatService {
       status: MessageStatus.received,
       isMine: false,
     );
+    if (_isBlocked(sender)) return message;
     _append(conversation, message, unreadDelta: 1);
     return message;
   }
@@ -117,7 +120,9 @@ extension FakeChatServiceTestHooks on FakeChatService {
     _groupChanges.add(groups);
   }
 
+  /// Dropped when [publicKey] is blocked.
   void receiveFriendRequest(String publicKey, {String message = 'CQ CQ'}) {
+    if (_isBlocked(publicKey)) return;
     _friendRequests.add(
       FriendRequest(
         publicKey: publicKey,
@@ -139,6 +144,8 @@ extension FakeChatServiceTestHooks on FakeChatService {
       groupName: groupName,
       kind: kind,
     );
+    // Dropped (returned but never listed) when the inviter is blocked.
+    if (_isBlocked(fromPublicKey)) return invite;
     _groupInvites.add(invite);
     _groupInviteChanges.add(groupInvites);
     return invite;

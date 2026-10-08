@@ -18,6 +18,7 @@ import 'history_page.dart';
 import 'message_mapper.dart';
 import 'pending_message_status.dart';
 
+part 'chat_service_blocking.dart';
 part 'chat_service_conversations.dart';
 part 'chat_service_friends.dart';
 part 'chat_service_groups.dart';
@@ -54,6 +55,7 @@ class Tim2ToxChatService
     _friendsPart = _FriendsPart(this);
     _groupsPart = _GroupsPart(this);
     _conversationsPart = _ConversationsPart(this);
+    _blockingPart = _BlockingPart(this);
     _sessionSub = _engine.sessionChanges.listen(_bindSession);
     _identitySub = identity.identityChanges.listen((value) {
       if (value != null && !identical(value, _replacementIdentity)) {
@@ -87,6 +89,7 @@ class Tim2ToxChatService
   late final _FriendsPart _friendsPart;
   late final _GroupsPart _groupsPart;
   late final _ConversationsPart _conversationsPart;
+  late final _BlockingPart _blockingPart;
 
   FfiChatService? _service;
   StreamSubscription<FfiChatService?>? _sessionSub;
@@ -224,6 +227,29 @@ class Tim2ToxChatService
   Future<void> removeFriend(String publicKey) =>
       _friendsPart.remove(_requireService(), publicKey);
 
+  // ---- Blocking (delegated) ------------------------------------------------
+
+  @override
+  Set<String> get blockedPeers => _blockingPart.blocked.value;
+
+  @override
+  Stream<Set<String>> get blockedPeerChanges => _blockingPart.blocked.stream;
+
+  @override
+  Future<void> blockPeer(String publicKey) =>
+      _blockingPart.block(_requireService(), publicKey);
+
+  @override
+  Future<void> unblockPeer(String publicKey) =>
+      _blockingPart.unblock(_requireService(), publicKey);
+
+  @override
+  bool _shows(t2t.ChatMessage m) => _blockingPart.shows(m);
+
+  @override
+  bool _hiddenNow(ChatMessage m) =>
+      !m.isMine && _blockingPart.isBlocked(m.senderId);
+
   // ---- Conversations (delegated) -------------------------------------------
 
   /// Derived from the identity, not the session, so the UI can show the
@@ -294,6 +320,7 @@ class Tim2ToxChatService
       svc.getHistory(peer),
       limit: limit,
       before: before,
+      shows: _blockingPart.shows,
       archive: () async {
         final hasArchive = await svc.hasArchivedHistory(peer);
         _ensureCurrent(svc);
@@ -454,6 +481,7 @@ class Tim2ToxChatService
       _friendsPart.close(),
       _groupsPart.close(),
       _conversationsPart.close(),
+      _blockingPart.close(),
     ]);
   }
 }

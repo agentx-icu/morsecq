@@ -16,7 +16,10 @@ tool/screenshots/capture.sh --locales zh --keep      # 只截一种语言，保�
 
 平台：`macos`、`linux`、`windows`（本机桌面）、`ios`（iPhone 模拟器）、`ipad`
 （iPad 模拟器）、`android`（模拟器或真机）。设备按平台从 `flutter devices` 里自动
-选择，也可用 `--device` 指定；移动端模拟器需事先启动。
+选择，也可用 `--device` 指定；Android 模拟器需事先启动。`ios` 和 `ipad` 产出 App Store
+Connect 截图：不传 `--device` 时脚本自行启动 6.9 英寸 iPhone（iPhone 17 Pro Max，否则 16 Pro
+Max：1320×2868）或 13 英寸 iPad（iPad Pro 13-inch M5，否则 M4：2064×2752）模拟器，按原生
+像素比截取为 RGB PNG，`verify` 拒绝其他尺寸或带 alpha 通道的帧（`doc/release/APP_STORE.zh-CN.md` §10）。
 
 发布其他主机的截图时，先下载同一 UI 版本成功 CI 的截图产物，再把产物中的
 `screenshots` 目录传给 `--from`。该模式保留源目录，使用相同的完整性、大小和重复帧
@@ -57,7 +60,8 @@ tool/screenshots/capture.sh --platforms linux --from /path/to/artifact/screensho
   所以 harness 会量出装饰尺寸再调整一次，直到 Flutter 视图本身就是请求的尺寸。macOS
   可能把超出可见区域的窗口钳小，此时接受较小尺寸并打日志；Linux 与 Windows 上尺寸
   不符即失败。
-- **像素比**：桌面 1.0，移动端 `min(dpr, 2)`，可用 `MORSECQ_SHOT_PIXEL_RATIO` 覆盖。
+- **像素比**：桌面 1.0，iOS 用原生像素比（App Store 尺寸），Android `min(dpr, 2)`，可用
+  `MORSECQ_SHOT_PIXEL_RATIO` 覆盖。iOS 帧不带 alpha。
 - **主题**：钉死为浅色（`MORSECQ_SHOT_THEME=light|dark|system`），不跟随宿主外观。
 - **参数校验**：参数格式错误或越界直接失败，不再静默退回默认值——窗口边长
   (0, 8192]、像素比 [0.25, 4]、主题只能是上述三个名字之一。

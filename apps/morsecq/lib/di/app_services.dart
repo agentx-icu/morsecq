@@ -46,11 +46,15 @@ final class AppServices {
     BackgroundTaskApi? backgroundTasks,
     Future<Object?> Function()? reconnect,
     this.desktopShell,
+    this.chatEnabled = true,
   }) : lifecycle = AppLifecycleCoordinator(
          identity: identity,
          onBackground: () => _flushDurable(identity, onBackground),
-         // Null in widget tests: no platform channel is touched there.
-         backgroundTasks: backgroundTasks ?? const NoopBackgroundTaskApi(),
+         // Null in widget tests: no platform channel is touched there. The
+         // offline build has no connection to keep alive in the background.
+         backgroundTasks: chatEnabled && backgroundTasks != null
+             ? backgroundTasks
+             : const NoopBackgroundTaskApi(),
        ),
        banner = ConnectionBannerPolicy(identity: identity),
        notificationPrefs = notificationPrefs ?? NotificationPrefs(),
@@ -65,7 +69,9 @@ final class AppServices {
       lifecycleHints: lifecycle.hints,
       reconnect: reconnect,
     );
-    final apis = notificationApis;
+    // The offline build posts nothing: no permission prompt, no launch
+    // payload, no badge.
+    final apis = chatEnabled ? notificationApis : null;
     notifications = apis == null
         ? null
         : NotificationCenter(
@@ -91,6 +97,9 @@ final class AppServices {
   final bool _ownsNotificationPrefs;
   final DesktopShellController? desktopShell;
 
+  /// `AppFeatures.chat`: off, there is no connection to diagnose or announce.
+  final bool chatEnabled;
+
   /// Current-language strings for code without a `BuildContext`; fires on a
   /// language change (setting or, while following the system, OS locale).
   final StringsResolver strings;
@@ -107,9 +116,9 @@ final class AppServices {
     _started = true;
     // Before attach(): a launch straight into the background emits its
     // `background` hint synchronously, and diagnostics must see it.
-    diagnostics.start();
+    if (chatEnabled) diagnostics.start();
     lifecycle.attach();
-    banner.start();
+    if (chatEnabled) banner.start();
     final center = notifications;
     if (center != null) unawaited(center.start());
     // Language changes reach the tray (desktop) and the Android channel

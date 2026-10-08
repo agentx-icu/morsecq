@@ -47,6 +47,7 @@ class ConversationAppBar extends StatelessWidget
           ConversationActions(
             settings: settings,
             isGroup: target.kind == ConversationKind.group,
+            canModerate: target.kind == ConversationKind.c2c && !target.isSelf,
             inline: inlineConversationActions(
               context,
               title: conversationTitleText(context.s, target),
@@ -106,7 +107,8 @@ int inlineConversationActions(
 }
 
 /// App-bar actions of a conversation: training mode, auto-play, playback
-/// settings and the overflow menu (members / clear history / leave).
+/// settings and the overflow menu (members / clear history / leave, and
+/// block in a conversation with another person).
 ///
 /// [inline] is how many of training mode and playback settings show as
 /// icons (see [inlineConversationActions]); the rest become overflow-menu
@@ -118,10 +120,14 @@ class ConversationActions extends StatelessWidget {
     required this.isGroup,
     required this.onMenu,
     this.inline = 2,
+    this.canModerate = false,
   });
 
   final MorsePlaybackSettings settings;
   final bool isGroup;
+
+  /// A conversation with another person: offer Block.
+  final bool canModerate;
   final ValueChanged<String> onMenu;
   final int inline;
 
@@ -238,6 +244,15 @@ class ConversationActions extends StatelessWidget {
             PopupMenuItem(value: 'clear', child: Text(s.chatClearHistory)),
             if (isGroup)
               PopupMenuItem(value: 'leave', child: Text(s.chatLeaveGroup)),
+            if (canModerate)
+              PopupMenuItem(
+                value: 'block',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.block),
+                  title: Text(s.moderationBlock),
+                ),
+              ),
           ],
         ),
       ],

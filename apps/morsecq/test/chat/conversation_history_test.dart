@@ -14,6 +14,15 @@ import 'test_support.dart';
 class _HistoryService implements ChatService {
   _HistoryService(this.delegate);
   final ChatService delegate;
+
+  @override
+  Set<String> get blockedPeers => delegate.blockedPeers;
+  @override
+  Stream<Set<String>> get blockedPeerChanges => delegate.blockedPeerChanges;
+  @override
+  Future<void> blockPeer(String publicKey) => delegate.blockPeer(publicKey);
+  @override
+  Future<void> unblockPeer(String publicKey) => delegate.unblockPeer(publicKey);
   final List<int> requests = [];
   Completer<void>? loadGate;
   Completer<void>? clearGate;

@@ -9,6 +9,13 @@ mixin _MessageManagement implements ChatService {
   void _ensureCurrent(FfiChatService svc);
   MessageMapper get _mapper;
 
+  /// Whether a row is shown (chat text, not from a blocked peer).
+  bool _shows(t2t.ChatMessage m);
+
+  /// A mapped row from a peer blocked now (re-checked at the end of a scan:
+  /// a block during one of its yields must not leak earlier rows).
+  bool _hiddenNow(ChatMessage m);
+
   /// Rows mapped between yields while scanning a long history, so a search
   /// never blocks the UI isolate for long.
   static const int _scanChunk = 500;
@@ -34,8 +41,9 @@ mixin _MessageManagement implements ChatService {
     final mapper = _mapper;
     final out = <ChatMessage>[];
     for (var i = 0; i < rows.length; i++) {
-      // Files, media and custom rows are not chat messages (as in history).
-      if (MessageMapper.isChatText(rows[i])) {
+      // Files, media and custom rows are not chat messages, and blocked
+      // peers' rows are hidden (as in history).
+      if (_shows(rows[i])) {
         out.add(mapper.map(rows[i], conversationId: conversationId));
       }
       if (i % _scanChunk == _scanChunk - 1) {
@@ -45,6 +53,7 @@ mixin _MessageManagement implements ChatService {
       }
     }
     if (cancel?.isCancelled ?? false) throw const MessageSearchCancelled();
+    out.removeWhere(_hiddenNow);
     return out;
   }
 

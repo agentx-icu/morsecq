@@ -20,11 +20,13 @@ import 'package:morsecq/ui/chat/message_bubble.dart';
 import 'package:morsecq/ui/contacts/contacts_page.dart';
 import 'package:morsecq/ui/groups/group_list.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
+import 'package:morsecq/ui/learn/learn_home_widgets.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
 import 'package:morsecq/ui/pages/me_page.dart';
+import 'package:morsecq/ui/pages/offline_me_page.dart';
 import 'package:morsecq/ui/pages/reference_page.dart';
 import 'package:morsecq/ui/reference/morse_pattern_text.dart';
 import 'package:morsecq/ui/reference/text_to_morse_view.dart';
@@ -36,7 +38,21 @@ import 'package:provider/provider.dart';
 import 'seed_data.dart';
 import 'shot_harness.dart';
 
-/// Every scene the screenshot run must produce, in capture order.
+/// Every scene the offline App Store build's run produces (`ios`, `ipad`),
+/// in capture order. `tool/screenshots/capture.sh` checks the same list.
+const List<String> kOfflineScenes = <String>[
+  'learn_home',
+  'stats',
+  'training_settings',
+  'receive_drill',
+  'send_practice',
+  'reference',
+  'translator',
+  'listen',
+  'me',
+];
+
+/// Every scene the chat build's run must produce, in capture order.
 /// `tool/screenshots/capture.sh` checks the same list.
 const List<String> kScenes = <String>[
   'welcome',
@@ -187,35 +203,7 @@ Future<void> walkShell(
 
   final copy = seed.copy;
 
-  // Learn
-  expectScreen(LearnHome);
-  expect(find.text(s.learnContinueLesson), findsOneWidget);
-  await shots.capture(tester, locale, 'learn_home');
-  await tapTooltip(tester, s.learnStatistics);
-  await settle(tester, extra: const Duration(milliseconds: 300));
-  expectScreen(StatsScreen);
-  await shots.capture(tester, locale, 'stats');
-  await popIfCan(tester);
-  await tapTooltip(tester, s.learnSettings);
-  expectScreen(TrainingSettingsScreen);
-  await shots.capture(tester, locale, 'training_settings');
-  await popIfCan(tester);
-  await tapText(tester, s.learnContinueLesson);
-  await settle(tester, extra: const Duration(milliseconds: 1200));
-  expectScreen(ReceiveDrillScreen);
-  // Without an audio device (CI runners) the drill falls back to the
-  // full-screen flash; capture between flashes.
-  await shots.capture(tester, locale, 'receive_drill', until: () {
-    return tester
-        .widgetList<FlashOverlay>(find.byType(FlashOverlay))
-        .every((w) => !w.isOn.value);
-  });
-  await popIfCan(tester);
-  await tapText(tester, s.learnSendPractice);
-  await settle(tester, extra: const Duration(milliseconds: 400));
-  expectScreen(SendPracticeScreen);
-  await shots.capture(tester, locale, 'send_practice');
-  await popIfCan(tester);
+  await walkLearn(tester, shots, s, locale);
 
   // Chat
   await selectTab(tester, ShellTab.chat);
@@ -260,6 +248,71 @@ Future<void> walkShell(
   await shots.capture(tester, locale, 'group_conversation');
   await popIfCan(tester);
 
+  await walkReference(tester, shots, s, locale);
+
+  // Me
+  await selectTab(tester, ShellTab.me);
+  expectScreen(MePage);
+  expect(find.text(copy.heroName), findsWidgets);
+  await shots.capture(tester, locale, 'me');
+}
+
+/// Learn: home, statistics, training settings, a receive drill and send
+/// practice. Shared by the chat and the offline walks.
+Future<void> walkLearn(
+  WidgetTester tester,
+  ShotHarness shots,
+  S s,
+  String locale,
+) async {
+  // Learn
+  expectScreen(LearnHome);
+  expect(find.text(s.learnContinueLesson), findsOneWidget);
+  await shots.capture(tester, locale, 'learn_home');
+  await tapTooltip(tester, s.learnStatistics);
+  await settle(tester, extra: const Duration(milliseconds: 300));
+  expectScreen(StatsScreen);
+  await shots.capture(tester, locale, 'stats');
+  await popIfCan(tester);
+  await tapTooltip(tester, s.learnSettings);
+  expectScreen(TrainingSettingsScreen);
+  await shots.capture(tester, locale, 'training_settings');
+  await popIfCan(tester);
+  await tapText(tester, s.learnContinueLesson);
+  await settle(tester, extra: const Duration(milliseconds: 1200));
+  expectScreen(ReceiveDrillScreen);
+  // Without an audio device (CI runners) the drill falls back to the
+  // full-screen flash; capture between flashes.
+  await shots.capture(tester, locale, 'receive_drill', until: () {
+    return tester
+        .widgetList<FlashOverlay>(find.byType(FlashOverlay))
+        .every((w) => !w.isOn.value);
+  });
+  await popIfCan(tester);
+  // The quick action, not today's plan step: in Chinese both read 发报练习,
+  // and the 6.9" iPhone shows the plan too.
+  await tapHittable(
+    tester,
+    find.descendant(
+      of: find.byType(QuickActions),
+      matching: find.text(s.learnSendPractice),
+    ),
+    'send practice quick action',
+  );
+  await settle(tester, extra: const Duration(milliseconds: 400));
+  expectScreen(SendPracticeScreen);
+  await shots.capture(tester, locale, 'send_practice');
+  await popIfCan(tester);
+}
+
+/// Reference: the handbook, the translator and Listen. Shared by the chat
+/// and the offline walks.
+Future<void> walkReference(
+  WidgetTester tester,
+  ShotHarness shots,
+  S s,
+  String locale,
+) async {
   // Reference
   await selectTab(tester, ShellTab.reference);
   expectScreen(ReferencePage);
@@ -281,10 +334,27 @@ Future<void> walkShell(
   expectScreen(ListenScreen);
   await shots.capture(tester, locale, 'listen');
   await popIfCan(tester);
+}
 
-  // Me
+/// The offline App Store build (`AppFeatures(chat: false)`): it opens
+/// straight on Learn (no onboarding), has three destinations and the
+/// offline Me page.
+Future<void> walkOffline(
+  WidgetTester tester,
+  ShotHarness shots,
+  S s,
+  String locale,
+) async {
+  await settle(tester, extra: const Duration(milliseconds: 500));
+  await shots.applyTheme(tester);
+  if (find.byType(AppShell).evaluate().isEmpty) {
+    await dumpStartupState(tester);
+  }
+  expect(find.byType(AppShell), findsOneWidget);
+  expect(find.byType(WelcomePage), findsNothing);
+  await walkLearn(tester, shots, s, locale);
+  await walkReference(tester, shots, s, locale);
   await selectTab(tester, ShellTab.me);
-  expectScreen(MePage);
-  expect(find.text(copy.heroName), findsWidgets);
+  expectScreen(OfflineMePage);
   await shots.capture(tester, locale, 'me');
 }

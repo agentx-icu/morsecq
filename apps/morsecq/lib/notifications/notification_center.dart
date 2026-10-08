@@ -111,6 +111,8 @@ class NotificationCenter {
   StreamSubscription<List<GroupInvite>>? _inviteSub;
   StreamSubscription<List<Conversation>>? _conversationSub;
   StreamSubscription<Identity?>? _identitySub;
+  StreamSubscription<Set<String>>? _blockedSub;
+  Set<String>? _blockedSeen;
 
   /// Messages per conversation id behind the currently visible notification.
   /// Kept raw and formatted on every post, so a privacy change (hiding the
@@ -215,6 +217,7 @@ class NotificationCenter {
     _inviteSub = _chat.groupInviteChanges.listen(_onGroupInvites);
     _conversationSub = _chat.conversationChanges.listen(_onConversations);
     _identitySub = _identity?.identityChanges.listen(_onIdentity);
+    _blockedSub = _chat.blockedPeerChanges.listen(_onBlocked);
     // The identity may already be open (or have opened while the plugin
     // initialised, with no replay to tell us): sync, and withdraw another
     // identity's leftovers for it.
@@ -264,6 +267,7 @@ class NotificationCenter {
       ?_inviteSub?.cancel(),
       ?_conversationSub?.cancel(),
       ?_identitySub?.cancel(),
+      ?_blockedSub?.cancel(),
       _taps.close(),
     ];
     _messageSub = null;
@@ -271,6 +275,7 @@ class NotificationCenter {
     _inviteSub = null;
     _conversationSub = null;
     _identitySub = null;
+    _blockedSub = null;
     await Future.wait(pending);
   }
 

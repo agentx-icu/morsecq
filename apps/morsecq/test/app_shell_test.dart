@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/di/app_services.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
-import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/i18n/locale_resolution.dart';
 import 'package:morsecq/l10n/generated/s.dart';
@@ -84,9 +83,9 @@ Future<void> _pumpAt(
               notifications: notifications,
               badge: FakeBadgeApi(),
             ),
-      localeStore: localeTag == null
-          ? null
-          : InMemoryKeyValueStore({LocaleController.storageKey: localeTag}),
+      localeStore: acceptedTermsStore({
+        LocaleController.storageKey: ?localeTag,
+      }),
     ),
   );
   await settle(tester);

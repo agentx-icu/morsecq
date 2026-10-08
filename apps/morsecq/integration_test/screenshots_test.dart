@@ -14,11 +14,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:morsecq/di/app_features.dart';
+import 'package:morsecq/di/app_settings.dart';
 import 'package:morsecq/di/fake_backend_factory.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
+import 'package:morsecq/training/guest_profile.dart';
 import 'package:morsecq/ui/account/backup_file_gateway.dart';
 import 'package:morsecq_chat_api/testing.dart';
 
@@ -26,9 +29,50 @@ import 'support/scene_walk.dart';
 import 'support/seed_data.dart';
 import 'support/shot_harness.dart';
 
+/// `--dart-define=MORSECQ_SHOT_VARIANT=offline`: the offline App Store build
+/// (`AppFeatures(chat: false)`, scenes [kOfflineScenes]); anything else is
+/// the chat build ([kScenes]). capture.sh passes `offline` for ios / ipad.
+const bool _offline =
+    String.fromEnvironment('MORSECQ_SHOT_VARIANT') == 'offline';
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final shots = ShotHarness(binding);
+
+  if (_offline) {
+    for (final locale in shotLocales()) {
+      testWidgets('screenshots offline [$locale]', (tester) async {
+        final S s = lookupS(Locale(locale));
+        final scratch = await Directory.systemTemp.createTemp('morsecq_shots_');
+        addTearDown(() => scratch.delete(recursive: true));
+        // The local learning profile, seeded with the same week of training.
+        final guest = GuestStore(root: () async => '${scratch.path}/offline');
+        await seedTrainingProgress(
+          await guest.directory(),
+          anchor: seedAnchor(DateTime.now()),
+        );
+        await tester.pumpWidget(
+          shots.wrap(
+            MorsecqApp(
+              key: ValueKey<String>('offline-$locale'),
+              features: const AppFeatures(chat: false),
+              backend: FakeBackendFactory(label: kOfflineBackendLabel),
+              backupFiles: FakeBackupFileGateway(),
+              guestStore: guest,
+              localeStore: InMemoryKeyValueStore({
+                LocaleController.storageKey: locale,
+              }),
+            ),
+          ),
+        );
+        await shots.prepareWindow(tester);
+        await walkOffline(tester, shots, s, locale);
+        final mine = shots.captured.where((n) => n.contains('/$locale/'));
+        expect(mine.length, kOfflineScenes.length, reason: 'all scenes');
+      });
+    }
+    return;
+  }
 
   for (final locale in shotLocales()) {
     testWidgets('screenshots [$locale]', (tester) async {
@@ -36,8 +80,12 @@ void main() {
       final S s = lookupS(Locale(locale));
       final scratch = await Directory.systemTemp.createTemp('morsecq_shots_');
       addTearDown(() => scratch.delete(recursive: true));
-      KeyValueStore localeStore() =>
-          InMemoryKeyValueStore({LocaleController.storageKey: locale});
+      // The seeded identity has accepted the community guidelines (the
+      // onboarding walk stops at the backup wizard, before the gate).
+      KeyValueStore localeStore() => InMemoryKeyValueStore({
+        LocaleController.storageKey: locale,
+        AppSettings.termsKey: '$kTermsVersion',
+      });
 
       // 1. First run: welcome → create → backup wizard.
       await tester.pumpWidget(

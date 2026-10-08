@@ -17,7 +17,12 @@ MORSECQ_SHOT_THEME=dark tool/screenshots/capture.sh  # env → --dart-define (se
 Platforms: `macos`, `linux`, `windows` (the host desktop), `ios` (an iPhone
 simulator), `ipad` (an iPad simulator), `android` (emulator or device). The
 device is picked from `flutter devices` by platform, or given with `--device`.
-Mobile simulators/emulators must already be running.
+Android emulators must already be running. `ios` and `ipad` produce App Store
+Connect screenshots: without `--device` the script boots the 6.9" iPhone
+(iPhone 17 Pro Max, else 16 Pro Max: 1320×2868) or the 13" iPad (iPad Pro
+13-inch M5, else M4: 2064×2752) simulator itself, captures at the native
+pixel ratio as RGB PNGs, and `verify` refuses any other size or an alpha
+channel (`doc/release/APP_STORE.md` §10).
 
 To publish captures from another host, download the screenshot artifact from a
 successful CI run of the same UI revision, then pass the artifact's `screenshots`
@@ -64,8 +69,9 @@ The pipeline is a normal `integration_test`:
   macOS may clamp a window larger than the visible frame; there a smaller
   size is accepted and logged. On Linux and Windows any mismatch fails the
   run.
-- **Pixel ratio**: 1.0 on desktop, `min(dpr, 2)` on mobile, override with
-  `MORSECQ_SHOT_PIXEL_RATIO`.
+- **Pixel ratio**: 1.0 on desktop, the native ratio on iOS (App Store sizes),
+  `min(dpr, 2)` on Android; override with `MORSECQ_SHOT_PIXEL_RATIO`. iOS
+  frames are encoded without alpha.
 - **Appearance**: pinned to Modern Calm, matching both README product concepts.
   Brightness is pinned to light (`MORSECQ_SHOT_THEME=light|dark|system`) so the
   frames do not follow the host's appearance or saved style preferences.

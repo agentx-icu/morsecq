@@ -34,6 +34,9 @@ class _FriendsPart {
     for (final f in raw) {
       final key = ConversationIds.normalizeKey(f.userId);
       if (key.isEmpty) continue;
+      // A blocked key is never listed, even if removing the friendship
+      // failed natively.
+      if (_owner._blockingPart.isBlocked(key)) continue;
       // Peer-chosen: no bidi overrides or control characters in a label.
       final nick = PeerText.singleLine(f.nickName);
       final name = nick.isNotEmpty ? nick : ConversationIds.shortKey(key);
@@ -123,8 +126,12 @@ class _FriendsPart {
     final dismissed = await store.dismissedKeys(fingerprints);
     if (!_owner._isCurrent(svc)) return;
     final friendKeys = friends.value.map((friend) => friend.publicKey).toSet();
+    final blocking = _owner._blockingPart;
     nextByKey.removeWhere(
-      (key, _) => friendKeys.contains(key) || dismissed.contains(key),
+      (key, _) =>
+          friendKeys.contains(key) ||
+          dismissed.contains(key) ||
+          blocking.isBlocked(key),
     );
     final next = _bounded(nextByKey.values, nativeKeys);
     next.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
@@ -183,6 +190,9 @@ class _FriendsPart {
         'already_friend',
         'Already in your friend list',
       );
+    }
+    if (_owner._blockingPart.isBlocked(key)) {
+      throw const ChatException('peer_blocked', 'Unblock them first');
     }
     final result = await svc.addFriend(id, requestMessage: message);
     if (!result.isSuccess) {

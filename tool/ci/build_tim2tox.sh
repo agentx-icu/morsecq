@@ -1018,6 +1018,9 @@ build_ios() {
 </dict>
 </plist>
 PLIST
+  # App Store privacy manifest of the framework (required-reason APIs).
+  cp "$SCRIPT_DIR/ios/tim2tox_ffi.PrivacyInfo.xcprivacy" "$fw_dir/PrivacyInfo.xcprivacy" \
+    || ci_die "[$TARGET] privacy manifest copy failed"
   install_name_tool -id "@rpath/libtim2tox_ffi.dylib" "$universal"
   # dlopen'd from the app bundle: a bad signature is a hard load failure.
   codesign --force --sign - "$fw_dir" || ci_die "[$TARGET] codesign framework failed"

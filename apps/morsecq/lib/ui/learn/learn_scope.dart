@@ -13,6 +13,7 @@ import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
 import '../../training/training_settings_store.dart';
 import 'learn_playback.dart';
+import 'learning_unavailable.dart';
 
 /// Builds the [TrainingController] for the current identity and hands it to
 /// [builder].
@@ -209,8 +210,9 @@ class _LearnScopeState extends State<LearnScope> {
         return _Placeholder(
           title: widget.title ?? context.s.navLearn,
           description: widget.description,
-          message: context.s.learnIdentityRequired,
+          message: learningUnavailableText(context),
           busy: false,
+          onRetry: learningRetryable(context) ? () => unawaited(_load()) : null,
         );
     }
   }
@@ -222,12 +224,16 @@ class _Placeholder extends StatelessWidget {
     required this.description,
     required this.message,
     required this.busy,
+    this.onRetry,
   });
 
   final String title;
   final String? description;
   final String message;
   final bool busy;
+
+  /// Offline build: the local profile failed to open; try again.
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -276,6 +282,14 @@ class _Placeholder extends StatelessWidget {
                       style: theme.textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
+                    if (onRetry != null) ...<Widget>[
+                      const SizedBox(height: 12),
+                      FilledButton.tonal(
+                        key: const ValueKey('learn-retry'),
+                        onPressed: onRetry,
+                        child: Text(context.s.actionRetry),
+                      ),
+                    ],
                   ],
                 ),
               ),

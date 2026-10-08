@@ -1,5 +1,6 @@
 import 'package:morsecq_chat_api/morsecq_chat_api.dart';
 
+import 'app_features.dart';
 import 'fake_backend_factory.dart';
 import 'real_backend_factory.dart';
 
@@ -42,9 +43,13 @@ abstract class BackendFactory {
 
 /// Chooses the backend for this launch: the fake when forced by dart-define
 /// or when the Tox backend fails to prepare (e.g. `libtim2tox_ffi` missing in
-/// a dev build), otherwise the Tox-backed one. Must be awaited in `main()`
-/// after `WidgetsFlutterBinding.ensureInitialized()`.
-Future<BackendFactory> resolveBackendFactory() async {
+/// a dev build), otherwise the Tox-backed one. The offline build
+/// ([AppFeatures.chat] false) never constructs the Tox backend, so the native
+/// library is not loaded (the iOS store build does not even bundle it): its
+/// in-memory services are never connected and no identity is created. Must
+/// be awaited in `main()` after `WidgetsFlutterBinding.ensureInitialized()`.
+Future<BackendFactory> resolveBackendFactory(AppFeatures features) async {
+  if (!features.chat) return FakeBackendFactory(label: kOfflineBackendLabel);
   if (kForceFakeBackend) return FakeBackendFactory();
   final real = RealBackendFactory();
   await real.prepare();
