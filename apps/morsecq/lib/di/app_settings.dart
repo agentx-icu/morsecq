@@ -11,11 +11,6 @@ import '../ui/appearance/ui_style.dart';
 class AppSettings extends ChangeNotifier {
   AppSettings({KeyValueStore? store})
     : _store = store ?? InMemoryKeyValueStore() {
-    // Preserve the theme used before style and mode shared one record.
-    _themeMode = ThemeMode.values.firstWhere(
-      (value) => value.name == _store.getString('app.theme'),
-      orElse: () => ThemeMode.system,
-    );
     final saved = _store.getString(storageKey);
     if (saved == null) return;
     try {

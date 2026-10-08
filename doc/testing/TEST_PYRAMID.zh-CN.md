@@ -5,3 +5,5 @@
 默认安装必须无需账号立即打开学习，只有学习/参考/我的三个目标。确认清除学习数据时，先保存待写入内容并释放当前控制器，再删除学习文件并重建空白学习状态。生命周期暂停和桌面退出必须等待本地持久化。
 
 E2E：`bash tool/test_pyramid.sh --level e2e --device macos`。截图：`bash tool/screenshots/capture.sh --platforms macos --locales en,zh`。CI 的 E2E 工作流通过手动运行或 PR 标签 `ci:e2e` 启用。没有后端开关或原生聊天测试。
+
+按需运行的 Visual matrix CI 渲染十种语言及五种样式的手机 / 桌面浅色 / 深色界面，共38个合并去重配置、76张真实 PNG。通过同一 `ci:e2e` 标签或手动启用，详见[截图指南](../../tool/screenshots/README.zh-CN.md)。自定义截图配置必须显式指定独立输出目录，以保护标准图库。

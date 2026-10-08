@@ -17,7 +17,7 @@ void main() {
 
   for (final locale in shotLocales()) {
     testWidgets('screenshots offline [$locale]', (tester) async {
-      final S s = lookupS(Locale(locale));
+      final S s = lookupS(parseShotLocale(locale));
       final scratch = await Directory.systemTemp.createTemp('morsecq_shots_');
       addTearDown(() => scratch.delete(recursive: true));
       // The local learning profile, seeded with the same week of training.

@@ -4,15 +4,16 @@
 
 ## 代码与回归检查
 
-- 应用测试 **701 项通过、1 项跳过**。跳过项是按需开启的视觉样式导出器，通过 `MORSECQ_RENDER_STYLES` 启用。
+- 应用测试 **703 项通过、2 项跳过**。跳过项为按需开启的样式预览和视觉矩阵导出器，分别通过 `MORSECQ_RENDER_STYLES` 与 `MORSECQ_RENDER_MATRIX` 启用。
 - 保留的五个包测试均通过；移除聊天练习元数据后，训练包当前 **212 项测试通过**。
 - 首次启动导航、共享控制器重试、后台写入、确认清除的持久化及学习界面重载回归通过。
 - 根目录 Flutter 分析零问题。分层、本地化、复杂度门禁及 actionlint、shellcheck、`git diff --check` 均通过。
-- 截图流程 **12 项回归通过**；macOS 安装包组件选择 **3 项回归通过**；发布完整性 **7 项回归通过**，覆盖缺失、空文件、额外文件、macOS 架构混用、符号链接、标签及校验清单。
+- 截图流程 **18 项回归通过**；macOS 安装包组件选择 **3 项回归通过**；发布完整性 **7 项回归通过**，覆盖缺失、空文件、额外文件、macOS 架构混用、符号链接、标签及校验清单。
 - Apple 插件缓存清理 **4 项回归通过**。真实 CMake 在两个 Apple 平台目录中复现已移除的 Xcode 编译器路径，清理生成文件后重新配置成功；源码、其他包及另一平台保持完整。
+- 新增截图配置 **4 项回归通过**，覆盖十种语言（含繁体中文脚本）、五种样式、参数拒绝及实际外观保存。真实字体的视觉矩阵本地生成 **38 个配置 / 76 张 PNG**，覆盖学习和参考页面；独立 Visual matrix CI 通过手动运行或 `ci:e2e` 标签启用。
 - `dart pub get --enforce-lockfile` 通过；解析图共 155 个包，不含 Tim2Tox、Tencent 或 MorseCQ 聊天包。
 
-运行时及打包实现 `8ff8dd4` 已通过[分析流水线](https://github.com/agentx-icu/morsecq/actions/runs/37722463165)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37722463344)和[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37722463151)。后续补全文档及发布完整性门禁，未更改应用代码；最新 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
+运行时及打包实现 `8ff8dd4` 已通过[分析流水线](https://github.com/agentx-icu/morsecq/actions/runs/37722463165)、[全部五个平台 Release 构建](https://github.com/agentx-icu/morsecq/actions/runs/37722463344)和[三个桌面 E2E 作业](https://github.com/agentx-icu/morsecq/actions/runs/37722463151)。随后 `5ba1a57` 亦通过全部五平台构建、分析和三桌面 E2E；当前增加语言 / 样式视觉门禁，并移除发布前旧主题回退。最新 CI 见 [PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
 
 ## 发布产物
 

@@ -4,15 +4,16 @@ Scope: the first account-free, offline MorseCQ release, version **1.0.0+1**. Ins
 
 ## Code and regression checks
 
-- Application suite: **701 passed, 1 skipped**. The skip is the opt-in visual-style exporter, enabled with `MORSECQ_RENDER_STYLES`.
+- Application suite: **703 passed, 2 skipped**. The skips are opt-in style-preview and visual-matrix exporters, enabled with `MORSECQ_RENDER_STYLES` and `MORSECQ_RENDER_MATRIX` respectively.
 - All five retained package suites passed. The current trainer suite passed **212 tests** after removal of chat exercise metadata.
 - First-launch navigation, shared controller retry, background flush, confirmed clear durability and learning-UI reload regressions passed.
 - Root Flutter analysis reports zero issues. Import, UI-literal and complexity guards passed; actionlint, shellcheck and `git diff --check` passed.
-- Screenshot pipeline: **12 regression tests passed**. macOS installer component selection: **3 regression tests passed**. Complete release-asset validation: **7 regression tests passed**, including missing/empty/extra files, macOS architecture mixing, symlinks, tags and the checksum manifest.
+- Screenshot pipeline: **18 regression tests passed**. macOS installer component selection: **3 regression tests passed**. Complete release-asset validation: **7 regression tests passed**, including missing/empty/extra files, macOS architecture mixing, symlinks, tags and the checksum manifest.
 - Apple plugin cache cleanup: **4 regression tests passed**. Real CMake configuration reproduced a removed Xcode compiler path for both Apple platform directories, then succeeded after deleting only generated output. Source files, unrelated packages and the other platform remained intact.
+- Screenshot configuration: **4 regression tests passed**, covering ten locales (including the Traditional Chinese script), five styles, invalid parameters and actual appearance persistence. The real-font visual matrix generated **38 profiles / 76 PNGs** locally for learning and reference pages. Separate Visual matrix CI runs on manual dispatch or the `ci:e2e` label.
 - `dart pub get --enforce-lockfile` passed. The resolved graph contains 155 packages and no Tim2Tox, Tencent or MorseCQ chat package.
 
-Runtime/package implementation `8ff8dd4` passed [Analyze](https://github.com/agentx-icu/morsecq/actions/runs/37722463165), [all five required release builds](https://github.com/agentx-icu/morsecq/actions/runs/37722463344) and [all three desktop E2E jobs](https://github.com/agentx-icu/morsecq/actions/runs/37722463151). Final documentation and the release-completeness gate were then added without changing application code; latest CI is tracked in [PR #27](https://github.com/agentx-icu/morsecq/pull/27).
+Runtime/package implementation `8ff8dd4` passed [Analyze](https://github.com/agentx-icu/morsecq/actions/runs/37722463165), [all five required release builds](https://github.com/agentx-icu/morsecq/actions/runs/37722463344) and [all three desktop E2E jobs](https://github.com/agentx-icu/morsecq/actions/runs/37722463151). Subsequent `5ba1a57` also passed all five builds, analysis and three-desktop E2E. Current changes add language/style visual coverage and remove the pre-release theme fallback; latest CI is tracked in [PR #27](https://github.com/agentx-icu/morsecq/pull/27).
 
 ## Release artifacts
 

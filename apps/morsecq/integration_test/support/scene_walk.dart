@@ -137,8 +137,7 @@ Future<void> walkLearn(
   await popIfCan(tester);
 }
 
-/// Reference: the handbook, the translator and Listen. Shared by the chat
-/// and the offline walks.
+/// Reference: the handbook, the translator and Listen.
 Future<void> walkReference(
   WidgetTester tester,
   ShotHarness shots,
@@ -170,9 +169,8 @@ Future<void> walkReference(
   await popIfCan(tester);
 }
 
-/// The offline App Store build (`AppFeatures(chat: false)`): it opens
-/// straight on Learn (no onboarding), has three destinations and the
-/// offline Me page.
+/// The account-free application opens directly on Learn with three
+/// destinations and local preferences on Me.
 Future<void> walkOffline(
   WidgetTester tester,
   ShotHarness shots,

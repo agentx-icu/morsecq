@@ -4,8 +4,8 @@ import '../training/atomic_json_file.dart';
 
 /// Minimal string key/value persistence that [LocaleController] is written
 /// against, so the language choice can be stored without the app committing
-/// to a preferences plugin. Production wires a real store (a JSON file via
-/// [JsonFileKeyValueStore], or an adapter over `shared_preferences`); tests
+/// to a preferences plugin. Production uses a JSON file through
+/// [JsonFileKeyValueStore]; tests
 /// use [InMemoryKeyValueStore].
 abstract interface class KeyValueStore {
   /// The stored value for [key], or null when nothing was saved.
@@ -16,7 +16,7 @@ abstract interface class KeyValueStore {
   Future<void> remove(String key);
 }
 
-/// Map-backed store for tests and for the fake backend.
+/// Map-backed store for tests and unavailable-storage startup fallback.
 final class InMemoryKeyValueStore implements KeyValueStore {
   InMemoryKeyValueStore([Map<String, String>? initial])
     : _values = {...?initial};
