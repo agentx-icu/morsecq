@@ -9,6 +9,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../../common/app_bar_title.dart';
 import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
@@ -179,10 +180,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     final body = ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: <Widget>[
-        _PresetRow(
-          trainer: _t,
-          onPick: (t) => _applyTrainer(t),
-        ),
+        _PresetRow(trainer: _t, onPick: (t) => _applyTrainer(t)),
         _SliderTile(
           title: s.learnCharacterSpeed,
           value: _wpm(s, _t.characterWpm),
@@ -338,7 +336,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
       ],
     );
     return Scaffold(
-      appBar: AppBar(title: Text(s.learnSettingsTitle)),
+      appBar: AppBar(title: AppBarTitle(s.learnSettingsTitle)),
       body: AnimatedBuilder(
         animation: widget.controller,
         builder: (context, _) => Center(
@@ -407,7 +405,10 @@ class _PresetRow extends StatelessWidget {
           Row(
             children: <Widget>[
               Expanded(
-                child: Text(s.learnSpeedPresets, style: theme.textTheme.titleSmall),
+                child: Text(
+                  s.learnSpeedPresets,
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
               const LearnGlossaryButton(),
             ],

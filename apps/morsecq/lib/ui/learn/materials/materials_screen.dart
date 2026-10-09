@@ -10,6 +10,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/material_practice.dart';
 import '../../../training/material_store.dart';
 import '../../../training/training_controller.dart';
+import '../../common/app_bar_title.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
 import 'material_editor_screen.dart';
@@ -312,7 +313,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     final all = _all;
     return Scaffold(
       appBar: AppBar(
-        title: Text(s.materialsTitle),
+        title: AppBarTitle(s.materialsTitle),
         actions: <Widget>[
           IconButton(
             tooltip: s.materialsImport,
@@ -345,6 +346,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.search),
                       hintText: s.materialsSearch,
+                      hintMaxLines: 2,
                       border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => setState(() {}),

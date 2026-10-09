@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/app_bar_title.dart';
 
 /// Scaffold shared by every radio tool: one scrolling column, capped at a
 /// readable width on desktop and full width (with safe areas) on phones.
@@ -12,7 +13,7 @@ class ToolPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(title)),
+    appBar: AppBar(title: AppBarTitle(title)),
     body: SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

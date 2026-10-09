@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/app_bar_title.dart';
 import 'accuracy_trend_chart.dart';
 import 'char_grid.dart';
 import 'confusion_heatmap.dart';
@@ -85,7 +86,7 @@ class _StatsScreenState extends State<StatsScreen> {
       return body;
     }
     return Scaffold(
-      appBar: AppBar(title: Text(context.s.statsTitle)),
+      appBar: AppBar(title: AppBarTitle(context.s.statsTitle)),
       body: body,
     );
   }

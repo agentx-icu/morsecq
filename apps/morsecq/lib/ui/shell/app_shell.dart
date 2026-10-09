@@ -112,7 +112,12 @@ class _AppShellState extends State<AppShell> {
                     NavigationRailDestination(
                       icon: Icon(d.icon),
                       selectedIcon: Icon(d.selectedIcon),
-                      label: Text(d.label(s)),
+                      // Capped so a long language at large text wraps the
+                      // label instead of widening the rail over the page.
+                      label: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 96),
+                        child: Text(d.label(s), textAlign: TextAlign.center),
+                      ),
                     ),
                 ],
               ),

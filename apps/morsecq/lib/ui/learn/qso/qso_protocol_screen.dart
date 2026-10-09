@@ -7,6 +7,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/qso_practice.dart';
 import '../../../training/training_controller.dart';
+import '../../common/app_bar_title.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../progress_save_snack.dart';
@@ -111,7 +112,7 @@ class _QsoProtocolScreenState extends State<QsoProtocolScreen>
     final theme = Theme.of(context);
     final question = _answeredConcept ?? _attempt.current;
     return Scaffold(
-      appBar: AppBar(title: Text(s.learnQsoProtocolTitle)),
+      appBar: AppBar(title: AppBarTitle(s.learnQsoProtocolTitle)),
       body: DrillLeaveGuard(
         guard: _attempt.answered > 0 && !_attempt.completed,
         child: SafeArea(

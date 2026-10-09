@@ -9,6 +9,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../../common/app_bar_title.dart';
 import '../conditions/conditions_playback.dart';
 import '../conditions/conditions_widgets.dart';
 import '../drill_session_guard.dart';
@@ -18,6 +19,7 @@ import '../progress_save_snack.dart';
 import 'answer_keypad.dart';
 import 'receive_next_steps.dart';
 import 'receive_summary_view.dart';
+import 'receive_widgets.dart';
 import 'round_result_view.dart';
 
 part 'receive_listen_view.dart';
@@ -344,7 +346,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       guard: _hasUnsavedRounds,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: AppBarTitle(title),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(4),
             child: LinearProgressIndicator(

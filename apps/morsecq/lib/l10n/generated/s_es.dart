@@ -757,7 +757,7 @@ class SEs extends S {
   String get learnReviewTitle => 'Repaso';
 
   @override
-  String get learnListen => 'Escucha...';
+  String get learnListen => 'Reproduciendo';
 
   @override
   String get learnReady => 'Listo';
@@ -2159,7 +2159,10 @@ class SEs extends S {
   String get materialsTitleField => 'Título';
 
   @override
-  String get materialsTagsField => 'Etiquetas (separadas por comas)';
+  String get materialsTagsField => 'Etiquetas';
+
+  @override
+  String get materialsTagsHelper => 'Separa las etiquetas con comas';
 
   @override
   String get materialsTextField => 'Texto';
@@ -3544,4 +3547,7 @@ class SEs extends S {
 
   @override
   String get comprehensionFieldWrong => 'Repasar este campo';
+
+  @override
+  String get comprehensionListen => 'Escuchar';
 }

@@ -18,28 +18,10 @@ extension _ReceiveListenView on _ReceiveDrillScreenState {
         if (_session.conditions case final RadioScenario c)
           ConditionsChip(scenario: c),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              _playing ? Icons.volume_up : Icons.volume_off_outlined,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                _playing ? s.learnListen : s.learnReady,
-                style: theme.textTheme.titleMedium,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: ready && !_playing ? _replay : null,
-              icon: const Icon(Icons.replay),
-              label: Text(_audioFailed ? s.actionRetry : s.learnReplay),
-            ),
-          ],
+        PlaybackStatusRow(
+          playing: _playing,
+          onReplay: ready && !_playing ? _replay : null,
+          replayLabel: _audioFailed ? s.actionRetry : s.learnReplay,
         ),
         if (_audioFailed)
           Padding(
@@ -102,6 +84,11 @@ extension _ReceiveListenView on _ReceiveDrillScreenState {
           style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 2),
           decoration: InputDecoration(
             hintText: s.learnAnswerHint,
+            // Smaller than the typed answer and wrapping, never clipped.
+            hintStyle: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            hintMaxLines: 3,
             border: const OutlineInputBorder(),
           ),
           onSubmitted: (_) => _submit(),

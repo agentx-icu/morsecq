@@ -118,7 +118,6 @@ class _Body extends StatelessWidget {
                   color: scheme.onSurfaceVariant,
                   fontFamily: 'monospace',
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             Text(formatWpm(s, wpm), style: theme.textTheme.labelLarge),

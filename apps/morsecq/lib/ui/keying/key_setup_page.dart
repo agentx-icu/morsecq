@@ -10,6 +10,7 @@ import '../../keying/key_profile.dart';
 import '../../keying/key_profiles.dart';
 import '../../training/training_controller_host.dart';
 import '../../training/training_settings.dart';
+import '../common/app_bar_title.dart';
 import 'key_test_area.dart';
 
 /// Keys and external keyers (F12): the device's key profiles, which one is
@@ -18,8 +19,9 @@ import 'key_test_area.dart';
 class KeySetupPage extends StatelessWidget {
   const KeySetupPage({super.key});
 
-  static Future<void> open(BuildContext context) => Navigator.of(context)
-      .push(MaterialPageRoute<void>(builder: (_) => const KeySetupPage()));
+  static Future<void> open(BuildContext context) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const KeySetupPage()));
 
   Future<void> _edit(BuildContext context, KeyProfile? profile) =>
       Navigator.of(context).push(
@@ -40,7 +42,7 @@ class KeySetupPage extends StatelessWidget {
     final profiles = context.watch<KeyProfiles>();
     final active = profiles.active;
     return Scaffold(
-      appBar: AppBar(title: Text(s.keysTitle)),
+      appBar: AppBar(title: AppBarTitle(s.keysTitle)),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('keys-new'),
         onPressed: () => _edit(context, null),
@@ -74,7 +76,9 @@ class KeySetupPage extends StatelessWidget {
                     key: const Key('keys-profile-default'),
                     value: KeyProfile.defaults.id,
                     title: Text(s.keysStandardProfile),
-                    subtitle: Text(keyLabels(KeyProfile.defaults.effectiveKeys)),
+                    subtitle: Text(
+                      keyLabels(KeyProfile.defaults.effectiveKeys),
+                    ),
                   ),
                   for (final p in profiles.saved)
                     RadioListTile<String>(
@@ -109,11 +113,7 @@ class KeySetupPage extends StatelessWidget {
 /// keyer mode, adapter and sidetone switches, and a test area. Saving
 /// refuses duplicate and reserved keys.
 class KeyProfileEditorPage extends StatefulWidget {
-  const KeyProfileEditorPage({
-    super.key,
-    required this.profile,
-    this.testSink,
-  });
+  const KeyProfileEditorPage({super.key, required this.profile, this.testSink});
 
   final KeyProfile profile;
 
@@ -175,7 +175,8 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
     for (final other in KeyerAction.values) {
       if (other != action && _keysOf(other).contains(key)) {
         setState(
-          () => _error = s.keysConflict(keyLabels({key}), _actionLabel(s, other)),
+          () =>
+              _error = s.keysConflict(keyLabels({key}), _actionLabel(s, other)),
         );
         return KeyEventResult.handled;
       }
@@ -229,13 +230,12 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
-    final exists = context
-        .watch<KeyProfiles>()
-        .saved
-        .any((p) => p.id == widget.profile.id);
+    final exists = context.watch<KeyProfiles>().saved.any(
+      (p) => p.id == widget.profile.id,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: Text(s.keysEditTitle),
+        title: AppBarTitle(s.keysEditTitle),
         actions: [
           if (exists)
             IconButton(
@@ -290,7 +290,8 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(s.keysSwapPaddles),
                 value: _draft.swapPaddles,
-                onChanged: (v) => setState(() => _draft = _draft.copyWith(swapPaddles: v)),
+                onChanged: (v) =>
+                    setState(() => _draft = _draft.copyWith(swapPaddles: v)),
               ),
               Text(s.keysKeyerMode, style: theme.textTheme.titleSmall),
               const SizedBox(height: 4),
@@ -306,7 +307,9 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                         KeyerMode.iambicB => s.keysIambicB,
                       }),
                       selected: _draft.keyerMode == m,
-                      onSelected: (_) => setState(() => _draft = _draft.copyWith(keyerMode: m)),
+                      onSelected: (_) => setState(
+                        () => _draft = _draft.copyWith(keyerMode: m),
+                      ),
                     ),
                 ],
               ),
@@ -316,7 +319,8 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                 title: Text(s.keysAdapterKeyer),
                 subtitle: Text(s.keysAdapterKeyerHint),
                 value: _draft.adapterKeyer,
-                onChanged: (v) => setState(() => _draft = _draft.copyWith(adapterKeyer: v)),
+                onChanged: (v) =>
+                    setState(() => _draft = _draft.copyWith(adapterKeyer: v)),
               ),
               SwitchListTile(
                 key: const Key('keys-sidetone'),
@@ -324,7 +328,8 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                 title: Text(s.keysAppSidetone),
                 subtitle: Text(s.keysAppSidetoneHint),
                 value: _draft.appSidetone,
-                onChanged: (v) => setState(() => _draft = _draft.copyWith(appSidetone: v)),
+                onChanged: (v) =>
+                    setState(() => _draft = _draft.copyWith(appSidetone: v)),
               ),
               const SizedBox(height: 8),
               KeyTestArea(profile: _draft, sink: widget.testSink),

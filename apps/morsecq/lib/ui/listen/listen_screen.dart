@@ -6,6 +6,7 @@ import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/app_bar_title.dart';
 import 'listen_controller.dart';
 import 'listen_preferences.dart';
 import 'listen_settings.dart';
@@ -13,6 +14,9 @@ import 'listen_widgets.dart';
 import 'pcm_source.dart';
 import 'record_pcm_source.dart';
 import 'workbench/workbench_screen.dart';
+
+/// Body height below which the screen scrolls as a whole (landscape phones).
+const double _kShortHeight = 480;
 
 /// Microphone -> Morse -> text.
 ///
@@ -51,6 +55,10 @@ class _ListenScreenState extends State<ListenScreen>
     with WidgetsBindingObserver {
   late final ListenController _controller;
   final ScrollController _scroll = ScrollController();
+
+  /// Moves the transcript (and its scroll position) between the tall and
+  /// short layouts when the window is rotated or resized.
+  final GlobalKey _transcriptKey = GlobalKey(debugLabel: 'listen-transcript');
   int _shownTextLength = 0;
   ListenPreferences? _preferences;
   bool _keepingAwake = false;
@@ -165,7 +173,7 @@ class _ListenScreenState extends State<ListenScreen>
     final S s = context.s;
     return Scaffold(
       appBar: AppBar(
-        title: Text(s.listenTitle),
+        title: AppBarTitle(s.listenTitle),
         actions: <Widget>[
           IconButton(
             key: const ValueKey('listen-open-workbench'),
@@ -189,30 +197,47 @@ class _ListenScreenState extends State<ListenScreen>
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                ListenStatusBanner(
-                  controller: _controller,
-                  onRetry: () => unawaited(_controller.start()),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: ListenLevelMeter(meter: _controller.meter),
-                ),
-                ListenFrequencyPanel(controller: _controller),
-                Expanded(
-                  child: ListenDecodedText(
-                    text: _controller.text,
-                    isListening: listening,
-                    scrollController: _scroll,
-                    onCopy: _copy,
-                    textKey: ListenScreen.decodedTextKey,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // A short window (a phone in landscape, or large text)
+                // scrolls the whole page with a fixed-height transcript.
+                final scaler = MediaQuery.textScalerOf(context);
+                final short =
+                    constraints.maxHeight < scaler.scale(_kShortHeight);
+                final decoded = ListenDecodedText(
+                  key: _transcriptKey,
+                  text: _controller.text,
+                  isListening: listening,
+                  scrollController: _scroll,
+                  onCopy: _copy,
+                  textKey: ListenScreen.decodedTextKey,
+                );
+                final children = <Widget>[
+                  ListenStatusBanner(
+                    controller: _controller,
+                    onRetry: () => unawaited(_controller.start()),
                   ),
-                ),
-                ListenStatsRow(controller: _controller),
-                const SizedBox(height: 72),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: ListenLevelMeter(meter: _controller.meter),
+                  ),
+                  ListenFrequencyPanel(controller: _controller),
+                  if (short)
+                    SizedBox(
+                      height: scaler.scale(_kShortHeight / 2),
+                      child: decoded,
+                    )
+                  else
+                    Expanded(child: decoded),
+                  ListenStatsRow(controller: _controller),
+                  const SizedBox(height: 72),
+                ];
+                final column = Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: children,
+                );
+                return short ? SingleChildScrollView(child: column) : column;
+              },
             ),
           ),
         ),

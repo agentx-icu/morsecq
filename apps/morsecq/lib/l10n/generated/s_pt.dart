@@ -758,7 +758,7 @@ class SPt extends S {
   String get learnReviewTitle => 'Revisão';
 
   @override
-  String get learnListen => 'Ouça...';
+  String get learnListen => 'Reproduzindo';
 
   @override
   String get learnReady => 'Pronto';
@@ -2160,7 +2160,10 @@ class SPt extends S {
   String get materialsTitleField => 'Título';
 
   @override
-  String get materialsTagsField => 'Tags (separadas por vírgulas)';
+  String get materialsTagsField => 'Tags';
+
+  @override
+  String get materialsTagsHelper => 'Separe as tags com vírgulas';
 
   @override
   String get materialsTextField => 'Texto';
@@ -3545,4 +3548,7 @@ class SPt extends S {
 
   @override
   String get comprehensionFieldWrong => 'Rever este campo';
+
+  @override
+  String get comprehensionListen => 'Ouvir';
 }
