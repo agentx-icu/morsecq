@@ -2,7 +2,7 @@
 
 使用 Flutter 3.41.9 / Dart 3.11.5 构建 MorseCQ。
 
-在根目录执行 `dart pub get --enforce-lockfile`，然后使用 `./build_all.sh --platform <目标> --mode release`。目标为 android、ios、macos、linux、windows。每个桌面平台在对应主机构建；iOS 在安装 Xcode 的 Mac 上构建。Android 需要 Java 17 与 Android SDK；Linux 需要 GTK、ALSA 与 Ayatana appindicator 开发包；Windows 需要 Visual Studio C++ 和 WiX v3 安装包工具。
+在根目录执行 `dart pub get --enforce-lockfile`，然后对 Android 和桌面目标使用 `./build_all.sh --platform <目标> --mode release`。目标为 android、ios、macos、linux、windows。每个桌面平台在对应主机构建；iOS 在安装 Xcode 的 Mac 上构建。要生成签名的 iOS TestFlight/App Store IPA，请运行 `bash tool/build_ios_store.sh`；`build_all.sh --platform ios --mode release` 默认失败，只有为 CI/侧载测试显式添加 `--allow-unsigned-ios` 才会生成无签名构建。Android 需要 Java 17 与 Android SDK；Linux 需要 GTK、ALSA 与 Ayatana appindicator 开发包；Windows 需要 Visual Studio C++ 和 WiX v3 安装包工具。
 
 `.github/workflows/builds.yml` 在 PR、main/master 更新、v* 标签及手动执行时运行。分析、复杂度、分层、本地化、截图导入保护及所有包/应用测试是构建前置门禁。所有五个平台均必须成功，标签才可生成草稿 Release。流水线输出 APK/AAB、IPA、macOS PKG/ZIP、Linux DEB/RPM/tar.gz、Windows MSI/ZIP 和 SHA256SUMS。不会改写已经发布的 Release 资产。
 
@@ -12,11 +12,11 @@ Apple CI 保留 Flutter SDK 缓存，关闭 Pub 缓存复用；macOS 构建及�
 
 macOS 创建任一归档前，会核对所有内嵌 Mach-O 架构与应用的 `LSMinimumSystemVersion`。可运行 `python3 tool/ci/macos_runtime.py <应用.app>` 检查已构建应用；任何依赖要求更高系统版本都会阻断打包。
 
-Android 签名使用 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 仓库 secrets，或本地 `android/key.properties`。iOS 配置 Apple Team、证书和描述文件后运行 `tool/build_ios_store.sh`。macOS 分发配置 Developer ID 签名及公证。
+Android 签名使用仓库 Actions secrets `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`，或本地 `apps/morsecq/android/key.properties`（`storeFile`、`storePassword`、`keyAlias`、`keyPassword`）。`vX.Y.Z` 标签构建缺少或部分缺少 secret 会失败，不会静默使用 debug key；PR/分支测试构建必须显式设置 `MORSECQ_ALLOW_DEBUG_SIGNING=1`。Google Play 发布负责人应启用 Play App Signing 并获得上传/发布轨道权限。iOS 需要 `icu.agentx.morsecq` App ID、iOS Distribution 证书、App Store 描述文件，以及有上传权限的 App Store Connect 应用。用 Xcode 打开 `apps/morsecq/ios/Runner.xcworkspace` 选择 Team，然后运行 `bash tool/build_ios_store.sh`；脚本固定 `--export-method app-store`、拒绝 `--no-codesign`、验证签名并在 `apps/morsecq/build/ios/ipa/` 生成 IPA，再通过 Xcode Organizer 或 Transporter 上传 TestFlight/App Store。GitHub iOS 工作流只发布无签名侧载产物。macOS 分发配置 Developer ID 签名及公证。
 
 设备检查覆盖麦克风解码、触觉、实体键和本地持久化。E2E CI 在 macOS、Windows 和 Linux 运行应用并捕获截图。
 
-发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：`1.0.0+1` 对应 `v1.0.0`；打包流程拒绝元数据不匹配。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> v1.0.0` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。
+发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：当前 `1.0.0+1` 对应 `v1.0.0`，旧的 `v0.2.0` 标签会在构建/打包前被拒绝。可先运行 `bash tool/ci/check_version_tag.sh v1.0.0`；工作流和打包流程会重复检查。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> v1.0.0` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。
 
 ## 平台范围
 

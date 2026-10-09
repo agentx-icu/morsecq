@@ -30,6 +30,12 @@ jobs:
           # Caches the Flutter SDK download/extract (~2.5 min/job).
           cache: true
 
+      # Check tags before dependency resolution or any build can package
+      # artifacts. The current branch declares 1.0.0+1, so a stale v0.2.0 tag
+      # must stop at this preflight.
+      - name: Version and release-tag gate
+        run: bash tool/ci/check_version_tag.sh
+
       # Pub workspace: one resolution at the root covers every package/app.
       - name: Install dependencies
         run: dart pub get --enforce-lockfile
@@ -74,6 +80,12 @@ jobs:
 
       - name: Complete release asset regression tests
         run: python3 tool/ci/verify_release_assets_test.py
+
+      - name: Version and release-tag regression tests
+        run: python3 tool/ci/check_version_tag_test.py
+
+      - name: Store release gate regression tests
+        run: python3 tool/ci/store_release_gates_test.py
 
       - name: Apple plugin cache regression tests
         run: python3 tool/ci/clean_apple_plugin_cache_test.py

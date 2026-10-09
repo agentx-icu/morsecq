@@ -30,21 +30,17 @@ done
 [[ -n "$TARGET" ]] || ci_die "--target is required"
 
 REPO_ROOT="$(ci_repo_root)"
+# Refuse to package a stale tag before touching dist/. This also checks the
+# full pubspec form (X.Y.Z+build), while the tag carries X.Y.Z.
+"$SCRIPT_DIR/check_version_tag.sh"
+
 APP_DIR="$REPO_ROOT/apps/morsecq"
 BUILD_DIR="$APP_DIR/build"
 DIST_DIR="$REPO_ROOT/dist/$TARGET"
 ci_reset_dir "$DIST_DIR"
 
 release_version() {
-  if [[ "${GITHUB_REF_TYPE:-}" == "tag" && "${GITHUB_REF_NAME:-}" == v* ]]; then
-    local declared tagged
-    declared="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$APP_DIR/pubspec.yaml" | head -n 1)"
-    tagged="${GITHUB_REF_NAME#v}"
-    [[ "$tagged" == "$declared" ]] || ci_die "tag $GITHUB_REF_NAME must match pubspec version $declared"
-    printf '%s\n' "$tagged"
-    return
-  fi
-  sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/p' "$APP_DIR/pubspec.yaml" | head -n 1
+  sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+[[:space:]]*$/\1/p' "$APP_DIR/pubspec.yaml" | head -n 1
 }
 VERSION="$(release_version)"
 [[ -n "$VERSION" ]] || ci_die "could not determine the release version"
@@ -111,10 +107,8 @@ package_macos() {
 
   arches="$(lipo -archs "$app/Contents/MacOS/MorseCQ")"
   case "$arches" in
-    'arm64') arch=arm64 ;;
-    'x86_64') arch=x86_64 ;;
     'x86_64 arm64'|'arm64 x86_64') arch=universal2 ;;
-    *) ci_die "Unexpected macOS executable architectures: $arches" ;;
+    *) ci_die "macOS release must be universal2 (arm64 + x86_64), found: $arches" ;;
   esac
   # Every embedded framework and architecture must fit the app's declared OS.
   ci_require_cmd python3
