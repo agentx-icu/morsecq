@@ -15,7 +15,6 @@ import '../learn_playback.dart';
 import 'comprehension_labels.dart';
 
 part 'comprehension_views.dart';
-part 'comprehension_audio.dart';
 
 /// Original offline head-copy material; its evidence never updates Koch/SRS.
 class ListeningComprehensionScreen extends StatefulWidget {
@@ -127,11 +126,7 @@ class _ListeningComprehensionScreenState
         setState(() => _audioFailed = true);
         return;
       }
-      final player = MorsePlayer(
-        sink: _AudibleListeningSink(playback.sink, playback.sidetone),
-        clock: playback.clock,
-        reportOutputFailures: true,
-      );
+      final player = playback.createAssessmentPlayer(requireSound: true);
       _subscription = player.events.listen(_onPlayerEvent);
       setState(() {
         _playback = playback;

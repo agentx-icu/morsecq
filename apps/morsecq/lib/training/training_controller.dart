@@ -68,8 +68,8 @@ final class TrainingController extends ChangeNotifier {
   /// Disposed: its profile was switched or replaced.
   bool get isDisposed => _disposed;
 
-  /// Set when [load] could not read the stores; the controller then runs on
-  /// defaults and the next save overwrites whatever was unreadable.
+  /// Set when [load] could not read a store. Only that store uses defaults;
+  /// readable progress and settings are retained independently.
   Object? get loadError => _loadError;
 
   TrainerProgress get progress => _progress;
@@ -93,20 +93,25 @@ final class TrainingController extends ChangeNotifier {
 
   Future<void> load() async {
     _ensureActive();
+    var progress = TrainerProgress();
+    var settings = TrainingSettings.defaults;
+    Object? loadError;
     try {
-      final progress = await _progressStore.load();
-      final settings = await _settingsStore.load();
-      if (_disposed) return;
-      _progress = _clampLesson(progress ?? TrainerProgress());
-      _settings = settings ?? TrainingSettings.defaults;
-      _savedSettings = _settings;
-      _loadError = null;
+      progress = await _progressStore.load() ?? progress;
     } on Object catch (error) {
-      if (_disposed) return;
-      _loadError = error;
-      _progress = TrainerProgress();
-      _settings = TrainingSettings.defaults;
+      loadError = error;
     }
+    if (_disposed) return;
+    try {
+      settings = await _settingsStore.load() ?? settings;
+    } on Object catch (error) {
+      loadError ??= error;
+    }
+    if (_disposed) return;
+    _progress = _clampLesson(progress);
+    _settings = settings;
+    _savedSettings = settings;
+    _loadError = loadError;
     _loaded = true;
     notifyListeners();
   }
@@ -178,12 +183,13 @@ final class TrainingController extends ChangeNotifier {
   /// [flush] covers it.
   Future<void> writeDoc(String name, Map<String, Object?> json) {
     _ensureActiveOrInTxn();
-    return _persist(_docs, () => _docs.write(name, json));
+    // Another document's successful save cannot resolve this one's failure.
+    return _persist((_docs, name), () => _docs.write(name, json));
   }
 
   Future<void> deleteDoc(String name) {
     _ensureActiveOrInTxn();
-    return _persist(_docs, () => _docs.delete(name));
+    return _persist((_docs, name), () => _docs.delete(name));
   }
 
   Future<void> _docTxn = Future<void>.value();

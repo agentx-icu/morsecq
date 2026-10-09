@@ -40,15 +40,18 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   /// the learner asks for it (spec §11.2.4).
   bool _copyMode = true;
 
-  /// Decoder answers the learner has seen, keyed by recording, selection
-  /// and tuning: decoding the same selection again does not make its
-  /// answer unseen.
-  final Set<String> _exposed = <String>{};
+  /// Exact selections shown before stay visible. Any overlapping audio from
+  /// the same recording is assisted, without revealing its new decoder text.
+  final Set<(String, int, int)> _exposed = <(String, int, int)>{};
 
-  String get _exposureKey =>
-      '${_c.file}#${_c.start}-${_c.end}#${_c.autoTune}#${_c.manualHz}';
+  (String, int, int) get _exposureKey => (_c.recordingKey, _c.start, _c.end);
 
   bool get _decoderShown => _exposed.contains(_exposureKey);
+
+  bool get _decoderAssisted => _exposed.any(
+    (range) =>
+        range.$1 == _c.recordingKey && range.$2 < _c.end && _c.start < range.$3,
+  );
 
   void _expose() => _exposed.add(_exposureKey);
   SessionScore? _score;
@@ -86,9 +89,13 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
       at: widget.training?.now(),
       drillKind: 'recording',
     );
+    // This attempt is graded before its result exposes the target. Later
+    // attempts on the same audio retain that result-page assistance.
+    final assisted = _decoderAssisted;
     setState(() {
       _score = score;
       _againstDecoder = ref.isEmpty;
+      if (_againstDecoder) _expose();
     });
     final training = widget.training;
     if (training == null) return;
@@ -100,7 +107,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         score: score,
         id: id,
         source: ExerciseSource.recording,
-        assistance: <Assistance>{if (_decoderShown) Assistance.decoder},
+        assistance: <Assistance>{if (assisted) Assistance.decoder},
         answered: MorseSupport.hasSymbols(_answer.text),
         sourceRef: 'recording:${_c.file}#${_c.start}-${_c.end}',
       );

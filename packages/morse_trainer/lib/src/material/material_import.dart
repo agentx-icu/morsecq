@@ -204,15 +204,17 @@ abstract final class MaterialLibraryCodec {
   static const String format = 'morsecq-materials';
   static const int version = 1;
 
-  /// Shared exports never contain private local references.
-  static String encode(List<TrainingMaterial> materials) =>
-      const JsonEncoder.withIndent('  ').convert(<String, Object?>{
-        'format': format,
-        'version': version,
-        'materials': [
-          for (final m in materials) m.toJson(includePrivate: false),
-        ],
-      });
+  /// Shared exports never contain private local references. Refuse an
+  /// export that could not be imported back with the same format limits.
+  static String encode(List<TrainingMaterial> materials) {
+    final raw = const JsonEncoder.withIndent('  ').convert(<String, Object?>{
+      'format': format,
+      'version': version,
+      'materials': [for (final m in materials) m.toJson(includePrivate: false)],
+    });
+    _decode(raw);
+    return raw;
+  }
 
   /// Parses a whole library or throws [FormatException]; never returns a
   /// partial result.
@@ -255,9 +257,14 @@ abstract final class MaterialLibraryCodec {
         throw const FormatException('material must be an object');
       }
       final material = TrainingMaterial.fromJson(m);
+      if (material.normalizedItems.isEmpty ||
+          material.normalizedItems.length > MaterialLimits.maxEntries) {
+        throw FormatException('invalid entry count in ${material.id}');
+      }
       for (final item in material.normalizedItems) {
         final symbols = MorseText.symbols(item);
-        if (symbols.length > MaterialLimits.maxSymbolsPerEntry ||
+        if (symbols.isEmpty ||
+            symbols.length > MaterialLimits.maxSymbolsPerEntry ||
             !symbols.every(MorseSupport.isSupported)) {
           throw FormatException('invalid item in ${material.id}');
         }

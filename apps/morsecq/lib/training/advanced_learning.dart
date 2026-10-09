@@ -28,7 +28,8 @@ extension AdvancedLearning on TrainingController {
       });
 
   Future<void> setLearningGoal(LearningGoal goal) async {
-    if (goal == progress.learningGoal) return;
+    // A failed write keeps the selected goal in memory. Selecting it again
+    // must retry persistence and finish refreshing the remaining plan.
     await commitProgress((p) => p.copyWith(learningGoal: goal));
     await refreshPlan();
   }

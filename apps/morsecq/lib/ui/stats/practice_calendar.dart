@@ -87,12 +87,23 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
             },
           ),
           const SizedBox(height: 8),
-          if (sel != null && sel < days.length)
+          if (sel != null &&
+              sel < days.length &&
+              (days[sel].chars > 0 || days[sel].listeningSessions == 0))
             Text(
               s.statsCalendarDay(
                 DateFormat.yMd(locale).format(days[sel].day),
                 days[sel].chars,
               ),
+              style: theme.textTheme.labelLarge,
+            ),
+          if (sel != null &&
+              sel < days.length &&
+              days[sel].listeningSessions > 0)
+            Text(
+              '${DateFormat.yMd(locale).format(days[sel].day)} · '
+              '${s.comprehensionTitle} · '
+              '${s.statsSessions(days[sel].listeningSessions)}',
               style: theme.textTheme.labelLarge,
             ),
           const SizedBox(height: 8),
@@ -233,7 +244,9 @@ class CalendarPainter extends CustomPainter {
           }
         }
       }
-      final level = heatLevel(day.chars, max: max);
+      final level = day.chars == 0 && day.isActive
+          ? 1
+          : heatLevel(day.chars, max: max);
       final future = day.day.isAfter(today);
       final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(3));
       final paint = Paint()

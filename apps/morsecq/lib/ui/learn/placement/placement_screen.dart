@@ -11,6 +11,7 @@ import '../../../training/training_controller.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import '../receive/answer_keypad.dart';
 
 enum _Phase { intro, round, tierResult, result }
@@ -34,7 +35,8 @@ class PlacementScreen extends StatefulWidget {
   State<PlacementScreen> createState() => _PlacementScreenState();
 }
 
-class _PlacementScreenState extends State<PlacementScreen> {
+class _PlacementScreenState extends State<PlacementScreen>
+    with WidgetsBindingObserver {
   late final PlacementAssessment _assessment = PlacementAssessment(
     course: widget.controller.course,
     seed: widget.seed ?? widget.controller.random.nextInt(1 << 30),
@@ -56,6 +58,9 @@ class _PlacementScreenState extends State<PlacementScreen> {
   bool _heard = false;
   bool _lastPassed = false;
   bool _disposed = false;
+  bool _backgrounded = false;
+  bool _audioFailed = false;
+  bool _settingUp = false;
   final String _id = ExerciseIds.next(DateTime.now(), Random());
 
   PlacementTier get _tier => _assessment.currentTier!;
@@ -63,32 +68,62 @@ class _PlacementScreenState extends State<PlacementScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     unawaited(_setup());
   }
 
-  Future<void> _setup() async {
-    final playback = await widget.playback.create(widget.controller.settings);
-    if (_disposed) {
-      await playback.dispose();
-      return;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final backgrounded = isDrillBackground(state);
+    if (_backgrounded != backgrounded && mounted) {
+      setState(() => _backgrounded = backgrounded);
     }
-    _sub = playback.player.events.listen((e) {
-      if (e is PlayerCompleted) _heard = true;
-      if ((e is PlayerCompleted || e is PlayerStopped) && !_disposed) {
-        setState(() => _playing = false);
+    if (_backgrounded) _playback?.player.stop();
+  }
+
+  Future<void> _setup() async {
+    if (_settingUp) return;
+    _settingUp = true;
+    try {
+      final playback = await widget.playback.create(widget.controller.settings);
+      if (_disposed) {
+        await playback.dispose();
+        return;
       }
-    });
-    setState(() => _playback = playback);
+      _sub = playback.player.events.listen((e) {
+        if (e is PlayerCompleted) _heard = true;
+        if ((e is PlayerCompleted || e is PlayerStopped) && !_disposed) {
+          setState(() {
+            _playing = false;
+            if (e is PlayerStopped && e.error != null) {
+              _heard = false;
+              _audioFailed = true;
+            }
+          });
+        }
+      });
+      setState(() {
+        _playback = playback;
+        _audioFailed = false;
+      });
+    } on Object {
+      if (!_disposed) setState(() => _audioFailed = true);
+    } finally {
+      _settingUp = false;
+    }
   }
 
   void _play({bool replay = false}) {
     final playback = _playback;
-    if (playback == null || _playing) return;
+    if (playback == null || _playing || _backgrounded) return;
     if (replay && _heard) {
       _assisted.add(_round);
       _anyAssisted = true;
     }
-    setState(() => _playing = true);
+    setState(() {
+      _playing = true;
+      _audioFailed = false;
+    });
     playback.player.play(
       MorseEncoder.encode(_tier.rounds[_round], _assessment.timingFor(_tier)),
     );
@@ -104,6 +139,7 @@ class _PlacementScreenState extends State<PlacementScreen> {
   }
 
   void _submit() {
+    if (_audioFailed || _playback == null || _backgrounded) return;
     _playback?.player.stop();
     _answers.add(_answer.text);
     _copies.add((_tier.rounds[_round], _answer.text));
@@ -139,15 +175,18 @@ class _PlacementScreenState extends State<PlacementScreen> {
         SessionScore.evaluate(target, answer),
     ], drillKind: 'placement');
     try {
-      await widget.controller.recordExercise(
+      final outcome = await widget.controller.recordExercise(
         score: score,
         id: _id,
         source: ExerciseSource.placement,
         assistance: <Assistance>{if (_anyAssisted) Assistance.replay},
         answered: _copies.any((c) => MorseSupport.hasSymbols(c.$2)),
       );
+      if (!outcome.saved && mounted) {
+        showProgressSaveFailed(context, widget.controller);
+      }
     } on Object {
-      // The suggestion still shows; activity credit is not essential.
+      if (mounted) showProgressSaveFailed(context, widget.controller);
     }
   }
 
@@ -159,6 +198,7 @@ class _PlacementScreenState extends State<PlacementScreen> {
   @override
   void dispose() {
     _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_sub?.cancel());
     unawaited(_playback?.dispose());
     _answer.dispose();
@@ -215,6 +255,13 @@ class _PlacementScreenState extends State<PlacementScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(s.placementIntro),
+        if (_audioFailed) ...[
+          Text(s.comprehensionAudioFailed),
+          TextButton(
+            onPressed: () => unawaited(_setup()),
+            child: Text(s.actionRetry),
+          ),
+        ],
         const SizedBox(height: 24),
         FilledButton(
           key: const ValueKey('placement-start'),
@@ -249,12 +296,19 @@ class _PlacementScreenState extends State<PlacementScreen> {
         ),
         LinearProgressIndicator(value: _round / tier.rounds.length),
         const SizedBox(height: 12),
+        if (_audioFailed) Text(s.comprehensionAudioFailed),
         OutlinedButton.icon(
-          onPressed: _playback != null && !_playing
+          onPressed: _playback != null && !_playing && !_backgrounded
               ? () => _play(replay: true)
               : null,
           icon: Icon(_playing ? Icons.volume_up : Icons.replay),
-          label: Text(_playing ? s.learnListen : s.learnReplay),
+          label: Text(
+            _playing
+                ? s.learnListen
+                : _audioFailed
+                ? s.actionRetry
+                : s.learnReplay,
+          ),
         ),
         const SizedBox(height: 12),
         TextField(
@@ -282,7 +336,7 @@ class _PlacementScreenState extends State<PlacementScreen> {
         const SizedBox(height: 12),
         FilledButton(
           key: const ValueKey('placement-submit'),
-          onPressed: _submit,
+          onPressed: !_audioFailed && !_backgrounded ? _submit : null,
           child: Text(s.learnSubmit),
         ),
       ],

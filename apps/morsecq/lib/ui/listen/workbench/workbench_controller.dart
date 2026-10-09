@@ -38,6 +38,7 @@ class WorkbenchController extends ChangeNotifier {
   WavPcmReader? _reader;
   String? _name;
   String _file = RecordingLibrary.workingFile;
+  int _workingRevision = 0;
   WaveformEnvelope? _waveform;
   int _waveGen = 0;
   int _start = 0;
@@ -60,6 +61,12 @@ class WorkbenchController extends ChangeNotifier {
 
   /// Managed media path of the open recording (relative to the profile).
   String get file => _file;
+
+  /// Saved files keep their identity when reopened. Each successful import
+  /// replaces the working slot with a new recording, even at the same length.
+  String get recordingKey => _file == RecordingLibrary.workingFile
+      ? '$_file@$_workingRevision'
+      : _file;
   WaveformEnvelope? get waveform => _waveform;
   int get start => _start;
   int get end => _end;
@@ -88,6 +95,11 @@ class WorkbenchController extends ChangeNotifier {
         _reader = null;
       },
     );
+    if (_disposed) {
+      await closeReader(reader);
+      return;
+    }
+    _workingRevision++;
     _install(reader, picked.name, RecordingLibrary.workingFile);
   });
 
@@ -101,9 +113,17 @@ class WorkbenchController extends ChangeNotifier {
       throw const FileSystemException('missing');
     }
     final reader = await library.open(file);
+    if (_disposed) {
+      await closeReader(reader);
+      return;
+    }
     await stopPlayback();
     _cancelDecode();
     await closeReader(_reader);
+    if (_disposed) {
+      await closeReader(reader);
+      return;
+    }
     _install(reader, name, file);
     if (selection != null) {
       setSelection(
@@ -114,13 +134,14 @@ class WorkbenchController extends ChangeNotifier {
   });
 
   Future<bool> _guard(Future<void> Function() body) async {
+    if (_disposed) return false;
     _busy = true;
     _failure = null;
     _wavError = null;
     notifyListeners();
     try {
       await body();
-      return true;
+      return !_disposed;
     } on WavFormatException catch (e) {
       _failure = WorkbenchFailure.format;
       _wavError = e.error;

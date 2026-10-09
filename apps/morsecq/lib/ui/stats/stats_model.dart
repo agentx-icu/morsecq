@@ -26,10 +26,17 @@ final class TrendPoint {
 
 /// One heat square in the practice calendar.
 final class CalendarDay {
-  const CalendarDay({required this.day, required this.chars});
+  const CalendarDay({
+    required this.day,
+    required this.chars,
+    this.listeningSessions = 0,
+  });
 
   final DateTime day;
   final int chars;
+  final int listeningSessions;
+
+  bool get isActive => chars > 0 || listeningSessions > 0;
 }
 
 /// One wrong answer for a character, ordered most frequent first.
@@ -106,7 +113,10 @@ final class StatsSnapshot {
         TrendPoint(
           index: i + 1,
           summary: window[i],
-          isSend: window[i].drillKind == kSendDrillKind,
+          isSend:
+              window[i].source == ExerciseSource.send ||
+              (window[i].source == null &&
+                  window[i].drillKind == kSendDrillKind),
         ),
     ];
 
@@ -118,7 +128,10 @@ final class StatsSnapshot {
       accuracyLast7Days: recentTotal == 0 ? null : recentCorrect / recentTotal,
       bestStreak: math.max(
         progress.streakDays,
-        longestDailyRun(progress.history.map((s) => s.at)),
+        longestDailyRun([
+          ...progress.history.map((s) => s.at),
+          ...progress.listeningAttempts.map((a) => a.at),
+        ]),
       ),
       totalPracticeTime: elapsed,
       trend: trend,
@@ -159,7 +172,8 @@ final class StatsSnapshot {
   /// Oldest first, `7 * kCalendarWeeks` days ending today.
   final List<CalendarDay> calendar;
 
-  bool get isEmpty => progress.history.isEmpty;
+  bool get isEmpty =>
+      progress.history.isEmpty && progress.listeningAttempts.isEmpty;
 
   int get currentLesson => course.clampLesson(progress.currentLesson);
 
@@ -195,7 +209,7 @@ final class StatsSnapshot {
     return send && receive;
   }
 
-  int get activeDays => calendar.where((d) => d.chars > 0).length;
+  int get activeDays => calendar.where((d) => d.isActive).length;
 
   int get calendarMaxChars =>
       calendar.fold<int>(0, (m, d) => math.max(m, d.chars));
@@ -286,11 +300,22 @@ final class StatsSnapshot {
         perDay[day] = (perDay[day] ?? 0) + s.totalChars;
       }
     }
+    final listeningPerDay = <DateTime, int>{};
+    for (final attempt in progress.listeningAttempts) {
+      final day = dayOf(attempt.at);
+      if (!day.isBefore(start) && !day.isAfter(end)) {
+        listeningPerDay[day] = (listeningPerDay[day] ?? 0) + 1;
+      }
+    }
     return <CalendarDay>[
       for (var i = 0; i < totalDays; i++)
         () {
           final day = DateTime(start.year, start.month, start.day + i);
-          return CalendarDay(day: day, chars: perDay[day] ?? 0);
+          return CalendarDay(
+            day: day,
+            chars: perDay[day] ?? 0,
+            listeningSessions: listeningPerDay[day] ?? 0,
+          );
         }(),
     ];
   }

@@ -72,6 +72,16 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   /// where word gaps are, so a reply resumed mid-word stays one word.
   String get _pendingText =>
       _typing ? _typedText.text : '$_carry${_keying.decodedText}';
+
+  /// Text snapshot including the released pattern awaiting a character gap.
+  String get _pendingSnapshot {
+    final pattern = _typing ? '' : _keying.pendingPattern;
+    final pendingCharacter = pattern.isEmpty
+        ? ''
+        : MorseAlphabet.decodePattern(pattern) ?? '<$pattern>';
+    return '$_pendingText$pendingCharacter';
+  }
+
   late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _playerSub;
@@ -173,10 +183,13 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     // restored reply keeps its word boundaries.
     final playback = _playback;
     if (playback != null) _keying.tick(playback.clock.now());
+    // A released final mark may still be waiting for its character gap.
+    // Snapshot that pattern without flushing the live decoder: a hint or
+    // repeat can save while the learner continues the same character.
     try {
       await _c.saveQsoDraft(
         _session,
-        pendingText: _pendingText,
+        pendingText: _pendingSnapshot,
         pendingId: _carryId ?? _keying.id,
         typedReply: _typing,
         pendingWasTyped: _pendingWasTyped,
@@ -203,6 +216,16 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _send() async {
+    // An enabled button callback may survive until the next frame. Check
+    // current state before clearing input or creating a new reply id.
+    if (_disposed || _session.isDone || _remotePlaying || _playback == null) {
+      return;
+    }
+    if (_typing
+        ? _typedText.text.trim().isEmpty
+        : (!_keying.hasInput && _carry.trim().isEmpty)) {
+      return;
+    }
     final keying = _keying;
     final typed = _typing || _pendingWasTyped;
     String text;
@@ -239,7 +262,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   void _toggleTyping() {
     _panel.currentState?.releaseHeld();
-    final pending = _pendingText;
+    final pending = _pendingSnapshot;
     setState(() {
       if (_typing) {
         _carry = pending;

@@ -1,12 +1,17 @@
-part of 'listening_comprehension_screen.dart';
+import 'package:morse_io/morse_io.dart';
 
-/// A key-down must really reach the prepared sidetone. SidetoneSink keeps
-/// live-keying recovery forgiving; head-copy grading needs this stricter
-/// postcondition and the original API diagnostics on silent refusal.
-final class _AudibleListeningSink implements MorseSink {
-  _AudibleListeningSink(this.inner, this.tone);
+/// A timeline may report completion only if key-down reached an enabled
+/// output. Live keying continues to use the forgiving raw sink directly.
+final class LearnPlaybackOutputSink implements MorseSink {
+  LearnPlaybackOutputSink({
+    required this.inner,
+    required this.tone,
+    this.allowAlternativeFeedback = false,
+  });
+
   final MorseSink inner;
   final SidetoneSink? tone;
+  final bool allowAlternativeFeedback;
 
   @override
   Future<void> prepare() => inner.prepare();
@@ -18,7 +23,7 @@ final class _AudibleListeningSink implements MorseSink {
   void on() {
     inner.on();
     final output = tone;
-    if (output == null || output.isOn) return;
+    if (output == null || output.isOn || allowAlternativeFeedback) return;
     final error =
         output.lastOutputError ?? StateError('Sidetone was not audible');
     final trace = output.lastOutputStackTrace;
