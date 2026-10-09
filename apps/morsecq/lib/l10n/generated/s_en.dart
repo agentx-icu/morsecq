@@ -3235,4 +3235,312 @@ class SEn extends S {
 
   @override
   String get learnQsoReadyHint => 'You have recent independent practice evidence and can begin full simulated QSOs.';
+
+  @override
+  String get goalsTitle => 'Learning goal';
+
+  @override
+  String get goalsFirstQso => 'First QSO';
+
+  @override
+  String get goalsConversation => 'Conversation and head copy';
+
+  @override
+  String get goalsContest => 'Contest exchanges';
+
+  @override
+  String get goalsExplanation => 'Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.';
+
+  @override
+  String get goalsBeginner => 'Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.';
+
+  @override
+  String get goalsComplete => 'All milestones currently met';
+
+  @override
+  String get goalsPractice => 'Practise the next skill';
+
+  @override
+  String get goalsCopying => 'Character recognition';
+
+  @override
+  String get goalsSending => 'Readable sending';
+
+  @override
+  String get goalsWords => 'Whole-word recognition';
+
+  @override
+  String get goalsPhrases => 'Phrase comprehension';
+
+  @override
+  String get goalsInformation => 'QSO information';
+
+  @override
+  String get goalsStory => 'Short-story head copy';
+
+  @override
+  String get goalsQso => 'Complete a QSO';
+
+  @override
+  String get goalsCompetition => 'Contest operation';
+
+  @override
+  String get goalsPlanListening => 'Listen for the information needed by your goal.';
+
+  @override
+  String get goalsPlanExchange => 'Practise an interactive exchange for your goal.';
+
+  @override
+  String get mistakesTitle => 'Mistake notebook';
+
+  @override
+  String get mistakesPending => 'To review';
+
+  @override
+  String get mistakesRecovered => 'Recovered';
+
+  @override
+  String get mistakesHint => 'Retry the original exercise at its original speed and conditions. Two exact answers on different days mark it recovered. Replays and revealed answers do not count toward recovery.';
+
+  @override
+  String get mistakesEmptyPending => 'No mistakes waiting for review. Failed exercises will appear here after practice.';
+
+  @override
+  String get mistakesEmptyRecovered => 'No recovered exercises yet. Retry an exercise correctly on two different days.';
+
+  @override
+  String get mistakesOriginalCopy => 'First incorrect answer';
+
+  @override
+  String get mistakesLastCopy => 'Latest answer';
+
+  @override
+  String get mistakesNoAnswer => 'No answer';
+
+  @override
+  String get mistakesFailures => 'Failed attempts';
+
+  @override
+  String get mistakesFirstFailure => 'First failure';
+
+  @override
+  String get mistakesLastFailure => 'Latest failure';
+
+  @override
+  String get mistakesCorrectDays => 'Days answered independently';
+
+  @override
+  String get mistakesRecoveredOn => 'Recovered on';
+
+  @override
+  String get mistakesRetry => 'Retry original exercise';
+
+  @override
+  String get qsoAdvancedContestTitle => 'Contest exchange';
+
+  @override
+  String get qsoAdvancedContestHint => 'Exchange callsigns, RST and serials, then confirm a corrected serial.';
+
+  @override
+  String get qsoAdvancedPotaTitle => 'POTA park-to-park';
+
+  @override
+  String get qsoAdvancedPotaHint => 'Exchange callsigns, RST and park references, then confirm a corrected park.';
+
+  @override
+  String get qsoAdvancedSerialLabel => 'Your serial number';
+
+  @override
+  String get qsoAdvancedParkLabel => 'Your park reference';
+
+  @override
+  String get qsoAdvancedInvalidSerial => 'Enter a serial from 1 to 9999.';
+
+  @override
+  String get qsoAdvancedInvalidPark => 'Use a park prefix and 4–5 digits, e.g. US-1234.';
+
+  @override
+  String get qsoAdvancedRepeatTitle => 'Repeat one field';
+
+  @override
+  String get qsoAdvancedRepeatHint => 'Ask only for information you missed; the exchange stays at this stage.';
+
+  @override
+  String get qsoAdvancedTypedMode => 'Type a reply (assisted)';
+
+  @override
+  String get qsoAdvancedKeyedMode => 'Key a reply';
+
+  @override
+  String get qsoAdvancedTypedReply => 'Your transmission';
+
+  @override
+  String get qsoAdvancedContestStage => 'Send RST and your serial';
+
+  @override
+  String get qsoAdvancedPotaStage => 'Send RST and your park';
+
+  @override
+  String get qsoAdvancedCorrectionStage => 'Confirm corrected information';
+
+  @override
+  String get qsoAdvancedCorrectionHint => 'Listen for CORR, then acknowledge the remote RST and corrected serial or park. Send readable code before increasing speed.';
+
+  @override
+  String get qsoAdvancedIssueMissingSerial => 'Send NR and your serial number.';
+
+  @override
+  String get qsoAdvancedIssueInvalidSerial => 'The serial must contain 1–4 digits and be greater than zero.';
+
+  @override
+  String get qsoAdvancedIssueWrongSerial => 'The serial does not match the expected number.';
+
+  @override
+  String get qsoAdvancedIssueMissingPark => 'Send PARK and the park reference.';
+
+  @override
+  String get qsoAdvancedIssueInvalidPark => 'Use the full park prefix and 4–5 digits.';
+
+  @override
+  String get qsoAdvancedIssueWrongPark => 'The park reference does not match the expected park.';
+
+  @override
+  String get qsoAdvancedIssueWrongRemoteRst => 'Confirm the RST you heard from the remote station.';
+
+  @override
+  String get qsoAdvancedContestSummary => 'Contest practice: callsign, report, serial and correction confirmed.';
+
+  @override
+  String get qsoAdvancedPotaSummary => 'POTA practice: callsign, report, park and correction confirmed.';
+
+  @override
+  String get comprehensionTitle => 'Head-copy listening';
+
+  @override
+  String get comprehensionIntro => 'Listen to the complete message, keep its meaning in mind, then answer. All material is original and available offline.';
+
+  @override
+  String get comprehensionModeLabel => 'Practice mode';
+
+  @override
+  String get comprehensionWords => 'Whole words';
+
+  @override
+  String get comprehensionPhrases => 'Word parts and phrases';
+
+  @override
+  String get comprehensionQso => 'QSO information';
+
+  @override
+  String get comprehensionPota => 'POTA exchange';
+
+  @override
+  String get comprehensionStory => 'Short stories';
+
+  @override
+  String get comprehensionWordsHelp => 'Recognise a whole word from its sound without writing each letter.';
+
+  @override
+  String get comprehensionPhrasesHelp => 'Listen for familiar word parts, then short phrases and complete sentences.';
+
+  @override
+  String get comprehensionQsoHelp => 'Remember the operator’s callsign, name, location and signal report.';
+
+  @override
+  String get comprehensionPotaHelp => 'Remember both callsigns, the park designator and the signal report. The first callsign is the station being called.';
+
+  @override
+  String get comprehensionStoryHelp => 'Listen without transcribing. Remember who, where, when and why. Answers use the English words in the message.';
+
+  @override
+  String get comprehensionSpeedLabel => 'Effective speed';
+
+  @override
+  String comprehensionSpeed(String character, String effective) {
+    return 'Character $character / effective $effective WPM';
+  }
+
+  @override
+  String comprehensionPreviewMissing(String symbols) {
+    return 'This message needs symbols you have not learned: $symbols. You can listen as an assisted preview.';
+  }
+
+  @override
+  String get comprehensionAssisted => 'Assisted practice · replay, reveal or unlearned symbols';
+
+  @override
+  String get comprehensionIndependent => 'Independent attempt · heard once without an answer reveal';
+
+  @override
+  String get comprehensionReveal => 'Reveal transcript (assisted)';
+
+  @override
+  String get comprehensionTarget => 'Transcript';
+
+  @override
+  String get comprehensionAnswer => 'Word or phrase';
+
+  @override
+  String get comprehensionCallsign => 'Called station / callsign';
+
+  @override
+  String get comprehensionOtherCallsign => 'Sending station / callsign';
+
+  @override
+  String get comprehensionName => 'Operator name';
+
+  @override
+  String get comprehensionQth => 'Location (QTH)';
+
+  @override
+  String get comprehensionRst => 'Signal report (RST)';
+
+  @override
+  String get comprehensionPark => 'Park designator';
+
+  @override
+  String get comprehensionPerson => 'Who?';
+
+  @override
+  String get comprehensionDestination => 'Where did they go?';
+
+  @override
+  String get comprehensionTime => 'When?';
+
+  @override
+  String get comprehensionAction => 'What did they go to do?';
+
+  @override
+  String comprehensionScore(int correct, int total) {
+    return '$correct of $total information fields correct';
+  }
+
+  @override
+  String get comprehensionNext => 'Next message';
+
+  @override
+  String get comprehensionDone => 'Done';
+
+  @override
+  String get comprehensionSaveFailed => 'The result could not be saved. Retry before leaving.';
+
+  @override
+  String get comprehensionAudioFailed => 'Audio is unavailable. Check the device output, then retry.';
+
+  @override
+  String get comprehensionAudioRequired => 'This listening activity uses audio, even if sound is off in your other practice settings.';
+
+  @override
+  String comprehensionHistory(int count, int percent) {
+    return 'Recent independent attempts: $count · field accuracy $percent%';
+  }
+
+  @override
+  String get comprehensionEmptyHistory => 'Independent listening results will appear here. Assisted practice is saved separately.';
+
+  @override
+  String get comprehensionFieldCorrect => 'Correct';
+
+  @override
+  String get comprehensionFieldWrong => 'Review this field';
 }

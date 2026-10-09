@@ -12,6 +12,19 @@ enum QsoIntent {
   answer,
 }
 
+/// Information which has already been heard and can be repeated alone.
+enum QsoRepeatField {
+  call('CALL'),
+  rst('RST'),
+  name('NAME'),
+  qth('QTH'),
+  serial('NR'),
+  park('PARK');
+
+  const QsoRepeatField(this.keyword);
+  final String keyword;
+}
+
 /// Why an answer was not accepted. The app localises each.
 enum QsoIssue {
   empty,
@@ -31,14 +44,26 @@ enum QsoIssue {
   wrongRemoteName,
   missing73,
   missingSk,
+  missingSerial,
+  invalidSerial,
+  wrongSerial,
+  missingPark,
+  invalidPark,
+  wrongPark,
+  wrongRemoteRst,
 }
 
 /// Result of evaluating one transmission against a stage.
 final class QsoEvaluation {
-  const QsoEvaluation(this.intent, [this.issues = const <QsoIssue>[]]);
+  const QsoEvaluation(
+    this.intent, [
+    this.issues = const <QsoIssue>[],
+    this.repeatField,
+  ]);
 
   final QsoIntent intent;
   final List<QsoIssue> issues;
+  final QsoRepeatField? repeatField;
 
   bool get accepted => intent == QsoIntent.answer && issues.isEmpty;
 }
@@ -83,7 +108,18 @@ abstract final class QsoEvaluator {
     final pse = core.length == 2 && core.first == 'PSE';
     if ((core.length == 1 || pse) && last == 'AGN') return QsoIntent.repeat;
     if ((core.length == 1 || pse) && last == 'QRS') return QsoIntent.slowDown;
+    if (_repeatField(w) != null) return QsoIntent.repeat;
     return QsoIntent.answer;
+  }
+
+  static QsoRepeatField? _repeatField(List<String> w) {
+    if (!w.contains('?')) return null;
+    final core = w.where((x) => x != '?' && x != 'PSE' && x != 'AGN').toList();
+    if (core.length != 1) return null;
+    for (final field in QsoRepeatField.values) {
+      if (field.keyword == core.single) return field;
+    }
+    return null;
   }
 
   static QsoEvaluation evaluate(
@@ -92,13 +128,16 @@ abstract final class QsoEvaluator {
     required QsoScenario scenario,
     required QsoStation local,
     required QsoStation remote,
+    String? remoteReport,
   }) {
     final w = words(text);
     if (w.isEmpty) {
       return const QsoEvaluation(QsoIntent.answer, [QsoIssue.empty]);
     }
     final intent = intentOf(w);
-    if (intent != QsoIntent.answer) return QsoEvaluation(intent);
+    if (intent != QsoIntent.answer) {
+      return QsoEvaluation(intent, const [], _repeatField(w));
+    }
     final issues = <QsoIssue>[];
     switch (stage) {
       case QsoStage.callCq:
@@ -111,6 +150,16 @@ abstract final class QsoEvaluator {
           _checkCalls(w, local, remote, issues);
         }
         _checkRst(w, issues);
+        if (scenario.isAdvanced) {
+          if (w.contains('DE')) _checkCalls(w, local, remote, issues);
+          if (scenario == QsoScenario.contestExchange) {
+            _checkSerial(w, local.serialNumber, issues);
+          } else {
+            _checkPark(w, local.parkReference, issues);
+          }
+          _checkEnding(w, issues);
+          break;
+        }
         if (scenario == QsoScenario.shortExchange) {
           _checkEnding(w, issues);
           break;
@@ -132,10 +181,29 @@ abstract final class QsoEvaluator {
           issues,
         );
       case QsoStage.confirmInfo:
-        _checkAck(w, remote, issues);
+        if (scenario.isAdvanced) {
+          _checkAckWord(w, issues);
+          _checkRst(w, issues);
+          final value = _fieldValue(w, 'RST');
+          if (value != null &&
+              remoteReport != null &&
+              normalizeRst(value) != normalizeRst(remoteReport)) {
+            issues.add(QsoIssue.wrongRemoteRst);
+          }
+          if (scenario == QsoScenario.contestExchange) {
+            _checkSerial(w, remote.serialNumber, issues);
+          } else {
+            _checkPark(w, remote.parkReference, issues);
+          }
+          _checkEnding(w, issues);
+        } else {
+          _checkAck(w, remote, issues);
+        }
       case QsoStage.closing:
         if (!w.contains('73')) issues.add(QsoIssue.missing73);
-        if (!w.contains('<SK>')) issues.add(QsoIssue.missingSk);
+        if (scenario != QsoScenario.contestExchange && !w.contains('<SK>')) {
+          issues.add(QsoIssue.missingSk);
+        }
       case QsoStage.done:
         break;
     }
@@ -233,6 +301,47 @@ abstract final class QsoEvaluator {
     return r >= 1 && r <= 5 && s >= 1 && s <= 9 && t >= 1 && t <= 9;
   }
 
+  static String normalizeRst(String value) => value
+      .toUpperCase()
+      .replaceAll('N', '9')
+      .replaceAll('T', '0')
+      .replaceAll('A', '1')
+      .replaceAll('E', '5');
+
+  static String? _fieldValue(List<String> w, String keyword) {
+    final at = w.lastIndexOf(keyword);
+    if (at < 0 || at + 1 >= w.length) return null;
+    final value = w[at + 1] == 'IS' ? at + 2 : at + 1;
+    return value < w.length ? w[value] : null;
+  }
+
+  static void _checkSerial(
+    List<String> w,
+    String expected,
+    List<QsoIssue> out,
+  ) {
+    final value = _fieldValue(w, 'NR');
+    if (value == null) {
+      out.add(QsoIssue.missingSerial);
+    } else if (!QsoStation.isValidSerial(value)) {
+      out.add(QsoIssue.invalidSerial);
+    } else if (int.parse(value) != int.parse(expected)) {
+      out.add(QsoIssue.wrongSerial);
+    }
+  }
+
+  static void _checkPark(List<String> w, String expected, List<QsoIssue> out) {
+    final value = _fieldValue(w, 'PARK');
+    if (value == null) {
+      out.add(QsoIssue.missingPark);
+    } else if (!QsoStation.isValidPark(value)) {
+      out.add(QsoIssue.invalidPark);
+    } else if (QsoStation.normalizePark(value) !=
+        QsoStation.normalizePark(expected)) {
+      out.add(QsoIssue.wrongPark);
+    }
+  }
+
   static void _checkField(
     List<String> w,
     String keyword,
@@ -256,9 +365,13 @@ abstract final class QsoEvaluator {
   }
 
   static void _checkAck(List<String> w, QsoStation remote, List<QsoIssue> out) {
+    _checkAckWord(w, out);
+    if (!w.contains(remote.name)) out.add(QsoIssue.wrongRemoteName);
+  }
+
+  static void _checkAckWord(List<String> w, List<QsoIssue> out) {
     if (!w.contains('R') && !w.contains('QSL') && !w.contains('RR')) {
       out.add(QsoIssue.missingAck);
     }
-    if (!w.contains(remote.name)) out.add(QsoIssue.wrongRemoteName);
   }
 }

@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "Praticar um QSO curto",
   "learnQsoShortExchangeHint": "Confirme os indicativos, troque relatórios de sinal e despeça-se sem ajuda antes de passar a um QSO completo.",
   "learnQsoExplorePending": "Explorar um QSO completo · ainda precisa de prática",
-  "learnQsoReadyHint": "Tem resultados recentes de prática sem ajuda e pode começar QSO simulados completos."
+  "learnQsoReadyHint": "Tem resultados recentes de prática sem ajuda e pode começar QSO simulados completos.",
+  "goalsTitle": "Objetivo de aprendizagem",
+  "goalsFirstQso": "Primeiro QSO",
+  "goalsConversation": "Conversa e cópia mental",
+  "goalsContest": "Trocas de concurso",
+  "goalsExplanation": "Inspirado na CW Academy. Cada etapa exige duas tentativas sem ajuda com pelo menos 90% na velocidade efetiva indicada nos últimos 28 dias.",
+  "goalsBeginner": "Comece pelo curso de caracteres. Após concluí-lo, o plano diário inclui compreensão e QSO conforme o objetivo.",
+  "goalsComplete": "Todas as etapas alcançadas",
+  "goalsPractice": "Praticar a próxima habilidade",
+  "goalsCopying": "Reconhecimento de caracteres",
+  "goalsSending": "Transmissão legível",
+  "goalsWords": "Reconhecimento de palavras",
+  "goalsPhrases": "Compreensão de frases",
+  "goalsInformation": "Informações de QSO",
+  "goalsStory": "Cópia mental de histórias",
+  "goalsQso": "Completar um QSO",
+  "goalsCompetition": "Operação em concurso",
+  "goalsPlanListening": "Ouça as informações necessárias para seu objetivo.",
+  "goalsPlanExchange": "Pratique uma troca interativa para seu objetivo.",
+  "mistakesTitle": "Caderno de erros",
+  "mistakesPending": "A rever",
+  "mistakesRecovered": "Dominado",
+  "mistakesHint": "Repita o exercício original à velocidade e nas condições originais. Duas respostas exatas em dias diferentes marcam o exercício como dominado. Repetições do áudio e respostas reveladas não contam.",
+  "mistakesEmptyPending": "Não há erros para rever. Os exercícios incorretos serão guardados aqui após a prática.",
+  "mistakesEmptyRecovered": "Ainda não há exercícios dominados. Responda corretamente sem ajuda em dois dias diferentes.",
+  "mistakesOriginalCopy": "Primeira resposta incorreta",
+  "mistakesLastCopy": "Última resposta",
+  "mistakesNoAnswer": "Sem resposta",
+  "mistakesFailures": "Tentativas falhadas",
+  "mistakesFirstFailure": "Primeiro erro",
+  "mistakesLastFailure": "Último erro",
+  "mistakesCorrectDays": "Dias com resposta correta sem ajuda",
+  "mistakesRecoveredOn": "Dominado em",
+  "mistakesRetry": "Repetir exercício original",
+  "qsoAdvancedContestTitle": "Troca de concurso",
+  "qsoAdvancedContestHint": "Troque indicativos, RST e números de série e confirme o número corrigido.",
+  "qsoAdvancedPotaTitle": "POTA entre parques",
+  "qsoAdvancedPotaHint": "Troque indicativos, RST e referências de parque e confirme o parque corrigido.",
+  "qsoAdvancedSerialLabel": "Seu número de série",
+  "qsoAdvancedParkLabel": "Sua referência de parque",
+  "qsoAdvancedInvalidSerial": "Digite um número de 1 a 9999.",
+  "qsoAdvancedInvalidPark": "Use o prefixo do parque e 4–5 dígitos, ex.: US-1234.",
+  "qsoAdvancedRepeatTitle": "Repetir um campo",
+  "qsoAdvancedRepeatHint": "Peça apenas a informação perdida; a etapa não muda.",
+  "qsoAdvancedTypedMode": "Digitar resposta (com ajuda)",
+  "qsoAdvancedKeyedMode": "Manipular resposta",
+  "qsoAdvancedTypedReply": "Sua transmissão",
+  "qsoAdvancedContestStage": "Enviar RST e seu número",
+  "qsoAdvancedPotaStage": "Enviar RST e seu parque",
+  "qsoAdvancedCorrectionStage": "Confirmar dados corrigidos",
+  "qsoAdvancedCorrectionHint": "Ouça CORR e confirme o RST remoto e o número ou parque corrigido. Envie código legível antes de aumentar a velocidade.",
+  "qsoAdvancedIssueMissingSerial": "Envie NR e seu número de série.",
+  "qsoAdvancedIssueInvalidSerial": "O número deve ter 1–4 dígitos e ser maior que zero.",
+  "qsoAdvancedIssueWrongSerial": "O número não corresponde ao esperado.",
+  "qsoAdvancedIssueMissingPark": "Envie PARK e a referência do parque.",
+  "qsoAdvancedIssueInvalidPark": "Use o prefixo completo do parque e 4–5 dígitos.",
+  "qsoAdvancedIssueWrongPark": "A referência não corresponde ao parque esperado.",
+  "qsoAdvancedIssueWrongRemoteRst": "Confirme o RST ouvido da outra estação.",
+  "qsoAdvancedContestSummary": "Prática de concurso: indicativo, relatório, número e correção confirmados.",
+  "qsoAdvancedPotaSummary": "Prática POTA: indicativo, relatório, parque e correção confirmados.",
+  "comprehensionTitle": "Escuta de palavras e frases",
+  "comprehensionIntro": "Ouça a mensagem completa, guarde o significado e depois responda. Todo o material é original e está disponível offline.",
+  "comprehensionModeLabel": "Modo de prática",
+  "comprehensionWords": "Palavras inteiras",
+  "comprehensionPhrases": "Partes de palavras e frases",
+  "comprehensionQso": "Informações de QSO",
+  "comprehensionPota": "Troca POTA",
+  "comprehensionStory": "Histórias curtas",
+  "comprehensionWordsHelp": "Reconheça a palavra inteira pelo som, sem anotar cada letra.",
+  "comprehensionPhrasesHelp": "Reconheça partes familiares de palavras e depois expressões e frases completas.",
+  "comprehensionQsoHelp": "Lembre o indicativo, nome, local e relatório de sinal.",
+  "comprehensionPotaHelp": "Lembre ambos os indicativos, o identificador do parque e o relatório. O primeiro indicativo é da estação chamada.",
+  "comprehensionStoryHelp": "Ouça sem transcrever. Lembre quem, onde, quando e para quê. Responda com as palavras inglesas da mensagem.",
+  "comprehensionSpeedLabel": "Velocidade efetiva",
+  "comprehensionSpeed": "Caracteres {character} / efetiva {effective} PPM",
+  "comprehensionPreviewMissing": "A mensagem exige símbolos ainda não aprendidos: {symbols}. Pode ouvir como prévia assistida.",
+  "comprehensionAssisted": "Prática assistida · repetição, texto revelado ou símbolos novos",
+  "comprehensionIndependent": "Tentativa independente · uma escuta sem revelar o texto",
+  "comprehensionReveal": "Revelar texto (com ajuda)",
+  "comprehensionTarget": "Texto transmitido",
+  "comprehensionAnswer": "Palavra ou frase",
+  "comprehensionCallsign": "Estação chamada / indicativo",
+  "comprehensionOtherCallsign": "Estação transmissora / indicativo",
+  "comprehensionName": "Nome do operador",
+  "comprehensionQth": "Local (QTH)",
+  "comprehensionRst": "Relatório de sinal (RST)",
+  "comprehensionPark": "Identificador do parque",
+  "comprehensionPerson": "Quem?",
+  "comprehensionDestination": "Aonde foi?",
+  "comprehensionTime": "Quando?",
+  "comprehensionAction": "O que foi fazer?",
+  "comprehensionScore": "{correct} de {total} campos corretos",
+  "comprehensionNext": "Próxima mensagem",
+  "comprehensionDone": "Concluir",
+  "comprehensionSaveFailed": "Não foi possível salvar o resultado. Tente novamente antes de sair.",
+  "comprehensionAudioFailed": "Áudio indisponível. Verifique a saída do dispositivo e tente novamente.",
+  "comprehensionAudioRequired": "Esta prática usa som mesmo que esteja desativado nas outras práticas.",
+  "comprehensionHistory": "Tentativas independentes recentes: {count} · precisão por campo {percent}%",
+  "comprehensionEmptyHistory": "Os resultados independentes aparecerão aqui. A prática assistida é salva separadamente.",
+  "comprehensionFieldCorrect": "Correto",
+  "comprehensionFieldWrong": "Rever este campo",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

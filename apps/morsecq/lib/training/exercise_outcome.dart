@@ -94,11 +94,23 @@ TrainerProgress completePlanStep(
   TrainerProgress next,
   String? stepId,
   String exerciseId,
-  SessionScore score,
-) {
+  SessionScore score, {
+  required DateTime now,
+  required String profileKey,
+  double? accuracy,
+}) {
   final plan = next.dailyPlan;
   final step = stepId == null ? null : plan?.stepById(stepId);
-  if (plan == null || step == null || step.isDone) return next;
+  if (plan == null ||
+      step == null ||
+      step.isDone ||
+      ((step.kind == PlanStepKind.qso ||
+              step.kind == PlanStepKind.comprehension) &&
+          step.state != PlanStepState.active) ||
+      !plan.isFor(now) ||
+      plan.profileKey != profileKey) {
+    return next;
+  }
   if (step.kind == PlanStepKind.send) {
     // A send step completes after its number of keyed targets.
     final attempts = next.history.where((s) => s.planStepId == stepId).length;
@@ -111,7 +123,7 @@ TrainerProgress completePlanStep(
     dailyPlan: plan.complete(
       stepId!,
       exerciseId: exerciseId,
-      accuracy: score.strictAccuracy,
+      accuracy: accuracy ?? score.strictAccuracy,
     ),
   );
 }
@@ -137,6 +149,8 @@ TrainerProgress completePlanStep(
   int? lesson,
   Duration? active,
   String? planStepId,
+  double? planAccuracy,
+  required String profileKey,
   String? sourceRef,
   String? detailRef,
   RadioScenario? conditions,
@@ -182,7 +196,7 @@ TrainerProgress completePlanStep(
     score,
     summary,
     credit: credit,
-    now: now,
+    now: summary.at,
     learned: learned,
   );
   final before = next.currentLesson;
@@ -194,7 +208,17 @@ TrainerProgress completePlanStep(
       : null;
   if (challenge) next = next.advanceIfPassed(course, score);
   // A plan step only completes with credited activity (no blank runs).
-  if (credit.activity) next = completePlanStep(next, planStepId, id, score);
+  if (credit.activity) {
+    next = completePlanStep(
+      next,
+      planStepId,
+      id,
+      score,
+      now: now,
+      profileKey: profileKey,
+      accuracy: planAccuracy,
+    );
+  }
   if (next.currentLesson != before && next.dailyPlan != null) {
     next = next.copyWith(dailyPlan: next.dailyPlan!.markPendingStale());
   }

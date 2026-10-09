@@ -20,6 +20,8 @@ import 'receive_next_steps.dart';
 import 'receive_summary_view.dart';
 import 'round_result_view.dart';
 
+part 'receive_listen_view.dart';
+
 enum _Phase { listen, result, summary }
 
 /// Plays each round of a [ReceiveSession], collects the copy (text field on
@@ -96,7 +98,10 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _wake.onLifecycle(state);
-    _backgrounded = isDrillBackground(state);
+    final backgrounded = isDrillBackground(state);
+    if (_backgrounded != backgrounded && mounted) {
+      setState(() => _backgrounded = backgrounded);
+    }
     if (_backgrounded) {
       _playback?.player.stop();
       _stopConditions();
@@ -111,23 +116,37 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       _session.roundCount > 0 && !_recording && _phase != _Phase.summary;
 
   Future<void> _setup() async {
-    final playback = await widget.playback.create(widget.controller.settings);
-    if (!mounted) {
-      await playback.dispose();
-      return;
+    if (_settingUp) return;
+    _settingUp = true;
+    try {
+      final playback = await widget.playback.create(widget.controller.settings);
+      if (!mounted) {
+        await playback.dispose();
+        return;
+      }
+      _playerSub = playback.player.events.listen(_onPlayerEvent);
+      _conditionsSub = _conditions?.playing.listen(_onConditionsPlaying);
+      setState(() => _playback = playback);
+      _play();
+    } on Object {
+      if (mounted) setState(() => _audioFailed = true);
+    } finally {
+      _settingUp = false;
     }
-    _playerSub = playback.player.events.listen(_onPlayerEvent);
-    _conditionsSub = _conditions?.playing.listen(_onConditionsPlaying);
-    setState(() => _playback = playback);
-    _play();
   }
 
   /// The current round was heard to the end once. A replay of an
   /// interrupted round (background, stop) is not assistance.
   bool _heard = false;
+  bool _audioFailed = false;
+  bool _settingUp = false;
 
   void _onPlayerEvent(PlayerEvent event) {
     if (event is PlayerCompleted) _heard = true;
+    if (event is PlayerStopped && event.error != null) {
+      _heard = false;
+      if (mounted) setState(() => _audioFailed = true);
+    }
     if (event is PlayerCompleted || event is PlayerStopped) {
       if (mounted && _playing) {
         setState(() => _playing = false);
@@ -190,7 +209,10 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
           });
       return;
     }
-    setState(() => _playing = true);
+    setState(() {
+      _playing = true;
+      _audioFailed = false;
+    });
     playback.player.play(_session.currentTimeline);
   }
 
@@ -206,11 +228,21 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   /// session still counts as practice but no longer unlocks or feeds SRS.
   void _replay() {
     if (_heard) _session.markReplay();
-    _play();
+    if (_playback == null) {
+      unawaited(_setup());
+    } else {
+      _play();
+    }
   }
 
   void _submit() {
-    if (_phase != _Phase.listen || _session.isFinished) {
+    if (_phase != _Phase.listen ||
+        _session.isFinished ||
+        _audioFailed ||
+        _conditionsBlocked ||
+        _conditionsFailed ||
+        _playback == null ||
+        _backgrounded) {
       return;
     }
     _playback?.player.stop();
@@ -323,113 +355,6 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
         ),
         body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
       ),
-    );
-  }
-
-  Widget _buildListen(BuildContext context) {
-    final theme = Theme.of(context);
-    final s = context.s;
-    final ready = _playback != null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          s.learnRoundOf(_session.roundCount + 1),
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        if (_session.conditions case final RadioScenario c)
-          ConditionsChip(scenario: c),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              _playing ? Icons.volume_up : Icons.volume_off_outlined,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                _playing ? s.learnListen : s.learnReady,
-                style: theme.textTheme.titleMedium,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: ready && !_playing ? _replay : null,
-              icon: const Icon(Icons.replay),
-              label: Text(s.learnReplay),
-            ),
-          ],
-        ),
-        if (_conditionsBlocked || _conditionsFailed)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              _conditionsFailed ? s.conditionsAudioFailed : s.conditionsNeedSound,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          )
-        // Haptics only count on phones; elsewhere the flash fallback runs.
-        else if (!_perceivable(widget.controller.settings))
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              s.learnNoFeedbackWarning,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        if (_session.isAssisted)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              s.learnReplayAssistedNote,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _answer,
-          focusNode: _answerFocus,
-          autofocus: hasPhysicalKeyboardByDefault,
-          textCapitalization: TextCapitalization.characters,
-          autocorrect: false,
-          enableSuggestions: false,
-          keyboardType: isTouchPlatform ? TextInputType.none : null,
-          style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 2),
-          decoration: InputDecoration(
-            hintText: s.learnAnswerHint,
-            border: const OutlineInputBorder(),
-          ),
-          onSubmitted: (_) => _submit(),
-        ),
-        const SizedBox(height: 12),
-        AnswerKeypad(
-          chars: _session.chars,
-          onChar: _appendChar,
-          onBackspace: _backspace,
-          onSpace: () => _appendChar(' '),
-        ),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: _submit,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(s.learnSubmit),
-        ),
-      ],
     );
   }
 

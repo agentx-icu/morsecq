@@ -3214,4 +3214,312 @@ class SJa extends S {
 
   @override
   String get learnQsoReadyHint => '最近の独力での練習記録がそろいました。完全なQSOのシミュレーションを始められます。';
+
+  @override
+  String get goalsTitle => '学習目標';
+
+  @override
+  String get goalsFirstQso => '初めての交信';
+
+  @override
+  String get goalsConversation => '会話とヘッドコピー';
+
+  @override
+  String get goalsContest => 'コンテスト交信';
+
+  @override
+  String get goalsExplanation => 'CW Academyを参考にした目標です。表示の実効速度で、28日以内に独力で正答率90%以上の練習を2回達成すると通過します。';
+
+  @override
+  String get goalsBeginner => 'まず文字コースを進めましょう。修了後、目標に合わせた聞き取りと交信練習が毎日の計画に加わります。';
+
+  @override
+  String get goalsComplete => 'すべての目標を達成';
+
+  @override
+  String get goalsPractice => '次の技能を練習';
+
+  @override
+  String get goalsCopying => '文字の聞き取り';
+
+  @override
+  String get goalsSending => '読みやすい送信';
+
+  @override
+  String get goalsWords => '単語の聞き取り';
+
+  @override
+  String get goalsPhrases => '短文の理解';
+
+  @override
+  String get goalsInformation => '交信情報の把握';
+
+  @override
+  String get goalsStory => '短い物語のヘッドコピー';
+
+  @override
+  String get goalsQso => '交信を完了';
+
+  @override
+  String get goalsCompetition => 'コンテスト運用';
+
+  @override
+  String get goalsPlanListening => '目標に必要な情報を聞き取りましょう。';
+
+  @override
+  String get goalsPlanExchange => '目標に合わせた対話型交信を練習しましょう。';
+
+  @override
+  String get mistakesTitle => '復習用の間違いノート';
+
+  @override
+  String get mistakesPending => '要復習';
+
+  @override
+  String get mistakesRecovered => '習得済み';
+
+  @override
+  String get mistakesHint => '元の問題を元の速度と受信条件で再練習します。異なる2日間で補助なしに完全正解すると習得済みになります。再生し直したり答えを表示した場合は習得の判定に含まれません。';
+
+  @override
+  String get mistakesEmptyPending => '復習待ちの問題はありません。練習で間違えた問題がここに保存されます。';
+
+  @override
+  String get mistakesEmptyRecovered => '習得済みの問題はまだありません。異なる2日間で補助なしに正解してください。';
+
+  @override
+  String get mistakesOriginalCopy => '最初の誤答';
+
+  @override
+  String get mistakesLastCopy => '最近の回答';
+
+  @override
+  String get mistakesNoAnswer => '未回答';
+
+  @override
+  String get mistakesFailures => '誤答回数';
+
+  @override
+  String get mistakesFirstFailure => '最初の誤答日';
+
+  @override
+  String get mistakesLastFailure => '最近の誤答日';
+
+  @override
+  String get mistakesCorrectDays => '補助なしで正解した日数';
+
+  @override
+  String get mistakesRecoveredOn => '習得日';
+
+  @override
+  String get mistakesRetry => '元の問題を再練習';
+
+  @override
+  String get qsoAdvancedContestTitle => 'コンテスト交信';
+
+  @override
+  String get qsoAdvancedContestHint => 'コールサイン、RST、連番を交換し、訂正された連番を確認します。';
+
+  @override
+  String get qsoAdvancedPotaTitle => 'POTA 公園間交信';
+
+  @override
+  String get qsoAdvancedPotaHint => 'コールサイン、RST、公園番号を交換し、訂正された公園を確認します。';
+
+  @override
+  String get qsoAdvancedSerialLabel => '自局の連番';
+
+  @override
+  String get qsoAdvancedParkLabel => '自局の公園番号';
+
+  @override
+  String get qsoAdvancedInvalidSerial => '1〜9999 の連番を入力してください。';
+
+  @override
+  String get qsoAdvancedInvalidPark => '公園の接頭辞と 4〜5 桁の数字を入力します。例：US-1234。';
+
+  @override
+  String get qsoAdvancedRepeatTitle => '一項目だけ再送';
+
+  @override
+  String get qsoAdvancedRepeatHint => '聞き逃した情報だけを要求します。交信の段階は進みません。';
+
+  @override
+  String get qsoAdvancedTypedMode => '文字で返信（補助あり）';
+
+  @override
+  String get qsoAdvancedKeyedMode => '返信を打鍵';
+
+  @override
+  String get qsoAdvancedTypedReply => '自局の送信内容';
+
+  @override
+  String get qsoAdvancedContestStage => 'RST と自局の連番を送信';
+
+  @override
+  String get qsoAdvancedPotaStage => 'RST と自局の公園番号を送信';
+
+  @override
+  String get qsoAdvancedCorrectionStage => '訂正情報を確認';
+
+  @override
+  String get qsoAdvancedCorrectionHint => 'CORR を聞いたら、相手の RST と訂正された連番または公園を確認します。速度を上げる前に明瞭な送信を練習します。';
+
+  @override
+  String get qsoAdvancedIssueMissingSerial => 'NR と自局の連番を送信してください。';
+
+  @override
+  String get qsoAdvancedIssueInvalidSerial => '連番は 0 より大きい 1〜4 桁の数字です。';
+
+  @override
+  String get qsoAdvancedIssueWrongSerial => '連番が確認すべき番号と一致しません。';
+
+  @override
+  String get qsoAdvancedIssueMissingPark => 'PARK と公園番号を送信してください。';
+
+  @override
+  String get qsoAdvancedIssueInvalidPark => '公園の接頭辞と 4〜5 桁の数字を使用してください。';
+
+  @override
+  String get qsoAdvancedIssueWrongPark => '公園番号が確認すべき公園と一致しません。';
+
+  @override
+  String get qsoAdvancedIssueWrongRemoteRst => '相手から聞いた RST を確認してください。';
+
+  @override
+  String get qsoAdvancedContestSummary => 'コンテスト練習：コールサイン、レポート、連番、訂正を確認しました。';
+
+  @override
+  String get qsoAdvancedPotaSummary => 'POTA 練習：コールサイン、レポート、公園、訂正を確認しました。';
+
+  @override
+  String get comprehensionTitle => '単語・文章の聞き取り';
+
+  @override
+  String get comprehensionIntro => 'メッセージ全体を聞き、意味を覚えてから答えましょう。教材はオリジナルで、オフラインでも使えます。';
+
+  @override
+  String get comprehensionModeLabel => '練習モード';
+
+  @override
+  String get comprehensionWords => '単語';
+
+  @override
+  String get comprehensionPhrases => '語の一部と短文';
+
+  @override
+  String get comprehensionQso => 'QSO 情報';
+
+  @override
+  String get comprehensionPota => 'POTA 交換';
+
+  @override
+  String get comprehensionStory => '短い物語';
+
+  @override
+  String get comprehensionWordsHelp => '文字を書き取らず、音から単語全体を認識します。';
+
+  @override
+  String get comprehensionPhrasesHelp => 'なじみのある語の一部から、短い表現や文の聞き取りへ進みます。';
+
+  @override
+  String get comprehensionQsoHelp => 'コールサイン、名前、所在地、信号レポートを覚えます。';
+
+  @override
+  String get comprehensionPotaHelp => '双方のコールサイン、公園番号、信号レポートを覚えます。最初は呼び出される局のコールサインです。';
+
+  @override
+  String get comprehensionStoryHelp => '書き取らず、誰が、どこへ、いつ、何をしに行ったかを覚えます。音声中の英単語で答えます。';
+
+  @override
+  String get comprehensionSpeedLabel => '実効速度';
+
+  @override
+  String comprehensionSpeed(String character, String effective) {
+    return '文字 $character / 実効 $effective WPM';
+  }
+
+  @override
+  String comprehensionPreviewMissing(String symbols) {
+    return '未習得の記号が含まれます：$symbols。補助付きプレビューとして聞けます。';
+  }
+
+  @override
+  String get comprehensionAssisted => '補助付き練習 · 再生・テキスト表示・未習得記号';
+
+  @override
+  String get comprehensionIndependent => '独立した試行 · 1 回聞き、テキストを表示しない';
+
+  @override
+  String get comprehensionReveal => 'テキストを表示（補助）';
+
+  @override
+  String get comprehensionTarget => '送信テキスト';
+
+  @override
+  String get comprehensionAnswer => '単語または短文';
+
+  @override
+  String get comprehensionCallsign => '呼び出される局 / コールサイン';
+
+  @override
+  String get comprehensionOtherCallsign => '送信局 / コールサイン';
+
+  @override
+  String get comprehensionName => 'オペレーター名';
+
+  @override
+  String get comprehensionQth => '所在地（QTH）';
+
+  @override
+  String get comprehensionRst => '信号レポート（RST）';
+
+  @override
+  String get comprehensionPark => '公園番号';
+
+  @override
+  String get comprehensionPerson => '誰？';
+
+  @override
+  String get comprehensionDestination => 'どこへ行った？';
+
+  @override
+  String get comprehensionTime => 'いつ？';
+
+  @override
+  String get comprehensionAction => '何をしに行った？';
+
+  @override
+  String comprehensionScore(int correct, int total) {
+    return '$total 項目中 $correct 項目正解';
+  }
+
+  @override
+  String get comprehensionNext => '次のメッセージ';
+
+  @override
+  String get comprehensionDone => '完了';
+
+  @override
+  String get comprehensionSaveFailed => '結果を保存できませんでした。退出前に再試行してください。';
+
+  @override
+  String get comprehensionAudioFailed => '音声を利用できません。出力機器を確認して再試行してください。';
+
+  @override
+  String get comprehensionAudioRequired => '他の練習で音声を無効にしていても、この聞き取り練習は音声を使います。';
+
+  @override
+  String comprehensionHistory(int count, int percent) {
+    return '最近の独立した試行：$count 回 · 情報正答率 $percent%';
+  }
+
+  @override
+  String get comprehensionEmptyHistory => '独立した聞き取りの結果がここに表示されます。補助付き練習は別に記録されます。';
+
+  @override
+  String get comprehensionFieldCorrect => '正解';
+
+  @override
+  String get comprehensionFieldWrong => 'この項目を復習';
 }

@@ -6,6 +6,11 @@ import 'koch_course.dart';
 import 'session_score.dart';
 import 'session_summary.dart';
 import 'srs_scheduler.dart';
+import 'learning_goal.dart';
+import 'listening_comprehension.dart';
+import 'mistake_notebook.dart';
+
+part 'advanced_progress.dart';
 
 /// Everything the trainer remembers about a learner.
 ///
@@ -30,6 +35,9 @@ final class TrainerProgress {
     this.speedAdviceKey,
     this.courseCompleted = false,
     this.firstLessonDoneAt,
+    MistakeNotebook? mistakeNotebook,
+    LearningGoal learningGoal = LearningGoal.firstQso,
+    List<ListeningAttempt> listeningAttempts = const [],
   }) : assert(currentLesson >= 1, 'currentLesson must be >= 1'),
        assert(streakDays >= 0, 'streakDays must be >= 0'),
        assert(dailyGoalChars >= 0, 'dailyGoalChars must be >= 0'),
@@ -47,7 +55,17 @@ final class TrainerProgress {
            history.fold<int>(0, (sum, s) => sum + s.totalChars),
        srs = srs ?? SrsScheduler(),
        confusion = confusion ?? ConfusionMatrix(),
-       committedIds = List<String>.unmodifiable(committedIds);
+       committedIds = List<String>.unmodifiable(committedIds),
+       _advanced = _AdvancedProgress(
+         mistakeNotebook,
+         learningGoal,
+         listeningAttempts,
+       );
+
+  final _AdvancedProgress _advanced;
+  MistakeNotebook get mistakeNotebook => _advanced.mistakes;
+  LearningGoal get learningGoal => _advanced.goal;
+  List<ListeningAttempt> get listeningAttempts => _advanced.attempts;
 
   /// How many committed exercise ids are remembered for de-duplication.
   ///
@@ -173,7 +191,7 @@ final class TrainerProgress {
       return 1;
     }
     final gap = daysBetween(last, now);
-    if (gap == 0) {
+    if (gap <= 0) {
       return streakDays;
     }
     return gap == 1 ? streakDays + 1 : 1;
@@ -188,10 +206,17 @@ final class TrainerProgress {
   }) => copyWith(
     history: _appendHistory(summary),
     streakDays: streakAfterPracticeOn(now),
-    lastPracticeDay: dayOf(now),
+    lastPracticeDay: latestPracticeDay(now),
     lifetimeSessions: lifetimeSessions + 1,
     lifetimeChars: lifetimeChars + summary.totalChars,
   );
+
+  /// Late recovered results cannot move the latest activity date backwards.
+  DateTime latestPracticeDay(DateTime at) {
+    final day = dayOf(at);
+    final last = lastPracticeDay;
+    return last != null && day.isBefore(last) ? last : day;
+  }
 
   List<SessionSummary> _appendHistory(SessionSummary summary) {
     final next = <SessionSummary>[...history, summary];
@@ -339,6 +364,9 @@ final class TrainerProgress {
     String? speedAdviceKey,
     bool? courseCompleted,
     DateTime? firstLessonDoneAt,
+    MistakeNotebook? mistakeNotebook,
+    LearningGoal? learningGoal,
+    List<ListeningAttempt>? listeningAttempts,
   }) => TrainerProgress(
     currentLesson: currentLesson ?? this.currentLesson,
     charStats: charStats ?? this.charStats,
@@ -357,10 +385,14 @@ final class TrainerProgress {
     speedAdviceKey: speedAdviceKey ?? this.speedAdviceKey,
     courseCompleted: courseCompleted ?? this.courseCompleted,
     firstLessonDoneAt: firstLessonDoneAt ?? this.firstLessonDoneAt,
+    mistakeNotebook: mistakeNotebook ?? this.mistakeNotebook,
+    learningGoal: learningGoal ?? this.learningGoal,
+    listeningAttempts: listeningAttempts ?? this.listeningAttempts,
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
     'version': 1,
+    ..._advanced.toJson(),
     'currentLesson': currentLesson,
     'charStats': CharStats.mapToJson(charStats),
     'streakDays': streakDays,
@@ -396,8 +428,12 @@ final class TrainerProgress {
     final lifetimeChars = (json['lifetimeChars'] as num?)?.toInt();
     final rawPlan = json['dailyPlan'];
     final rawPrevious = json['previousPlan'];
+    final advanced = _AdvancedProgress.fromJson(json);
     return TrainerProgress(
       currentLesson: (json['currentLesson'] as num?)?.toInt() ?? 1,
+      mistakeNotebook: advanced.mistakes,
+      learningGoal: advanced.goal,
+      listeningAttempts: advanced.attempts,
       charStats: CharStats.mapFromJson(
         json['charStats'] as Map<String, Object?>?,
       ),

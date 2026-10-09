@@ -27,9 +27,14 @@ final class PlayerCompleted extends PlayerEvent {
   const PlayerCompleted();
 }
 
-/// Playback was cut short by [MorsePlayer.stop] (or a new [MorsePlayer.play]).
+/// Playback was cut short by stop, restart, or an opted-in output failure.
 final class PlayerStopped extends PlayerEvent {
-  const PlayerStopped();
+  const PlayerStopped({this.error, this.stackTrace, this.cleanupError});
+
+  /// Null for an explicit stop; otherwise the original output failure.
+  final Object? error;
+  final StackTrace? stackTrace;
+  final Object? cleanupError;
 }
 
 /// Plays a `List<MorseElement>` through a [MorseSink] with drift-free timing.
@@ -44,12 +49,20 @@ final class PlayerStopped extends PlayerEvent {
 /// on resume; the element that was interrupted is re-keyed for its remaining
 /// time.
 final class MorsePlayer {
-  MorsePlayer({required MorseSink sink, Clock? clock})
-      : _sink = sink,
-        _clock = clock ?? SystemClock.shared;
+  MorsePlayer({
+    required MorseSink sink,
+    Clock? clock,
+    this.reportOutputFailures = false,
+  }) : _sink = sink,
+       _clock = clock ?? SystemClock.shared;
 
   final MorseSink _sink;
   final Clock _clock;
+
+  /// Opt-in for sound assessments: turn synchronous and timer output errors
+  /// into a diagnostic stopped event and cancel the failed timeline. The
+  /// default preserves existing live-keying/error behavior.
+  final bool reportOutputFailures;
   final StreamController<PlayerEvent> _events =
       StreamController<PlayerEvent>.broadcast(sync: true);
 
@@ -77,12 +90,13 @@ final class MorsePlayer {
   int get currentIndex => _current;
 
   /// Total length of the timeline being played (zero when idle).
-  Duration get totalDuration => _offsets.isEmpty ? Duration.zero : _offsets.last;
+  Duration get totalDuration =>
+      _offsets.isEmpty ? Duration.zero : _offsets.last;
 
   /// Starts [elements] from the beginning. A running timeline is stopped
   /// first (emitting [PlayerStopped]). An empty list completes immediately.
   void play(List<MorseElement> elements) {
-    stop();
+    if (!_stop()) return;
     if (elements.isEmpty) {
       _emit(const PlayerCompleted());
       return;
@@ -116,21 +130,24 @@ final class MorsePlayer {
     }
     _paused = false;
     _startAt += _clock.now() - _pausedAt;
-    _setSink(_elements[_current].on);
+    if (!_setSink(_elements[_current].on)) return;
     _scheduleBoundaryAfter(_current);
   }
 
-  void stop() {
+  void stop() => _stop();
+
+  bool _stop() {
     if (!_playing) {
-      return;
+      return true;
     }
     _timer?.cancel();
     _timer = null;
-    _setSink(false);
+    if (!_setSink(false)) return false;
     _playing = false;
     _paused = false;
     _current = -1;
     _emit(const PlayerStopped());
+    return true;
   }
 
   Future<void> dispose() async {
@@ -141,7 +158,7 @@ final class MorsePlayer {
   void _startElement(int index) {
     _current = index;
     final element = _elements[index];
-    _setSink(element.on);
+    if (!_setSink(element.on)) return;
     _emit(PlayerElementStarted(index, element));
     _scheduleBoundaryAfter(index);
   }
@@ -158,7 +175,7 @@ final class MorsePlayer {
 
   void _complete() {
     _timer = null;
-    _setSink(false);
+    if (!_setSink(false)) return;
     _playing = false;
     _current = -1;
     _emit(const PlayerCompleted());
@@ -167,19 +184,49 @@ final class MorsePlayer {
   void _scheduleAt(Duration absolute, void Function() callback) {
     _timer?.cancel();
     final delay = absolute - _clock.now();
-    _timer = _clock.schedule(delay.isNegative ? Duration.zero : delay, callback);
+    _timer = _clock.schedule(
+      delay.isNegative ? Duration.zero : delay,
+      callback,
+    );
   }
 
-  void _setSink(bool on) {
-    if (on == _sinkOn) {
-      return;
-    }
+  bool _setSink(bool on) {
+    if (on == _sinkOn) return true;
     _sinkOn = on;
-    if (on) {
-      _sink.on();
-    } else {
-      _sink.off();
+    try {
+      if (on) {
+        _sink.on();
+      } else {
+        _sink.off();
+      }
+      return true;
+    } on Object catch (error, stackTrace) {
+      if (!reportOutputFailures) rethrow;
+      _failOutput(error, stackTrace);
+      return false;
     }
+  }
+
+  void _failOutput(Object error, StackTrace stackTrace) {
+    _timer?.cancel();
+    _timer = null;
+    _playing = false;
+    _paused = false;
+    _current = -1;
+    _sinkOn = false;
+    Object? cleanupError;
+    try {
+      _sink.off();
+    } on Object catch (failure) {
+      cleanupError = failure;
+    }
+    _emit(
+      PlayerStopped(
+        error: error,
+        stackTrace: stackTrace,
+        cleanupError: cleanupError,
+      ),
+    );
   }
 
   void _emit(PlayerEvent event) {

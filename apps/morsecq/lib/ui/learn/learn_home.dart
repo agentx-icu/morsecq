@@ -12,6 +12,7 @@ import 'learn_glossary.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
 import 'learn_playback.dart';
+import 'goals/advanced_learning_card.dart';
 import 'conditions/conditions_playback.dart';
 import 'materials/materials_screen.dart';
 import 'onboarding/first_lesson_screen.dart';
@@ -290,18 +291,25 @@ class LearnHome extends StatelessWidget {
       ),
   ];
 
-  Widget _actions(BuildContext context) => QuickActions(
-    showContinue: false,
-    dueCount: controller.dueChars.length,
-    onContinueLesson: () => _continueLesson(context),
-    onReceivePractice: () => _receivePractice(context),
-    onSendPractice: () => _sendPractice(context),
-    onGuidedSend: () => _guidedSend(context),
-    onReview: () => _review(context),
-    onQso: () => _qso(context),
-    qsoStatus: _qsoStatus(context.s),
-    onMaterials: () => _materials(context),
-    onTelegraph: () => _telegraph(context),
+  Widget _actions(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      QuickActions(
+        showContinue: false,
+        dueCount: controller.dueChars.length,
+        onContinueLesson: () => _continueLesson(context),
+        onReceivePractice: () => _receivePractice(context),
+        onSendPractice: () => _sendPractice(context),
+        onGuidedSend: () => _guidedSend(context),
+        onReview: () => _review(context),
+        onQso: () => _qso(context),
+        qsoStatus: _qsoStatus(context.s),
+        onMaterials: () => _materials(context),
+        onTelegraph: () => _telegraph(context),
+      ),
+      const SizedBox(height: 12),
+      AdvancedLearningCard(controller: controller, playback: playback),
+    ],
   );
 
   /// Readiness label for the QSO entry: symbols to learn, lines to

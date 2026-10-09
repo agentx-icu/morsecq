@@ -44,19 +44,25 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
   );
   late MaterialKind _kind = widget.existing?.kind ?? MaterialKind.text;
   late MaterialAnalysis _analysis = MaterialImport.analyze(_text.text, _kind);
+  bool _analysisPending = false;
   bool _saving = false;
   Timer? _debounce;
 
   void _reanalyze() {
     _debounce?.cancel();
+    setState(() => _analysisPending = true);
     _debounce = Timer(const Duration(milliseconds: 200), () {
       if (mounted) {
-        setState(() => _analysis = MaterialImport.analyze(_text.text, _kind));
+        setState(() {
+          _analysis = MaterialImport.analyze(_text.text, _kind);
+          _analysisPending = false;
+        });
       }
     });
   }
 
   Future<void> _save() async {
+    if (_analysisPending || _saving) return;
     final analysis = MaterialImport.analyze(_text.text, _kind);
     if (!analysis.ok || _title.text.trim().isEmpty || _saving) return;
     setState(() => _saving = true);
@@ -110,7 +116,8 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
   Widget build(BuildContext context) {
     final s = context.s;
     final a = _analysis;
-    final canSave = a.ok && _title.text.trim().isNotEmpty && !_saving;
+    final canSave =
+        a.ok && _title.text.trim().isNotEmpty && !_analysisPending && !_saving;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.existing == null ? s.materialsNew : s.materialsEdit),

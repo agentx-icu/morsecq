@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "Тренировать короткое QSO",
   "learnQsoShortExchangeHint": "Самостоятельно подтвердите позывные, обменяйтесь рапортами и завершите связь, затем переходите к полному QSO.",
   "learnQsoExplorePending": "Попробовать полное QSO · ещё нужна практика",
-  "learnQsoReadyHint": "Есть свежие самостоятельные результаты. Можно начинать полные учебные QSO."
+  "learnQsoReadyHint": "Есть свежие самостоятельные результаты. Можно начинать полные учебные QSO.",
+  "goalsTitle": "Цель обучения",
+  "goalsFirstQso": "Первое QSO",
+  "goalsConversation": "Разговор и приём на слух",
+  "goalsContest": "Обмен в соревнованиях",
+  "goalsExplanation": "По мотивам CW Academy. Для этапа нужны две самостоятельные попытки с точностью от 90% на указанной эффективной скорости за последние 28 дней.",
+  "goalsBeginner": "Сначала пройдите курс знаков. Затем ежедневный план добавит понимание на слух и QSO по выбранной цели.",
+  "goalsComplete": "Все этапы достигнуты",
+  "goalsPractice": "Тренировать следующий навык",
+  "goalsCopying": "Распознавание знаков",
+  "goalsSending": "Разборчивая передача",
+  "goalsWords": "Распознавание слов",
+  "goalsPhrases": "Понимание фраз",
+  "goalsInformation": "Информация из QSO",
+  "goalsStory": "Короткие рассказы на слух",
+  "goalsQso": "Завершение QSO",
+  "goalsCompetition": "Работа в соревнованиях",
+  "goalsPlanListening": "Тренируйте понимание информации для вашей цели.",
+  "goalsPlanExchange": "Практикуйте интерактивный обмен для вашей цели.",
+  "mistakesTitle": "Тетрадь ошибок",
+  "mistakesPending": "Для повторения",
+  "mistakesRecovered": "Освоено",
+  "mistakesHint": "Повторите исходное упражнение с прежней скоростью и условиями. Два точных самостоятельных ответа в разные дни означают освоение. Повторное воспроизведение и показ ответа не учитываются.",
+  "mistakesEmptyPending": "Нет ошибок для повторения. Ошибочно выполненные упражнения будут сохранены здесь после тренировки.",
+  "mistakesEmptyRecovered": "Пока нет освоенных упражнений. Дайте правильный самостоятельный ответ в два разных дня.",
+  "mistakesOriginalCopy": "Первый ошибочный ответ",
+  "mistakesLastCopy": "Последний ответ",
+  "mistakesNoAnswer": "Нет ответа",
+  "mistakesFailures": "Ошибочные попытки",
+  "mistakesFirstFailure": "Первая ошибка",
+  "mistakesLastFailure": "Последняя ошибка",
+  "mistakesCorrectDays": "Дни с самостоятельным правильным ответом",
+  "mistakesRecoveredOn": "Дата освоения",
+  "mistakesRetry": "Повторить исходное упражнение",
+  "qsoAdvancedContestTitle": "Соревновательный обмен",
+  "qsoAdvancedContestHint": "Обменяйтесь позывными, RST и номерами, затем подтвердите исправленный номер.",
+  "qsoAdvancedPotaTitle": "POTA между парками",
+  "qsoAdvancedPotaHint": "Обменяйтесь позывными, RST и номерами парков, затем подтвердите исправленный парк.",
+  "qsoAdvancedSerialLabel": "Ваш порядковый номер",
+  "qsoAdvancedParkLabel": "Ваш номер парка",
+  "qsoAdvancedInvalidSerial": "Введите номер от 1 до 9999.",
+  "qsoAdvancedInvalidPark": "Используйте префикс парка и 4–5 цифр, например US-1234.",
+  "qsoAdvancedRepeatTitle": "Повторить одно поле",
+  "qsoAdvancedRepeatHint": "Запросите только пропущенные данные; этап связи не изменится.",
+  "qsoAdvancedTypedMode": "Ответ текстом (с помощью)",
+  "qsoAdvancedKeyedMode": "Передать ответ ключом",
+  "qsoAdvancedTypedReply": "Ваша передача",
+  "qsoAdvancedContestStage": "Передать RST и свой номер",
+  "qsoAdvancedPotaStage": "Передать RST и свой парк",
+  "qsoAdvancedCorrectionStage": "Подтвердить исправленные данные",
+  "qsoAdvancedCorrectionHint": "Услышав CORR, подтвердите RST корреспондента и исправленный номер или парк. Сначала добейтесь разборчивой передачи, затем повышайте скорость.",
+  "qsoAdvancedIssueMissingSerial": "Передайте NR и свой порядковый номер.",
+  "qsoAdvancedIssueInvalidSerial": "Номер должен содержать 1–4 цифры и быть больше нуля.",
+  "qsoAdvancedIssueWrongSerial": "Номер не совпадает с ожидаемым.",
+  "qsoAdvancedIssueMissingPark": "Передайте PARK и номер парка.",
+  "qsoAdvancedIssueInvalidPark": "Используйте полный префикс парка и 4–5 цифр.",
+  "qsoAdvancedIssueWrongPark": "Номер парка не совпадает с ожидаемым.",
+  "qsoAdvancedIssueWrongRemoteRst": "Подтвердите RST, услышанный от корреспондента.",
+  "qsoAdvancedContestSummary": "Соревновательная практика: позывной, рапорт, номер и исправление подтверждены.",
+  "qsoAdvancedPotaSummary": "Практика POTA: позывной, рапорт, парк и исправление подтверждены.",
+  "comprehensionTitle": "Слова и фразы на слух",
+  "comprehensionIntro": "Прослушайте сообщение целиком, запомните смысл и затем ответьте. Все упражнения оригинальные и доступны без сети.",
+  "comprehensionModeLabel": "Режим практики",
+  "comprehensionWords": "Целые слова",
+  "comprehensionPhrases": "Части слов и фразы",
+  "comprehensionQso": "Информация QSO",
+  "comprehensionPota": "Обмен POTA",
+  "comprehensionStory": "Короткие истории",
+  "comprehensionWordsHelp": "Узнавайте слово целиком по звучанию, не записывая каждую букву.",
+  "comprehensionPhrasesHelp": "Распознавайте знакомые части слов, затем короткие фразы и предложения.",
+  "comprehensionQsoHelp": "Запомните позывной, имя, местоположение и рапорт.",
+  "comprehensionPotaHelp": "Запомните оба позывных, номер парка и рапорт. Первый позывной принадлежит вызываемой станции.",
+  "comprehensionStoryHelp": "Слушайте без записи. Запомните кто, куда, когда и зачем. Отвечайте английскими словами из сообщения.",
+  "comprehensionSpeedLabel": "Эффективная скорость",
+  "comprehensionSpeed": "Знаки {character} / эффективная {effective} WPM",
+  "comprehensionPreviewMissing": "В сообщении есть ещё не изученные знаки: {symbols}. Можно прослушать его как тренировку с помощью.",
+  "comprehensionAssisted": "Практика с помощью · повтор, текст или новые знаки",
+  "comprehensionIndependent": "Самостоятельная попытка · одно прослушивание без текста",
+  "comprehensionReveal": "Показать текст (с помощью)",
+  "comprehensionTarget": "Переданный текст",
+  "comprehensionAnswer": "Слово или фраза",
+  "comprehensionCallsign": "Вызываемая станция / позывной",
+  "comprehensionOtherCallsign": "Передающая станция / позывной",
+  "comprehensionName": "Имя оператора",
+  "comprehensionQth": "Местоположение (QTH)",
+  "comprehensionRst": "Рапорт (RST)",
+  "comprehensionPark": "Номер парка",
+  "comprehensionPerson": "Кто?",
+  "comprehensionDestination": "Куда пошёл человек?",
+  "comprehensionTime": "Когда?",
+  "comprehensionAction": "Что он хотел сделать?",
+  "comprehensionScore": "Верно {correct} из {total} полей",
+  "comprehensionNext": "Следующее сообщение",
+  "comprehensionDone": "Готово",
+  "comprehensionSaveFailed": "Не удалось сохранить результат. Повторите перед выходом.",
+  "comprehensionAudioFailed": "Аудио недоступно. Проверьте выход устройства и повторите.",
+  "comprehensionAudioRequired": "Эта практика использует звук, даже если он отключён для других упражнений.",
+  "comprehensionHistory": "Недавние самостоятельные попытки: {count} · точность полей {percent}%",
+  "comprehensionEmptyHistory": "Здесь появятся самостоятельные результаты. Практика с помощью сохраняется отдельно.",
+  "comprehensionFieldCorrect": "Верно",
+  "comprehensionFieldWrong": "Повторить это поле",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

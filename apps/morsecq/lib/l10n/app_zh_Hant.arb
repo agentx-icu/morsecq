@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "練習短通聯",
   "learnQsoShortExchangeHint": "獨立完成呼號確認、訊號報告和告別，再進行完整通聯。",
   "learnQsoExplorePending": "自由體驗完整通聯 · 仍有待練項目",
-  "learnQsoReadyHint": "已具備近期獨立練習證據，可以開始完整模擬通聯。"
+  "learnQsoReadyHint": "已具備近期獨立練習證據，可以開始完整模擬通聯。",
+  "goalsTitle": "學習目標",
+  "goalsFirstQso": "第一次通聯",
+  "goalsConversation": "日常交談與腦內聽抄",
+  "goalsContest": "競賽交換",
+  "goalsExplanation": "參考 CW Academy。每個里程碑需要在標示有效速度下，近期至少兩次獨立練習達到 90% 準確率；證據有效期為 28 天。",
+  "goalsBeginner": "先完成字元課程；通過後，每日計畫會加入對應目標的聽懂訓練和模擬通聯。",
+  "goalsComplete": "目前已達到全部里程碑",
+  "goalsPractice": "練習下一項能力",
+  "goalsCopying": "字元聽辨",
+  "goalsSending": "清晰發報",
+  "goalsWords": "整詞聽辨",
+  "goalsPhrases": "短句理解",
+  "goalsInformation": "通聯資訊提取",
+  "goalsStory": "短故事腦內聽抄",
+  "goalsQso": "完整通聯",
+  "goalsCompetition": "競賽操作",
+  "goalsPlanListening": "按學習目標練習整詞與通聯資訊聽辨。",
+  "goalsPlanExchange": "進行與學習目標對應的互動通聯。",
+  "mistakesTitle": "跨次錯題本",
+  "mistakesPending": "待複習",
+  "mistakesRecovered": "已掌握",
+  "mistakesHint": "以原速度與原干擾條件重練原題。在兩個不同日期獨立、完整答對後標記為已掌握。重播或顯示答案不計入掌握證據。",
+  "mistakesEmptyPending": "暫無待複習的錯題。練習中答錯的原題會儲存在這裡。",
+  "mistakesEmptyRecovered": "暫無已掌握的錯題。在兩個不同日期獨立答對原題即可掌握。",
+  "mistakesOriginalCopy": "首次錯誤答案",
+  "mistakesLastCopy": "最近答案",
+  "mistakesNoAnswer": "未作答",
+  "mistakesFailures": "錯誤次數",
+  "mistakesFirstFailure": "首次答錯",
+  "mistakesLastFailure": "最近答錯",
+  "mistakesCorrectDays": "獨立答對的日期數",
+  "mistakesRecoveredOn": "掌握日期",
+  "mistakesRetry": "重練原題",
+  "qsoAdvancedContestTitle": "競賽交換",
+  "qsoAdvancedContestHint": "交換呼號、RST 和序號，再確認更正後的序號。",
+  "qsoAdvancedPotaTitle": "POTA 公園間通聯",
+  "qsoAdvancedPotaHint": "交換呼號、RST 和公園編號，再確認更正後的公園。",
+  "qsoAdvancedSerialLabel": "你的序號",
+  "qsoAdvancedParkLabel": "你的公園編號",
+  "qsoAdvancedInvalidSerial": "輸入 1–9999 的序號。",
+  "qsoAdvancedInvalidPark": "使用公園前綴和 4–5 位數字，例如 US-1234。",
+  "qsoAdvancedRepeatTitle": "只重發一項",
+  "qsoAdvancedRepeatHint": "只請求沒聽清的資訊，通聯仍停留在目前階段。",
+  "qsoAdvancedTypedMode": "文字作答（輔助）",
+  "qsoAdvancedKeyedMode": "拍發回覆",
+  "qsoAdvancedTypedReply": "你的發報內容",
+  "qsoAdvancedContestStage": "傳送 RST 和你的序號",
+  "qsoAdvancedPotaStage": "傳送 RST 和你的公園編號",
+  "qsoAdvancedCorrectionStage": "確認更正後的資訊",
+  "qsoAdvancedCorrectionHint": "聽到 CORR 後，確認對方的 RST 和更正後的序號或公園。先確保拍發清晰，再提高速度。",
+  "qsoAdvancedIssueMissingSerial": "傳送 NR 和你的序號。",
+  "qsoAdvancedIssueInvalidSerial": "序號必須是大於零的 1–4 位數字。",
+  "qsoAdvancedIssueWrongSerial": "序號與應確認的號碼不一致。",
+  "qsoAdvancedIssueMissingPark": "傳送 PARK 和公園編號。",
+  "qsoAdvancedIssueInvalidPark": "使用完整公園前綴和 4–5 位數字。",
+  "qsoAdvancedIssueWrongPark": "公園編號與應確認的公園不一致。",
+  "qsoAdvancedIssueWrongRemoteRst": "確認剛才聽到的對方 RST。",
+  "qsoAdvancedContestSummary": "競賽練習：已確認呼號、報告、序號和更正資訊。",
+  "qsoAdvancedPotaSummary": "POTA 練習：已確認呼號、報告、公園和更正資訊。",
+  "comprehensionTitle": "整詞整句聽懂",
+  "comprehensionIntro": "聽完完整訊息，在腦中保留含義，再回答問題。素材為原創，可離線使用。",
+  "comprehensionModeLabel": "練習模式",
+  "comprehensionWords": "整詞辨識",
+  "comprehensionPhrases": "詞語片段與短句",
+  "comprehensionQso": "通聯資訊",
+  "comprehensionPota": "POTA 交換",
+  "comprehensionStory": "短故事",
+  "comprehensionWordsHelp": "透過聲音整體辨識單字，不逐字母抄寫。",
+  "comprehensionPhrasesHelp": "先辨識熟悉的詞語片段，再聽懂短語與完整句子。",
+  "comprehensionQsoHelp": "記住操作員呼號、姓名、地點和訊號報告。",
+  "comprehensionPotaHelp": "記住雙方呼號、公園編號和訊號報告。第一個呼號是被呼叫的電台。",
+  "comprehensionStoryHelp": "不逐字抄寫，記住人物、地點、時間和目的。使用訊息中的英語詞語作答。",
+  "comprehensionSpeedLabel": "有效速度",
+  "comprehensionSpeed": "字元 {character} / 有效 {effective} WPM",
+  "comprehensionPreviewMissing": "訊息包含尚未學過的符號：{symbols}。可作為輔助預覽聽練。",
+  "comprehensionAssisted": "輔助練習 · 重播、查看文字或包含未學符號",
+  "comprehensionIndependent": "獨立嘗試 · 只聽一次，未查看文字",
+  "comprehensionReveal": "查看文字（輔助）",
+  "comprehensionTarget": "播發文字",
+  "comprehensionAnswer": "單字或短句",
+  "comprehensionCallsign": "被呼叫電台 / 呼號",
+  "comprehensionOtherCallsign": "發信電台 / 呼號",
+  "comprehensionName": "操作員姓名",
+  "comprehensionQth": "地點（QTH）",
+  "comprehensionRst": "訊號報告（RST）",
+  "comprehensionPark": "公園編號",
+  "comprehensionPerson": "誰？",
+  "comprehensionDestination": "去了哪裡？",
+  "comprehensionTime": "何時？",
+  "comprehensionAction": "去做什麼？",
+  "comprehensionScore": "{total} 個資訊項答對 {correct} 個",
+  "comprehensionNext": "下一則訊息",
+  "comprehensionDone": "完成",
+  "comprehensionSaveFailed": "結果未能儲存，請在離開前重試。",
+  "comprehensionAudioFailed": "音訊無法使用，請檢查裝置輸出後重試。",
+  "comprehensionAudioRequired": "此聽懂練習使用聲音，即使其他練習設定已關閉聲音。",
+  "comprehensionHistory": "近期獨立嘗試：{count} 次 · 資訊準確率 {percent}%",
+  "comprehensionEmptyHistory": "獨立聽懂的結果將在這裡顯示，輔助練習分開記錄。",
+  "comprehensionFieldCorrect": "正確",
+  "comprehensionFieldWrong": "需要重練",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

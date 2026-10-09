@@ -68,6 +68,10 @@ extension QsoPractice on TrainingController {
         session: QsoSession.fromJson(raw),
         pendingText: json!['pendingText'] as String? ?? '',
         pendingId: json['pendingId'] as String?,
+        typedReply: json['typedReply'] as bool? ?? false,
+        pendingWasTyped:
+            json['pendingWasTyped'] as bool? ??
+            (json['typedReply'] as bool? ?? false),
         active: Duration(
           milliseconds: (json['activeMs'] as num?)?.toInt() ?? 0,
         ),
@@ -83,11 +87,15 @@ extension QsoPractice on TrainingController {
     QsoSession session, {
     String pendingText = '',
     String? pendingId,
+    bool typedReply = false,
+    bool pendingWasTyped = false,
     Duration active = Duration.zero,
   }) => writeDoc(draftDoc, <String, Object?>{
     'session': session.toJson(),
     'pendingText': pendingText,
     'pendingId': pendingId,
+    'typedReply': typedReply,
+    'pendingWasTyped': pendingWasTyped,
     'activeMs': active.inMilliseconds,
   });
 
@@ -99,6 +107,11 @@ extension QsoPractice on TrainingController {
   static String _finishedDoc(QsoSession s) =>
       '$finishedPrefix${s.scenario.name}_${s.seed}'.toLowerCase();
 
+  static DateTime? _completedAt(Map<String, Object?>? json) {
+    final raw = json?['completedAt'];
+    return raw is String ? DateTime.tryParse(raw) : null;
+  }
+
   /// Records a finished QSO. It is first parked in its own document (never
   /// overwritten by another QSO), then credited, then removed — only once
   /// the result is on disk, so a crash or a failed write never loses it.
@@ -106,16 +119,29 @@ extension QsoPractice on TrainingController {
   /// evicted from de-duplication, so this cannot credit twice.
   Future<bool> finishQso(QsoSession session, Duration active) async {
     final doc = _finishedDoc(session);
+    var completedAt = now();
+    var completionDateKnown = true;
     try {
+      // A retry preserves the first completion date, even across launches.
+      final parked = await readDoc(doc);
+      final originalDate = _completedAt(parked);
+      completionDateKnown = parked == null || originalDate != null;
+      completedAt = originalDate ?? completedAt;
       await writeDoc(doc, <String, Object?>{
         'session': session.toJson(),
         'activeMs': active.inMilliseconds,
+        if (completionDateKnown) 'completedAt': completedAt.toIso8601String(),
       });
       await discardQsoDraft();
     } on Object {
       // Recording below still runs; only crash recovery is weaker.
     }
-    final outcome = await recordQso(session, active);
+    final outcome = await recordQso(
+      session,
+      active,
+      at: completedAt,
+      completionDateKnown: completionDateKnown,
+    );
     if (!outcome.saved) return false;
     try {
       await deleteDoc(doc);
@@ -143,7 +169,13 @@ extension QsoPractice on TrainingController {
         final active = Duration(
           milliseconds: (json!['activeMs'] as num?)?.toInt() ?? 0,
         );
-        final outcome = await recordQso(session, active);
+        final completedAt = _completedAt(json);
+        final outcome = await recordQso(
+          session,
+          active,
+          at: completedAt,
+          completionDateKnown: completedAt != null,
+        );
         if (outcome.saved) await deleteDoc(name);
       } on Object {
         // Tried again next time.
@@ -153,7 +185,12 @@ extension QsoPractice on TrainingController {
 
   /// Credits a finished QSO once (its id is derived from the seed, so a
   /// resumed and finished session cannot be credited twice).
-  Future<ReceiveOutcome> recordQso(QsoSession session, Duration active) {
+  Future<ReceiveOutcome> recordQso(
+    QsoSession session,
+    Duration active, {
+    DateTime? at,
+    bool completionDateKnown = true,
+  }) {
     final sent = session.turns
         .where((t) => !t.fromRemote && (t.accepted ?? false))
         .map((t) => t.text)
@@ -161,17 +198,27 @@ extension QsoPractice on TrainingController {
     final score = SessionScore.evaluate(
       sent,
       sent,
-      at: now(),
+      at: at ?? now(),
       drillKind: 'qso-sim',
     );
     return recordExercise(
       score: score,
       id: 'qso_${session.scenario.name}_${session.seed}',
+      planStepId: session.planStepId,
+      planAccuracy: session.answerStages > 0
+          ? session.firstTryStages / session.answerStages
+          : null,
       source: ExerciseSource.qso,
       sourceRef:
           'qso:${session.scenario.name}:${session.firstTryStages}/${session.answerStages}',
       assistance: <Assistance>{
         if (session.hints > 0) Assistance.hint,
+        // Typed responses practise the protocol but do not demonstrate
+        // independent sending. The protocol field score is still retained.
+        if (session.typedReplies > 0) Assistance.hint,
+        // Legacy parked results still restore activity, but an unknown
+        // completion date cannot establish recent independent practice.
+        if (!completionDateKnown) Assistance.hint,
         if (session.repeats > 0) Assistance.replay,
       },
       answered: session.learnerTurns > 0,
@@ -193,6 +240,8 @@ final class QsoDraft {
     required this.session,
     this.pendingText = '',
     this.pendingId,
+    this.typedReply = false,
+    this.pendingWasTyped = false,
     this.active = Duration.zero,
   });
 
@@ -203,5 +252,7 @@ final class QsoDraft {
 
   /// Its submission id, so sending it after a restore cannot double-submit.
   final String? pendingId;
+  final bool typedReply;
+  final bool pendingWasTyped;
   final Duration active;
 }

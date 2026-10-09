@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "Kurzes QSO üben",
   "learnQsoShortExchangeHint": "Bestätige Rufzeichen, tausche Signalrapporte aus und verabschiede dich ohne Hilfe, bevor du ein vollständiges QSO übst.",
   "learnQsoExplorePending": "Vollständiges QSO erkunden · weitere Übung nötig",
-  "learnQsoReadyHint": "Du hast aktuelle eigenständige Übungsergebnisse und kannst vollständige simulierte QSOs beginnen."
+  "learnQsoReadyHint": "Du hast aktuelle eigenständige Übungsergebnisse und kannst vollständige simulierte QSOs beginnen.",
+  "goalsTitle": "Lernziel",
+  "goalsFirstQso": "Erstes QSO",
+  "goalsConversation": "Gespräche und Kopfhören",
+  "goalsContest": "Contest-QSOs",
+  "goalsExplanation": "Nach CW Academy. Pro Meilenstein sind zwei selbstständige Versuche mit mindestens 90 % bei der angegebenen Effektivgeschwindigkeit innerhalb von 28 Tagen erforderlich.",
+  "goalsBeginner": "Beginne mit dem Zeichenkurs. Danach ergänzt der Tagesplan Hörverständnis und QSOs passend zum Ziel.",
+  "goalsComplete": "Alle Meilensteine derzeit erreicht",
+  "goalsPractice": "Nächste Fähigkeit üben",
+  "goalsCopying": "Zeichenerkennung",
+  "goalsSending": "Lesbares Geben",
+  "goalsWords": "Worterkennung",
+  "goalsPhrases": "Satzverständnis",
+  "goalsInformation": "QSO-Informationen",
+  "goalsStory": "Kurzgeschichten im Kopf",
+  "goalsQso": "QSO abschließen",
+  "goalsCompetition": "Contest-Betrieb",
+  "goalsPlanListening": "Höre die für dein Ziel benötigten Informationen.",
+  "goalsPlanExchange": "Übe einen interaktiven Austausch passend zu deinem Ziel.",
+  "mistakesTitle": "Fehlerheft",
+  "mistakesPending": "Zu wiederholen",
+  "mistakesRecovered": "Beherrscht",
+  "mistakesHint": "Wiederhole die ursprüngliche Aufgabe bei gleicher Geschwindigkeit und gleichen Bedingungen. Zwei genaue Antworten an verschiedenen Tagen gelten als beherrscht. Wiederholtes Abspielen und angezeigte Antworten zählen nicht.",
+  "mistakesEmptyPending": "Keine Fehler zur Wiederholung. Falsch beantwortete Aufgaben werden hier nach dem Üben gespeichert.",
+  "mistakesEmptyRecovered": "Noch keine beherrschten Aufgaben. Beantworte eine Aufgabe an zwei verschiedenen Tagen selbstständig richtig.",
+  "mistakesOriginalCopy": "Erste falsche Antwort",
+  "mistakesLastCopy": "Letzte Antwort",
+  "mistakesNoAnswer": "Keine Antwort",
+  "mistakesFailures": "Fehlversuche",
+  "mistakesFirstFailure": "Erster Fehler",
+  "mistakesLastFailure": "Letzter Fehler",
+  "mistakesCorrectDays": "Tage mit selbstständiger richtiger Antwort",
+  "mistakesRecoveredOn": "Beherrscht seit",
+  "mistakesRetry": "Ursprüngliche Aufgabe wiederholen",
+  "qsoAdvancedContestTitle": "Contest-Austausch",
+  "qsoAdvancedContestHint": "Rufzeichen, RST und Seriennummer austauschen, dann eine korrigierte Nummer bestätigen.",
+  "qsoAdvancedPotaTitle": "POTA Park zu Park",
+  "qsoAdvancedPotaHint": "Rufzeichen, RST und Parkreferenzen austauschen, dann den korrigierten Park bestätigen.",
+  "qsoAdvancedSerialLabel": "Deine Seriennummer",
+  "qsoAdvancedParkLabel": "Deine Parkreferenz",
+  "qsoAdvancedInvalidSerial": "Gib eine Seriennummer von 1 bis 9999 ein.",
+  "qsoAdvancedInvalidPark": "Parkpräfix und 4–5 Ziffern verwenden, z. B. US-1234.",
+  "qsoAdvancedRepeatTitle": "Ein Feld wiederholen",
+  "qsoAdvancedRepeatHint": "Nur verpasste Informationen anfordern; die Phase bleibt gleich.",
+  "qsoAdvancedTypedMode": "Antwort tippen (mit Hilfe)",
+  "qsoAdvancedKeyedMode": "Antwort tasten",
+  "qsoAdvancedTypedReply": "Deine Sendung",
+  "qsoAdvancedContestStage": "RST und deine Seriennummer senden",
+  "qsoAdvancedPotaStage": "RST und deinen Park senden",
+  "qsoAdvancedCorrectionStage": "Korrigierte Angaben bestätigen",
+  "qsoAdvancedCorrectionHint": "Auf CORR achten, dann das RST der Gegenstation und die korrigierte Nummer oder den Park bestätigen. Erst sauber senden, dann das Tempo erhöhen.",
+  "qsoAdvancedIssueMissingSerial": "NR und deine Seriennummer senden.",
+  "qsoAdvancedIssueInvalidSerial": "Die Nummer muss aus 1–4 Ziffern bestehen und größer als null sein.",
+  "qsoAdvancedIssueWrongSerial": "Die Seriennummer stimmt nicht mit der erwarteten Nummer überein.",
+  "qsoAdvancedIssueMissingPark": "PARK und die Parkreferenz senden.",
+  "qsoAdvancedIssueInvalidPark": "Vollständiges Parkpräfix und 4–5 Ziffern verwenden.",
+  "qsoAdvancedIssueWrongPark": "Die Parkreferenz stimmt nicht mit dem erwarteten Park überein.",
+  "qsoAdvancedIssueWrongRemoteRst": "Bestätige das gehörte RST der Gegenstation.",
+  "qsoAdvancedContestSummary": "Contest-Übung: Rufzeichen, Rapport, Seriennummer und Korrektur bestätigt.",
+  "qsoAdvancedPotaSummary": "POTA-Übung: Rufzeichen, Rapport, Park und Korrektur bestätigt.",
+  "comprehensionTitle": "Wörter und Sätze im Kopf hören",
+  "comprehensionIntro": "Höre die ganze Nachricht, behalte ihren Sinn im Kopf und beantworte dann die Fragen. Alle Übungen sind eigens erstellt und offline verfügbar.",
+  "comprehensionModeLabel": "Übungsart",
+  "comprehensionWords": "Ganze Wörter",
+  "comprehensionPhrases": "Wortteile und Sätze",
+  "comprehensionQso": "QSO-Informationen",
+  "comprehensionPota": "POTA-Austausch",
+  "comprehensionStory": "Kurze Geschichten",
+  "comprehensionWordsHelp": "Erkenne das ganze Wort am Klang, ohne jeden Buchstaben mitzuschreiben.",
+  "comprehensionPhrasesHelp": "Erkenne vertraute Wortteile, dann kurze Ausdrücke und vollständige Sätze.",
+  "comprehensionQsoHelp": "Merke dir Rufzeichen, Name, Ort und Signalrapport.",
+  "comprehensionPotaHelp": "Merke dir beide Rufzeichen, die Parkkennung und den Signalrapport. Das erste Rufzeichen gehört der gerufenen Station.",
+  "comprehensionStoryHelp": "Schreibe nicht mit. Merke dir wer, wohin, wann und wozu. Antworte mit den englischen Wörtern aus der Nachricht.",
+  "comprehensionSpeedLabel": "Effektive Geschwindigkeit",
+  "comprehensionSpeed": "Zeichen {character} / effektiv {effective} WPM",
+  "comprehensionPreviewMissing": "Die Nachricht enthält noch nicht gelernte Zeichen: {symbols}. Du kannst sie als unterstützte Vorschau hören.",
+  "comprehensionAssisted": "Unterstützte Übung · Wiederholung, Textanzeige oder neue Zeichen",
+  "comprehensionIndependent": "Unabhängiger Versuch · einmal gehört, ohne Textanzeige",
+  "comprehensionReveal": "Text anzeigen (mit Hilfe)",
+  "comprehensionTarget": "Sendetext",
+  "comprehensionAnswer": "Wort oder Satz",
+  "comprehensionCallsign": "Gerufene Station / Rufzeichen",
+  "comprehensionOtherCallsign": "Sendende Station / Rufzeichen",
+  "comprehensionName": "Name des Operators",
+  "comprehensionQth": "Ort (QTH)",
+  "comprehensionRst": "Signalrapport (RST)",
+  "comprehensionPark": "Parkkennung",
+  "comprehensionPerson": "Wer?",
+  "comprehensionDestination": "Wohin ging die Person?",
+  "comprehensionTime": "Wann?",
+  "comprehensionAction": "Was wollte die Person tun?",
+  "comprehensionScore": "{correct} von {total} Informationsfeldern richtig",
+  "comprehensionNext": "Nächste Nachricht",
+  "comprehensionDone": "Fertig",
+  "comprehensionSaveFailed": "Das Ergebnis konnte nicht gespeichert werden. Versuche es vor dem Verlassen erneut.",
+  "comprehensionAudioFailed": "Audio ist nicht verfügbar. Prüfe die Ausgabe und versuche es erneut.",
+  "comprehensionAudioRequired": "Diese Hörübung verwendet Ton, auch wenn er in anderen Übungen deaktiviert ist.",
+  "comprehensionHistory": "Letzte unabhängige Versuche: {count} · Feldgenauigkeit {percent}%",
+  "comprehensionEmptyHistory": "Hier erscheinen unabhängige Hörergebnisse. Unterstützte Übungen werden separat gespeichert.",
+  "comprehensionFieldCorrect": "Richtig",
+  "comprehensionFieldWrong": "Dieses Feld wiederholen",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

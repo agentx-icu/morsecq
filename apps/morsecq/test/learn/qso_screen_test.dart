@@ -4,6 +4,7 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/training/advanced_learning.dart';
 import 'package:morsecq/training/qso_practice.dart';
 import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/qso/qso_screen.dart';
@@ -85,6 +86,313 @@ final class _NoWake implements ScreenWakeApi {
 }
 
 void main() {
+  testWidgets(
+    'typed submission survives reload and stays assisted protocol practice',
+    (tester) async {
+      final t = await _training();
+      final playback = FakeLearnPlaybackFactory();
+      final session = _session(scenario: QsoScenario.shortExchange);
+      await _pumpScreen(tester, t, session, playback);
+      await _finishPlayback(tester, playback.clock);
+      await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+      await tester.pump();
+      final text = '${session.remote.callsign} DE BD1XYZ K';
+      await tester.enterText(
+        find.byKey(const ValueKey('qso-typed-reply')),
+        text,
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('qso-send')));
+      await tester.pumpAndSettle();
+      expect(session.stage, QsoStage.exchange);
+      expect(session.toJson()['typedReplies'], 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      final restored = (await t.controller.loadQsoDraft())!.session;
+      expect(restored.toJson()['typedReplies'], 1);
+      restored.submit('keyed-report', 'UR RST 599 K');
+      restored.submit('keyed-closing', 'TU 73 <SK>');
+      await t.controller.finishQso(restored, Duration.zero);
+      final row = t.controller.progress.history.single;
+      expect(row.sourceRef, 'qso:shortExchange:3/3');
+      expect(row.assistance, contains(Assistance.hint));
+      expect(row.isKnownUnassisted, isFalse);
+      expect(
+        t.controller.learningRoute.milestones
+            .where((m) => m.skill == RouteSkill.qso)
+            .every((m) => m.attempts == 0),
+        isTrue,
+      );
+    },
+  );
+
+  testWidgets(
+    'typed pending text remains assisted after switching to keying and reload',
+    (tester) async {
+      final t = await _training();
+      final playback = FakeLearnPlaybackFactory();
+      final session = _session(scenario: QsoScenario.shortExchange);
+      await _pumpScreen(tester, t, session, playback);
+      await _finishPlayback(tester, playback.clock);
+      await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+      await tester.pump();
+      final text = '${session.remote.callsign} DE BD1XYZ K';
+      await tester.enterText(
+        find.byKey(const ValueKey('qso-typed-reply')),
+        text,
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+      await tester.pumpAndSettle();
+      final saved = (await t.controller.readDoc(QsoPractice.draftDoc))!;
+      expect(saved['typedReply'], isFalse);
+      expect(saved['pendingWasTyped'], isTrue);
+      final draft = (await t.controller.loadQsoDraft())!;
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      await tester.pumpWidget(
+        l10nApp(
+          home: QsoScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+            session: draft.session,
+            resumed: draft,
+            screenWake: _NoWake(),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('qso-send')));
+      await tester.pump();
+      expect(draft.session.stage, QsoStage.exchange);
+      expect(draft.session.toJson()['typedReplies'], 1);
+    },
+  );
+
+  testWidgets(
+    'goal setup uses frozen speed and binds only its selected scenario',
+    (tester) async {
+      tester.view.physicalSize = const Size(430, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      for (final changeScenario in [false, true]) {
+        final t = await TestTraining.create(
+          progress: TrainerProgress(
+            currentLesson: 30,
+            dailyPlan: DailyPlan(
+              id: 'contest-plan',
+              date: DailyPlan.dateKey(kTestNow),
+              profileKey: '',
+              seed: 1,
+              budgetMinutes: 15,
+              settings: const PlanSettings(
+                characterWpm: 22,
+                effectiveWpm: 9,
+                toneHz: 600,
+                groupSize: 5,
+              ),
+              steps: [
+                PlanStep(
+                  id: 'contest-plan-step',
+                  kind: PlanStepKind.qso,
+                  pool: const ['contestExchange'],
+                  minutes: 3,
+                  charBudget: 50,
+                  lesson: 30,
+                  reason: PlanReason.goalExchange,
+                  state: PlanStepState.active,
+                  seed: 317,
+                ),
+              ],
+            ),
+          ),
+          settings: const TrainingSettings(keyerMode: KeyerMode.straight),
+        );
+        final original = t.controller.settings;
+        await tester.pumpWidget(
+          l10nApp(
+            home: QsoSetupScreen(
+              key: ValueKey(changeScenario),
+              controller: t.controller,
+              playback: FakeLearnPlaybackFactory(),
+              initialScenario: QsoScenario.contestExchange,
+              practiceTiming: const MorseTiming(wpm: 22, farnsworthWpm: 9),
+              planStepId: 'contest-plan-step',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('qso-station-serial')),
+          findsOneWidget,
+        );
+        if (changeScenario) {
+          await tester.ensureVisible(
+            find.byKey(const ValueKey('qso-scenario-pota')),
+          );
+          await tester.tap(find.byKey(const ValueKey('qso-scenario-pota')));
+          await tester.pumpAndSettle();
+          expect(
+            find.byKey(const ValueKey('qso-station-park')),
+            findsOneWidget,
+          );
+        }
+        final start = find.byKey(const ValueKey('qso-start'));
+        await tester.ensureVisible(start);
+        await tester.tap(start);
+        await tester.pumpAndSettle();
+        final session = tester
+            .widget<QsoScreen>(find.byType(QsoScreen))
+            .session;
+        expect(session.characterWpm, 22);
+        expect(session.effectiveWpm, 9);
+        expect(session.planStepId, changeScenario ? null : 'contest-plan-step');
+        expect(
+          session.scenario,
+          changeScenario
+              ? QsoScenario.potaActivation
+              : QsoScenario.contestExchange,
+        );
+        expect(t.controller.settings, original);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+      }
+    },
+  );
+
+  testWidgets('typed draft keeps unsent text and restores silently', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final s = _session(scenario: QsoScenario.contestExchange);
+    final text = '${s.remote.callsign} DE BD1XYZ K';
+    await t.controller.saveQsoDraft(
+      s,
+      pendingText: text,
+      pendingId: 'typed-draft',
+      typedReply: true,
+    );
+    final draft = (await t.controller.loadQsoDraft())!;
+    expect(draft.typedReply, isTrue);
+    tester.view.physicalSize = const Size(430, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      l10nApp(
+        home: QsoScreen(
+          controller: t.controller,
+          playback: playback,
+          session: draft.session,
+          resumed: draft,
+          screenWake: _NoWake(),
+        ),
+      ),
+    );
+    await tester.pump();
+    final field = tester.widget<TextField>(
+      find.byKey(const ValueKey('qso-typed-reply')),
+    );
+    expect(field.controller!.text, text);
+    expect(playback.sink.events, isEmpty);
+    await tester.tap(find.byKey(const ValueKey('qso-send')));
+    await tester.pump();
+    expect(draft.session.stage, QsoStage.exchange);
+    expect(draft.session.submit('typed-draft', text).duplicate, isTrue);
+    await _finishPlayback(tester, playback.clock);
+  });
+
+  testWidgets(
+    'POTA typed replies complete park exchange and corrected reference',
+    (tester) async {
+      final t = await _training();
+      final playback = FakeLearnPlaybackFactory();
+      final session = _session(scenario: QsoScenario.potaActivation);
+      await _pumpScreen(tester, t, session, playback);
+      await _finishPlayback(tester, playback.clock);
+      await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+      await tester.pump();
+      for (final text in [
+        '${session.remote.callsign} DE BD1XYZ K',
+        'UR RST 599 PARK US1234 K',
+        'QSL RST ${session.report} PARK ${session.remote.parkOnAir} K',
+        'TU 73 <SK>',
+      ]) {
+        await _finishPlayback(tester, playback.clock);
+        await tester.enterText(
+          find.byKey(const ValueKey('qso-typed-reply')),
+          text,
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(const ValueKey('qso-send')));
+        await tester.pumpAndSettle();
+      }
+      expect(session.isDone, isTrue);
+      expect(session.firstTryStages, 4);
+      expect(
+        t.controller.progress.history.single.sourceRef,
+        'qso:potaActivation:4/4',
+      );
+      expect(t.controller.progress.charStats, isEmpty);
+    },
+  );
+
+  testWidgets('contest typed replies complete all stages and credit once', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.contestExchange);
+    await _pumpScreen(tester, t, session, playback);
+    await _finishPlayback(tester, playback.clock);
+    await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+    await tester.pump();
+    for (final text in [
+      '${session.remote.callsign} DE BD1XYZ K',
+      'UR RST 5NN NR 001 K',
+      'QSL RST ${session.report} NR ${session.remote.serialNumber} K',
+      'TU 73',
+    ]) {
+      await _finishPlayback(tester, playback.clock);
+      await tester.enterText(
+        find.byKey(const ValueKey('qso-typed-reply')),
+        text,
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('qso-send')));
+      await tester.pumpAndSettle();
+    }
+    expect(session.isDone, isTrue);
+    expect(session.firstTryStages, 4);
+    expect(t.controller.progress.history, hasLength(1));
+    expect(
+      t.controller.progress.history.single.sourceRef,
+      'qso:contestExchange:4/4',
+    );
+    await t.controller.finishQso(session, Duration.zero);
+    expect(t.controller.progress.history, hasLength(1));
+    expect(t.controller.progress.charStats, isEmpty);
+  });
+
+  testWidgets('targeted repeat is available only after the field was heard', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.contestExchange);
+    await _pumpScreen(tester, t, session, playback);
+    expect(find.byKey(const ValueKey('qso-repeat-CALL')), findsOneWidget);
+    expect(find.byKey(const ValueKey('qso-repeat-NR')), findsNothing);
+    await _finishPlayback(tester, playback.clock);
+    await tester.tap(find.byKey(const ValueKey('qso-repeat-CALL')));
+    await tester.pump();
+    expect(session.stage, QsoStage.callConfirm);
+    expect(session.repeats, 1);
+    expect(session.turns.last.text, 'CALL ${session.remote.callsign} K');
+    expect(session.hints, 0);
+    await _finishPlayback(tester, playback.clock);
+  });
+
   testWidgets(
     'short exchange keys all three stages and records first-try evidence',
     (tester) async {

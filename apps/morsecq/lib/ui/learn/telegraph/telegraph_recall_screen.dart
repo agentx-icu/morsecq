@@ -73,6 +73,7 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
   }
 
   Future<void> _next() async {
+    if (_done || _lastCorrect == null) return;
     final card = _deck[_index];
     setState(() {
       _answers.add((card.char, _lastCorrect ?? false, _revealed));
@@ -95,7 +96,7 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
   /// Saves the round; on failure the result stays on screen with a retry.
   Future<void> _save() async {
     // The snackbar's Retry may outlive this screen.
-    if (!mounted) return;
+    if (!mounted || _saving || _saved != null) return;
     setState(() => _saving = true);
     try {
       final stats = await widget.controller.recordTelegraphRecall(

@@ -56,15 +56,18 @@ final class FileTrainingDocStore implements TrainingDocStore {
   @override
   Future<List<String>> names() async {
     if (!await directory.exists()) return const <String>[];
-    final out = <String>[];
+    final out = <String>{};
     await for (final entity in directory.list()) {
       final base = p.basename(entity.path);
-      if (entity is File && base.endsWith('.json')) {
-        out.add(base.substring(0, base.length - 5));
-      }
+      if (entity is! File) continue;
+      final suffix = base.endsWith('.json.bak') ? '.json.bak' : '.json';
+      if (!base.endsWith(suffix)) continue;
+      final name = base.substring(0, base.length - suffix.length);
+      if (_safe.hasMatch(name) && !name.contains('..')) out.add(name);
     }
-    out.sort();
-    return out;
+    // A replacement interrupted after rotation leaves only .json.bak.
+    // Include it so parked results can be discovered and recovered.
+    return out.toList()..sort();
   }
 }
 

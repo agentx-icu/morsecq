@@ -10,6 +10,7 @@ final class QsoTurn {
     required this.text,
     required this.stage,
     this.accepted,
+    this.assistance = false,
     this.issues = const <QsoIssue>[],
   });
 
@@ -19,6 +20,7 @@ final class QsoTurn {
 
   /// Learner turns only: whether the stage accepted it.
   final bool? accepted;
+  final bool assistance;
   final List<QsoIssue> issues;
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -26,6 +28,7 @@ final class QsoTurn {
     'text': text,
     'stage': stage.name,
     'accepted': accepted,
+    'assistance': assistance,
     'issues': issues.map((i) => i.name).toList(),
   };
 
@@ -34,6 +37,7 @@ final class QsoTurn {
     text: json['text']! as String,
     stage: QsoStage.parse(json['stage'] as String?),
     accepted: json['accepted'] as bool?,
+    assistance: json['assistance'] as bool? ?? false,
     issues: [
       for (final name in (json['issues'] as List<Object?>? ?? const []))
         for (final i in QsoIssue.values)
@@ -100,10 +104,12 @@ final class QsoSession {
     required QsoStage stage,
     required List<QsoTurn> turns,
     required Set<String> processed,
+    this.planStepId,
     this.repeats = 0,
     this.hints = 0,
     this.consecutiveErrors = 0,
     this.firstTryStages = 0,
+    this.typedReplies = 0,
   }) : _effectiveWpm = effectiveWpm,
        _stage = stage,
        _turns = turns,
@@ -116,9 +122,19 @@ final class QsoSession {
     required double characterWpm,
     required double effectiveWpm,
     double minEffectiveWpm = 5,
+    String? planStepId,
   }) {
     final random = Random(seed);
     final l = local.normalized();
+    if (scenario.isAdvanced &&
+        ((scenario == QsoScenario.contestExchange &&
+                !QsoStation.isValidSerial(l.serialNumber)) ||
+            (scenario == QsoScenario.potaActivation &&
+                !QsoStation.isValidPark(l.parkReference)))) {
+      throw ArgumentError(
+        'Invalid station exchange details for ${scenario.name}',
+      );
+    }
     QsoStation remote;
     do {
       remote = QsoStation.random(random);
@@ -138,6 +154,7 @@ final class QsoSession {
       stage: first,
       turns: <QsoTurn>[],
       processed: <String>{},
+      planStepId: planStepId,
     );
     session._remoteFor(first);
     return session;
@@ -147,6 +164,7 @@ final class QsoSession {
 
   final QsoScenario scenario;
   final int seed;
+  final String? planStepId;
   final QsoStation local;
   final QsoStation remote;
 
@@ -165,6 +183,10 @@ final class QsoSession {
 
   /// Stages accepted on the first answer (field correctness).
   int firstTryStages;
+
+  /// Protocol practice submitted through the text input instead of keying.
+  /// Kept separately from the semantic field score and counted as assistance.
+  int typedReplies;
   bool _stageHadError = false;
 
   QsoStage get stage => _stage;
@@ -177,16 +199,36 @@ final class QsoSession {
   /// the learner opens.
   String? get lastRemoteText {
     for (final t in _turns.reversed) {
-      if (t.fromRemote) return t.text;
+      if (t.fromRemote && !t.assistance) return t.text;
     }
     return null;
   }
 
   int get learnerTurns => _turns.where((t) => !t.fromRemote).length;
 
+  /// Only fields actually announced in a scripted turn are offered. A
+  /// correction replaces the previously heard value for the same field.
+  Set<QsoRepeatField> get availableRepeatFields => {
+    for (final field in QsoRepeatField.values)
+      if (_heardValue(field) != null) field,
+  };
+
+  String? _heardValue(QsoRepeatField field) {
+    for (final turn in _turns.reversed) {
+      if (!turn.fromRemote || turn.assistance) continue;
+      final words = QsoEvaluator.words(turn.text);
+      if (field == QsoRepeatField.call && words.contains(remote.callsign)) {
+        return remote.callsign;
+      }
+      final index = words.indexOf(field.keyword);
+      if (index >= 0 && index + 1 < words.length) return words[index + 1];
+    }
+    return null;
+  }
+
   /// Processes one explicit submission. A repeated [submissionId] (double
   /// tap, rebuild) returns a duplicate reply and changes nothing.
-  QsoReply submit(String submissionId, String text) {
+  QsoReply submit(String submissionId, String text, {bool typed = false}) {
     final before = _stage;
     if (_processed.contains(submissionId) || isDone) {
       return QsoReply(
@@ -197,12 +239,14 @@ final class QsoSession {
       );
     }
     _processed.add(submissionId);
+    if (typed && text.trim().isNotEmpty) typedReplies++;
     final eval = QsoEvaluator.evaluate(
       text,
       stage: _stage,
       scenario: scenario,
       local: local,
       remote: remote,
+      remoteReport: report,
     );
     _turns.add(
       QsoTurn(
@@ -216,8 +260,14 @@ final class QsoSession {
     switch (eval.intent) {
       case QsoIntent.repeat:
         repeats++;
-        final again = lastRemoteText;
-        if (again != null) _addRemote(again);
+        final field = eval.repeatField;
+        final value = field == null ? null : _heardValue(field);
+        final again = field == null
+            ? lastRemoteText
+            : value == null
+            ? 'NIL ${field.keyword} K'
+            : '${field.keyword} $value K';
+        if (again != null) _addRemote(again, assistance: true);
         return QsoReply(
           evaluation: eval,
           stageBefore: before,
@@ -232,7 +282,7 @@ final class QsoSession {
         final changed = lowered < _effectiveWpm;
         _effectiveWpm = lowered;
         final again = lastRemoteText;
-        if (again != null) _addRemote(again);
+        if (again != null) _addRemote(again, assistance: true);
         return QsoReply(
           evaluation: eval,
           stageBefore: before,
@@ -279,15 +329,26 @@ final class QsoSession {
       QsoStage.callConfirm =>
         level == 2 ? '$r DE $l K' : '<REMOTE> DE <LOCAL> K',
       QsoStage.exchange =>
-        scenario == QsoScenario.shortExchange
+        scenario == QsoScenario.contestExchange
+            ? 'UR RST 599 NR ${local.serialNumber} K'
+            : scenario == QsoScenario.potaActivation
+            ? 'UR RST 599 PARK ${local.parkOnAir} K'
+            : scenario == QsoScenario.shortExchange
             ? 'UR RST 599 K'
             : (scenario == QsoScenario.callCq ? '$r DE $l ' : '') +
                   (level == 2
                       ? 'UR RST 599 NAME ${local.name} QTH ${local.qth} K'
                       : 'UR RST <RST> NAME <NAME> QTH <QTH> K'),
       QsoStage.confirmInfo =>
-        level == 2 ? 'R R TNX ${remote.name}' : 'R R TNX <REMOTE NAME>',
-      QsoStage.closing => 'TU 73 <SK>',
+        scenario.isAdvanced
+            ? 'R R RST ${level == 2 ? report : '<REMOTE RST>'} '
+                  '${scenario == QsoScenario.contestExchange ? 'NR' : 'PARK'} '
+                  '${level == 2 ? (scenario == QsoScenario.contestExchange ? remote.serialNumber : remote.parkOnAir) : '<CORRECTED VALUE>'} K'
+            : level == 2
+            ? 'R R TNX ${remote.name}'
+            : 'R R TNX <REMOTE NAME>',
+      QsoStage.closing =>
+        scenario == QsoScenario.contestExchange ? 'TU 73' : 'TU 73 <SK>',
       QsoStage.done => '',
     };
     return QsoHint(stage: _stage, level: level, example: example);
@@ -305,13 +366,20 @@ final class QsoSession {
     return text;
   }
 
-  void _addRemote(String text) =>
-      _turns.add(QsoTurn(fromRemote: true, text: text, stage: _stage));
+  void _addRemote(String text, {bool assistance = false}) => _turns.add(
+    QsoTurn(
+      fromRemote: true,
+      text: text,
+      stage: _stage,
+      assistance: assistance,
+    ),
+  );
 
   Map<String, Object?> toJson() => <String, Object?>{
     'v': QsoScript.version,
     'scenario': scenario.name,
     'seed': seed,
+    'planStepId': planStepId,
     'local': local.toJson(),
     'remote': remote.toJson(),
     'report': report,
@@ -325,6 +393,7 @@ final class QsoSession {
     'hints': hints,
     'consecutiveErrors': consecutiveErrors,
     'firstTryStages': firstTryStages,
+    'typedReplies': typedReplies,
     'stageHadError': _stageHadError,
   };
 
@@ -333,6 +402,7 @@ final class QsoSession {
     final session = QsoSession._(
       scenario: QsoScenario.parse(json['scenario'] as String?),
       seed: (json['seed']! as num).toInt(),
+      planStepId: json['planStepId'] as String?,
       local: QsoStation.fromJson(json['local']! as Map<String, Object?>),
       remote: QsoStation.fromJson(json['remote']! as Map<String, Object?>),
       report: json['report']! as String,
@@ -349,6 +419,7 @@ final class QsoSession {
       hints: (json['hints'] as num?)?.toInt() ?? 0,
       consecutiveErrors: (json['consecutiveErrors'] as num?)?.toInt() ?? 0,
       firstTryStages: (json['firstTryStages'] as num?)?.toInt() ?? 0,
+      typedReplies: (json['typedReplies'] as num?)?.toInt() ?? 0,
     );
     session._stageHadError = json['stageHadError'] as bool? ?? false;
     return session;

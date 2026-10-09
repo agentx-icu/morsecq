@@ -10,6 +10,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/qso_practice.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
+import '../../../training/training_plan.dart';
 import '../../../training/training_settings.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
@@ -25,10 +26,16 @@ class QsoSetupScreen extends StatefulWidget {
     super.key,
     required this.controller,
     required this.playback,
+    this.initialScenario = QsoScenario.shortExchange,
+    this.practiceTiming,
+    this.planStepId,
   });
 
   final TrainingController controller;
   final LearnPlaybackFactory playback;
+  final QsoScenario initialScenario;
+  final MorseTiming? practiceTiming;
+  final String? planStepId;
 
   @override
   State<QsoSetupScreen> createState() => _QsoSetupScreenState();
@@ -38,7 +45,9 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   final _call = TextEditingController();
   final _name = TextEditingController();
   final _qth = TextEditingController();
-  QsoScenario _scenario = QsoScenario.shortExchange;
+  final _serial = TextEditingController();
+  final _park = TextEditingController();
+  late QsoScenario _scenario = widget.initialScenario;
   QsoDraft? _draft;
   bool _loaded = false;
   LearnPlayback? _playback;
@@ -149,6 +158,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
       _call.text = station.callsign;
       _name.text = station.name;
       _qth.text = station.qth;
+      _serial.text = station.serialNumber;
+      _park.text = station.parkReference;
       _draft = draft;
       _loaded = true;
     });
@@ -162,9 +173,14 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
 
   bool get _valid =>
       QsoStation.isValidCallsign(_call.text) &&
-      (_scenario == QsoScenario.shortExchange ||
-          (QsoStation.isValidWord(_name.text) &&
-              QsoStation.isValidWord(_qth.text)));
+      switch (_scenario) {
+        QsoScenario.shortExchange => true,
+        QsoScenario.contestExchange => QsoStation.isValidSerial(_serial.text),
+        QsoScenario.potaActivation => QsoStation.isValidPark(_park.text),
+        _ =>
+          QsoStation.isValidWord(_name.text) &&
+              QsoStation.isValidWord(_qth.text),
+      };
 
   Future<void> _open(QsoSession session, {QsoDraft? resumed}) async {
     _playback?.player.stop();
@@ -186,8 +202,29 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
       callsign: _call.text,
       name: _name.text,
       qth: _qth.text,
+      serialNumber: _serial.text,
+      parkReference: _park.text,
     ).normalized();
-    final t = _c.trainerSettings;
+    final chosen = scenario ?? _scenario;
+    final plan = _c.todayPlan;
+    final step = widget.planStepId == null
+        ? null
+        : plan?.stepById(widget.planStepId!);
+    final bound =
+        chosen == widget.initialScenario &&
+        step?.kind == PlanStepKind.qso &&
+        step?.state == PlanStepState.active &&
+        step!.pool.length == 1 &&
+        step.pool.single == chosen.name;
+    final snapshot = bound ? plan!.settingsOf(step) : null;
+    final timing = snapshot == null
+        ? widget.practiceTiming ?? _c.trainerSettings.toTiming()
+        : MorseTiming(
+            wpm: snapshot.characterWpm,
+            farnsworthWpm: snapshot.effectiveWpm < snapshot.characterWpm
+                ? snapshot.effectiveWpm
+                : null,
+          );
     try {
       await _c.saveQsoStation(station);
       await _c.discardQsoDraft();
@@ -197,11 +234,12 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     if (!mounted) return;
     await _open(
       QsoSession.start(
-        scenario: scenario ?? _scenario,
-        seed: _c.random.nextInt(1 << 30),
+        scenario: chosen,
+        seed: bound ? step.seed : _c.random.nextInt(1 << 30),
         local: station,
-        characterWpm: t.characterWpm,
-        effectiveWpm: t.isFarnsworth ? t.farnsworthWpm! : t.characterWpm,
+        characterWpm: timing.wpm,
+        effectiveWpm: timing.farnsworthWpm ?? timing.wpm,
+        planStepId: bound ? step.id : null,
       ),
     );
   }
@@ -212,6 +250,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     _call.dispose();
     _name.dispose();
     _qth.dispose();
+    _serial.dispose();
+    _park.dispose();
     super.dispose();
   }
 
@@ -283,6 +323,18 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                               title: Text(s.learnQsoCall),
                               subtitle: Text(s.learnQsoCallHint),
                             ),
+                            RadioListTile<QsoScenario>(
+                              key: const ValueKey('qso-scenario-contest'),
+                              value: QsoScenario.contestExchange,
+                              title: Text(s.qsoAdvancedContestTitle),
+                              subtitle: Text(s.qsoAdvancedContestHint),
+                            ),
+                            RadioListTile<QsoScenario>(
+                              key: const ValueKey('qso-scenario-pota'),
+                              value: QsoScenario.potaActivation,
+                              title: Text(s.qsoAdvancedPotaTitle),
+                              subtitle: Text(s.qsoAdvancedPotaHint),
+                            ),
                           ],
                         ),
                       ),
@@ -298,7 +350,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                         ),
                         onChanged: (_) => setState(() {}),
                       ),
-                      if (_scenario != QsoScenario.shortExchange) ...[
+                      if (_scenario == QsoScenario.respondToCq ||
+                          _scenario == QsoScenario.callCq) ...[
                         const SizedBox(height: 12),
                         TextField(
                           controller: _name,
@@ -319,6 +372,40 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           decoration: InputDecoration(
                             labelText: s.learnQsoYourQth,
                             errorText: _wordError(s, _qth),
+                            border: const OutlineInputBorder(),
+                          ),
+                          onChanged: (_) => setState(() {}),
+                        ),
+                      ],
+                      if (_scenario == QsoScenario.contestExchange) ...[
+                        const SizedBox(height: 12),
+                        TextField(
+                          key: const ValueKey('qso-station-serial'),
+                          controller: _serial,
+                          keyboardType: TextInputType.number,
+                          autocorrect: false,
+                          decoration: InputDecoration(
+                            labelText: s.qsoAdvancedSerialLabel,
+                            errorText: QsoStation.isValidSerial(_serial.text)
+                                ? null
+                                : s.qsoAdvancedInvalidSerial,
+                            border: const OutlineInputBorder(),
+                          ),
+                          onChanged: (_) => setState(() {}),
+                        ),
+                      ],
+                      if (_scenario == QsoScenario.potaActivation) ...[
+                        const SizedBox(height: 12),
+                        TextField(
+                          key: const ValueKey('qso-station-park'),
+                          controller: _park,
+                          textCapitalization: TextCapitalization.characters,
+                          autocorrect: false,
+                          decoration: InputDecoration(
+                            labelText: s.qsoAdvancedParkLabel,
+                            errorText: QsoStation.isValidPark(_park.text)
+                                ? null
+                                : s.qsoAdvancedInvalidPark,
                             border: const OutlineInputBorder(),
                           ),
                           onChanged: (_) => setState(() {}),

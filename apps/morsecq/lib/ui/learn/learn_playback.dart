@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:morse_io/morse_io.dart';
 
 import '../../training/training_settings.dart';
+import 'learn_playback_output.dart';
 
 /// Everything a Learn screen needs to make Morse perceivable, built once per
 /// screen from the current [TrainingSettings].
@@ -19,7 +20,16 @@ final class LearnPlayback {
     required this.flash,
     required Future<void> Function() dispose,
     this.sidetone,
-  }) : player = MorsePlayer(sink: sink, clock: clock),
+    this.hasAlternativeFeedback = false,
+  }) : player = MorsePlayer(
+         sink: LearnPlaybackOutputSink(
+           inner: sink,
+           tone: sidetone,
+           allowAlternativeFeedback: hasAlternativeFeedback,
+         ),
+         clock: clock,
+         reportOutputFailures: true,
+       ),
        _dispose = dispose;
 
   final MorseSink sink;
@@ -29,6 +39,22 @@ final class LearnPlayback {
 
   /// The sidetone sink when sound is on, for live retuning.
   final SidetoneSink? sidetone;
+
+  /// A prepared flash or mobile haptic output can carry receive practice
+  /// when the audio device refuses a later mark.
+  final bool hasAlternativeFeedback;
+
+  /// Sound-only head copy cannot accept the visual/haptic alternative.
+  MorsePlayer createAssessmentPlayer({bool requireSound = false}) =>
+      MorsePlayer(
+        sink: LearnPlaybackOutputSink(
+          inner: sink,
+          tone: sidetone,
+          allowAlternativeFeedback: !requireSound && hasAlternativeFeedback,
+        ),
+        clock: clock,
+        reportOutputFailures: true,
+      );
 
   final Future<void> Function() _dispose;
   bool _disposed = false;
@@ -110,6 +136,7 @@ final class DevicePlaybackFactory implements LearnPlaybackFactory {
       clock: clock ?? SystemClock.shared,
       flash: flash?.isOn,
       sidetone: sidetone,
+      hasAlternativeFeedback: sinks.any((s) => s is! SidetoneSink),
       dispose: effective.dispose,
     );
   }
