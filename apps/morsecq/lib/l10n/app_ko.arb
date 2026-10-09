@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "짧은 교신 연습하기",
   "learnQsoShortExchangeHint": "호출부호 확인, 신호 보고 교환, 작별을 도움 없이 마친 뒤 전체 교신으로 진행하세요.",
   "learnQsoExplorePending": "전체 교신 체험 · 아직 연습할 항목이 있어요",
-  "learnQsoReadyHint": "최근 독립적인 연습 기록을 갖췄습니다. 전체 모의 교신을 시작할 수 있어요."
+  "learnQsoReadyHint": "최근 독립적인 연습 기록을 갖췄습니다. 전체 모의 교신을 시작할 수 있어요.",
+  "goalsTitle": "학습 목표",
+  "goalsFirstQso": "첫 교신",
+  "goalsConversation": "일상 교신과 머릿속 수신",
+  "goalsContest": "콘테스트 교신",
+  "goalsExplanation": "CW Academy를 참고했습니다. 표시된 실효 속도에서 최근 28일 이내에 도움 없이 정확도 90% 이상을 두 번 달성해야 합니다.",
+  "goalsBeginner": "먼저 문자 과정을 완료하세요. 이후 일일 계획에 목표에 맞는 듣기와 교신 연습이 추가됩니다.",
+  "goalsComplete": "현재 모든 단계 달성",
+  "goalsPractice": "다음 능력 연습",
+  "goalsCopying": "문자 수신",
+  "goalsSending": "명확한 송신",
+  "goalsWords": "단어 듣기",
+  "goalsPhrases": "짧은 문장 이해",
+  "goalsInformation": "교신 정보 파악",
+  "goalsStory": "짧은 이야기 듣기",
+  "goalsQso": "교신 완료",
+  "goalsCompetition": "콘테스트 운용",
+  "goalsPlanListening": "목표에 필요한 정보를 듣고 파악하세요.",
+  "goalsPlanExchange": "목표에 맞는 대화형 교신을 연습하세요.",
+  "mistakesTitle": "오답 노트",
+  "mistakesPending": "복습 대기",
+  "mistakesRecovered": "숙달 완료",
+  "mistakesHint": "원래 속도와 수신 조건으로 원래 문제를 다시 연습하세요. 서로 다른 두 날짜에 도움 없이 완전히 맞히면 숙달로 표시됩니다. 다시 듣거나 답을 확인한 경우에는 숙달 근거로 인정되지 않습니다.",
+  "mistakesEmptyPending": "복습할 오답이 없습니다. 연습 중 틀린 원래 문제가 여기에 저장됩니다.",
+  "mistakesEmptyRecovered": "아직 숙달한 문제가 없습니다. 서로 다른 두 날짜에 도움 없이 맞혀 보세요.",
+  "mistakesOriginalCopy": "첫 오답",
+  "mistakesLastCopy": "최근 답안",
+  "mistakesNoAnswer": "답 없음",
+  "mistakesFailures": "오답 횟수",
+  "mistakesFirstFailure": "첫 오답 날짜",
+  "mistakesLastFailure": "최근 오답 날짜",
+  "mistakesCorrectDays": "도움 없이 맞힌 날짜 수",
+  "mistakesRecoveredOn": "숙달 날짜",
+  "mistakesRetry": "원래 문제 다시 연습",
+  "qsoAdvancedContestTitle": "대회 교환",
+  "qsoAdvancedContestHint": "호출부호, RST, 일련번호를 교환하고 수정된 번호를 확인합니다.",
+  "qsoAdvancedPotaTitle": "POTA 공원 간 교신",
+  "qsoAdvancedPotaHint": "호출부호, RST, 공원 번호를 교환하고 수정된 공원을 확인합니다.",
+  "qsoAdvancedSerialLabel": "내 일련번호",
+  "qsoAdvancedParkLabel": "내 공원 번호",
+  "qsoAdvancedInvalidSerial": "1~9999의 일련번호를 입력하세요.",
+  "qsoAdvancedInvalidPark": "공원 접두어와 4~5자리 숫자를 사용하세요. 예: US-1234.",
+  "qsoAdvancedRepeatTitle": "한 항목만 재전송",
+  "qsoAdvancedRepeatHint": "놓친 정보만 요청하며 현재 교신 단계는 유지됩니다.",
+  "qsoAdvancedTypedMode": "텍스트로 응답 (보조 연습)",
+  "qsoAdvancedKeyedMode": "답신 키잉",
+  "qsoAdvancedTypedReply": "내 송신 내용",
+  "qsoAdvancedContestStage": "RST와 내 일련번호 보내기",
+  "qsoAdvancedPotaStage": "RST와 내 공원 번호 보내기",
+  "qsoAdvancedCorrectionStage": "수정 정보 확인",
+  "qsoAdvancedCorrectionHint": "CORR를 들으면 상대 RST와 수정된 번호 또는 공원을 확인하세요. 속도를 올리기 전에 명확하게 송신하세요.",
+  "qsoAdvancedIssueMissingSerial": "NR와 내 일련번호를 보내세요.",
+  "qsoAdvancedIssueInvalidSerial": "일련번호는 0보다 큰 1~4자리 숫자여야 합니다.",
+  "qsoAdvancedIssueWrongSerial": "일련번호가 확인할 번호와 다릅니다.",
+  "qsoAdvancedIssueMissingPark": "PARK와 공원 번호를 보내세요.",
+  "qsoAdvancedIssueInvalidPark": "전체 공원 접두어와 4~5자리 숫자를 사용하세요.",
+  "qsoAdvancedIssueWrongPark": "공원 번호가 확인할 공원과 다릅니다.",
+  "qsoAdvancedIssueWrongRemoteRst": "상대에게서 들은 RST를 확인하세요.",
+  "qsoAdvancedContestSummary": "대회 연습: 호출부호, 리포트, 번호, 수정 내용을 확인했습니다.",
+  "qsoAdvancedPotaSummary": "POTA 연습: 호출부호, 리포트, 공원, 수정 내용을 확인했습니다.",
+  "comprehensionTitle": "단어와 문장 듣기",
+  "comprehensionIntro": "전체 메시지를 듣고 의미를 기억한 뒤 답하세요. 모든 자료는 독창적으로 제작되었으며 오프라인으로 사용할 수 있습니다.",
+  "comprehensionModeLabel": "연습 모드",
+  "comprehensionWords": "단어 듣기",
+  "comprehensionPhrases": "단어 부분과 짧은 문장",
+  "comprehensionQso": "QSO 정보",
+  "comprehensionPota": "POTA 교환",
+  "comprehensionStory": "짧은 이야기",
+  "comprehensionWordsHelp": "글자마다 받아 적지 않고 소리로 단어 전체를 인식합니다.",
+  "comprehensionPhrasesHelp": "익숙한 단어 부분부터 짧은 구절과 문장 듣기로 나아갑니다.",
+  "comprehensionQsoHelp": "호출부호, 이름, 위치, 신호 보고를 기억하세요.",
+  "comprehensionPotaHelp": "양쪽 호출부호, 공원 번호, 신호 보고를 기억하세요. 첫 호출부호는 호출받는 방송국입니다.",
+  "comprehensionStoryHelp": "받아 적지 않고 인물, 장소, 시간, 목적을 기억하세요. 메시지의 영어 단어로 답하세요.",
+  "comprehensionSpeedLabel": "실효 속도",
+  "comprehensionSpeed": "문자 {character} / 실효 {effective} WPM",
+  "comprehensionPreviewMissing": "아직 배우지 않은 기호가 있습니다: {symbols}. 도움받는 미리듣기로 연습할 수 있습니다.",
+  "comprehensionAssisted": "도움받은 연습 · 재생, 텍스트 보기 또는 미학습 기호",
+  "comprehensionIndependent": "독립 시도 · 한 번 듣고 텍스트를 보지 않음",
+  "comprehensionReveal": "텍스트 보기 (도움)",
+  "comprehensionTarget": "송신 텍스트",
+  "comprehensionAnswer": "단어 또는 문장",
+  "comprehensionCallsign": "호출받는 방송국 / 호출부호",
+  "comprehensionOtherCallsign": "송신 방송국 / 호출부호",
+  "comprehensionName": "운용자 이름",
+  "comprehensionQth": "위치 (QTH)",
+  "comprehensionRst": "신호 보고 (RST)",
+  "comprehensionPark": "공원 번호",
+  "comprehensionPerson": "누구?",
+  "comprehensionDestination": "어디로 갔나요?",
+  "comprehensionTime": "언제?",
+  "comprehensionAction": "무엇을 하러 갔나요?",
+  "comprehensionScore": "정보 {total}개 중 {correct}개 정답",
+  "comprehensionNext": "다음 메시지",
+  "comprehensionDone": "완료",
+  "comprehensionSaveFailed": "결과를 저장하지 못했습니다. 나가기 전에 다시 시도하세요.",
+  "comprehensionAudioFailed": "오디오를 사용할 수 없습니다. 출력 장치를 확인하고 다시 시도하세요.",
+  "comprehensionAudioRequired": "다른 연습 설정에서 소리를 꺼도 이 듣기 연습은 소리를 사용합니다.",
+  "comprehensionHistory": "최근 독립 시도: {count}회 · 정보 정확도 {percent}%",
+  "comprehensionEmptyHistory": "독립 듣기 결과가 여기에 표시됩니다. 도움받은 연습은 별도로 저장됩니다.",
+  "comprehensionFieldCorrect": "정답",
+  "comprehensionFieldWrong": "이 항목 복습",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

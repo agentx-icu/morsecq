@@ -31,5 +31,30 @@ abstract final class QsoLabels {
     QsoIssue.wrongRemoteName => s.learnQsoIssueWrongRemoteName,
     QsoIssue.missing73 => s.learnQsoIssueMissing73,
     QsoIssue.missingSk => s.learnQsoIssueMissingSk,
+    QsoIssue.missingSerial => s.qsoAdvancedIssueMissingSerial,
+    QsoIssue.invalidSerial => s.qsoAdvancedIssueInvalidSerial,
+    QsoIssue.wrongSerial => s.qsoAdvancedIssueWrongSerial,
+    QsoIssue.missingPark => s.qsoAdvancedIssueMissingPark,
+    QsoIssue.invalidPark => s.qsoAdvancedIssueInvalidPark,
+    QsoIssue.wrongPark => s.qsoAdvancedIssueWrongPark,
+    QsoIssue.wrongRemoteRst => s.qsoAdvancedIssueWrongRemoteRst,
   };
+
+  static String task(S s, QsoSession session) {
+    if (session.scenario.isAdvanced) {
+      if (session.stage == QsoStage.exchange) {
+        return session.scenario == QsoScenario.contestExchange
+            ? s.qsoAdvancedContestStage
+            : s.qsoAdvancedPotaStage;
+      }
+      if (session.stage == QsoStage.confirmInfo) {
+        return s.qsoAdvancedCorrectionStage;
+      }
+    }
+    if (session.scenario == QsoScenario.shortExchange &&
+        session.stage == QsoStage.exchange) {
+      return s.learnQsoSignalReport;
+    }
+    return stage(s, session.stage);
+  }
 }

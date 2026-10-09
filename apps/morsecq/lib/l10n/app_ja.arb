@@ -914,5 +914,142 @@
   "learnQsoShortExchange": "短いQSOを練習",
   "learnQsoShortExchangeHint": "コールサインの確認、信号レポートの交換、終了の挨拶を独力で行ってから、完全なQSOへ進みます。",
   "learnQsoExplorePending": "完全なQSOを体験 · まだ練習が必要です",
-  "learnQsoReadyHint": "最近の独力での練習記録がそろいました。完全なQSOのシミュレーションを始められます。"
+  "learnQsoReadyHint": "最近の独力での練習記録がそろいました。完全なQSOのシミュレーションを始められます。",
+  "goalsTitle": "学習目標",
+  "goalsFirstQso": "初めての交信",
+  "goalsConversation": "会話とヘッドコピー",
+  "goalsContest": "コンテスト交信",
+  "goalsExplanation": "CW Academyを参考にした目標です。表示の実効速度で、28日以内に独力で正答率90%以上の練習を2回達成すると通過します。",
+  "goalsBeginner": "まず文字コースを進めましょう。修了後、目標に合わせた聞き取りと交信練習が毎日の計画に加わります。",
+  "goalsComplete": "すべての目標を達成",
+  "goalsPractice": "次の技能を練習",
+  "goalsCopying": "文字の聞き取り",
+  "goalsSending": "読みやすい送信",
+  "goalsWords": "単語の聞き取り",
+  "goalsPhrases": "短文の理解",
+  "goalsInformation": "交信情報の把握",
+  "goalsStory": "短い物語のヘッドコピー",
+  "goalsQso": "交信を完了",
+  "goalsCompetition": "コンテスト運用",
+  "goalsPlanListening": "目標に必要な情報を聞き取りましょう。",
+  "goalsPlanExchange": "目標に合わせた対話型交信を練習しましょう。",
+  "mistakesTitle": "復習用の間違いノート",
+  "mistakesPending": "要復習",
+  "mistakesRecovered": "習得済み",
+  "mistakesHint": "元の問題を元の速度と受信条件で再練習します。異なる2日間で補助なしに完全正解すると習得済みになります。再生し直したり答えを表示した場合は習得の判定に含まれません。",
+  "mistakesEmptyPending": "復習待ちの問題はありません。練習で間違えた問題がここに保存されます。",
+  "mistakesEmptyRecovered": "習得済みの問題はまだありません。異なる2日間で補助なしに正解してください。",
+  "mistakesOriginalCopy": "最初の誤答",
+  "mistakesLastCopy": "最近の回答",
+  "mistakesNoAnswer": "未回答",
+  "mistakesFailures": "誤答回数",
+  "mistakesFirstFailure": "最初の誤答日",
+  "mistakesLastFailure": "最近の誤答日",
+  "mistakesCorrectDays": "補助なしで正解した日数",
+  "mistakesRecoveredOn": "習得日",
+  "mistakesRetry": "元の問題を再練習",
+  "qsoAdvancedContestTitle": "コンテスト交信",
+  "qsoAdvancedContestHint": "コールサイン、RST、連番を交換し、訂正された連番を確認します。",
+  "qsoAdvancedPotaTitle": "POTA 公園間交信",
+  "qsoAdvancedPotaHint": "コールサイン、RST、公園番号を交換し、訂正された公園を確認します。",
+  "qsoAdvancedSerialLabel": "自局の連番",
+  "qsoAdvancedParkLabel": "自局の公園番号",
+  "qsoAdvancedInvalidSerial": "1〜9999 の連番を入力してください。",
+  "qsoAdvancedInvalidPark": "公園の接頭辞と 4〜5 桁の数字を入力します。例：US-1234。",
+  "qsoAdvancedRepeatTitle": "一項目だけ再送",
+  "qsoAdvancedRepeatHint": "聞き逃した情報だけを要求します。交信の段階は進みません。",
+  "qsoAdvancedTypedMode": "文字で返信（補助あり）",
+  "qsoAdvancedKeyedMode": "返信を打鍵",
+  "qsoAdvancedTypedReply": "自局の送信内容",
+  "qsoAdvancedContestStage": "RST と自局の連番を送信",
+  "qsoAdvancedPotaStage": "RST と自局の公園番号を送信",
+  "qsoAdvancedCorrectionStage": "訂正情報を確認",
+  "qsoAdvancedCorrectionHint": "CORR を聞いたら、相手の RST と訂正された連番または公園を確認します。速度を上げる前に明瞭な送信を練習します。",
+  "qsoAdvancedIssueMissingSerial": "NR と自局の連番を送信してください。",
+  "qsoAdvancedIssueInvalidSerial": "連番は 0 より大きい 1〜4 桁の数字です。",
+  "qsoAdvancedIssueWrongSerial": "連番が確認すべき番号と一致しません。",
+  "qsoAdvancedIssueMissingPark": "PARK と公園番号を送信してください。",
+  "qsoAdvancedIssueInvalidPark": "公園の接頭辞と 4〜5 桁の数字を使用してください。",
+  "qsoAdvancedIssueWrongPark": "公園番号が確認すべき公園と一致しません。",
+  "qsoAdvancedIssueWrongRemoteRst": "相手から聞いた RST を確認してください。",
+  "qsoAdvancedContestSummary": "コンテスト練習：コールサイン、レポート、連番、訂正を確認しました。",
+  "qsoAdvancedPotaSummary": "POTA 練習：コールサイン、レポート、公園、訂正を確認しました。",
+  "comprehensionTitle": "単語・文章の聞き取り",
+  "comprehensionIntro": "メッセージ全体を聞き、意味を覚えてから答えましょう。教材はオリジナルで、オフラインでも使えます。",
+  "comprehensionModeLabel": "練習モード",
+  "comprehensionWords": "単語",
+  "comprehensionPhrases": "語の一部と短文",
+  "comprehensionQso": "QSO 情報",
+  "comprehensionPota": "POTA 交換",
+  "comprehensionStory": "短い物語",
+  "comprehensionWordsHelp": "文字を書き取らず、音から単語全体を認識します。",
+  "comprehensionPhrasesHelp": "なじみのある語の一部から、短い表現や文の聞き取りへ進みます。",
+  "comprehensionQsoHelp": "コールサイン、名前、所在地、信号レポートを覚えます。",
+  "comprehensionPotaHelp": "双方のコールサイン、公園番号、信号レポートを覚えます。最初は呼び出される局のコールサインです。",
+  "comprehensionStoryHelp": "書き取らず、誰が、どこへ、いつ、何をしに行ったかを覚えます。音声中の英単語で答えます。",
+  "comprehensionSpeedLabel": "実効速度",
+  "comprehensionSpeed": "文字 {character} / 実効 {effective} WPM",
+  "comprehensionPreviewMissing": "未習得の記号が含まれます：{symbols}。補助付きプレビューとして聞けます。",
+  "comprehensionAssisted": "補助付き練習 · 再生・テキスト表示・未習得記号",
+  "comprehensionIndependent": "独立した試行 · 1 回聞き、テキストを表示しない",
+  "comprehensionReveal": "テキストを表示（補助）",
+  "comprehensionTarget": "送信テキスト",
+  "comprehensionAnswer": "単語または短文",
+  "comprehensionCallsign": "呼び出される局 / コールサイン",
+  "comprehensionOtherCallsign": "送信局 / コールサイン",
+  "comprehensionName": "オペレーター名",
+  "comprehensionQth": "所在地（QTH）",
+  "comprehensionRst": "信号レポート（RST）",
+  "comprehensionPark": "公園番号",
+  "comprehensionPerson": "誰？",
+  "comprehensionDestination": "どこへ行った？",
+  "comprehensionTime": "いつ？",
+  "comprehensionAction": "何をしに行った？",
+  "comprehensionScore": "{total} 項目中 {correct} 項目正解",
+  "comprehensionNext": "次のメッセージ",
+  "comprehensionDone": "完了",
+  "comprehensionSaveFailed": "結果を保存できませんでした。退出前に再試行してください。",
+  "comprehensionAudioFailed": "音声を利用できません。出力機器を確認して再試行してください。",
+  "comprehensionAudioRequired": "他の練習で音声を無効にしていても、この聞き取り練習は音声を使います。",
+  "comprehensionHistory": "最近の独立した試行：{count} 回 · 情報正答率 {percent}%",
+  "comprehensionEmptyHistory": "独立した聞き取りの結果がここに表示されます。補助付き練習は別に記録されます。",
+  "comprehensionFieldCorrect": "正解",
+  "comprehensionFieldWrong": "この項目を復習",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    }
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

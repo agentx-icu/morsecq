@@ -41,6 +41,14 @@ class QsoSummaryView extends StatelessWidget {
         ),
         Text(s.learnQsoSummaryRepeats(session.repeats)),
         Text(s.learnQsoSummaryHints(session.hints)),
+        if (session.scenario.isAdvanced) ...[
+          const SizedBox(height: 8),
+          Text(
+            session.scenario == QsoScenario.contestExchange
+                ? s.qsoAdvancedContestSummary
+                : s.qsoAdvancedPotaSummary,
+          ),
+        ],
         if (sendingWpm != null)
           Text(s.learnQsoSummaryRhythm(sendingWpm!.round())),
         const SizedBox(height: 12),

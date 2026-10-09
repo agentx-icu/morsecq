@@ -5,6 +5,8 @@ import 'confusion_matrix.dart';
 import 'daily_plan.dart';
 import 'koch_course.dart';
 import 'learner_stage.dart';
+import 'learning_goal.dart';
+import 'goal_plan_builder.dart';
 
 /// Everything a plan is generated from. Injected so a fixed input always
 /// produces the same plan.
@@ -22,6 +24,7 @@ final class PlanInputs {
     required this.seed,
     this.stage = LearnerStage.copying,
     this.firstLessonDone = false,
+    this.goal,
   });
 
   final DateTime now;
@@ -42,6 +45,7 @@ final class PlanInputs {
 
   /// Whether the guided first lesson was finished (no intro step then).
   final bool firstLessonDone;
+  final LearningGoal? goal;
 }
 
 /// Pure plan generator (functional spec §4.2). It owns every decision; the
@@ -183,7 +187,14 @@ abstract final class DailyPlanBuilder {
     return ordered;
   }
 
-  static List<PlanStep> _steps(PlanInputs inputs, String planId, int offset) {
+  static List<PlanStep> _steps(PlanInputs inputs, String planId, int offset) =>
+      GoalPlanBuilder.enrich(_coreSteps(inputs, planId, offset), inputs);
+
+  static List<PlanStep> _coreSteps(
+    PlanInputs inputs,
+    String planId,
+    int offset,
+  ) {
     final course = inputs.course;
     final lesson = course.clampLesson(inputs.lesson);
     final learned = course.charsForLesson(lesson);

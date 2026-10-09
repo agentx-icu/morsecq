@@ -3,7 +3,7 @@ import 'dart:math';
 import '../callsign_drill.dart';
 import '../word_lists.dart';
 
-/// The two initial simulator scenarios (functional spec §5.1).
+/// Offline exchanges from a first contact to intermediate CW practice.
 enum QsoScenario {
   /// A first interactive exchange: callsigns, signal report and closing.
   shortExchange,
@@ -12,7 +12,15 @@ enum QsoScenario {
   respondToCq,
 
   /// The learner calls CQ; a remote station answers.
-  callCq;
+  callCq,
+
+  /// A contest contact with reports, serials and a corrected serial.
+  contestExchange,
+
+  /// A park-to-park contact with reports and a corrected park reference.
+  potaActivation;
+
+  bool get isAdvanced => this == contestExchange || this == potaActivation;
 
   static QsoScenario parse(String? name) => values.firstWhere(
     (v) => v.name == name,
@@ -51,11 +59,19 @@ final class QsoStation {
     required this.callsign,
     required this.name,
     required this.qth,
+    this.serialNumber = '001',
+    this.parkReference = 'US-1234',
   });
 
   final String callsign;
   final String name;
   final String qth;
+  final String serialNumber;
+  final String parkReference;
+
+  /// Park identifiers are sent without punctuation, retaining the full
+  /// prefix and number; typed hyphen/slash forms are equivalent.
+  String get parkOnAir => normalizePark(parkReference).replaceAll('-', '');
 
   static final RegExp _call = RegExp(r'^[A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3}[A-Z]$');
   static final RegExp _word = RegExp(r'^[A-Z]{2,12}$');
@@ -69,22 +85,44 @@ final class QsoStation {
   static bool isValidWord(String word) =>
       _word.hasMatch(word.trim().toUpperCase());
 
+  static bool isValidSerial(String value) =>
+      RegExp(r'^[0-9]{1,4}$').hasMatch(value.trim()) &&
+      (int.tryParse(value.trim()) ?? 0) > 0;
+
+  static bool isValidPark(String value) => RegExp(
+    r'^[A-Z]{1,3}[-/]?[0-9]{4,5}$',
+  ).hasMatch(value.trim().toUpperCase());
+
+  static String normalizePark(String value) {
+    final compact = value.trim().toUpperCase().replaceAll(RegExp(r'[-/]'), '');
+    final match = RegExp(r'^([A-Z]{1,3})([0-9]{4,5})$').firstMatch(compact);
+    return match == null
+        ? value.trim().toUpperCase()
+        : '${match[1]}-${match[2]}';
+  }
+
   QsoStation normalized() => QsoStation(
     callsign: callsign.trim().toUpperCase(),
     name: name.trim().toUpperCase(),
     qth: qth.trim().toUpperCase(),
+    serialNumber: serialNumber.trim().padLeft(3, '0'),
+    parkReference: normalizePark(parkReference),
   );
 
   Map<String, Object?> toJson() => <String, Object?>{
     'callsign': callsign,
     'name': name,
     'qth': qth,
+    'serialNumber': serialNumber,
+    'parkReference': parkReference,
   };
 
   factory QsoStation.fromJson(Map<String, Object?> json) => QsoStation(
     callsign: json['callsign']! as String,
     name: json['name']! as String,
     qth: json['qth']! as String,
+    serialNumber: json['serialNumber'] as String? ?? '001',
+    parkReference: json['parkReference'] as String? ?? 'US-1234',
   );
 
   /// A random but seed-stable station; QTHs are single words.
@@ -99,6 +137,8 @@ final class QsoStation {
       name: WordLists
           .operatorNames[random.nextInt(WordLists.operatorNames.length)],
       qth: qths[random.nextInt(qths.length)],
+      serialNumber: (1 + random.nextInt(998)).toString().padLeft(3, '0'),
+      parkReference: 'US-${1000 + random.nextInt(8999)}',
     );
   }
 }
@@ -107,7 +147,7 @@ final class QsoStation {
 /// text snapshots; the session fills them once per seed so every repeat is
 /// identical.
 abstract final class QsoScript {
-  static const int version = 1;
+  static const int version = 2;
 
   /// Signal reports the remote may give.
   static const List<String> remoteReports = <String>[
@@ -136,6 +176,13 @@ abstract final class QsoScript {
       QsoStage.confirmInfo,
       QsoStage.closing,
     ],
+    QsoScenario.contestExchange ||
+    QsoScenario.potaActivation => const <QsoStage>[
+      QsoStage.callConfirm,
+      QsoStage.exchange,
+      QsoStage.confirmInfo,
+      QsoStage.closing,
+    ],
   };
 
   /// What the remote sends before the learner's [stage] (null: the learner
@@ -150,6 +197,31 @@ abstract final class QsoScript {
     final l = local.callsign;
     final r = remote.callsign;
     switch ((scenario, stage)) {
+      case (QsoScenario.contestExchange, QsoStage.callConfirm):
+        return 'CQ TEST DE $r $r K';
+      case (QsoScenario.contestExchange, QsoStage.exchange):
+        final preliminary = (int.parse(remote.serialNumber) % 999 + 1)
+            .toString()
+            .padLeft(3, '0');
+        return '$l DE $r UR RST $report NR $preliminary $preliminary K';
+      case (QsoScenario.contestExchange, QsoStage.confirmInfo):
+        return '$l DE $r R CORR NR ${remote.serialNumber} '
+            '${remote.serialNumber} CFM? K';
+      case (QsoScenario.potaActivation, QsoStage.callConfirm):
+        return 'CQ POTA DE $r $r K';
+      case (QsoScenario.potaActivation, QsoStage.exchange):
+        final compact = remote.parkOnAir;
+        final preliminary =
+            '${compact.substring(0, compact.length - 1)}'
+            '${(int.parse(compact[compact.length - 1]) + 1) % 10}';
+        return '$l DE $r UR RST $report PARK $preliminary K';
+      case (QsoScenario.potaActivation, QsoStage.confirmInfo):
+        return '$l DE $r R CORR PARK ${remote.parkOnAir} '
+            '${remote.parkOnAir} CFM? K';
+      case (QsoScenario.contestExchange, QsoStage.closing):
+        return 'QSL TU $l DE $r 73';
+      case (QsoScenario.potaActivation, QsoStage.closing):
+        return 'QSL TNX P2P 73 $l DE $r <SK>';
       case (QsoScenario.shortExchange, QsoStage.callConfirm):
         return 'CQ CQ DE $r $r K';
       case (QsoScenario.shortExchange, QsoStage.exchange):

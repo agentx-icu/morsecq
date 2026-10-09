@@ -81,6 +81,7 @@ extension TrainingPlan on TrainingController {
       seed: seed ?? random.nextInt(1 << 31),
       stage: learnerStage,
       firstLessonDone: progress.firstLessonDone,
+      goal: progress.learningGoal,
     );
   }
 
@@ -133,7 +134,10 @@ extension TrainingPlan on TrainingController {
   /// or when it is an `intro` or `send` step (those have their own
   /// starters).
   Future<ReceiveSession> startPlanReceiveStep(PlanStep step) async {
-    if (step.kind == PlanStepKind.intro || step.kind == PlanStepKind.send) {
+    if (step.kind == PlanStepKind.intro ||
+        step.kind == PlanStepKind.send ||
+        step.kind == PlanStepKind.comprehension ||
+        step.kind == PlanStepKind.qso) {
       throw StateError('${step.kind.name} steps are not receive sessions');
     }
     final started = _ownPlan(step).start(step.id);

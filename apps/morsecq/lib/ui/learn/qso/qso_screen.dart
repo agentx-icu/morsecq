@@ -18,6 +18,8 @@ import 'qso_labels.dart';
 import 'qso_log_view.dart';
 import 'qso_summary_view.dart';
 
+part 'qso_screen_views.dart';
+
 /// A running simulated QSO (functional spec §5.2): the remote station's
 /// complete text snapshots are played at the learner's speed; the learner
 /// keys a reply (touch or keyboard) and submits it explicitly. Pausing,
@@ -51,6 +53,13 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   final Set<int> _revealed = <int>{};
   final List<double> _wpms = <double>[];
   final Stopwatch _active = Stopwatch();
+  late final TextEditingController _typedText = TextEditingController(
+    text: widget.resumed?.typedReply == true ? widget.resumed!.pendingText : '',
+  );
+  late bool _typing = widget.resumed?.typedReply ?? false;
+  late bool _pendingWasTyped =
+      (widget.resumed?.pendingWasTyped ?? false) ||
+      (widget.resumed?.typedReply ?? false);
   late final Duration _activeBefore = widget.resumed?.active ?? Duration.zero;
 
   /// A keyed but unsent reply restored from the draft, and its id.
@@ -61,7 +70,8 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   /// Restored and newly keyed text joined as keyed: the decoder decides
   /// where word gaps are, so a reply resumed mid-word stays one word.
-  String get _pendingText => '$_carry${_keying.decodedText}';
+  String get _pendingText =>
+      _typing ? _typedText.text : '$_carry${_keying.decodedText}';
   late final DrillScreenWake _wake = DrillScreenWake(widget.screenWake);
   LearnPlayback? _playback;
   StreamSubscription<PlayerEvent>? _playerSub;
@@ -168,6 +178,8 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
         _session,
         pendingText: _pendingText,
         pendingId: _carryId ?? _keying.id,
+        typedReply: _typing,
+        pendingWasTyped: _pendingWasTyped,
         active: _activeTotal,
       );
     } on Object {
@@ -175,9 +187,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _submitText(String id, String text) async {
+  Future<void> _submitText(String id, String text, {bool typed = false}) async {
     if (_session.isDone) return;
-    final reply = _session.submit(id, text);
+    final reply = _session.submit(id, text, typed: typed);
     if (reply.duplicate) return;
     setState(() {
       _issues = reply.evaluation.issues;
@@ -192,27 +204,54 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   Future<void> _send() async {
     final keying = _keying;
-    final result = keying.finish();
-    if (result.attempt.marks.length >= 3 && result.measuredWpm > 0) {
-      _wpms.add(result.measuredWpm);
+    final typed = _typing || _pendingWasTyped;
+    String text;
+    if (_typing) {
+      text = _typedText.text;
+      _typedText.clear();
+    } else {
+      final result = keying.finish();
+      if (result.attempt.marks.length >= 3 && result.measuredWpm > 0) {
+        _wpms.add(result.measuredWpm);
+      }
+      text = '$_carry${result.attempt.decoded}';
     }
-    final text = '$_carry${result.attempt.decoded}';
     final id = _carryId ?? keying.id;
     _carry = '';
     _carryId = null;
+    _pendingWasTyped = false;
     _newKeying();
     keying.dispose();
     _active.start();
-    await _submitText(id, text);
+    await _submitText(id, text, typed: typed);
   }
 
   void _clear() {
     setState(() {
       _carry = '';
       _carryId = null;
+      _typedText.clear();
+      _pendingWasTyped = false;
     });
     _keying.restart();
     _panel.currentState?.releaseHeld();
+  }
+
+  void _toggleTyping() {
+    _panel.currentState?.releaseHeld();
+    final pending = _pendingText;
+    setState(() {
+      if (_typing) {
+        _carry = pending;
+        _typedText.clear();
+      } else {
+        _typedText.text = pending;
+        _carry = '';
+      }
+      _typing = !_typing;
+      _keying.restart();
+    });
+    unawaited(_saveDraft());
   }
 
   void _request(String intent) =>
@@ -254,6 +293,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     unawaited(_playerSub?.cancel());
     unawaited(_keyingSub?.cancel());
     _keying.dispose();
+    _typedText.dispose();
     unawaited(_playback?.dispose());
     super.dispose();
   }
@@ -306,148 +346,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     return flash == null ? body : FlashOverlay(isOn: flash, child: body);
   }
 
-  Widget _running(BuildContext context, S s, LearnPlayback? playback) {
-    final theme = Theme.of(context);
-    final decoded = _pendingText;
-    final canKey = playback != null && !_remotePlaying;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          _session.scenario == QsoScenario.shortExchange &&
-                  _session.stage == QsoStage.exchange
-              ? s.learnQsoSignalReport
-              : QsoLabels.stage(s, _session.stage),
-          style: theme.textTheme.titleMedium,
-        ),
-        Text(
-          s.learnQsoSpeed(_session.effectiveWpm.round()),
-          style: theme.textTheme.bodySmall,
-        ),
-        const SizedBox(height: 8),
-        QsoLogView(
-          session: _session,
-          revealed: _revealed,
-          onReveal: _reveal,
-          // Hearing a transmission again is a repeat, like AGN.
-          onPlay: _remotePlaying
-              ? null
-              : (text) {
-                  _session.repeats++;
-                  _playRemote(text);
-                  unawaited(_saveDraft());
-                },
-        ),
-        if (_issues.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                for (final issue in _issues)
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.error_outline, color: theme.colorScheme.error),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(QsoLabels.issue(s, issue))),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        if (_hint != null)
-          Card(
-            key: const ValueKey('qso-hint'),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: SelectableText(s.learnQsoHintLabel(_hint!.example)),
-            ),
-          ),
-        const SizedBox(height: 8),
-        Text(
-          _remotePlaying ? s.learnQsoRemoteSending : s.learnQsoYourTurn,
-          style: theme.textTheme.labelLarge,
-        ),
-        const SizedBox(height: 8),
-        Semantics(
-          liveRegion: true,
-          label: s.learnQsoDecoded,
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 56),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.outline),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              decoded.trim().isEmpty ? s.learnQsoNothingKeyed : decoded,
-              key: const ValueKey('qso-decoded'),
-              style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 2),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (playback == null)
-          const Center(child: CircularProgressIndicator())
-        else
-          KeyerPanel(
-            key: _panel,
-            session: _keying,
-            playback: playback,
-            mode: _c.settings.keyerMode,
-            enabled: canKey,
-          ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: <Widget>[
-            OutlinedButton(
-              onPressed: canKey ? () => _request('PSE AGN') : null,
-              child: Text(s.learnQsoPlayAgain),
-            ),
-            OutlinedButton(
-              onPressed: canKey ? () => _request('QRS') : null,
-              child: Text(s.learnQsoSlower),
-            ),
-            OutlinedButton.icon(
-              onPressed: _showHint,
-              icon: const Icon(Icons.lightbulb_outline),
-              label: Text(s.learnQsoHint),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _keying.hasInput || _carry.isNotEmpty
-                    ? _clear
-                    : null,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-                child: Text(s.learnQsoClear),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                key: const ValueKey('qso-send'),
-                onPressed: canKey && (_keying.hasInput || _carry.isNotEmpty)
-                    ? _send
-                    : null,
-                icon: const Icon(Icons.send),
-                label: Text(s.learnQsoSend),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+  void _typedChanged() {
+    _pendingWasTyped = _typedText.text.trim().isNotEmpty;
+    _active.start();
+    setState(() {});
   }
 }

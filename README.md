@@ -12,6 +12,8 @@ Use **Learn / Reference / Me** to navigate. Microphone access is requested when 
 
 See the [product design](doc/designs/product-2026-10-08/README.md) and [screenshot gallery](doc/screenshots/README.md).
 
+Advanced learning adds a persistent mistake notebook, whole-word and sentence comprehension, and first-QSO, conversation and contest goal routes. The simulator includes contest and park-to-park POTA exchanges, corrections and targeted repetition. Original offline exercises follow CW Academy intermediate learning directions; assisted attempts remain separate from independent mastery. See [advanced learning](doc/architecture/ADVANCED_LEARNING.md).
+
 ## Build and run
 
 Use Flutter **3.41.9** with Dart **3.11.5** and the host platform's Flutter build tools. Resolve the Pub workspace at the repository root:

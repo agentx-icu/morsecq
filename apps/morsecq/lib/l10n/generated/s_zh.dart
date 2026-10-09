@@ -3214,6 +3214,314 @@ class SZh extends S {
 
   @override
   String get learnQsoReadyHint => '已具备近期独立练习证据，可以开始完整模拟通联。';
+
+  @override
+  String get goalsTitle => '学习目标';
+
+  @override
+  String get goalsFirstQso => '第一次通联';
+
+  @override
+  String get goalsConversation => '日常交谈与脑内听抄';
+
+  @override
+  String get goalsContest => '竞赛交换';
+
+  @override
+  String get goalsExplanation => '参考 CW Academy。每个里程碑需要在标示有效速度下，近期至少两次独立练习达到 90% 准确率；证据有效期为 28 天。';
+
+  @override
+  String get goalsBeginner => '先完成字符课程；通过后，每日计划会加入对应目标的听懂训练和模拟通联。';
+
+  @override
+  String get goalsComplete => '当前已达到全部里程碑';
+
+  @override
+  String get goalsPractice => '练习下一项能力';
+
+  @override
+  String get goalsCopying => '字符听辨';
+
+  @override
+  String get goalsSending => '清晰发报';
+
+  @override
+  String get goalsWords => '整词听辨';
+
+  @override
+  String get goalsPhrases => '短句理解';
+
+  @override
+  String get goalsInformation => '通联信息提取';
+
+  @override
+  String get goalsStory => '短故事脑内听抄';
+
+  @override
+  String get goalsQso => '完整通联';
+
+  @override
+  String get goalsCompetition => '竞赛操作';
+
+  @override
+  String get goalsPlanListening => '按学习目标练习整词与通联信息听辨。';
+
+  @override
+  String get goalsPlanExchange => '进行与学习目标对应的互动通联。';
+
+  @override
+  String get mistakesTitle => '跨次错题本';
+
+  @override
+  String get mistakesPending => '待复习';
+
+  @override
+  String get mistakesRecovered => '已掌握';
+
+  @override
+  String get mistakesHint => '按原速度与原干扰条件重练原题。在两个不同日期独立、完整答对后标记为已掌握。重播或显示答案不计入掌握证据。';
+
+  @override
+  String get mistakesEmptyPending => '暂无待复习的错题。练习中答错的原题将在这里保存。';
+
+  @override
+  String get mistakesEmptyRecovered => '暂无已掌握的错题。在两个不同日期独立答对原题即可掌握。';
+
+  @override
+  String get mistakesOriginalCopy => '首次错误答案';
+
+  @override
+  String get mistakesLastCopy => '最近答案';
+
+  @override
+  String get mistakesNoAnswer => '未作答';
+
+  @override
+  String get mistakesFailures => '错误次数';
+
+  @override
+  String get mistakesFirstFailure => '首次答错';
+
+  @override
+  String get mistakesLastFailure => '最近答错';
+
+  @override
+  String get mistakesCorrectDays => '独立答对的日期数';
+
+  @override
+  String get mistakesRecoveredOn => '掌握日期';
+
+  @override
+  String get mistakesRetry => '重练原题';
+
+  @override
+  String get qsoAdvancedContestTitle => '竞赛交换';
+
+  @override
+  String get qsoAdvancedContestHint => '交换呼号、RST 和序号，再确认更正后的序号。';
+
+  @override
+  String get qsoAdvancedPotaTitle => 'POTA 公园间通联';
+
+  @override
+  String get qsoAdvancedPotaHint => '交换呼号、RST 和公园编号，再确认更正后的公园。';
+
+  @override
+  String get qsoAdvancedSerialLabel => '你的序号';
+
+  @override
+  String get qsoAdvancedParkLabel => '你的公园编号';
+
+  @override
+  String get qsoAdvancedInvalidSerial => '输入 1–9999 的序号。';
+
+  @override
+  String get qsoAdvancedInvalidPark => '使用公园前缀和 4–5 位数字，例如 US-1234。';
+
+  @override
+  String get qsoAdvancedRepeatTitle => '只重发一项';
+
+  @override
+  String get qsoAdvancedRepeatHint => '只请求没听清的信息，通联仍停留在当前阶段。';
+
+  @override
+  String get qsoAdvancedTypedMode => '文字作答（辅助）';
+
+  @override
+  String get qsoAdvancedKeyedMode => '拍发回复';
+
+  @override
+  String get qsoAdvancedTypedReply => '你的发报内容';
+
+  @override
+  String get qsoAdvancedContestStage => '发送 RST 和你的序号';
+
+  @override
+  String get qsoAdvancedPotaStage => '发送 RST 和你的公园编号';
+
+  @override
+  String get qsoAdvancedCorrectionStage => '确认更正后的信息';
+
+  @override
+  String get qsoAdvancedCorrectionHint => '听到 CORR 后，确认对方的 RST 和更正后的序号或公园。先保证拍发清晰，再提高速度。';
+
+  @override
+  String get qsoAdvancedIssueMissingSerial => '发送 NR 和你的序号。';
+
+  @override
+  String get qsoAdvancedIssueInvalidSerial => '序号必须是大于零的 1–4 位数字。';
+
+  @override
+  String get qsoAdvancedIssueWrongSerial => '序号与应确认的号码不一致。';
+
+  @override
+  String get qsoAdvancedIssueMissingPark => '发送 PARK 和公园编号。';
+
+  @override
+  String get qsoAdvancedIssueInvalidPark => '使用完整公园前缀和 4–5 位数字。';
+
+  @override
+  String get qsoAdvancedIssueWrongPark => '公园编号与应确认的公园不一致。';
+
+  @override
+  String get qsoAdvancedIssueWrongRemoteRst => '确认刚才听到的对方 RST。';
+
+  @override
+  String get qsoAdvancedContestSummary => '竞赛练习：已确认呼号、报告、序号和更正信息。';
+
+  @override
+  String get qsoAdvancedPotaSummary => 'POTA 练习：已确认呼号、报告、公园和更正信息。';
+
+  @override
+  String get comprehensionTitle => '整词整句听懂';
+
+  @override
+  String get comprehensionIntro => '听完完整消息，在脑中保留含义，再回答问题。素材为原创，可离线使用。';
+
+  @override
+  String get comprehensionModeLabel => '练习模式';
+
+  @override
+  String get comprehensionWords => '整词识别';
+
+  @override
+  String get comprehensionPhrases => '词语片段与短句';
+
+  @override
+  String get comprehensionQso => '通联信息';
+
+  @override
+  String get comprehensionPota => 'POTA 交换';
+
+  @override
+  String get comprehensionStory => '短故事';
+
+  @override
+  String get comprehensionWordsHelp => '通过声音整体识别单词，不逐字母抄写。';
+
+  @override
+  String get comprehensionPhrasesHelp => '先识别熟悉的词语片段，再听懂短语与完整句子。';
+
+  @override
+  String get comprehensionQsoHelp => '记住操作员呼号、姓名、地点和信号报告。';
+
+  @override
+  String get comprehensionPotaHelp => '记住双方呼号、公园编号和信号报告。第一个呼号是被呼叫的电台。';
+
+  @override
+  String get comprehensionStoryHelp => '不逐字抄写，记住人物、地点、时间和目的。使用消息中的英语词语作答。';
+
+  @override
+  String get comprehensionSpeedLabel => '有效速度';
+
+  @override
+  String comprehensionSpeed(String character, String effective) {
+    return '字符 $character / 有效 $effective WPM';
+  }
+
+  @override
+  String comprehensionPreviewMissing(String symbols) {
+    return '消息包含尚未学过的符号：$symbols。可作为辅助预览听练。';
+  }
+
+  @override
+  String get comprehensionAssisted => '辅助练习 · 重播、查看文本或包含未学符号';
+
+  @override
+  String get comprehensionIndependent => '独立尝试 · 只听一次，未查看文本';
+
+  @override
+  String get comprehensionReveal => '查看文本（辅助）';
+
+  @override
+  String get comprehensionTarget => '播发文本';
+
+  @override
+  String get comprehensionAnswer => '单词或短句';
+
+  @override
+  String get comprehensionCallsign => '被呼叫电台 / 呼号';
+
+  @override
+  String get comprehensionOtherCallsign => '发信电台 / 呼号';
+
+  @override
+  String get comprehensionName => '操作员姓名';
+
+  @override
+  String get comprehensionQth => '地点（QTH）';
+
+  @override
+  String get comprehensionRst => '信号报告（RST）';
+
+  @override
+  String get comprehensionPark => '公园编号';
+
+  @override
+  String get comprehensionPerson => '谁？';
+
+  @override
+  String get comprehensionDestination => '去了哪里？';
+
+  @override
+  String get comprehensionTime => '何时？';
+
+  @override
+  String get comprehensionAction => '去做什么？';
+
+  @override
+  String comprehensionScore(int correct, int total) {
+    return '$total 个信息项答对 $correct 个';
+  }
+
+  @override
+  String get comprehensionNext => '下一条消息';
+
+  @override
+  String get comprehensionDone => '完成';
+
+  @override
+  String get comprehensionSaveFailed => '结果未能保存，请在离开前重试。';
+
+  @override
+  String get comprehensionAudioFailed => '音频不可用，请检查设备输出后重试。';
+
+  @override
+  String get comprehensionAudioRequired => '此听懂练习使用声音，即使其他练习设置已关闭声音。';
+
+  @override
+  String comprehensionHistory(int count, int percent) {
+    return '近期独立尝试：$count 次 · 信息准确率 $percent%';
+  }
+
+  @override
+  String get comprehensionEmptyHistory => '独立听懂的结果将在这里显示，辅助练习单独记录。';
+
+  @override
+  String get comprehensionFieldCorrect => '正确';
+
+  @override
+  String get comprehensionFieldWrong => '需要重练';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6426,4 +6734,312 @@ class SZhHant extends SZh {
 
   @override
   String get learnQsoReadyHint => '已具備近期獨立練習證據，可以開始完整模擬通聯。';
+
+  @override
+  String get goalsTitle => '學習目標';
+
+  @override
+  String get goalsFirstQso => '第一次通聯';
+
+  @override
+  String get goalsConversation => '日常交談與腦內聽抄';
+
+  @override
+  String get goalsContest => '競賽交換';
+
+  @override
+  String get goalsExplanation => '參考 CW Academy。每個里程碑需要在標示有效速度下，近期至少兩次獨立練習達到 90% 準確率；證據有效期為 28 天。';
+
+  @override
+  String get goalsBeginner => '先完成字元課程；通過後，每日計畫會加入對應目標的聽懂訓練和模擬通聯。';
+
+  @override
+  String get goalsComplete => '目前已達到全部里程碑';
+
+  @override
+  String get goalsPractice => '練習下一項能力';
+
+  @override
+  String get goalsCopying => '字元聽辨';
+
+  @override
+  String get goalsSending => '清晰發報';
+
+  @override
+  String get goalsWords => '整詞聽辨';
+
+  @override
+  String get goalsPhrases => '短句理解';
+
+  @override
+  String get goalsInformation => '通聯資訊提取';
+
+  @override
+  String get goalsStory => '短故事腦內聽抄';
+
+  @override
+  String get goalsQso => '完整通聯';
+
+  @override
+  String get goalsCompetition => '競賽操作';
+
+  @override
+  String get goalsPlanListening => '按學習目標練習整詞與通聯資訊聽辨。';
+
+  @override
+  String get goalsPlanExchange => '進行與學習目標對應的互動通聯。';
+
+  @override
+  String get mistakesTitle => '跨次錯題本';
+
+  @override
+  String get mistakesPending => '待複習';
+
+  @override
+  String get mistakesRecovered => '已掌握';
+
+  @override
+  String get mistakesHint => '以原速度與原干擾條件重練原題。在兩個不同日期獨立、完整答對後標記為已掌握。重播或顯示答案不計入掌握證據。';
+
+  @override
+  String get mistakesEmptyPending => '暫無待複習的錯題。練習中答錯的原題會儲存在這裡。';
+
+  @override
+  String get mistakesEmptyRecovered => '暫無已掌握的錯題。在兩個不同日期獨立答對原題即可掌握。';
+
+  @override
+  String get mistakesOriginalCopy => '首次錯誤答案';
+
+  @override
+  String get mistakesLastCopy => '最近答案';
+
+  @override
+  String get mistakesNoAnswer => '未作答';
+
+  @override
+  String get mistakesFailures => '錯誤次數';
+
+  @override
+  String get mistakesFirstFailure => '首次答錯';
+
+  @override
+  String get mistakesLastFailure => '最近答錯';
+
+  @override
+  String get mistakesCorrectDays => '獨立答對的日期數';
+
+  @override
+  String get mistakesRecoveredOn => '掌握日期';
+
+  @override
+  String get mistakesRetry => '重練原題';
+
+  @override
+  String get qsoAdvancedContestTitle => '競賽交換';
+
+  @override
+  String get qsoAdvancedContestHint => '交換呼號、RST 和序號，再確認更正後的序號。';
+
+  @override
+  String get qsoAdvancedPotaTitle => 'POTA 公園間通聯';
+
+  @override
+  String get qsoAdvancedPotaHint => '交換呼號、RST 和公園編號，再確認更正後的公園。';
+
+  @override
+  String get qsoAdvancedSerialLabel => '你的序號';
+
+  @override
+  String get qsoAdvancedParkLabel => '你的公園編號';
+
+  @override
+  String get qsoAdvancedInvalidSerial => '輸入 1–9999 的序號。';
+
+  @override
+  String get qsoAdvancedInvalidPark => '使用公園前綴和 4–5 位數字，例如 US-1234。';
+
+  @override
+  String get qsoAdvancedRepeatTitle => '只重發一項';
+
+  @override
+  String get qsoAdvancedRepeatHint => '只請求沒聽清的資訊，通聯仍停留在目前階段。';
+
+  @override
+  String get qsoAdvancedTypedMode => '文字作答（輔助）';
+
+  @override
+  String get qsoAdvancedKeyedMode => '拍發回覆';
+
+  @override
+  String get qsoAdvancedTypedReply => '你的發報內容';
+
+  @override
+  String get qsoAdvancedContestStage => '傳送 RST 和你的序號';
+
+  @override
+  String get qsoAdvancedPotaStage => '傳送 RST 和你的公園編號';
+
+  @override
+  String get qsoAdvancedCorrectionStage => '確認更正後的資訊';
+
+  @override
+  String get qsoAdvancedCorrectionHint => '聽到 CORR 後，確認對方的 RST 和更正後的序號或公園。先確保拍發清晰，再提高速度。';
+
+  @override
+  String get qsoAdvancedIssueMissingSerial => '傳送 NR 和你的序號。';
+
+  @override
+  String get qsoAdvancedIssueInvalidSerial => '序號必須是大於零的 1–4 位數字。';
+
+  @override
+  String get qsoAdvancedIssueWrongSerial => '序號與應確認的號碼不一致。';
+
+  @override
+  String get qsoAdvancedIssueMissingPark => '傳送 PARK 和公園編號。';
+
+  @override
+  String get qsoAdvancedIssueInvalidPark => '使用完整公園前綴和 4–5 位數字。';
+
+  @override
+  String get qsoAdvancedIssueWrongPark => '公園編號與應確認的公園不一致。';
+
+  @override
+  String get qsoAdvancedIssueWrongRemoteRst => '確認剛才聽到的對方 RST。';
+
+  @override
+  String get qsoAdvancedContestSummary => '競賽練習：已確認呼號、報告、序號和更正資訊。';
+
+  @override
+  String get qsoAdvancedPotaSummary => 'POTA 練習：已確認呼號、報告、公園和更正資訊。';
+
+  @override
+  String get comprehensionTitle => '整詞整句聽懂';
+
+  @override
+  String get comprehensionIntro => '聽完完整訊息，在腦中保留含義，再回答問題。素材為原創，可離線使用。';
+
+  @override
+  String get comprehensionModeLabel => '練習模式';
+
+  @override
+  String get comprehensionWords => '整詞辨識';
+
+  @override
+  String get comprehensionPhrases => '詞語片段與短句';
+
+  @override
+  String get comprehensionQso => '通聯資訊';
+
+  @override
+  String get comprehensionPota => 'POTA 交換';
+
+  @override
+  String get comprehensionStory => '短故事';
+
+  @override
+  String get comprehensionWordsHelp => '透過聲音整體辨識單字，不逐字母抄寫。';
+
+  @override
+  String get comprehensionPhrasesHelp => '先辨識熟悉的詞語片段，再聽懂短語與完整句子。';
+
+  @override
+  String get comprehensionQsoHelp => '記住操作員呼號、姓名、地點和訊號報告。';
+
+  @override
+  String get comprehensionPotaHelp => '記住雙方呼號、公園編號和訊號報告。第一個呼號是被呼叫的電台。';
+
+  @override
+  String get comprehensionStoryHelp => '不逐字抄寫，記住人物、地點、時間和目的。使用訊息中的英語詞語作答。';
+
+  @override
+  String get comprehensionSpeedLabel => '有效速度';
+
+  @override
+  String comprehensionSpeed(String character, String effective) {
+    return '字元 $character / 有效 $effective WPM';
+  }
+
+  @override
+  String comprehensionPreviewMissing(String symbols) {
+    return '訊息包含尚未學過的符號：$symbols。可作為輔助預覽聽練。';
+  }
+
+  @override
+  String get comprehensionAssisted => '輔助練習 · 重播、查看文字或包含未學符號';
+
+  @override
+  String get comprehensionIndependent => '獨立嘗試 · 只聽一次，未查看文字';
+
+  @override
+  String get comprehensionReveal => '查看文字（輔助）';
+
+  @override
+  String get comprehensionTarget => '播發文字';
+
+  @override
+  String get comprehensionAnswer => '單字或短句';
+
+  @override
+  String get comprehensionCallsign => '被呼叫電台 / 呼號';
+
+  @override
+  String get comprehensionOtherCallsign => '發信電台 / 呼號';
+
+  @override
+  String get comprehensionName => '操作員姓名';
+
+  @override
+  String get comprehensionQth => '地點（QTH）';
+
+  @override
+  String get comprehensionRst => '訊號報告（RST）';
+
+  @override
+  String get comprehensionPark => '公園編號';
+
+  @override
+  String get comprehensionPerson => '誰？';
+
+  @override
+  String get comprehensionDestination => '去了哪裡？';
+
+  @override
+  String get comprehensionTime => '何時？';
+
+  @override
+  String get comprehensionAction => '去做什麼？';
+
+  @override
+  String comprehensionScore(int correct, int total) {
+    return '$total 個資訊項答對 $correct 個';
+  }
+
+  @override
+  String get comprehensionNext => '下一則訊息';
+
+  @override
+  String get comprehensionDone => '完成';
+
+  @override
+  String get comprehensionSaveFailed => '結果未能儲存，請在離開前重試。';
+
+  @override
+  String get comprehensionAudioFailed => '音訊無法使用，請檢查裝置輸出後重試。';
+
+  @override
+  String get comprehensionAudioRequired => '此聽懂練習使用聲音，即使其他練習設定已關閉聲音。';
+
+  @override
+  String comprehensionHistory(int count, int percent) {
+    return '近期獨立嘗試：$count 次 · 資訊準確率 $percent%';
+  }
+
+  @override
+  String get comprehensionEmptyHistory => '獨立聽懂的結果將在這裡顯示，輔助練習分開記錄。';
+
+  @override
+  String get comprehensionFieldCorrect => '正確';
+
+  @override
+  String get comprehensionFieldWrong => '需要重練';
 }

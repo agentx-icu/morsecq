@@ -18,6 +18,7 @@ export 'receive_recording.dart';
 export 'receive_session_start.dart';
 export 'receive_verdict.dart';
 export 'send_practice_start.dart';
+export 'advanced_learning.dart';
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
 /// Koch position, SRS due list and streak, starts sessions and records their
@@ -315,11 +316,13 @@ final class TrainingController extends ChangeNotifier {
     MorseTiming? timing,
     Duration? active,
     String? planStepId,
+    double? planAccuracy,
     String? sourceRef,
     String? detailRef,
     Set<String>? learned,
     bool countsTowardLesson = false,
     RadioScenario? conditions,
+    MistakeNotebook? mistakeNotebook,
   }) async {
     final (next, outcome) = applyExercise(
       _progress,
@@ -336,6 +339,8 @@ final class TrainingController extends ChangeNotifier {
       toneHz: _settings.trainer.toneHz,
       active: active,
       planStepId: planStepId,
+      planAccuracy: planAccuracy,
+      profileKey: profileKey,
       sourceRef: sourceRef,
       detailRef: detailRef,
       learned: learned ?? learnedChars.toSet(),
@@ -347,7 +352,11 @@ final class TrainingController extends ChangeNotifier {
       final unsaved = _writeErrors.containsKey(_progressStore);
       return outcome.withSaved(!unsaved || await retryProgressSave());
     }
-    final saved = await _commitKeepingResult(next);
+    final saved = await _commitKeepingResult(
+      mistakeNotebook == null
+          ? next
+          : next.copyWith(mistakeNotebook: mistakeNotebook),
+    );
     return outcome.withSaved(saved);
   }
 

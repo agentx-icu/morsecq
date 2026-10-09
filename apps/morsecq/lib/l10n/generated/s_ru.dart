@@ -3283,4 +3283,312 @@ class SRu extends S {
 
   @override
   String get learnQsoReadyHint => 'Есть свежие самостоятельные результаты. Можно начинать полные учебные QSO.';
+
+  @override
+  String get goalsTitle => 'Цель обучения';
+
+  @override
+  String get goalsFirstQso => 'Первое QSO';
+
+  @override
+  String get goalsConversation => 'Разговор и приём на слух';
+
+  @override
+  String get goalsContest => 'Обмен в соревнованиях';
+
+  @override
+  String get goalsExplanation => 'По мотивам CW Academy. Для этапа нужны две самостоятельные попытки с точностью от 90% на указанной эффективной скорости за последние 28 дней.';
+
+  @override
+  String get goalsBeginner => 'Сначала пройдите курс знаков. Затем ежедневный план добавит понимание на слух и QSO по выбранной цели.';
+
+  @override
+  String get goalsComplete => 'Все этапы достигнуты';
+
+  @override
+  String get goalsPractice => 'Тренировать следующий навык';
+
+  @override
+  String get goalsCopying => 'Распознавание знаков';
+
+  @override
+  String get goalsSending => 'Разборчивая передача';
+
+  @override
+  String get goalsWords => 'Распознавание слов';
+
+  @override
+  String get goalsPhrases => 'Понимание фраз';
+
+  @override
+  String get goalsInformation => 'Информация из QSO';
+
+  @override
+  String get goalsStory => 'Короткие рассказы на слух';
+
+  @override
+  String get goalsQso => 'Завершение QSO';
+
+  @override
+  String get goalsCompetition => 'Работа в соревнованиях';
+
+  @override
+  String get goalsPlanListening => 'Тренируйте понимание информации для вашей цели.';
+
+  @override
+  String get goalsPlanExchange => 'Практикуйте интерактивный обмен для вашей цели.';
+
+  @override
+  String get mistakesTitle => 'Тетрадь ошибок';
+
+  @override
+  String get mistakesPending => 'Для повторения';
+
+  @override
+  String get mistakesRecovered => 'Освоено';
+
+  @override
+  String get mistakesHint => 'Повторите исходное упражнение с прежней скоростью и условиями. Два точных самостоятельных ответа в разные дни означают освоение. Повторное воспроизведение и показ ответа не учитываются.';
+
+  @override
+  String get mistakesEmptyPending => 'Нет ошибок для повторения. Ошибочно выполненные упражнения будут сохранены здесь после тренировки.';
+
+  @override
+  String get mistakesEmptyRecovered => 'Пока нет освоенных упражнений. Дайте правильный самостоятельный ответ в два разных дня.';
+
+  @override
+  String get mistakesOriginalCopy => 'Первый ошибочный ответ';
+
+  @override
+  String get mistakesLastCopy => 'Последний ответ';
+
+  @override
+  String get mistakesNoAnswer => 'Нет ответа';
+
+  @override
+  String get mistakesFailures => 'Ошибочные попытки';
+
+  @override
+  String get mistakesFirstFailure => 'Первая ошибка';
+
+  @override
+  String get mistakesLastFailure => 'Последняя ошибка';
+
+  @override
+  String get mistakesCorrectDays => 'Дни с самостоятельным правильным ответом';
+
+  @override
+  String get mistakesRecoveredOn => 'Дата освоения';
+
+  @override
+  String get mistakesRetry => 'Повторить исходное упражнение';
+
+  @override
+  String get qsoAdvancedContestTitle => 'Соревновательный обмен';
+
+  @override
+  String get qsoAdvancedContestHint => 'Обменяйтесь позывными, RST и номерами, затем подтвердите исправленный номер.';
+
+  @override
+  String get qsoAdvancedPotaTitle => 'POTA между парками';
+
+  @override
+  String get qsoAdvancedPotaHint => 'Обменяйтесь позывными, RST и номерами парков, затем подтвердите исправленный парк.';
+
+  @override
+  String get qsoAdvancedSerialLabel => 'Ваш порядковый номер';
+
+  @override
+  String get qsoAdvancedParkLabel => 'Ваш номер парка';
+
+  @override
+  String get qsoAdvancedInvalidSerial => 'Введите номер от 1 до 9999.';
+
+  @override
+  String get qsoAdvancedInvalidPark => 'Используйте префикс парка и 4–5 цифр, например US-1234.';
+
+  @override
+  String get qsoAdvancedRepeatTitle => 'Повторить одно поле';
+
+  @override
+  String get qsoAdvancedRepeatHint => 'Запросите только пропущенные данные; этап связи не изменится.';
+
+  @override
+  String get qsoAdvancedTypedMode => 'Ответ текстом (с помощью)';
+
+  @override
+  String get qsoAdvancedKeyedMode => 'Передать ответ ключом';
+
+  @override
+  String get qsoAdvancedTypedReply => 'Ваша передача';
+
+  @override
+  String get qsoAdvancedContestStage => 'Передать RST и свой номер';
+
+  @override
+  String get qsoAdvancedPotaStage => 'Передать RST и свой парк';
+
+  @override
+  String get qsoAdvancedCorrectionStage => 'Подтвердить исправленные данные';
+
+  @override
+  String get qsoAdvancedCorrectionHint => 'Услышав CORR, подтвердите RST корреспондента и исправленный номер или парк. Сначала добейтесь разборчивой передачи, затем повышайте скорость.';
+
+  @override
+  String get qsoAdvancedIssueMissingSerial => 'Передайте NR и свой порядковый номер.';
+
+  @override
+  String get qsoAdvancedIssueInvalidSerial => 'Номер должен содержать 1–4 цифры и быть больше нуля.';
+
+  @override
+  String get qsoAdvancedIssueWrongSerial => 'Номер не совпадает с ожидаемым.';
+
+  @override
+  String get qsoAdvancedIssueMissingPark => 'Передайте PARK и номер парка.';
+
+  @override
+  String get qsoAdvancedIssueInvalidPark => 'Используйте полный префикс парка и 4–5 цифр.';
+
+  @override
+  String get qsoAdvancedIssueWrongPark => 'Номер парка не совпадает с ожидаемым.';
+
+  @override
+  String get qsoAdvancedIssueWrongRemoteRst => 'Подтвердите RST, услышанный от корреспондента.';
+
+  @override
+  String get qsoAdvancedContestSummary => 'Соревновательная практика: позывной, рапорт, номер и исправление подтверждены.';
+
+  @override
+  String get qsoAdvancedPotaSummary => 'Практика POTA: позывной, рапорт, парк и исправление подтверждены.';
+
+  @override
+  String get comprehensionTitle => 'Слова и фразы на слух';
+
+  @override
+  String get comprehensionIntro => 'Прослушайте сообщение целиком, запомните смысл и затем ответьте. Все упражнения оригинальные и доступны без сети.';
+
+  @override
+  String get comprehensionModeLabel => 'Режим практики';
+
+  @override
+  String get comprehensionWords => 'Целые слова';
+
+  @override
+  String get comprehensionPhrases => 'Части слов и фразы';
+
+  @override
+  String get comprehensionQso => 'Информация QSO';
+
+  @override
+  String get comprehensionPota => 'Обмен POTA';
+
+  @override
+  String get comprehensionStory => 'Короткие истории';
+
+  @override
+  String get comprehensionWordsHelp => 'Узнавайте слово целиком по звучанию, не записывая каждую букву.';
+
+  @override
+  String get comprehensionPhrasesHelp => 'Распознавайте знакомые части слов, затем короткие фразы и предложения.';
+
+  @override
+  String get comprehensionQsoHelp => 'Запомните позывной, имя, местоположение и рапорт.';
+
+  @override
+  String get comprehensionPotaHelp => 'Запомните оба позывных, номер парка и рапорт. Первый позывной принадлежит вызываемой станции.';
+
+  @override
+  String get comprehensionStoryHelp => 'Слушайте без записи. Запомните кто, куда, когда и зачем. Отвечайте английскими словами из сообщения.';
+
+  @override
+  String get comprehensionSpeedLabel => 'Эффективная скорость';
+
+  @override
+  String comprehensionSpeed(String character, String effective) {
+    return 'Знаки $character / эффективная $effective WPM';
+  }
+
+  @override
+  String comprehensionPreviewMissing(String symbols) {
+    return 'В сообщении есть ещё не изученные знаки: $symbols. Можно прослушать его как тренировку с помощью.';
+  }
+
+  @override
+  String get comprehensionAssisted => 'Практика с помощью · повтор, текст или новые знаки';
+
+  @override
+  String get comprehensionIndependent => 'Самостоятельная попытка · одно прослушивание без текста';
+
+  @override
+  String get comprehensionReveal => 'Показать текст (с помощью)';
+
+  @override
+  String get comprehensionTarget => 'Переданный текст';
+
+  @override
+  String get comprehensionAnswer => 'Слово или фраза';
+
+  @override
+  String get comprehensionCallsign => 'Вызываемая станция / позывной';
+
+  @override
+  String get comprehensionOtherCallsign => 'Передающая станция / позывной';
+
+  @override
+  String get comprehensionName => 'Имя оператора';
+
+  @override
+  String get comprehensionQth => 'Местоположение (QTH)';
+
+  @override
+  String get comprehensionRst => 'Рапорт (RST)';
+
+  @override
+  String get comprehensionPark => 'Номер парка';
+
+  @override
+  String get comprehensionPerson => 'Кто?';
+
+  @override
+  String get comprehensionDestination => 'Куда пошёл человек?';
+
+  @override
+  String get comprehensionTime => 'Когда?';
+
+  @override
+  String get comprehensionAction => 'Что он хотел сделать?';
+
+  @override
+  String comprehensionScore(int correct, int total) {
+    return 'Верно $correct из $total полей';
+  }
+
+  @override
+  String get comprehensionNext => 'Следующее сообщение';
+
+  @override
+  String get comprehensionDone => 'Готово';
+
+  @override
+  String get comprehensionSaveFailed => 'Не удалось сохранить результат. Повторите перед выходом.';
+
+  @override
+  String get comprehensionAudioFailed => 'Аудио недоступно. Проверьте выход устройства и повторите.';
+
+  @override
+  String get comprehensionAudioRequired => 'Эта практика использует звук, даже если он отключён для других упражнений.';
+
+  @override
+  String comprehensionHistory(int count, int percent) {
+    return 'Недавние самостоятельные попытки: $count · точность полей $percent%';
+  }
+
+  @override
+  String get comprehensionEmptyHistory => 'Здесь появятся самостоятельные результаты. Практика с помощью сохраняется отдельно.';
+
+  @override
+  String get comprehensionFieldCorrect => 'Верно';
+
+  @override
+  String get comprehensionFieldWrong => 'Повторить это поле';
 }

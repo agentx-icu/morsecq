@@ -12,6 +12,8 @@ MorseCQ 是无需账号的离线莫尔斯电码学习软件，打开应用即可
 
 查看[产品设计](doc/designs/product-2026-10-08/README.zh-CN.md)和[截图库](doc/screenshots/README.zh-CN.md)。
 
+进阶学习提供跨次错题本、整词与整句听懂训练，以及首次通联、日常交谈和竞赛目标路线。模拟通联支持竞赛与 POTA 公园间交换、信息更正和部分重发。参考 CW Academy 进阶方向设计的原创练习全部离线运行，辅助成绩与独立掌握分开保存。见[进阶学习说明](doc/architecture/ADVANCED_LEARNING.zh-CN.md)。
+
 ## 构建与运行
 
 使用 Flutter **3.41.9** / Dart **3.11.5** 及目标平台的 Flutter 构建工具。在仓库根目录解析 Pub workspace：

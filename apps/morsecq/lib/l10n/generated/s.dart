@@ -5599,6 +5599,606 @@ abstract class S {
   /// In en, this message translates to:
   /// **'You have recent independent practice evidence and can begin full simulated QSOs.'**
   String get learnQsoReadyHint;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Learning goal
+  ///
+  /// In en, this message translates to:
+  /// **'Learning goal'**
+  String get goalsTitle;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: First QSO
+  ///
+  /// In en, this message translates to:
+  /// **'First QSO'**
+  String get goalsFirstQso;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Conversation and head copy
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation and head copy'**
+  String get goalsConversation;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Contest exchanges
+  ///
+  /// In en, this message translates to:
+  /// **'Contest exchanges'**
+  String get goalsContest;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.'**
+  String get goalsExplanation;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.'**
+  String get goalsBeginner;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: All milestones currently met
+  ///
+  /// In en, this message translates to:
+  /// **'All milestones currently met'**
+  String get goalsComplete;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Practise the next skill
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the next skill'**
+  String get goalsPractice;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Character recognition
+  ///
+  /// In en, this message translates to:
+  /// **'Character recognition'**
+  String get goalsCopying;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Readable sending
+  ///
+  /// In en, this message translates to:
+  /// **'Readable sending'**
+  String get goalsSending;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Whole-word recognition
+  ///
+  /// In en, this message translates to:
+  /// **'Whole-word recognition'**
+  String get goalsWords;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Phrase comprehension
+  ///
+  /// In en, this message translates to:
+  /// **'Phrase comprehension'**
+  String get goalsPhrases;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: QSO information
+  ///
+  /// In en, this message translates to:
+  /// **'QSO information'**
+  String get goalsInformation;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Short-story head copy
+  ///
+  /// In en, this message translates to:
+  /// **'Short-story head copy'**
+  String get goalsStory;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Complete a QSO
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a QSO'**
+  String get goalsQso;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Contest operation
+  ///
+  /// In en, this message translates to:
+  /// **'Contest operation'**
+  String get goalsCompetition;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Listen for the information needed by your goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen for the information needed by your goal.'**
+  String get goalsPlanListening;
+
+  /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Practise an interactive exchange for your goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise an interactive exchange for your goal.'**
+  String get goalsPlanExchange;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Mistake notebook
+  ///
+  /// In en, this message translates to:
+  /// **'Mistake notebook'**
+  String get mistakesTitle;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: To review
+  ///
+  /// In en, this message translates to:
+  /// **'To review'**
+  String get mistakesPending;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Recovered
+  ///
+  /// In en, this message translates to:
+  /// **'Recovered'**
+  String get mistakesRecovered;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Retry the original exercise at its original speed and conditions. Two exact answers on different days mark it recovered. Replays and revealed answers do not count toward recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the original exercise at its original speed and conditions. Two exact answers on different days mark it recovered. Replays and revealed answers do not count toward recovery.'**
+  String get mistakesHint;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: No mistakes waiting for review. Failed exercises will appear here after practice.
+  ///
+  /// In en, this message translates to:
+  /// **'No mistakes waiting for review. Failed exercises will appear here after practice.'**
+  String get mistakesEmptyPending;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: No recovered exercises yet. Retry an exercise correctly on two different days.
+  ///
+  /// In en, this message translates to:
+  /// **'No recovered exercises yet. Retry an exercise correctly on two different days.'**
+  String get mistakesEmptyRecovered;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: First incorrect answer
+  ///
+  /// In en, this message translates to:
+  /// **'First incorrect answer'**
+  String get mistakesOriginalCopy;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Latest answer
+  ///
+  /// In en, this message translates to:
+  /// **'Latest answer'**
+  String get mistakesLastCopy;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: No answer
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get mistakesNoAnswer;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Failed attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Failed attempts'**
+  String get mistakesFailures;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: First failure
+  ///
+  /// In en, this message translates to:
+  /// **'First failure'**
+  String get mistakesFirstFailure;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Latest failure
+  ///
+  /// In en, this message translates to:
+  /// **'Latest failure'**
+  String get mistakesLastFailure;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Days answered independently
+  ///
+  /// In en, this message translates to:
+  /// **'Days answered independently'**
+  String get mistakesCorrectDays;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Recovered on
+  ///
+  /// In en, this message translates to:
+  /// **'Recovered on'**
+  String get mistakesRecoveredOn;
+
+  /// Persistent mistake notebook and original-exercise retry. UI label or instruction: Retry original exercise
+  ///
+  /// In en, this message translates to:
+  /// **'Retry original exercise'**
+  String get mistakesRetry;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Contest exchange
+  ///
+  /// In en, this message translates to:
+  /// **'Contest exchange'**
+  String get qsoAdvancedContestTitle;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Exchange callsigns, RST and serials, then confirm a corrected serial.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange callsigns, RST and serials, then confirm a corrected serial.'**
+  String get qsoAdvancedContestHint;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: POTA park-to-park
+  ///
+  /// In en, this message translates to:
+  /// **'POTA park-to-park'**
+  String get qsoAdvancedPotaTitle;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Exchange callsigns, RST and park references, then confirm a corrected park.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange callsigns, RST and park references, then confirm a corrected park.'**
+  String get qsoAdvancedPotaHint;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Your serial number
+  ///
+  /// In en, this message translates to:
+  /// **'Your serial number'**
+  String get qsoAdvancedSerialLabel;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Your park reference
+  ///
+  /// In en, this message translates to:
+  /// **'Your park reference'**
+  String get qsoAdvancedParkLabel;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Enter a serial from 1 to 9999.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a serial from 1 to 9999.'**
+  String get qsoAdvancedInvalidSerial;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Use a park prefix and 4–5 digits, e.g. US-1234.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a park prefix and 4–5 digits, e.g. US-1234.'**
+  String get qsoAdvancedInvalidPark;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Repeat one field
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat one field'**
+  String get qsoAdvancedRepeatTitle;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Ask only for information you missed; the exchange stays at this stage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask only for information you missed; the exchange stays at this stage.'**
+  String get qsoAdvancedRepeatHint;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Type a reply
+  ///
+  /// In en, this message translates to:
+  /// **'Type a reply (assisted)'**
+  String get qsoAdvancedTypedMode;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Key a reply
+  ///
+  /// In en, this message translates to:
+  /// **'Key a reply'**
+  String get qsoAdvancedKeyedMode;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Your transmission
+  ///
+  /// In en, this message translates to:
+  /// **'Your transmission'**
+  String get qsoAdvancedTypedReply;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Send RST and your serial
+  ///
+  /// In en, this message translates to:
+  /// **'Send RST and your serial'**
+  String get qsoAdvancedContestStage;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Send RST and your park
+  ///
+  /// In en, this message translates to:
+  /// **'Send RST and your park'**
+  String get qsoAdvancedPotaStage;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Confirm corrected information
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm corrected information'**
+  String get qsoAdvancedCorrectionStage;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Listen for CORR, then acknowledge the remote RST and corrected serial or park. Send readable code before increasing speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen for CORR, then acknowledge the remote RST and corrected serial or park. Send readable code before increasing speed.'**
+  String get qsoAdvancedCorrectionHint;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Send NR and your serial number.
+  ///
+  /// In en, this message translates to:
+  /// **'Send NR and your serial number.'**
+  String get qsoAdvancedIssueMissingSerial;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: The serial must contain 1–4 digits and be greater than zero.
+  ///
+  /// In en, this message translates to:
+  /// **'The serial must contain 1–4 digits and be greater than zero.'**
+  String get qsoAdvancedIssueInvalidSerial;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: The serial does not match the expected number.
+  ///
+  /// In en, this message translates to:
+  /// **'The serial does not match the expected number.'**
+  String get qsoAdvancedIssueWrongSerial;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Send PARK and the park reference.
+  ///
+  /// In en, this message translates to:
+  /// **'Send PARK and the park reference.'**
+  String get qsoAdvancedIssueMissingPark;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Use the full park prefix and 4–5 digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the full park prefix and 4–5 digits.'**
+  String get qsoAdvancedIssueInvalidPark;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: The park reference does not match the expected park.
+  ///
+  /// In en, this message translates to:
+  /// **'The park reference does not match the expected park.'**
+  String get qsoAdvancedIssueWrongPark;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Confirm the RST you heard from the remote station.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the RST you heard from the remote station.'**
+  String get qsoAdvancedIssueWrongRemoteRst;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: Contest practice: callsign, report, serial and correction confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Contest practice: callsign, report, serial and correction confirmed.'**
+  String get qsoAdvancedContestSummary;
+
+  /// Offline contest and park-to-park POTA simulator. UI label or instruction: POTA practice: callsign, report, park and correction confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'POTA practice: callsign, report, park and correction confirmed.'**
+  String get qsoAdvancedPotaSummary;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Head-copy listening
+  ///
+  /// In en, this message translates to:
+  /// **'Head-copy listening'**
+  String get comprehensionTitle;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen to the complete message, keep its meaning in mind, then answer. All material is original and available offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to the complete message, keep its meaning in mind, then answer. All material is original and available offline.'**
+  String get comprehensionIntro;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Practice mode
+  ///
+  /// In en, this message translates to:
+  /// **'Practice mode'**
+  String get comprehensionModeLabel;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Whole words
+  ///
+  /// In en, this message translates to:
+  /// **'Whole words'**
+  String get comprehensionWords;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Word parts and phrases
+  ///
+  /// In en, this message translates to:
+  /// **'Word parts and phrases'**
+  String get comprehensionPhrases;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: QSO information
+  ///
+  /// In en, this message translates to:
+  /// **'QSO information'**
+  String get comprehensionQso;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: POTA exchange
+  ///
+  /// In en, this message translates to:
+  /// **'POTA exchange'**
+  String get comprehensionPota;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Short stories
+  ///
+  /// In en, this message translates to:
+  /// **'Short stories'**
+  String get comprehensionStory;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Recognise a whole word from its sound without writing each letter.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognise a whole word from its sound without writing each letter.'**
+  String get comprehensionWordsHelp;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen for familiar word parts, then short phrases and complete sentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen for familiar word parts, then short phrases and complete sentences.'**
+  String get comprehensionPhrasesHelp;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Remember the operator’s callsign, name, location and signal report.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember the operator’s callsign, name, location and signal report.'**
+  String get comprehensionQsoHelp;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Remember both callsigns, the park designator and the signal report. The first callsign is the station being called.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember both callsigns, the park designator and the signal report. The first callsign is the station being called.'**
+  String get comprehensionPotaHelp;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen without transcribing. Remember who, where, when and why. Answers use the English words in the message.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen without transcribing. Remember who, where, when and why. Answers use the English words in the message.'**
+  String get comprehensionStoryHelp;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Effective speed
+  ///
+  /// In en, this message translates to:
+  /// **'Effective speed'**
+  String get comprehensionSpeedLabel;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Character {character} / effective {effective} WPM
+  ///
+  /// In en, this message translates to:
+  /// **'Character {character} / effective {effective} WPM'**
+  String comprehensionSpeed(String character, String effective);
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: This message needs symbols you have not learned: {symbols}. You can listen as an assisted preview.
+  ///
+  /// In en, this message translates to:
+  /// **'This message needs symbols you have not learned: {symbols}. You can listen as an assisted preview.'**
+  String comprehensionPreviewMissing(String symbols);
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Assisted practice · replay, reveal or unlearned symbols
+  ///
+  /// In en, this message translates to:
+  /// **'Assisted practice · replay, reveal or unlearned symbols'**
+  String get comprehensionAssisted;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Independent attempt · heard once without an answer reveal
+  ///
+  /// In en, this message translates to:
+  /// **'Independent attempt · heard once without an answer reveal'**
+  String get comprehensionIndependent;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Reveal transcript (assisted)
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal transcript (assisted)'**
+  String get comprehensionReveal;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Transcript
+  ///
+  /// In en, this message translates to:
+  /// **'Transcript'**
+  String get comprehensionTarget;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Word or phrase
+  ///
+  /// In en, this message translates to:
+  /// **'Word or phrase'**
+  String get comprehensionAnswer;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Called station / callsign
+  ///
+  /// In en, this message translates to:
+  /// **'Called station / callsign'**
+  String get comprehensionCallsign;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Sending station / callsign
+  ///
+  /// In en, this message translates to:
+  /// **'Sending station / callsign'**
+  String get comprehensionOtherCallsign;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Operator name
+  ///
+  /// In en, this message translates to:
+  /// **'Operator name'**
+  String get comprehensionName;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Location (QTH)
+  ///
+  /// In en, this message translates to:
+  /// **'Location (QTH)'**
+  String get comprehensionQth;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Signal report (RST)
+  ///
+  /// In en, this message translates to:
+  /// **'Signal report (RST)'**
+  String get comprehensionRst;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Park designator
+  ///
+  /// In en, this message translates to:
+  /// **'Park designator'**
+  String get comprehensionPark;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Who?
+  ///
+  /// In en, this message translates to:
+  /// **'Who?'**
+  String get comprehensionPerson;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Where did they go?
+  ///
+  /// In en, this message translates to:
+  /// **'Where did they go?'**
+  String get comprehensionDestination;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: When?
+  ///
+  /// In en, this message translates to:
+  /// **'When?'**
+  String get comprehensionTime;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: What did they go to do?
+  ///
+  /// In en, this message translates to:
+  /// **'What did they go to do?'**
+  String get comprehensionAction;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: {correct} of {total} information fields correct
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} of {total} information fields correct'**
+  String comprehensionScore(int correct, int total);
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Next message
+  ///
+  /// In en, this message translates to:
+  /// **'Next message'**
+  String get comprehensionNext;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Done
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get comprehensionDone;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: The result could not be saved. Retry before leaving.
+  ///
+  /// In en, this message translates to:
+  /// **'The result could not be saved. Retry before leaving.'**
+  String get comprehensionSaveFailed;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Audio is unavailable. Check the device output, then retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio is unavailable. Check the device output, then retry.'**
+  String get comprehensionAudioFailed;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: This listening activity uses audio, even if sound is off in your other practice settings.
+  ///
+  /// In en, this message translates to:
+  /// **'This listening activity uses audio, even if sound is off in your other practice settings.'**
+  String get comprehensionAudioRequired;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Recent independent attempts: {count} · field accuracy {percent}%
+  ///
+  /// In en, this message translates to:
+  /// **'Recent independent attempts: {count} · field accuracy {percent}%'**
+  String comprehensionHistory(int count, int percent);
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Independent listening results will appear here. Assisted practice is saved separately.
+  ///
+  /// In en, this message translates to:
+  /// **'Independent listening results will appear here. Assisted practice is saved separately.'**
+  String get comprehensionEmptyHistory;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Correct
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get comprehensionFieldCorrect;
+
+  /// Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Review this field
+  ///
+  /// In en, this message translates to:
+  /// **'Review this field'**
+  String get comprehensionFieldWrong;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -4690,5 +4690,434 @@
   "learnQsoReadyHint": "You have recent independent practice evidence and can begin full simulated QSOs.",
   "@learnQsoReadyHint": {
     "description": "Learning pedagogy: learnQsoReadyHint"
+  },
+  "goalsTitle": "Learning goal",
+  "goalsFirstQso": "First QSO",
+  "goalsConversation": "Conversation and head copy",
+  "goalsContest": "Contest exchanges",
+  "goalsExplanation": "Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.",
+  "goalsBeginner": "Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.",
+  "goalsComplete": "All milestones currently met",
+  "goalsPractice": "Practise the next skill",
+  "goalsCopying": "Character recognition",
+  "goalsSending": "Readable sending",
+  "goalsWords": "Whole-word recognition",
+  "goalsPhrases": "Phrase comprehension",
+  "goalsInformation": "QSO information",
+  "goalsStory": "Short-story head copy",
+  "goalsQso": "Complete a QSO",
+  "goalsCompetition": "Contest operation",
+  "goalsPlanListening": "Listen for the information needed by your goal.",
+  "goalsPlanExchange": "Practise an interactive exchange for your goal.",
+  "mistakesTitle": "Mistake notebook",
+  "mistakesPending": "To review",
+  "mistakesRecovered": "Recovered",
+  "mistakesHint": "Retry the original exercise at its original speed and conditions. Two exact answers on different days mark it recovered. Replays and revealed answers do not count toward recovery.",
+  "mistakesEmptyPending": "No mistakes waiting for review. Failed exercises will appear here after practice.",
+  "mistakesEmptyRecovered": "No recovered exercises yet. Retry an exercise correctly on two different days.",
+  "mistakesOriginalCopy": "First incorrect answer",
+  "mistakesLastCopy": "Latest answer",
+  "mistakesNoAnswer": "No answer",
+  "mistakesFailures": "Failed attempts",
+  "mistakesFirstFailure": "First failure",
+  "mistakesLastFailure": "Latest failure",
+  "mistakesCorrectDays": "Days answered independently",
+  "mistakesRecoveredOn": "Recovered on",
+  "mistakesRetry": "Retry original exercise",
+  "qsoAdvancedContestTitle": "Contest exchange",
+  "qsoAdvancedContestHint": "Exchange callsigns, RST and serials, then confirm a corrected serial.",
+  "qsoAdvancedPotaTitle": "POTA park-to-park",
+  "qsoAdvancedPotaHint": "Exchange callsigns, RST and park references, then confirm a corrected park.",
+  "qsoAdvancedSerialLabel": "Your serial number",
+  "qsoAdvancedParkLabel": "Your park reference",
+  "qsoAdvancedInvalidSerial": "Enter a serial from 1 to 9999.",
+  "qsoAdvancedInvalidPark": "Use a park prefix and 4–5 digits, e.g. US-1234.",
+  "qsoAdvancedRepeatTitle": "Repeat one field",
+  "qsoAdvancedRepeatHint": "Ask only for information you missed; the exchange stays at this stage.",
+  "qsoAdvancedTypedMode": "Type a reply (assisted)",
+  "qsoAdvancedKeyedMode": "Key a reply",
+  "qsoAdvancedTypedReply": "Your transmission",
+  "qsoAdvancedContestStage": "Send RST and your serial",
+  "qsoAdvancedPotaStage": "Send RST and your park",
+  "qsoAdvancedCorrectionStage": "Confirm corrected information",
+  "qsoAdvancedCorrectionHint": "Listen for CORR, then acknowledge the remote RST and corrected serial or park. Send readable code before increasing speed.",
+  "qsoAdvancedIssueMissingSerial": "Send NR and your serial number.",
+  "qsoAdvancedIssueInvalidSerial": "The serial must contain 1–4 digits and be greater than zero.",
+  "qsoAdvancedIssueWrongSerial": "The serial does not match the expected number.",
+  "qsoAdvancedIssueMissingPark": "Send PARK and the park reference.",
+  "qsoAdvancedIssueInvalidPark": "Use the full park prefix and 4–5 digits.",
+  "qsoAdvancedIssueWrongPark": "The park reference does not match the expected park.",
+  "qsoAdvancedIssueWrongRemoteRst": "Confirm the RST you heard from the remote station.",
+  "qsoAdvancedContestSummary": "Contest practice: callsign, report, serial and correction confirmed.",
+  "qsoAdvancedPotaSummary": "POTA practice: callsign, report, park and correction confirmed.",
+  "comprehensionTitle": "Head-copy listening",
+  "comprehensionIntro": "Listen to the complete message, keep its meaning in mind, then answer. All material is original and available offline.",
+  "comprehensionModeLabel": "Practice mode",
+  "comprehensionWords": "Whole words",
+  "comprehensionPhrases": "Word parts and phrases",
+  "comprehensionQso": "QSO information",
+  "comprehensionPota": "POTA exchange",
+  "comprehensionStory": "Short stories",
+  "comprehensionWordsHelp": "Recognise a whole word from its sound without writing each letter.",
+  "comprehensionPhrasesHelp": "Listen for familiar word parts, then short phrases and complete sentences.",
+  "comprehensionQsoHelp": "Remember the operator’s callsign, name, location and signal report.",
+  "comprehensionPotaHelp": "Remember both callsigns, the park designator and the signal report. The first callsign is the station being called.",
+  "comprehensionStoryHelp": "Listen without transcribing. Remember who, where, when and why. Answers use the English words in the message.",
+  "comprehensionSpeedLabel": "Effective speed",
+  "comprehensionSpeed": "Character {character} / effective {effective} WPM",
+  "comprehensionPreviewMissing": "This message needs symbols you have not learned: {symbols}. You can listen as an assisted preview.",
+  "comprehensionAssisted": "Assisted practice · replay, reveal or unlearned symbols",
+  "comprehensionIndependent": "Independent attempt · heard once without an answer reveal",
+  "comprehensionReveal": "Reveal transcript (assisted)",
+  "comprehensionTarget": "Transcript",
+  "comprehensionAnswer": "Word or phrase",
+  "comprehensionCallsign": "Called station / callsign",
+  "comprehensionOtherCallsign": "Sending station / callsign",
+  "comprehensionName": "Operator name",
+  "comprehensionQth": "Location (QTH)",
+  "comprehensionRst": "Signal report (RST)",
+  "comprehensionPark": "Park designator",
+  "comprehensionPerson": "Who?",
+  "comprehensionDestination": "Where did they go?",
+  "comprehensionTime": "When?",
+  "comprehensionAction": "What did they go to do?",
+  "comprehensionScore": "{correct} of {total} information fields correct",
+  "comprehensionNext": "Next message",
+  "comprehensionDone": "Done",
+  "comprehensionSaveFailed": "The result could not be saved. Retry before leaving.",
+  "comprehensionAudioFailed": "Audio is unavailable. Check the device output, then retry.",
+  "comprehensionAudioRequired": "This listening activity uses audio, even if sound is off in your other practice settings.",
+  "comprehensionHistory": "Recent independent attempts: {count} · field accuracy {percent}%",
+  "comprehensionEmptyHistory": "Independent listening results will appear here. Assisted practice is saved separately.",
+  "comprehensionFieldCorrect": "Correct",
+  "comprehensionFieldWrong": "Review this field",
+  "@comprehensionSpeed": {
+    "placeholders": {
+      "character": {
+        "type": "String"
+      },
+      "effective": {
+        "type": "String"
+      }
+    },
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Character {character} / effective {effective} WPM"
+  },
+  "@comprehensionPreviewMissing": {
+    "placeholders": {
+      "symbols": {
+        "type": "String"
+      }
+    },
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: This message needs symbols you have not learned: {symbols}. You can listen as an assisted preview."
+  },
+  "@comprehensionScore": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: {correct} of {total} information fields correct"
+  },
+  "@comprehensionHistory": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    },
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Recent independent attempts: {count} · field accuracy {percent}%"
+  },
+  "@goalsTitle": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Learning goal"
+  },
+  "@goalsFirstQso": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: First QSO"
+  },
+  "@goalsConversation": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Conversation and head copy"
+  },
+  "@goalsContest": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Contest exchanges"
+  },
+  "@goalsExplanation": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days."
+  },
+  "@goalsBeginner": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course."
+  },
+  "@goalsComplete": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: All milestones currently met"
+  },
+  "@goalsPractice": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Practise the next skill"
+  },
+  "@goalsCopying": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Character recognition"
+  },
+  "@goalsSending": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Readable sending"
+  },
+  "@goalsWords": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Whole-word recognition"
+  },
+  "@goalsPhrases": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Phrase comprehension"
+  },
+  "@goalsInformation": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: QSO information"
+  },
+  "@goalsStory": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Short-story head copy"
+  },
+  "@goalsQso": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Complete a QSO"
+  },
+  "@goalsCompetition": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Contest operation"
+  },
+  "@goalsPlanListening": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Listen for the information needed by your goal."
+  },
+  "@goalsPlanExchange": {
+    "description": "Learning goal route screen and goal-aware daily plan. UI label or instruction: Practise an interactive exchange for your goal."
+  },
+  "@mistakesTitle": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Mistake notebook"
+  },
+  "@mistakesPending": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: To review"
+  },
+  "@mistakesRecovered": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Recovered"
+  },
+  "@mistakesHint": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Retry the original exercise at its original speed and conditions. Two exact answers on different days mark it recovered. Replays and revealed answers do not count toward recovery."
+  },
+  "@mistakesEmptyPending": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: No mistakes waiting for review. Failed exercises will appear here after practice."
+  },
+  "@mistakesEmptyRecovered": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: No recovered exercises yet. Retry an exercise correctly on two different days."
+  },
+  "@mistakesOriginalCopy": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: First incorrect answer"
+  },
+  "@mistakesLastCopy": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Latest answer"
+  },
+  "@mistakesNoAnswer": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: No answer"
+  },
+  "@mistakesFailures": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Failed attempts"
+  },
+  "@mistakesFirstFailure": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: First failure"
+  },
+  "@mistakesLastFailure": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Latest failure"
+  },
+  "@mistakesCorrectDays": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Days answered independently"
+  },
+  "@mistakesRecoveredOn": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Recovered on"
+  },
+  "@mistakesRetry": {
+    "description": "Persistent mistake notebook and original-exercise retry. UI label or instruction: Retry original exercise"
+  },
+  "@qsoAdvancedContestTitle": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Contest exchange"
+  },
+  "@qsoAdvancedContestHint": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Exchange callsigns, RST and serials, then confirm a corrected serial."
+  },
+  "@qsoAdvancedPotaTitle": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: POTA park-to-park"
+  },
+  "@qsoAdvancedPotaHint": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Exchange callsigns, RST and park references, then confirm a corrected park."
+  },
+  "@qsoAdvancedSerialLabel": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Your serial number"
+  },
+  "@qsoAdvancedParkLabel": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Your park reference"
+  },
+  "@qsoAdvancedInvalidSerial": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Enter a serial from 1 to 9999."
+  },
+  "@qsoAdvancedInvalidPark": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Use a park prefix and 4–5 digits, e.g. US-1234."
+  },
+  "@qsoAdvancedRepeatTitle": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Repeat one field"
+  },
+  "@qsoAdvancedRepeatHint": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Ask only for information you missed; the exchange stays at this stage."
+  },
+  "@qsoAdvancedTypedMode": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Type a reply"
+  },
+  "@qsoAdvancedKeyedMode": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Key a reply"
+  },
+  "@qsoAdvancedTypedReply": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Your transmission"
+  },
+  "@qsoAdvancedContestStage": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Send RST and your serial"
+  },
+  "@qsoAdvancedPotaStage": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Send RST and your park"
+  },
+  "@qsoAdvancedCorrectionStage": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Confirm corrected information"
+  },
+  "@qsoAdvancedCorrectionHint": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Listen for CORR, then acknowledge the remote RST and corrected serial or park. Send readable code before increasing speed."
+  },
+  "@qsoAdvancedIssueMissingSerial": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Send NR and your serial number."
+  },
+  "@qsoAdvancedIssueInvalidSerial": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: The serial must contain 1–4 digits and be greater than zero."
+  },
+  "@qsoAdvancedIssueWrongSerial": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: The serial does not match the expected number."
+  },
+  "@qsoAdvancedIssueMissingPark": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Send PARK and the park reference."
+  },
+  "@qsoAdvancedIssueInvalidPark": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Use the full park prefix and 4–5 digits."
+  },
+  "@qsoAdvancedIssueWrongPark": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: The park reference does not match the expected park."
+  },
+  "@qsoAdvancedIssueWrongRemoteRst": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Confirm the RST you heard from the remote station."
+  },
+  "@qsoAdvancedContestSummary": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: Contest practice: callsign, report, serial and correction confirmed."
+  },
+  "@qsoAdvancedPotaSummary": {
+    "description": "Offline contest and park-to-park POTA simulator. UI label or instruction: POTA practice: callsign, report, park and correction confirmed."
+  },
+  "@comprehensionTitle": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Head-copy listening"
+  },
+  "@comprehensionIntro": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen to the complete message, keep its meaning in mind, then answer. All material is original and available offline."
+  },
+  "@comprehensionModeLabel": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Practice mode"
+  },
+  "@comprehensionWords": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Whole words"
+  },
+  "@comprehensionPhrases": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Word parts and phrases"
+  },
+  "@comprehensionQso": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: QSO information"
+  },
+  "@comprehensionPota": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: POTA exchange"
+  },
+  "@comprehensionStory": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Short stories"
+  },
+  "@comprehensionWordsHelp": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Recognise a whole word from its sound without writing each letter."
+  },
+  "@comprehensionPhrasesHelp": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen for familiar word parts, then short phrases and complete sentences."
+  },
+  "@comprehensionQsoHelp": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Remember the operator’s callsign, name, location and signal report."
+  },
+  "@comprehensionPotaHelp": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Remember both callsigns, the park designator and the signal report. The first callsign is the station being called."
+  },
+  "@comprehensionStoryHelp": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Listen without transcribing. Remember who, where, when and why. Answers use the English words in the message."
+  },
+  "@comprehensionSpeedLabel": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Effective speed"
+  },
+  "@comprehensionAssisted": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Assisted practice · replay, reveal or unlearned symbols"
+  },
+  "@comprehensionIndependent": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Independent attempt · heard once without an answer reveal"
+  },
+  "@comprehensionReveal": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Reveal transcript (assisted)"
+  },
+  "@comprehensionTarget": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Transcript"
+  },
+  "@comprehensionAnswer": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Word or phrase"
+  },
+  "@comprehensionCallsign": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Called station / callsign"
+  },
+  "@comprehensionOtherCallsign": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Sending station / callsign"
+  },
+  "@comprehensionName": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Operator name"
+  },
+  "@comprehensionQth": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Location (QTH)"
+  },
+  "@comprehensionRst": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Signal report (RST)"
+  },
+  "@comprehensionPark": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Park designator"
+  },
+  "@comprehensionPerson": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Who?"
+  },
+  "@comprehensionDestination": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Where did they go?"
+  },
+  "@comprehensionTime": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: When?"
+  },
+  "@comprehensionAction": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: What did they go to do?"
+  },
+  "@comprehensionNext": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Next message"
+  },
+  "@comprehensionDone": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Done"
+  },
+  "@comprehensionSaveFailed": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: The result could not be saved. Retry before leaving."
+  },
+  "@comprehensionAudioFailed": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Audio is unavailable. Check the device output, then retry."
+  },
+  "@comprehensionAudioRequired": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: This listening activity uses audio, even if sound is off in your other practice settings."
+  },
+  "@comprehensionEmptyHistory": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Independent listening results will appear here. Assisted practice is saved separately."
+  },
+  "@comprehensionFieldCorrect": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Correct"
+  },
+  "@comprehensionFieldWrong": {
+    "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Review this field"
   }
 }

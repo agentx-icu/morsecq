@@ -16,7 +16,13 @@ enum PlanStepKind {
   intro,
 
   /// Single-symbol recognition rounds of the current lesson's set.
-  recognition;
+  recognition,
+
+  /// Whole-word and information listening after the beginner course.
+  comprehension,
+
+  /// Interactive exchange on the chosen goal route.
+  qso;
 
   static PlanStepKind parse(String? name) => values.firstWhere(
     (v) => v.name == name,
@@ -68,7 +74,9 @@ enum PlanReason {
   courseGuided,
 
   /// Optional sending for a beginner: hear the model, key a few targets.
-  sendOptional;
+  sendOptional,
+  goalListening,
+  goalExchange;
 
   static PlanReason parse(String? name) => values.firstWhere(
     (v) => v.name == name,
