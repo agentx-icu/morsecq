@@ -473,17 +473,18 @@ class _SliderTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         ListTile(
-          title: Text(title),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+          // The value sits in the title row so a long title wraps instead of
+          // being squeezed to a few characters by a wide trailing value at
+          // large text on a phone.
+          title: Wrap(
+            spacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: <Widget>[
+              Text(title),
               Text(value, style: theme.textTheme.titleMedium),
-              if (trailing != null) ...<Widget>[
-                const SizedBox(width: 8),
-                trailing!,
-              ],
             ],
           ),
+          trailing: trailing,
         ),
         slider,
       ],

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
+import '../responsive.dart';
 import 'listen_controller.dart';
 import 'listen_preferences.dart';
 import 'listen_settings.dart';
@@ -245,7 +246,10 @@ class _ListenScreenState extends State<ListenScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: busy ? null : _toggle,
         icon: Icon(listening ? Icons.stop : Icons.mic),
-        label: Text(listening ? s.listenStop : s.listenStart),
+        label: Text(
+          listening ? s.listenStop : s.listenStart,
+          textScaler: edgeLabelTextScaler(context),
+        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
 import '../listen/listen_screen.dart';
+import '../responsive.dart';
 import '../tools/radio_tools_screen.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_catalog.dart';
@@ -265,15 +266,19 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
             ),
             const VerticalDivider(width: 1),
             Expanded(
-              child: Column(
-                children: <Widget>[
-                  _searchField(context),
-                  Expanded(
-                    child: _query.isEmpty
-                        ? ReferenceSectionView(section: _selected)
-                        : ReferenceSearchResults(query: _query),
-                  ),
-                ],
+              child: ReadableBody(
+                maxWidth: 960,
+                alignment: AlignmentDirectional.topStart,
+                child: Column(
+                  children: <Widget>[
+                    _searchField(context),
+                    Expanded(
+                      child: _query.isEmpty
+                          ? ReferenceSectionView(section: _selected)
+                          : ReferenceSearchResults(query: _query),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

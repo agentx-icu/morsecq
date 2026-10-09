@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// An [AppBar] title that never hides words behind an ellipsis.
@@ -36,29 +38,43 @@ class AppBarTitle extends StatelessWidget {
           text: TextSpan(text: text, style: small),
           textDirection: Directionality.of(context),
           textScaler: MediaQuery.textScalerOf(context),
+          textWidthBasis: TextWidthBasis.longestLine,
         )..layout();
         final width = wrapped.minIntrinsicWidth > constraints.maxWidth
             ? wrapped.minIntrinsicWidth.ceilToDouble()
             : constraints.maxWidth;
+        // Only as wide as the longest wrapped line, so the bar places the
+        // block as it places a one-line title: centred where it centres
+        // titles (iOS and macOS with fewer than two actions, centerTitle),
+        // at the start otherwise.
+        wrapped.layout(maxWidth: width);
+        final block = wrapped.width.ceilToDouble();
+        final blockHeight = wrapped.height;
         wrapped.dispose();
         // The bar gives its title unbounded height; bound the box to the
         // toolbar so FittedBox scales tall wrapped text down to fit it.
         final height = constraints.hasBoundedHeight
             ? constraints.maxHeight
             : AppBarTheme.of(context).toolbarHeight ?? kToolbarHeight;
+        // The scale FittedBox will apply; the box is as wide as the scaled
+        // block so no empty width sits beside it.
+        final scale = math.min(
+          1.0,
+          math.min(height / blockHeight, constraints.maxWidth / block),
+        );
         return SizedBox(
-          width: constraints.maxWidth,
+          width: block * scale,
           height: height,
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
             child: SizedBox(
-              width: width,
+              width: block,
               child: Text(
                 text,
                 style: small,
                 softWrap: true,
                 overflow: TextOverflow.visible,
+                textWidthBasis: TextWidthBasis.longestLine,
               ),
             ),
           ),

@@ -47,7 +47,7 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
           appBar: AppBar(title: AppBarTitle(context.s.learnSettings)),
           body: Center(
             child: snapshot.hasError
-                ? Padding(
+                ? SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

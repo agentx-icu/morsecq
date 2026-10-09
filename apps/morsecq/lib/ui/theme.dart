@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'appearance/style_tokens.dart';
 import 'appearance/ui_style.dart';
+import 'safe_sides_page_transitions.dart';
 
 /// Telegraph-brass amber: the colour of a polished straight key.
 const Color kMorsecqSeedColor = Color(0xFFB8860B);
+
+/// Dialogs stop at the Material 3 maximum width: an `AlertDialog` sizes to
+/// its content, and one with a text field grew across a whole desktop window.
+const DialogThemeData kDialogTheme = DialogThemeData(
+  constraints: BoxConstraints(minWidth: 280, maxWidth: 560),
+);
 
 /// App-wide Material 3 themes; Modern Calm is the default appearance.
 abstract final class MorsecqTheme {
@@ -24,6 +31,8 @@ abstract final class MorsecqTheme {
       useMaterial3: true,
       colorScheme: scheme,
       extensions: [_tokens(style, scheme)],
+      pageTransitionsTheme: kSafeSidesPageTransitions,
+      dialogTheme: kDialogTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       navigationBarTheme: NavigationBarThemeData(
         indicatorColor: scheme.primaryContainer,
@@ -128,6 +137,8 @@ abstract final class MorsecqTheme {
       scaffoldBackgroundColor: Color(canvas),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       extensions: [tokens],
+      pageTransitionsTheme: kSafeSidesPageTransitions,
+      dialogTheme: kDialogTheme,
       cardTheme: CardThemeData(
         color: Color(surface),
         surfaceTintColor: Colors.transparent,
