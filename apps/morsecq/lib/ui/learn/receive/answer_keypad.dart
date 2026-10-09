@@ -50,8 +50,10 @@ class AnswerKeypad extends StatelessWidget {
           ],
         ),
         const SizedBox(height: keyGap),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: keyGap,
+          runSpacing: keyGap,
           children: <Widget>[
             _Key(
               label: s.learnSpace,
@@ -61,7 +63,6 @@ class AnswerKeypad extends StatelessWidget {
               minWidth: keySize * 3,
               background: scheme.surfaceContainerHigh,
             ),
-            const SizedBox(width: keyGap),
             _Key(
               label: '⌫',
               semanticsLabel: s.learnBackspace,

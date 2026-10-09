@@ -6,6 +6,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/mistake_practice.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
+import '../../common/app_bar_title.dart';
 import '../conditions/conditions_playback.dart';
 import '../comprehension/comprehension_labels.dart';
 import '../comprehension/listening_comprehension_screen.dart';
@@ -60,7 +61,7 @@ class _MistakeNotebookScreenState extends State<MistakeNotebookScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.s.mistakesTitle)),
+    appBar: AppBar(title: AppBarTitle(context.s.mistakesTitle)),
     body: AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {

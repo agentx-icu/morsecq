@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../i18n/language_settings_tile.dart';
 import '../../training/training_controller_host.dart';
+import '../common/app_bar_title.dart';
 import '../settings/settings_routes.dart';
 import '../common/settings_body.dart';
 import '../appearance/appearance_page.dart';
@@ -52,7 +53,7 @@ class OfflineMePage extends StatelessWidget {
       ),
     );
     return Scaffold(
-      appBar: AppBar(title: Text(s.navMe)),
+      appBar: AppBar(title: AppBarTitle(s.navMe)),
       body: SettingsBody(
         maxWidth: 640,
         children: [

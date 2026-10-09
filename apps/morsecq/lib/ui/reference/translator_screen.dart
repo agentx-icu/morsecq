@@ -3,6 +3,7 @@ import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/app_bar_title.dart';
 import 'morse_to_text_view.dart';
 import 'playback_settings_sheet.dart';
 import 'reference_layout.dart';
@@ -111,7 +112,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(s.referenceTranslatorTitle),
+          title: AppBarTitle(s.referenceTranslatorTitle),
           actions: <Widget>[
             IconButton(
               tooltip: s.referencePlaybackSettings,

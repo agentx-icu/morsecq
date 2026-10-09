@@ -168,13 +168,17 @@ class _TextToMorseViewState extends State<TextToMorseView> {
                 onPressed: hasPattern ? _copy : null,
               ),
               const SizedBox(width: 4),
-              FilledButton.tonalIcon(
-                key: TextToMorseView.playKey,
-                onPressed: hasPattern
-                    ? () => controller.toggle(TextToMorseView.playId, _source)
-                    : null,
-                icon: Icon(playing ? Icons.stop : Icons.play_arrow),
-                label: Text(playing ? s.referenceStop : s.referencePlay),
+              // Flexible: a long label wraps inside the button on a narrow
+              // phone with large text instead of overflowing the row.
+              Flexible(
+                child: FilledButton.tonalIcon(
+                  key: TextToMorseView.playKey,
+                  onPressed: hasPattern
+                      ? () => controller.toggle(TextToMorseView.playId, _source)
+                      : null,
+                  icon: Icon(playing ? Icons.stop : Icons.play_arrow),
+                  label: Text(playing ? s.referenceStop : s.referencePlay),
+                ),
               ),
             ],
           ),

@@ -10,6 +10,7 @@ import '../../../training/audio_material_store.dart';
 import '../../../training/local_learning_store.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
+import '../../common/app_bar_title.dart';
 import '../../learn/learning_unavailable.dart';
 import 'recording_files.dart';
 import 'workbench_controller.dart';
@@ -215,7 +216,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     final c = _c;
     return Scaffold(
       appBar: AppBar(
-        title: Text(s.workbenchTitle),
+        title: AppBarTitle(s.workbenchTitle),
         actions: <Widget>[
           IconButton(
             tooltip: s.workbenchLibrary,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/app_bar_title.dart';
 import '../listen/listen_screen.dart';
 import '../tools/radio_tools_screen.dart';
 import 'playback_settings_sheet.dart';
@@ -106,7 +107,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   AppBar _appBar(BuildContext context) {
     final S s = context.s;
     return AppBar(
-      title: Text(s.referenceReferenceTitle),
+      title: AppBarTitle(s.referenceReferenceTitle),
       actions: <Widget>[
         IconButton(
           tooltip: s.listenTitle,
@@ -155,26 +156,53 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
 
   Widget _searchField(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-    child: TextField(
-      key: ReferenceScreen.searchFieldKey,
-      controller: _search,
-      onChanged: _onQueryChanged,
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintText: context.s.referenceSearchHint,
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: _query.isEmpty
-            ? null
-            : IconButton(
-                tooltip: context.s.referenceClearSearch,
-                icon: const Icon(Icons.close),
-                onPressed: _clearQuery,
-              ),
-        border: const OutlineInputBorder(),
-        isDense: true,
+    child: LayoutBuilder(
+      builder: (context, constraints) => TextField(
+        key: ReferenceScreen.searchFieldKey,
+        controller: _search,
+        onChanged: _onQueryChanged,
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintText: _searchHint(context, constraints.maxWidth),
+          hintMaxLines: 2,
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _query.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: context.s.referenceClearSearch,
+                  icon: const Icon(Icons.close),
+                  onPressed: _clearQuery,
+                ),
+          border: const OutlineInputBorder(),
+          isDense: true,
+        ),
       ),
     ),
   );
+
+  /// The descriptive hint when it fits two lines of the field, else the
+  /// platform's short "Search" (narrow phones, long languages, large text).
+  String _searchHint(BuildContext context, double fieldWidth) {
+    final hint = context.s.referenceSearchHint;
+    final painter =
+        TextPainter(
+          text: TextSpan(
+            text: hint,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 2,
+        )..layout(
+          maxWidth: (fieldWidth - 2 * kMinInteractiveDimension - 24).clamp(
+            1,
+            double.infinity,
+          ),
+        );
+    final fits = !painter.didExceedMaxLines;
+    painter.dispose();
+    return fits ? hint : MaterialLocalizations.of(context).searchFieldLabel;
+  }
 
   Widget _buildCompact(BuildContext context) {
     const List<ReferenceSection> sections = ReferenceSection.values;

@@ -54,7 +54,9 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
           DropdownButtonFormField<double>(
             key: const ValueKey('comprehension-speed'),
             initialValue: _effective,
-            decoration: InputDecoration(labelText: s.comprehensionSpeedLabel),
+            decoration: InputDecoration(
+              label: FieldLabel(s.comprehensionSpeedLabel),
+            ),
             items: [
               for (final speed in ({
                 10.0,
@@ -103,7 +105,13 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
                   ? Icons.replay
                   : Icons.hearing,
             ),
-            label: Text(_started && !_playing ? s.learnReplay : s.learnListen),
+            label: Text(
+              _playing
+                  ? s.learnListen
+                  : _started
+                  ? s.learnReplay
+                  : s.comprehensionListen,
+            ),
           ),
           if (_playing) const LinearProgressIndicator(),
           if (_audioFailed) ...[

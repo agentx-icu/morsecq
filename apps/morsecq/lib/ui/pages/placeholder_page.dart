@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/app_bar_title.dart';
 
 /// Shared body for the not-yet-built destinations: a centred icon, the
 /// destination name and a one-line description. Replaced page by page as
@@ -19,7 +20,7 @@ class PlaceholderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: AppBarTitle(title)),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),

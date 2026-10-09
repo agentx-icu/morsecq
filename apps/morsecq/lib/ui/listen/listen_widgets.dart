@@ -165,8 +165,12 @@ class ListenDecodedText extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
             child: Row(
               children: <Widget>[
-                Text(s.listenDecoded, style: theme.textTheme.labelLarge),
-                const Spacer(),
+                Expanded(
+                  child: Text(
+                    s.listenDecoded,
+                    style: theme.textTheme.labelLarge,
+                  ),
+                ),
                 IconButton(
                   tooltip: s.listenCopy,
                   onPressed: text.isEmpty ? null : onCopy,
@@ -217,27 +221,53 @@ class ListenStatsRow extends StatelessWidget {
     final S s = context.s;
     final pending = controller.pendingPattern;
     final wpm = controller.wpm;
+    // Two label/value groups that sit on one line when they fit and wrap
+    // onto a second line on a narrow phone, a long language or large text.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      child: Row(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 16,
+        runSpacing: 4,
         children: <Widget>[
-          Text(s.listenPending, style: theme.textTheme.labelMedium),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              pending.isEmpty ? '—' : pending,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontFamily: 'monospace',
-                letterSpacing: 2,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Flexible(
+                child: Text(
+                  s.listenPending,
+                  style: theme.textTheme.labelMedium,
+                ),
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  pending.isEmpty ? '—' : pending,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontFamily: 'monospace',
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+            ],
           ),
-          Text(s.listenSpeed, style: theme.textTheme.labelMedium),
-          const SizedBox(width: 8),
-          Text(
-            wpm == null ? s.listenSpeedUnknown : s.listenWpmValue(wpm.round()),
-            style: theme.textTheme.titleMedium,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Flexible(
+                child: Text(s.listenSpeed, style: theme.textTheme.labelMedium),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  wpm == null
+                      ? s.listenSpeedUnknown
+                      : s.listenWpmValue(wpm.round()),
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
+            ],
           ),
         ],
       ),

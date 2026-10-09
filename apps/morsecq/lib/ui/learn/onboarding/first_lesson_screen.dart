@@ -9,6 +9,7 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_plan.dart';
+import '../../common/app_bar_title.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
@@ -272,7 +273,7 @@ class _FirstLessonScreenState extends State<FirstLessonScreen>
     return DrillLeaveGuard(
       guard: _trials.roundCount > 0 && _outcome == null && !_recording,
       child: Scaffold(
-        appBar: AppBar(title: Text(s.firstLessonTitle)),
+        appBar: AppBar(title: AppBarTitle(s.firstLessonTitle)),
         body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
       ),
     );

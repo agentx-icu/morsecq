@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
+import '../../common/app_bar_title.dart';
 import '../../common/feedback.dart';
+import '../../common/field_label.dart';
 import '../learn_playback.dart';
 import 'goal_labels.dart';
 import 'goal_practice_launcher.dart';
@@ -35,7 +37,7 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.s.goalsTitle)),
+    appBar: AppBar(title: AppBarTitle(context.s.goalsTitle)),
     body: AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {
@@ -50,7 +52,7 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
               key: const ValueKey('goal-selector'),
               initialValue: c.progress.learningGoal,
               isExpanded: true,
-              decoration: InputDecoration(labelText: s.goalsTitle),
+              decoration: InputDecoration(label: FieldLabel(s.goalsTitle)),
               items: [
                 for (final goal in LearningGoal.values)
                   DropdownMenuItem(

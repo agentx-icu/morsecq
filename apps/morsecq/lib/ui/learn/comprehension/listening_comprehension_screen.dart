@@ -10,6 +10,8 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_settings.dart';
+import '../../common/app_bar_title.dart';
+import '../../common/field_label.dart';
 import '../drill_session_guard.dart';
 import '../learn_playback.dart';
 import 'comprehension_labels.dart';
@@ -349,7 +351,7 @@ class _ListeningComprehensionScreenState
   Widget build(BuildContext context) => DrillLeaveGuard(
     guard: _started && !_saved,
     child: Scaffold(
-      appBar: AppBar(title: Text(context.s.comprehensionTitle)),
+      appBar: AppBar(title: AppBarTitle(context.s.comprehensionTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),

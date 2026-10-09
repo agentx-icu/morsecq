@@ -113,6 +113,38 @@ void main() {
     expect(_decodedText(tester), 'SOS');
   });
 
+  testWidgets('rotating keeps the transcript and its scroll position', (
+    tester,
+  ) async {
+    final source = FakePcmSource();
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    _pushText(source, List.filled(12, 'CQ CQ DE BD1XYZ K').join(' '));
+    await tester.pump();
+    final transcript = find
+        .descendant(
+          of: find.byType(ListenDecodedText),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    final position = tester.state<ScrollableState>(transcript).position;
+    position.jumpTo(position.maxScrollExtent / 2);
+    final offset = position.pixels;
+    expect(offset, greaterThan(0));
+
+    // Landscape phone: the page scrolls as a whole around the transcript.
+    tester.view.physicalSize = const Size(844, 390);
+    await tester.pumpAndSettle();
+    expect(find.byType(SingleChildScrollView), findsNWidgets(2));
+    expect(tester.state<ScrollableState>(transcript).position.pixels, offset);
+
+    tester.view.physicalSize = const Size(390, 844);
+    await tester.pumpAndSettle();
+    expect(tester.state<ScrollableState>(transcript).position.pixels, offset);
+    expect(_decodedText(tester), startsWith('CQ CQ DE BD1XYZ K'));
+  });
+
   testWidgets('shows the permission-denied state and lets the user retry', (
     tester,
   ) async {

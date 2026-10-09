@@ -12,6 +12,7 @@ import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_plan.dart';
 import '../../../training/training_settings.dart';
+import '../../common/app_bar_title.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
 import 'qso_readiness_card.dart';
@@ -446,7 +447,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
             ),
           );
     return Scaffold(
-      appBar: AppBar(title: Text(s.learnQsoTitle)),
+      appBar: AppBar(title: AppBarTitle(s.learnQsoTitle)),
       // Flash-only learners still see the symbol they tapped.
       body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );
