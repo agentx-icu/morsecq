@@ -62,52 +62,57 @@ class _MistakeNotebookScreenState extends State<MistakeNotebookScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: AppBarTitle(context.s.mistakesTitle)),
-    body: AnimatedBuilder(
-      animation: widget.controller,
-      builder: (context, _) {
-        final book = widget.controller.progress.mistakeNotebook;
-        final entries = _showRecovered ? book.recovered : book.pending;
-        final s = context.s;
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(s.mistakesHint),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  key: const ValueKey('mistakes-filter-pending'),
-                  label: Text('${s.mistakesPending} (${book.pending.length})'),
-                  selected: !_showRecovered,
-                  onSelected: (_) => setState(() => _showRecovered = false),
-                ),
-                ChoiceChip(
-                  key: const ValueKey('mistakes-filter-recovered'),
-                  label: Text(
-                    '${s.mistakesRecovered} (${book.recovered.length})',
+    body: SafeArea(
+      // Side notches in landscape; the home indicator at the end.
+      child: AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, _) {
+          final book = widget.controller.progress.mistakeNotebook;
+          final entries = _showRecovered ? book.recovered : book.pending;
+          final s = context.s;
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(s.mistakesHint),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ChoiceChip(
+                    key: const ValueKey('mistakes-filter-pending'),
+                    label: Text(
+                      '${s.mistakesPending} (${book.pending.length})',
+                    ),
+                    selected: !_showRecovered,
+                    onSelected: (_) => setState(() => _showRecovered = false),
                   ),
-                  selected: _showRecovered,
-                  onSelected: (_) => setState(() => _showRecovered = true),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (entries.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Text(
-                  _showRecovered
-                      ? s.mistakesEmptyRecovered
-                      : s.mistakesEmptyPending,
-                ),
+                  ChoiceChip(
+                    key: const ValueKey('mistakes-filter-recovered'),
+                    label: Text(
+                      '${s.mistakesRecovered} (${book.recovered.length})',
+                    ),
+                    selected: _showRecovered,
+                    onSelected: (_) => setState(() => _showRecovered = true),
+                  ),
+                ],
               ),
-            for (final entry in entries)
-              _MistakeCard(entry: entry, onRetry: () => _retry(entry)),
-          ],
-        );
-      },
+              const SizedBox(height: 16),
+              if (entries.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    _showRecovered
+                        ? s.mistakesEmptyRecovered
+                        : s.mistakesEmptyPending,
+                  ),
+                ),
+              for (final entry in entries)
+                _MistakeCard(entry: entry, onRetry: () => _retry(entry)),
+            ],
+          );
+        },
+      ),
     ),
   );
 }

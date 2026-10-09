@@ -20,7 +20,7 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
           initialValue: _mode,
           isExpanded: true,
           decoration: InputDecoration(
-            labelText: s.comprehensionModeLabel,
+            label: FieldLabel(s.comprehensionModeLabel),
             border: const OutlineInputBorder(),
           ),
           items: [
@@ -136,7 +136,9 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: comprehensionFieldLabel(context, question.field),
+                  label: FieldLabel(
+                    comprehensionFieldLabel(context, question.field),
+                  ),
                   border: const OutlineInputBorder(),
                 ),
                 onSubmitted: (_) {

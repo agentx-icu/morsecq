@@ -170,34 +170,37 @@ class LearnHome extends StatelessWidget {
           ),
         ],
       ),
-      body: AnimatedBuilder(
-        animation: controller,
-        builder: (context, _) {
-          if (!controller.isLoaded) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final twoColumns =
-                  constraints.maxWidth >= kLearnTwoColumnMinWidth;
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1100),
-                    child:
-                        StyleTokens.of(context)?.style != null &&
-                            StyleTokens.of(context)!.style != UiStyle.classic
-                        ? _styledLayout(context, twoColumns)
-                        : twoColumns
-                        ? _twoColumn(context)
-                        : _oneColumn(context),
+      body: SafeArea(
+        // Side notches in landscape; the home indicator at the end.
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            if (!controller.isLoaded) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final twoColumns =
+                    constraints.maxWidth >= kLearnTwoColumnMinWidth;
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1100),
+                      child:
+                          StyleTokens.of(context)?.style != null &&
+                              StyleTokens.of(context)!.style != UiStyle.classic
+                          ? _styledLayout(context, twoColumns)
+                          : twoColumns
+                          ? _twoColumn(context)
+                          : _oneColumn(context),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

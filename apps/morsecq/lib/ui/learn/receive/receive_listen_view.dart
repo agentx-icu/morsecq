@@ -88,7 +88,6 @@ extension _ReceiveListenView on _ReceiveDrillScreenState {
             hintStyle: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            hintMaxLines: 3,
             border: const OutlineInputBorder(),
           ),
           onSubmitted: (_) => _submit(),

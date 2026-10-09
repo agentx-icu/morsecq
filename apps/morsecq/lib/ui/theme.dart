@@ -190,6 +190,11 @@ abstract final class MorsecqTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Color(surface),
+        // Hints, helpers and errors wrap instead of ending in an ellipsis
+        // on narrow windows, long languages or large text.
+        hintMaxLines: 4,
+        helperMaxLines: 8,
+        errorMaxLines: 8,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(tokens.controlRadius),
         ),

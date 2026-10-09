@@ -7,6 +7,8 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/material_store.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../common/field_label.dart';
+import '../../responsive.dart';
 import 'material_labels.dart';
 
 /// Create or edit a material (functional spec §9.1–9.2). The preview shows
@@ -125,10 +127,12 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
           widget.existing == null ? s.materialsNew : s.materialsEdit,
         ),
         actions: <Widget>[
-          TextButton(
-            key: const ValueKey('material-save'),
-            onPressed: canSave ? () => unawaited(_save()) : null,
-            child: Text(s.materialsSave),
+          appBarTextAction(
+            TextButton(
+              key: const ValueKey('material-save'),
+              onPressed: canSave ? () => unawaited(_save()) : null,
+              child: Text(s.materialsSave),
+            ),
           ),
         ],
       ),
@@ -144,7 +148,7 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
                   TextField(
                     controller: _title,
                     decoration: InputDecoration(
-                      labelText: s.materialsTitleField,
+                      label: FieldLabel(s.materialsTitleField),
                       border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => setState(() {}),
@@ -169,9 +173,8 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
                   TextField(
                     controller: _tags,
                     decoration: InputDecoration(
-                      labelText: s.materialsTagsField,
+                      label: FieldLabel(s.materialsTagsField),
                       helperText: s.materialsTagsHelper,
-                      helperMaxLines: 3,
                       border: const OutlineInputBorder(),
                     ),
                   ),
@@ -183,9 +186,11 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
                     maxLines: 14,
                     autocorrect: false,
                     decoration: InputDecoration(
-                      labelText: _kind == MaterialKind.text
-                          ? s.materialsTextField
-                          : s.materialsListField,
+                      label: FieldLabel(
+                        _kind == MaterialKind.text
+                            ? s.materialsTextField
+                            : s.materialsListField,
+                      ),
                       border: const OutlineInputBorder(),
                     ),
                     onChanged: (_) => _reanalyze(),
@@ -248,8 +253,6 @@ class MaterialPreview extends StatelessWidget {
             for (final item in a.items.take(5))
               Text(
                 item,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontFamily: 'monospace',
                 ),

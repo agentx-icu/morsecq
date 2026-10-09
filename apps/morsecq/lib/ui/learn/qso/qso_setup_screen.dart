@@ -13,6 +13,7 @@ import '../../../training/training_controller.dart';
 import '../../../training/training_plan.dart';
 import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
+import '../../common/field_label.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
 import 'qso_readiness_card.dart';
@@ -345,7 +346,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                         textCapitalization: TextCapitalization.characters,
                         autocorrect: false,
                         decoration: InputDecoration(
-                          labelText: s.learnQsoYourCall,
+                          label: FieldLabel(s.learnQsoYourCall),
                           errorText: _callError(s),
                           border: const OutlineInputBorder(),
                         ),
@@ -359,7 +360,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           textCapitalization: TextCapitalization.characters,
                           autocorrect: false,
                           decoration: InputDecoration(
-                            labelText: s.learnQsoYourName,
+                            label: FieldLabel(s.learnQsoYourName),
                             errorText: _wordError(s, _name),
                             border: const OutlineInputBorder(),
                           ),
@@ -371,7 +372,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           textCapitalization: TextCapitalization.characters,
                           autocorrect: false,
                           decoration: InputDecoration(
-                            labelText: s.learnQsoYourQth,
+                            label: FieldLabel(s.learnQsoYourQth),
                             errorText: _wordError(s, _qth),
                             border: const OutlineInputBorder(),
                           ),
@@ -386,7 +387,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           keyboardType: TextInputType.number,
                           autocorrect: false,
                           decoration: InputDecoration(
-                            labelText: s.qsoAdvancedSerialLabel,
+                            label: FieldLabel(s.qsoAdvancedSerialLabel),
                             errorText: QsoStation.isValidSerial(_serial.text)
                                 ? null
                                 : s.qsoAdvancedInvalidSerial,
@@ -403,7 +404,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                           textCapitalization: TextCapitalization.characters,
                           autocorrect: false,
                           decoration: InputDecoration(
-                            labelText: s.qsoAdvancedParkLabel,
+                            label: FieldLabel(s.qsoAdvancedParkLabel),
                             errorText: QsoStation.isValidPark(_park.text)
                                 ? null
                                 : s.qsoAdvancedInvalidPark,

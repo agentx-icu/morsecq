@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/feedback.dart';
 
 /// Keeps the screen on while a drill session is running in the foreground.
 ///
@@ -96,8 +97,7 @@ Future<bool> confirmLeaveDrill(BuildContext context) async {
   final s = context.s;
   final bool? leave = await showDialog<bool>(
     context: context,
-    builder: (dialogContext) => AlertDialog(
-      scrollable: true,
+    builder: (dialogContext) => ScrollingAlertDialog(
       title: Text(s.learnLeaveDrillTitle),
       content: Text(s.learnLeaveDrillBody),
       actions: <Widget>[

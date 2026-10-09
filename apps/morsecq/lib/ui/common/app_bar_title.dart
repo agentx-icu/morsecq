@@ -2,12 +2,17 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// An [AppBar] title that never hides words behind an ellipsis.
+import 'field_label.dart' show kMinShrunkFontSize;
+
+/// An [AppBar] title that keeps every word readable.
 ///
 /// One line at the bar's title style when it fits; otherwise wrapped lines
-/// at a smaller size, scaled down further only when even those overflow the
-/// bar (a narrow phone, a long language or large text). Use it for every
-/// app bar title so long translations stay readable.
+/// at a smaller size, scaled down further when even those overflow the bar
+/// (a narrow phone, a long language or large text) — but never below
+/// [kMinShrunkFontSize]. A title that would need to go smaller shows at the
+/// floor size with an ellipsis and keeps the full text in a tooltip and for
+/// screen readers; the layout sweep reports it so the copy or the bar's
+/// actions get fixed. Use it for every app bar title.
 class AppBarTitle extends StatelessWidget {
   const AppBarTitle(this.text, {super.key});
 
@@ -62,6 +67,22 @@ class AppBarTitle extends StatelessWidget {
           1.0,
           math.min(height / blockHeight, constraints.maxWidth / block),
         );
+        final fontSize = MediaQuery.textScalerOf(
+          context,
+        ).scale(small.fontSize ?? 17);
+        if (scale * fontSize < kMinShrunkFontSize) {
+          return Tooltip(
+            message: text,
+            child: MediaQuery.withNoTextScaling(
+              child: Text(
+                text,
+                style: small.copyWith(fontSize: kMinShrunkFontSize),
+                maxLines: (height / (kMinShrunkFontSize * 1.15)).floor(),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          );
+        }
         return SizedBox(
           width: block * scale,
           height: height,

@@ -21,6 +21,7 @@ Future<void> showMaterialExportSheet(
   required TrainingMaterial material,
 }) => showModalBottomSheet<void>(
   context: context,
+  useSafeArea: true,
   isScrollControlled: true,
   showDragHandle: true,
   builder: (_) => _ExportSheet(controller: controller, material: material),
