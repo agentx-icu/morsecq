@@ -234,7 +234,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       body: SafeArea(
         child: _unavailable
             ? Center(
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

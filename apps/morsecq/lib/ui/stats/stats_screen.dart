@@ -3,6 +3,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
+import '../responsive.dart';
 import 'accuracy_trend_chart.dart';
 import 'char_grid.dart';
 import 'confusion_heatmap.dart';
@@ -126,9 +127,14 @@ class StatsDashboard extends StatelessWidget {
                 ),
               ]
             : <Widget>[overview, trend, chars, confusions, calendar];
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-          children: children,
+        // Two columns stop growing on a wide monitor; a 1300 px chart is
+        // no easier to read than a 600 px one.
+        return ReadableBody(
+          maxWidth: 1200,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+            children: children,
+          ),
         );
       },
     );
