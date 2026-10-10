@@ -2733,6 +2733,11 @@ class SKo extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '새 문자 $char 연습하기';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a vs $b';
   }
@@ -2965,7 +2970,7 @@ class SKo extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '이번 라운드는 $total개 중 $correct개 정답입니다. 다음 단계를 선택하고 자신의 속도로 계속하세요.';
+    return '$total개 중 $correct개 정답입니다. 다음 단계를 선택하고 자신의 속도로 계속하세요.';
   }
 
   @override
@@ -3017,7 +3022,7 @@ class SKo extends S {
   String get learnPlanStepRecognition => '문자 하나씩';
 
   @override
-  String get learnPlanReasonFirstLesson => '소리를 듣고 K와 M 구별하기 (약 3분)';
+  String get learnPlanReasonFirstLesson => '소리를 듣고 K와 M 구별하기';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3149,7 +3154,7 @@ class SKo extends S {
   String get firstLessonPerfectHint => '이번 라운드는 모두 정답이에요. 다음에는 선택지 없는 받아쓰기 연습으로 다져 보세요.';
 
   @override
-  String get firstLessonPaceLocked => '답변을 시작했으므로 이번 라운드의 속도는 유지됩니다. 다음 라운드는 설정에서 조정할 수 있어요.';
+  String get firstLessonPaceLocked => '답변을 시작했으므로 이번 라운드들이 끝날 때까지 속도가 유지됩니다. 나중에 설정에서 바꿀 수 있어요.';
 
   @override
   String get learnRecentEvidenceHint => '학습 단계는 최근 14일간 같은 속도로 도움 없이 받아쓴 기록으로 판단합니다.';

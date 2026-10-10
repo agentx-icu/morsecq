@@ -2733,6 +2733,11 @@ class SJa extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '新しい文字 $char を練習';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a と $b を聞き比べ';
   }
@@ -2965,7 +2970,7 @@ class SJa extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return 'このラウンドは$total問中$correct問正解です。次のステップを選び、自分のペースで続けましょう。';
+    return '$total問中$correct問正解です。次のステップを選び、自分のペースで続けましょう。';
   }
 
   @override
@@ -3017,7 +3022,7 @@ class SJa extends S {
   String get learnPlanStepRecognition => '1文字ずつ';
 
   @override
-  String get learnPlanReasonFirstLesson => '音を聞いてKとMを聞き分ける（約3分）';
+  String get learnPlanReasonFirstLesson => '音を聞いてKとMを聞き分ける';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3149,7 +3154,7 @@ class SJa extends S {
   String get firstLessonPerfectHint => 'このラウンドは全問正解です。次は選択肢のない聞き取り練習で定着させましょう。';
 
   @override
-  String get firstLessonPaceLocked => '回答を始めたので、このラウンドの速度は変わりません。次のラウンドでは設定で調整できます。';
+  String get firstLessonPaceLocked => '回答を始めたので、これらのラウンドが終わるまで速度は変わりません。後で設定から変更できます。';
 
   @override
   String get learnRecentEvidenceHint => '段階は、過去14日間の同じ速度での補助なしの聞き取り記録で判断します。';

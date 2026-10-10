@@ -2753,6 +2753,11 @@ class SEn extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'Practise the new character $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a vs $b';
   }
@@ -2986,7 +2991,7 @@ class SEn extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total correct this round. Choose your next step and continue at your own pace.';
+    return '$correct / $total correct. Choose your next step and continue at your own pace.';
   }
 
   @override
@@ -3038,7 +3043,7 @@ class SEn extends S {
   String get learnPlanStepRecognition => 'Single symbols';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Hear the sounds and tell K from M (about 3 minutes)';
+  String get learnPlanReasonFirstLesson => 'Hear the sounds and tell K from M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3170,7 +3175,7 @@ class SEn extends S {
   String get firstLessonPerfectHint => 'Every answer was correct this round. Reinforce this with copying practice without answer choices.';
 
   @override
-  String get firstLessonPaceLocked => 'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.';
+  String get firstLessonPaceLocked => 'Answering has started, so the speed stays fixed until these rounds end. You can change it later in settings.';
 
   @override
   String get learnRecentEvidenceHint => 'Stages use unassisted copying evidence from the last 14 days at the same speed.';

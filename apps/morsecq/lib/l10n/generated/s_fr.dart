@@ -2755,6 +2755,11 @@ class SFr extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'S’entraîner sur le nouveau caractère $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a contre $b';
   }
@@ -2988,7 +2993,7 @@ class SFr extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total réponses correctes cette manche. Choisissez la suite et continuez à votre rythme.';
+    return '$correct / $total réponses correctes. Choisissez la suite et continuez à votre rythme.';
   }
 
   @override
@@ -3040,7 +3045,7 @@ class SFr extends S {
   String get learnPlanStepRecognition => 'Symboles seuls';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Écouter les sons et distinguer K de M (environ 3 minutes)';
+  String get learnPlanReasonFirstLesson => 'Écouter les sons et distinguer K de M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3172,7 +3177,7 @@ class SFr extends S {
   String get firstLessonPerfectHint => 'Toutes les réponses de cette manche sont correctes. Consolidez cela avec une copie sans choix de réponses.';
 
   @override
-  String get firstLessonPaceLocked => 'Cette manche a commencé : sa vitesse reste fixe. Vous pourrez la modifier dans les paramètres pour la prochaine manche.';
+  String get firstLessonPaceLocked => 'Vous avez commencé à répondre : la vitesse reste fixe jusqu’à la fin de ces manches. Vous pourrez la modifier ensuite dans les paramètres.';
 
   @override
   String get learnRecentEvidenceHint => 'Les étapes reposent sur les copies sans aide des 14 derniers jours, à la même vitesse.';

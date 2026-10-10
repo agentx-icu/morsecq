@@ -4748,6 +4748,12 @@ abstract class S {
   /// **'Hear {char}'**
   String learnHearChar(String char);
 
+  /// Button after a lesson challenge unlocked a symbol: short single-symbol practice of that new symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the new character {char}'**
+  String learnPractiseNewChar(String char);
+
   /// Button: play two symbols one after the other so they can be told apart
   ///
   /// In en, this message translates to:
@@ -5135,7 +5141,7 @@ abstract class S {
   /// First lesson step 5 body with the trial result
   ///
   /// In en, this message translates to:
-  /// **'{correct} / {total} correct this round. Choose your next step and continue at your own pace.'**
+  /// **'{correct} / {total} correct. Choose your next step and continue at your own pace.'**
   String firstLessonNextBody(int correct, int total);
 
   /// First lesson next action: short guided session
@@ -5237,7 +5243,7 @@ abstract class S {
   /// Daily plan reason for the first-lesson step
   ///
   /// In en, this message translates to:
-  /// **'Hear the sounds and tell K from M (about 3 minutes)'**
+  /// **'Hear the sounds and tell K from M'**
   String get learnPlanReasonFirstLesson;
 
   /// Daily plan reason for the recognition step
@@ -5477,7 +5483,7 @@ abstract class S {
   /// Learning pedagogy: firstLessonPaceLocked
   ///
   /// In en, this message translates to:
-  /// **'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.'**
+  /// **'Answering has started, so the speed stays fixed until these rounds end. You can change it later in settings.'**
   String get firstLessonPaceLocked;
 
   /// Learning pedagogy: learnRecentEvidenceHint

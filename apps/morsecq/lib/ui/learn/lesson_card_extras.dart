@@ -16,7 +16,7 @@ CharChipState chipStateOf(
   required bool isNewest,
 }) {
   if (isNewest) return CharChipState.newest;
-  if (controller.dueChars.contains(char)) return CharChipState.due;
+  if (controller.reviewDueChars.contains(char)) return CharChipState.due;
   final evidence = controller.recentEvidenceOf(char);
   if (evidence.stats.attempts > 0 &&
       evidence.strictAccuracy < LearnerStages.masteryAccuracy) {
