@@ -102,7 +102,15 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _wake.onLifecycle(state);
     final backgrounded = isDrillBackground(state);
     if (_backgrounded != backgrounded && mounted) {
-      setState(() => _backgrounded = backgrounded);
+      setState(() {
+        _backgrounded = backgrounded;
+        // Leaving cut the round off (or interrupted listening to it): the
+        // next replay restores what was lost and is not assistance.
+        if (backgrounded && _phase == _Phase.listen) {
+          _interrupted = true;
+          _heard = false;
+        }
+      });
     }
     if (_backgrounded) {
       _playback?.player.stop();
@@ -140,6 +148,10 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   /// The current round was heard to the end once. A replay of an
   /// interrupted round (background, stop) is not assistance.
   bool _heard = false;
+
+  /// The app went to the background during this round; cleared by the
+  /// replay that restores it or by answering.
+  bool _interrupted = false;
   bool _audioFailed = false;
   bool _settingUp = false;
 
@@ -230,6 +242,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   /// session still counts as practice but no longer unlocks or feeds SRS.
   void _replay() {
     if (_heard) _session.markReplay();
+    if (_interrupted) setState(() => _interrupted = false);
     if (_playback == null) {
       unawaited(_setup());
     } else {
@@ -251,6 +264,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _stopConditions();
     final round = _session.submit(_answer.text);
     _heard = false;
+    _interrupted = false;
     _answer.clear();
     setState(() {
       _lastRound = round;

@@ -107,11 +107,11 @@ class SZh extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已发 $count 个字符',
+      other: '共听 $count 个字符',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SZh extends S {
   String get learnReplayAssistedNote => '已重播：本次练习计入练习量，但不会解锁课程或更新复习。';
 
   @override
+  String get learnRoundInterrupted => '切到后台时播放已停止。点按“重放”重新收听本轮，这不算作辅助。';
+
+  @override
   String get learnPlanTitle => '今日计划';
 
   @override
@@ -2942,6 +2945,16 @@ class SZh extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a，停顿，然后 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '播放第 $number 个声音';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K 还是 M？';
 
   @override
@@ -3638,11 +3651,11 @@ class SZhHant extends SZh {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已發 $count 個字元',
+      other: '共聽 $count 個字元',
     );
     return '$_temp0';
   }
@@ -5093,6 +5106,9 @@ class SZhHant extends SZh {
   String get learnReplayAssistedNote => '已重播：本次練習計入練習量，但不會解鎖課程或更新複習。';
 
   @override
+  String get learnRoundInterrupted => '切到背景時播放已停止。點按「重放」重新收聽本輪，這不算作輔助。';
+
+  @override
   String get learnPlanTitle => '今日計畫';
 
   @override
@@ -6470,6 +6486,16 @@ class SZhHant extends SZh {
   @override
   String firstLessonWorkedReveal(String char) {
     return '剛才是 $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a，停頓，然後 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '播放第 $number 個聲音';
   }
 
   @override

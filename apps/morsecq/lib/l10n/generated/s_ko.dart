@@ -107,11 +107,11 @@ class SKo extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count개 문자 송신 완료',
+      other: '$count개 문자 수신',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SKo extends S {
   String get learnReplayAssistedNote => '다시 들음: 연습으로는 집계되지만 레슨 해제나 복습 갱신에는 반영되지 않습니다.';
 
   @override
+  String get learnRoundInterrupted => '앱이 백그라운드로 전환되어 재생이 멈췄습니다. \"다시 재생\"을 눌러 이번 라운드를 다시 들으세요. 도움으로 계산되지 않습니다.';
+
+  @override
   String get learnPlanTitle => '오늘의 계획';
 
   @override
@@ -2939,6 +2942,16 @@ class SKo extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return '방금 것은 $char였습니다';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, 잠깐 쉬고 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '$number번째 소리 재생';
   }
 
   @override

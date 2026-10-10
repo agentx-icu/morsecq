@@ -116,14 +116,14 @@ class SRu extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Передано $count символа',
-      many: 'Передано $count символов',
-      few: 'Передано $count символа',
-      one: 'Передан $count символ',
+      other: 'Прослушано $count символа',
+      many: 'Прослушано $count символов',
+      few: 'Прослушано $count символа',
+      one: 'Прослушан $count символ',
     );
     return '$_temp0';
   }
@@ -1617,6 +1617,9 @@ class SRu extends S {
   String get learnReplayAssistedNote => 'Повтор: занятие засчитано как практика, но не открывает урок и не обновляет повторения.';
 
   @override
+  String get learnRoundInterrupted => 'Воспроизведение остановилось, когда приложение ушло в фон. Нажмите «Прослушать снова», чтобы услышать этот раунд ещё раз; это не считается подсказкой.';
+
+  @override
   String get learnPlanTitle => 'План на сегодня';
 
   @override
@@ -3008,6 +3011,16 @@ class SRu extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return 'Это было $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, пауза, затем $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Воспроизвести звук $number';
   }
 
   @override

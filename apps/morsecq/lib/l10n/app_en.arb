@@ -137,9 +137,9 @@
       }
     }
   },
-  "learnCharsSent": "{count, plural, =1{1 character sent} other{{count} characters sent}}",
-  "@learnCharsSent": {
-    "description": "Receive drill session summary: how many characters were played to the user in the session",
+  "learnCharsHeard": "{count, plural, =1{1 character heard} other{{count} characters heard}}",
+  "@learnCharsHeard": {
+    "description": "Receive drill session summary: how many characters were played to the learner to copy",
     "placeholders": {
       "count": {
         "type": "int"
@@ -2193,6 +2193,10 @@
   "learnReplayAssistedNote": "Replayed: this session counts as practice but won't unlock a lesson or update reviews.",
   "@learnReplayAssistedNote": {
     "description": "Receive drill: shown after the learner replayed a round; replays make the session assisted"
+  },
+  "learnRoundInterrupted": "Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.",
+  "@learnRoundInterrupted": {
+    "description": "Receive drill: the app went to the background during this round, so playback stopped"
   },
   "learnPlanTitle": "Today's plan",
   "@learnPlanTitle": {
@@ -4276,6 +4280,27 @@
     "placeholders": {
       "char": {
         "type": "String"
+      }
+    }
+  },
+  "firstLessonPauseDemo": "{a}, a pause, then {b}",
+  "@firstLessonPauseDemo": {
+    "description": "First lesson short/long step: tile playing two symbols with the pause between characters",
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonWorkedPlay": "Play sound {number}",
+  "@firstLessonWorkedPlay": {
+    "description": "First lesson worked answer: play button for the numbered sound; the symbol is revealed only after it plays",
+    "placeholders": {
+      "number": {
+        "type": "int"
       }
     }
   },

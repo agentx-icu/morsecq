@@ -110,12 +110,12 @@ class SFr extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count caractères envoyés',
-      one: '$count caractère envoyé',
+      other: '$count caractères écoutés',
+      one: '$count caractère écouté',
     );
     return '$_temp0';
   }
@@ -1580,6 +1580,9 @@ class SFr extends S {
   String get learnReplayAssistedNote => 'Rejoué : cette séance compte comme entraînement mais ne débloque pas de leçon et ne met pas à jour les révisions.';
 
   @override
+  String get learnRoundInterrupted => 'La lecture s’est arrêtée quand l’app est passée en arrière-plan. Touchez « Réécouter » pour réentendre cette manche ; cela ne compte pas comme une aide.';
+
+  @override
   String get learnPlanTitle => 'Programme du jour';
 
   @override
@@ -2962,6 +2965,16 @@ class SFr extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return 'C’était $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, une pause, puis $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Lire le son $number';
   }
 
   @override

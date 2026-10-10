@@ -49,10 +49,9 @@ CharChipState chipStateOf(
       scheme.surfaceContainerHigh,
       scheme.onSurfaceVariant,
     ),
-    CharChipState.mastered => (
-      scheme.surfaceContainerHighest,
-      scheme.onSurface,
-    ),
+    // A solid accent: unmistakable next to the neutral "new" surface and
+    // the newest / practising / due / weak containers in every style.
+    CharChipState.mastered => (scheme.secondary, scheme.onSecondary),
   };
 }
 

@@ -110,12 +110,12 @@ class SEn extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count characters sent',
-      one: '1 character sent',
+      other: '$count characters heard',
+      one: '1 character heard',
     );
     return '$_temp0';
   }
@@ -1578,6 +1578,9 @@ class SEn extends S {
   String get learnReplayAssistedNote => 'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.';
 
   @override
+  String get learnRoundInterrupted => 'Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.';
+
+  @override
   String get learnPlanTitle => 'Today\'s plan';
 
   @override
@@ -2960,6 +2963,16 @@ class SEn extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return 'That was $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, a pause, then $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Play sound $number';
   }
 
   @override

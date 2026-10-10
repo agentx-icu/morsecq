@@ -110,12 +110,12 @@ class SPt extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count caracteres transmitidos',
-      one: '$count caractere transmitido',
+      other: '$count caracteres ouvidos',
+      one: '$count caractere ouvido',
     );
     return '$_temp0';
   }
@@ -1580,6 +1580,9 @@ class SPt extends S {
   String get learnReplayAssistedNote => 'Repetido: esta sessão conta como prática, mas não desbloqueia lições nem atualiza revisões.';
 
   @override
+  String get learnRoundInterrupted => 'A reprodução parou quando a app passou para segundo plano. Toque em “Reproduzir novamente” para ouvir esta ronda de novo; isso não conta como ajuda.';
+
+  @override
   String get learnPlanTitle => 'Plano de hoje';
 
   @override
@@ -2962,6 +2965,16 @@ class SPt extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return 'Foi $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, uma pausa e depois $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Reproduzir o som $number';
   }
 
   @override

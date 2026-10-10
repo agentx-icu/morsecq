@@ -107,11 +107,11 @@ class SJa extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 文字を送信',
+      other: '$count 文字を聞き取り',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SJa extends S {
   String get learnReplayAssistedNote => '再生し直しました：練習には数えますが、レッスンの解放や復習の更新は行いません。';
 
   @override
+  String get learnRoundInterrupted => 'アプリがバックグラウンドに移ったため再生が止まりました。「もう一度再生」でこのラウンドを聞き直せます。補助としては数えません。';
+
+  @override
   String get learnPlanTitle => '今日のプラン';
 
   @override
@@ -2939,6 +2942,16 @@ class SJa extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return '今のは $char でした';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a、間をあけて $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '$number つ目の音を再生';
   }
 
   @override

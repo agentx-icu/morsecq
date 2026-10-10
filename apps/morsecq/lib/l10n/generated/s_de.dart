@@ -110,12 +110,12 @@ class SDe extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Zeichen gesendet',
-      one: '$count Zeichen gesendet',
+      other: '$count Zeichen gehört',
+      one: '$count Zeichen gehört',
     );
     return '$_temp0';
   }
@@ -1579,6 +1579,9 @@ class SDe extends S {
   String get learnReplayAssistedNote => 'Wiederholt: Diese Übung zählt als Training, schaltet aber keine Lektion frei und ändert keine Wiederholungen.';
 
   @override
+  String get learnRoundInterrupted => 'Die Wiedergabe wurde angehalten, als die App in den Hintergrund ging. Tippe auf „Erneut abspielen“, um diese Runde noch einmal zu hören; das zählt nicht als Hilfe.';
+
+  @override
   String get learnPlanTitle => 'Plan für heute';
 
   @override
@@ -2961,6 +2964,16 @@ class SDe extends S {
   @override
   String firstLessonWorkedReveal(String char) {
     return 'Das war $char';
+  }
+
+  @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, eine Pause, dann $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Ton $number abspielen';
   }
 
   @override

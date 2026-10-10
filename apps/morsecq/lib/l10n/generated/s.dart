@@ -242,11 +242,11 @@ abstract class S {
   /// **'{percent}%'**
   String learnAccuracyPercent(int percent);
 
-  /// Receive drill session summary: how many characters were played to the user in the session
+  /// Receive drill session summary: how many characters were played to the learner to copy
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 character sent} other{{count} characters sent}}'**
-  String learnCharsSent(int count);
+  /// **'{count, plural, =1{1 character heard} other{{count} characters heard}}'**
+  String learnCharsHeard(int count);
 
   /// Receive drill session summary: verdict when the lesson was passed and a new Koch character was unlocked; {char} is that character
   ///
@@ -2714,6 +2714,12 @@ abstract class S {
   /// **'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.'**
   String get learnReplayAssistedNote;
 
+  /// Receive drill: the app went to the background during this round, so playback stopped
+  ///
+  /// In en, this message translates to:
+  /// **'Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.'**
+  String get learnRoundInterrupted;
+
   /// Learn home: title of the daily plan card
   ///
   /// In en, this message translates to:
@@ -5095,6 +5101,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'That was {char}'**
   String firstLessonWorkedReveal(String char);
+
+  /// First lesson short/long step: tile playing two symbols with the pause between characters
+  ///
+  /// In en, this message translates to:
+  /// **'{a}, a pause, then {b}'**
+  String firstLessonPauseDemo(String a, String b);
+
+  /// First lesson worked answer: play button for the numbered sound; the symbol is revealed only after it plays
+  ///
+  /// In en, this message translates to:
+  /// **'Play sound {number}'**
+  String firstLessonWorkedPlay(int number);
 
   /// First lesson step 4 title: two-choice trials
   ///

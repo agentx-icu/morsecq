@@ -368,6 +368,15 @@ class _FirstLessonScreenState extends State<FirstLessonScreen>
           playing: _playingId == c,
           onPlay: () => _playText(c),
         ),
+      // Both symbols as one group: the silence between them is the
+      // character gap of the current timing.
+      SoundTile(
+        key: const ValueKey('sound-pause'),
+        label: s.firstLessonPauseDemo(_pair.first, _pair.last),
+        pattern: _pair.map(MorseEncoder.toPattern).join('   '),
+        playing: _playingId == _pair.join(),
+        onPlay: () => _playText(_pair.join()),
+      ),
       const SizedBox(height: 16),
       _continue(s, _Step.worked),
     ],
@@ -379,12 +388,13 @@ class _FirstLessonScreenState extends State<FirstLessonScreen>
     title: s.firstLessonWorkedTitle,
     body: s.firstLessonWorkedBody,
     children: <Widget>[
-      for (final c in _pair) ...<Widget>[
+      for (final (i, c) in _pair.indexed) ...<Widget>[
         FilledButton.tonalIcon(
           key: ValueKey<String>('worked-$c'),
           onPressed: _playback == null ? null : () => _playText(c),
           icon: Icon(_playingId == c ? Icons.volume_up : Icons.play_arrow),
-          label: Text(s.firstLessonPlay),
+          // Numbered, not named: the symbol is the answer revealed after.
+          label: Text(s.firstLessonWorkedPlay(i + 1)),
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(56)),
         ),
         const SizedBox(height: 6),
