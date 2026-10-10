@@ -53,6 +53,34 @@ void main() {
     },
   );
 
+  test(
+    'a paused start touches no output until resume reports the failure',
+    () async {
+      final clock = FakeClock();
+      final sink = _FailingOutput()..failMark = 1;
+      final player = MorsePlayer(
+        sink: sink,
+        clock: clock,
+        reportOutputFailures: true,
+      );
+      final events = <PlayerEvent>[];
+      player.events.listen(events.add);
+      player.play(
+        MorseEncoder.encode('E', const MorseTiming(wpm: 20)),
+        paused: true,
+      );
+      clock.advance(const Duration(seconds: 1));
+      expect(sink.marks, 0, reason: 'silent while paused');
+      expect(events.whereType<PlayerStopped>(), isEmpty);
+      player.resume();
+      expect(sink.marks, 1);
+      expect(player.isPlaying, isFalse);
+      expect(clock.pendingTimers, 0);
+      expect(events.whereType<PlayerStopped>().single.error, same(sink.error));
+      await player.dispose();
+    },
+  );
+
   test('failed release reports diagnostics and cancels the timeline', () async {
     final clock = FakeClock();
     final sink = _FailingOutput()..failRelease = true;

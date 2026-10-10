@@ -93,9 +93,22 @@ final class MorsePlayer {
   Duration get totalDuration =>
       _offsets.isEmpty ? Duration.zero : _offsets.last;
 
+  /// Elapsed timeline time, frozen while paused and bounded by its length.
+  Duration get elapsed {
+    if (!_playing) return Duration.zero;
+    final value = (_paused ? _pausedAt : _clock.now()) - _startAt;
+    return value < Duration.zero
+        ? Duration.zero
+        : value > totalDuration
+        ? totalDuration
+        : value;
+  }
+
   /// Starts [elements] from the beginning. A running timeline is stopped
   /// first (emitting [PlayerStopped]). An empty list completes immediately.
-  void play(List<MorseElement> elements) {
+  /// With [paused] the timeline is loaded but stays silent, with no timer,
+  /// until [resume].
+  void play(List<MorseElement> elements, {bool paused = false}) {
     if (!_stop()) return;
     if (elements.isEmpty) {
       _emit(const PlayerCompleted());
@@ -108,8 +121,9 @@ final class MorsePlayer {
     }
     _offsets = offsets;
     _playing = true;
-    _paused = false;
+    _paused = paused;
     _startAt = _clock.now();
+    if (paused) _pausedAt = _startAt;
     _startElement(0);
   }
 
@@ -158,9 +172,10 @@ final class MorsePlayer {
   void _startElement(int index) {
     _current = index;
     final element = _elements[index];
-    if (!_setSink(element.on)) return;
+    // Started paused: the first element waits for resume().
+    if (!_paused && !_setSink(element.on)) return;
     _emit(PlayerElementStarted(index, element));
-    _scheduleBoundaryAfter(index);
+    if (!_paused) _scheduleBoundaryAfter(index);
   }
 
   void _scheduleBoundaryAfter(int index) {
