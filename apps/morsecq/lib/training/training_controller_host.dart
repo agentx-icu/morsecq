@@ -54,9 +54,11 @@ class TrainingControllerHost {
     _suspended = true;
     try {
       await flush();
-    } on Object {
-      _suspended = false;
-      rethrow;
+    } on Object catch (error) {
+      // The barrier reports an earlier failed save only after every queued
+      // write has settled. Those files are about to be removed, so a past
+      // failure must not keep the learner from clearing.
+      debugPrint('Clearing after a failed learning save: $error');
     }
     _current?.dispose();
     _current = null;
