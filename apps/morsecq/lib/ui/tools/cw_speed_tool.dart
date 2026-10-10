@@ -25,10 +25,17 @@ class _CwSpeedToolState extends State<CwSpeedTool> {
     CwSpeedTool.maxWpm,
   );
   bool _farnsworth = false;
-  late double _overall = (_wpm / 2).roundToDouble().clamp(
-    CwSpeedTool.minWpm,
-    _wpm,
-  );
+
+  /// Half the initial character speed. Set eagerly: a lazy initializer
+  /// first ran inside the first slider move, after `_wpm` had already
+  /// changed, so the default overall speed depended on that drag.
+  late double _overall;
+
+  @override
+  void initState() {
+    super.initState();
+    _overall = (_wpm / 2).roundToDouble().clamp(CwSpeedTool.minWpm, _wpm);
+  }
 
   void _setWpm(double v) => setState(() {
     _wpm = v.roundToDouble();
