@@ -20,6 +20,7 @@ final class AppServices with WidgetsBindingObserver {
   final BackgroundTaskApi _background;
   bool _started = false;
   Future<void>? _flushing;
+  bool _flushAgain = false;
   void start() {
     if (_started) return;
     _started = true;
@@ -39,14 +40,27 @@ final class AppServices with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _flushInBackground() =>
-      _flushing ??= _save().whenComplete(() => _flushing = null);
+  // A request arriving during a save may follow newer writes that the running
+  // barrier does not cover, so it schedules one more barrier.
+  Future<void> _flushInBackground() {
+    if (_flushing != null) {
+      _flushAgain = true;
+      return _flushing!;
+    }
+    return _flushing = _save().whenComplete(() => _flushing = null);
+  }
+
   Future<void> _save() async {
     final token = await _background.begin();
     try {
-      await flush();
-    } on Object catch (error) {
-      debugPrint('Learning persistence failed: $error');
+      do {
+        _flushAgain = false;
+        try {
+          await flush();
+        } on Object catch (error) {
+          debugPrint('Learning persistence failed: $error');
+        }
+      } while (_flushAgain);
     } finally {
       if (token != null) await _background.end(token);
     }
