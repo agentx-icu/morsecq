@@ -179,33 +179,36 @@ class _AppearancePageState extends State<AppearancePage> {
     final changed = _style != settings.style || _mode != settings.themeMode;
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(context.s.appearanceTitle)),
-      body: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1100),
-              child: LayoutBuilder(
-                builder: (context, inner) {
-                  if (inner.maxWidth >= 900) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        // Side notches in landscape; the home indicator at the end.
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1100),
+                child: LayoutBuilder(
+                  builder: (context, inner) {
+                    if (inner.maxWidth >= 900) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: _choices(inner.maxWidth - 320)),
+                          const SizedBox(width: 24),
+                          SizedBox(width: 296, child: _preview()),
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _choices(inner.maxWidth - 320)),
-                        const SizedBox(width: 24),
-                        SizedBox(width: 296, child: _preview()),
+                        _preview(),
+                        const SizedBox(height: 24),
+                        _choices(inner.maxWidth),
                       ],
                     );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _preview(),
-                      const SizedBox(height: 24),
-                      _choices(inner.maxWidth),
-                    ],
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ),

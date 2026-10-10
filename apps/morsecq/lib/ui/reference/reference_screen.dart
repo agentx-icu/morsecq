@@ -158,33 +158,40 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   Widget _searchField(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
     child: LayoutBuilder(
-      builder: (context, constraints) => TextField(
-        key: ReferenceScreen.searchFieldKey,
-        controller: _search,
-        onChanged: _onQueryChanged,
-        textInputAction: TextInputAction.search,
-        decoration: InputDecoration(
-          hintText: _searchHint(context, constraints.maxWidth),
-          hintMaxLines: 2,
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: _query.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: context.s.referenceClearSearch,
-                  icon: const Icon(Icons.close),
-                  onPressed: _clearQuery,
-                ),
-          border: const OutlineInputBorder(),
-          isDense: true,
-        ),
-      ),
+      builder: (context, constraints) {
+        final hint = context.s.referenceSearchHint;
+        final fits = _hintFits(context, hint, constraints.maxWidth);
+        return TextField(
+          key: ReferenceScreen.searchFieldKey,
+          controller: _search,
+          onChanged: _onQueryChanged,
+          textInputAction: TextInputAction.search,
+          decoration: InputDecoration(
+            // The description stays visible: as the hint when it fits two
+            // lines, otherwise as wrapping helper text under a short hint.
+            hintText: fits
+                ? hint
+                : MaterialLocalizations.of(context).searchFieldLabel,
+            hintMaxLines: 2,
+            helperText: fits ? null : hint,
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _query.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: context.s.referenceClearSearch,
+                    icon: const Icon(Icons.close),
+                    onPressed: _clearQuery,
+                  ),
+            border: const OutlineInputBorder(),
+            isDense: true,
+          ),
+        );
+      },
     ),
   );
 
-  /// The descriptive hint when it fits two lines of the field, else the
-  /// platform's short "Search" (narrow phones, long languages, large text).
-  String _searchHint(BuildContext context, double fieldWidth) {
-    final hint = context.s.referenceSearchHint;
+  /// Whether the descriptive [hint] fits two lines of the field.
+  bool _hintFits(BuildContext context, String hint, double fieldWidth) {
     final painter =
         TextPainter(
           text: TextSpan(
@@ -202,7 +209,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
         );
     final fits = !painter.didExceedMaxLines;
     painter.dispose();
-    return fits ? hint : MaterialLocalizations.of(context).searchFieldLabel;
+    return fits;
   }
 
   Widget _buildCompact(BuildContext context) {
@@ -214,34 +221,31 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
       child: Scaffold(
         appBar: _appBar(context),
         body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              _searchField(context),
-              Expanded(
-                child: _query.isEmpty
-                    ? Column(
-                        children: <Widget>[
-                          TabBar(
-                            isScrollable: true,
-                            tabAlignment: TabAlignment.start,
-                            tabs: <Widget>[
-                              for (final ReferenceSection section in sections)
-                                Tab(text: section.label(s)),
-                            ],
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: <Widget>[
-                                for (final ReferenceSection section in sections)
-                                  ReferenceSectionView(section: section),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : ReferenceSearchResults(query: _query),
-              ),
+          // The search field and tabs scroll away with the content, so a
+          // short landscape window or large text still leaves room for it.
+          child: NestedScrollView(
+            headerSliverBuilder: (context, _) => <Widget>[
+              SliverToBoxAdapter(child: _searchField(context)),
+              if (_query.isEmpty)
+                SliverToBoxAdapter(
+                  child: TabBar(
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    tabs: <Widget>[
+                      for (final ReferenceSection section in sections)
+                        Tab(text: section.label(s)),
+                    ],
+                  ),
+                ),
             ],
+            body: _query.isEmpty
+                ? TabBarView(
+                    children: <Widget>[
+                      for (final ReferenceSection section in sections)
+                        ReferenceSectionView(section: section),
+                    ],
+                  )
+                : ReferenceSearchResults(query: _query),
           ),
         ),
       ),

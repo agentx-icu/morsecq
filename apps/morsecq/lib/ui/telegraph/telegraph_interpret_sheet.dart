@@ -13,6 +13,7 @@ import 'telegraph_labels.dart';
 Future<void> showTelegraphInterpretation(BuildContext context, String text) =>
     showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
       showDragHandle: true,
       isScrollControlled: true,
       builder: (_) => SafeArea(child: TelegraphInterpretation(text: text)),

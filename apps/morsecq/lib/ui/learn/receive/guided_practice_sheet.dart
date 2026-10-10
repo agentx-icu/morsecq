@@ -20,8 +20,11 @@ Future<GuidedLevel?> showGuidedPracticeSheet(
   useSafeArea: true,
   builder: (context) {
     final s = context.s;
+    // useSafeArea covers the top and sides; the bottom inset is padded here.
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding:
+          const EdgeInsets.all(20) +
+          MediaQuery.paddingOf(context).copyWith(top: 0, left: 0, right: 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

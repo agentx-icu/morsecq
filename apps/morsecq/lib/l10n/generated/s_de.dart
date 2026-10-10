@@ -916,7 +916,7 @@ class SDe extends S {
   String get learnDailyGoal => 'Tagesziel';
 
   @override
-  String get referenceReferenceTitle => 'Morse-Nachschlagewerk';
+  String get referenceReferenceTitle => 'Morse-Referenz';
 
   @override
   String get referenceTranslatorTitle => 'Übersetzer';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/field_label.dart';
 import 'morse_keypad.dart';
 import 'pattern_decoder.dart';
 import 'reference_layout.dart';
@@ -124,7 +125,7 @@ class _MorseToTextViewState extends State<MorseToTextView> {
               FilteringTextInputFormatter.allow(MorseToTextView.allowedInput),
             ],
             decoration: InputDecoration(
-              labelText: s.referencePatternInputLabel,
+              label: FieldLabel(s.referencePatternInputLabel),
               hintText: s.referencePatternInputHint,
               border: const OutlineInputBorder(),
               alignLabelWithHint: true,

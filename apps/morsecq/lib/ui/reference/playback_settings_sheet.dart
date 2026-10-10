@@ -10,9 +10,9 @@ Future<void> showReferencePlaybackSettings(
 ) {
   return showModalBottomSheet<void>(
     context: context,
+    useSafeArea: true,
     showDragHandle: true,
     isScrollControlled: true,
-    useSafeArea: true,
     builder: (_) => SafeArea(
       // Scrolls on short landscape phones instead of overflowing.
       child: SingleChildScrollView(

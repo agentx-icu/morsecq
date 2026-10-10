@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/feedback.dart';
 
 /// Plain-language explanations of the jargon the Learn tab cannot avoid
 /// (Koch, WPM, Farnsworth, QSO, RST / 73). The professional terms stay in
@@ -9,27 +10,25 @@ Future<void> showLearnGlossary(BuildContext context) {
   final s = context.s;
   return showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
+    builder: (context) => ScrollingAlertDialog(
       title: Text(s.learnGlossaryTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          key: const ValueKey('learn-glossary'),
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            for (final text in <String>[
-              s.glossaryKoch,
-              s.glossaryWpm,
-              s.glossaryFarnsworth,
-              s.glossaryQso,
-              s.glossaryRst,
-            ])
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(text),
-              ),
-          ],
-        ),
+      content: Column(
+        key: const ValueKey('learn-glossary'),
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          for (final text in <String>[
+            s.glossaryKoch,
+            s.glossaryWpm,
+            s.glossaryFarnsworth,
+            s.glossaryQso,
+            s.glossaryRst,
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(text),
+            ),
+        ],
       ),
       actions: <Widget>[
         TextButton(

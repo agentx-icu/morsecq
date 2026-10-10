@@ -18,6 +18,7 @@ Future<(ReceiveDrillKind, RadioPreset)?> showDrillPickerSheet(
   Future<void> Function(RadioPreset preset)? onPreview,
 }) => showModalBottomSheet<(ReceiveDrillKind, RadioPreset)>(
   context: context,
+  useSafeArea: true,
   showDragHandle: true,
   builder: (sheetContext) => SafeArea(
     child: DrillPickerList(
