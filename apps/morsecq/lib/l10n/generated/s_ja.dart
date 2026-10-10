@@ -2645,24 +2645,6 @@ class SJa extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => '電碼の解釈';
-
-  @override
-  String get telegraphInterpretNote => 'ここに表示するだけで、メッセージ自体は変わらず、何も送信されません。';
-
-  @override
-  String get telegraphUnresolved => '未解決：この番号の字はありません';
-
-  @override
-  String get telegraphMalformed => '4 桁のグループではありません';
-
-  @override
-  String get telegraphNotCode => '文字列（そのまま）';
-
-  @override
-  String get telegraphAmbiguous => 'この番号を共有する字が複数あります';
-
-  @override
   String get conditionsAudioFailed => 'この端末では音声を開始できませんでした。「クリア」で練習してください。';
 
   @override

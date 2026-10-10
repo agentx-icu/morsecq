@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
@@ -8,7 +6,6 @@ import 'package:morsecq/training/telegraph_sessions.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/telegraph/telegraph_practice_screen.dart';
 import 'package:morsecq/ui/learn/telegraph/telegraph_recall_screen.dart';
-import 'package:morsecq/ui/telegraph/telegraph_interpret_sheet.dart';
 import 'package:morsecq/ui/telegraph/telegraph_labels.dart';
 
 import 'helpers/fake_playback.dart';
@@ -181,78 +178,6 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(find.textContaining(en.telegraphRecallResults(1, 100)), findsOne);
-    });
-  });
-
-  group('TelegraphInterpretation', () {
-    Future<void> pumpSheet(WidgetTester tester, String text) async {
-      tester.view.physicalSize = const Size(430, 1400);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        l10nApp(
-          home: Builder(
-            builder: (context) => Scaffold(
-              body: TextButton(
-                onPressed: () =>
-                    unawaited(showTelegraphInterpretation(context, text)),
-                child: const Text('open'),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
-    }
-
-    Finder subtitleOf(int i, String text) => find.descendant(
-      of: find.byKey(ValueKey('telegraph-token-$i')),
-      matching: find.text(text),
-    );
-
-    testWidgets('reads every token in order with its kind', (tester) async {
-      await pumpSheet(tester, '0022 0948  CQ 123 9999');
-      expect(find.text(en.telegraphInterpretTitle), findsOneWidget);
-      for (final (i, source) in ['0022', '0948', 'CQ', '123', '9999'].indexed) {
-        expect(subtitleOf(i, source), findsOneWidget, reason: 'token $i');
-      }
-      expect(find.byKey(const ValueKey('telegraph-token-5')), findsNothing);
-      expect(subtitleOf(0, '中'), findsOneWidget);
-      expect(subtitleOf(1, '国'), findsOneWidget);
-      expect(subtitleOf(2, en.telegraphNotCode), findsOneWidget);
-      expect(subtitleOf(3, en.telegraphMalformed), findsOneWidget);
-      expect(subtitleOf(4, en.telegraphUnresolved), findsOneWidget);
-    });
-
-    testWidgets('switching the codebook re-reads the same message', (
-      tester,
-    ) async {
-      await pumpSheet(tester, '0948 8888');
-      expect(subtitleOf(0, '国'), findsOneWidget);
-      expect(subtitleOf(1, en.telegraphUnresolved), findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('codebook-taiwan')));
-      await tester.pumpAndSettle();
-      expect(subtitleOf(0, '國'), findsOneWidget);
-      expect(subtitleOf(0, '国'), findsNothing);
-      // 8888 exists only in the Taiwan book.
-      expect(subtitleOf(1, en.telegraphUnresolved), findsNothing);
-      expect(
-        subtitleOf(
-          1,
-          ChineseTelegraphCode.charsOf(
-            '8888',
-            codebook: TelegraphCodebook.taiwan,
-          ).join(' / '),
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('an empty message lists no tokens', (tester) async {
-      await pumpSheet(tester, '   ');
-      expect(find.text(en.telegraphInterpretTitle), findsOneWidget);
-      expect(find.byKey(const ValueKey('telegraph-token-0')), findsNothing);
     });
   });
 

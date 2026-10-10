@@ -2645,24 +2645,6 @@ class SKo extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => '전신 부호 해석';
-
-  @override
-  String get telegraphInterpretNote => '여기에만 표시됩니다. 메시지는 바뀌지 않고 아무것도 전송되지 않습니다.';
-
-  @override
-  String get telegraphUnresolved => '미해결: 이 부호에 해당하는 글자가 없습니다';
-
-  @override
-  String get telegraphMalformed => '네 자리 묶음이 아닙니다';
-
-  @override
-  String get telegraphNotCode => '텍스트(그대로 둠)';
-
-  @override
-  String get telegraphAmbiguous => '여러 글자가 이 부호를 함께 씁니다';
-
-  @override
   String get conditionsAudioFailed => '이 기기에서 오디오를 시작하지 못했습니다. 깨끗한 환경으로 연습하세요.';
 
   @override
