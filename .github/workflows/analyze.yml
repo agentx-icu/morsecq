@@ -57,6 +57,15 @@ jobs:
       - name: Import guard (layering)
         run: dart run tool/import_guard.dart
 
+      # Files shared with DitMesh are pinned in tool/shared_packages.lock.json;
+      # an unrecorded edit or an unexplained divergence fails here. Needs no
+      # DitMesh checkout. The second step tests the tool itself.
+      - name: Shared package pins (DitMesh sync)
+        run: dart run tool/shared_sync.dart --check
+
+      - name: Shared package sync tool tests
+        run: dart test tool/test
+
       # No hard-coded user-visible prose in apps/morsecq/lib: text sinks
       # (Text, tooltip, labelText, ...) must read from the ARBs. Its own
       # tests run with the app tests (apps/morsecq/test/i18n/).
