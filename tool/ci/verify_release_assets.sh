@@ -6,8 +6,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 [[ $# -eq 2 ]] || ci_die "Usage: verify_release_assets.sh <dist-dir> <vX.Y.Z>"
 DIST_DIR="$1"
-VERSION="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+[[:space:]]*$/\1/p' "$(ci_repo_root)/apps/morsecq/pubspec.yaml")"
-[[ -n "$VERSION" && "$2" == "v$VERSION" ]] || ci_die "Release tag must match app version v$VERSION"
+TAG="$2"
+# Validate the tag against the current pubspec before reading or writing any
+# release assets. In particular this rejects stale tags such as v0.2.0 when
+# master now declares 1.0.0+1.
+"$SCRIPT_DIR/check_version_tag.sh" "$TAG"
+VERSION="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+[[:space:]]*$/\1/p' "$(ci_repo_root)/apps/morsecq/pubspec.yaml" | head -n 1)"
+[[ -n "$VERSION" ]] || ci_die "Could not determine app version"
 [[ -d "$DIST_DIR" ]] || ci_die "Missing release directory: $DIST_DIR"
 BASE="morsecq-$VERSION"
 MAC_ARCH=""

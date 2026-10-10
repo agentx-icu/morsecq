@@ -13,9 +13,14 @@ plugins {
 //     password may contain any character);
 //  2. android/key.properties (storeFile, storePassword, keyAlias, keyPassword;
 //     gitignored), the usual Flutter setup for a local release build.
-// Neither: signed with the debug key — installable for testing, not for a
-// store, and not upgradable to/from a properly signed build.
+// Neither: release builds fail unless MORSECQ_ALLOW_DEBUG_SIGNING=1
+// explicitly opts into a non-distributable debug-signed test artifact.
 val morsecqSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+// Debug signing is useful for a deliberately non-distributable local/CI test
+// build only. Release builds must opt in explicitly; otherwise a missing
+// keystore must fail the release task instead of silently producing an APK that
+// cannot be upgraded or uploaded to Play.
+val morsecqAllowDebugSigning = System.getenv("MORSECQ_ALLOW_DEBUG_SIGNING") == "1"
 val morsecqReleaseSigning: Map<String, String>? = run {
     val env = mapOf(
         "storeFile" to "MORSECQ_ANDROID_KEYSTORE",
@@ -82,10 +87,38 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName(
-                if (morsecqReleaseSigning != null) "release" else "debug",
+            signingConfig = when {
+                morsecqReleaseSigning != null -> signingConfigs.getByName("release")
+                morsecqAllowDebugSigning -> signingConfigs.getByName("debug")
+                else -> null
+            }
+        }
+    }
+}
+
+// Check when a release task runs, not while Gradle configures all variants:
+// ordinary debug builds must keep working without distribution credentials.
+val verifyMorsecqReleaseSigning = tasks.register("verifyMorsecqReleaseSigning") {
+    doLast {
+        val taggedBuild = System.getenv("GITHUB_REF_TYPE") == "tag"
+        if (morsecqReleaseSigning == null && (!morsecqAllowDebugSigning || taggedBuild)) {
+            throw GradleException(
+                "Android release signing is not configured. Provide MORSECQ_ANDROID_KEYSTORE, " +
+                    "MORSECQ_ANDROID_KEYSTORE_PASSWORD, MORSECQ_ANDROID_KEY_ALIAS and " +
+                    "MORSECQ_ANDROID_KEY_PASSWORD (or android/key.properties). " +
+                    "For non-tag, non-distributable test artifacts only, set " +
+                    "MORSECQ_ALLOW_DEBUG_SIGNING=1.",
             )
         }
+        if (morsecqReleaseSigning == null) {
+            logger.warn("MorseCQ release explicitly uses DEBUG signing: testing only, never upload to a store.")
+        }
+    }
+}
+tasks.configureEach {
+    if (name == "preReleaseBuild" || name == "assembleRelease" ||
+        name == "bundleRelease" || name == "packageRelease") {
+        dependsOn(verifyMorsecqReleaseSigning)
     }
 }
 
