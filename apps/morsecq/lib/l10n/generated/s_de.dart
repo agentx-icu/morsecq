@@ -110,12 +110,12 @@ class SDe extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Zeichen gesendet',
-      one: '$count Zeichen gesendet',
+      other: '$count Zeichen gehört',
+      one: '$count Zeichen gehört',
     );
     return '$_temp0';
   }
@@ -1579,6 +1579,9 @@ class SDe extends S {
   String get learnReplayAssistedNote => 'Wiederholt: Diese Übung zählt als Training, schaltet aber keine Lektion frei und ändert keine Wiederholungen.';
 
   @override
+  String get learnRoundInterrupted => 'Die Wiedergabe wurde angehalten, als die App in den Hintergrund ging. Tippe auf „Erneut abspielen“, um diese Runde noch einmal zu hören; das zählt nicht als Hilfe.';
+
+  @override
   String get learnPlanTitle => 'Plan für heute';
 
   @override
@@ -2754,6 +2757,11 @@ class SDe extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'Neues Zeichen $char üben';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a gegen $b';
   }
@@ -2959,6 +2967,16 @@ class SDe extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, eine Pause, dann $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Ton $number abspielen';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K oder M?';
 
   @override
@@ -2987,7 +3005,7 @@ class SDe extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total in dieser Runde richtig. Wähle den nächsten Schritt und mache in deinem Tempo weiter.';
+    return '$correct / $total richtig. Wähle den nächsten Schritt und mache in deinem Tempo weiter.';
   }
 
   @override
@@ -3039,7 +3057,7 @@ class SDe extends S {
   String get learnPlanStepRecognition => 'Einzelne Zeichen';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Töne hören und K von M unterscheiden (etwa 3 Minuten)';
+  String get learnPlanReasonFirstLesson => 'Töne hören und K von M unterscheiden';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3171,7 +3189,7 @@ class SDe extends S {
   String get firstLessonPerfectHint => 'In dieser Runde waren alle Antworten richtig. Festige das mit Hörübungen ohne Antwortauswahl.';
 
   @override
-  String get firstLessonPaceLocked => 'Die Runde hat begonnen, deshalb bleibt ihr Tempo unverändert. Für die nächste Runde kannst du es in den Einstellungen ändern.';
+  String get firstLessonPaceLocked => 'Du hast mit dem Antworten begonnen, daher bleibt das Tempo bis zum Ende dieser Runden gleich. Du kannst es später in den Einstellungen ändern.';
 
   @override
   String get learnRecentEvidenceHint => 'Die Stufen berücksichtigen Hörübungen ohne Hilfe aus den letzten 14 Tagen bei gleichem Tempo.';

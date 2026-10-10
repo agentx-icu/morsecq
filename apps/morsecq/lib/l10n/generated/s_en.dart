@@ -110,12 +110,12 @@ class SEn extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count characters sent',
-      one: '1 character sent',
+      other: '$count characters heard',
+      one: '1 character heard',
     );
     return '$_temp0';
   }
@@ -1578,6 +1578,9 @@ class SEn extends S {
   String get learnReplayAssistedNote => 'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.';
 
   @override
+  String get learnRoundInterrupted => 'Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.';
+
+  @override
   String get learnPlanTitle => 'Today\'s plan';
 
   @override
@@ -2753,6 +2756,11 @@ class SEn extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'Practise the new character $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a vs $b';
   }
@@ -2958,6 +2966,16 @@ class SEn extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, a pause, then $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Play sound $number';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K or M?';
 
   @override
@@ -2986,7 +3004,7 @@ class SEn extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total correct this round. Choose your next step and continue at your own pace.';
+    return '$correct / $total correct. Choose your next step and continue at your own pace.';
   }
 
   @override
@@ -3038,7 +3056,7 @@ class SEn extends S {
   String get learnPlanStepRecognition => 'Single symbols';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Hear the sounds and tell K from M (about 3 minutes)';
+  String get learnPlanReasonFirstLesson => 'Hear the sounds and tell K from M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3170,7 +3188,7 @@ class SEn extends S {
   String get firstLessonPerfectHint => 'Every answer was correct this round. Reinforce this with copying practice without answer choices.';
 
   @override
-  String get firstLessonPaceLocked => 'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.';
+  String get firstLessonPaceLocked => 'Answering has started, so the speed stays fixed until these rounds end. You can change it later in settings.';
 
   @override
   String get learnRecentEvidenceHint => 'Stages use unassisted copying evidence from the last 14 days at the same speed.';

@@ -107,11 +107,11 @@ class SKo extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count개 문자 송신 완료',
+      other: '$count개 문자 수신',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SKo extends S {
   String get learnReplayAssistedNote => '다시 들음: 연습으로는 집계되지만 레슨 해제나 복습 갱신에는 반영되지 않습니다.';
 
   @override
+  String get learnRoundInterrupted => '앱이 백그라운드로 전환되어 재생이 멈췄습니다. \"다시 재생\"을 눌러 이번 라운드를 다시 들으세요. 도움으로 계산되지 않습니다.';
+
+  @override
   String get learnPlanTitle => '오늘의 계획';
 
   @override
@@ -2733,6 +2736,11 @@ class SKo extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '새 문자 $char 연습하기';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a vs $b';
   }
@@ -2937,6 +2945,16 @@ class SKo extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, 잠깐 쉬고 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '$number번째 소리 재생';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K일까요, M일까요?';
 
   @override
@@ -2965,7 +2983,7 @@ class SKo extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '이번 라운드는 $total개 중 $correct개 정답입니다. 다음 단계를 선택하고 자신의 속도로 계속하세요.';
+    return '$total개 중 $correct개 정답입니다. 다음 단계를 선택하고 자신의 속도로 계속하세요.';
   }
 
   @override
@@ -3017,7 +3035,7 @@ class SKo extends S {
   String get learnPlanStepRecognition => '문자 하나씩';
 
   @override
-  String get learnPlanReasonFirstLesson => '소리를 듣고 K와 M 구별하기 (약 3분)';
+  String get learnPlanReasonFirstLesson => '소리를 듣고 K와 M 구별하기';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3149,7 +3167,7 @@ class SKo extends S {
   String get firstLessonPerfectHint => '이번 라운드는 모두 정답이에요. 다음에는 선택지 없는 받아쓰기 연습으로 다져 보세요.';
 
   @override
-  String get firstLessonPaceLocked => '답변을 시작했으므로 이번 라운드의 속도는 유지됩니다. 다음 라운드는 설정에서 조정할 수 있어요.';
+  String get firstLessonPaceLocked => '답변을 시작했으므로 이번 라운드들이 끝날 때까지 속도가 유지됩니다. 나중에 설정에서 바꿀 수 있어요.';
 
   @override
   String get learnRecentEvidenceHint => '학습 단계는 최근 14일간 같은 속도로 도움 없이 받아쓴 기록으로 판단합니다.';

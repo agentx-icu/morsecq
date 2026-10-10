@@ -116,14 +116,14 @@ class SRu extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Передано $count символа',
-      many: 'Передано $count символов',
-      few: 'Передано $count символа',
-      one: 'Передан $count символ',
+      other: 'Прослушано $count символа',
+      many: 'Прослушано $count символов',
+      few: 'Прослушано $count символа',
+      one: 'Прослушан $count символ',
     );
     return '$_temp0';
   }
@@ -1617,6 +1617,9 @@ class SRu extends S {
   String get learnReplayAssistedNote => 'Повтор: занятие засчитано как практика, но не открывает урок и не обновляет повторения.';
 
   @override
+  String get learnRoundInterrupted => 'Воспроизведение остановилось, когда приложение ушло в фон. Нажмите «Прослушать снова», чтобы услышать этот раунд ещё раз; это не считается подсказкой.';
+
+  @override
   String get learnPlanTitle => 'План на сегодня';
 
   @override
@@ -2800,6 +2803,11 @@ class SRu extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'Тренировать новый символ $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a и $b';
   }
@@ -3006,6 +3014,16 @@ class SRu extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, пауза, затем $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Воспроизвести звук $number';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K или M?';
 
   @override
@@ -3034,7 +3052,7 @@ class SRu extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return 'В этом раунде верно $correct / $total. Выберите следующий шаг и продолжайте в своём темпе.';
+    return 'Верно $correct / $total. Выберите следующий шаг и продолжайте в своём темпе.';
   }
 
   @override
@@ -3086,7 +3104,7 @@ class SRu extends S {
   String get learnPlanStepRecognition => 'Одиночные символы';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Послушать звуки и отличить K от M (около 3 минут)';
+  String get learnPlanReasonFirstLesson => 'Послушать звуки и отличить K от M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3218,7 +3236,7 @@ class SRu extends S {
   String get firstLessonPerfectHint => 'В этом раунде все ответы верны. Закрепите результат приёмом без вариантов ответа.';
 
   @override
-  String get firstLessonPaceLocked => 'Ответы уже начаты, поэтому скорость этого раунда фиксирована. Для следующего раунда её можно изменить в настройках.';
+  String get firstLessonPaceLocked => 'Ответы уже начаты, поэтому скорость не меняется до конца этих раундов. Позже её можно изменить в настройках.';
 
   @override
   String get learnRecentEvidenceHint => 'Этап определяется по приёму без подсказок за последние 14 дней на той же скорости.';

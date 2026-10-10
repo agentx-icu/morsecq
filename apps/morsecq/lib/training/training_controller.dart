@@ -282,6 +282,13 @@ final class TrainingController extends ChangeNotifier {
   /// Symbols the SRS wants drilled now, plus learned symbols never tracked.
   List<String> get dueChars => _progress.srs.dueOrNew(learnedChars, _now());
 
+  /// Learned symbols with a review record that is due now. Unlike
+  /// [dueChars], a symbol never practised is not "due for review".
+  List<String> get reviewDueChars {
+    final learned = learnedChars.toSet();
+    return _progress.srs.dueChars(_now()).where(learned.contains).toList();
+  }
+
   int get streak => _progress.streakAsOf(_now());
   int get charsToday => _progress.charsOn(_now());
   int get dailyGoal => _progress.dailyGoalChars;

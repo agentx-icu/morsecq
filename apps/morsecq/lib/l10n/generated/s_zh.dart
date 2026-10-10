@@ -107,11 +107,11 @@ class SZh extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已发 $count 个字符',
+      other: '共听 $count 个字符',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SZh extends S {
   String get learnReplayAssistedNote => '已重播：本次练习计入练习量，但不会解锁课程或更新复习。';
 
   @override
+  String get learnRoundInterrupted => '切到后台时播放已停止。点按“重放”重新收听本轮，这不算作辅助。';
+
+  @override
   String get learnPlanTitle => '今日计划';
 
   @override
@@ -2733,6 +2736,11 @@ class SZh extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '练习新字符 $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a 对比 $b';
   }
@@ -2937,6 +2945,16 @@ class SZh extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a，停顿，然后 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '播放第 $number 个声音';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K 还是 M？';
 
   @override
@@ -2965,7 +2983,7 @@ class SZh extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '本轮答对 $correct / $total。选择下一步，按自己的节奏继续。';
+    return '答对 $correct / $total。选择下一步，按自己的节奏继续。';
   }
 
   @override
@@ -3017,7 +3035,7 @@ class SZh extends S {
   String get learnPlanStepRecognition => '单字符识别';
 
   @override
-  String get learnPlanReasonFirstLesson => '听声音，分辨 K 和 M（约 3 分钟）';
+  String get learnPlanReasonFirstLesson => '听声音，分辨 K 和 M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3149,7 +3167,7 @@ class SZh extends S {
   String get firstLessonPerfectHint => '这轮全部答对了。接着用不显示选项的听抄练习巩固。';
 
   @override
-  String get firstLessonPaceLocked => '本轮已开始作答，速度保持不变；下一轮可在设置中调整。';
+  String get firstLessonPaceLocked => '已开始作答，这几轮结束前速度保持不变；之后可在设置中调整。';
 
   @override
   String get learnRecentEvidenceHint => '阶段按近 14 天、同速且无辅助的听抄证据判断。';
@@ -3633,11 +3651,11 @@ class SZhHant extends SZh {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '已發 $count 個字元',
+      other: '共聽 $count 個字元',
     );
     return '$_temp0';
   }
@@ -5088,6 +5106,9 @@ class SZhHant extends SZh {
   String get learnReplayAssistedNote => '已重播：本次練習計入練習量，但不會解鎖課程或更新複習。';
 
   @override
+  String get learnRoundInterrupted => '切到背景時播放已停止。點按「重放」重新收聽本輪，這不算作輔助。';
+
+  @override
   String get learnPlanTitle => '今日計畫';
 
   @override
@@ -6259,6 +6280,11 @@ class SZhHant extends SZh {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '練習新字元 $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a 對比 $b';
   }
@@ -6463,6 +6489,16 @@ class SZhHant extends SZh {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a，停頓，然後 $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '播放第 $number 個聲音';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K 還是 M？';
 
   @override
@@ -6491,7 +6527,7 @@ class SZhHant extends SZh {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '本輪答對 $correct / $total。選擇下一步，按自己的節奏繼續。';
+    return '答對 $correct / $total。選擇下一步，按自己的節奏繼續。';
   }
 
   @override
@@ -6543,7 +6579,7 @@ class SZhHant extends SZh {
   String get learnPlanStepRecognition => '單字元辨識';
 
   @override
-  String get learnPlanReasonFirstLesson => '聽聲音，分辨 K 和 M（約 3 分鐘）';
+  String get learnPlanReasonFirstLesson => '聽聲音，分辨 K 和 M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -6675,7 +6711,7 @@ class SZhHant extends SZh {
   String get firstLessonPerfectHint => '這輪全部答對了。接著用不顯示選項的聽抄練習鞏固。';
 
   @override
-  String get firstLessonPaceLocked => '本輪已開始作答，速度保持不變；下一輪可在設定中調整。';
+  String get firstLessonPaceLocked => '已開始作答，這幾輪結束前速度保持不變；之後可在設定中調整。';
 
   @override
   String get learnRecentEvidenceHint => '階段按近 14 天、同速且無輔助的聽抄證據判斷。';

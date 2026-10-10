@@ -110,12 +110,12 @@ class SPt extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count caracteres transmitidos',
-      one: '$count caractere transmitido',
+      other: '$count caracteres ouvidos',
+      one: '$count caractere ouvido',
     );
     return '$_temp0';
   }
@@ -1580,6 +1580,9 @@ class SPt extends S {
   String get learnReplayAssistedNote => 'Repetido: esta sessão conta como prática, mas não desbloqueia lições nem atualiza revisões.';
 
   @override
+  String get learnRoundInterrupted => 'A reprodução parou quando a app passou para segundo plano. Toque em “Reproduzir novamente” para ouvir esta ronda de novo; isso não conta como ajuda.';
+
+  @override
   String get learnPlanTitle => 'Plano de hoje';
 
   @override
@@ -2755,6 +2758,11 @@ class SPt extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return 'Praticar o novo caractere $char';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a vs $b';
   }
@@ -2960,6 +2968,16 @@ class SPt extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, uma pausa e depois $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Reproduzir o som $number';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'K ou M?';
 
   @override
@@ -2988,7 +3006,7 @@ class SPt extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total corretos nesta ronda. Escolha o próximo passo e continue ao seu ritmo.';
+    return '$correct / $total corretos. Escolha o próximo passo e continue ao seu ritmo.';
   }
 
   @override
@@ -3040,7 +3058,7 @@ class SPt extends S {
   String get learnPlanStepRecognition => 'Símbolos isolados';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Ouvir os sons e distinguir K de M (cerca de 3 minutos)';
+  String get learnPlanReasonFirstLesson => 'Ouvir os sons e distinguir K de M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3172,7 +3190,7 @@ class SPt extends S {
   String get firstLessonPerfectHint => 'Todas as respostas desta ronda foram corretas. Consolide com prática de cópia sem opções de resposta.';
 
   @override
-  String get firstLessonPaceLocked => 'Esta ronda já começou, por isso a velocidade fica fixa. Pode ajustá-la nas definições para a próxima ronda.';
+  String get firstLessonPaceLocked => 'Já começou a responder, por isso a velocidade fica fixa até ao fim destas rondas. Pode ajustá-la depois nas definições.';
 
   @override
   String get learnRecentEvidenceHint => 'As etapas usam cópias sem ajuda dos últimos 14 dias, à mesma velocidade.';

@@ -137,9 +137,9 @@
       }
     }
   },
-  "learnCharsSent": "{count, plural, =1{1 character sent} other{{count} characters sent}}",
-  "@learnCharsSent": {
-    "description": "Receive drill session summary: how many characters were played to the user in the session",
+  "learnCharsHeard": "{count, plural, =1{1 character heard} other{{count} characters heard}}",
+  "@learnCharsHeard": {
+    "description": "Receive drill session summary: how many characters were played to the learner to copy",
     "placeholders": {
       "count": {
         "type": "int"
@@ -2194,6 +2194,10 @@
   "@learnReplayAssistedNote": {
     "description": "Receive drill: shown after the learner replayed a round; replays make the session assisted"
   },
+  "learnRoundInterrupted": "Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.",
+  "@learnRoundInterrupted": {
+    "description": "Receive drill: the app went to the background during this round, so playback stopped"
+  },
   "learnPlanTitle": "Today's plan",
   "@learnPlanTitle": {
     "description": "Learn home: title of the daily plan card"
@@ -3951,6 +3955,15 @@
       }
     }
   },
+  "learnPractiseNewChar": "Practise the new character {char}",
+  "@learnPractiseNewChar": {
+    "description": "Button after a lesson challenge unlocked a symbol: short single-symbol practice of that new symbol",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
   "learnCompareWith": "{a} vs {b}",
   "@learnCompareWith": {
     "description": "Button: play two symbols one after the other so they can be told apart",
@@ -4270,6 +4283,27 @@
       }
     }
   },
+  "firstLessonPauseDemo": "{a}, a pause, then {b}",
+  "@firstLessonPauseDemo": {
+    "description": "First lesson short/long step: tile playing two symbols with the pause between characters",
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonWorkedPlay": "Play sound {number}",
+  "@firstLessonWorkedPlay": {
+    "description": "First lesson worked answer: play button for the numbered sound; the symbol is revealed only after it plays",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "firstLessonTrialsTitle": "K or M?",
   "@firstLessonTrialsTitle": {
     "description": "First lesson step 4 title: two-choice trials"
@@ -4319,7 +4353,7 @@
   "@firstLessonNextTitle": {
     "description": "First lesson step 5 title"
   },
-  "firstLessonNextBody": "{correct} / {total} correct this round. Choose your next step and continue at your own pace.",
+  "firstLessonNextBody": "{correct} / {total} correct. Choose your next step and continue at your own pace.",
   "@firstLessonNextBody": {
     "description": "First lesson step 5 body with the trial result",
     "placeholders": {
@@ -4395,7 +4429,7 @@
   "@learnPlanStepRecognition": {
     "description": "Daily plan step title: single-symbol recognition"
   },
-  "learnPlanReasonFirstLesson": "Hear the sounds and tell K from M (about 3 minutes)",
+  "learnPlanReasonFirstLesson": "Hear the sounds and tell K from M",
   "@learnPlanReasonFirstLesson": {
     "description": "Daily plan reason for the first-lesson step"
   },
@@ -4597,7 +4631,7 @@
   "@firstLessonPerfectHint": {
     "description": "Learning pedagogy: firstLessonPerfectHint"
   },
-  "firstLessonPaceLocked": "This round has started, so its speed stays fixed. You can change the speed in settings for the next round.",
+  "firstLessonPaceLocked": "Answering has started, so the speed stays fixed until these rounds end. You can change it later in settings.",
   "@firstLessonPaceLocked": {
     "description": "Learning pedagogy: firstLessonPaceLocked"
   },

@@ -107,11 +107,11 @@ class SJa extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count 文字を送信',
+      other: '$count 文字を聞き取り',
     );
     return '$_temp0';
   }
@@ -1562,6 +1562,9 @@ class SJa extends S {
   String get learnReplayAssistedNote => '再生し直しました：練習には数えますが、レッスンの解放や復習の更新は行いません。';
 
   @override
+  String get learnRoundInterrupted => 'アプリがバックグラウンドに移ったため再生が止まりました。「もう一度再生」でこのラウンドを聞き直せます。補助としては数えません。';
+
+  @override
   String get learnPlanTitle => '今日のプラン';
 
   @override
@@ -2733,6 +2736,11 @@ class SJa extends S {
   }
 
   @override
+  String learnPractiseNewChar(String char) {
+    return '新しい文字 $char を練習';
+  }
+
+  @override
   String learnCompareWith(String a, String b) {
     return '$a と $b を聞き比べ';
   }
@@ -2937,6 +2945,16 @@ class SJa extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a、間をあけて $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return '$number つ目の音を再生';
+  }
+
+  @override
   String get firstLessonTrialsTitle => 'KかMか？';
 
   @override
@@ -2965,7 +2983,7 @@ class SJa extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return 'このラウンドは$total問中$correct問正解です。次のステップを選び、自分のペースで続けましょう。';
+    return '$total問中$correct問正解です。次のステップを選び、自分のペースで続けましょう。';
   }
 
   @override
@@ -3017,7 +3035,7 @@ class SJa extends S {
   String get learnPlanStepRecognition => '1文字ずつ';
 
   @override
-  String get learnPlanReasonFirstLesson => '音を聞いてKとMを聞き分ける（約3分）';
+  String get learnPlanReasonFirstLesson => '音を聞いてKとMを聞き分ける';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3149,7 +3167,7 @@ class SJa extends S {
   String get firstLessonPerfectHint => 'このラウンドは全問正解です。次は選択肢のない聞き取り練習で定着させましょう。';
 
   @override
-  String get firstLessonPaceLocked => '回答を始めたので、このラウンドの速度は変わりません。次のラウンドでは設定で調整できます。';
+  String get firstLessonPaceLocked => '回答を始めたので、これらのラウンドが終わるまで速度は変わりません。後で設定から変更できます。';
 
   @override
   String get learnRecentEvidenceHint => '段階は、過去14日間の同じ速度での補助なしの聞き取り記録で判断します。';

@@ -300,7 +300,7 @@ class LearnHome extends StatelessWidget {
     children: [
       QuickActions(
         showContinue: false,
-        dueCount: controller.dueChars.length,
+        dueCount: controller.reviewDueChars.length,
         onContinueLesson: () => _continueLesson(context),
         onReceivePractice: () => _receivePractice(context),
         onSendPractice: () => _sendPractice(context),

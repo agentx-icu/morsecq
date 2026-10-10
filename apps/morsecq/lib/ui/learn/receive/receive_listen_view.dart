@@ -61,6 +61,16 @@ extension _ReceiveListenView on _ReceiveDrillScreenState {
               textAlign: TextAlign.center,
             ),
           ),
+        if (_interrupted && !_playing)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              s.learnRoundInterrupted,
+              key: const ValueKey('round-interrupted'),
+              style: theme.textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ),
         if (_session.isAssisted)
           Padding(
             padding: const EdgeInsets.only(top: 8),
