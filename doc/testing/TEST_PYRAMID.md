@@ -13,3 +13,15 @@ The opt-in Visual matrix CI renders ten languages and five styles in light/dark 
 `first_day_learning_test.dart` runs English and Simplified Chinese through the real playback factory and native key timing: fresh Start here, six assisted intro trials, one-character and three-character guided receive, then a correctly keyed K advancing guided sending to M. Each guided receive stage must leave Koch lesson 1 unchanged. This is a behavior check, not evidence of learner mastery. The local E2E command and every desktop CI job include this test.
 
 `advanced_learning_test.dart` uses an isolated local profile and real device audio. It checks that a complete playback precedes head-copy answers, an omitted word becomes a semantic mistake, and the selected goal, question snapshot and listening result survive reopening. Widget regressions additionally cover all five styles on phone/desktop, large text, exact retries across days, assistance, frozen plans and delayed QSO recovery.
+
+## Shared packages
+
+`morse_core`, `morse_dsp`, `morse_io`, `morse_trainer` and `radio_tools` also live in the DitMesh repository. `tool/shared_packages.lock.json` pins every Git-visible file of them with the SHA-256 of MorseCQ's copy and of DitMesh's copy, plus the DitMesh commit of the last comparison. A file whose copies differ needs a divergence rule with a reason: `product` (intentional, e.g. the app name or MorseCQ having no chat), `morsecq-ahead` or `ditmesh-ahead` (a change the other side has not taken yet).
+
+`dart run tool/shared_sync.dart --check` (CI and the gates level; no DitMesh checkout needed) fails on any shared file that changed, appeared or disappeared since its pin, on an unexplained divergence and on a stale rule. Its own tests run with `dart test tool/test`.
+
+To change a shared file or take a change from DitMesh:
+
+1. `dart run tool/shared_sync.dart --compare <ditmesh-checkout>` lists the files that changed on each side since the pin.
+2. Make the change, and port it to the other repository when both should have it. If the copies are meant to stay different, add or update a divergence rule in the manifest.
+3. `dart run tool/shared_sync.dart --write --ditmesh <ditmesh-checkout>` re-pins both sides and the DitMesh commit (without `--ditmesh` only MorseCQ's hashes move), then validates the result. Commit the manifest with the code and say in the commit message what was synced or why it diverges.

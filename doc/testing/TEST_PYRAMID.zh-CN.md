@@ -13,3 +13,15 @@ Layout CI 在每次 push 和 pull request 时运行 `apps/morsecq/test/layout/`�
 按需运行的 Visual matrix CI 渲染十种语言及五种样式的手机 / 桌面浅色 / 深色界面，共38个合并去重配置、76张真实 PNG。通过同一 `ci:e2e` 标签或手动启用，详见[截图指南](../../tool/screenshots/README.zh-CN.md)。自定义截图配置必须显式指定独立输出目录，以保护标准图库。
 
 `first_day_learning_test.dart` 以英文与简体中文使用真实播放与原生按键时序，完成首次“从这里开始”、六次辅助入门识别、单字符与三字符引导抄报，再正确发出 K 推进到 M。每次引导抄报都必须保持科赫课程第 1 课不变。这验证软件行为，不证明学习者已掌握。本地 E2E 命令与所有桌面 CI 都运行此测试。
+
+## 共享包
+
+`morse_core`、`morse_dsp`、`morse_io`、`morse_trainer` 和 `radio_tools` 同时存在于 DitMesh 仓库。`tool/shared_packages.lock.json` 为这些包中每个 Git 可见文件记录 MorseCQ 副本与 DitMesh 副本的 SHA-256，以及上次比较时的 DitMesh 提交。两边内容不同的文件必须有带理由的分歧规则：`product`（有意为之，例如应用名称或 MorseCQ 没有聊天）、`morsecq-ahead` 或 `ditmesh-ahead`（另一边尚未合入的改动）。
+
+`dart run tool/shared_sync.dart --check`（CI 与 gates 层运行，不需要 DitMesh 检出）在以下情况失败：共享文件自固定以来被修改、新增或删除；存在未说明的分歧；存在已失效的规则。工具自身的测试用 `dart test tool/test` 运行。
+
+修改共享文件或从 DitMesh 合入改动时：
+
+1. `dart run tool/shared_sync.dart --compare <ditmesh 检出目录>` 列出自固定以来两边各自变化的文件。
+2. 完成改动；若两边都应包含，同步到另一个仓库。若两份副本应保持不同，在清单中新增或更新分歧规则。
+3. `dart run tool/shared_sync.dart --write --ditmesh <ditmesh 检出目录>` 重新固定两边哈希和 DitMesh 提交（不带 `--ditmesh` 时只更新 MorseCQ 的哈希），然后校验结果。把清单与代码一起提交，并在提交说明中写明同步了什么或为何保持分歧。

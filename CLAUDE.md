@@ -41,6 +41,7 @@ flutter analyze --no-pub
 dart analyze --fatal-infos tool
 dart run tool/check_complexity.dart
 dart run tool/import_guard.dart
+dart run tool/shared_sync.dart --check
 dart run tool/ui_literal_guard.dart
 bash tool/test_pyramid.sh --level unit
 bash tool/test_pyramid.sh --level widget
@@ -49,7 +50,9 @@ python3 tool/screenshots/capture_import_test.py
 
 The complexity gate caps production files at 500 lines with its recorded
 baseline; do not suppress failures. The import gate forbids chat/transport SDKs
-and protects pure-Dart packages. User-facing strings come from ARB resources.
+and protects pure-Dart packages. The five `packages/` are shared with DitMesh
+and pinned in `tool/shared_packages.lock.json`; follow the sync procedure in
+`doc/testing/TEST_PYRAMID.md`. User-facing strings come from ARB resources.
 Regenerate localization after changing keys. Keep all ten canonical locales
 and five styles, light/dark/system themes, narrow layouts and physical keys.
 

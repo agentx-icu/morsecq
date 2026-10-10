@@ -3,8 +3,9 @@
 #
 #   tool/test_pyramid.sh [--level gates|unit|widget|e2e|all] [--device <id>] [--help]
 #
-#   gates   analyzer (zero issues), complexity, import guard, UI literal guard
-#   unit    packages/*  — pure-Dart Morse engines
+#   gates   analyzer (zero issues), complexity, import guard, shared package
+#           pins, UI literal guard
+#   unit    packages/*  — pure-Dart Morse engines; tool/test — gate tools
 #   widget  apps/morsecq/test — hermetic widget tests (local learning, no host)
 #   e2e     apps/morsecq/integration_test on a real device/desktop window:
 #           the real main() click-through + the screenshot scene walk
@@ -22,7 +23,7 @@ while [[ $# -gt 0 ]]; do
     --level=*) LEVEL="${1#*=}"; shift ;;
     --device) DEVICE="${2:-}"; shift 2 ;;
     --device=*) DEVICE="${1#*=}"; shift ;;
-    --help|-h) sed -n '2,15p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --help|-h) sed -n '2,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown flag: $1" >&2; exit 64 ;;
   esac
 done
@@ -52,6 +53,7 @@ level_gates() {
   run_step "analyze tool" dart analyze --fatal-infos tool
   run_step "complexity gate" dart run tool/check_complexity.dart
   run_step "import guard" dart run tool/import_guard.dart
+  run_step "shared package pins" dart run tool/shared_sync.dart --check
   run_step "UI literal guard" dart run tool/ui_literal_guard.dart
 }
 
@@ -60,6 +62,7 @@ level_unit() {
     [[ -f "$dir/pubspec.yaml" && -d "$dir/test" ]] || continue
     run_step "unit $dir" bash -c "cd '$dir' && flutter test --exclude-tags=needs-native"
   done
+  run_step "unit tool" dart test tool/test
 }
 
 level_widget() {
