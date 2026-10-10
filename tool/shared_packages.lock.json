@@ -43,6 +43,11 @@
       "reason": "Test phrase is CQ DE MORSECQ instead of CQ DE DITMESH."
     },
     {
+      "path": "packages/morse_dsp/test/envelope_gate_warmup_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "New coverage tests added in MorseCQ's test-coverage pass; not yet taken by DitMesh."
+    },
+    {
       "path": "packages/morse_trainer/README.md",
       "kind": "product",
       "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself."
@@ -263,6 +268,11 @@
       "reason": "Advanced learning (9b47bad): goals, listening comprehension, mistake notebook, advanced progress; not taken by DitMesh."
     },
     {
+      "path": "packages/morse_trainer/test/qso_hint_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "New coverage tests added in MorseCQ's test-coverage pass; not yet taken by DitMesh."
+    },
+    {
       "path": "packages/morse_trainer/test/qso_learning_path_test.dart",
       "kind": "morsecq-ahead",
       "reason": "Beginner progression (78fbbf8): lesson challenge, learner stages, QSO readiness, recent practice; not taken by DitMesh."
@@ -271,6 +281,11 @@
       "path": "packages/morse_trainer/test/recent_mastery_test.dart",
       "kind": "morsecq-ahead",
       "reason": "Beginner progression (78fbbf8): lesson challenge, learner stages, QSO readiness, recent practice; not taken by DitMesh."
+    },
+    {
+      "path": "packages/morse_trainer/test/send_issue_text_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "New coverage tests added in MorseCQ's test-coverage pass; not yet taken by DitMesh."
     },
     {
       "path": "packages/radio_tools/README.md",
@@ -351,6 +366,10 @@
       "ditmesh": "f8798b11003a0bd2d4e111ba9afe4d9ff0a731e400d5f8188a1d084146911895"
     },
     "packages/morse_dsp/test/envelope_gate_test.dart": "386a211c76981e9c79b2e9b1368368d608b146d556526ce5a0f77bf54b5a80a4",
+    "packages/morse_dsp/test/envelope_gate_warmup_test.dart": {
+      "morsecq": "23e2e39c26469f825f6e557f3e2421c400293bbdb0c2a49bf2bea231b3778d43",
+      "ditmesh": null
+    },
     "packages/morse_dsp/test/goertzel_test.dart": "7d64e8ba54708699cc4aa79c954bdd62a4fb1d97139ab0b805b64fc00ae82a6d",
     "packages/morse_dsp/test/pcm_test.dart": "14184a14c0f222658b58ea5b26bb0c02eab4d56957288c8fe36bea4f4db7c6e5",
     "packages/morse_dsp/test/support/wav_bytes.dart": "d7a04355ace33007ff8b6e529e793ddb7d1d030f2f1d7a27e3772fb6589e352b",
@@ -599,6 +618,10 @@
       "morsecq": "83b0076d945ea4dc10823d6b074226b386f62768d4169b1e23110d059797efc9",
       "ditmesh": null
     },
+    "packages/morse_trainer/test/qso_hint_test.dart": {
+      "morsecq": "44409cc127ffe4221be38a3bf981d77fdc888a60a6da4ae0b03794c5b79d53be",
+      "ditmesh": null
+    },
     "packages/morse_trainer/test/qso_learning_path_test.dart": {
       "morsecq": "d1a63aced86ee778b29dc6aedaf39c9b26f992a197269c5dabd6d221953648a0",
       "ditmesh": null
@@ -607,6 +630,10 @@
     "packages/morse_trainer/test/radio_conditions_test.dart": "eda77067f9f63f35ed2c345d384e75d9d6eea86916e5941fd06fb05076615ab2",
     "packages/morse_trainer/test/recent_mastery_test.dart": {
       "morsecq": "6d12bbf564e68a8732f76cf414e8799631a42ae636aa32b6f3bbdec8736096bb",
+      "ditmesh": null
+    },
+    "packages/morse_trainer/test/send_issue_text_test.dart": {
+      "morsecq": "ae999b76f7045c369d86e94987243b86bcb1684022ab344d0baebbe754f26148",
       "ditmesh": null
     },
     "packages/morse_trainer/test/send_practice_test.dart": "e2f2273f8ce5eba8e5c94d949204675e420e383070abe9c95b7a431d8a554e65",

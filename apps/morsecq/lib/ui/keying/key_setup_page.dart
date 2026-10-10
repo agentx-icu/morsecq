@@ -226,8 +226,12 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
 
   Future<void> _delete() async {
     final profiles = context.read<KeyProfiles>();
+    final host = Provider.of<TrainingControllerHost?>(context, listen: false);
     final navigator = Navigator.of(context);
+    final wasActive = profiles.active.id == widget.profile.id;
     await profiles.delete(widget.profile.id);
+    // Deleting the active profile activates the standard one: Learn follows.
+    if (wasActive) await syncLearnKeyerMode(host, profiles.active.keyerMode);
     navigator.pop();
   }
 
