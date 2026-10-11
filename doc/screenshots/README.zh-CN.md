@@ -19,6 +19,6 @@
 | listen | [PNG](macos/zh/listen.png) | [PNG](ios/zh/listen.png) | [PNG](ipad/zh/listen.png) | [PNG](android/zh/listen.png) | [PNG](linux/zh/listen.png) | [PNG](windows/zh/listen.png) |
 | me | [PNG](macos/zh/me.png) | [PNG](ios/zh/me.png) | [PNG](ipad/zh/me.png) | [PNG](android/zh/me.png) | [PNG](linux/zh/me.png) | [PNG](windows/zh/me.png) |
 
-桌面：1280×800；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 macOS/iPhone/iPad/Android 捕获及 Linux/Windows E2E 产物都从保留上游 `5631376` 教学功能的离线应用重新生成。Linux/Windows 截图来源：[教学整合 E2E 37733546823](https://github.com/agentx-icu/morsecq/actions/runs/37733546823)；最新 CI：[PR #27](https://github.com/agentx-icu/morsecq/pull/27)。
+桌面：1280×800；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 iPhone（iPhone 17 Pro Max 模拟器）、iPad（iPad Pro 13 英寸 M5 模拟器）和 Android（Pixel 7 API 36 模拟器）捕获，以及 macOS/Linux/Windows E2E 产物，都从 `e493213`（v1.0.1）重新生成。桌面截图来源：[E2E 38097487038](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)；最新 CI：[PR #41](https://github.com/agentx-icu/morsecq/pull/41)。
 
 [截图流程](../../tool/screenshots/README.zh-CN.md) · [产品设计](../designs/product-2026-10-08/README.zh-CN.md)
