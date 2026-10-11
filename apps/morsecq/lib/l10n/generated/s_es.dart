@@ -2666,24 +2666,6 @@ class SEs extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Interpretación del código telegráfico';
-
-  @override
-  String get telegraphInterpretNote => 'Solo se muestra aquí: el mensaje no cambia y no se envía nada.';
-
-  @override
-  String get telegraphUnresolved => 'Sin resolver: ningún carácter tiene este código';
-
-  @override
-  String get telegraphMalformed => 'No es un grupo de cuatro cifras';
-
-  @override
-  String get telegraphNotCode => 'Texto, tal como está';
-
-  @override
-  String get telegraphAmbiguous => 'Varios caracteres comparten este código';
-
-  @override
   String get conditionsAudioFailed => 'No se pudo iniciar el audio en este dispositivo. Practica con condiciones limpias.';
 
   @override

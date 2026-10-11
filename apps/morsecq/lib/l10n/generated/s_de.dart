@@ -2666,24 +2666,6 @@ class SDe extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Deutung als Telegrafencode';
-
-  @override
-  String get telegraphInterpretNote => 'Nur hier angezeigt: Die Nachricht selbst bleibt unverändert und nichts wird gesendet.';
-
-  @override
-  String get telegraphUnresolved => 'Ungeklärt: Kein Zeichen hat diesen Code';
-
-  @override
-  String get telegraphMalformed => 'Keine vierstellige Gruppe';
-
-  @override
-  String get telegraphNotCode => 'Text, unverändert';
-
-  @override
-  String get telegraphAmbiguous => 'Mehrere Zeichen teilen sich diesen Code';
-
-  @override
   String get conditionsAudioFailed => 'Der Ton ließ sich auf diesem Gerät nicht starten. Übe stattdessen mit klaren Bedingungen.';
 
   @override

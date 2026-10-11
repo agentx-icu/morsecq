@@ -2667,24 +2667,6 @@ class SPt extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Interpretação do código telegráfico';
-
-  @override
-  String get telegraphInterpretNote => 'Só exibido aqui: a mensagem não muda e nada é enviado.';
-
-  @override
-  String get telegraphUnresolved => 'Não resolvido: nenhum caractere tem este código';
-
-  @override
-  String get telegraphMalformed => 'Não é um grupo de quatro dígitos';
-
-  @override
-  String get telegraphNotCode => 'Texto, mantido como está';
-
-  @override
-  String get telegraphAmbiguous => 'Vários caracteres compartilham este código';
-
-  @override
   String get conditionsAudioFailed => 'Não foi possível iniciar o áudio neste dispositivo. Pratique com condições limpas.';
 
   @override

@@ -43,7 +43,6 @@ import 'package:morsecq/ui/reference/reference_playback_settings.dart';
 import 'package:morsecq/ui/reference/reference_screen.dart';
 import 'package:morsecq/ui/stats/char_grid.dart';
 import 'package:morsecq/ui/stats/stats_model.dart';
-import 'package:morsecq/ui/telegraph/telegraph_interpret_sheet.dart';
 import 'package:morsecq/ui/tools/band_tool.dart';
 import 'package:morsecq/ui/tools/grid_locator_tool.dart';
 import 'package:morsecq/ui/tools/radio_tools_screen.dart';
@@ -258,9 +257,6 @@ final _scenes = <String, _Scene>{
   ),
   'guided-practice': _overlay(
     (c, t) => unawaited(showGuidedPracticeSheet(c, GuidedLevel.short)),
-  ),
-  'telegraph-interpret': _overlay(
-    (c, t) => unawaited(showTelegraphInterpretation(c, '0022 0948 CQ')),
   ),
   'mnemonic': _scene(
     (t, p) => ReferenceScreen(playerFactory: FakeReferencePlayer().create),

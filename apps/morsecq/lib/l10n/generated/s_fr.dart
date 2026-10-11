@@ -2667,24 +2667,6 @@ class SFr extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Interprétation du code télégraphique';
-
-  @override
-  String get telegraphInterpretNote => 'Affiché ici seulement : le message n\'est pas modifié et rien n\'est envoyé.';
-
-  @override
-  String get telegraphUnresolved => 'Non résolu : aucun caractère n\'a ce code';
-
-  @override
-  String get telegraphMalformed => 'Pas un groupe de quatre chiffres';
-
-  @override
-  String get telegraphNotCode => 'Texte, laissé tel quel';
-
-  @override
-  String get telegraphAmbiguous => 'Plusieurs caractères partagent ce code';
-
-  @override
   String get conditionsAudioFailed => 'Le son n\'a pas pu démarrer sur cet appareil. Entraînez-vous plutôt en conditions claires.';
 
   @override

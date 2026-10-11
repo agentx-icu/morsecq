@@ -3826,30 +3826,6 @@
       }
     }
   },
-  "telegraphInterpretTitle": "Telegraph code interpretation",
-  "@telegraphInterpretTitle": {
-    "description": "Telegraph interpretation sheet title"
-  },
-  "telegraphInterpretNote": "Shown here only: the message itself is not changed and nothing is sent.",
-  "@telegraphInterpretNote": {
-    "description": "Telegraph interpretation: local and read-only"
-  },
-  "telegraphUnresolved": "Unresolved: no character has this code",
-  "@telegraphUnresolved": {
-    "description": "Telegraph interpretation: unassigned code"
-  },
-  "telegraphMalformed": "Not a four-digit group",
-  "@telegraphMalformed": {
-    "description": "Telegraph interpretation: digits but not four"
-  },
-  "telegraphNotCode": "Text, kept as written",
-  "@telegraphNotCode": {
-    "description": "Telegraph interpretation: ordinary text token"
-  },
-  "telegraphAmbiguous": "Several characters share this code",
-  "@telegraphAmbiguous": {
-    "description": "Telegraph interpretation: several characters share the code"
-  },
   "conditionsAudioFailed": "The audio could not be started on this device. Practise with Clear conditions instead.",
   "@conditionsAudioFailed": {
     "description": "Receive drill: the conditions audio could not be started"

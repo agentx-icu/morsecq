@@ -2645,24 +2645,6 @@ class SZh extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => '电码解读';
-
-  @override
-  String get telegraphInterpretNote => '仅在此显示：不会修改原消息，也不会发送任何内容。';
-
-  @override
-  String get telegraphUnresolved => '无法解读：没有字对应此码';
-
-  @override
-  String get telegraphMalformed => '不是四位数字组';
-
-  @override
-  String get telegraphNotCode => '文字，保持原样';
-
-  @override
-  String get telegraphAmbiguous => '多个字共用此码';
-
-  @override
   String get conditionsAudioFailed => '本设备无法播放音频。请改用“清晰”环境练习。';
 
   @override
@@ -6187,24 +6169,6 @@ class SZhHant extends SZh {
     );
     return '$_temp0';
   }
-
-  @override
-  String get telegraphInterpretTitle => '電碼解讀';
-
-  @override
-  String get telegraphInterpretNote => '僅在此顯示：不會修改原訊息，也不會傳送任何內容。';
-
-  @override
-  String get telegraphUnresolved => '無法解讀：沒有字對應此碼';
-
-  @override
-  String get telegraphMalformed => '不是四位數字組';
-
-  @override
-  String get telegraphNotCode => '文字，保持原樣';
-
-  @override
-  String get telegraphAmbiguous => '多個字共用此碼';
 
   @override
   String get conditionsAudioFailed => '本裝置無法播放音訊。請改用「清晰」環境練習。';

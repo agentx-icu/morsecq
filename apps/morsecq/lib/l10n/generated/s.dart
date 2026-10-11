@@ -4580,42 +4580,6 @@ abstract class S {
   /// **'{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}'**
   String telegraphRecallAssisted(int count);
 
-  /// Telegraph interpretation sheet title
-  ///
-  /// In en, this message translates to:
-  /// **'Telegraph code interpretation'**
-  String get telegraphInterpretTitle;
-
-  /// Telegraph interpretation: local and read-only
-  ///
-  /// In en, this message translates to:
-  /// **'Shown here only: the message itself is not changed and nothing is sent.'**
-  String get telegraphInterpretNote;
-
-  /// Telegraph interpretation: unassigned code
-  ///
-  /// In en, this message translates to:
-  /// **'Unresolved: no character has this code'**
-  String get telegraphUnresolved;
-
-  /// Telegraph interpretation: digits but not four
-  ///
-  /// In en, this message translates to:
-  /// **'Not a four-digit group'**
-  String get telegraphMalformed;
-
-  /// Telegraph interpretation: ordinary text token
-  ///
-  /// In en, this message translates to:
-  /// **'Text, kept as written'**
-  String get telegraphNotCode;
-
-  /// Telegraph interpretation: several characters share the code
-  ///
-  /// In en, this message translates to:
-  /// **'Several characters share this code'**
-  String get telegraphAmbiguous;
-
   /// Receive drill: the conditions audio could not be started
   ///
   /// In en, this message translates to:

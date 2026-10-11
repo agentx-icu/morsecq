@@ -2712,24 +2712,6 @@ class SRu extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Расшифровка телеграфного кода';
-
-  @override
-  String get telegraphInterpretNote => 'Только для просмотра: само сообщение не меняется, ничего не отправляется.';
-
-  @override
-  String get telegraphUnresolved => 'Не найдено: нет иероглифа с этим кодом';
-
-  @override
-  String get telegraphMalformed => 'Не четырёхзначная группа';
-
-  @override
-  String get telegraphNotCode => 'Текст, без изменений';
-
-  @override
-  String get telegraphAmbiguous => 'Этот код у нескольких иероглифов';
-
-  @override
   String get conditionsAudioFailed => 'Не удалось запустить звук на этом устройстве. Занимайтесь в чистых условиях.';
 
   @override

@@ -2665,24 +2665,6 @@ class SEn extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Telegraph code interpretation';
-
-  @override
-  String get telegraphInterpretNote => 'Shown here only: the message itself is not changed and nothing is sent.';
-
-  @override
-  String get telegraphUnresolved => 'Unresolved: no character has this code';
-
-  @override
-  String get telegraphMalformed => 'Not a four-digit group';
-
-  @override
-  String get telegraphNotCode => 'Text, kept as written';
-
-  @override
-  String get telegraphAmbiguous => 'Several characters share this code';
-
-  @override
   String get conditionsAudioFailed => 'The audio could not be started on this device. Practise with Clear conditions instead.';
 
   @override
