@@ -8,7 +8,7 @@
     "radio_tools"
   ],
   "ditmesh": {
-    "commit": "776677fc9a8b2f91be2611825ddc5fccc4d38c39",
+    "commit": "020f80a6f78c4a6478965d583bcd62f5559a0834",
     "dirty": false
   },
   "divergence": [
@@ -389,7 +389,7 @@
     "packages/morse_io/lib/src/key_event.dart": "ca0d50af539d78429170085fbaec47ac94af66d47616bc99b73a836054b282fb",
     "packages/morse_io/lib/src/keyboard_binding.dart": "c445c9da839c0479b1e336c9e372ee6d2e94710e40753abcd4a3d7831ac429c5",
     "packages/morse_io/lib/src/keyer_timing.dart": "2601cc2106a6d069d78279f4237b13056c414959102e1129b64c9c8ebb33f7ec",
-    "packages/morse_io/lib/src/player.dart": "7b3bd41290c8cc4f77ce2fb7cd1f5f4d7d10a5fdaeed6b58f3499ae973a9d513",
+    "packages/morse_io/lib/src/player.dart": "7d2195b1e6834bcc590ba90a0b5d17396df95a31944b12173c9e847ca82d48d4",
     "packages/morse_io/lib/src/screen_wake.dart": "60ff9a36786f4e08f584464fbbcc16c7b37de459f5240b5713d1b84de0cd707e",
     "packages/morse_io/lib/src/sidetone_sink.dart": "3c88be3b87dfec036a8f33ef10130a1972441f58e0e737c5b3b04cd191f22592",
     "packages/morse_io/lib/src/sink.dart": "1259c3f4f3b1954742c05846369ede9c8839e972f8c3d0a535a75ddc1e971e13",
@@ -414,8 +414,8 @@
     "packages/morse_io/test/keyboard_binding_test.dart": "2743c8cac5fea95b68c90f81cae9ff2a0023dc0db42a26a067d222421ad8dc34",
     "packages/morse_io/test/keying_focus_semantics_test.dart": "748ddcdc023c04707d9a45ab53f5ef40045f343fb13583fab3aa579ebd28d325",
     "packages/morse_io/test/keying_touch_test.dart": "0c0a553dd188e4f18a5d960b4f37bf46897871b7e6a9e897ae36b965e318b67f",
-    "packages/morse_io/test/player_output_failure_test.dart": "8d4a6d6867e5a50c674d958b85a43e9b4541720d39be4922885682b8fd0f4ab0",
-    "packages/morse_io/test/player_test.dart": "c5ca9f69c4b09efc6d513b745e82a53340bdf9fe631bbe3e66ea3297139cc10b",
+    "packages/morse_io/test/player_output_failure_test.dart": "689db62a518e054b1a758810fe4e7b68db4dcb098720bfe118332269805f1a17",
+    "packages/morse_io/test/player_test.dart": "e0565922f45a7a64a65c9dd06ea4376aa3e50d230eafe08b4a274291a707ae98",
     "packages/morse_io/test/primitives_test.dart": "4e6c802b7539fb674fbeb2a82aefd38406f4496e0b34faef784d745e6d109bc5",
     "packages/morse_io/test/screen_wake_test.dart": "51522b8c6c8ff418d3f92be198e3b1f6c99f8e86d87b342b51ed1f4f35fb44be",
     "packages/morse_io/test/sidetone_output_status_test.dart": "2e86fe89222be62efe9ba0cb7e96c7d493a7f13db3bcad529f76a1cabc9eb3f7",
