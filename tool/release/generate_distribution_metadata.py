@@ -115,6 +115,8 @@ def context(version: str, macos_arch: str, checksums: dict[str, str], release_da
         "VERSION": version,
         "TAG": f"v{version}",
         "MACOS_ARCH": macos_arch,
+        # A single-architecture archive must not install on the other CPU.
+        "MACOS_ARCH_DEPENDS": "" if macos_arch == "universal2" else f"\n  depends_on arch: :{macos_arch}",
         "MACOS_ASSET": assets["macos"],
         "MACOS_SHA256": checksums["macos"],
         "LINUX_ASSET": assets["linux"],

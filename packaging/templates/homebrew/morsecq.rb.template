@@ -10,6 +10,8 @@ cask "morsecq" do
   desc "Account-free offline Morse code trainer"
   homepage "https://github.com/agentx-icu/morsecq"
 
+  depends_on macos: :ventura{{MACOS_ARCH_DEPENDS}}
+
   app "MorseCQ.app"
 
 end

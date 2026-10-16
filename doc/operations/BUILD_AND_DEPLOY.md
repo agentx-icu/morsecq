@@ -16,7 +16,7 @@ Configure Android signing with repository Actions secrets `ANDROID_KEYSTORE_BASE
 
 Device checks cover microphone decoding, haptics, keying and local persistence. E2E CI runs the application and captures screenshots on macOS, Windows and Linux.
 
-Tags must match the numeric `X.Y.Z` part of the app pubspec: the current `1.0.0+1` uses tag `v1.0.0`; the stale `v0.2.0` tag is rejected before builds/package steps. Run `bash tool/ci/check_version_tag.sh v1.0.0` to preflight locally. Packaging and the release workflow repeat this check. Before creating a draft release, `bash tool/ci/verify_release_assets.sh <dist-dir> v1.0.0` requires all ten platform assets, exactly one macOS architecture pair, and writes a portable SHA256SUMS manifest. Missing, empty, unexpected or symlinked assets fail the gate.
+Tags must match the numeric `X.Y.Z` part of the app pubspec: for example `1.0.1+2` uses tag `v1.0.1`; a stale tag such as `v0.2.0` is rejected before builds/package steps. Run `bash tool/ci/check_version_tag.sh vX.Y.Z` to preflight locally. Packaging and the release workflow repeat this check. Before creating a draft release, `bash tool/ci/verify_release_assets.sh <dist-dir> vX.Y.Z` requires all ten platform assets, exactly one macOS architecture pair, and writes a portable SHA256SUMS manifest. Missing, empty, unexpected or symlinked assets fail the gate.
 
 ## Platform scope
 

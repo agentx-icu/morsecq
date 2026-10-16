@@ -1,3 +1,5 @@
+[简体中文](./DISTRIBUTION_PACKAGING.zh-CN.md)
+
 # Third-party distribution metadata
 
 MorseCQ's CI creates immutable, versioned GitHub Release assets. The files in
@@ -7,18 +9,31 @@ to Homebrew, Flathub, Snap Store, WinGet or Chocolatey.
 
 ## Release checklist
 
+Package managers download from the public release, so nothing is rendered or
+submitted until the release is published with its final assets and checksums.
+
 1. Create and push tag `vX.Y.Z` matching the three-part version in
    `apps/morsecq/pubspec.yaml` (the build workflow rejects a mismatch).
-2. Wait for the draft GitHub Release and all ten platform assets. Verify the
-   release assets and generate `SHA256SUMS`:
+2. Wait for the draft GitHub Release and all ten platform assets.
+3. Signing outside CI happens now, while the release is still a draft: the
+   owner signs and notarizes the macOS archives with Developer ID, and signs
+   the Windows MSI with Authenticode once a certificate is available. Replace
+   only the assets that changed, in the draft.
+4. Download the final assets, verify them and regenerate `SHA256SUMS`:
 
    ```sh
    bash tool/ci/verify_release_assets.sh dist vX.Y.Z
    ```
 
-3. Render metadata from that manifest. The default architecture is the
+   Upload this `SHA256SUMS` over the one CI attached to the draft. CI's
+   manifest describes the unsigned binaries; publishing it next to signed
+   ones would publish wrong checksums.
+5. Publish the release. Its download URLs are public only from now on;
+   metadata rendered from a draft must not be submitted.
+6. Render metadata from the final manifest. The default architecture is the
    universal2 macOS archive; pass `--macos-arch arm64` or `x86_64` when the
-   release contains a single-architecture pair:
+   release contains a single-architecture pair (the Homebrew cask then
+   declares that architecture):
 
    ```sh
    python3 tool/release/generate_distribution_metadata.py \
@@ -38,14 +53,14 @@ to Homebrew, Flathub, Snap Store, WinGet or Chocolatey.
    native build from the relevant directory (for example,
    `cd dist/packaging/snap && snapcraft`).
 
-4. Review each generated file against the package manager's current schema and
+7. Review each generated file against the package manager's current schema and
    contribution policy. The Flathub file is explicitly a binary demo and is
    not submission-ready: Flathub requires source builds for this project.
    Replace its archive module with an offline source build, then verify the
    final source checksum and native runtime dependencies. The Snap file is
    also untested; validate the core24/GNOME extension runtime before changing
    its `grade: devel` to `stable`.
-5. Submit each generated file through the package manager's normal review
+8. Submit each generated file through the package manager's normal review
    process. Keep package-manager repositories separate from this repository;
    this project only owns the templates and rendering tool.
 

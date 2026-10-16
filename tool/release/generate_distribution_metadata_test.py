@@ -2,6 +2,7 @@
 """Regression tests for release metadata rendering."""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
@@ -52,6 +53,30 @@ class DistributionMetadataTest(unittest.TestCase):
                 self.assertNotIn("{{", text, path)
                 self.assertNotIn("REPLACE_WITH_SHA256", text, path)
         self.assertIn('date="2026-10-09"', (output / "flathub/io.github.agentx_icu.morsecq.metainfo.xml").read_text())
+
+    def test_homebrew_declares_macos_minimum_and_single_architecture(self) -> None:
+        result = self.run_generator(checksums=self.checksums)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        cask = (self.root / "out/homebrew/morsecq.rb").read_text(encoding="utf-8")
+        self.assertIn("depends_on macos: :ventura\n", cask)
+        self.assertNotIn("depends_on arch:", cask, "universal2 runs on both CPUs")
+
+        self.assets = {
+            name.replace("universal2", "arm64"): digest for name, digest in self.assets.items()
+        }
+        self.write_checksums()
+        result = self.run_generator("--macos-arch", "arm64", checksums=self.checksums)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        cask = (self.root / "out/homebrew/morsecq.rb").read_text(encoding="utf-8")
+        self.assertIn("depends_on macos: :ventura\n  depends_on arch: :arm64\n", cask)
+        self.assertIn("morsecq-1.0.0-macos-arm64.zip", cask)
+
+    def test_support_scripts_stay_executable(self) -> None:
+        result = self.run_generator(checksums=self.checksums)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for script in ("flathub/morsecq-wrapper", "snap/morsecq-launcher"):
+            path = self.root / "out" / script
+            self.assertTrue(os.access(path, os.X_OK), path)
 
     def test_checksum_manifest_is_required_for_production(self) -> None:
         result = self.run_generator()

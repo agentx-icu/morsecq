@@ -34,8 +34,10 @@ if [[ -z "$TAG" && "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
   TAG="${GITHUB_REF_NAME:-}"
 fi
 # A caller that only provides GITHUB_REF_NAME (for example a local CI replay)
-# still gets the same safety check when it looks like a release tag.
-if [[ -z "$TAG" && "${GITHUB_REF_NAME:-}" == v* ]]; then
+# still gets the same safety check when it is shaped like a release tag. A
+# known non-tag ref (a branch such as version-bump) is never treated as one.
+if [[ -z "$TAG" && -z "${GITHUB_REF_TYPE:-}" &&
+      "${GITHUB_REF_NAME:-}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   TAG="$GITHUB_REF_NAME"
 fi
 

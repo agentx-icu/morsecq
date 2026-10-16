@@ -31,6 +31,6 @@ MorseCQ 不自带原生库，所以 Google Play 的 16 KB 页要求（面向 And
 
 预测性返回已启用（`android:enableOnBackInvokedCallback="true"`）；Android 16 对 targetSdk 36 本来就默认启用，该属性让 Android 13–15 行为一致。`DrillLeaveGuard` 通过 `PopScope` 处理该手势。
 
-当前应用版本是 `1.0.0+1`，唯一有效的发布标签是 `v1.0.0`；`v0.2.0` 等旧标签会在打包前被拒绝。
+唯一有效的发布标签是 `v` 加 pubspec 版本的 `X.Y.Z` 部分（例如 `1.0.1+2` 发布为 `v1.0.1`）；`v0.2.0` 等旧标签会在打包前被拒绝。
 
 详见[构建指南](../operations/BUILD_AND_DEPLOY.zh-CN.md)和[验证记录](../VALIDATION.zh-CN.md)。

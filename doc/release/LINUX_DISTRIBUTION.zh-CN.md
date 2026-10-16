@@ -1,3 +1,5 @@
+[English](./LINUX_DISTRIBUTION.md)
+
 # Linux 中国区分发准备
 
 ## 目标渠道

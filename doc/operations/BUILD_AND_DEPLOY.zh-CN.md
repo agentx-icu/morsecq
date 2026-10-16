@@ -8,7 +8,7 @@
 
 Apple CI 保留 Flutter SDK 缓存，关闭 Pub 缓存复用；macOS 构建及界面测试前仅清理 flutter_soloud 的 CMake 生成文件，iOS 构建清理对应平台的生成文件，避免在不同 Xcode 主机镜像间复用绝对编译器路径。本地切换 Xcode 后，可在重新构建前执行 `bash tool/ci/clean_apple_plugin_cache.sh macos` 或 `ios`。
 
-本地构建后运行 `bash tool/ci/package_artifacts.sh --target <目标>`，资产位于 `dist/<目标>/`。macOS 包名按可执行文件的实际架构标注为 arm64、x86_64 或 universal2。Linux/Windows ARM 暂不作为必需应用构建目标。
+本地构建后运行 `bash tool/ci/package_artifacts.sh --target <目标>`，资产位于 `dist/<目标>/`。macOS 发布打包要求 universal2 可执行文件（arm64 + x86_64）。Linux/Windows ARM 暂不作为必需应用构建目标。
 
 macOS 创建任一归档前，会核对所有内嵌 Mach-O 架构与应用的 `LSMinimumSystemVersion`。可运行 `python3 tool/ci/macos_runtime.py <应用.app>` 检查已构建应用；任何依赖要求更高系统版本都会阻断打包。
 
@@ -16,7 +16,7 @@ Android 签名使用仓库 Actions secrets `ANDROID_KEYSTORE_BASE64`、`ANDROID_
 
 设备检查覆盖麦克风解码、触觉、实体键和本地持久化。E2E CI 在 macOS、Windows 和 Linux 运行应用并捕获截图。
 
-发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：当前 `1.0.0+1` 对应 `v1.0.0`，旧的 `v0.2.0` 标签会在构建/打包前被拒绝。可先运行 `bash tool/ci/check_version_tag.sh v1.0.0`；工作流和打包流程会重复检查。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> v1.0.0` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。
+发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：例如 `1.0.1+2` 对应 `v1.0.1`，`v0.2.0` 等旧标签会在构建/打包前被拒绝。可先运行 `bash tool/ci/check_version_tag.sh vX.Y.Z`；工作流和打包流程会重复检查。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> vX.Y.Z` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。
 
 ## 平台范围
 

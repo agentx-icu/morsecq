@@ -1,3 +1,5 @@
+[English](./WINDOWS_DISTRIBUTION.md)
+
 # Windows 中国区分发准备
 
 ## 目标渠道
@@ -12,7 +14,7 @@
 
 - CI 目标：Windows x64。
 - 构建：Flutter Windows release。
-- 打包：WiX v3 生成 `morsecq-1.0.0-windows-x64.msi`，同时生成 ZIP。
+- 打包：WiX v3 生成 `morsecq-X.Y.Z-windows-x64.msi`，同时生成 ZIP。
 - 模板：`packaging/templates/winget/` 和 `packaging/templates/chocolatey/`。
 - 元数据：必须从同一版本的 `SHA256SUMS` 渲染，不能提交占位符或 `latest` 可变链接。
 

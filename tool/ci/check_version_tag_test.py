@@ -44,6 +44,21 @@ class VersionTagTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(f"release tag should be {TAG}", result.stderr)
 
+    def test_branch_named_like_v_is_not_a_tag(self):
+        result = self.run_gate(GITHUB_REF_TYPE="branch", GITHUB_REF_NAME="version-bump")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(f"release tag should be {TAG}", result.stderr)
+
+    def test_ref_name_only_stale_tag_still_fails(self):
+        result = self.run_gate(GITHUB_REF_TYPE="", GITHUB_REF_NAME=STALE_TAG)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(f"must match app version {TAG}", result.stderr)
+
+    def test_ref_name_only_non_tag_shape_only_validates_version(self):
+        result = self.run_gate(GITHUB_REF_TYPE="", GITHUB_REF_NAME="v-next")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(f"release tag should be {TAG}", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

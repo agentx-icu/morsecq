@@ -59,7 +59,8 @@ MorseCQ ships no native library of its own, so Google Play's 16 KB page-size req
 
 Predictive back is enabled (`android:enableOnBackInvokedCallback="true"`); Android 16 applies it to targetSdk 36 anyway, the attribute makes Android 13–15 behave the same. `DrillLeaveGuard` handles the gesture through `PopScope`.
 
-The current app version is `1.0.0+1`, so the only valid release tag is
-`v1.0.0`; a stale tag such as `v0.2.0` is rejected before packaging.
+The only valid release tag is `v` plus the `X.Y.Z` part of the pubspec
+version (for example `1.0.1+2` releases as `v1.0.1`); a stale tag such as
+`v0.2.0` is rejected before packaging.
 
 See the [build guide](../operations/BUILD_AND_DEPLOY.md) and [validation record](../VALIDATION.md).

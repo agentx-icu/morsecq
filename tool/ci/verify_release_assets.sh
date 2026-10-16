@@ -8,8 +8,8 @@ source "$SCRIPT_DIR/common.sh"
 DIST_DIR="$1"
 TAG="$2"
 # Validate the tag against the current pubspec before reading or writing any
-# release assets. In particular this rejects stale tags such as v0.2.0 when
-# master now declares 1.0.0+1.
+# release assets. In particular this rejects a stale tag such as v0.2.0 that
+# no longer matches the pubspec's X.Y.Z.
 "$SCRIPT_DIR/check_version_tag.sh" "$TAG"
 VERSION="$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+[[:space:]]*$/\1/p' "$(ci_repo_root)/apps/morsecq/pubspec.yaml" | head -n 1)"
 [[ -n "$VERSION" ]] || ci_die "Could not determine app version"
