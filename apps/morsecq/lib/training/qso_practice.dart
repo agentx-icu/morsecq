@@ -62,24 +62,34 @@ extension QsoPractice on TrainingController {
   Future<QsoDraft?> loadQsoDraft() async {
     try {
       final json = await readDoc(draftDoc);
-      final raw = json?['session'];
-      if (raw is! Map<String, Object?>) return null;
-      return QsoDraft(
-        session: QsoSession.fromJson(raw),
-        pendingText: json!['pendingText'] as String? ?? '',
-        pendingId: json['pendingId'] as String?,
-        typedReply: json['typedReply'] as bool? ?? false,
-        pendingWasTyped:
-            json['pendingWasTyped'] as bool? ??
-            (json['typedReply'] as bool? ?? false),
-        active: Duration(
-          milliseconds: (json['activeMs'] as num?)?.toInt() ?? 0,
-        ),
-      );
+      return json == null ? null : decodeDraft(json);
     } on Object {
       return null;
     }
   }
+
+  /// The draft in [json]; throws when the app could not resume it. Shared
+  /// with the learning backup checks.
+  static QsoDraft decodeDraft(Map<String, Object?> json) => QsoDraft(
+    session: QsoSession.fromJson(json['session']! as Map<String, Object?>),
+    pendingText: json['pendingText'] as String? ?? '',
+    pendingId: json['pendingId'] as String?,
+    typedReply: json['typedReply'] as bool? ?? false,
+    pendingWasTyped:
+        json['pendingWasTyped'] as bool? ??
+        (json['typedReply'] as bool? ?? false),
+    active: _activeOf(json),
+  );
+
+  /// A parked finished QSO; throws when [recoverFinishedQso] could not
+  /// credit it. Shared with the learning backup checks.
+  static (QsoSession, Duration) decodeFinished(Map<String, Object?> json) => (
+    QsoSession.fromJson(json['session']! as Map<String, Object?>),
+    _activeOf(json),
+  );
+
+  static Duration _activeOf(Map<String, Object?> json) =>
+      Duration(milliseconds: (json['activeMs'] as num?)?.toInt() ?? 0);
 
   /// Keeps text and state only (never a held key or playback), including a
   /// keyed reply that was not sent yet and its submission id.
@@ -163,12 +173,8 @@ extension QsoPractice on TrainingController {
     for (final name in names.where((n) => n.startsWith(finishedPrefix))) {
       try {
         final json = await readDoc(name);
-        final raw = json?['session'];
-        if (raw is! Map<String, Object?>) continue;
-        final session = QsoSession.fromJson(raw);
-        final active = Duration(
-          milliseconds: (json!['activeMs'] as num?)?.toInt() ?? 0,
-        );
+        if (json == null) continue;
+        final (session, active) = decodeFinished(json);
         final completedAt = _completedAt(json);
         final outcome = await recordQso(
           session,

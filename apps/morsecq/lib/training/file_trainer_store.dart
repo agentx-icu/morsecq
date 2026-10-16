@@ -23,9 +23,10 @@ final class FileTrainerStore implements TrainerStore {
   final AtomicJsonFile _json;
 
   @override
-  Future<TrainerProgress?> load() => _json.readDecoded(_decode);
+  Future<TrainerProgress?> load() => _json.readDecoded(decode);
 
-  static TrainerProgress _decode(Map<String, Object?> json) {
+  /// Typed validation shared with the learning backup.
+  static TrainerProgress decode(Map<String, Object?> json) {
     final progress = TrainerProgress.fromJson(json);
     // Model constructors use assertions. Files must be validated in release
     // builds too, before invalid counters or SRS indexes reach the trainer.
@@ -65,7 +66,7 @@ final class FileTrainerStore implements TrainerStore {
 
   @override
   Future<void> save(TrainerProgress progress) =>
-      _json.write(progress.toJson(), validate: _decode);
+      _json.write(progress.toJson(), validate: decode);
 
   @override
   Future<void> clear() => _json.delete();

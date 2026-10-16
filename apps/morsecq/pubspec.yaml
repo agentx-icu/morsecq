@@ -25,6 +25,8 @@ dependencies:
   # Radio tools (lib/ui/tools/): locator, bands, CW speed, RST maths.
   radio_tools: ^0.1.0
   record: ^6.2.1
+  # Learning backup checksum (lib/training/backup/); already resolved for tool/.
+  crypto: ^3.0.7
   path: ^1.9.0
   path_provider: ^2.1.3
   provider: ^6.1.0

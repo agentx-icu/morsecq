@@ -102,12 +102,9 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     }
     if (mounted) setState(() => _training = training);
     try {
-      // Nothing is importing or saving yet: drop recordings left behind by
-      // entries deleted while their recording was open.
-      final referenced = {
-        for (final m in await training.loadAudioMaterials()) m.file,
-      };
-      await _c?.library.pruneUnreferenced(referenced);
+      // Nothing is importing or saving yet.
+      final library = _c?.library;
+      if (library != null) await sweepUnreferencedRecordings(training, library);
     } on Object {
       // Housekeeping only.
     }

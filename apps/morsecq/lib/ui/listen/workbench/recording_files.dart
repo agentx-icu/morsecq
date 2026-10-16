@@ -6,6 +6,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:path/path.dart' as p;
 
+import '../../../training/audio_material_store.dart';
+import '../../../training/kept_recordings.dart';
+import '../../../training/training_controller.dart';
+
 /// A file the learner picked. Pickers give a file path when there is one;
 /// content providers without a path (Android documents, iCloud) give a
 /// byte stream ([read]), which is copied without loading it whole.
@@ -121,6 +125,18 @@ final class RecordingLibrary {
       throw ArgumentError.value(relativePath, 'relativePath', 'outside');
     }
     return File(resolved);
+  }
+
+  /// Every managed recording on disk.
+  Future<Set<String>> recordings() async {
+    final dir = Directory(p.join(root, 'media', 'recordings'));
+    if (!await dir.exists()) return <String>{};
+    final out = <String>{};
+    await for (final entity in dir.list()) {
+      final rel = 'media/recordings/${p.basename(entity.path)}';
+      if (entity is File && _safe.hasMatch(rel)) out.add(rel);
+    }
+    return out;
   }
 
   /// Deletes recordings no entry refers to (left behind when an entry was
@@ -245,4 +261,23 @@ final class RecordingLibrary {
 Future<void> closeReader(WavPcmReader? reader) async {
   final source = reader?.source;
   if (source is FileByteSource) await source.close();
+}
+
+/// Drops recordings left behind by entries deleted while their recording
+/// was open. Call only when nothing is importing or saving.
+///
+/// Recordings kept across a restored learning backup are the learner's and
+/// stay. When that list cannot be read, every recording present now is
+/// kept (and the list rewritten), rather than deleting what it protected.
+Future<void> sweepUnreferencedRecordings(
+  TrainingController training,
+  RecordingLibrary library,
+) async {
+  final kept = await KeptRecordings(
+    library.root,
+  ).loadOrRebuild(library.recordings);
+  await library.pruneUnreferenced({
+    for (final m in await training.loadAudioMaterials()) m.file,
+    ...kept,
+  });
 }
