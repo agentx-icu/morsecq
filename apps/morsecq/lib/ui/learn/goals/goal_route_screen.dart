@@ -54,8 +54,9 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
                 key: const ValueKey('goal-selector'),
                 initialValue: c.progress.learningGoal,
                 isExpanded: true,
-                // Items size to their wrapped labels (long languages,
-                // large text) instead of a fixed one-line height.
+                // Items and the selected label size to their wrapped text
+                // (long languages, large text) instead of one dense line.
+                isDense: false,
                 itemHeight: null,
                 decoration: InputDecoration(label: FieldLabel(s.goalsTitle)),
                 items: [

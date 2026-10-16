@@ -52,6 +52,17 @@ Future<void> _playToEnd(
   await tester.pump();
 }
 
+/// Plays the first half of the round, so it is not heard to the end.
+Future<void> _playPart(
+  WidgetTester tester,
+  ReceiveSession session,
+  FakeLearnPlaybackFactory playback,
+) async {
+  final total = MorseEncoder.totalDuration(session.currentTimeline);
+  playback.clock.advance(total ~/ 2);
+  await tester.pump();
+}
+
 Future<void> _background(WidgetTester tester) async {
   for (final state in [
     AppLifecycleState.inactive,
@@ -89,10 +100,10 @@ double _distance(Color a, Color b) => math.sqrt(
 void main() {
   group('round interrupted by the background', () {
     testWidgets(
-      'heard round, background, replay: not assisted, challenge still passes',
+      'cut off mid-round, background, replay: not assisted, challenge passes',
       (tester) async {
         final (t, session, playback) = await _pumpChallenge(tester);
-        await _playToEnd(tester, session, playback);
+        await _playPart(tester, session, playback);
         expect(find.byKey(const ValueKey('round-interrupted')), findsNothing);
         await _background(tester);
         expect(find.text(en.learnRoundInterrupted), findsOneWidget);
@@ -104,6 +115,23 @@ void main() {
         final outcome = await _finishPerfectly(t.controller, session);
         expect(outcome.advanced, isTrue);
         expect(t.controller.currentLesson, 2);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+
+    testWidgets(
+      'a round heard to the end stays heard across the background',
+      (tester) async {
+        final (t, session, playback) = await _pumpChallenge(tester);
+        await _playToEnd(tester, session, playback);
+        await _background(tester);
+        expect(find.text(en.learnRoundInterrupted), findsNothing);
+        await tester.tap(find.text(en.learnReplay));
+        await tester.pump();
+        expect(session.isAssisted, isTrue);
+        final outcome = await _finishPerfectly(t.controller, session);
+        expect(outcome.advanced, isFalse);
+        expect(t.controller.currentLesson, 1);
       },
       variant: TargetPlatformVariant.only(TargetPlatform.android),
     );
@@ -126,7 +154,7 @@ void main() {
       'after the restoring replay is heard, another replay is assistance',
       (tester) async {
         final (_, session, playback) = await _pumpChallenge(tester);
-        await _playToEnd(tester, session, playback);
+        await _playPart(tester, session, playback);
         await _background(tester);
         await tester.tap(find.text(en.learnReplay));
         await tester.pump();

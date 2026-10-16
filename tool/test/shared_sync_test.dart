@@ -76,6 +76,7 @@ void main() {
     ditmesh = _Repo(Directory('${tmp.path}/ditmesh')..createSync());
     for (final repo in [morsecq, ditmesh]) {
       repo
+        ..put('packages/core/pubspec.yaml', 'name: core')
         ..put('packages/core/lib/a.dart', 'a')
         ..put('packages/core/lib/b.dart', 'b')
         ..put('packages/core/.gitignore', 'build/\n')
@@ -100,6 +101,7 @@ void main() {
       'packages/core/.gitignore',
       'packages/core/lib/a.dart',
       'packages/core/lib/b.dart',
+      'packages/core/pubspec.yaml',
     ], reason: 'ignored and non-shared files are not pinned');
     expect(files.values, everyElement(isA<String>()));
     final pinned = morsecq.manifest['ditmesh']! as Map<String, Object?>;
@@ -219,8 +221,79 @@ void main() {
       ];
     final run = _sync(morsecq, ['--compare', ditmesh.path]);
     expect(run.code, 0);
-    expect(run.out, contains('2 identical, 1 differ as pinned'));
+    expect(run.out, contains('3 identical, 1 differ as pinned'));
     expect(run.out, contains('    1 product\n'));
+  });
+
+  test('a path that is not the DitMesh checkout root changes nothing', () {
+    pin();
+    final before = File('${morsecq.path}/$manifestPath').readAsStringSync();
+    final missing = '${ditmesh.path}/../nowhere';
+    ditmesh.remove('packages/core/pubspec.yaml');
+    for (final (path, why) in [
+      ('${ditmesh.path}/packages', 'not its root'),
+      (ditmesh.path, 'no packages/core/pubspec.yaml'),
+      (missing, 'does not exist'),
+      (Directory.systemTemp.path, 'not a Git checkout'),
+    ]) {
+      for (final args in [
+        ['--write', '--ditmesh', path],
+        ['--compare', path],
+      ]) {
+        final run = _sync(morsecq, args);
+        expect(run.code, 1, reason: '$args');
+        expect(run.err, contains(why), reason: '$args');
+      }
+    }
+    expect(
+      File('${morsecq.path}/$manifestPath').readAsStringSync(),
+      before,
+      reason: 'the manifest is untouched',
+    );
+  });
+
+  test('a checkout with core.autocrlf=true hashes like the pin', () {
+    final attributes = File('.gitattributes').readAsStringSync();
+    final binary = [0, 1, 13, 10, 10, 13, 0];
+    final clones = <String, Map<String, String>>{};
+    for (final withAttributes in [true, false]) {
+      final source = _Repo(
+        Directory.systemTemp.createTempSync('shared_sync_crlf'),
+      );
+      addTearDown(() => source.dir.deleteSync(recursive: true));
+      if (withAttributes) source.put('.gitattributes', attributes);
+      source.put('packages/core/lib/a.dart', 'line 1\nline 2\n');
+      File('${source.path}/packages/core/assets/key.bin')
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(binary);
+      source.commit();
+      final clone = '${source.path}-clone';
+      addTearDown(() => Directory(clone).deleteSync(recursive: true));
+      final r = Process.runSync('git', [
+        '-c',
+        'core.autocrlf=true',
+        'clone',
+        '-q',
+        source.path,
+        clone,
+      ]);
+      expect(r.exitCode, 0, reason: '${r.stderr}');
+      expect(
+        File('$clone/packages/core/assets/key.bin').readAsBytesSync(),
+        binary,
+      );
+      expect(snapshot(clone, ['core']).length, 2);
+      clones['$withAttributes'] = {
+        for (final MapEntry(:key, :value) in snapshot(clone, ['core']).entries)
+          key: value == snapshot(source.path, ['core'])[key] ? 'same' : 'diff',
+      };
+    }
+    expect(clones['true']!.values, everyElement('same'));
+    expect(
+      clones['false']!['packages/core/lib/a.dart'],
+      'diff',
+      reason: 'without the attribute the checkout is CRLF',
+    );
   });
 
   test('bad arguments and a malformed manifest are reported', () {

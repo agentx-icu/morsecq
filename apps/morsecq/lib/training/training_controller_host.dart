@@ -52,15 +52,21 @@ class TrainingControllerHost {
   Future<void> _suspendLearning() async {
     if (_suspended) throw StateError('Learning operation already in progress');
     _suspended = true;
-    try {
-      await flush();
-    } on Object catch (error) {
-      // The barrier reports an earlier failed save only after every queued
-      // write has settled. Those files are about to be removed, so a past
-      // failure must not keep the learner from clearing.
-      debugPrint('Clearing after a failed learning save: $error');
+    // Screens still holding the controller must refuse new writes at once,
+    // before any await. [_pending] stays set until every accepted write has
+    // settled, so a concurrent [flush] (backgrounding, quit) still waits.
+    final closing = _current?.close();
+    final pending = _pending;
+    TrainingController? loaded;
+    if (pending != null) {
+      try {
+        loaded = await pending;
+      } on Object {
+        // A failed load left nothing to close.
+      }
     }
-    _current?.dispose();
+    // Save failures are ignored: those files are about to be removed.
+    await (closing ?? loaded?.close());
     _current = null;
     _pending = null;
   }

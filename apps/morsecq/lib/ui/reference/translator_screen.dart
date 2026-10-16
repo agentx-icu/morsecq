@@ -146,10 +146,10 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                           for (final TranslatorMode m in TranslatorMode.values)
                             ButtonSegment<TranslatorMode>(
                               value: m,
+                              // Wraps at large text sizes instead of clipping.
                               label: Text(
                                 m.label(s),
-                                maxLines: 1,
-                                softWrap: false,
+                                textAlign: TextAlign.center,
                               ),
                               icon: twoPane ? Icon(m.icon) : null,
                             ),

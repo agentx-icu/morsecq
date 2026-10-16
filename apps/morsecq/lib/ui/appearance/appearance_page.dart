@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../di/app_settings.dart';
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
+import '../common/wrapping_choice_chip.dart';
 import 'style_labels.dart';
 import 'style_preview.dart';
 import 'ui_style.dart';
@@ -157,13 +158,13 @@ class _AppearancePageState extends State<AppearancePage> {
         runSpacing: 8,
         children: [
           for (final mode in ThemeMode.values)
-            ChoiceChip(
+            wrappingChoiceChip(
               key: ValueKey('mode-${mode.name}'),
-              label: Text(switch (mode) {
+              label: switch (mode) {
                 ThemeMode.system => context.s.languageSystemDefault,
                 ThemeMode.light => context.s.appearanceLight,
                 ThemeMode.dark => context.s.appearanceDark,
-              }),
+              },
               selected: mode == _mode,
               onSelected: _saving ? null : (_) => setState(() => _mode = mode),
               materialTapTargetSize: MaterialTapTargetSize.padded,

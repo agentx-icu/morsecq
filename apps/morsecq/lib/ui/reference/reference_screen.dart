@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -190,6 +192,20 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
     ),
   );
 
+  /// A tab tall enough for its one-line label: the default 46 px fades the
+  /// bottom of the label away at large text sizes.
+  double _tabHeight(BuildContext context) {
+    final painter = TextPainter(
+      text: TextSpan(text: ' ', style: Theme.of(context).textTheme.titleSmall),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    );
+    final line = painter.preferredLineHeight;
+    painter.dispose();
+    // 26 px is the default tab's room around its 20 px label line.
+    return math.max(46, line + 26);
+  }
+
   /// Whether the descriptive [hint] fits two lines of the field.
   bool _hintFits(BuildContext context, String hint, double fieldWidth) {
     final painter =
@@ -233,7 +249,10 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
                     tabAlignment: TabAlignment.start,
                     tabs: <Widget>[
                       for (final ReferenceSection section in sections)
-                        Tab(text: section.label(s)),
+                        Tab(
+                          text: section.label(s),
+                          height: _tabHeight(context),
+                        ),
                     ],
                   ),
                 ),
