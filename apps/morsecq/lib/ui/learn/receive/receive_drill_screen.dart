@@ -104,11 +104,11 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     if (_backgrounded != backgrounded && mounted) {
       setState(() {
         _backgrounded = backgrounded;
-        // Leaving cut the round off (or interrupted listening to it): the
-        // next replay restores what was lost and is not assistance.
-        if (backgrounded && _phase == _Phase.listen) {
+        // Leaving cut the round off before it was heard to the end: the
+        // next replay restores what was lost and is not assistance. A round
+        // already heard stays heard, so replaying it is still assistance.
+        if (backgrounded && _phase == _Phase.listen && !_heard) {
           _interrupted = true;
-          _heard = false;
         }
       });
     }
@@ -149,8 +149,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   /// interrupted round (background, stop) is not assistance.
   bool _heard = false;
 
-  /// The app went to the background during this round; cleared by the
-  /// replay that restores it or by answering.
+  /// The app went to the background before this round was heard to the
+  /// end; cleared by the replay that restores it or by answering.
   bool _interrupted = false;
   bool _audioFailed = false;
   bool _settingUp = false;
