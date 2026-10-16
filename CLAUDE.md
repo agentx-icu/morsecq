@@ -20,7 +20,8 @@ Run Pub resolution once from the repository root with Flutter 3.41.9 / Dart
 `TrainingControllerHost` shares and retires the controller. Backgrounding and
 quitting await local writes; confirmed clearing retires the controller before
 removing active learning files. Appearance/language and device preferences stay
-available. Read `doc/architecture/OFFLINE_LEARNING.md` for the storage contract.
+available. Read `doc/architecture/OFFLINE_LEARNING.md` for the storage contract
+and `doc/README.md` for the index of current documentation.
 
 ## Teaching invariants
 

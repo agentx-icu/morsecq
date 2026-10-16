@@ -1,6 +1,10 @@
+[简体中文](./TEST_PYRAMID.zh-CN.md)
+
 # Test pyramid
 
-Run `tool/test_pyramid.sh --level gates|unit|widget|e2e|all` from the root. Gates cover zero-issue analysis, complexity, import and localization boundaries. Unit tests cover Morse core, trainer, DSP, audio I/O and radio tools. Widget tests cover local learning, keying, reference, recordings, statistics and settings. E2E launches the real app, reopens local persistence, exercises native head-copy audio and advanced learning persistence, completes the first-day learning path and walks twelve screenshot scenes.
+Coverage and fixes for every current learning/training entry, flow and save boundary are in the [learning and training audit](LEARNING_TRAINING_AUDIT.md); storage locations and lifecycle guarantees are in the [persistence audit](PERSISTENCE_AUDIT.md).
+
+Run `tool/test_pyramid.sh --level gates|unit|widget|e2e|all` from the root. Gates cover zero-issue analysis, complexity, import and localization boundaries. Unit tests cover Morse core, trainer, DSP, audio I/O and radio tools, plus the repository tools' own tests (`dart test tool/test`). Widget tests cover local learning, keying, reference, recordings, statistics and settings. E2E launches the real app, reopens local persistence, exercises native head-copy audio and advanced learning persistence, completes the first-day learning path and walks twelve screenshot scenes.
 
 A default installation must open Learn immediately without an account and expose only Learn / Reference / Me. Confirmed clearing flushes pending writes, retires the active controller, deletes learning files and reloads empty learning state. Backgrounding and desktop quit flush local persistence.
 
@@ -12,7 +16,7 @@ The opt-in Visual matrix CI renders ten languages and five styles in light/dark 
 
 `first_day_learning_test.dart` runs English and Simplified Chinese through the real playback factory and native key timing: fresh Start here, six assisted intro trials, one-character and three-character guided receive, then a correctly keyed K advancing guided sending to M. Each guided receive stage must leave Koch lesson 1 unchanged. This is a behavior check, not evidence of learner mastery. The local E2E command and every E2E CI job include this test.
 
-`advanced_learning_test.dart` uses an isolated local profile and real device audio. It checks that a complete playback precedes head-copy answers, an omitted word becomes a semantic mistake, and the selected goal, question snapshot and listening result survive reopening. Widget regressions additionally cover all five styles on phone/desktop, large text, exact retries across days, assistance, frozen plans and delayed QSO recovery.
+`advanced_learning_test.dart` has two tests on an isolated local profile. The first uses test playback that records the real timeline: it checks that a complete playback precedes head-copy answers, an omitted word becomes a semantic mistake, and the selected goal, question snapshot and listening result survive reopening. The second uses the device's real audio and passes only when playback completes or, without a usable audio device, when answers and submission stay hidden and no comprehension record or mistake is written. Widget regressions additionally cover all five styles on phone/desktop, large text, exact retries across days, assistance, frozen plans and delayed QSO recovery.
 
 ## Shared packages
 

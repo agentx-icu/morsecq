@@ -47,5 +47,7 @@ bash tool/ci/package_artifacts.sh --target macos
 - `packages/radio_tools`：网格、距离、波段、CW 速度与 RST 工具。
 - `packages/morse_io`：音频、键控与触觉反馈。
 - `apps/morsecq`：应用、本地持久化与桌面窗口服务。
+- `tool`：分析、复杂度、导入、本地化与共享包门禁；CI 打包及截图采集。
+- `doc`：架构、测试、构建与发布指南；`site`：公开的产品、隐私、条款与支持页面。
 
-[学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)
+[文档索引](doc/README.zh-CN.md) · [学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)

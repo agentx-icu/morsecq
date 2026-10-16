@@ -1,3 +1,5 @@
+[English](./BUILD_AND_DEPLOY.md)
+
 # 构建与发布
 
 使用 Flutter 3.41.9 / Dart 3.11.5 构建 MorseCQ。
