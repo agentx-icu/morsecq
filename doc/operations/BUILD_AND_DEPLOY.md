@@ -1,3 +1,5 @@
+[简体中文](./BUILD_AND_DEPLOY.zh-CN.md)
+
 # Build and release
 
 Use Flutter 3.41.9 / Dart 3.11.5 to build MorseCQ.

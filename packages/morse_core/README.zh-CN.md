@@ -78,8 +78,7 @@ MorseCQ 的纯 Dart 摩尔斯电码引擎：字母表、PARIS / Farnsworth 计�
 ## 运行测试
 
 ```bash
-export PATH=/home/user/flutter/bin:$PATH
-cd /path/to/morsecq && dart pub get          # workspace root
+cd /path/to/morsecq && dart pub get --enforce-lockfile   # workspace root
 cd packages/morse_core
 dart analyze .
 dart test

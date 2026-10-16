@@ -6,14 +6,14 @@ MorseCQ stores learning and preferences locally and opens directly into Learn. `
 
 | Durable content | Location | Save/reopen behavior |
 | --- | --- | --- |
-| Course completion, first-lesson timestamp, recognition pace, guided-send stage, SRS cards, plan steps and completed session history | `<learning>/training/progress.json` | Validated atomic JSON replacement with a previous-save backup; a fresh controller reloads committed data. |
+| Course completion, first-lesson timestamp, recognition pace, guided-send stage, SRS cards, plan steps, completed session history, mistake notebook, comprehension records and the chosen learning goal | `<learning>/training/progress.json` | Validated atomic JSON replacement with a previous-save backup; a fresh controller reloads committed data. |
 | Training speed, playback and pedagogy defaults | `<learning>/training/settings.json` | Validated and serialized local settings. |
-| Materials, workbench documents and recording metadata | `<learning>/training/docs/` | Named JSON documents with atomic replacement and previous-save recovery. |
-| Recorded audio | `<learning>/media/recordings/` | Metadata permits only safe relative recording filenames. |
+| Materials, workbench documents, recording metadata, send-rhythm details, telegraph-code sessions, QSO drafts and parked QSO results | `<learning>/training/docs/` | Named JSON documents with atomic replacement and previous-save recovery. |
+| Recorded audio | `<learning>/media/recordings/` | Metadata permits only safe relative recording filenames. `<learning>/media/recordings_kept.json` lists recordings a backup restore must keep. |
 | Language, appearance, reference playback, decoder and physical-key preferences | `<support>/settings.json` | One file-backed key/value store. Style and brightness share `appearance.preferences`; defaults are Modern/system. Successful writes precede visible appearance changes; failed writes preserve the committed state. |
 | Desktop window bounds/maximized and tray preferences | `<support>/settings.json` | Bounds are checked against current displays; close-to-tray and quit follow persisted choices. |
 
-Live audio, microphone buffers, pressed keys, selected pages, translator scratch text and unfinished exercise input remain session state. Completed sessions and chosen defaults are durable. Materials and media can be shared using their dedicated tools; those operations are distinct from a whole-application backup.
+Live audio, microphone buffers, pressed keys, selected pages, translator scratch text and unfinished exercise input remain session state. Completed sessions and chosen defaults are durable. Materials and media can be shared using their dedicated tools; those operations are distinct from a whole-application backup. The storage layer for a portable learning backup exists (see the [learning architecture](../architecture/OFFLINE_LEARNING.md#backup-storage-layer)) but has no user-facing action yet.
 
 `AppScope` flushes preferences, locale, key profiles and the shared training controller together. Preference failures remain dirty for retry; another setting cannot erase the failure. Backgrounding uses the platform background-task bridge where available. Desktop quit waits for persistence and propagates unresolved errors. Confirmed Clear learning first flushes and retires the active controller, deletes local training/media, then reloads an empty controller so a delayed writer cannot resurrect cleared data. App-wide language/appearance/window choices remain available.
 

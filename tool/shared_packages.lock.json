@@ -50,12 +50,12 @@
     {
       "path": "packages/morse_trainer/README.md",
       "kind": "product",
-      "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself."
+      "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself, and documents the beginner-progression and advanced-learning modules DitMesh has not taken."
     },
     {
       "path": "packages/morse_trainer/README.zh-CN.md",
       "kind": "product",
-      "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself."
+      "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself, and documents the beginner-progression and advanced-learning modules DitMesh has not taken."
     },
     {
       "path": "packages/morse_trainer/lib/morse_trainer.dart",
@@ -310,11 +310,11 @@
   ],
   "files": {
     "packages/morse_core/README.md": {
-      "morsecq": "d2087ee156f875ef71277a19a26b6b723f4ee4997a32630b3c981d100649c813",
+      "morsecq": "dbb5920d6494afc43302159e6f02e074770b70d1b24129ae74038efd92b2eab8",
       "ditmesh": "80fe5a56b7105faefa297ec2e0a93d7e7dbbc49cc5a5f541f225a4a09bd35776"
     },
     "packages/morse_core/README.zh-CN.md": {
-      "morsecq": "845f4103baea3c74b9a8437b0a5c1a8798e44fe91240202675c669e40b1979bb",
+      "morsecq": "5743b8bf1e032612421885ee43e2fc9ac53363ebb25f8174df37ee3a941d5798",
       "ditmesh": "489f500d32eb2157d29a482f6c41cfe19e45380c7304656dbe16b8badd46a343"
     },
     "packages/morse_core/THIRD_PARTY_NOTICES.md": "f77225e6ac5245fb901b0fc353ee0f95b043441f89e41b4f3f3682aa9bd04d0d",
@@ -425,11 +425,11 @@
     "packages/morse_io/test/widget_insets_semantics_test.dart": "24f449fc7516737e8545b0d6284008bad57e9147c86237ea931041bca512a407",
     "packages/morse_io/test/widgets_test.dart": "1c01d9a094407a58f4f53cd63fbd576f5ae5473f72d55ee0598fe4adc9a9c9be",
     "packages/morse_trainer/README.md": {
-      "morsecq": "8f7814a1cd3723fe96301342551caf5d99a04da688994260320190bcbe6547d0",
+      "morsecq": "3aae1f5991493af41fa88fe8db7ce9e48b8177d411205af61d4f6945c4ee042c",
       "ditmesh": "90ba50b694f64adb9a7f916945a085508d67db49cfb70c97c3813d47730cb8ae"
     },
     "packages/morse_trainer/README.zh-CN.md": {
-      "morsecq": "2441cfdcf15c45997d9dc4d4995d180a9ed9c3079c820db5a22a3e8f7bc18c39",
+      "morsecq": "1a382b0e13cfd1dd50b0f7f79532b3625a5e44d57f4f5ccb0389fb7bff2c7d51",
       "ditmesh": "2bf9ed527fad2be3c289f9aa11f9f433a738aeec287c661abeadc54341d28bf7"
     },
     "packages/morse_trainer/lib/morse_trainer.dart": {

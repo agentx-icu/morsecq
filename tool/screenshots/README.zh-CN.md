@@ -15,7 +15,7 @@ tool/screenshots/capture.sh --locales en,zh,zh_Hant,ja,ko,de,fr,es,pt,ru --style
 
 任意非默认语言集合、样式或主题都必须显式指定 `--out`，且位于 `doc/screenshots` 之外；别名及标准图库内部路径同样被拒绝。其他主机完成的截图可用 `--from /path/to/screenshots` 导入，保留相同语言/样式/主题参数，输出必须与源目录分离。`--style all` 的源包含五个样式目录。选中的源目录及 PNG 不允许符号链接。完整性、尺寸或重复帧检查失败会保留该配置原有图库；不同平台 / 样式配置独立发布。
 
-`--keep` 保留暂存；`MORSECQ_SHOT_STAGING` 指定暂存目录，全部样式使用各自的子目录。`MORSECQ_SHOT_WINDOW` 指定桌面逻辑尺寸（默认 1280x800），`MORSECQ_SHOT_PIXEL_RATIO` 覆盖截图比例。应用通过 RepaintBoundary 捕获自身 Flutter 图层，再由集成测试报告将 PNG 传到主机驱动。导航使用本地化文案与稳定键，截图前检查实际场景。没有翻译种子文案的语言可使用英文演示参与者及消息。
+`--keep` 保留暂存；`MORSECQ_SHOT_STAGING` 指定暂存目录，全部样式使用各自的子目录。`MORSECQ_SHOT_WINDOW` 指定桌面逻辑尺寸（默认 1280x800），`MORSECQ_SHOT_PIXEL_RATIO` 覆盖截图比例。应用通过 RepaintBoundary 捕获自身 Flutter 图层，再由集成测试报告将 PNG 传到主机驱动。导航使用本地化文案与稳定键，截图前检查实际场景。预置的学习素材文本属于用户自建内容，可以保持英文；导航、学习说明和场景断言使用所选语言。
 
 按需运行的 **Visual matrix** 流水线通过手动触发或 PR 的 `ci:e2e` 标签启用。它加载真实 Noto CJK、等宽及衬线字体，生成 **38 个配置 / 76 张 PNG**：十种语言的手机 / 桌面 Modern 浅色界面，以及五种样式的手机 / 桌面浅色 / 深色英文界面；重复配置合并。代表场景为 `learn_home / reference`，分别覆盖各维度，避免把全部语言、样式、主题、平台相乘。产物包含 `manifest.json`，现有 E2E 仍在三种真实桌面主机上捕获完整产品场景。
 

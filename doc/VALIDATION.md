@@ -1,10 +1,28 @@
 [简体中文](./VALIDATION.zh-CN.md)
 
-# Verification record — 2026-10-08
+# Verification record
+
+## Current checks — 2026-10-16
+
+Verified source revision: `6573a53` (master after PR #45; later documentation-only changes do not affect these results). Toolchain: Flutter 3.41.9 / Dart 3.11.5. Local runs used a macOS host.
+
+| Check | Result |
+|---|---|
+| Gates (`tool/test_pyramid.sh --level gates`) | Analysis of all five packages, the application and `tool`, plus the complexity, import, shared-package pin and UI literal gates: 11 of 11 passed. |
+| Package suites (`--level unit`) | Core 92, DSP 112 (2 skipped), audio I/O 175, trainer 336, radio tools 18 and tool tests 10 passed. The DSP skips are the known first-block noise-floor limitation. |
+| Application suite (`--level widget`) | 1143 passed; 753 skipped. Every skip is in `test/layout/`, `test/appearance/` or `test/screenshots/`: the layout sweep needs real fonts and the image exporters are opt-in. |
+| Screenshot import | `capture_import_test.py`: 19 tests passed. |
+| [Analyze CI](https://github.com/agentx-icu/morsecq/actions/runs/38933762577) | Strict analysis, source guards and package/application tests passed on master. |
+| [Layout CI](https://github.com/agentx-icu/morsecq/actions/runs/38933762574) | The layout sweep and overlay checks passed with real Noto fonts on master. |
+| [Platform builds](https://github.com/agentx-icu/morsecq/actions/runs/38933762575) | All five required platform builds passed on master. |
+
+The E2E and Visual matrix workflows are opt-in and were not re-run for this revision; their latest full results are in the earlier record below. The [learning and training audit](testing/LEARNING_TRAINING_AUDIT.md) records the 2026-10-09 native macOS run of the advanced-learning and first-day tests.
+
+## Earlier full verification — 2026-10-08
 
 Verified source revision: `1eb4784140bc11b106912482f6485c6b5dd13164`. Toolchain: Flutter 3.41.9 / Dart 3.11.5.
 
-## Automated checks
+### Automated checks
 
 | Check | Result |
 |---|---|
@@ -22,7 +40,7 @@ The first-lesson journey covers six assisted intro trials, one-character then th
 
 The DSP skips concern unusually quiet first noise blocks that can produce a spurious leading symbol. The opt-in application exporters are exercised by the screenshot and visual workflows.
 
-## Screenshots and packages
+### Screenshots and packages
 
 The [gallery](screenshots/README.md) contains **144 frames**: 12 scenes × English/Chinese × macOS/iPhone/iPad/Android/Linux/Windows.
 

@@ -47,5 +47,7 @@ Progress, learning materials and recordings stay on your device. Use Me → Clea
 - `packages/radio_tools`: locator, distance, bands, CW speed and RST utilities.
 - `packages/morse_io`: audio, keying and haptics.
 - `apps/morsecq`: application, local persistence and desktop shell.
+- `tool`: analysis, complexity, import, localization and shared-package gates; CI packaging and screenshot capture.
+- `doc`: architecture, testing, build and release guides; `site`: the public product, privacy, terms and support pages.
 
-[Learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)
+[Documentation](doc/README.md) · [Learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)

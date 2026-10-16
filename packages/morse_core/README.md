@@ -102,8 +102,7 @@ suite pins down.
 ## Running the tests
 
 ```bash
-export PATH=/home/user/flutter/bin:$PATH
-cd /path/to/morsecq && dart pub get          # workspace root
+cd /path/to/morsecq && dart pub get --enforce-lockfile   # workspace root
 cd packages/morse_core
 dart analyze .
 dart test
