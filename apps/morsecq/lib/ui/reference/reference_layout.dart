@@ -45,7 +45,10 @@ class ReferenceMinHeight extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double need = MediaQuery.textScalerOf(context).scale(minHeight);
+    // The column is mostly body text, so it grows as body text does. A
+    // nonlinear scaler grows a 360 "size" far less than 14 px text.
+    final double need =
+        minHeight * MediaQuery.textScalerOf(context).scale(14) / 14;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints box) {
         final double height = box.hasBoundedHeight && box.maxHeight > need

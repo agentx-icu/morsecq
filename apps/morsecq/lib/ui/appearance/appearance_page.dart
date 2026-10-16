@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../di/app_settings.dart';
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
+import '../common/wrapping_choice_chip.dart';
 import 'style_labels.dart';
 import 'style_preview.dart';
 import 'ui_style.dart';
@@ -157,13 +158,13 @@ class _AppearancePageState extends State<AppearancePage> {
         runSpacing: 8,
         children: [
           for (final mode in ThemeMode.values)
-            ChoiceChip(
+            wrappingChoiceChip(
               key: ValueKey('mode-${mode.name}'),
-              label: Text(switch (mode) {
+              label: switch (mode) {
                 ThemeMode.system => context.s.languageSystemDefault,
                 ThemeMode.light => context.s.appearanceLight,
                 ThemeMode.dark => context.s.appearanceDark,
-              }),
+              },
               selected: mode == _mode,
               onSelected: _saving ? null : (_) => setState(() => _mode = mode),
               materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -179,33 +180,36 @@ class _AppearancePageState extends State<AppearancePage> {
     final changed = _style != settings.style || _mode != settings.themeMode;
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(context.s.appearanceTitle)),
-      body: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1100),
-              child: LayoutBuilder(
-                builder: (context, inner) {
-                  if (inner.maxWidth >= 900) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        // Side notches in landscape; the home indicator at the end.
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1100),
+                child: LayoutBuilder(
+                  builder: (context, inner) {
+                    if (inner.maxWidth >= 900) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: _choices(inner.maxWidth - 320)),
+                          const SizedBox(width: 24),
+                          SizedBox(width: 296, child: _preview()),
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _choices(inner.maxWidth - 320)),
-                        const SizedBox(width: 24),
-                        SizedBox(width: 296, child: _preview()),
+                        _preview(),
+                        const SizedBox(height: 24),
+                        _choices(inner.maxWidth),
                       ],
                     );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _preview(),
-                      const SizedBox(height: 24),
-                      _choices(inner.maxWidth),
-                    ],
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ),

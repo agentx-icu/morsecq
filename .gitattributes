@@ -1,0 +1,3 @@
+# tool/shared_sync.dart hashes the shared packages byte for byte: keep them
+# LF in every checkout, whatever core.autocrlf says (binary files stay as is).
+packages/** text=auto eol=lf

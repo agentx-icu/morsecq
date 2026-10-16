@@ -10,8 +10,10 @@ import '../../keying/key_profile.dart';
 import '../../keying/key_profiles.dart';
 import '../../training/training_controller_host.dart';
 import '../../training/training_settings.dart';
+import '../common/adaptive_fab.dart';
 import '../common/app_bar_title.dart';
 import '../responsive.dart';
+import '../common/field_label.dart';
 import 'key_test_area.dart';
 
 /// Keys and external keyers (F12): the device's key profiles, which one is
@@ -44,11 +46,11 @@ class KeySetupPage extends StatelessWidget {
     final active = profiles.active;
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(s.keysTitle)),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: AdaptiveFab(
         key: const Key('keys-new'),
         onPressed: () => _edit(context, null),
         icon: const Icon(Icons.add),
-        label: Text(s.keysNewProfile, textScaler: edgeLabelTextScaler(context)),
+        label: s.keysNewProfile,
       ),
       body: ReadableBody(
         child: SafeArea(
@@ -224,8 +226,12 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
 
   Future<void> _delete() async {
     final profiles = context.read<KeyProfiles>();
+    final host = Provider.of<TrainingControllerHost?>(context, listen: false);
     final navigator = Navigator.of(context);
+    final wasActive = profiles.active.id == widget.profile.id;
     await profiles.delete(widget.profile.id);
+    // Deleting the active profile activates the standard one: Learn follows.
+    if (wasActive) await syncLearnKeyerMode(host, profiles.active.keyerMode);
     navigator.pop();
   }
 
@@ -261,7 +267,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                   key: const Key('keys-name'),
                   controller: _name,
                   decoration: InputDecoration(
-                    labelText: s.keysName,
+                    label: FieldLabel(s.keysName),
                     border: const OutlineInputBorder(),
                   ),
                 ),

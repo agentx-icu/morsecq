@@ -19,8 +19,12 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
           key: const ValueKey('comprehension-mode'),
           initialValue: _mode,
           isExpanded: true,
+          // The selected label wraps at large text sizes instead of being
+          // clipped to the dense one-line height.
+          isDense: false,
+          itemHeight: null,
           decoration: InputDecoration(
-            labelText: s.comprehensionModeLabel,
+            label: FieldLabel(s.comprehensionModeLabel),
             border: const OutlineInputBorder(),
           ),
           items: [
@@ -136,7 +140,9 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   counterText: '',
-                  labelText: comprehensionFieldLabel(context, question.field),
+                  label: FieldLabel(
+                    comprehensionFieldLabel(context, question.field),
+                  ),
                   border: const OutlineInputBorder(),
                 ),
                 onSubmitted: (_) {

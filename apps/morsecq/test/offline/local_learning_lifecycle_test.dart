@@ -47,6 +47,34 @@ void main() {
       expect(loads, 2);
     },
   );
+  test('an earlier failed save does not block confirmed clearing', () async {
+    final progress = _FailingSaveStore();
+    var cleared = 0;
+    final host = TrainingControllerHost(
+      _ClearingStore(() async {
+        cleared++;
+        await progress.clear();
+      }),
+      factory: () async {
+        final controller = TrainingController(
+          progressStore: progress,
+          settingsStore: InMemoryTrainingSettingsStore(),
+        );
+        await controller.load();
+        return controller;
+      },
+    );
+    addTearDown(host.dispose);
+    final first = await host.controller();
+    progress.failing = true;
+    await expectLater(first.setDailyGoal(55), throwsA(isA<StateError>()));
+    progress.failing = false;
+    await host.clear();
+    expect(cleared, 1);
+    expect(first.isDisposed, isTrue);
+    final next = await host.controller();
+    expect(next.progress.dailyGoalChars, TrainerProgress().dailyGoalChars);
+  });
   test('a failed open can be retried without a restart', () async {
     var failed = true;
     final host = TrainingControllerHost(
@@ -95,6 +123,41 @@ void main() {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     },
   );
+  testWidgets(
+    'backgrounding again during a slow save also saves the newer writes',
+    (tester) async {
+      final background = _RecordingBackgroundTask();
+      final locale = LocaleController(InMemoryKeyValueStore());
+      final saves = <Completer<void>>[];
+      final services = AppServices(
+        locale: locale,
+        backgroundTasks: background,
+        flush: () {
+          saves.add(Completer<void>());
+          return saves.last.future;
+        },
+      );
+      services.start();
+      addTearDown(services.dispose);
+      addTearDown(locale.dispose);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+      expect(saves, hasLength(1));
+      // Back in the foreground the learner saves more progress, then leaves
+      // again before the first barrier has finished.
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+      saves.first.complete();
+      await tester.pump();
+      expect(saves, hasLength(2), reason: 'a fresh barrier covers new writes');
+      expect(background.ended, 0, reason: 'the task covers the second save');
+      saves.last.complete();
+      await tester.pump();
+      expect(background.ended, background.started);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    },
+  );
 }
 
 final class _RecordingBackgroundTask implements BackgroundTaskApi {
@@ -113,4 +176,19 @@ final class _ClearingStore extends LocalLearningStore {
   final Future<void> Function() onClear;
   @override
   Future<void> clear() => onClear();
+}
+
+final class _FailingSaveStore implements TrainerStore {
+  final InMemoryTrainerStore _inner = InMemoryTrainerStore();
+  var failing = false;
+  @override
+  Future<TrainerProgress?> load() => _inner.load();
+  @override
+  Future<void> save(TrainerProgress progress) async {
+    if (failing) throw StateError('disk full');
+    await _inner.save(progress);
+  }
+
+  @override
+  Future<void> clear() => _inner.clear();
 }

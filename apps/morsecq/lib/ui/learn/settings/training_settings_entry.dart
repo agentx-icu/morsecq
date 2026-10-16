@@ -28,8 +28,10 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
   late Future<TrainingController> _controller =
       TrainingControllerHost.fromContext(context);
 
-  void _retry() =>
-      setState(() => _controller = TrainingControllerHost.fromContext(context));
+  void _retry() => setState(() {
+    // A block body: an arrow would hand setState the Future it assigns.
+    _controller = TrainingControllerHost.fromContext(context);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,11 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
         return Scaffold(
           appBar: AppBar(title: AppBarTitle(context.s.learnSettings)),
           body: Center(
-            child: snapshot.hasError
+            // A retry keeps the old error in the snapshot while it waits:
+            // show progress, not the stale failure.
+            child:
+                snapshot.hasError &&
+                    snapshot.connectionState == ConnectionState.done
                 ? SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
                     child: Column(

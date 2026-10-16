@@ -65,7 +65,7 @@ class ReceiveSummaryView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         Text(
-          s.learnCharsSent(score.totalChars),
+          s.learnCharsHeard(score.totalChars),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: scheme.onSurfaceVariant,
           ),

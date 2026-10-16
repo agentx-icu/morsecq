@@ -110,12 +110,12 @@ class SEs extends S {
   }
 
   @override
-  String learnCharsSent(int count) {
+  String learnCharsHeard(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count caracteres transmitidos',
-      one: '$count carácter transmitido',
+      other: '$count caracteres escuchados',
+      one: '$count carácter escuchado',
     );
     return '$_temp0';
   }
@@ -1579,6 +1579,9 @@ class SEs extends S {
   String get learnReplayAssistedNote => 'Repetido: esta sesión cuenta como práctica, pero no desbloquea lecciones ni actualiza repasos.';
 
   @override
+  String get learnRoundInterrupted => 'La reproducción se detuvo cuando la app pasó a segundo plano. Toca «Repetir audio» para volver a oír esta ronda; no cuenta como ayuda.';
+
+  @override
   String get learnPlanTitle => 'Plan de hoy';
 
   @override
@@ -2663,24 +2666,6 @@ class SEs extends S {
   }
 
   @override
-  String get telegraphInterpretTitle => 'Interpretación del código telegráfico';
-
-  @override
-  String get telegraphInterpretNote => 'Solo se muestra aquí: el mensaje no cambia y no se envía nada.';
-
-  @override
-  String get telegraphUnresolved => 'Sin resolver: ningún carácter tiene este código';
-
-  @override
-  String get telegraphMalformed => 'No es un grupo de cuatro cifras';
-
-  @override
-  String get telegraphNotCode => 'Texto, tal como está';
-
-  @override
-  String get telegraphAmbiguous => 'Varios caracteres comparten este código';
-
-  @override
   String get conditionsAudioFailed => 'No se pudo iniciar el audio en este dispositivo. Practica con condiciones limpias.';
 
   @override
@@ -2751,6 +2736,11 @@ class SEs extends S {
   @override
   String learnHearChar(String char) {
     return 'Oír $char';
+  }
+
+  @override
+  String learnPractiseNewChar(String char) {
+    return 'Practicar el nuevo carácter $char';
   }
 
   @override
@@ -2959,6 +2949,16 @@ class SEs extends S {
   }
 
   @override
+  String firstLessonPauseDemo(String a, String b) {
+    return '$a, una pausa y luego $b';
+  }
+
+  @override
+  String firstLessonWorkedPlay(int number) {
+    return 'Reproducir el sonido $number';
+  }
+
+  @override
   String get firstLessonTrialsTitle => '¿K o M?';
 
   @override
@@ -2987,7 +2987,7 @@ class SEs extends S {
 
   @override
   String firstLessonNextBody(int correct, int total) {
-    return '$correct / $total correctos en esta ronda. Elige el siguiente paso y continúa a tu ritmo.';
+    return '$correct / $total correctos. Elige el siguiente paso y continúa a tu ritmo.';
   }
 
   @override
@@ -3039,7 +3039,7 @@ class SEs extends S {
   String get learnPlanStepRecognition => 'Símbolos sueltos';
 
   @override
-  String get learnPlanReasonFirstLesson => 'Oír los sonidos y distinguir K de M (unos 3 minutos)';
+  String get learnPlanReasonFirstLesson => 'Oír los sonidos y distinguir K de M';
 
   @override
   String learnPlanReasonRecognition(String symbols) {
@@ -3171,7 +3171,7 @@ class SEs extends S {
   String get firstLessonPerfectHint => 'Todas las respuestas fueron correctas en esta ronda. Refuérzalo con práctica de copia sin opciones de respuesta.';
 
   @override
-  String get firstLessonPaceLocked => 'Esta ronda ya ha comenzado, así que su velocidad no cambia. Puedes ajustarla para la siguiente ronda en los ajustes.';
+  String get firstLessonPaceLocked => 'Ya has empezado a responder, así que la velocidad no cambia hasta terminar estas rondas. Puedes ajustarla después en los ajustes.';
 
   @override
   String get learnRecentEvidenceHint => 'Las etapas se basan en copias sin ayuda de los últimos 14 días a la misma velocidad.';

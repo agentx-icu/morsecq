@@ -6,8 +6,8 @@ import 'package:morse_io/morse_io.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/adaptive_fab.dart';
 import '../common/app_bar_title.dart';
-import '../responsive.dart';
 import 'listen_controller.dart';
 import 'listen_preferences.dart';
 import 'listen_settings.dart';
@@ -145,6 +145,7 @@ class _ListenScreenState extends State<ListenScreen>
 
   Future<void> _openSettings() => showModalBottomSheet<void>(
     context: context,
+    useSafeArea: true,
     showDragHandle: true,
     isScrollControlled: true,
     builder: (_) => ListenSettingsSheet(
@@ -202,9 +203,10 @@ class _ListenScreenState extends State<ListenScreen>
               builder: (context, constraints) {
                 // A short window (a phone in landscape, or large text)
                 // scrolls the whole page with a fixed-height transcript.
-                final scaler = MediaQuery.textScalerOf(context);
-                final short =
-                    constraints.maxHeight < scaler.scale(_kShortHeight);
+                // How much the text scale grows body text (also for
+                // nonlinear scalers, which barely grow large sizes).
+                final factor = MediaQuery.textScalerOf(context).scale(14) / 14;
+                final short = constraints.maxHeight < _kShortHeight * factor;
                 final decoded = ListenDecodedText(
                   key: _transcriptKey,
                   text: _controller.text,
@@ -224,10 +226,7 @@ class _ListenScreenState extends State<ListenScreen>
                   ),
                   ListenFrequencyPanel(controller: _controller),
                   if (short)
-                    SizedBox(
-                      height: scaler.scale(_kShortHeight / 2),
-                      child: decoded,
-                    )
+                    SizedBox(height: _kShortHeight / 2 * factor, child: decoded)
                   else
                     Expanded(child: decoded),
                   ListenStatsRow(controller: _controller),
@@ -243,13 +242,10 @@ class _ListenScreenState extends State<ListenScreen>
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: AdaptiveFab(
         onPressed: busy ? null : _toggle,
         icon: Icon(listening ? Icons.stop : Icons.mic),
-        label: Text(
-          listening ? s.listenStop : s.listenStart,
-          textScaler: edgeLabelTextScaler(context),
-        ),
+        label: listening ? s.listenStop : s.listenStart,
       ),
     );
   }

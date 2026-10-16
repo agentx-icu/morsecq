@@ -4,6 +4,7 @@ import 'package:morse_core/morse_core.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/field_label.dart';
 import 'morse_pattern_text.dart';
 import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
@@ -140,7 +141,7 @@ class _TextToMorseViewState extends State<TextToMorseView> {
         textAlignVertical: TextAlignVertical.top,
         textCapitalization: TextCapitalization.characters,
         decoration: InputDecoration(
-          labelText: s.referenceTextInputLabel,
+          label: FieldLabel(s.referenceTextInputLabel),
           hintText: s.referenceTextInputHint,
           border: const OutlineInputBorder(),
           alignLabelWithHint: true,

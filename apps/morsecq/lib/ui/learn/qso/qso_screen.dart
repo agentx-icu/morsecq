@@ -10,6 +10,7 @@ import '../../../training/qso_practice.dart';
 import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../common/field_label.dart';
 import '../drill_session_guard.dart';
 import '../keying/keyer_panel.dart';
 import '../learn_platform.dart';

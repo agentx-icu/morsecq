@@ -13,6 +13,8 @@ import '../../common/app_bar_title.dart';
 import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import 'settings_slider_tile.dart';
+import '../../common/wrapping_choice_chip.dart';
 
 /// Training preferences. Reachable from the Learn home gear and pushable
 /// from the Me page via [routeName] / [route].
@@ -181,7 +183,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: <Widget>[
         _PresetRow(trainer: _t, onPick: (t) => _applyTrainer(t)),
-        _SliderTile(
+        SettingsSliderTile(
           title: s.learnCharacterSpeed,
           value: _wpm(s, _t.characterWpm),
           slider: Slider(
@@ -209,7 +211,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         if (_t.farnsworthWpm != null) _buildFarnsworthSlider(s),
         const Divider(),
-        _SliderTile(
+        SettingsSliderTile(
           title: s.learnTone,
           value: _hz(s, _t.toneHz),
           trailing: IconButton.filledTonal(
@@ -237,7 +239,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
           ),
         ),
         const Divider(),
-        _SliderTile(
+        SettingsSliderTile(
           title: s.learnSessionLength,
           value: s.learnCharsCount(_t.sessionLengthChars),
           slider: Slider(
@@ -262,7 +264,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
                 _applyTrainer(_t.copyWith(sessionLengthChars: v.round())),
           ),
         ),
-        _SliderTile(
+        SettingsSliderTile(
           title: s.learnDailyGoal,
           value: s.learnCharsCount(goal),
           slider: Slider(
@@ -337,14 +339,17 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     );
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(s.learnSettingsTitle)),
-      body: AnimatedBuilder(
-        animation: widget.controller,
-        builder: (context, _) => Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: flash == null
-                ? body
-                : FlashOverlay(isOn: flash, child: body),
+      body: SafeArea(
+        // Side notches in landscape; the home indicator at the end.
+        child: AnimatedBuilder(
+          animation: widget.controller,
+          builder: (context, _) => Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: flash == null
+                  ? body
+                  : FlashOverlay(isOn: flash, child: body),
+            ),
           ),
         ),
       ),
@@ -356,7 +361,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     final min = math.min(TrainingSettings.minFarnsworthWpm, max);
     final value = (_t.farnsworthWpm ?? max).clamp(min, max);
     final divisions = (max - min).round();
-    return _SliderTile(
+    return SettingsSliderTile(
       title: s.learnEffectiveSpeed,
       value: _wpm(s, value),
       slider: Slider(
@@ -416,9 +421,9 @@ class _PresetRow extends StatelessWidget {
           Wrap(
             spacing: 8,
             children: <Widget>[
-              ChoiceChip(
+              wrappingChoiceChip(
                 key: const ValueKey('preset-beginner'),
-                label: Text(s.learnPresetBeginner),
+                label: s.learnPresetBeginner,
                 selected: _matches(beginnerEffectiveWpm),
                 onSelected: (_) => onPick(
                   trainer.copyWith(
@@ -427,9 +432,9 @@ class _PresetRow extends StatelessWidget {
                   ),
                 ),
               ),
-              ChoiceChip(
+              wrappingChoiceChip(
                 key: const ValueKey('preset-standard'),
-                label: Text(s.learnPresetStandard),
+                label: s.learnPresetStandard,
                 selected: _matches(standardEffectiveWpm),
                 onSelected: (_) => onPick(
                   trainer.copyWith(
@@ -449,45 +454,6 @@ class _PresetRow extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SliderTile extends StatelessWidget {
-  const _SliderTile({
-    required this.title,
-    required this.value,
-    required this.slider,
-    this.trailing,
-  });
-
-  final String title;
-  final String value;
-  final Slider slider;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        ListTile(
-          // The value sits in the title row so a long title wraps instead of
-          // being squeezed to a few characters by a wide trailing value at
-          // large text on a phone.
-          title: Wrap(
-            spacing: 12,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: <Widget>[
-              Text(title),
-              Text(value, style: theme.textTheme.titleMedium),
-            ],
-          ),
-          trailing: trailing,
-        ),
-        slider,
-      ],
     );
   }
 }

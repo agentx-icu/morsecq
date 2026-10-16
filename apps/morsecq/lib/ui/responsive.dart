@@ -108,3 +108,11 @@ class ReadableBody extends StatelessWidget {
     );
   }
 }
+
+/// An app bar text action scaled like the title: the AppBar caps its title
+/// at [kAppBarTitleMaxTextScale], and an uncapped text button would squeeze
+/// the title below a readable size at the largest accessibility text sizes.
+Widget appBarTextAction(Widget action) => MediaQuery.withClampedTextScaling(
+  maxScaleFactor: kAppBarTitleMaxTextScale,
+  child: action,
+);

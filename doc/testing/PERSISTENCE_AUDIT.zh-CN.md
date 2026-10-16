@@ -17,6 +17,6 @@ MorseCQ 在本地保存学习及偏好，安装后直接打开学习。`<support
 
 `AppScope` 一起等待偏好、语言、实体键配置和共享训练控制器保存。偏好保存失败会保留待写快照以供重试，其他设置不能清除该失败。进入后台时使用可用的平台后台任务桥接；桌面退出等待持久化，并传递尚未解决的错误。确认清除学习数据后，先保存并退役当前控制器，再删除本地训练 / 媒体文件，重建空白控制器，避免延迟写入恢复已经清除的数据。语言、外观和窗口等应用偏好仍可使用。
 
-回归覆盖并发文件写入、损坏 JSON 恢复、偏好失败 / 重试和外观重启；首次启动、后台保存、清除持久化和学习界面重载；`integration_test/persistence_test.dart` 在真实平台重新打开学习及偏好存储。桌面 E2E 会在 macOS、Linux 和 Windows 运行该集成测试及真实界面导航。最新精确测试数量、CI 链接、设备证据及产物校验统一维护于[验证记录](../VALIDATION.zh-CN.md)和[英文版本](../VALIDATION.md)。可通过 `tool/test_pyramid.sh` 重现门禁与测试，截图和视觉矩阵详见[截图指南](../../tool/screenshots/README.zh-CN.md)。
+回归覆盖并发文件写入、损坏 JSON 恢复、偏好失败 / 重试和外观重启；首次启动、后台保存、清除持久化和学习界面重载；`integration_test/persistence_test.dart` 在真实平台重新打开学习及偏好存储。`integration_test/storage_contract_test.dart` 在设备文件系统上覆盖进程被杀前的生命周期保存屏障、与清除竞争的迟到写入、损坏进度文件的恢复以及快速连续的未等待写入；`integration_test/app_storage_lifecycle_test.dart` 驱动真实应用，依次经过带原生后台任务的切入后台、桌面退出钩子和“我”页面的确认清除，每项之后都重新启动应用。桌面 E2E 会在 macOS、Linux 和 Windows 运行全部集成测试及真实界面导航。最新精确测试数量、CI 链接、设备证据及产物校验统一维护于[验证记录](../VALIDATION.zh-CN.md)和[英文版本](../VALIDATION.md)。可通过 `tool/test_pyramid.sh` 重现门禁与测试，截图和视觉矩阵详见[截图指南](../../tool/screenshots/README.zh-CN.md)。
 
 应用支持目录无法打开时，偏好会记录错误并退回内存，无法在重启后恢复；学习存储失败显示可重试状态。原子替换及上一次有效文件降低不完整文件风险，但不证明断电或强制杀进程的持久性。

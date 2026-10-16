@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/audio_material_store.dart';
 import '../../../training/training_controller.dart';
+import '../../common/feedback.dart';
+import '../../common/field_label.dart';
 import 'recording_files.dart';
 import 'workbench_controller.dart';
 import 'workbench_waveform.dart';
@@ -42,25 +44,25 @@ class _SaveDialogState extends State<_SaveDialog> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
-    return AlertDialog(
+    return ScrollingAlertDialog(
       title: Text(s.workbenchSave),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TextField(
-              key: const ValueKey('workbench-save-title'),
-              controller: _title,
-              decoration: InputDecoration(labelText: s.workbenchSaveTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TextField(
+            key: const ValueKey('workbench-save-title'),
+            controller: _title,
+            decoration: InputDecoration(
+              label: FieldLabel(s.workbenchSaveTitle),
             ),
-            TextField(
-              controller: _note,
-              minLines: 1,
-              maxLines: 4,
-              decoration: InputDecoration(labelText: s.workbenchSaveNote),
-            ),
-          ],
-        ),
+          ),
+          TextField(
+            controller: _note,
+            minLines: 1,
+            maxLines: 4,
+            decoration: InputDecoration(label: FieldLabel(s.workbenchSaveNote)),
+          ),
+        ],
       ),
       actions: <Widget>[
         TextButton(
@@ -92,6 +94,7 @@ Future<void> showWorkbenchLibrary(
   required VoidCallback onFailure,
 }) => showModalBottomSheet<void>(
   context: context,
+  useSafeArea: true,
   showDragHandle: true,
   isScrollControlled: true,
   builder: (_) => _LibrarySheet(

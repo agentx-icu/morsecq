@@ -88,7 +88,10 @@ class _StatsScreenState extends State<StatsScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(context.s.statsTitle)),
-      body: body,
+      body: SafeArea(
+        // Side notches in landscape; the home indicator at the end.
+        child: body,
+      ),
     );
   }
 }

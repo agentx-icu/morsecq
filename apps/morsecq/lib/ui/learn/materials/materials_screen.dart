@@ -10,8 +10,10 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/material_practice.dart';
 import '../../../training/material_store.dart';
 import '../../../training/training_controller.dart';
+import '../../common/adaptive_fab.dart';
 import '../../common/app_bar_title.dart';
 import '../../responsive.dart';
+import '../../common/feedback.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
 import 'material_editor_screen.dart';
@@ -151,11 +153,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           for (final m in incoming.take(5))
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                '• ${m.title}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              child: Text('• ${m.title}'),
             ),
           if (collides)
             Padding(
@@ -282,8 +280,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     final s = context.s;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        scrollable: true,
+      builder: (context) => ScrollingAlertDialog(
         title: Text(s.materialsDeleteTitle),
         content: Text(s.materialsDeleteBody(m.title)),
         actions: <Widget>[
@@ -331,11 +328,11 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: AdaptiveFab(
         key: const ValueKey('material-new'),
         onPressed: () => unawaited(_edit()),
         icon: const Icon(Icons.add),
-        label: Text(s.materialsNew, textScaler: edgeLabelTextScaler(context)),
+        label: s.materialsNew,
       ),
       body: all == null
           ? const Center(child: CircularProgressIndicator())
@@ -343,44 +340,47 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           // an `Expanded` list left no room on a landscape phone with the
           // keyboard up.
           : ReadableBody(
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: 88),
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: TextField(
-                      controller: _search,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search),
-                        hintText: s.materialsSearch,
-                        hintMaxLines: 2,
-                        border: const OutlineInputBorder(),
-                      ),
-                      onChanged: (_) => setState(() {}),
-                    ),
-                  ),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: FilterChip(
-                        label: Text(s.materialsFavoritesOnly),
-                        selected: _favoritesOnly,
-                        onSelected: (v) => setState(() => _favoritesOnly = v),
-                      ),
-                    ),
-                  ),
-                  if (all.isEmpty)
+              // The home indicator at the end of the list.
+              child: SafeArea(
+                top: false,
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: kFabClearance),
+                  children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        s.materialsEmpty,
-                        textAlign: TextAlign.center,
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: TextField(
+                        controller: _search,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.search),
+                          hintText: s.materialsSearch,
+                          border: const OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => setState(() {}),
                       ),
-                    )
-                  else
-                    for (final m in _visible) _tile(context, m),
-                ],
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: FilterChip(
+                          label: Text(s.materialsFavoritesOnly),
+                          selected: _favoritesOnly,
+                          onSelected: (v) => setState(() => _favoritesOnly = v),
+                        ),
+                      ),
+                    ),
+                    if (all.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          s.materialsEmpty,
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    else
+                      for (final m in _visible) _tile(context, m),
+                  ],
+                ),
               ),
             ),
     );
@@ -395,7 +395,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
         icon: Icon(m.favorite ? Icons.star : Icons.star_border),
         onPressed: () => unawaited(_toggleFavorite(m)),
       ),
-      title: Text(m.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      title: Text(m.title),
       subtitle: Text(
         [
           MaterialLabels.kind(s, m.kind),
@@ -403,8 +403,6 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           if (m.source != null) s.materialsImportedSource,
           ...m.tags,
         ].join(' · '),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
       onTap: () => unawaited(_practise(m)),
       trailing: PopupMenuButton<String>(

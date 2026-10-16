@@ -77,6 +77,21 @@ class SendPracticeBody extends StatelessWidget {
         const SizedBox(height: 16),
         SendLiveView(session: session, hideTarget: hideTarget),
         const SizedBox(height: 20),
+        // The guide unlocks the key only after the model; on a phone the
+        // key then appears below the fold, so bring it into view.
+        if (guide != null && canKey)
+          RevealOnAppear(child: _controls(context))
+        else
+          _controls(context),
+      ],
+    );
+  }
+
+  Widget _controls(BuildContext context) {
+    final s = context.s;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         if (canKey) keying,
         if (canKey && hasPhysicalKeyboardByDefault) ...[
           const SizedBox(height: 8),
@@ -114,4 +129,33 @@ class SendPracticeBody extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Scrolls [child] fully into view once, right after it first appears.
+class RevealOnAppear extends StatefulWidget {
+  const RevealOnAppear({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<RevealOnAppear> createState() => _RevealOnAppearState();
+}
+
+class _RevealOnAppearState extends State<RevealOnAppear> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

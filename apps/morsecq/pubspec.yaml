@@ -1,7 +1,7 @@
 name: morsecq
 description: "Account-free offline Morse code trainer."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 resolution: workspace
 
 environment:

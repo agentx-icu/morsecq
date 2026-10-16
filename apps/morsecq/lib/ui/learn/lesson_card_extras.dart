@@ -16,7 +16,7 @@ CharChipState chipStateOf(
   required bool isNewest,
 }) {
   if (isNewest) return CharChipState.newest;
-  if (controller.dueChars.contains(char)) return CharChipState.due;
+  if (controller.reviewDueChars.contains(char)) return CharChipState.due;
   final evidence = controller.recentEvidenceOf(char);
   if (evidence.stats.attempts > 0 &&
       evidence.strictAccuracy < LearnerStages.masteryAccuracy) {
@@ -49,10 +49,9 @@ CharChipState chipStateOf(
       scheme.surfaceContainerHigh,
       scheme.onSurfaceVariant,
     ),
-    CharChipState.mastered => (
-      scheme.surfaceContainerHighest,
-      scheme.onSurface,
-    ),
+    // A solid accent: unmistakable next to the neutral "new" surface and
+    // the newest / practising / due / weak containers in every style.
+    CharChipState.mastered => (scheme.secondary, scheme.onSecondary),
   };
 }
 

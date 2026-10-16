@@ -59,6 +59,7 @@ final class TrainingController extends ChangeNotifier {
   TrainingSettings _savedSettings = TrainingSettings.defaults;
   bool _loaded = false;
   bool _disposed = false;
+  bool _closing = false;
   Object? _loadError;
   Future<void> _writes = Future<void>.value();
   final Map<Object, (Object, StackTrace)> _writeErrors = {};
@@ -215,14 +216,29 @@ final class TrainingController extends ChangeNotifier {
 
   /// Durability barrier used before backgrounding, backup or replacement.
   Future<void> flush() async {
-    // Document transactions enqueue their writes when they run: wait for
-    // them first, then for every queued write.
-    await _docTxn;
-    await _writes;
+    await _settle();
     if (_writeErrors.isNotEmpty) {
       final (error, stack) = _writeErrors.values.first;
       Error.throwWithStackTrace(error, stack);
     }
+  }
+
+  /// Refuses new operations, waits for every accepted one and disposes.
+  /// Save failures are ignored: the caller is about to remove the files.
+  Future<void> close() async {
+    _closing = true;
+    await _settle();
+    dispose();
+  }
+
+  /// Waits until nothing is queued, including work accepted meanwhile.
+  /// Transactions enqueue their writes when they run: await them first.
+  Future<void> _settle() async {
+    Future<void> txn, writes;
+    do {
+      await (txn = _docTxn);
+      await (writes = _writes);
+    } while (!identical(txn, _docTxn) || !identical(writes, _writes));
   }
 
   @override
@@ -281,6 +297,13 @@ final class TrainingController extends ChangeNotifier {
 
   /// Symbols the SRS wants drilled now, plus learned symbols never tracked.
   List<String> get dueChars => _progress.srs.dueOrNew(learnedChars, _now());
+
+  /// Learned symbols with a review record that is due now. Unlike
+  /// [dueChars], a symbol never practised is not "due for review".
+  List<String> get reviewDueChars {
+    final learned = learnedChars.toSet();
+    return _progress.srs.dueChars(_now()).where(learned.contains).toList();
+  }
 
   int get streak => _progress.streakAsOf(_now());
   int get charsToday => _progress.charsOn(_now());
@@ -459,7 +482,7 @@ final class TrainingController extends ChangeNotifier {
   }
 
   void _ensureActive() {
-    if (_disposed) throw StateError('training controller disposed');
+    if (_disposed || _closing) throw StateError('training controller disposed');
   }
 
   Future<void> _persist(Object store, Future<void> Function() operation) {

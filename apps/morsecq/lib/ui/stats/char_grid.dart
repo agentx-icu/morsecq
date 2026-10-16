@@ -209,6 +209,7 @@ class CharDetailSheet extends StatelessWidget {
     String char,
   ) => showModalBottomSheet<void>(
     context: context,
+    useSafeArea: true,
     showDragHandle: true,
     isScrollControlled: true,
     builder: (_) => CharDetailSheet(snapshot: snapshot, char: char),

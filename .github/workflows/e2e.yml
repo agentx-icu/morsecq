@@ -1,9 +1,12 @@
 name: E2E
 
 # Top of the test pyramid (doc/testing/TEST_PYRAMID.md): the real app on
-# macOS, Linux and Windows runners — the real main() click-through and the
-# screenshot scene walk, then the screenshot pipeline itself with the frames
-# as an artifact (the only source of the Linux and Windows frames).
+# macOS, Linux and Windows runners, an iOS simulator and an Android emulator —
+# the real main() click-through and the screenshot scene walk, then (desktop)
+# the screenshot pipeline itself with the frames as an artifact (the only
+# source of the Linux and Windows frames). tool/ci/run_integration_tests.sh
+# launches the app once per file and retries a failed file once, with a
+# warning annotation, so a retried pass stays visible.
 # Opt-in: manual, or the `ci:e2e` label on a pull request.
 
 on:
@@ -44,12 +47,7 @@ jobs:
         run: bash tool/ci/clean_apple_plugin_cache.sh macos
 
       - name: Real-UI tests (offline learning)
-        run: |
-          set -euo pipefail
-          cd apps/morsecq
-          for f in integration_test/*_test.dart; do
-            flutter test "$f" -d macos
-          done
+        run: bash tool/ci/run_integration_tests.sh -d macos
 
       # Staging inside the workspace so a failed run's frames are still
       # uploaded (the default staging is a temp dir the runner discards).
@@ -100,10 +98,8 @@ jobs:
         run: |
           set -euo pipefail
           flutter config --enable-linux-desktop
-          cd apps/morsecq
-          for f in integration_test/*_test.dart; do
-            xvfb-run -a -s '-screen 0 1920x1080x24' flutter test "$f" -d linux
-          done
+          xvfb-run -a -s '-screen 0 1920x1080x24' \
+            bash tool/ci/run_integration_tests.sh -d linux
 
       - name: Screenshots
         env:
@@ -175,10 +171,7 @@ jobs:
         run: |
           set -euo pipefail
           flutter config --enable-windows-desktop
-          cd apps/morsecq
-          for f in integration_test/*_test.dart; do
-            flutter test "$f" -d windows
-          done
+          bash tool/ci/run_integration_tests.sh -d windows
 
       - name: Screenshots
         env:
@@ -193,3 +186,86 @@ jobs:
             build/screenshots
             build/shot_staging
           if-no-files-found: warn
+
+  ios:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'ci:e2e')
+    timeout-minutes: 75
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: 'stable'
+          cache: true
+          pub-cache: false
+
+      - name: Install dependencies
+        run: dart pub get --enforce-lockfile
+
+      - name: Drop flutter_soloud's cached CMake build
+        run: bash tool/ci/clean_apple_plugin_cache.sh ios
+
+      # The newest available iPhone simulator; rotation_test.dart only runs
+      # on a phone or tablet, so this is where it is exercised.
+      - name: Boot an iPhone simulator
+        run: |
+          set -euo pipefail
+          udid="$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          phones = [d for runtime, ds in sorted(devices.items()) if "iOS" in runtime
+                    for d in ds if d["name"].startswith("iPhone")]
+          print(phones[-1]["udid"])')"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          echo "SIM_UDID=$udid" >> "$GITHUB_ENV"
+
+      - name: Real-UI tests (offline learning)
+        run: bash tool/ci/run_integration_tests.sh -d "$SIM_UDID"
+
+  android:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'ci:e2e')
+    timeout-minutes: 75
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get --enforce-lockfile
+
+      # Hardware acceleration for the x86_64 emulator.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Audio stays enabled (no -no-audio): the first-day and advanced
+      # learning tests drive real playback through flutter_soloud.
+      - name: Real-UI tests (offline learning)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -no-boot-anim -camera-back none
+          script: bash tool/ci/run_integration_tests.sh -d emulator-5554

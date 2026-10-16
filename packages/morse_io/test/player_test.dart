@@ -30,6 +30,20 @@ void main() {
 
   tearDown(() => player.dispose());
 
+  test('starting paused is silent until an explicit resume', () {
+    player.play(_timeline, paused: true);
+    expect(player.isPlaying, isTrue);
+    expect(player.isPaused, isTrue);
+    expect(sink.log, isEmpty);
+    expect(clock.pendingTimers, 0);
+    clock.advance(_ms * 500);
+    expect(player.elapsed, Duration.zero);
+    player.resume();
+    expect(sink.log, [(true, 500)]);
+    clock.advance(_ms * 100);
+    expect(sink.log.last, (false, 600));
+  });
+
   test('keys the exact on/off sequence with absolute timestamps', () {
     player.play(_timeline);
     expect(player.isPlaying, isTrue);
@@ -47,8 +61,13 @@ void main() {
     ]);
     expect(player.isPlaying, isFalse);
     expect(player.currentIndex, -1);
-    expect(events.whereType<PlayerElementStarted>().map((e) => e.index),
-        <int>[0, 1, 2, 3, 4]);
+    expect(events.whereType<PlayerElementStarted>().map((e) => e.index), <int>[
+      0,
+      1,
+      2,
+      3,
+      4,
+    ]);
     expect(events.last, isA<PlayerCompleted>());
     expect(clock.pendingTimers, 0);
   });
@@ -161,5 +180,202 @@ void main() {
       expect(s.disposeCalls, 1);
       expect(s.log, <(bool, int)>[(true, 0), (false, 10)]);
     }
+  });
+
+  group('elapsed', () {
+    test('advances with the clock while running', () {
+      player.play(_timeline);
+      expect(player.totalDuration, _ms * 900);
+      expect(player.elapsed, Duration.zero);
+      clock.advance(_ms * 250);
+      expect(player.elapsed, _ms * 250);
+      clock.advance(_ms * 400);
+      expect(player.elapsed, _ms * 650);
+      expect(player.isPlaying, isTrue);
+    });
+
+    test('freezes while paused and continues after resume', () {
+      player.play(_timeline);
+      clock.advance(_ms * 300);
+      player.pause();
+      expect(player.elapsed, _ms * 300);
+      clock.advance(_ms * 1000);
+      expect(player.elapsed, _ms * 300, reason: 'paused time is not elapsed');
+
+      player.resume();
+      expect(player.elapsed, _ms * 300);
+      clock.advance(_ms * 200);
+      expect(player.elapsed, _ms * 500);
+
+      // A second pause/resume cycle shifts the timeline again.
+      player.pause();
+      clock.advance(_ms * 50);
+      expect(player.elapsed, _ms * 500);
+      player.resume();
+      clock.advance(_ms * 100);
+      expect(player.elapsed, _ms * 600);
+    });
+
+    test('a paused start counts from zero once resumed', () {
+      player.play(_timeline, paused: true);
+      clock.advance(_ms * 500);
+      expect(player.elapsed, Duration.zero);
+      player.resume();
+      expect(player.elapsed, Duration.zero);
+      clock.advance(_ms * 150);
+      expect(player.elapsed, _ms * 150);
+    });
+
+    test('is clamped to the total duration while completion is late', () {
+      final lateClock = FakeClock(timerLatency: _ms * 50);
+      final latePlayer = MorsePlayer(
+        sink: RecordingSink(clock: lateClock),
+        clock: lateClock,
+      );
+      addTearDown(latePlayer.dispose);
+
+      latePlayer.play(_timeline);
+      // The final boundary is due at 900 ms but fires 50 ms late.
+      lateClock.advance(_ms * 930);
+      expect(latePlayer.isPlaying, isTrue);
+      expect(latePlayer.elapsed, latePlayer.totalDuration);
+      expect(latePlayer.elapsed, _ms * 900);
+
+      lateClock.advance(_ms * 20);
+      expect(latePlayer.isPlaying, isFalse);
+      expect(latePlayer.elapsed, Duration.zero);
+    });
+
+    test('returns to zero after completion', () {
+      player.play(_timeline);
+      clock.advance(_ms * 900);
+      expect(events.last, isA<PlayerCompleted>());
+      expect(player.elapsed, Duration.zero);
+      clock.advance(_ms * 100);
+      expect(player.elapsed, Duration.zero);
+    });
+
+    test('returns to zero after stop, running or paused', () {
+      player.play(_timeline);
+      clock.advance(_ms * 250);
+      player.stop();
+      expect(player.elapsed, Duration.zero);
+      clock.advance(_ms * 300);
+      expect(player.elapsed, Duration.zero);
+
+      player.play(_timeline);
+      clock.advance(_ms * 100);
+      player.pause();
+      expect(player.elapsed, _ms * 100);
+      player.stop();
+      expect(player.elapsed, Duration.zero);
+    });
+
+    test('restarting from a running timeline counts from zero again', () {
+      player.play(_timeline);
+      clock.advance(_ms * 400);
+      player.play(_timeline);
+      expect(player.elapsed, Duration.zero);
+      clock.advance(_ms * 50);
+      expect(player.elapsed, _ms * 50);
+    });
+  });
+
+  group('paused start events', () {
+    List<int> started() =>
+        events.whereType<PlayerElementStarted>().map((e) => e.index).toList();
+
+    test('reports the first element only when resume makes it sound', () {
+      final soundingAtStart = <bool>[];
+      player.events.listen((event) {
+        if (event is PlayerElementStarted) soundingAtStart.add(sink.isOn);
+      });
+      player.play(_timeline, paused: true);
+      clock.advance(_ms * 500);
+      expect(events, isEmpty, reason: 'nothing sounds while paused');
+
+      player.resume();
+      expect(started(), <int>[0]);
+      expect(soundingAtStart, <bool>[true]);
+      expect(sink.log, <(bool, int)>[(true, 500)]);
+
+      clock.advance(_ms * 900);
+      expect(started(), <int>[0, 1, 2, 3, 4]);
+      expect(events.last, isA<PlayerCompleted>());
+      expect(events.length, 6);
+    });
+
+    test('a later pause and resume reports nothing new', () {
+      player.play(_timeline, paused: true);
+      player.resume();
+      clock.advance(_ms * 150); // inside the intra-character gap
+      player.pause();
+      clock.advance(_ms * 100);
+      player.resume();
+      expect(started(), <int>[0, 1]);
+      clock.advance(_ms * 750);
+      expect(started(), <int>[0, 1, 2, 3, 4]);
+    });
+
+    test('a timeline that opens with a gap reports it at resume', () {
+      player.play(_timeline.sublist(1), paused: true);
+      expect(events, isEmpty);
+      player.resume();
+      expect(events.single, isA<PlayerElementStarted>());
+      expect((events.single as PlayerElementStarted).element.on, isFalse);
+    });
+
+    test('pausing while the start is pending keeps it for resume', () {
+      player.play(_timeline, paused: true);
+      clock.advance(_ms * 100);
+      player.pause();
+      expect(events, isEmpty);
+      player.resume();
+      expect(started(), <int>[0]);
+      expect(sink.log, <(bool, int)>[(true, 100)]);
+    });
+
+    test('stopping before resume reports only the stop', () {
+      player.play(_timeline, paused: true);
+      player.stop();
+      player.resume();
+      clock.advance(_ms * 1000);
+      expect(events.single, isA<PlayerStopped>());
+      expect(sink.log, isEmpty);
+    });
+
+    test('replacing a paused start drops its pending report', () {
+      player.play(_timeline, paused: true);
+      player.play(_timeline);
+      expect(events.first, isA<PlayerStopped>());
+      expect(started(), <int>[0]);
+      clock.advance(_ms * 900);
+      expect(started(), <int>[0, 1, 2, 3, 4]);
+      expect(events.whereType<PlayerCompleted>().length, 1);
+    });
+
+    test('a listener that pauses on the resumed start stays paused', () {
+      player.events.listen((event) {
+        if (event is PlayerElementStarted) player.pause();
+      });
+      player.play(_timeline, paused: true);
+      player.resume();
+      expect(player.isPaused, isTrue);
+      expect(clock.pendingTimers, 0);
+      expect(sink.isOn, isFalse);
+    });
+  });
+
+  test('dispose stops playback and closes the event stream', () async {
+    var done = false;
+    player.events.listen(null, onDone: () => done = true);
+    player.play(_timeline);
+    await player.dispose();
+    expect(done, isTrue);
+    expect(events.last, isA<PlayerStopped>());
+    expect(player.isPlaying, isFalse);
+    expect(sink.isOn, isFalse);
+    expect(clock.pendingTimers, 0);
+    expect(await player.events.isEmpty, isTrue);
   });
 }

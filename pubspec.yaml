@@ -16,7 +16,10 @@ workspace:
   - packages/radio_tools
 
 # Dependencies of the repo-root scripts under tool/ (resolved by the same
-# workspace `dart pub get`). tool/ui_literal_guard.dart parses the app with it.
+# workspace `dart pub get`). tool/ui_literal_guard.dart parses the app with it;
+# tool/shared_sync.dart hashes shared package files, tested under tool/test/.
 dev_dependencies:
   analyzer: ^10.0.1
+  crypto: ^3.0.7
   image: ^4.10.1
+  test: ^1.30.0

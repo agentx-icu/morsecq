@@ -242,11 +242,11 @@ abstract class S {
   /// **'{percent}%'**
   String learnAccuracyPercent(int percent);
 
-  /// Receive drill session summary: how many characters were played to the user in the session
+  /// Receive drill session summary: how many characters were played to the learner to copy
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 character sent} other{{count} characters sent}}'**
-  String learnCharsSent(int count);
+  /// **'{count, plural, =1{1 character heard} other{{count} characters heard}}'**
+  String learnCharsHeard(int count);
 
   /// Receive drill session summary: verdict when the lesson was passed and a new Koch character was unlocked; {char} is that character
   ///
@@ -2714,6 +2714,12 @@ abstract class S {
   /// **'Replayed: this session counts as practice but won\'t unlock a lesson or update reviews.'**
   String get learnReplayAssistedNote;
 
+  /// Receive drill: the app went to the background during this round, so playback stopped
+  ///
+  /// In en, this message translates to:
+  /// **'Playback stopped when the app went to the background. Tap Replay to hear this round again; that does not count as help.'**
+  String get learnRoundInterrupted;
+
   /// Learn home: title of the daily plan card
   ///
   /// In en, this message translates to:
@@ -4574,42 +4580,6 @@ abstract class S {
   /// **'{count, plural, =1{1 card with the answer shown} other{{count} cards with the answer shown}}'**
   String telegraphRecallAssisted(int count);
 
-  /// Telegraph interpretation sheet title
-  ///
-  /// In en, this message translates to:
-  /// **'Telegraph code interpretation'**
-  String get telegraphInterpretTitle;
-
-  /// Telegraph interpretation: local and read-only
-  ///
-  /// In en, this message translates to:
-  /// **'Shown here only: the message itself is not changed and nothing is sent.'**
-  String get telegraphInterpretNote;
-
-  /// Telegraph interpretation: unassigned code
-  ///
-  /// In en, this message translates to:
-  /// **'Unresolved: no character has this code'**
-  String get telegraphUnresolved;
-
-  /// Telegraph interpretation: digits but not four
-  ///
-  /// In en, this message translates to:
-  /// **'Not a four-digit group'**
-  String get telegraphMalformed;
-
-  /// Telegraph interpretation: ordinary text token
-  ///
-  /// In en, this message translates to:
-  /// **'Text, kept as written'**
-  String get telegraphNotCode;
-
-  /// Telegraph interpretation: several characters share the code
-  ///
-  /// In en, this message translates to:
-  /// **'Several characters share this code'**
-  String get telegraphAmbiguous;
-
   /// Receive drill: the conditions audio could not be started
   ///
   /// In en, this message translates to:
@@ -4747,6 +4717,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Hear {char}'**
   String learnHearChar(String char);
+
+  /// Button after a lesson challenge unlocked a symbol: short single-symbol practice of that new symbol
+  ///
+  /// In en, this message translates to:
+  /// **'Practise the new character {char}'**
+  String learnPractiseNewChar(String char);
 
   /// Button: play two symbols one after the other so they can be told apart
   ///
@@ -5090,6 +5066,18 @@ abstract class S {
   /// **'That was {char}'**
   String firstLessonWorkedReveal(String char);
 
+  /// First lesson short/long step: tile playing two symbols with the pause between characters
+  ///
+  /// In en, this message translates to:
+  /// **'{a}, a pause, then {b}'**
+  String firstLessonPauseDemo(String a, String b);
+
+  /// First lesson worked answer: play button for the numbered sound; the symbol is revealed only after it plays
+  ///
+  /// In en, this message translates to:
+  /// **'Play sound {number}'**
+  String firstLessonWorkedPlay(int number);
+
   /// First lesson step 4 title: two-choice trials
   ///
   /// In en, this message translates to:
@@ -5135,7 +5123,7 @@ abstract class S {
   /// First lesson step 5 body with the trial result
   ///
   /// In en, this message translates to:
-  /// **'{correct} / {total} correct this round. Choose your next step and continue at your own pace.'**
+  /// **'{correct} / {total} correct. Choose your next step and continue at your own pace.'**
   String firstLessonNextBody(int correct, int total);
 
   /// First lesson next action: short guided session
@@ -5237,7 +5225,7 @@ abstract class S {
   /// Daily plan reason for the first-lesson step
   ///
   /// In en, this message translates to:
-  /// **'Hear the sounds and tell K from M (about 3 minutes)'**
+  /// **'Hear the sounds and tell K from M'**
   String get learnPlanReasonFirstLesson;
 
   /// Daily plan reason for the recognition step
@@ -5477,7 +5465,7 @@ abstract class S {
   /// Learning pedagogy: firstLessonPaceLocked
   ///
   /// In en, this message translates to:
-  /// **'This round has started, so its speed stays fixed. You can change the speed in settings for the next round.'**
+  /// **'Answering has started, so the speed stays fixed until these rounds end. You can change it later in settings.'**
   String get firstLessonPaceLocked;
 
   /// Learning pedagogy: learnRecentEvidenceHint

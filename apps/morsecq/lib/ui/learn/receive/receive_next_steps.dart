@@ -83,10 +83,34 @@ class ReceiveNextSteps extends StatelessWidget {
     final retryGuided =
         session.sourceRef ==
         'guided/${controller.currentLesson}/${nextLevel.name}';
+    final guided = session.sourceRef?.startsWith('guided/') ?? false;
+    // A pass unlocked a symbol: meet it before anything else.
+    final unlocked = verdict == ReceiveVerdict.unlocked;
+    final newest = controller.newestChar;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        if (session.sourceRef?.startsWith('guided/') ?? false) ...[
+        if (unlocked) ...[
+          FilledButton.icon(
+            key: const ValueKey('practise-new-char'),
+            onPressed: () =>
+                _replaceWith(context, controller.startGuidedSession()),
+            icon: const Icon(Icons.bolt),
+            label: Text(s.learnPractiseNewChar(newest)),
+            style: big,
+          ),
+          const SizedBox(height: 12),
+          if (playback != null) ...[
+            OutlinedButton.icon(
+              key: const ValueKey('hear-new-char'),
+              onPressed: () => _hear(newest, ''),
+              icon: const Icon(Icons.hearing),
+              label: Text(s.learnHearChar(newest)),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ],
+        if (guided) ...[
           FilledButton.icon(
             key: const ValueKey('guided-next'),
             onPressed: () =>
@@ -147,7 +171,7 @@ class ReceiveNextSteps extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        if (session.sourceRef?.startsWith('guided/') ?? false)
+        if (guided || unlocked)
           OutlinedButton(
             key: const ValueKey('receive-done'),
             onPressed: () => Navigator.of(context).pop(outcome),

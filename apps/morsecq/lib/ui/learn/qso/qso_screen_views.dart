@@ -98,7 +98,7 @@ extension _QsoScreenView on _QsoScreenState {
             minLines: 1,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: s.qsoAdvancedTypedReply,
+              label: FieldLabel(s.qsoAdvancedTypedReply),
               border: const OutlineInputBorder(),
             ),
             onChanged: (_) => _typedChanged(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
+import '../common/feedback.dart';
 import 'morse_pattern_text.dart';
 import 'reference_catalog.dart';
 import 'reference_playback_controller.dart';
@@ -93,8 +94,7 @@ Future<void> showReferenceMnemonic(BuildContext context, ReferenceEntry entry) {
       final Locale locale = Localizations.localeOf(dialogContext);
       final String? meaning = entry.meaning(locale);
       final int? position = entry.position;
-      return AlertDialog(
-        scrollable: true,
+      return ScrollingAlertDialog(
         title: Text(entry.label, style: theme.textTheme.displaySmall),
         content: Column(
           mainAxisSize: MainAxisSize.min,
