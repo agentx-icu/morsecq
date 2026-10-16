@@ -19,6 +19,10 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
           key: const ValueKey('comprehension-mode'),
           initialValue: _mode,
           isExpanded: true,
+          // The selected label wraps at large text sizes instead of being
+          // clipped to the dense one-line height.
+          isDense: false,
+          itemHeight: null,
           decoration: InputDecoration(
             label: FieldLabel(s.comprehensionModeLabel),
             border: const OutlineInputBorder(),

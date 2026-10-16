@@ -14,6 +14,7 @@ import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import 'settings_slider_tile.dart';
+import '../../common/wrapping_choice_chip.dart';
 
 /// Training preferences. Reachable from the Learn home gear and pushable
 /// from the Me page via [routeName] / [route].
@@ -420,9 +421,9 @@ class _PresetRow extends StatelessWidget {
           Wrap(
             spacing: 8,
             children: <Widget>[
-              ChoiceChip(
+              wrappingChoiceChip(
                 key: const ValueKey('preset-beginner'),
-                label: Text(s.learnPresetBeginner),
+                label: s.learnPresetBeginner,
                 selected: _matches(beginnerEffectiveWpm),
                 onSelected: (_) => onPick(
                   trainer.copyWith(
@@ -431,9 +432,9 @@ class _PresetRow extends StatelessWidget {
                   ),
                 ),
               ),
-              ChoiceChip(
+              wrappingChoiceChip(
                 key: const ValueKey('preset-standard'),
-                label: Text(s.learnPresetStandard),
+                label: s.learnPresetStandard,
                 selected: _matches(standardEffectiveWpm),
                 onSelected: (_) => onPick(
                   trainer.copyWith(

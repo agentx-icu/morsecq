@@ -391,13 +391,32 @@ double effectiveFontSize(RenderParagraph node) {
   return node.textScaler.scale(_fontSize(node.text)) * sx;
 }
 
-/// Visible text an ellipsis or line limit cut off.
+/// Visible text an ellipsis, a line limit or a clamped box cut off.
 void scanTruncated(Size screen, Set<String> out) {
   for (final node in _onstageText()) {
-    if (node.didExceedMaxLines && _lineRects(node, screen).isNotEmpty) {
+    if (_lineRects(node, screen).isEmpty) continue;
+    if (node.didExceedMaxLines) {
       out.add('truncated ${_label(node)}');
+    } else if (_clipped(node)) {
+      out.add('clipped ${_label(node)}');
     }
   }
+}
+
+/// Whether the laid-out text is larger than the paragraph's own box, the
+/// comparison Flutter makes before it clips or fades: a line that may not
+/// wrap ran past the width (any amount), or a parent clamped the height (a
+/// fixed box, a dense field). The sweep's fonts put about a quarter of each
+/// line in leading around the glyphs, so a clipping clamp counts once it
+/// removes a third of a line; that still catches every lost line. A fade
+/// dims half a line at any vertical overflow, so it counts at once.
+bool _clipped(RenderParagraph node) {
+  if (node.overflow == TextOverflow.visible) return false;
+  final text = node.textSize;
+  final line = node.getFullHeightForCaret(const TextPosition(offset: 0));
+  final allowed = node.overflow == TextOverflow.fade ? 1 : line / 3;
+  return text.width > node.size.width + 1 ||
+      text.height - node.size.height > allowed;
 }
 
 /// Text inside bottom navigation / app bars.
@@ -538,13 +557,14 @@ List<Rect> _strips(Size size, EdgeInsets i, {required bool top}) => <Rect>[
 ].where((r) => !r.isEmpty).toList();
 
 /// Whether a scene's state finder matches. The finder's on-stage walk can
-/// assert on kept-alive, not laid-out list children; that tree is still
-/// the scene, so it counts as seen.
-bool _seen(Finder finder) {
+/// assert on kept-alive, not laid-out list children; the harness's own
+/// walk skips those, so the finder is matched against it instead.
+@visibleForTesting
+bool seenScene(Finder finder) {
   try {
     return finder.evaluate().isNotEmpty;
   } on AssertionError {
-    return true;
+    return finder.findInCandidates(_onstage((_) => true)).isNotEmpty;
   }
 }
 
@@ -632,7 +652,7 @@ Future<Set<String>> sweep(
         }
         final found = <String>{};
         // A lazy list may build the state's widget only further down.
-        var stateSeen = shown == null || _seen(shown(tester));
+        var stateSeen = shown == null || seenScene(shown(tester));
         final insets = EdgeInsets.fromLTRB(
           profile.insets.left,
           profile.insets.top,
@@ -655,7 +675,7 @@ Future<Set<String>> sweep(
           covered: profile.keyboard > 0 ? _bottomBarText() : const {},
         );
         scanFab(size, found);
-        stateSeen = stateSeen || _seen(shown(tester));
+        stateSeen = stateSeen || seenScene(shown(tester));
         if (!stateSeen) found.add('scene state lost');
         problems.addAll(found.map((p) => '$where: $p'));
         if (profile.keyboard > 0) {

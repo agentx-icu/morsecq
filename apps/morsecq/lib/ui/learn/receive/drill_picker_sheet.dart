@@ -4,6 +4,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/receive_session.dart';
 import '../conditions/conditions_playback.dart';
+import '../../common/wrapping_choice_chip.dart';
 
 /// Bottom sheet listing the receive drills the learned set supports, with
 /// the channel conditions to play them under (F11; Clear by default, each
@@ -82,9 +83,9 @@ class _DrillPickerListState extends State<DrillPickerList> {
             runSpacing: 4,
             children: [
               for (final p in RadioPreset.values)
-                ChoiceChip(
+                wrappingChoiceChip(
                   key: Key('drill-conditions-${p.name}'),
-                  label: Text(radioPresetLabel(s, p)),
+                  label: radioPresetLabel(s, p),
                   selected: _preset == p,
                   onSelected: (_) => setState(() => _preset = p),
                 ),

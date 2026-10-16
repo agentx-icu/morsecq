@@ -13,6 +13,7 @@ import '../comprehension/listening_comprehension_screen.dart';
 import '../learn_playback.dart';
 import '../receive/drill_picker_sheet.dart';
 import '../receive/receive_drill_screen.dart';
+import '../../common/wrapping_choice_chip.dart';
 
 /// Failed exercises retained across sessions, with deliberate spaced retries.
 class MistakeNotebookScreen extends StatefulWidget {
@@ -79,19 +80,15 @@ class _MistakeNotebookScreenState extends State<MistakeNotebookScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  ChoiceChip(
+                  wrappingChoiceChip(
                     key: const ValueKey('mistakes-filter-pending'),
-                    label: Text(
-                      '${s.mistakesPending} (${book.pending.length})',
-                    ),
+                    label: '${s.mistakesPending} (${book.pending.length})',
                     selected: !_showRecovered,
                     onSelected: (_) => setState(() => _showRecovered = false),
                   ),
-                  ChoiceChip(
+                  wrappingChoiceChip(
                     key: const ValueKey('mistakes-filter-recovered'),
-                    label: Text(
-                      '${s.mistakesRecovered} (${book.recovered.length})',
-                    ),
+                    label: '${s.mistakesRecovered} (${book.recovered.length})',
                     selected: _showRecovered,
                     onSelected: (_) => setState(() => _showRecovered = true),
                   ),
