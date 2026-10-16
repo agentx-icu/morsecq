@@ -70,6 +70,15 @@ int runSharedSync(
   try {
     final manifest = Manifest.parse(manifestFile.readAsStringSync());
     final tree = snapshot(root, manifest.packages);
+    // A wrong directory would snapshot as empty: refuse it before
+    // comparing or writing anything.
+    if (ditmesh != null) {
+      final problem = checkoutProblem(ditmesh, manifest.packages);
+      if (problem != null) {
+        err.writeln('[shared-sync] $problem; pass the DitMesh checkout root');
+        return 1;
+      }
+    }
     switch (mode) {
       case 'check':
         return _report(validate(manifest, tree), out, err);
@@ -103,7 +112,40 @@ int runSharedSync(
   } on ProcessException catch (e) {
     err.writeln('[shared-sync] git failed: ${e.message}');
     return 1;
+  } on FileSystemException catch (e) {
+    err.writeln('[shared-sync] ${e.path}: ${e.message}');
+    return 1;
   }
+}
+
+/// Why [repo] is not the root of a checkout holding every shared package,
+/// or null when it is.
+String? checkoutProblem(String repo, List<String> packages) {
+  if (!Directory(repo).existsSync()) return '$repo does not exist';
+  final top = Process.runSync('git', [
+    '-C',
+    repo,
+    'rev-parse',
+    '--show-toplevel',
+  ]);
+  if (top.exitCode != 0) return '$repo is not a Git checkout';
+  final root = '${top.stdout}'.trim();
+  if (_canonical(root) != _canonical(repo)) {
+    return '$repo is inside the checkout $root, not its root';
+  }
+  for (final p in packages) {
+    if (!File('$repo/packages/$p/pubspec.yaml').existsSync()) {
+      return '$repo has no packages/$p/pubspec.yaml';
+    }
+  }
+  return null;
+}
+
+String _canonical(String path) {
+  final resolved = Directory(
+    path,
+  ).resolveSymbolicLinksSync().replaceAll('\\', '/');
+  return Platform.isWindows ? resolved.toLowerCase() : resolved;
 }
 
 int _report(List<String> errors, StringSink out, StringSink err) {

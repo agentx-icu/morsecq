@@ -25,3 +25,5 @@ Layout CI 在每次 push 和 pull request 时运行 `apps/morsecq/test/layout/`�
 1. `dart run tool/shared_sync.dart --compare <ditmesh 检出目录>` 列出自固定以来两边各自变化的文件。
 2. 完成改动；若两边都应包含，同步到另一个仓库。若两份副本应保持不同，在清单中新增或更新分歧规则。
 3. `dart run tool/shared_sync.dart --write --ditmesh <ditmesh 检出目录>` 重新固定两边哈希和 DitMesh 提交（不带 `--ditmesh` 时只更新 MorseCQ 的哈希），然后校验结果。把清单与代码一起提交，并在提交说明中写明同步了什么或为何保持分歧。
+
+`<ditmesh 检出目录>` 必须是包含全部共享包的 DitMesh 检出根目录；其他目录会在比较或写入任何内容之前被拒绝。哈希按字节计算，因此根目录的 `.gitattributes` 让 `packages/**` 在任何检出中都保持 LF，不受 `core.autocrlf` 影响。在该文件加入之前创建的 Windows 检出仍是 CRLF 副本：在没有本地改动时执行一次 `git rm -rq --cached packages` 和 `git reset -q --hard`。在 Windows 上使用 `--compare` 时，DitMesh 检出中也需要同样的属性。
