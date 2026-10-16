@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/training/exercise_outcome.dart';
 import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/training/receive_session_start.dart';
 import 'package:morsecq/ui/learn/onboarding/first_lesson_screen.dart';
@@ -235,11 +236,16 @@ void main() {
       tester,
     ) async {
       final l = await _open(tester);
-      await _toNext(tester, l);
+      await _toNext(tester, l, wrong: 1);
       await _tapKey(tester, 'first-lesson-done');
       expect(find.byType(FirstLessonScreen), findsNothing);
       expect(find.text('launch'), findsOneWidget);
-      expect(l.popped, isNot(isA<_NotPopped>()));
+      final outcome = l.popped;
+      expect(outcome, isA<ReceiveOutcome>(), reason: 'the recorded trials');
+      outcome as ReceiveOutcome;
+      expect(outcome.saved, isTrue);
+      expect(outcome.score.totalChars, 6);
+      expect(outcome.score.correctChars, 5, reason: 'one trial was wrong');
       expect(l.t.controller.progress.firstLessonDone, isTrue);
     });
   });
