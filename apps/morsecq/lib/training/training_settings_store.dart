@@ -33,9 +33,10 @@ final class FileTrainingSettingsStore implements TrainingSettingsStore {
   final AtomicJsonFile _json;
 
   @override
-  Future<TrainingSettings?> load() => _json.readDecoded(_decode);
+  Future<TrainingSettings?> load() => _json.readDecoded(decode);
 
-  static TrainingSettings _decode(Map<String, Object?> json) {
+  /// Typed validation and clamping shared with the learning backup.
+  static TrainingSettings decode(Map<String, Object?> json) {
     final settings = TrainingSettings.fromJson(json);
     final trainer = settings.trainer;
     final parameters = <double?>[
@@ -80,7 +81,7 @@ final class FileTrainingSettingsStore implements TrainingSettingsStore {
 
   @override
   Future<void> save(TrainingSettings settings) =>
-      _json.write(settings.toJson(), validate: _decode);
+      _json.write(settings.toJson(), validate: decode);
 
   @override
   Future<void> clear() => _json.delete();

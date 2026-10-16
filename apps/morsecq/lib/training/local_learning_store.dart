@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import '../ui/learn/learn_scope.dart';
+import 'backup/learning_replacement.dart';
 import 'training_controller.dart';
 
 /// Device-local learning storage, independent of any account.
@@ -21,6 +22,9 @@ class LocalLearningStore {
       LearnScope.controllerForDirectory(await directory(), profileKey: 'guest');
   Future<void> clear() async {
     final dir = await directory();
+    // Leftovers of an interrupted restore go first: startup recovery would
+    // otherwise bring a previous directory back once `training/` is gone.
+    await deleteLeftovers(dir);
     for (final name in ['training', 'media']) {
       final folder = Directory(p.join(dir, name));
       if (await folder.exists()) await folder.delete(recursive: true);

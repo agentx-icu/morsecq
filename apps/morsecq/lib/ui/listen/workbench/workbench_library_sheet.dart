@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/audio_material_store.dart';
+import '../../../training/kept_recordings.dart';
 import '../../../training/training_controller.dart';
 import '../../common/feedback.dart';
 import '../../common/field_label.dart';
@@ -175,8 +176,10 @@ class _LibrarySheetState extends State<_LibrarySheet> {
     // of it must not point at a deleted file. It is pruned the next time
     // the workbench opens if nothing refers to it any more.
     final open = m.file == widget.controller.file;
+    final library = widget.controller.library;
+    if (!stillUsed) await KeptRecordings(library.root).release(m.file);
     if (!stillUsed && !open && m.file != RecordingLibrary.workingFile) {
-      await widget.controller.library.delete(m.file);
+      await library.delete(m.file);
     }
     await _reload();
   }
