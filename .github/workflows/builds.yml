@@ -62,7 +62,13 @@ jobs:
         run: |
           flutter config --enable-${{ matrix.platform }}-desktop
           cd apps/morsecq
-          flutter build ${{ matrix.platform }} --release
+          if [[ "${{ matrix.platform }}" == macos ]]; then
+            # Flutter 3.41.9's release defaults produce arm64 + x86_64 on the
+            # macOS runner; package_artifacts.sh verifies the universal2 result.
+            flutter build macos --release
+          else
+            flutter build ${{ matrix.platform }} --release
+          fi
       - name: Package
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
@@ -100,11 +106,18 @@ jobs:
           if [[ "$count" == 4 ]]; then
             printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
             echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
-          elif [[ "$count" == 0 ]]; then
-            echo '::warning::No Android signing secrets: artifacts use the debug key for testing; configure owner signing for distribution.'
-          else
+          elif [[ "$count" != 0 ]]; then
             echo 'All four Android signing secrets must be provided together.' >&2
             exit 1
+          elif [[ "$GITHUB_REF_TYPE" == tag ]]; then
+            echo 'Release tags require Android signing secrets; refusing to build a debug-signed store artifact.' >&2
+            exit 1
+          else
+            # PR/branch builds may produce installable test artifacts, but the
+            # opt-in is explicit so a missing keystore can never silently leak
+            # into a distributable release build.
+            echo 'MORSECQ_ALLOW_DEBUG_SIGNING=1' >> "$GITHUB_ENV"
+            echo '::warning::No Android signing secrets: this non-tag CI artifact is explicitly debug-signed for testing only.'
           fi
       - name: Build APK and App Bundle
         env:
