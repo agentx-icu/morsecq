@@ -3,10 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/send_session.dart';
-import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
 import 'package:morsecq/ui/learn/send/send_live_view.dart';
 

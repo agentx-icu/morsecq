@@ -11,6 +11,7 @@
 - [当前产品设计](designs/product-2026-10-08/README.zh-CN.md)和[页面风格](designs/ui-styles-2026-10-01/README.zh-CN.md)
 - [应用结构](../apps/morsecq/README.zh-CN.md)、[桌面外壳](../apps/morsecq/lib/desktop/README.zh-CN.md)和[本地化](../apps/morsecq/lib/l10n/README.zh-CN.md)
 - 共享包：[morse_core](../packages/morse_core/README.zh-CN.md)、[morse_trainer](../packages/morse_trainer/README.zh-CN.md)、[morse_dsp](../packages/morse_dsp/README.zh-CN.md)、[morse_io](../packages/morse_io/README.zh-CN.md) 和 [radio_tools](../packages/radio_tools/README.zh-CN.md)
+- 会话层：[morse_session](../packages/morse_session/README.zh-CN.md)（纯 Dart，仅 MorseCQ 使用）
 
 ## 测试与验证
 

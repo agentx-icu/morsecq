@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
-import '../../training/qso_practice.dart';
 import '../../training/training_controller_host.dart';
 import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';

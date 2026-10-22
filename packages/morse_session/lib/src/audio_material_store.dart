@@ -1,4 +1,4 @@
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// A saved selection of a recording plus the learner's note (spec §11.2.5).
 /// Only this metadata lives in the training directory (and so in local
@@ -87,7 +87,7 @@ final class AudioMaterial {
 }
 
 /// Audio material metadata as one training document.
-extension AudioMaterialStore on TrainingController {
+extension AudioMaterialStore on TrainingCore {
   static const String doc = 'audio_materials';
 
   /// Every readable entry; a damaged entry is skipped, never fatal.

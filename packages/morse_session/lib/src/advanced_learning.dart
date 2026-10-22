@@ -1,9 +1,9 @@
 import 'package:morse_trainer/morse_trainer.dart';
 
-import 'training_controller.dart';
+import 'training_core.dart';
 import 'training_plan.dart';
 
-extension AdvancedLearning on TrainingController {
+extension AdvancedLearning on TrainingCore {
   Future<void> recordListeningAttempt(ListeningAttempt attempt) =>
       commitProgress((p) {
         if (p.hasCommitted(attempt.id)) return p;

@@ -45,6 +45,7 @@ bash tool/ci/package_artifacts.sh --target macos
 - `packages/morse_trainer`：课程、测评、间隔复习、评分与模拟通联。
 - `packages/morse_dsp`：音频解码与 WAV 读取。
 - `packages/radio_tools`：网格、距离、波段、CW 速度与 RST 工具。
+- `packages/morse_session`：训练控制器核心、收发练习会话、记分判定与文档编解码（纯 Dart，仅 MorseCQ 使用）。
 - `packages/morse_io`：音频、键控与触觉反馈。
 - `apps/morsecq`：应用、本地持久化与桌面窗口服务。
 - `tool`：分析、复杂度、导入、本地化与共享包门禁；CI 打包及截图采集。

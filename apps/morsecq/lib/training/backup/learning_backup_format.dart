@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:morse_session/morse_session.dart';
 
-import '../audio_material_store.dart';
-import '../file_trainer_store.dart';
-import '../material_store.dart';
 import 'learning_document_rules.dart';
 
 /// Why a backup file was refused; [reason] selects the user-facing message.
@@ -160,7 +158,7 @@ final class LearningBackup {
 
   LearningBackupSummary summary() {
     final raw = documents[LearningDocumentRules.progress];
-    final progress = raw == null ? null : FileTrainerStore.decode(raw);
+    final progress = raw == null ? null : TrainerProgressCodec.decode(raw);
     int count(String doc) {
       final list = documents[LearningDocumentRules.docPath(doc)]?['materials'];
       return list is List ? list.length : 0;

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morse_core/morse_core.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/mistake_practice.dart';
-import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../conditions/conditions_playback.dart';

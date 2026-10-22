@@ -6,12 +6,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/di/app_settings.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/keying/key_profiles.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/appearance/appearance_page.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';

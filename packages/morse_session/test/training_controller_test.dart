@@ -1,10 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
+import 'package:test/test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/receive_session.dart';
-import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings.dart';
 
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 void main() {
   test('loads defaults when nothing is stored', () async {

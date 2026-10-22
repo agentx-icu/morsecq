@@ -8,6 +8,6 @@
 
 辅助练习、听懂成绩和模拟通联不得进入科赫解锁或逐字符掌握度。新的学习记录应写入 `TrainerProgress` 或经过校验的 `training/docs/` 文档，这样重开、清除和备份存储层才能看到它们。
 
-五个 `packages/` 与 DitMesh 共享。修改它们需要用 `tool/shared_sync.dart` 重新固定哈希；两边副本不同时还需要分歧规则，见[共享包流程](testing/TEST_PYRAMID.zh-CN.md#共享包)。
+六个 `packages/` 中除 `morse_session` 外的五个与 DitMesh 共享。修改它们需要用 `tool/shared_sync.dart` 重新固定哈希；两边副本不同时还需要分歧规则，见[共享包流程](testing/TEST_PYRAMID.zh-CN.md#共享包)。
 
 使用手机和桌面布局检查十种语言和五种风格；Layout CI 在推送到 `main`/`master` 及以其为目标的 PR 上检查溢出、截断和安全区问题。设备检查覆盖麦克风解码、键控时序、触觉反馈、学习素材选择和本地持久化。

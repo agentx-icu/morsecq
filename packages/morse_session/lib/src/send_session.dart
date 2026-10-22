@@ -2,17 +2,18 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:morse_core/morse_core.dart';
-import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+
+import 'send_key_target.dart';
 
 /// A send-practice exercise in progress.
 ///
-/// Sits behind the keyers as their [KeyTarget]: every key-down / key-up is
+/// Sits behind the keyers as their [SendKeyTarget]: every key-down / key-up is
 /// timestamped by the caller's `Clock`, forwarded to the streaming
 /// [MorseDecoder] and remembered as a mark or gap so [finish] can hand the
 /// raw measurements to `SendAttempt` / `SendDiagnostics`. Pure logic: the UI
 /// owns the clock, the periodic [tick] and the sidetone.
-final class SendSession implements KeyTarget {
+final class SendSession implements SendKeyTarget {
   SendSession({
     required this.target,
     required MorseTiming timing,

@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
+import 'package:test/test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/receive_session.dart';
 
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 void main() {
   ReceiveSession session({

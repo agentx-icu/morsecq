@@ -1,11 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
+import 'package:test/test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/receive_session.dart';
-import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_plan.dart';
-import 'package:morsecq/training/training_settings.dart';
 
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 /// The plan's current speeds; a step freezes them when it starts.
 const _planSpeeds = PlanSettings(
@@ -73,7 +70,7 @@ SessionSummary _planAttempt(String stepId, Map<String, CharStats> perChar) {
   );
 }
 
-Future<TrainingController> _controller(TrainerProgress progress) async =>
+Future<TrainingCore> _controller(TrainerProgress progress) async =>
     (await TestTraining.create(progress: progress)).controller;
 
 void main() {
@@ -217,7 +214,7 @@ void main() {
       );
       final session = await c.startPlanSendStep(c.todayPlan!.stepById('send')!);
       final symbols = session.target.replaceAll(' ', '');
-      expect(symbols, hasLength(TrainingController.sendTargetChars));
+      expect(symbols, hasLength(TrainingCore.sendTargetChars));
       expect(symbols.split(''), everyElement(isIn(['Q', 'Z'])));
     });
   });

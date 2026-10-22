@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../keying/key_profile.dart';
 import '../../../keying/key_profiles.dart';
-import '../../../training/training_settings.dart';
 
 /// Desktop hint under the on-screen key(s): which keyboard keys drive them.
 /// Hidden on touch platforms by the caller.

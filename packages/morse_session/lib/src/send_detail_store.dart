@@ -4,7 +4,7 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import 'send_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// Saved key timing of one send attempt (functional spec §7.3): target,
 /// target speed, relative mark/gap durations, alignment result and the
@@ -79,7 +79,7 @@ final class SendDetail {
 /// Rhythm details as training documents plus a size index, trimmed to a
 /// cache budget. Trimming only deletes detail documents: summaries in the
 /// progress file and favourites the learner kept are never removed.
-extension SendDetailStore on TrainingController {
+extension SendDetailStore on TrainingCore {
   static const String indexDoc = 'send_index';
   static const int defaultBudgetBytes = 20 * 1024 * 1024;
 

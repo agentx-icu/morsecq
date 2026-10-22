@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/training/training_settings.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/ui/learn/learn_playback.dart';
 import 'package:morsecq/ui/learn/placement/placement_screen.dart';
 

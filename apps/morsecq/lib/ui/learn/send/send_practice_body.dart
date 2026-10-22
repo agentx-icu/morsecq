@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/send_session.dart';
-import '../../../training/training_settings.dart';
 import '../learn_platform.dart';
 import 'keyer_legend.dart';
 import 'send_first_use_hint.dart';

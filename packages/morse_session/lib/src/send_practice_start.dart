@@ -3,12 +3,13 @@ import 'package:morse_core/morse_core.dart';
 
 import 'drill_catalog.dart';
 import 'send_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
+import 'guided_send.dart';
 
 export 'guided_send.dart';
 
 /// Free send practice targets (re-exported by `training_controller.dart`).
-extension SendPracticeStart on TrainingController {
+extension SendPracticeStart on TrainingCore {
   /// One short target (a word if the learned set allows, else a group).
   SendSession startSendSession() {
     if (GuidedSending.needed(progress.history)) return startGuidedSendSession();
@@ -51,7 +52,7 @@ extension SendPracticeStart on TrainingController {
         : RandomGroupsDrill(
             chars: chars,
             groupCount: 1,
-            groupSize: TrainingController.sendTargetChars,
+            groupSize: TrainingCore.sendTargetChars,
             weights: DrillCatalog(
               course: course,
               progress: progress,
