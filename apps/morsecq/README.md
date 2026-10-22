@@ -2,7 +2,7 @@
 
 # MorseCQ application
 
-The account-free offline Flutter app opens learning immediately. It wires the morse_core, morse_dsp, morse_io, morse_trainer and radio_tools packages into Learn / Reference / Me, with device-local preferences and learning data. No chat, account or transport package is required.
+The account-free offline Flutter app opens learning immediately. It wires the morse_core, morse_dsp, morse_io, morse_trainer, radio_tools and morse_session packages into Learn / Reference / Me, with device-local preferences and learning data. No chat, account or transport package is required.
 
 From the workspace root, run `dart pub get --enforce-lockfile`, `flutter analyze apps/morsecq` and `(cd apps/morsecq && flutter test --no-pub)`. Start with `(cd apps/morsecq && flutter run -d macos)` or a supported device. Native tests live in `integration_test/`; run them through `bash tool/test_pyramid.sh --level e2e --device <id>` or `tool/ci/run_integration_tests.sh -d <id>`.
 
@@ -10,7 +10,7 @@ From the workspace root, run `dart pub get --enforce-lockfile`, `flutter analyze
 | --- | --- |
 | `lib/main.dart`, `lib/di/` | Startup, `settings.json`, `AppScope` services and device preferences |
 | `lib/i18n/`, `lib/l10n/` | Language selection and resolution; ARB resources and generated localizations ([localization](lib/l10n/README.md)) |
-| `lib/training/` | `TrainingController`, `TrainingControllerHost`, local JSON stores and the backup storage layer |
+| `lib/training/` | `TrainingController` (`morse_session`'s `TrainingCore` with `ChangeNotifier`), `TrainingControllerHost`, `dart:io` document stores and the backup storage layer |
 | `lib/keying/`, `lib/lifecycle/` | Physical-key profiles; the native background-task bridge |
 | `lib/ui/` | The Learn / Reference / Me shell, learning, reference, statistics, recording workbench, appearance and radio-tool screens |
 | `lib/desktop/` | Window, tray and quit handling ([desktop shell](lib/desktop/README.md)) |

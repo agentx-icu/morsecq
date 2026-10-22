@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 
 import 'helpers/fake_playback.dart';

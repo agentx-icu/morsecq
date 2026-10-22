@@ -3,17 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:morsecq/training/audio_material_store.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/training/backup/learning_backup_format.dart';
 import 'package:morsecq/training/backup/learning_document_rules.dart';
 import 'package:morsecq/training/backup/learning_replacement.dart';
 import 'package:morsecq/training/backup/learning_snapshot.dart';
 import 'package:morsecq/training/kept_recordings.dart';
 import 'package:morsecq/training/local_learning_store.dart';
-import 'package:morsecq/training/material_store.dart';
-import 'package:morsecq/training/qso_practice.dart';
-import 'package:morsecq/training/send_detail_store.dart';
-import 'package:morsecq/training/telegraph_sessions.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/ui/listen/workbench/recording_files.dart';
 import 'package:morse_core/morse_core.dart';

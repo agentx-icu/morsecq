@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import 'receive_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 import 'training_plan.dart';
 
 /// Size of a guided (beginner) session: one symbol per round first, then
@@ -25,7 +25,7 @@ enum GuidedLevel {
 /// Only [startLessonSession] (and an eligible daily-plan course step) is a
 /// course challenge. Everything else is practice: it may feed statistics,
 /// reviews and activity, but never advances the course (review A1).
-extension ReceiveSessionStart on TrainingController {
+extension ReceiveSessionStart on TrainingCore {
   /// Rounds of the first lesson's K / M trials.
   static const int onboardingRounds = DailyPlanBuilder.introTrials;
 
@@ -297,4 +297,16 @@ extension ReceiveSessionStart on TrainingController {
   Duration? get _timeBudget => trainerSettings.sessionLengthSeconds == null
       ? null
       : Duration(seconds: trainerSettings.sessionLengthSeconds!);
+
+  /// Drill kinds the learned set can support right now.
+  List<ReceiveDrillKind> get availableReceiveKinds {
+    final chars = learnedChars;
+    final catalog = this.catalog;
+    return <ReceiveDrillKind>[
+      for (final kind in ReceiveDrillKind.values)
+        if (kind != ReceiveDrillKind.review &&
+            catalog.drillFor(kind, chars) != null)
+          kind,
+    ];
+  }
 }

@@ -1,9 +1,9 @@
-import 'package:morsecq/training/training_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/keying/key_profile.dart';
 import 'package:morsecq/keying/key_profiles.dart';

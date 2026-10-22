@@ -1,10 +1,10 @@
 import 'package:morse_trainer/morse_trainer.dart';
 
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// The learner's material library (functional spec §9), one document under
 /// the profile's training directory, so local learning exports include it.
-extension MaterialStore on TrainingController {
+extension MaterialStore on TrainingCore {
   static const String doc = 'materials';
 
   Future<List<TrainingMaterial>> loadMaterials() async {

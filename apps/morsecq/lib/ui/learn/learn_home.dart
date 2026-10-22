@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
-import '../../training/qso_practice.dart';
 import '../../training/training_controller.dart';
 import '../common/app_bar_title.dart';
 import '../stats/stats_screen.dart';

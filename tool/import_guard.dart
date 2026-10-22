@@ -35,6 +35,23 @@ const _rules = <ImportRule>[
       'packages/radio_tools/',
     ],
   ),
+  ImportRule(
+    name: 'pure-dart-session',
+    description:
+        'morse_session is compiled with dart2js for the mini programs: no '
+        'Flutter, no dart:io, no path, no morse_io barrel.',
+    forbiddenPrefixes: [
+      'package:flutter/',
+      'package:flutter_test/',
+      'dart:io',
+      'package:path/',
+      'package:morse_io/morse_io.dart',
+    ],
+    appliesOnlyTo: [
+      'packages/morse_session/',
+      'packages/morsecq_mini_bridge/',
+    ],
+  ),
 ];
 
 /// Top-level directories scanned for `.dart` files. Dot-directories and

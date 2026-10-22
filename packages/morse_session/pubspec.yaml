@@ -1,0 +1,17 @@
+name: morse_session
+description: Pure-Dart learning sessions for MorseCQ - the training controller core, receive and send sessions, exercise credit and verdicts, drill catalog, training settings, document codecs and the atomic document writer. No Flutter dependency; shared by the app and the mini-program bridge.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  meta: ^1.16.0
+  morse_core: ^0.1.0
+  morse_trainer: ^0.1.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  test: ^1.25.0

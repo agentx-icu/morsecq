@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/training_settings.dart';
 
 /// First-use keying guidance (pedagogy review): how to hold the control for
 /// a dit and a dah and to pause between characters, worded for the keyer

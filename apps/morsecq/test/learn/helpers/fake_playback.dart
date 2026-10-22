@@ -1,5 +1,5 @@
 import 'package:morse_io/testing.dart';
-import 'package:morsecq/training/training_settings.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/ui/learn/learn_playback.dart';
 
 /// [LearnPlaybackFactory] for widget tests: every playback shares one

@@ -14,6 +14,7 @@ workspace:
   - apps/morsecq
   - packages/morse_dsp
   - packages/radio_tools
+  - packages/morse_session
 
 # Dependencies of the repo-root scripts under tool/ (resolved by the same
 # workspace `dart pub get`). tool/ui_literal_guard.dart parses the app with it;

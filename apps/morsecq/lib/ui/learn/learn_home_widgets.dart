@@ -4,11 +4,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
-import '../../training/training_settings.dart';
 import '../appearance/radio_mascot.dart';
 import '../appearance/style_tokens.dart';
 import '../appearance/ui_style.dart';

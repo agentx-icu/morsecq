@@ -45,6 +45,7 @@ Progress, learning materials and recordings stay on your device. Use Me → Clea
 - `packages/morse_trainer`: lessons, assessment, spaced review, scoring and simulated QSO models.
 - `packages/morse_dsp`: audio decoding and WAV reading.
 - `packages/radio_tools`: locator, distance, bands, CW speed and RST utilities.
+- `packages/morse_session`: training controller core, receive/send sessions, credit and verdicts, document codecs (pure Dart, MorseCQ only).
 - `packages/morse_io`: audio, keying and haptics.
 - `apps/morsecq`: application, local persistence and desktop shell.
 - `tool`: analysis, complexity, import, localization and shared-package gates; CI packaging and screenshot capture.

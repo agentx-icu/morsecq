@@ -4,11 +4,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/material_practice.dart';
-import '../../../training/material_store.dart';
 import '../../../training/training_controller.dart';
 import '../../common/adaptive_fab.dart';
 import '../../common/app_bar_title.dart';

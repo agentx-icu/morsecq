@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/material_store.dart';
 import 'package:morsecq/training/training_doc_store.dart';
 import 'package:morsecq/ui/learn/materials/material_file_gateway.dart';
 import 'package:morsecq/ui/learn/materials/materials_screen.dart';
