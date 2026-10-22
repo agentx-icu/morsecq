@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+        <include domain="file" path="morsecq/guest/"/>
+        <include domain="file" path="settings.json"/>
+</full-backup-content>

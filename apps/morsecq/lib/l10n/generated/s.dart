@@ -6199,6 +6199,54 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Listen'**
   String get comprehensionListen;
+
+  /// Desktop preference: keep the app running after closing its window
+  ///
+  /// In en, this message translates to:
+  /// **'Keep running in the tray when the window closes'**
+  String get desktopCloseToTray;
+
+  /// Explanation of the close-window preference and tray availability
+  ///
+  /// In en, this message translates to:
+  /// **'Off: closing the window quits. Requires a working system tray.'**
+  String get desktopCloseToTrayDescription;
+
+  /// Photosensitivity and reduced-motion notice beside the flash setting
+  ///
+  /// In en, this message translates to:
+  /// **'Uses a small flashing indicator. Avoid if photosensitive; Reduce Motion keeps it steady.'**
+  String get learnFlashNotice;
+
+  /// Explanation when the device has no usable vibrator
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration is unavailable on this device.'**
+  String get learnHapticUnavailable;
+
+  /// Linux microphone error with the package to install
+  ///
+  /// In en, this message translates to:
+  /// **'Install pulseaudio-utils to use the microphone on Linux.'**
+  String get listenMissingCaptureTool;
+
+  /// Me: explicit action copying local error types and stacks, never uploaded
+  ///
+  /// In en, this message translates to:
+  /// **'Copy local diagnostics'**
+  String get diagnosticsCopy;
+
+  /// Incompatible future learning-data error; explains preservation and update recovery
+  ///
+  /// In en, this message translates to:
+  /// **'Learning data was written by a newer MorseCQ. Update the app to open it; your files have been kept.'**
+  String get learnNewerData;
+
+  /// Snackbar confirming diagnostics were copied to the clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Local diagnostics copied'**
+  String get diagnosticsCopied;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

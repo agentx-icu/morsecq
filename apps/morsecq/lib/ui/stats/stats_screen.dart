@@ -74,6 +74,10 @@ class _StatsScreenState extends State<StatsScreen> {
           progress,
           course: widget.course,
           now: widget.now,
+          firstDayOfWeek:
+              MaterialLocalizations.of(context).firstDayOfWeekIndex == 0
+              ? DateTime.sunday
+              : MaterialLocalizations.of(context).firstDayOfWeekIndex,
         );
         return RefreshIndicator(
           onRefresh: _reload,

@@ -64,6 +64,7 @@ class DesktopShellController extends ChangeNotifier
   bool _trayAvailable = false;
   bool _windowVisible = false;
   bool _closing = false;
+  Rect? _normalBounds;
   bool _closeToTray;
   bool _soundEnabled;
   S _s;
@@ -90,7 +91,6 @@ class DesktopShellController extends ChangeNotifier
 
   bool get soundEnabled => _soundEnabled;
 
-
   /// The strings the title, tooltip and menu currently render from.
   S get strings => _s;
 
@@ -107,11 +107,12 @@ class DesktopShellController extends ChangeNotifier
           ? _s.desktopTrayHide(config.appName)
           : _s.desktopTrayShow(config.appName),
     ),
-    TrayMenuEntry(
-      key: TrayMenuKeys.sound,
-      label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
-      checked: _soundEnabled,
-    ),
+    if (config.onToggleSound != null)
+      TrayMenuEntry(
+        key: TrayMenuKeys.sound,
+        label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
+        checked: _soundEnabled,
+      ),
     const TrayMenuEntry.separator(),
     TrayMenuEntry(
       key: TrayMenuKeys.quit,
@@ -165,6 +166,7 @@ class DesktopShellController extends ChangeNotifier
       minimumSize: minSize,
       size: target.rect.size,
     );
+    _normalBounds = target.rect;
     await _window.setBounds(target.rect);
     await _window.show();
     await _window.focus();
@@ -179,6 +181,7 @@ class DesktopShellController extends ChangeNotifier
     final icon = TrayIconAssets.forPlatform(config.effectivePlatform);
     if (icon == null) return;
     try {
+      if (!await _hasTrayHost()) return;
       _tray.setEventHandler(this);
       await _tray.setIcon(icon, isTemplate: config.isMacOS);
       _trayAvailable = true;
@@ -196,6 +199,15 @@ class DesktopShellController extends ChangeNotifier
     await _applyTrayState();
   }
 
+  Future<bool> _hasTrayHost() async {
+    try {
+      return await config.trayHostAvailable?.call() ?? true;
+    } on Object catch (error) {
+      config.logger('[DesktopShell] tray host unavailable: $error');
+      return false;
+    }
+  }
+
   Future<List<Rect>> _workAreas() async {
     try {
       return await _screen.workAreas();
@@ -209,10 +221,7 @@ class DesktopShellController extends ChangeNotifier
     if (!_trayAvailable) return;
     await _tolerate('setToolTip', () => _tray.setToolTip(trayTooltip));
     if (config.isMacOS) {
-      await _tolerate(
-        'setTitle',
-        () => _tray.setTitle(''),
-      );
+      await _tolerate('setTitle', () => _tray.setTitle(''));
     }
     await _tolerate('setMenu', () => _tray.setMenu(trayMenu));
   }
@@ -230,6 +239,7 @@ class DesktopShellController extends ChangeNotifier
 
   Future<void> showWindow() async {
     if (!_active) return;
+    if (await _window.isMinimized()) await _window.restore();
     await _window.show();
     await _window.focus();
     _setWindowVisible(true);
@@ -238,7 +248,7 @@ class DesktopShellController extends ChangeNotifier
   /// Hides the window; the tray is the only way back, so this is refused
   /// when the tray is unavailable.
   Future<void> hideToTray() async {
-    if (!_active || !_trayAvailable) return;
+    if (!_active || !_trayAvailable || !await _hasTrayHost()) return;
     await persistWindowState();
     await _window.hide();
     _setWindowVisible(false);
@@ -267,9 +277,17 @@ class DesktopShellController extends ChangeNotifier
     try {
       final rect = await _window.getBounds();
       final maximized = await _window.isMaximized();
+      if (!maximized &&
+          !await _window.isFullScreen() &&
+          !await _window.isMinimized()) {
+        _normalBounds = rect;
+      }
       await config.store.set(
         boundsKey,
-        WindowBounds(rect: rect, maximized: maximized).encode(),
+        WindowBounds(
+          rect: _normalBounds ?? rect,
+          maximized: maximized,
+        ).encode(),
       );
     } catch (e) {
       config.logger('[DesktopShell] could not persist window state: $e');
@@ -372,7 +390,7 @@ class DesktopShellController extends ChangeNotifier
   /// exit path.
   Future<void> handleCloseRequested() async {
     if (!_active || _closing) return;
-    if (_closeToTray && _trayAvailable) {
+    if (_closeToTray && _trayAvailable && await _hasTrayHost()) {
       await hideToTray();
       return;
     }

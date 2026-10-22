@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:morse_trainer/morse_trainer.dart';
 
 import 'atomic_json_file.dart';
 
@@ -41,13 +42,30 @@ final class FileTrainingDocStore implements TrainingDocStore {
     return AtomicJsonFile(File(p.join(directory.path, '$name.json')));
   }
 
+  static void _checkVersion(String name, Map<String, Object?> json) {
+    if (const {
+      'materials',
+      'audio_materials',
+      'telegraph_recall',
+    }.contains(name)) {
+      UnsupportedDataVersion.check(json['v'], supported: 1, document: name);
+    }
+  }
+
   @override
-  Future<Map<String, Object?>?> read(String name) => _file(name).read();
+  Future<Map<String, Object?>?> read(String name) =>
+      _file(name).readDecoded((json) {
+        _checkVersion(name, json);
+        return json;
+      });
 
   @override
   Future<void> write(String name, Map<String, Object?> json) async {
     await directory.create(recursive: true);
-    await _file(name).write(json);
+    _checkVersion(name, json);
+    await _file(
+      name,
+    ).write(json, validate: (existing) => _checkVersion(name, existing));
   }
 
   @override

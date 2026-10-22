@@ -18,6 +18,26 @@ import 'helpers/l10n.dart';
 
 void main() {
   group('TrainingSettingsEntry', () {
+    testWidgets('future learning data explains update recovery from Me', (
+      tester,
+    ) async {
+      final host = TrainingControllerHost(
+        LocalLearningStore(),
+        factory: () async =>
+            throw const UnsupportedDataVersion('Training settings', 2),
+      );
+      addTearDown(host.dispose);
+      await tester.pumpWidget(
+        Provider<TrainingControllerHost>.value(
+          value: host,
+          child: l10nApp(home: const TrainingSettingsEntry()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(en.learnNewerData), findsOneWidget);
+      expect(find.byType(TrainingSettingsScreen), findsNothing);
+    });
+
     late Completer<TrainingController> opening;
     late int opens;
     late TrainingControllerHost host;

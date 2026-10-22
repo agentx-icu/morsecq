@@ -3597,4 +3597,28 @@ class SRu extends S {
 
   @override
   String get comprehensionListen => 'Слушать';
+
+  @override
+  String get desktopCloseToTray => 'Работать в трее после закрытия окна';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Если выключено, закрытие окна завершает приложение. Нужен доступный системный трей.';
+
+  @override
+  String get learnFlashNotice => 'Небольшой мигающий индикатор. Не используйте при светочувствительности; при уменьшении движения он горит постоянно.';
+
+  @override
+  String get learnHapticUnavailable => 'Вибрация недоступна на этом устройстве.';
+
+  @override
+  String get listenMissingCaptureTool => 'Установите pulseaudio-utils для использования микрофона в Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Копировать локальную диагностику';
+
+  @override
+  String get learnNewerData => 'Данные сохранены новой версией MorseCQ. Обновите приложение. Исходные файлы сохранены.';
+
+  @override
+  String get diagnosticsCopied => 'Локальная диагностика скопирована';
 }

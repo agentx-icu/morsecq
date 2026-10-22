@@ -1,26 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Learning data stays local; platform backup and device transfer are disabled. -->
 <data-extraction-rules>
     <cloud-backup>
-        <exclude domain="root"/>
-        <exclude domain="file"/>
-        <exclude domain="database"/>
-        <exclude domain="sharedpref"/>
-        <exclude domain="external"/>
-        <exclude domain="device_root"/>
-        <exclude domain="device_file"/>
-        <exclude domain="device_database"/>
-        <exclude domain="device_sharedpref"/>
+        <include domain="file" path="morsecq/guest/"/>
+        <include domain="file" path="settings.json"/>
     </cloud-backup>
     <device-transfer>
-        <exclude domain="root"/>
-        <exclude domain="file"/>
-        <exclude domain="database"/>
-        <exclude domain="sharedpref"/>
-        <exclude domain="external"/>
-        <exclude domain="device_root"/>
-        <exclude domain="device_file"/>
-        <exclude domain="device_database"/>
-        <exclude domain="device_sharedpref"/>
+        <include domain="file" path="morsecq/guest/"/>
+        <include domain="file" path="settings.json"/>
     </device-transfer>
 </data-extraction-rules>

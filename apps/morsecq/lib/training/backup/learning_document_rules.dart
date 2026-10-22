@@ -77,6 +77,7 @@ abstract final class LearningDocumentRules {
     }
     switch (name) {
       case MaterialStore.doc || AudioMaterialStore.doc:
+        UnsupportedDataVersion.check(json['v'], supported: 1, document: path);
         _require(json['materials'] is List, path);
       case QsoPractice.stationDoc:
         QsoStation.fromJson(json);

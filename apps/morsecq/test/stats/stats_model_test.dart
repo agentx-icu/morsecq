@@ -43,6 +43,16 @@ TrainerProgress buildProgress({
 }
 
 void main() {
+  for (final now in [DateTime(2026, 5, 20), DateTime(2026, 12, 2)]) {
+    test('calendar preserves midnight and Monday across DST at $now', () {
+      final snapshot = StatsSnapshot.from(TrainerProgress(), now: now);
+      expect(snapshot.calendar.first.day.weekday, DateTime.monday);
+      expect(snapshot.calendar.first.day.hour, 0);
+      expect(snapshot.calendar.last.day.weekday, DateTime.sunday);
+      expect(snapshot.calendar.every((entry) => entry.day.hour == 0), isTrue);
+    });
+  }
+
   group('StatsSnapshot.from', () {
     test('fresh progress is empty with sane defaults', () {
       final s = StatsSnapshot.from(TrainerProgress(), now: kNow);

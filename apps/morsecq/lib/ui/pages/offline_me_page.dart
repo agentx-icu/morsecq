@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../i18n/language_settings_tile.dart';
 import '../../training/training_controller_host.dart';
+import '../../desktop/desktop_shell_controller.dart';
+import '../../diagnostics/local_diagnostics.dart';
 import '../common/app_bar_title.dart';
 import '../settings/settings_routes.dart';
 import '../common/settings_body.dart';
@@ -43,6 +45,7 @@ class OfflineMePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final S s = context.s;
     final ThemeData theme = Theme.of(context);
+    final desktop = context.watch<DesktopShellController?>();
     Widget header(String label) => Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 4, left: 16),
       child: Text(
@@ -75,6 +78,15 @@ class OfflineMePage extends StatelessWidget {
             onTap: () => KeySetupPage.open(context),
           ),
           const LanguageSettingsTile(),
+          if (desktop != null && desktop.isActive)
+            SwitchListTile(
+              key: const ValueKey('desktop-close-to-tray'),
+              title: Text(s.desktopCloseToTray),
+              subtitle: Text(s.desktopCloseToTrayDescription),
+              secondary: const Icon(Icons.desktop_windows_outlined),
+              value: desktop.closeToTray,
+              onChanged: (value) => unawaited(desktop.setCloseToTray(value)),
+            ),
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: Text(s.appearanceTitle),
@@ -89,6 +101,20 @@ class OfflineMePage extends StatelessWidget {
             onTap: () => unawaited(_clear(context)),
           ),
           header(s.accountSectionAbout),
+          ListTile(
+            leading: const Icon(Icons.bug_report_outlined),
+            title: Text(s.diagnosticsCopy),
+            onTap: () async {
+              final text = await LocalDiagnostics.read();
+              if (context.mounted) {
+                await copyToClipboard(
+                  context,
+                  text,
+                  confirmation: s.diagnosticsCopied,
+                );
+              }
+            },
+          ),
           const SiteLinksSection(),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),

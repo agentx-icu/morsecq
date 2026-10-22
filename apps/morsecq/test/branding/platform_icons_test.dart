@@ -105,6 +105,7 @@ void main() {
 
     test('macOS template is black glyph on transparent', () {
       final img.Image image = _png(TrayIconAssets.macTemplate);
+      expect(image.width, greaterThanOrEqualTo(36));
       expect(image.numChannels, 4);
       _expectGlyphOnTransparent(image, TrayIconAssets.macTemplate);
       expect(_offColourVisiblePixels(image, 0, 0, 0), 0);

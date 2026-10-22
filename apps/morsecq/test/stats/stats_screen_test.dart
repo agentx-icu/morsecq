@@ -30,12 +30,55 @@ Future<void> _pump(
 }) async {
   await _setSize(tester, size);
   await tester.pumpWidget(
-    l10nApp(theme: theme, home: StatsScreen(loadProgress: load, now: kNow)),
+    l10nApp(
+      theme: theme,
+      home: StatsScreen(loadProgress: load, now: kNow),
+    ),
   );
   await tester.pumpAndSettle();
 }
 
 void main() {
+  for (final use24Hour in [false, true]) {
+    testWidgets('trend tooltip honors system 24-hour override=$use24Hour', (
+      tester,
+    ) async {
+      await _setSize(tester, kDesktop);
+      final at = DateTime(2026, 9, 30, 13, 5);
+      final progress = TrainerProgress().recordSession(
+        SessionScore.evaluate('KM', 'KM', at: at),
+        now: at,
+      );
+      await tester.pumpWidget(
+        l10nApp(
+          home: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(alwaysUse24HourFormat: use24Hour),
+              child: StatsScreen(loadProgress: () async => progress, now: at),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final calendar = tester.widget<PracticeCalendar>(
+        find.byType(PracticeCalendar),
+      );
+      expect(calendar.snapshot.calendar.first.day.weekday, DateTime.sunday);
+      final chart = find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.painter is TrendPainter,
+      );
+      await tester.tapAt(tester.getRect(chart).center);
+      await tester.pumpAndSettle();
+      expect(find.textContaining(use24Hour ? '13:05' : '1:05'), findsOneWidget);
+      expect(
+        find.textContaining('PM'),
+        use24Hour ? findsNothing : findsOneWidget,
+      );
+    });
+  }
+
   group('StatsScreen', () {
     testWidgets('shows the empty state for a fresh identity', (tester) async {
       await _pump(tester, size: kPhone, load: () async => TrainerProgress());
@@ -155,10 +198,7 @@ void main() {
         Offset(rect.right - TrendGeometry.kRightInset, rect.center.dy),
       );
       await tester.pumpAndSettle();
-      expect(
-        find.textContaining(en.statsTooltipSession(3, 3)),
-        findsOneWidget,
-      );
+      expect(find.textContaining(en.statsTooltipSession(3, 3)), findsOneWidget);
       expect(find.text(en.statsTrendHint), findsNothing);
     });
 

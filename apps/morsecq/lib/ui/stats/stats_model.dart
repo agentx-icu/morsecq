@@ -81,6 +81,7 @@ final class StatsSnapshot {
     DateTime? now,
     int trendWindow = kTrendWindow,
     int calendarWeeks = kCalendarWeeks,
+    int firstDayOfWeek = DateTime.monday,
   }) {
     final resolvedCourse = course ?? KochCourse();
     final clock = now ?? DateTime.now();
@@ -89,7 +90,7 @@ final class StatsSnapshot {
         ? const <String>[]
         : resolvedCourse.charsForLesson(lesson);
 
-    final since = dayOf(clock).subtract(const Duration(days: 6));
+    final since = DateTime(clock.year, clock.month, clock.day - 6);
     var recentTotal = 0;
     var recentCorrect = 0;
     var elapsed = Duration.zero;
@@ -135,7 +136,7 @@ final class StatsSnapshot {
       ),
       totalPracticeTime: elapsed,
       trend: trend,
-      calendar: _buildCalendar(progress, clock, calendarWeeks),
+      calendar: _buildCalendar(progress, clock, calendarWeeks, firstDayOfWeek),
     );
   }
 
@@ -287,12 +288,14 @@ final class StatsSnapshot {
     TrainerProgress progress,
     DateTime now,
     int weeks,
+    int firstDayOfWeek,
   ) {
     final today = dayOf(now);
     final totalDays = weeks * 7;
     // End the grid on today's ISO week so columns are whole weeks.
-    final end = weekStartOf(today).add(const Duration(days: 6));
-    final start = end.subtract(Duration(days: totalDays - 1));
+    final week = weekStartOf(today, firstDayOfWeek: firstDayOfWeek);
+    final end = DateTime(week.year, week.month, week.day + 6);
+    final start = DateTime(end.year, end.month, end.day - totalDays + 1);
     final perDay = <DateTime, int>{};
     for (final s in progress.history) {
       final day = dayOf(s.at);

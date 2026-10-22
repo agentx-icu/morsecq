@@ -3550,4 +3550,28 @@ class SEs extends S {
 
   @override
   String get comprehensionListen => 'Escuchar';
+
+  @override
+  String get desktopCloseToTray => 'Seguir en la bandeja al cerrar la ventana';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Desactivado: cerrar la ventana sale de la aplicación. Requiere una bandeja disponible.';
+
+  @override
+  String get learnFlashNotice => 'Indicador pequeño intermitente. Evítalo si tienes fotosensibilidad; Reducir movimiento lo mantiene fijo.';
+
+  @override
+  String get learnHapticUnavailable => 'La vibración no está disponible en este dispositivo.';
+
+  @override
+  String get listenMissingCaptureTool => 'Instala pulseaudio-utils para usar el micrófono en Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Copiar diagnóstico local';
+
+  @override
+  String get learnNewerData => 'Una versión más reciente de MorseCQ guardó los datos. Actualiza la aplicación. Los archivos se han conservado.';
+
+  @override
+  String get diagnosticsCopied => 'Diagnóstico local copiado';
 }

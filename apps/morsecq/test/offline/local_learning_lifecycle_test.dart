@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show AppExitResponse;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
@@ -12,6 +13,31 @@ import 'package:morsecq/training/training_controller_host.dart';
 import 'package:morsecq/training/training_settings_store.dart';
 
 void main() {
+  testWidgets('OS quit waits for persistence and cancels on failure', (
+    tester,
+  ) async {
+    final locale = LocaleController(InMemoryKeyValueStore());
+    final saved = Completer<void>();
+    final services = AppServices(locale: locale, flush: () => saved.future);
+    addTearDown(locale.dispose);
+    addTearDown(services.dispose);
+    var completed = false;
+    final exit = services.didRequestAppExit().then((result) {
+      completed = true;
+      return result;
+    });
+    await tester.pump();
+    expect(completed, isFalse);
+    saved.complete();
+    expect(await exit, AppExitResponse.exit);
+    final failing = AppServices(
+      locale: locale,
+      flush: () async => throw StateError('disk full'),
+    );
+    expect(await failing.didRequestAppExit(), AppExitResponse.cancel);
+    failing.dispose();
+  });
+
   test(
     'clearing flushes, retires the shared controller and reloads empty learning',
     () async {

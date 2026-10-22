@@ -46,8 +46,9 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS_PRIVATE_DIRS "opt/morsecq/lib")
 # Plus what is only loaded at run time (dlopen), so shlibdeps cannot see it:
 # the tray indicator and ALSA for the sidetone.
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-  "libayatana-appindicator3-1, libasound2t64 | libasound2")
+  "libayatana-appindicator3-1, libasound2t64 | libasound2, pulseaudio-utils, libglib2.0-bin")
 
+set(CPACK_RPM_PACKAGE_REQUIRES "pulseaudio-utils, glib2")
 set(CPACK_RPM_PACKAGE_ARCHITECTURE "${MORSECQ_RPM_ARCH}")
 set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-only")
 set(CPACK_RPM_PACKAGE_GROUP "Applications/Education")

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
 import '../../i18n/l10n_extension.dart';
+import '../../i18n/system_date_time.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
@@ -211,7 +211,6 @@ class _TrendTooltip extends StatelessWidget {
       if (split || point.isSend) kind,
       if (summary.elapsed != null) formatPracticeDuration(s, summary.elapsed!),
     ];
-    final locale = Localizations.localeOf(context).toString();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -234,7 +233,7 @@ class _TrendTooltip extends StatelessWidget {
             ),
           ),
           Text(
-            _formatDate(summary.at, locale),
+            formatSystemDateTime(context, summary.at),
             style: theme.textTheme.bodySmall?.copyWith(
               color: scheme.onSurfaceVariant,
             ),
@@ -243,9 +242,6 @@ class _TrendTooltip extends StatelessWidget {
       ),
     );
   }
-
-  static String _formatDate(DateTime at, String locale) =>
-      DateFormat.yMd(locale).add_Hm().format(at.toLocal());
 }
 
 /// Draws grid, axes, series polylines, markers and the selection crosshair.

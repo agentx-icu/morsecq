@@ -23,3 +23,28 @@ Tags must match the numeric `X.Y.Z` part of the app pubspec: `1.0.0+1` uses tag 
 ## Platform scope
 
 Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled objective_c native framework’s verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. Windows CI uses Windows Server 2022.
+
+## Compatibility release checks (2026-10-22)
+
+Linux Listen invokes `parecord` and `pactl`: install `pulseaudio-utils` for bare
+tar.gz deployments. DEB and RPM now declare it; `gdbus` is used to confirm a live
+tray host (DEB `libglib2.0-bin`, RPM `glib2`). An absent tray host leaves close as
+quit. The native macOS sandbox permits local client/server IPC for the
+single-instance activation socket; no Internet service is contacted.
+
+Tagged Android builds require all four owner-signing secrets. The built APK
+and AAB must have matching non-debug certificates, checked by
+`tool/ci/verify_android_signing.py`; non-tag debug-signed artifacts remain for
+local/CI testing. Windows Authenticode signing and macOS Developer ID signing /
+notarization require owner credentials and are not claimed by an unsigned build.
+
+Builds archive Dart split-debug-info and available dSYM/PDB files as separate
+`symbols-*` CI artifacts. Local framework/unhandled-Dart errors retain only UTC
+time, runtime error type and stack in `<support>/logs/errors.log`, with one
+previous file (256 KiB each). No exception messages, learning content, recordings
+or upload are included. Me → Copy local diagnostics is the explicit export path.
+Native crashes still need OS crash reports and matching archived native symbols.
+Installed package and upgrade smoke checks on each OS remain required: install
+the preceding release, create learning progress, upgrade, launch, confirm saved
+progress, close/tray/reopen/quit, and inspect actual packaged declarations. They
+have not been established by widget tests or a bundle launch alone.

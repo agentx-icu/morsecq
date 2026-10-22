@@ -3550,4 +3550,28 @@ class SDe extends S {
 
   @override
   String get comprehensionListen => 'Anhören';
+
+  @override
+  String get desktopCloseToTray => 'Nach dem Schließen im Infobereich weiterlaufen';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Aus: Das Schließen des Fensters beendet die App. Erfordert einen verfügbaren Infobereich.';
+
+  @override
+  String get learnFlashNotice => 'Kleine blinkende Anzeige. Bei Lichtempfindlichkeit vermeiden; bei reduzierter Bewegung leuchtet sie konstant.';
+
+  @override
+  String get learnHapticUnavailable => 'Vibration ist auf diesem Gerät nicht verfügbar.';
+
+  @override
+  String get listenMissingCaptureTool => 'Installiere pulseaudio-utils, um das Mikrofon unter Linux zu verwenden.';
+
+  @override
+  String get diagnosticsCopy => 'Lokale Diagnose kopieren';
+
+  @override
+  String get learnNewerData => 'Die Lerndaten stammen von einer neueren MorseCQ-Version. Aktualisiere die App. Die Dateien bleiben erhalten.';
+
+  @override
+  String get diagnosticsCopied => 'Lokale Diagnose kopiert';
 }

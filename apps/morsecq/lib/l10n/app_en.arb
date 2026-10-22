@@ -5137,5 +5137,21 @@
   },
   "@comprehensionFieldWrong": {
     "description": "Whole-word, phrase and semantic head-copy listening practice. UI label or instruction: Review this field"
-  }
+  },
+  "desktopCloseToTray": "Keep running in the tray when the window closes",
+  "desktopCloseToTrayDescription": "Off: closing the window quits. Requires a working system tray.",
+  "learnFlashNotice": "Uses a small flashing indicator. Avoid if photosensitive; Reduce Motion keeps it steady.",
+  "learnHapticUnavailable": "Vibration is unavailable on this device.",
+  "listenMissingCaptureTool": "Install pulseaudio-utils to use the microphone on Linux.",
+  "diagnosticsCopy": "Copy local diagnostics",
+  "learnNewerData": "Learning data was written by a newer MorseCQ. Update the app to open it; your files have been kept.",
+  "diagnosticsCopied": "Local diagnostics copied",
+  "@desktopCloseToTray": {"description": "Desktop preference: keep the app running after closing its window"},
+  "@desktopCloseToTrayDescription": {"description": "Explanation of the close-window preference and tray availability"},
+  "@learnFlashNotice": {"description": "Photosensitivity and reduced-motion notice beside the flash setting"},
+  "@learnHapticUnavailable": {"description": "Explanation when the device has no usable vibrator"},
+  "@listenMissingCaptureTool": {"description": "Linux microphone error with the package to install"},
+  "@diagnosticsCopy": {"description": "Me: explicit action copying local error types and stacks, never uploaded"},
+  "@learnNewerData": {"description": "Incompatible future learning-data error; explains preservation and update recovery"},
+  "@diagnosticsCopied": {"description": "Snackbar confirming diagnostics were copied to the clipboard"}
 }

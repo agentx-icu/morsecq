@@ -21,6 +21,7 @@ _shell({TargetPlatform platform = TargetPlatform.linux, S? strings}) {
       store: InMemoryKeyValueStore(),
       platform: platform,
       persistDebounce: Duration.zero,
+      onToggleSound: (_) {},
     ),
     window: window,
     tray: tray,

@@ -7,6 +7,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'desktop/desktop_platform.dart';
+import 'desktop/desktop_instance.dart';
+import 'diagnostics/local_diagnostics.dart';
+import 'desktop/linux_tray_host.dart';
 import 'desktop/desktop_shell_controller.dart';
 import 'desktop/init_desktop_shell.dart';
 import 'di/app_scope.dart';
@@ -26,6 +29,17 @@ import 'training/local_learning_store.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Own every persistent store before opening settings or learning data.
+  DesktopInstance? instance;
+  if (isDesktopTarget(defaultTargetPlatform)) {
+    instance = await DesktopInstance.acquire(
+      await getApplicationSupportDirectory(),
+    );
+    if (instance == null) exit(0);
+  }
+
+  await LocalDiagnostics.initialize();
+
   // One settings file for app-wide choices (language, theme, playback,
   // and window bounds). Learning data stays in the local profile.
   final KeyValueStore settingsStore = await _openSettingsStore();
@@ -39,11 +53,13 @@ Future<void> main() async {
         // Product name, never translated; resolved through S so the desktop
         // shell has no English literal of its own.
         appName: currentS().appName,
+        trayHostAvailable: Platform.isLinux ? linuxTrayHostAvailable : null,
         log: kDebugMode ? debugPrint : null,
       ),
     );
   }
 
+  instance?.onActivate = desktopShell?.showWindow;
   runApp(
     MorsecqApp(
       localeStore: settingsStore,

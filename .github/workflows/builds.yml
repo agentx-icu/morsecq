@@ -62,7 +62,15 @@ jobs:
         run: |
           flutter config --enable-${{ matrix.platform }}-desktop
           cd apps/morsecq
-          flutter build ${{ matrix.platform }} --release
+          flutter build ${{ matrix.platform }} --release --split-debug-info=build/symbols/${{ matrix.platform }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: symbols-${{ matrix.platform }}
+          path: |
+            apps/morsecq/build/symbols/
+            apps/morsecq/build/macos/Build/Products/Release/**/*.dSYM
+            apps/morsecq/build/windows/x64/runner/Release/*.pdb
+          if-no-files-found: error
       - name: Package
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
@@ -101,6 +109,10 @@ jobs:
             printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
             echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
           elif [[ "$count" == 0 ]]; then
+            if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+              echo 'Tagged Android releases require owner signing secrets.' >&2
+              exit 1
+            fi
             echo '::warning::No Android signing secrets: artifacts use the debug key for testing; configure owner signing for distribution.'
           else
             echo 'All four Android signing secrets must be provided together.' >&2
@@ -113,8 +125,16 @@ jobs:
           MORSECQ_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           cd apps/morsecq
-          flutter build apk --release
-          flutter build appbundle --release
+          flutter build apk --release --split-debug-info=build/symbols/android
+          flutter build appbundle --release --split-debug-info=build/symbols/android
+      - name: Verify tagged Android signing identity
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: python3 tool/ci/verify_android_signing.py apps/morsecq/build/app/outputs/flutter-apk/app-release.apk apps/morsecq/build/app/outputs/bundle/release/app-release.aab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: symbols-android
+          path: apps/morsecq/build/symbols/android/
+          if-no-files-found: error
       - run: bash tool/ci/package_artifacts.sh --target android
       - uses: actions/upload-artifact@v4
         with:
@@ -139,7 +159,14 @@ jobs:
       - name: Build unsigned application
         run: |
           cd apps/morsecq
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --split-debug-info=build/symbols/ios
+      - uses: actions/upload-artifact@v4
+        with:
+          name: symbols-ios
+          path: |
+            apps/morsecq/build/symbols/ios/
+            apps/morsecq/build/ios/iphoneos/**/*.dSYM
+          if-no-files-found: error
       - run: bash tool/ci/package_artifacts.sh --target ios
       - uses: actions/upload-artifact@v4
         with:

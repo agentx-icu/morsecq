@@ -212,12 +212,10 @@ class CalendarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final weekday in const <int>[
-      DateTime.monday,
-      DateTime.wednesday,
-      DateTime.friday,
-    ]) {
-      final r = geometry.rectFor(weekday - 1);
+    for (final row in const [0, 2, 4]) {
+      if (row >= days.length) break;
+      final weekday = days[row].day.weekday;
+      final r = geometry.rectFor(row);
       _text(
         canvas,
         weekdayInitial(weekday, locale: locale),

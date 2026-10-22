@@ -20,3 +20,19 @@ Live audio, microphone buffers, pressed keys, selected pages, translator scratch
 Regression coverage includes concurrent file writes, malformed JSON recovery, preference error/retry and appearance restart behavior; first launch, background flushing, clear durability and learning-UI reload; plus real-platform learning/preference reopening in `integration_test/persistence_test.dart`. On the device file system, `integration_test/storage_contract_test.dart` covers the lifecycle barrier before a kill, clearing racing a late write, corrupt-progress recovery and rapid unawaited writes; `integration_test/app_storage_lifecycle_test.dart` drives the real app through backgrounding with the native background task, the desktop quit hook and the Me page's confirmed clear, each followed by a relaunch. The desktop E2E workflow executes every integration test and the actual UI walk on macOS, Linux and Windows. Fresh counts, CI links, device evidence and artifact verification are maintained in [the validation record](../VALIDATION.md), with [Chinese details](../VALIDATION.zh-CN.md). Reproduce gates and suites through `tool/test_pyramid.sh`; the screenshot and visual-matrix workflows are documented in [the screenshot guide](../../tool/screenshots/README.md).
 
 If application-support storage cannot open, preferences fall back to memory and log the error; they then cannot survive restart. Learning-store failures surface a retryable state. Atomic JSON replacement and previous-save files reduce incomplete-file failures; they do not prove power-loss or force-kill durability.
+
+## Cross-platform update — 2026-10-22
+
+Desktop acquires a process-wide support-directory lock before any settings or
+learning store opens, and keeps it until process exit. Later launches request
+activation over authenticated loopback IPC. Future progress/settings schemas
+raise `UnsupportedDataVersion` through the atomic loader and controller, show an
+update-required state, and are not renamed, recovered over or overwritten.
+Repeated corrupt files keep distinct recovery copies. Telegraph recall already
+had a write guard; its codec now also rejects newer schemas explicitly.
+Android now opts the local learning directory and settings into OS backup and
+device transfer, subject to system settings and the 25 MB cloud quota. Actual
+restore/transfer still needs a device. Window close defaults to quit; Me offers
+a persisted tray option, usable only with a live tray host. Native cancelable
+exit requests wait for saves. Forced termination and Windows session-end
+callbacks remain outside this verified guarantee.

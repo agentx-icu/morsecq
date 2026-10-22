@@ -1,8 +1,13 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/file_trainer_store.dart';
+import 'package:morsecq/ui/learn/learn_scope.dart';
+import 'package:morsecq/training/training_settings_store.dart';
+import 'package:morsecq/training/training_settings.dart';
+import 'package:morsecq/training/training_doc_store.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
@@ -19,6 +24,106 @@ void main() {
   });
 
   FileTrainerStore store() => FileTrainerStore.inDataDirectory(tmp.path);
+
+  test(
+    'future training settings are preserved and cannot become defaults',
+    () async {
+      final s = FileTrainingSettingsStore.inDataDirectory(tmp.path);
+      await s.file.parent.create(recursive: true);
+      const future = '{"version":2,"trainer":"future"}';
+      await s.file.writeAsString(future);
+      await expectLater(s.load(), throwsA(isA<UnsupportedDataVersion>()));
+      await expectLater(
+        s.save(TrainingSettings.defaults),
+        throwsA(isA<UnsupportedDataVersion>()),
+      );
+      await expectLater(
+        LearnScope.controllerForDirectory(tmp.path, profileKey: 'guest'),
+        throwsA(isA<UnsupportedDataVersion>()),
+      );
+      expect(await s.file.readAsString(), future);
+    },
+  );
+
+  test('future progress never opens a writable learning controller', () async {
+    final s = store();
+    await s.file.parent.create(recursive: true);
+    await s.file.writeAsString('{"version":2}');
+    await expectLater(
+      LearnScope.controllerForDirectory(tmp.path, profileKey: 'guest'),
+      throwsA(isA<UnsupportedDataVersion>()),
+    );
+    expect(await s.file.readAsString(), '{"version":2}');
+  });
+
+  for (final name in ['materials', 'audio_materials', 'telegraph_recall']) {
+    for (final companion in ['', '.bak']) {
+      test('future $name$companion is preserved before a document save', () async {
+        final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
+        await docs.write(name, {'v': 1});
+        final file = File('${docs.directory.path}/$name.json$companion');
+        const future = '{"v":2,"newField":"preserve me"}';
+        await file.writeAsString(future);
+        if (companion.isEmpty) await expectLater(docs.read(name), throwsA(isA<UnsupportedDataVersion>()));
+        await expectLater(docs.write(name, {'v': 1}), throwsA(isA<UnsupportedDataVersion>()));
+        expect(await file.readAsString(), future);
+      });
+    }
+  }
+
+  test('generic document store does not impose owned schema on foreign docs', () async {
+    final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
+    await docs.write('custom_document', {'v': 99, 'custom': 'value'});
+    expect(await docs.read('custom_document'), {'v': 99, 'custom': 'value'});
+  });
+
+  test('future backup is never rotated over by an older primary', () async {
+    final s = store();
+    await s.save(TrainerProgress(currentLesson: 3));
+    final primary = await s.file.readAsString();
+    final backup = File('${s.file.path}.bak');
+    const future = '{"version":2,"currentLesson":"future"}';
+    await backup.writeAsString(future);
+    await expectLater(
+      s.save(TrainerProgress(currentLesson: 4)),
+      throwsA(isA<UnsupportedDataVersion>()),
+    );
+    expect(await s.file.readAsString(), primary);
+    expect(await backup.readAsString(), future);
+  });
+
+  test('future progress is preserved and cannot be overwritten', () async {
+    final s = store();
+    await s.save(TrainerProgress(currentLesson: 4));
+    await s.save(TrainerProgress(currentLesson: 5));
+    final future = jsonEncode({'version': 2, 'currentLesson': 'new-format'});
+    await s.file.writeAsString(future);
+    final backup = await File('${s.file.path}.bak').readAsString();
+    await expectLater(s.load(), throwsA(isA<FormatException>()));
+    expect(await s.file.readAsString(), future);
+    await expectLater(
+      s.save(TrainerProgress()),
+      throwsA(isA<FormatException>()),
+    );
+    expect(await s.file.readAsString(), future);
+    expect(await File('${s.file.path}.bak').readAsString(), backup);
+  });
+
+  test('successive corrupt documents preserve every recovery copy', () async {
+    final s = store();
+    await s.file.parent.create(recursive: true);
+    await s.file.writeAsString('bad first');
+    await s.load();
+    await s.file.writeAsString('bad second');
+    await s.load();
+    final recovered = await s.file.parent
+        .list()
+        .where((f) => f.path.contains('.corrupt'))
+        .cast<File>()
+        .asyncMap((f) => f.readAsString())
+        .toList();
+    expect(recovered, containsAll(['bad first', 'bad second']));
+  });
 
   test('empty directory loads null', () async {
     expect(await store().load(), isNull);

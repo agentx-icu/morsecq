@@ -11,6 +11,14 @@ SingleActivator _activatorFor(
         as SingleActivator;
 
 void main() {
+  test('mute leaves Cmd+M available to native minimize', () {
+    final mute = _activatorFor(
+      desktopShortcutBindings(platform: TargetPlatform.macOS),
+      ToggleSidetoneIntent,
+    );
+    expect(mute.shift, isTrue);
+  });
+
   test('binds K and M to search and sidetone', () {
     final bindings = desktopShortcutBindings(platform: TargetPlatform.linux);
     expect(bindings, hasLength(2));

@@ -23,7 +23,10 @@ class TrainingSettingsScreen extends StatefulWidget {
     super.key,
     required this.controller,
     required this.playback,
+    this.hapticAvailability,
   });
+
+  final Future<bool> Function()? hapticAvailability;
 
   static const String routeName = '/settings/training';
 
@@ -51,6 +54,8 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
   LearnPlayback? _sample;
   StreamSubscription<PlayerEvent>? _sampleSub;
   bool _samplePlaying = false;
+  late final Future<bool> _hapticsAvailable =
+      (widget.hapticAvailability ?? hapticsAvailable)();
 
   /// Bumped when the feedback outputs change; a sample bundle created for an
   /// older generation is thrown away instead of played.
@@ -297,16 +302,25 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         SwitchListTile(
           title: Text(s.learnFlash),
+          subtitle: Text(s.learnFlashNotice),
           secondary: const Icon(Icons.flashlight_on_outlined),
           value: _draft.flashEnabled,
           onChanged: (v) => _apply(_draft.copyWith(flashEnabled: v)),
         ),
         if (isTouchPlatform)
-          SwitchListTile(
-            title: Text(s.learnHaptic),
-            secondary: const Icon(Icons.vibration),
-            value: _draft.hapticEnabled,
-            onChanged: (v) => _apply(_draft.copyWith(hapticEnabled: v)),
+          FutureBuilder<bool>(
+            future: _hapticsAvailable,
+            builder: (context, snapshot) => SwitchListTile(
+              title: Text(s.learnHaptic),
+              subtitle: snapshot.data == false
+                  ? Text(s.learnHapticUnavailable)
+                  : null,
+              secondary: const Icon(Icons.vibration),
+              value: _draft.hapticEnabled,
+              onChanged: snapshot.data == true
+                  ? (v) => _apply(_draft.copyWith(hapticEnabled: v))
+                  : null,
+            ),
           ),
         const Divider(),
         ListTile(

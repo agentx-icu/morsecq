@@ -1,3 +1,4 @@
+import 'training_load.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -94,25 +95,19 @@ final class TrainingController extends ChangeNotifier {
 
   Future<void> load() async {
     _ensureActive();
-    var progress = TrainerProgress();
-    var settings = TrainingSettings.defaults;
-    Object? loadError;
-    try {
-      progress = await _progressStore.load() ?? progress;
-    } on Object catch (error) {
-      loadError = error;
-    }
+    final (progress, progressError) = await loadCompatibleTrainingData(
+      _progressStore.load,
+    );
     if (_disposed) return;
-    try {
-      settings = await _settingsStore.load() ?? settings;
-    } on Object catch (error) {
-      loadError ??= error;
-    }
+    final (storedSettings, settingsError) = await loadCompatibleTrainingData(
+      _settingsStore.load,
+    );
     if (_disposed) return;
-    _progress = _clampLesson(progress);
+    final settings = storedSettings ?? TrainingSettings.defaults;
+    _progress = _clampLesson(progress ?? TrainerProgress());
     _settings = settings;
     _savedSettings = settings;
-    _loadError = loadError;
+    _loadError = progressError ?? settingsError;
     _loaded = true;
     notifyListeners();
   }

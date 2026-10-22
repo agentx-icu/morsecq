@@ -13,6 +13,7 @@ import 'helpers/test_controller.dart';
 Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
   WidgetTester tester, {
   TrainingSettings? settings,
+  bool hapticAvailable = true,
   // Tall enough that every tile is on screen without scrolling.
   Size size = const Size(390, 1600),
 }) async {
@@ -28,6 +29,7 @@ Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
       home: TrainingSettingsScreen(
         controller: t.controller,
         playback: playback,
+        hapticAvailability: () async => hapticAvailable,
       ),
     ),
   );
@@ -35,12 +37,28 @@ Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
   return (t, playback);
 }
 
-Finder _switchFor(String title) => find.ancestor(
-  of: find.text(title),
-  matching: find.byType(SwitchListTile),
-);
+Finder _switchFor(String title) =>
+    find.ancestor(of: find.text(title), matching: find.byType(SwitchListTile));
 
 void main() {
+  testWidgets('vibrator-less phone cannot enable haptics', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    final (t, _) = await _pump(tester, hapticAvailable: false);
+    final tile = tester.widget<SwitchListTile>(_switchFor(en.learnHaptic));
+    expect(tile.onChanged, isNull);
+    expect(find.text(en.learnHapticUnavailable), findsOneWidget);
+    expect(t.controller.settings.hapticEnabled, isFalse);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('flash setting explains bounded flashing before enabling', (
+    tester,
+  ) async {
+    await _pump(tester);
+    expect(find.textContaining('photosensitive'), findsOneWidget);
+  });
+
   testWidgets('shows the current values', (tester) async {
     await _pump(tester);
     expect(find.text(en.learnWpmValue('20')), findsOneWidget);

@@ -1051,5 +1051,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "desktopCloseToTray": "關閉視窗後繼續在系統匣執行",
+  "desktopCloseToTrayDescription": "關閉此選項時，關閉視窗會結束應用程式。需要可用的系統匣。",
+  "learnFlashNotice": "使用小範圍閃光指示燈。光敏感使用者請勿開啟；減少動態效果時指示燈保持常亮。",
+  "learnHapticUnavailable": "此裝置不支援震動。",
+  "listenMissingCaptureTool": "請安裝 pulseaudio-utils 以在 Linux 上使用麥克風。",
+  "diagnosticsCopy": "複製本機診斷資訊",
+  "learnNewerData": "學習資料由較新版本的 MorseCQ 寫入。請更新應用程式後開啟；原始檔案已保留。",
+  "diagnosticsCopied": "已複製本機診斷資訊"
 }

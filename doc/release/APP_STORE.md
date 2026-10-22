@@ -17,3 +17,35 @@ MorseCQ ships no native library of its own, so Google Play's 16 KB page-size req
 Predictive back is enabled (`android:enableOnBackInvokedCallback="true"`); Android 16 applies it to targetSdk 36 anyway, the attribute makes Android 13–15 behave the same. `DrillLeaveGuard` handles the gesture through `PopScope`.
 
 See the [build guide](../operations/BUILD_AND_DEPLOY.md) and [validation record](../VALIDATION.md).
+
+## Submission answers and compatibility surfaces (2026-10-22)
+
+These are source-based draft answers for the owner to enter and verify in the
+store consoles, not evidence of an accepted submission.
+
+| Question | Current product answer |
+| --- | --- |
+| App Store privacy / Play Data safety | No developer collection, sharing, tracking, advertising or analytics. Learning, recordings and redacted diagnostics remain on-device. User-requested exports and OS backup are explicit/system-owned paths. |
+| Microphone | Optional live Morse decoding and local recording; no audio upload. |
+| Accounts / purchases / UGC service | None. No account deletion or server moderation flow applies. |
+| Age-rating content flags | No violence, sexual content, gambling, alcohol/drugs, advertising, unrestricted in-app web browsing or user-to-user communication. Complete each store's current questionnaire; do not infer a store age label from this list. |
+| iOS binary on Apple silicon Mac | Do not offer the compatibility binary; ship the separately tested native macOS application. Owner must deselect compatibility availability in App Store Connect. |
+| iOS binary on Apple Vision Pro / native visionOS | Not offered pending plugin, input and media validation. Owner must opt out of compatibility availability in App Store Connect. |
+
+Apple's [privacy definitions](https://developer.apple.com/app-store/app-privacy-details/)
+exclude processing confined to a device. Apple documents separate
+[Mac compatibility availability](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-macs-with-apple-silicon/)
+and [Vision Pro compatibility availability](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-apple-vision-pro/).
+The API 36 deadline above was checked against
+[Play's current requirement](https://support.google.com/googleplay/android-developer/answer/11926878)
+on 2026-10-22. Actual console settings and signed release verification remain owner actions.
+
+## Release budgets
+
+Initial engineering limits, to be checked per architecture on every release:
+Android APK/AAB ≤100 MiB each; iOS IPA ≤150 MiB; macOS app ≤100 MiB and PKG ≤100 MiB;
+Windows MSI ≤150 MiB and installed app ≤250 MiB; Linux DEB/RPM ≤100 MiB each and
+installed bundle ≤250 MiB. Cold start to usable Learn ≤5 s and warm reopen ≤2 s
+on the release device matrix are targets, not measurements. The local universal
+macOS release measured 57.1 MB on macOS 27.0.1 arm64; the other artifact sizes and
+startup latency still require measurement. See the [cross-platform audit](../testing/CROSS_PLATFORM_AUDIT.md).

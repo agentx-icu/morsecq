@@ -23,3 +23,19 @@ Android 签名使用 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`
 ## 平台范围
 
 必需安装包面向 Android API 24+（arm64-v8a、armeabi-v7a、x86_64）、iOS 14+（arm64）、macOS 13+ universal2、Linux x86_64 和 Windows x64。macOS Runner 和 Podfile 的最低版本与实际随包 objective_c 原生框架已验证的 13.0 要求一致。Linux 在 Ubuntu 24.04 与 GTK 3、ALSA、Ayatana appindicator 上验证运行；Windows CI 使用 Windows Server 2022。
+
+## 跨平台发布检查（2026-10-22）
+
+Linux Listen 调用 `parecord` 和 `pactl`；tar.gz 部署需要安装 `pulseaudio-utils`，DEB/RPM 已声明依赖。
+使用 `gdbus` 检测真实托盘宿主（DEB 的 `libglib2.0-bin`、RPM 的 `glib2`）；没有宿主时关闭窗口仍退出。
+macOS 沙盒允许单实例激活套接字所需的本机客户端/服务器 IPC，不连接互联网服务。
+
+Android 标签构建必须提供四项所有者签名 secret；`tool/ci/verify_android_signing.py` 检查产物 APK/AAB 使用同一非调试证书。
+非标签调试签名产物仅用于本机/CI 测试。Windows Authenticode、macOS Developer ID 与公证仍需所有者凭据，不能由未签名构建推定完成。
+
+CI 以独立 `symbols-*` artifact 保存 Dart split-debug-info 及可用 dSYM/PDB。
+本机框架/未处理 Dart 错误仅记录 UTC 时间、错误类型和堆栈到 `<support>/logs/errors.log`，最多两份、每份 256 KiB。
+不记录异常消息、学习内容或录音，不上传；“我的 → 复制本地诊断信息”是主动导出入口。
+原生崩溃仍需要系统崩溃报告与对应原生符号。
+各系统还需要安装包和升级冒烟：安装上一版、创建学习记录、升级、启动并确认记录、检查关闭/托盘/重开/退出及最终包声明。
+Widget 测试或直接启动 app bundle 不证明安装升级已验证。

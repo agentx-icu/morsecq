@@ -1051,5 +1051,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "desktopCloseToTray": "Seguir en la bandeja al cerrar la ventana",
+  "desktopCloseToTrayDescription": "Desactivado: cerrar la ventana sale de la aplicación. Requiere una bandeja disponible.",
+  "learnFlashNotice": "Indicador pequeño intermitente. Evítalo si tienes fotosensibilidad; Reducir movimiento lo mantiene fijo.",
+  "learnHapticUnavailable": "La vibración no está disponible en este dispositivo.",
+  "listenMissingCaptureTool": "Instala pulseaudio-utils para usar el micrófono en Linux.",
+  "diagnosticsCopy": "Copiar diagnóstico local",
+  "learnNewerData": "Una versión más reciente de MorseCQ guardó los datos. Actualiza la aplicación. Los archivos se han conservado.",
+  "diagnosticsCopied": "Diagnóstico local copiado"
 }

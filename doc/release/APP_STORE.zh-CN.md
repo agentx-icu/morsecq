@@ -17,3 +17,29 @@ MorseCQ 不自带原生库，所以 Google Play 的 16 KB 页要求（面向 And
 预测性返回已启用（`android:enableOnBackInvokedCallback="true"`）；Android 16 对 targetSdk 36 本来就默认启用，该属性让 Android 13–15 行为一致。`DrillLeaveGuard` 通过 `PopScope` 处理该手势。
 
 详见[构建指南](../operations/BUILD_AND_DEPLOY.zh-CN.md)和[验证记录](../VALIDATION.zh-CN.md)。
+
+## 提交答案与兼容平台（2026-10-22）
+
+以下为根据当前源码准备的草稿，供所有者在商店后台逐项核对填写，不代表商店已接受提交。
+
+| 问题 | 当前产品答案 |
+| --- | --- |
+| App Store 隐私 / Play 数据安全 | 开发者不收集、分享或跟踪数据；无广告与分析 SDK。学习、录音与脱敏诊断留在设备上。主动导出和系统备份是用户/系统控制的路径。 |
+| 麦克风 | 可选的实时电码解码和本地录音，不上传音频。 |
+| 账号 / 购买 / 用户内容服务 | 均无，因此不涉及账号删除或服务器内容管理流程。 |
+| 年龄分级内容项 | 无暴力、色情、赌博、酒精/药物、广告、不受限的应用内浏览或用户间通信。按当前问卷填写，不能由本表推定商店最终年龄标签。 |
+| Apple silicon Mac 上的 iOS 兼容版 | 不提供；发布单独测试的原生 macOS 应用。所有者需在 App Store Connect 取消兼容版可用性。 |
+| Vision Pro 上的 iOS 兼容版 / 原生 visionOS | 插件、输入与媒体验证完成前不提供。所有者需在 App Store Connect 取消兼容版可用性。 |
+
+Apple 的[隐私定义](https://developer.apple.com/app-store/app-privacy-details/)将仅在设备上处理的数据排除在收集之外。
+[Mac 兼容版](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-macs-with-apple-silicon/)与
+[Vision Pro 兼容版](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-apple-vision-pro/)可用性需要单独设置。
+API 36 截止日期已于 2026-10-22 对照 [Play 当前要求](https://support.google.com/googleplay/android-developer/answer/11926878)核对。
+后台实际状态与签名分发验证仍需所有者执行。
+
+## 发布预算
+
+初始工程限制，发布时按架构检查：Android APK/AAB 各 ≤100 MiB；iOS IPA ≤150 MiB；macOS 应用与 PKG 各 ≤100 MiB；Windows MSI ≤150 MiB、安装后应用 ≤250 MiB；Linux DEB/RPM 各 ≤100 MiB、安装后目录 ≤250 MiB。
+发布设备矩阵上的冷启动至可用 Learn ≤5 秒、热重开 ≤2 秒是目标，尚未测量。
+本机 macOS 27.0.1 arm64 上 universal release 构建为 57.1 MB；其余包体与启动延迟待测。
+详见[跨平台审计](../testing/CROSS_PLATFORM_AUDIT.zh-CN.md)。

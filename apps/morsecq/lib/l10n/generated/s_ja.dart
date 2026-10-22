@@ -3528,4 +3528,28 @@ class SJa extends S {
 
   @override
   String get comprehensionListen => '聞く';
+
+  @override
+  String get desktopCloseToTray => 'ウインドウを閉じた後もトレイで実行';
+
+  @override
+  String get desktopCloseToTrayDescription => 'オフの場合、ウインドウを閉じると終了します。利用可能なシステムトレイが必要です。';
+
+  @override
+  String get learnFlashNotice => '小さな点滅ランプを使用します。光に敏感な方は使用を避けてください。動きを減らす設定では点灯を維持します。';
+
+  @override
+  String get learnHapticUnavailable => 'この端末では振動を利用できません。';
+
+  @override
+  String get listenMissingCaptureTool => 'Linux でマイクを使用するには pulseaudio-utils をインストールしてください。';
+
+  @override
+  String get diagnosticsCopy => 'ローカル診断情報をコピー';
+
+  @override
+  String get learnNewerData => '新しいバージョンの MorseCQ で保存された学習データです。アプリを更新してください。元のファイルは保持されています。';
+
+  @override
+  String get diagnosticsCopied => 'ローカル診断情報をコピーしました';
 }
