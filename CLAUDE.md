@@ -57,6 +57,11 @@ and pinned in `tool/shared_packages.lock.json`; follow the sync procedure in
 Regenerate localization after changing keys. Keep all ten canonical locales
 and five styles, light/dark/system themes, narrow layouts and physical keys.
 
+UI, layout, lifecycle, permission, media and packaging changes are checked
+against the `cross-platform-app-checklist` skill
+(https://github.com/agentx-icu/cross-platform-app-checklist); report its IDs
+as verified / to do / needs device / not applicable in the PR.
+
 Use real native integration tests and the capture pipeline for product images.
 The default gallery has twelve offline scenes; custom language/style/theme
 profiles require a separate explicit output. The bounded actual-font visual
