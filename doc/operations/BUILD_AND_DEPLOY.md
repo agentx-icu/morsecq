@@ -48,3 +48,22 @@ Installed package and upgrade smoke checks on each OS remain required: install
 the preceding release, create learning progress, upgrade, launch, confirm saved
 progress, close/tray/reopen/quit, and inspect actual packaged declarations. They
 have not been established by widget tests or a bundle launch alone.
+
+## Channel preflight and owner signing
+
+Read the [store/channel matrix](../release/STORE_READINESS.md) before choosing a distribution route. Python 3.11+ is required by payload tooling; CI pins 3.12. All five native jobs build release payloads and retain `evidence-*` separately from release/symbol artifacts. Reports inventory native hashes/architectures, actual Apple privacy/localizations/entitlements or Android merged permissions/SDK/ABIs/16 KB ELF/ZIP/bundle alignment; Windows also checks MSI Template Summary against x64. These checks do not replace installation or store review. The bundletool 1.18.3 download is SHA-256 pinned.
+
+Default `package_artifacts.sh` creates development downloads; iOS remains explicitly unsigned. Do not publish them as approved store or trusted distribution artifacts. The optional `MORSECQ_DISTRIBUTION=1` path refuses missing owner material before staging:
+
+| Target | Owner inputs / behavior |
+| --- | --- |
+| macOS Developer ID | `MORSECQ_MACOS_APPLICATION_IDENTITY`, `MORSECQ_MACOS_INSTALLER_IDENTITY`, verified `MORSECQ_APPLE_TEAM_ID`, existing `MORSECQ_NOTARY_PROFILE`. Signs nested images/containers then app, checks actual Team/authority/runtime, notarizes app ZIP and PKG, staples and checks final ZIP/installer. This is owner-invoked and uploads only to notarization, not App Store submission. |
+| Windows direct/hosted MSI | `MORSECQ_WINDOWS_CERT_SHA1` in the accessible certificate store, `signtool.exe`, trusted signing material. Checks every staged PE architecture before signing, signs unsigned PE, preserves valid vendor signatures, requires the app/installer to match the expected owner, and verifies all PE plus MSI. Not used for an unimplemented Store MSIX path. |
+| Android | `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`, explicit `MORSECQ_BUNDLETOOL_JAR` and executable `MORSECQ_APKANALYZER` paths; missing inspection tools fail closed. Before copying, rechecks final manifest/ABI/16 KB using those tools; actual APK and AAB must match the expected upload certificate and reject debug. JDK17 `JarFile` reads every AAB payload to EOF and checks its signer, independently of manifest ZIP order; unsigned/tampered/duplicate entries fail. PR builds also retain a development AAB signature report. Tagged CI uses repository variable `ANDROID_UPLOAD_CERT_SHA256` plus the existing four signing secrets; record Play App Signing's delivery fingerprint separately. |
+| iOS / Linux | Refuses this generic distribution flag: iOS uses the separate signed App Store export; Linux repository trust/signing and update policy are owner release work. Development packaging remains available. |
+
+For iOS, set the verified `MORSECQ_APPLE_TEAM_ID` and run `bash tool/build_ios_store.sh` with the owner's Xcode signing/export options. After export it extracts the actual IPA, checks device payload/privacy, distribution signature/team and App Store provisioning identity (no development/ad-hoc device list). It writes `build/evidence/ios-store.json` and never submits to a store. An unsigned CI IPA is not this export.
+
+Before publishing, record hashes and the prior signed artifact; test clean install, update with existing learning data, denial/revocation and uninstall as a standard user on each selected channel. Owner credentials, identity/territory/metadata/rights and store-console answers remain blockers until evidenced.
+
+Both CI and local strict packaging use the same payload inspector. Final Mac ZIP inspection also runs actual `codesign --verify --deep --strict`; reading entitlement metadata alone cannot verify resources/signatures.

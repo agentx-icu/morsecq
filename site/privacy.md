@@ -1,5 +1,6 @@
 ---
 layout: default
+permalink: /privacy/
 title: Privacy policy
 ---
 

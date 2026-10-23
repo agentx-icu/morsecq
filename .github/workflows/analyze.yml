@@ -22,6 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -89,6 +96,13 @@ jobs:
 
       - name: Android signing regression tests
         run: python3 tool/ci/verify_android_signing_test.py
+
+      - name: Release payload and distribution refusal regressions
+        run: |
+          python3 tool/ci/release_preflight_test.py
+          python3 tool/ci/distribution_signing_test.py
+          python3 tool/ci/release_packager_test.py
+          python3 tool/ci/verify_site_test.py
 
       - name: DST calendar regressions
         env:

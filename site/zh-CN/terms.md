@@ -1,5 +1,6 @@
 ---
 layout: default
+permalink: /zh-CN/terms/
 title: 使用条款
 ---
 

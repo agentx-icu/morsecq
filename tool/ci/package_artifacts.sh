@@ -33,6 +33,25 @@ REPO_ROOT="$(ci_repo_root)"
 APP_DIR="$REPO_ROOT/apps/morsecq"
 BUILD_DIR="$APP_DIR/build"
 DIST_DIR="$REPO_ROOT/dist/$TARGET"
+# Development artifacts remain available without inventing owner identities.
+# This opt-in path fails before staging when owner material is absent.
+if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+  case "$TARGET" in
+    macos)
+      for key in MORSECQ_MACOS_APPLICATION_IDENTITY MORSECQ_MACOS_INSTALLER_IDENTITY MORSECQ_APPLE_TEAM_ID MORSECQ_NOTARY_PROFILE; do
+        [[ -n "${!key:-}" ]] || ci_die "distribution requires $key"
+      done ;;
+    windows) [[ -n "${MORSECQ_WINDOWS_CERT_SHA1:-}" ]] || ci_die 'distribution requires MORSECQ_WINDOWS_CERT_SHA1' ;;
+    android)
+      for key in MORSECQ_ANDROID_UPLOAD_CERT_SHA256 MORSECQ_BUNDLETOOL_JAR MORSECQ_APKANALYZER; do
+        [[ -n "${!key:-}" ]] || ci_die "distribution requires $key"
+      done
+      [[ -f "$MORSECQ_BUNDLETOOL_JAR" && -x "$MORSECQ_APKANALYZER" ]] || ci_die 'distribution requires readable bundletool JAR and executable apkanalyzer'
+      ;;
+    ios) ci_die 'distribution: use tool/build_ios_store.sh for a signed App Store export; this packager only creates unsigned IPA' ;;
+    linux) ci_die 'distribution: Linux repository signing/update trust is an owner release action; only development packages are automated' ;;
+  esac
+fi
 ci_reset_dir "$DIST_DIR"
 
 release_version() {
@@ -91,6 +110,10 @@ package_windows() {
   stage="$DIST_DIR/.stage/morsecq"
   mkdir -p "$stage"
   cp -R "$runner/." "$stage/"
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    python "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/windows-strict.json" native "$stage" --platform windows --architecture x86_64
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ci_windows_path "$SCRIPT_DIR/sign_windows.ps1")" -InputPath "$(ci_windows_path "$stage")"
+  fi
   (cd "$DIST_DIR/.stage" && 7z a -tzip -bd -bso0 "$(ci_windows_path "$DIST_DIR")/$BASE-windows-x64.zip" morsecq)
 
   ci_require_cmd cpack
@@ -102,6 +125,9 @@ package_windows() {
     -DMORSECQ_PACKAGE_ARCH=x64 >/dev/null
   (cd "$installer" && cpack -C Release -G WIX)
   copy_one "$installer" '*.msi' "$DIST_DIR/$BASE-windows-x64.msi"
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ci_windows_path "$SCRIPT_DIR/sign_windows.ps1")" -InputPath "$(ci_windows_path "$DIST_DIR/$BASE-windows-x64.msi")"
+  fi
   rm -rf "$DIST_DIR/.stage"
 }
 
@@ -119,6 +145,14 @@ package_macos() {
   # Every embedded framework and architecture must fit the app's declared OS.
   ci_require_cmd python3
   python3 "$SCRIPT_DIR/macos_runtime.py" "$app"
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    bash "$SCRIPT_DIR/sign_macos.sh" "$app"
+    ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/.notarize.zip"
+    xcrun notarytool submit "$DIST_DIR/.notarize.zip" --keychain-profile "$MORSECQ_NOTARY_PROFILE" --wait
+    rm "$DIST_DIR/.notarize.zip"
+    xcrun stapler staple "$app"
+    xcrun stapler validate "$app"
+  fi
   # ditto keeps the bundle's symlinks, modes and signature intact.
   ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/$BASE-macos-$arch.zip"
 
@@ -134,10 +168,32 @@ package_macos() {
   # inventory. Select the application by path and pin every child bundle.
   ci_require_cmd python3
   python3 "$SCRIPT_DIR/macos_components.py" "$plist"
-  pkgbuild --root "$root" --component-plist "$plist" \
+  local -a signing=()
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    signing=(--sign "$MORSECQ_MACOS_INSTALLER_IDENTITY")
+  fi
+  pkgbuild ${signing[@]+"${signing[@]}"} --root "$root" --component-plist "$plist" \
     --identifier icu.agentx.morsecq --version "$VERSION" \
     --install-location /Applications "$DIST_DIR/$BASE-macos-$arch.pkg"
   rm -rf "$root" "$plist"
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    xcrun notarytool submit "$DIST_DIR/$BASE-macos-$arch.pkg" --keychain-profile "$MORSECQ_NOTARY_PROFILE" --wait
+    xcrun stapler staple "$DIST_DIR/$BASE-macos-$arch.pkg"
+    xcrun stapler validate "$DIST_DIR/$BASE-macos-$arch.pkg"
+    pkgutil --check-signature "$DIST_DIR/$BASE-macos-$arch.pkg" > "$DIST_DIR/.installer-signature.txt"
+    grep -F 'Developer ID Installer:' "$DIST_DIR/.installer-signature.txt" >/dev/null
+    grep -F "($MORSECQ_APPLE_TEAM_ID)" "$DIST_DIR/.installer-signature.txt" >/dev/null
+    rm "$DIST_DIR/.installer-signature.txt"
+    spctl --assess --type install "$DIST_DIR/$BASE-macos-$arch.pkg"
+  fi
+  # Re-extract the final ZIP after the final mutation and inspect its app.
+  ditto -x -k "$DIST_DIR/$BASE-macos-$arch.zip" "$DIST_DIR/.verify"
+  python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/macos-final.json" apple "$DIST_DIR/.verify/MorseCQ.app" --platform macos
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    python3 "$SCRIPT_DIR/distribution_signing.py" "$DIST_DIR/.verify/MorseCQ.app" --team "$MORSECQ_APPLE_TEAM_ID" --platform macos
+    xcrun stapler validate "$DIST_DIR/.verify/MorseCQ.app"
+  fi
+  rm -rf "$DIST_DIR/.verify"
 }
 
 package_android() {
@@ -145,6 +201,11 @@ package_android() {
   local aab="$BUILD_DIR/app/outputs/bundle/release/app-release.aab"
   [[ -f "$apk" ]] || ci_die "Android APK not found: $apk"
   [[ -f "$aab" ]] || ci_die "Android App Bundle not found: $aab"
+  if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/android-strict.json" android "$apk" "$aab" \
+      --bundletool "$MORSECQ_BUNDLETOOL_JAR" --apkanalyzer "$MORSECQ_APKANALYZER" --target-sdk 36
+    python3 "$SCRIPT_DIR/verify_android_signing.py" "$apk" "$aab" --expected-sha256 "$MORSECQ_ANDROID_UPLOAD_CERT_SHA256"
+  fi
   cp "$apk" "$DIST_DIR/$BASE-android.apk"
   cp "$aab" "$DIST_DIR/$BASE-android.aab"
 }

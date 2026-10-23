@@ -39,3 +39,22 @@ CI 以独立 `symbols-*` artifact 保存 Dart split-debug-info 及可用 dSYM/PD
 原生崩溃仍需要系统崩溃报告与对应原生符号。
 各系统还需要安装包和升级冒烟：安装上一版、创建学习记录、升级、启动并确认记录、检查关闭/托盘/重开/退出及最终包声明。
 Widget 测试或直接启动 app bundle 不证明安装升级已验证。
+
+## 渠道预检与所有者签名
+
+先读[商店/渠道矩阵](../release/STORE_READINESS.zh-CN.md)。产物工具需 Python3.11+，CI 固定3.12。五个平台构建 release 并把 `evidence-*` 与下载/符号分开保留：原生哈希/架构、Apple 最终隐私/用途本地化/权限、Android 最终 manifest/SDK/ABI/16 KB ELF/ZIP/bundle 对齐；Windows 另核对 MSI Template Summary 为 x64。检查不能替代安装和审核。bundletool1.18.3 下载有 SHA-256 pin。
+
+`package_artifacts.sh` 默认是开发下载，iOS 明确未签名，不可宣称已上架/可信分发。可选 `MORSECQ_DISTRIBUTION=1` 在 staging 前拒绝缺少所有者材料：
+
+| 目标 | 所有者输入 / 行为 |
+| --- | --- |
+| macOS Developer ID | `MORSECQ_MACOS_APPLICATION_IDENTITY`、`MORSECQ_MACOS_INSTALLER_IDENTITY`、真实 `MORSECQ_APPLE_TEAM_ID` 和已有 `MORSECQ_NOTARY_PROFILE`。从内到外签名，核对真实 Team/证书类别/runtime，公证并 staple app ZIP/PKG，再核对最终 ZIP/安装器；仅由所有者调用，上传至公证服务而非 App Store 提交。 |
+| Windows 直接/hosted MSI | 可用证书存储中的 `MORSECQ_WINDOWS_CERT_SHA1`、`signtool.exe` 与可信签名材料。签名前先查所有 staged PE 架构，再签未签名 PE，保留有效供应商签名；app/安装器须匹配所有者，所有 PE/MSI 校验。不是尚未实现的 Store MSIX 路径。 |
+| Android | `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`、显式 `MORSECQ_BUNDLETOOL_JAR` 和可执行 `MORSECQ_APKANALYZER` 路径；缺检查工具直接拒绝。复制前重查最终 manifest/ABI/16 KB；APK/AAB 须匹配预期 upload 证书，拒绝 debug。JDK17 `JarFile` 逐条读至 EOF 验证签名者，不依赖 manifest 的 ZIP 顺序；未签名/篡改/重复条目拒绝。PR 构建亦保留开发 AAB 签名报告。tag CI 需 repository variable `ANDROID_UPLOAD_CERT_SHA256` 及已有四个签名 secrets；Play 分发指纹另记。 |
+| iOS / Linux | 拒绝通用发行标志：iOS 用独立 App Store 签名导出，Linux 仓库信任/签名与更新为所有者发布工作，仍可生成开发包。 |
+
+配置真实 `MORSECQ_APPLE_TEAM_ID` 后用所有者 Xcode signing/export 参数运行 `bash tool/build_ios_store.sh`。导出后解包实际 IPA，检查设备 payload/隐私、distribution 签名/Team 和 App Store provisioning（无开发/ad-hoc 设备列表），生成 `build/evidence/ios-store.json`，不提交商店。CI 未签名 IPA 不是此导出包。
+
+发布前记录最终哈希和上一签名版本，按选定渠道以普通用户测试干净安装、带学习数据升级、授权拒绝/撤销和卸载。凭据、身份/地区/文案/权利与后台声明没有证据前仍是所有者阻塞项。
+
+CI 与本地 strict 打包共用 payload 检查器。最终 Mac ZIP 检查同时执行真实 `codesign --verify --deep --strict`，仅读权限元数据不能验证资源/签名。
