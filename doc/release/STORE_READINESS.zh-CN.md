@@ -108,6 +108,8 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 
 进一步核对发现实际运行库遗漏：#49 最终 Windows ZIP（Builds run `39886425706`）没有 MSVC runtime DLL，但 `llvm-objdump -p` 检查真实 `morsecq.exe` 可见 `MSVCP140.dll`、`VCRUNTIME140.dll`、`VCRUNTIME140_1.dll` 导入。自带 Visual Studio 的 runner 会掩盖这一问题。现按 [Flutter Windows ZIP 分发指引](https://docs.flutter.dev/platform-integration/windows/building#building-your-own-zip-file-for-windows)，由 Windows CMake 的 `InstallRequiredSystemLibraries` 按目标工具链发现 release CRT，缺任一必需 DLL 即失败，并将其随 ZIP/MSI 放到 exe 旁。Native inventory 校 CPU/hash；安装冒烟校验 Microsoft 可信签名，并确认这些 CRT 与引擎实际从安装 payload 加载，不依赖 runner 全局运行库。所有者本地 strict 签名入口也会在查找签名工具前拒绝损坏/未签/非 Microsoft CRT，不会改用所有者签名覆盖原厂身份。Windows CI 对真实已签 CRT 的副本修改代码字节执行拒绝回归，原组件不变。
 
+真实已装检查随后抓到退出码 `0xC000041D`：`window_manager` 只投递 `WM_QUIT`，runner 仍持有窗口/controller；隐式成员析构会让原生 controller 的窗口回调重入半析构对象。现于消息循环后、`CoUninitialize` 前调用已有 `window.Destroy()`，由 `OnDestroy` 先清空 client controller 指针再析构原生视图；字体变化回调也守卫该指针。原有严格安装/repair/重启/卸载冒烟仍须证明正常 exit0，失败或 debugger 下通过不能替代。
+
 包内保留 `licenses/MSVC-runtime.txt`，记录工具链/目标与组件及官方许可入口。[Microsoft 再分发条件](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files)仍需所有者确认适用的 Visual Studio 许可，并在发布记录归档该工具链的确切许可条款；代码实现不等于权利已批准。App-local CRT 的安全更新需随应用更新提供。本次不安装全局 redistributable、不创建凭据、不公开发布。
 
 
@@ -119,13 +121,17 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 | --- | --- | --- |
 | W4、X6 / Windows MSI | 已加入安装后自动门禁；精确 head 结果见 PR | 实际安装 → 文件/CPU 校验 → 可见启动/优雅退出 → DLL 缺失 repair/重启 → 卸载，保留日志与制品 hash。可信签名、普通用户与旧版升级仍需所有者/设备。 |
 | X5 | 已记录 parity | 本次测试 Windows MSI 与 Ubuntu 24.04 DEB；macOS 安装器、Linux RPM/Wayland 与移动商店投递升级仍需对应安装矩阵。五平台原有 payload gate 均保留。 |
-| B2、W2 | 行为未改；冒烟执行默认关闭 | Fresh-profile close-to-tray 默认 false，不退出即失败。强杀只清理失败测试，不能当作优雅退出证据；未修改训练/session 层。 |
+| B2、W2 | 保留保存/托盘语义，修正最终退出路径 | Fresh-profile close-to-tray 默认 false，不退出即失败。强杀只清理失败测试，不能当作优雅退出证据；未修改训练/session 层。 |
 
 ## Linux DEB 安装后证据
 
 此前干净 DEB 检查还抓到意外 `libdartjni.so` → 缺失 `libjvm.so`：`path_provider_android` 间接引入 JNI，应用和 desktop 实现没有 Java 调用，生成的 Android registrar 受 `Platform.isAndroid` 限制。JNI 上游仅在宿主恰好有 JDK 时构建其可选桌面库。现于 Linux/Windows generated plugins 前关闭该可选 CMake 发现，Android 不变。真实上游 CMake fixture 先复现宿主污染，再证明仅排除未用 JNI，另一个 native 资产仍实际构建/安装；不删除必需组件、不豁免原生检查。未来若增加 desktop Java 功能，必须重新声明完整 JVM/runtime 依赖并验证已装产物。
 
 Flutter 动态加载 EGL/GL/GLES，`dpkg-shlibdeps` 不能单独证明这部分依赖；DEB 现显式声明 `libegl1`、`libgl1`、`libgles2`，RPM 声明对应 x64 SONAME（未宣称 RPM 实际运行）。容器在 X11 harness 引入图形库之前核精确 loader SONAME、实际文件/CPU 与依赖闭包。
+
+真实已装关闭又暴露独立 GTK/engine 生命周期错误：`WM_DELETE_WINDOW` 后，可见已装进程在无当前 GL context 时清理 compositor shader 并 abort。`window_manager 0.5.2` 移除 Flutter 默认 close handler，其 destroy 同步关闭 GTK 窗口；固定 Flutter 版本的 `fl_view.cc` 原链则请求 app exit，`fl_platform_handler.cc` 的 `SystemNavigator.pop` handler 解除 application/window 引用并退出 `GApplication`，避免先销毁 view 再继续主循环。本地源码闭环和真实失败日志为证据，同版本[上游报告](https://github.com/leanflutter/window_manager/issues/585)亦有相同现象。
+
+现在只将 Linux 的最终 `WindowManagerApi.destroy` 改走该官方平台退出；controller 仍先等待偏好、窗口位置、学习保存 listener 与 cleanup，销毁托盘后才请求退出。Close-to-tray 仍隐藏。四项真实 MethodChannel/controller 回归覆盖阻塞保存、cleanup 先于退出及 Windows/macOS 原路由。最终干净 DEB 仍须在无 debugger 下 exit0；这个有限路径不代表 X9 或所有 engine/native-crash 场景均已完成。
 
 Linux release-build job 现将最终 DEB 安装进官方 Ubuntu 24.04 容器，记录 image digest、包 SHA-256 与 OS/CPU。先只安装 DEB 声明的依赖，在引入 X11 测试工具前逐个 installed ELF 执行 `ldd`，避免测试工具补装的库掩盖 Depends 遗漏。应用入口移除 `LD_LIBRARY_PATH` 独立检查；单个插件 DSO 只使用该已装包的私有 `lib` 目录模拟应用已加载引擎的上下文，该检查环境不会导出给真实 GUI 进程。真实 GUI 使用镜像既有 `nobody` 用户与私有 XDG 目录，不挂载宿主桌面/数据/服务 socket。检查最终包与已装程序/launcher/desktop/icon 文件完全匹配、ELF CPU，要求可见可关闭窗口属于已装 executable 的同一 PID，并加载随包 Flutter engine；发送 `WM_DELETE_WINDOW` 后要求 exit0、启动进程组无残留，再检查卸载后程序文件消失且包不再是 installed 状态（apt remove 可保留配置状态）。强杀只清理失败，不算通过。
 
