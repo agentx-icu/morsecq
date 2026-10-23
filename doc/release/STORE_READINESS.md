@@ -133,7 +133,7 @@ The actual exported app must pass the existing identity/signature gate plus exac
 | W4 / iOS | controlled preparation gate; owner export pending | Twenty policy/failure regressions, including built SDK/Xcode floor and refusal before export; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
 | X6 / iOS | final archive payload inspected | Same native/privacy/purpose-localization checks as the existing unsigned IPA; unsigned archive is not a signed delivery or installed-device result. |
 
-Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Sixteen helper-policy regressions and the complete 92-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
+Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Twenty helper-policy regressions and the complete 96-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
 
 ## Installed Windows MSI evidence
 

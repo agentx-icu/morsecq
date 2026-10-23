@@ -104,7 +104,7 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 | W4 / iOS | 已加受控准备门禁；所有者导出待办 | 二十项策略/失败回归，包含实际 SDK/Xcode 门槛与 export 前拒绝；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
 | X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
 
-2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十六项 helper 策略回归及全部 92 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
+2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。二十项 helper 策略回归及全部 96 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
 
 ## Windows MSI 安装后证据
 
