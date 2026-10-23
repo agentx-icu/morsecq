@@ -26,6 +26,7 @@ void main() {
       _activatorFor(bindings, FocusSearchIntent).trigger,
       LogicalKeyboardKey.keyK,
     );
+    expect(_activatorFor(bindings, FocusSearchIntent).includeRepeats, isFalse);
     expect(
       _activatorFor(bindings, ToggleSidetoneIntent).trigger,
       LogicalKeyboardKey.keyM,

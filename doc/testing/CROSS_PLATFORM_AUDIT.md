@@ -56,7 +56,7 @@ specified OS/hardware. No store acceptance is inferred.
 | D6 | to do | Theme persistence tests exist; full measured contrast audit is not established. |
 | D7 | verified in widget tests | Reduced-motion flash has no key-rate listener. |
 | I1 | to do | Add/record measured touch-target guideline evidence on all reachable controls. |
-| I2 | partial / to do | Secondary-click and modifier regression; attached-tablet keyboard hints and native menus remain. |
+| I2 | partial / to do | Reference search binds primary+K only on its selected, current route, with editor/IME and repeat guards; 18 real keyboard-event widget regressions cover five platform semantics and responsive navigation. Native menus and physical tablet keyboard/assistive input validation remain. |
 | I3 | verified in tests | Text submission uses IME-safe submission; keying focus/pointer/keyboard suites pass. Native CJK IME remains needs device. |
 | I4 | verified declarations/tests | PopScope drill guard and predictive-back manifest; native back gestures need device. |
 | I5 | needs device | VoiceOver, TalkBack, Narrator and Orca through first lesson, receive, Listen start/stop. |
