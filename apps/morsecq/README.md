@@ -6,6 +6,8 @@ The account-free offline Flutter app opens learning immediately. It wires the mo
 
 From the workspace root, run `dart pub get --enforce-lockfile`, `flutter analyze apps/morsecq` and `(cd apps/morsecq && flutter test --no-pub)`. Start with `(cd apps/morsecq && flutter run -d macos)` or a supported device. Native tests live in `integration_test/`; run them through `bash tool/test_pyramid.sh --level e2e --device <id>` or `tool/ci/run_integration_tests.sh -d <id>`.
 
+With Reference selected, Command+K on macOS/iOS or Ctrl+K on Windows/Linux/Android focuses its search field. The command stays within the current page and route, does not switch tabs, and leaves focused editors and IME composition to the text input system. Held-key repeats do not repeat the app command. The sidetone intent remains a definition without a shell binding; native menus and physical iPad keyboard validation remain pending.
+
 | Path | Owns |
 | --- | --- |
 | `lib/main.dart`, `lib/di/` | Startup, `settings.json`, `AppScope` services and device preferences |
