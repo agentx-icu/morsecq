@@ -83,10 +83,18 @@ jobs:
       - name: Inspect Windows native payload
         if: runner.os == 'Windows'
         run: python tool/ci/release_preflight.py --output build/evidence/windows.json native apps/morsecq/build/windows/x64/runner/Release --platform windows --architecture x86_64
+      - name: Refuse damaged Microsoft runtime before owner signing
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tool/ci/test_windows_runtime_signing.ps1 -RuntimePath apps/morsecq/build/windows/x64/runner/Release/msvcp140.dll
       - name: Package
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
       - name: Hash final packaged artifacts
         run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/${{ matrix.platform }}
+      - name: Test installed Linux DEB
+        if: runner.os == 'Linux'
+        timeout-minutes: 15
+        run: python3 tool/ci/linux_installed_smoke.py --app morsecq --architecture x86_64 --package-dir dist/linux --evidence-dir build/evidence/linux-installed
       - name: Verify final Windows ZIP payload
         if: runner.os == 'Windows'
         run: python tool/ci/release_preflight.py --output build/evidence/windows-final.json native dist/windows/morsecq-*-windows-x64.zip --platform windows --architecture x86_64
@@ -100,7 +108,17 @@ jobs:
           $template = $database.SummaryInformation(0).Property(7)
           if ($template -notmatch '^x64;') { throw "Unexpected MSI Template Summary: $template" }
           $template | Out-File build/evidence/windows-msi-template.txt
+      - name: Test installed Windows MSI
+        if: runner.os == 'Windows'
+        shell: pwsh
+        timeout-minutes: 12
+        run: |
+          $msis = @(Get-ChildItem dist/windows/*.msi)
+          $zips = @(Get-ChildItem dist/windows/*.zip)
+          if ($msis.Count -ne 1 -or $zips.Count -ne 1) { throw 'Expected exactly one final MSI and ZIP' }
+          & ./tool/ci/test_windows_installer.ps1 -MsiPath $msis[0].FullName -PayloadZipPath $zips[0].FullName -EvidenceDirectory build/evidence/windows-installed
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: evidence-${{ matrix.platform }}
           path: build/evidence/
@@ -237,6 +255,16 @@ jobs:
         with:
           name: release-ios
           path: dist/ios/*
+          if-no-files-found: error
+      - name: Validate controlled unsigned iOS archive
+        run: python3 tool/ci/ios_store_export.py --unsigned-archive --output build/ios/store-readiness/ci-archive
+      - name: Preserve unsigned archive modes and symlinks
+        run: tar -czf build/ios/store-readiness/ci-archive.tar.gz -C build/ios/store-readiness ci-archive
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-archive
+          path: build/ios/store-readiness/ci-archive.tar.gz
+          retention-days: 7
           if-no-files-found: error
   release:
     if: startsWith(github.ref, 'refs/tags/v')

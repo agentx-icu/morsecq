@@ -10,9 +10,9 @@ import subprocess
 def verify_apple_identity(report, team, platform):
     if not re.fullmatch(r'[A-Z0-9]{10}', team):
         raise ValueError('Supply the verified owner Apple Team ID')
-    authority = 'Developer ID Application:' if platform == 'macos' else 'Apple Distribution:'
+    authority = r'Developer ID Application:' if platform == 'macos' else r'(?:Apple|iPhone) Distribution:'
     if ('Signature=adhoc' in report or f'TeamIdentifier={team}\n' not in report or
-            not re.search(r'^Authority=' + re.escape(authority), report, re.M)):
+            not re.search(r'^Authority=' + authority, report, re.M)):
         raise ValueError('Artifact is not signed by the expected distribution team / certificate type')
     if platform == 'macos' and '(runtime)' not in report:
         raise ValueError('Developer ID distribution requires hardened runtime')

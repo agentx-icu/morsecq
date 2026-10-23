@@ -58,3 +58,5 @@ Widget 测试或直接启动 app bundle 不证明安装升级已验证。
 发布前记录最终哈希和上一签名版本，按选定渠道以普通用户测试干净安装、带学习数据升级、授权拒绝/撤销和卸载。凭据、身份/地区/文案/权利与后台声明没有证据前仍是所有者阻塞项。
 
 CI 与本地 strict 打包共用 payload 检查器。最终 Mac ZIP 检查同时执行真实 `codesign --verify --deep --strict`，仅读权限元数据不能验证资源/签名。
+
+桌面 CMake 显式关闭可选 JNI 宿主发现：JNI 来自仅 Android 使用的间接平台依赖，MorseCQ 的 Linux/Windows 没有 Java 功能，不能因 runner 安装了 JDK 而额外要求 JVM。Android JNI 不变；未来增加桌面 Java 必须重新声明完整 runtime/依赖并验证已装产物。DEB 在引入测试 harness 前检查 EGL/GL/GLES loader 与闭包；tar 部署亦须安装 `libegl1`、`libgl1`、`libgles2` 及已有音频依赖。

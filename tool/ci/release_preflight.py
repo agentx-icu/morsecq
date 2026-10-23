@@ -3,7 +3,7 @@
 import argparse
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import plistlib
 import re
 import struct
@@ -157,6 +157,54 @@ def check_native_directory(root, platform, architecture):
     return records
 
 
+def check_installed_payload(root, archive_path):
+    """Compare every final ZIP file with its installed counterpart, including assets."""
+    root = Path(root).resolve()
+    records, entries, seen = [], [], set()
+    with zipfile.ZipFile(archive_path) as archive:
+        for entry in archive.infolist():
+            parts = entry.filename.rstrip('/').split('/')
+            name = entry.filename.rstrip('/').casefold()
+            if ('\\' in entry.filename or ':' in entry.filename or
+                    any(part in ('', '.', '..') for part in parts) or
+                    parts[0] != 'morsecq' or name in seen):
+                raise ValueError(f'Unsafe or duplicate ZIP entry: {entry.filename}')
+            seen.add(name)
+            if not entry.is_dir():
+                entries.append((entry, PurePosixPath(*parts[1:])))
+        if not any(entry.filename == 'morsecq/morsecq.exe' for entry, _ in entries):
+            raise ValueError('Final ZIP is missing morsecq.exe')
+        for entry, relative in entries:
+            installed = root.joinpath(*relative.parts)
+            if not installed.is_file() or not installed.resolve().is_relative_to(root):
+                raise ValueError(f'Missing installed file: {relative}')
+            with archive.open(entry) as stream:
+                expected = hashlib.file_digest(stream, 'sha256').hexdigest()
+            if digest(installed) != expected:
+                raise ValueError(f'Installed file differs from final ZIP: {relative}')
+            records.append({'path': str(relative), 'sha256': expected})
+        expected_files = {str(relative).casefold() for _, relative in entries}
+        actual_files = {path.relative_to(root).as_posix().casefold()
+                        for path in root.rglob('*') if path.is_file()}
+        if actual_files - expected_files:
+            raise ValueError(f'Unexpected installed files: {sorted(actual_files - expected_files)}')
+    return records
+
+
+def check_windows_runtime(records):
+    paths = {PurePosixPath(record['path'].replace('\\', '/').lower()): record
+             for record in records}
+    runners = [path for path in paths if path.name == 'morsecq.exe']
+    if len(runners) != 1:
+        raise ValueError('Expected one Windows release runner')
+    directory = runners[0].parent
+    required = [directory / name for name in
+                ['msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']]
+    if not all(path in paths for path in required):
+        raise ValueError('Missing app-local MSVC runtime next to the release runner')
+    return [paths[path] for path in required]
+
+
 def check_apple(app, platform, *, inspect_native=True):
     app = Path(app).resolve()
     resources = app / 'Contents/Resources' if platform == 'macos' else app
@@ -241,6 +289,7 @@ def main():
     native.add_argument('root', type=Path)
     native.add_argument('--platform', choices=['windows', 'linux'], required=True)
     native.add_argument('--architecture', required=True)
+    native.add_argument('--expected-zip', type=Path, help='Compare an installed directory with the final Windows ZIP')
     hashes = sub.add_parser('hashes')
     hashes.add_argument('root', type=Path)
     args = parser.parse_args()
@@ -260,6 +309,12 @@ def main():
         report = check_apple(args.app, args.platform)
     elif args.kind == 'native':
         report = {'binaries': check_native_directory(args.root, args.platform, args.architecture)}
+        if args.platform == 'windows':
+            report['windows_runtime'] = check_windows_runtime(report['binaries'])
+        if args.expected_zip:
+            if args.platform != 'windows' or not args.root.is_dir():
+                raise ValueError('--expected-zip requires an installed Windows directory')
+            report['installed_files'] = check_installed_payload(args.root, args.expected_zip)
     else:
         report = {'artifacts': [{'name': p.name, 'sha256': digest(p), 'bytes': p.stat().st_size} for p in sorted(args.root.iterdir()) if p.is_file() and not p.name.startswith('.')]}
         if not report['artifacts']:

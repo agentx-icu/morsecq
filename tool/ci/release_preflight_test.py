@@ -3,6 +3,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+import warnings
 import zipfile
 
 from release_preflight import check_android_native, check_android_manifest, check_apple, check_native_directory
@@ -122,6 +123,61 @@ class ReleasePreflightTest(unittest.TestCase):
             z.writestr('morsecq/morsecq.exe', pe())
             z.writestr('morsecq/data/app.so', elf(machine=62))
         self.assertEqual(len(check_native_directory(archive, 'windows', 'x86_64')), 2)
+
+    def test_installed_payload_matches_every_final_zip_file(self):
+        from release_preflight import check_installed_payload
+        archive = self.root / 'windows.zip'
+        installed = self.root / 'installed with spaces'
+        installed.mkdir()
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('morsecq/morsecq.exe', pe())
+            z.writestr('morsecq/data/flutter_assets/FontManifest.json', b'[]')
+        (installed / 'morsecq.exe').write_bytes(pe())
+        with self.assertRaisesRegex(ValueError, 'Missing installed file'):
+            check_installed_payload(installed, archive)
+        asset = installed / 'data/flutter_assets/FontManifest.json'
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(b'[]')
+        self.assertEqual(len(check_installed_payload(installed, archive)), 2)
+        asset.write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError, 'Installed file differs'):
+            check_installed_payload(installed, archive)
+        asset.write_bytes(b'[]')
+        (installed / 'unexpected.dll').write_bytes(pe())
+        with self.assertRaisesRegex(ValueError, 'Unexpected installed files'):
+            check_installed_payload(installed, archive)
+
+    def test_installed_payload_requires_an_executable_file_not_a_directory(self):
+        from release_preflight import check_installed_payload
+        archive = self.root / 'windows.zip'
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('morsecq/morsecq.exe/', b'')
+        with self.assertRaisesRegex(ValueError, 'missing morsecq.exe'):
+            check_installed_payload(self.root, archive)
+
+    def test_windows_release_requires_app_local_crt_next_to_runner(self):
+        from release_preflight import check_windows_runtime
+        records = [{'path': 'morsecq/morsecq.exe'}]
+        with self.assertRaisesRegex(ValueError, 'app-local MSVC'):
+            check_windows_runtime(records)
+        for name in ['msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']:
+            records.append({'path': 'morsecq/' + name})
+        self.assertEqual(len(check_windows_runtime(records)), 3)
+        records[-1]['path'] = 'morsecq/subdirectory/vcruntime140_1.dll'
+        with self.assertRaisesRegex(ValueError, 'app-local MSVC'):
+            check_windows_runtime(records)
+
+    def test_installed_payload_rejects_unsafe_or_duplicate_zip_entries(self):
+        from release_preflight import check_installed_payload
+        archive = self.root / 'windows.zip'
+        for names in [('morsecq/../escape',), ('morsecq/morsecq.exe', 'morsecq/morsecq.exe')]:
+            with self.subTest(names=names):
+                with warnings.catch_warnings(), zipfile.ZipFile(archive, 'w') as z:
+                    warnings.simplefilter('ignore', UserWarning)
+                    for name in names:
+                        z.writestr(name, b'fixture')
+                with self.assertRaisesRegex(ValueError, 'Unsafe or duplicate'):
+                    check_installed_payload(self.root, archive)
 
     def test_apple_requires_app_manifest_and_rejects_collected_data(self):
         app = self.root / 'MorseCQ.app'
