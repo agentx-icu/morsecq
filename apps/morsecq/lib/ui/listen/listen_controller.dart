@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import '../../diagnostics/local_diagnostics.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 
@@ -184,7 +185,7 @@ final class ListenController extends ChangeNotifier {
     try {
       return await _source.hasInputDevice();
     } catch (error) {
-      debugPrint('[ListenController] hasInputDevice threw: $error');
+      LocalDiagnostics.report(DiagnosticContext.inputDeviceProbe, error);
       return null;
     }
   }
@@ -256,10 +257,7 @@ final class ListenController extends ChangeNotifier {
     if (_disposed) return;
     final String? detail = error?.toString();
     if (detail != null) {
-      debugPrint(
-        '[ListenController] ${kind.name}: $detail'
-        '${stack == null ? '' : '\n$stack'}',
-      );
+      LocalDiagnostics.report(DiagnosticContext.captureFailure, error!, stack);
     }
     _failure = ListenFailure(kind, detail: detail);
     if (release) {

@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 import '../i18n/current_strings.dart';
+import '../diagnostics/local_diagnostics.dart';
+import 'desktop_diagnostics.dart';
 import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'screen_api.dart';
@@ -191,9 +193,7 @@ class DesktopShellController extends ChangeNotifier
       // real quit so the user can never lose the window.
       _trayAvailable = false;
       _tray.setEventHandler(null);
-      config.logger(
-        '[DesktopShell] tray unavailable, continuing without it: $e',
-      );
+      config.diagnose(DiagnosticContext.desktopTray, e);
       return;
     }
     await _applyTrayState();
@@ -203,7 +203,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await config.trayHostAvailable?.call() ?? true;
     } on Object catch (error) {
-      config.logger('[DesktopShell] tray host unavailable: $error');
+      config.diagnose(DiagnosticContext.desktopTrayHost, error);
       return false;
     }
   }
@@ -212,7 +212,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await _screen.workAreas();
     } catch (e) {
-      config.logger('[DesktopShell] display lookup failed: $e');
+      config.diagnose(DiagnosticContext.desktopDisplay, e);
       return const [];
     }
   }
@@ -290,7 +290,7 @@ class DesktopShellController extends ChangeNotifier
         ).encode(),
       );
     } catch (e) {
-      config.logger('[DesktopShell] could not persist window state: $e');
+      config.diagnose(DiagnosticContext.desktopWindowSave, e);
     }
   }
 
@@ -310,7 +310,7 @@ class DesktopShellController extends ChangeNotifier
         _closeToTray = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist closeToTray: $e');
+      config.diagnose(DiagnosticContext.desktopCloseSave, e);
     }
   }
 
@@ -342,13 +342,13 @@ class DesktopShellController extends ChangeNotifier
         _soundEnabled = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist sound: $e');
+      config.diagnose(DiagnosticContext.desktopSoundSave, e);
       return;
     }
     try {
       await config.onToggleSound?.call(enabled);
     } catch (e) {
-      config.logger('[DesktopShell] onToggleSound failed: $e');
+      config.diagnose(DiagnosticContext.desktopSoundChange, e);
     }
     if (_active) _enqueueTray(_applyTrayState);
   }
@@ -367,13 +367,13 @@ class DesktopShellController extends ChangeNotifier
       }
     } catch (e) {
       _closing = false;
-      config.logger('[DesktopShell] could not save session before quit: $e');
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
       return;
     }
     try {
       await config.onBeforeQuit?.call();
     } catch (e) {
-      config.logger('[DesktopShell] onBeforeQuit failed: $e');
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
     }
     await _tolerate('destroy tray', _tray.destroy);
     await _window.destroy();
@@ -450,7 +450,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await config.store.get(key);
     } catch (e) {
-      config.logger('[DesktopShell] could not read $key: $e');
+      config.diagnose(DiagnosticContext.desktopRead, e);
       return null;
     }
   }
@@ -463,7 +463,7 @@ class DesktopShellController extends ChangeNotifier
     } catch (e) {
       if (_trayGapWarned) return;
       _trayGapWarned = true;
-      config.logger('[DesktopShell] $label unavailable on this platform: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
     }
   }
 
@@ -471,7 +471,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await op();
     } catch (e) {
-      config.logger('[DesktopShell] $label failed: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
       return null;
     }
   }
