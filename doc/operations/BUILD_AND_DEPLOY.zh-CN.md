@@ -34,9 +34,16 @@ Android 标签构建必须提供四项所有者签名 secret；`tool/ci/verify_a
 非标签调试签名产物仅用于本机/CI 测试。Windows Authenticode、macOS Developer ID 与公证仍需所有者凭据，不能由未签名构建推定完成。
 
 CI 以独立 `symbols-*` artifact 保存 Dart split-debug-info 及可用 dSYM/PDB。
-本机框架/未处理 Dart 错误仅记录 UTC 时间、错误类型和堆栈到 `<support>/logs/errors.log`，最多两份、每份 256 KiB。
-不记录异常消息、学习内容或录音，不上传；“我的 → 复制本地诊断信息”是主动导出入口。
-原生崩溃仍需要系统崩溃报告与对应原生符号。
+应用自身的 Dart 诊断仅保存 UTC 时间、错误类型、固定事件名，以及记录器内部捕获的代码坐标 / AOT PC，
+位置为 `<support>/logs/errors.log`，最多两份、每份 256 KiB。忽略调用方传入的堆栈文本、函数名、绝对路径、
+异常消息、学习内容与录音。这是记录器捕获点的代码栈，并非原始异常堆栈；无法识别的帧直接丢弃。
+旧版原始日志在继续记录前替换，复制时也不导出。不上传；“我的 → 复制本地诊断信息”是主动导出入口。
+
+错误钩子在启动工作前安装，此时不打开存储；桌面文件 sink 仅在独占实例取得目录所有权后启用。
+存储尚未就绪或不可用时仍阻止 release 原始控制台回退，但无法保留此前的报告。
+Release 不转发原始 Flutter details，PlatformDispatcher 不再请求 stderr 回退；应用/共享插件 catch 日志
+和显式桌面日志 sink 仅在 debug 输出原文。Product-policy CI 验证这些分支，不代替安装后的 release 测试。
+原生崩溃、工作 isolate 错误转发、与已发产物匹配的逐平台符号化仍未验证，仍需系统崩溃报告和归档符号。
 各系统还需要安装包和升级冒烟：安装上一版、创建学习记录、升级、启动并确认记录、检查关闭/托盘/重开/退出及最终包声明。
 Widget 测试或直接启动 app bundle 不证明安装升级已验证。
 

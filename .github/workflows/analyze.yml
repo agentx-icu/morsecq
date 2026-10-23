@@ -124,3 +124,10 @@ jobs:
             (cd "$dir" && flutter test --no-pub)
             echo "::endgroup::"
           done
+
+      - name: Diagnostics product-policy regressions
+        run: >-
+          flutter test --no-pub
+          apps/morsecq/test/platform/diagnostics_privacy_regression_test.dart
+          --dart-define=dart.vm.product=true
+          --dart-define=MORSECQ_TEST_PRODUCT_POLICY=true

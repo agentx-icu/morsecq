@@ -47,3 +47,5 @@ API 36 截止日期已于 2026-10-22 对照 [Play 当前要求](https://support.
 发布设备矩阵上的冷启动至可用 Learn ≤5 秒、热重开 ≤2 秒是目标，尚未测量。
 本机 macOS 27.0.1 arm64 上 universal release 构建为 57.1 MB；其余包体与启动延迟待测。
 详见[跨平台审计](../testing/CROSS_PLATFORM_AUDIT.zh-CN.md)。
+
+应用自身诊断排除传入堆栈文本和 release 控制台异常原文；[构建指南](../operations/BUILD_AND_DEPLOY.zh-CN.md)说明本地保留、旧日志替换与尚未完成的原生诊断验证。

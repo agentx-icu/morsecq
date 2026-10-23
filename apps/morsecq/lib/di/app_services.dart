@@ -3,6 +3,7 @@ import 'dart:ui' show AppExitResponse;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../desktop/desktop_shell_controller.dart';
+import '../diagnostics/local_diagnostics.dart';
 import '../i18n/locale_controller.dart';
 import '../i18n/strings_resolver.dart';
 import '../lifecycle/background_task_api.dart';
@@ -66,7 +67,7 @@ final class AppServices with WidgetsBindingObserver {
         try {
           await flush();
         } on Object catch (error) {
-          debugPrint('Learning persistence failed: $error');
+          LocalDiagnostics.report(DiagnosticContext.learningSave, error);
         }
       } while (_flushAgain);
     } finally {
@@ -83,7 +84,7 @@ final class AppServices with WidgetsBindingObserver {
       ]).timeout(const Duration(seconds: 5));
       return AppExitResponse.exit;
     } on Object catch (error) {
-      debugPrint('Could not save before application exit: $error');
+      LocalDiagnostics.report(DiagnosticContext.applicationExitSave, error);
       return AppExitResponse.cancel;
     }
   }

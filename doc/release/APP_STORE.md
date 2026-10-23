@@ -53,3 +53,5 @@ installed bundle ≤250 MiB. Cold start to usable Learn ≤5 s and warm reopen �
 on the release device matrix are targets, not measurements. The local universal
 macOS release measured 57.1 MB on macOS 27.0.1 arm64; the other artifact sizes and
 startup latency still require measurement. See the [cross-platform audit](../testing/CROSS_PLATFORM_AUDIT.md).
+
+App-owned diagnostics exclude supplied stack text and release console error details; [the build guide](../operations/BUILD_AND_DEPLOY.md) documents the local retention, legacy-log replacement and remaining native diagnostics verification.

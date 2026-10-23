@@ -39,11 +39,24 @@ local/CI testing. Windows Authenticode signing and macOS Developer ID signing /
 notarization require owner credentials and are not claimed by an unsigned build.
 
 Builds archive Dart split-debug-info and available dSYM/PDB files as separate
-`symbols-*` CI artifacts. Local framework/unhandled-Dart errors retain only UTC
-time, runtime error type and stack in `<support>/logs/errors.log`, with one
-previous file (256 KiB each). No exception messages, learning content, recordings
-or upload are included. Me → Copy local diagnostics is the explicit export path.
-Native crashes still need OS crash reports and matching archived native symbols.
+`symbols-*` CI artifacts. App-owned Dart diagnostics retain UTC time, error type, a fixed event name and
+code coordinates / AOT PCs captured inside the recorder in
+`<support>/logs/errors.log`, with one previous file (256 KiB each). Caller-supplied
+stack text, function names, absolute paths, exception messages, learning content
+and recordings are excluded. This is the recorder's capture-point stack, not the
+original exception stack. Unrecognized frames are omitted. Legacy raw logs are
+replaced before recording and excluded from copying. Nothing is uploaded;
+Me → Copy local diagnostics is the explicit export path.
+
+Error hooks install before startup work without opening storage. On desktop,
+only the exclusive instance owner enables the file sink. Until storage is ready
+(or if it is unavailable), hooks still prevent raw release console fallback but
+cannot retain an early report. Release hooks do not forward raw Flutter details
+or request PlatformDispatcher's stderr fallback. App/plugin catch logs and the
+opt-in shell sink are verbose only in debug builds. Product-policy CI checks
+these branches; it does not replace installed release testing. Native crashes,
+worker-isolate forwarding and per-platform symbolication from the matching
+shipped artifact remain unverified; use OS crash reports and archived symbols.
 Installed package and upgrade smoke checks on each OS remain required: install
 the preceding release, create learning progress, upgrade, launch, confirm saved
 progress, close/tray/reopen/quit, and inspect actual packaged declarations. They
