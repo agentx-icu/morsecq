@@ -28,6 +28,7 @@ import 'training/local_learning_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LocalDiagnostics.installErrorHandlers();
 
   // Own every persistent store before opening settings or learning data.
   DesktopInstance? instance;
@@ -79,7 +80,7 @@ Future<KeyValueStore> _openSettingsStore() async {
       File(p.join(dir.path, 'settings.json')),
     );
   } on Object catch (error) {
-    debugPrint('settings store unavailable, using memory: $error');
+    LocalDiagnostics.report(DiagnosticContext.settingsOpen, error);
     return InMemoryKeyValueStore();
   }
 }

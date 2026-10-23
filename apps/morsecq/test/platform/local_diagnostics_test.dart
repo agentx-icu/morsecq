@@ -16,7 +16,11 @@ void main() {
       );
       final evidence = await file.readAsString();
       expect(evidence, contains('StateError'));
-      expect(evidence, contains('frame one'));
+      expect(evidence, isNot(contains('frame one')));
+      expect(
+        evidence,
+        contains('package:morsecq/diagnostics/local_diagnostics.dart:'),
+      );
       expect(evidence, isNot(contains('PRIVATE_USER_MATERIAL')));
       for (var i = 0; i < 10; i++) {
         log.record(

@@ -361,6 +361,16 @@
       "path": "packages/radio_tools/test/rf_tools_test.dart",
       "kind": "ditmesh-ahead",
       "reason": "DitMesh contains additional RF design tools; MorseCQ retains its existing product scope. Cross-platform fixes do not import those unrelated features."
+    },
+    {
+      "path": "packages/morse_io/lib/src/audio_session_api.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Release diagnostics: raw plugin errors are debug-only; identical guarded copies are coordinated in the DitMesh diagnostics PR, pending merge and the next shared snapshot."
+    },
+    {
+      "path": "packages/morse_io/lib/src/screen_wake.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Release diagnostics: raw plugin errors are debug-only; identical guarded copies are coordinated in the DitMesh diagnostics PR, pending merge and the next shared snapshot."
     }
   ],
   "files": {
@@ -440,7 +450,10 @@
     },
     "packages/morse_io/lib/morse_io.dart": "6b5170d7ae5bda3c6ee903b0392da130400fcad78943314c8b46c023e9c65d1d",
     "packages/morse_io/lib/src/app_foreground.dart": "cf04e1c4ad41652c646351e597d14d9a0a76cae459474b44e016737358d701a4",
-    "packages/morse_io/lib/src/audio_session_api.dart": "31e85fc23003e49c9ad5a2342260dd9619854fc5b9482ac4adbd0bf99bdb4762",
+    "packages/morse_io/lib/src/audio_session_api.dart": {
+      "morsecq": "127f9f2b00c64fade53b2861da4948452cc5d0b3d5c6e288aefaf10f5533fc54",
+      "ditmesh": "31e85fc23003e49c9ad5a2342260dd9619854fc5b9482ac4adbd0bf99bdb4762"
+    },
     "packages/morse_io/lib/src/clip_player.dart": "e3868324a18ab853855b92c6fd6addb07da99d9c9229c30aa0357424241f3487",
     "packages/morse_io/lib/src/clock.dart": "8d9589be4c42b4398c8d70c92420c53bd0d9f001e821f36772c20037ae70f7d4",
     "packages/morse_io/lib/src/engine_leases.dart": "62b6a36dece255af506804f307eb0edc3b19b86eda660695a9f65953025ffa69",
@@ -451,7 +464,10 @@
     "packages/morse_io/lib/src/keyboard_binding.dart": "c445c9da839c0479b1e336c9e372ee6d2e94710e40753abcd4a3d7831ac429c5",
     "packages/morse_io/lib/src/keyer_timing.dart": "2601cc2106a6d069d78279f4237b13056c414959102e1129b64c9c8ebb33f7ec",
     "packages/morse_io/lib/src/player.dart": "7d2195b1e6834bcc590ba90a0b5d17396df95a31944b12173c9e847ca82d48d4",
-    "packages/morse_io/lib/src/screen_wake.dart": "60ff9a36786f4e08f584464fbbcc16c7b37de459f5240b5713d1b84de0cd707e",
+    "packages/morse_io/lib/src/screen_wake.dart": {
+      "morsecq": "636e358b60c0202f0afd40f28d9e74bfe0d7286859d6350764686207d96044cc",
+      "ditmesh": "60ff9a36786f4e08f584464fbbcc16c7b37de459f5240b5713d1b84de0cd707e"
+    },
     "packages/morse_io/lib/src/sidetone_sink.dart": "3c88be3b87dfec036a8f33ef10130a1972441f58e0e737c5b3b04cd191f22592",
     "packages/morse_io/lib/src/sink.dart": "1259c3f4f3b1954742c05846369ede9c8839e972f8c3d0a535a75ddc1e971e13",
     "packages/morse_io/lib/src/soloud_api.dart": "828241920d1147f69834cb55f61c0163b2f9fc0d06d019b45e6b5a6b3bbd35f2",
