@@ -197,6 +197,36 @@ class IosStoreExportTests(unittest.TestCase):
                 store.inspect_export(self.root, self.root, "ABCDE12345", self.fingerprint, "fixture")
         self.assertFalse((self.root / "export-evidence/distribution.json").exists())
 
+    def test_final_owner_export_ipa_must_pass_the_existing_150_mib_budget(self):
+        # A sparse fixture exercises the final-IPA boundary, not real signing.
+        (self.root / "ipa").mkdir()
+        (self.root / "export-evidence").mkdir()
+        with (self.root / "ipa/App.ipa").open("wb") as stream:
+            stream.truncate(150 * 1024 * 1024 + 1)
+        calls = []
+        def runner(command, **kwargs):
+            calls.append(command)
+            result = subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
+            if command[0] == "ditto":
+                app = Path(command[-1]) / "Payload/Runner.app"
+                app.mkdir(parents=True)
+                (app / "Runner").write_bytes(b"fixture")
+            elif "--verbose=4" in command:
+                result.stderr = "Authority=Apple Distribution: Owner (ABCDE12345)\nTeamIdentifier=ABCDE12345\n"
+            elif "--entitlements" in command:
+                result.stdout = plistlib.dumps(self.profile()["Entitlements"])
+            elif command[:2] == ["security", "cms"]:
+                result.stdout = plistlib.dumps(self.profile())
+            elif "--extract-certificates" in command:
+                Path(command[-2] + "0").write_bytes(self.certificate)
+            return result
+        with patch.object(store, "run", side_effect=runner), patch.object(store, "inspect_app"):
+            with self.assertRaisesRegex(ValueError, "size budget"):
+                store.inspect_export(self.root, self.root, "ABCDE12345", self.fingerprint, "fixture")
+        self.assertTrue(any(command[:2] == ["security", "verify-cert"] for command in calls))
+        self.assertFalse((self.root / "export-evidence/distribution.json").exists())
+        self.assertIn('"outcome": "failed"', (self.root / "export-evidence/size-budget.json").read_text())
+
     def test_wrapper_rejects_unreviewed_xcode_and_flutter_overrides(self):
         wrapper = SOURCE.parents[1] / "build_ios_store.sh"
         for argument in ("-allowProvisioningUpdates", "-allowProvisioningDeviceRegistration",
