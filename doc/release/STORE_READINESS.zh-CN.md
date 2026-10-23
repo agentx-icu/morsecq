@@ -43,7 +43,7 @@
 
 均于 **2026-10-23** 核对，真正发布时重查；时间阈值不硬写进检测器。
 
-- [Apple 提交要求](https://developer.apple.com/news/upcoming-requirements/)当前移动提交需 Xcode26/SDK26；部署最低 OS 是独立值，现有 iOS14 高于当前提交下限。[2.4.5](https://developer.apple.com/app-store/review/guidelines/#hardware-compatibility)是 Mac Store 路径；[出口](https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance/)与[无障碍披露](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels/)还须核对后台，不猜资格或分级。
+- [Apple 提交要求](https://developer.apple.com/news/upcoming-requirements/)当前移动提交需 Xcode26/SDK26；项目最低运行版本为 iOS14，与提交 SDK26 是独立数值；所有者须在发布时重查提交要求。[2.4.5](https://developer.apple.com/app-store/review/guidelines/#hardware-compatibility)是 Mac Store 路径；[出口](https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance/)与[无障碍披露](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels/)还须核对后台，不猜资格或分级。
 - [Play target API](https://support.google.com/googleplay/android-developer/answer/11926878)规定移动新应用/更新自 2026-08-31 使用 API36，延期取决于账号；[16 KB 指引](https://developer.android.com/guide/practices/page-sizes)当前写 2027-02-01 阻止不兼容更新，仍须实际二进制/运行验证。[App content](https://support.google.com/googleplay/android-developer/answer/9859455)及[个人账号测试](https://support.google.com/googleplay/android-developer/answer/14151465)为后台工作。
 - [Microsoft 7.20](https://learn.microsoft.com/en-us/windows/apps/publish/store-policies#102-security)自 2026-10-22 生效，是 hosted MSI/EXE 签名依据；[MSIX 要求](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/app-package-requirements)是另一包路径。
 - [Flathub](https://docs.flathub.org/docs/for-app-authors/requirements#generative-ai-policy)人类边界如上；[Snap confinement](https://snapcraft.io/docs/explanation/security/snap-confinement/)与[发布](https://ubuntu.com/docs/snapcraft/9/how-to/publishing/publish-a-snap/)仅在选定后适用。
@@ -64,3 +64,5 @@ macOS27.0.1 arm64、Flutter3.41.9、Xcode SDK26.4：release57.0MB，15个 Mach-O
 Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共40项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
 
 2026-10-23，现有 `/morsecq/privacy/`、`/morsecq/support/` 实测 HTTP404，而 `/morsecq/privacy.html` 为200，Pages 最近部署成功；原因是 Jekyll 页面未设置显式 permalink。现补英/中文 slash permalink 匹配应用 URL，PR Pages 构建在部署前核对六个真实渲染输出路径。现网404在合并触发现有 Pages 部署并 GET 验证前仍阻塞提交，不编造新隐私 URL/联系人/商店记录。
+
+独立复查补充：本地 strict Windows/Android 入口现于签名/复制前运行相同 payload gate；Android 显式要求 bundletool/apkanalyzer 路径。三个入口负例通过。真实 Mac release 副本仅修改一个签名资源后被递归 codesign 检查拒绝，原包通过；真实 strict Android 尝试先通过 payload 检查，再拒绝 Debug 证书。
