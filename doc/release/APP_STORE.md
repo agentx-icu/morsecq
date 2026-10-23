@@ -63,3 +63,5 @@ payload sizes are recorded without inventing an additional limit. See the
 and [cross-platform audit](../testing/CROSS_PLATFORM_AUDIT.md). Cold/warm startup
 to usable Learn still requires the release device matrix; a visible CI window
 does not measure it.
+
+App-owned diagnostics exclude supplied stack text and release console error details; [the build guide](../operations/BUILD_AND_DEPLOY.md) documents the local retention, legacy-log replacement and remaining native diagnostics verification.

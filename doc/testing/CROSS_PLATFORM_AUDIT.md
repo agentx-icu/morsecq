@@ -97,7 +97,20 @@ specified OS/hardware. No store acceptance is inferred.
 | X5 | verified pins | Shared fixes ported without overwriting existing DitMesh feature differences; sync gate passes. |
 | X6 | partial / to do | All-platform release workflow exists; only local Mac release build/run exercised, no installed-upgrade claim. |
 | X8 | not applicable to remote service | No Internet bootstrap/service; loopback IPC is tested locally and rejects unauthenticated tokens. |
-| X9 | partial / to do | Dart errors have bounded local stacks and CI symbol retention; native-crash diagnostics and symbolized reports still need platform validation. |
+| X9 | partial / to do | App-owned Dart diagnostics now use fixed events/type and internally captured code coordinates/PCs; raw supplied stacks, release error forwarding and catch-log bypasses are excluded. Rotation/copy/legacy-log, early-storage and product-policy regressions pass. Capture-point stacks do not reconstruct the original exception. Native crashes, worker isolates and matching shipped-build symbolication remain to do / need device. |
+
+
+## X9 Dart diagnostics boundary — 2026-10-23
+
+| Item | Status | Evidence / remaining work |
+| --- | --- | --- |
+| Framework/runtime error exits | verified policy tests | Hooks install before startup without storage; release does not forward raw Flutter details and reports runtime errors handled, preventing the embedding stderr fallback. Debug framework/test observers remain active. |
+| Private-content exclusion | verified synthetic regressions | Exception messages and caller-supplied stack text are not persisted. Only the recorder's own VM code coordinates/numeric AOT metadata are selected. Synthetic paths/content are absent from current/rotated/copied logs; legacy raw files are replaced. |
+| Retention and exclusive ownership | verified unit tests | At most two 256 KiB files; initialization retries after unavailable storage. Hook installation opens no shared store; main retains owner-before-file initialization. Reports before file availability cannot be retained. |
+| Catch-log parity | verified product-policy tests | Actual preference-save failures, null/explicit shell sinks and the shared audio/wake failures preserve debug observability and emit no raw release console text. Identical shared patches are coordinated with DitMesh; only their pins move. |
+| Shipped-build/native coverage | to do / needs device | On iOS, Android, macOS, Windows and Linux, install the final artifact and trigger synthetic framework, async/native-bridge and native errors; confirm marker absence in OS logs and the exported bundle, then symbolize against that artifact's archived symbols. Native reporter integration, worker-isolate forwarding and original-error stack reconstruction are not completed by this patch. |
+
+`Diagnostics product-policy regressions` runs with Dart product constants and an explicit release-mode assertion in Analyze CI. This checks code paths under the test runner; it is not evidence of an installed AOT release. No SDK, telemetry endpoint, account, credential or permission is added. See [retention and startup details](../operations/BUILD_AND_DEPLOY.md).
 
 ## Statistics detail alternatives (I1/I2/I5/D6)
 
