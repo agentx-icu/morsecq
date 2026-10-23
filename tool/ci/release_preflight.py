@@ -172,7 +172,7 @@ def check_installed_payload(root, archive_path):
             seen.add(name)
             if not entry.is_dir():
                 entries.append((entry, PurePosixPath(*parts[1:])))
-        if 'morsecq/morsecq.exe' not in seen:
+        if not any(entry.filename == 'morsecq/morsecq.exe' for entry, _ in entries):
             raise ValueError('Final ZIP is missing morsecq.exe')
         for entry, relative in entries:
             installed = root.joinpath(*relative.parts)
@@ -183,6 +183,11 @@ def check_installed_payload(root, archive_path):
             if digest(installed) != expected:
                 raise ValueError(f'Installed file differs from final ZIP: {relative}')
             records.append({'path': str(relative), 'sha256': expected})
+        expected_files = {str(relative).casefold() for _, relative in entries}
+        actual_files = {path.relative_to(root).as_posix().casefold()
+                        for path in root.rglob('*') if path.is_file()}
+        if actual_files - expected_files:
+            raise ValueError(f'Unexpected installed files: {sorted(actual_files - expected_files)}')
     return records
 
 

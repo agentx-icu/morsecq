@@ -142,6 +142,18 @@ class ReleasePreflightTest(unittest.TestCase):
         asset.write_bytes(b'changed')
         with self.assertRaisesRegex(ValueError, 'Installed file differs'):
             check_installed_payload(installed, archive)
+        asset.write_bytes(b'[]')
+        (installed / 'unexpected.dll').write_bytes(pe())
+        with self.assertRaisesRegex(ValueError, 'Unexpected installed files'):
+            check_installed_payload(installed, archive)
+
+    def test_installed_payload_requires_an_executable_file_not_a_directory(self):
+        from release_preflight import check_installed_payload
+        archive = self.root / 'windows.zip'
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('morsecq/morsecq.exe/', b'')
+        with self.assertRaisesRegex(ValueError, 'missing morsecq.exe'):
+            check_installed_payload(self.root, archive)
 
     def test_installed_payload_rejects_unsafe_or_duplicate_zip_entries(self):
         from release_preflight import check_installed_payload
