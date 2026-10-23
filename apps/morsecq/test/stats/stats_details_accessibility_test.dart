@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/ui/stats/accuracy_trend_chart.dart';
+import 'package:morsecq/ui/stats/char_grid.dart';
 import 'package:morsecq/ui/stats/confusion_heatmap.dart';
 import 'package:morsecq/ui/stats/practice_calendar.dart';
 import 'package:morsecq/ui/stats/stats_details_picker.dart';
@@ -286,4 +287,42 @@ void main() {
       );
     },
   );
+
+  for (final scale in [1.0, 3.1]) {
+    testWidgets(
+      'real character grid targets stay >=48 at 320px scale=$scale',
+      (tester) async {
+        await _pump(
+          tester,
+          CharGrid(snapshot: snapshot),
+          scale: scale,
+          locale: const Locale('de'),
+        );
+        for (final cell in find.byType(CharCell).evaluate()) {
+          final box = tester.getRect(find.byWidget(cell.widget));
+          expect(box.width, greaterThanOrEqualTo(48));
+          expect(box.height, greaterThanOrEqualTo(48));
+          expect(box.left, greaterThanOrEqualTo(0));
+          expect(box.right, lessThanOrEqualTo(320));
+        }
+        final first = find.byWidgetPredicate(
+          (w) => w is CharCell && w.char == 'K',
+        );
+        await tester.ensureVisible(first);
+        final bounds = tester.getRect(first);
+        // Hit the new straight edge, inside the rounded visual shape. The
+        // outer square corner is intentionally outside its rounded border.
+        await tester.tapAt(bounds.center + const Offset(23, 0));
+        await tester.pumpAndSettle();
+        expect(find.byType(CharDetailSheet), findsOneWidget);
+        Navigator.of(tester.element(find.byType(CharDetailSheet))).pop();
+        await tester.pumpAndSettle();
+        await tester.tapAt(bounds.center + const Offset(0, 23));
+        await tester.pumpAndSettle();
+        expect(find.byType(CharDetailSheet), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.android),
+    );
+  }
 }

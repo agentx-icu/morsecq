@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'stats_math.dart';
 
-/// The only colours the dashboard uses, all derived from the active
-/// [ColorScheme] so light and dark themes are covered without hard-coding.
+/// Dashboard backgrounds/series derive from the active [ColorScheme]. Text
+/// keeps themed colours when readable, with a monochrome contrast fallback.
 ///
 /// * Sequential (magnitude): one hue, [surfaceContainerHighest] -> [primary].
 /// * Categorical (identity): receive = primary, send = tertiary, fixed order.
@@ -41,10 +41,12 @@ final class StatsPalette {
 
   /// Text colour that reads on [sequential] at `t`.
   Color onSequential(double t) {
-    if (t <= 0) {
-      return scheme.onSurfaceVariant;
-    }
-    return t >= 0.55 ? scheme.onPrimary : scheme.onPrimaryContainer;
+    final preferred = t <= 0
+        ? scheme.onSurfaceVariant
+        : t >= 0.55
+        ? scheme.onPrimary
+        : scheme.onPrimaryContainer;
+    return _readableText(sequential(t), preferred);
   }
 
   /// Background for an accuracy bucket. Weak is the error container so it is
@@ -57,11 +59,37 @@ final class StatsPalette {
     AccuracyBucket.strong => sequential(1),
   };
 
-  Color bucketForeground(AccuracyBucket bucket) => switch (bucket) {
-    AccuracyBucket.none => scheme.onSurfaceVariant,
-    AccuracyBucket.weak => scheme.onErrorContainer,
-    AccuracyBucket.fair => scheme.onPrimaryContainer,
-    AccuracyBucket.good => scheme.onPrimary,
-    AccuracyBucket.strong => scheme.onPrimary,
-  };
+  Color bucketForeground(AccuracyBucket bucket) =>
+      _readableText(bucketBackground(bucket), switch (bucket) {
+        AccuracyBucket.none => scheme.onSurfaceVariant,
+        AccuracyBucket.weak => scheme.onErrorContainer,
+        AccuracyBucket.fair => scheme.onPrimaryContainer,
+        AccuracyBucket.good => scheme.onPrimary,
+        AccuracyBucket.strong => scheme.onPrimary,
+      });
+
+  /// Keep existing themed text when readable; otherwise choose a themed
+  /// alternative using the actual background luminance. Only a theme with
+  /// no qualifying text colour needs the opaque black/white fallback.
+  Color _readableText(Color background, Color preferred) {
+    final luminance = background.computeLuminance();
+    double ratio(Color text) {
+      final other = text.computeLuminance();
+      return ((luminance > other ? luminance : other) + 0.05) /
+          ((luminance > other ? other : luminance) + 0.05);
+    }
+
+    for (final text in [
+      preferred,
+      scheme.onPrimary,
+      scheme.onPrimaryContainer,
+      scheme.onSurface,
+      scheme.onSurfaceVariant,
+    ]) {
+      if (ratio(text) >= 4.5) return text;
+    }
+    return ratio(Colors.black) >= ratio(Colors.white)
+        ? Colors.black
+        : Colors.white;
+  }
 }

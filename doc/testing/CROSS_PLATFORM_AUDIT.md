@@ -53,9 +53,9 @@ specified OS/hardware. No store acceptance is inferred.
 | D1, D2 | verified in tests | Ten ARBs, explicit new translator notes, real-font text-scale matrix; Bold Text/RTL native checks remain outside evidence (no RTL locale ships). |
 | D3, D5 | verified assets; needs device | Tray resolution and launcher format tests; native fractional scaling not measured. |
 | D4 | needs device | Mixed-DPI monitor movement/removal on Windows, Retina/non-Retina on Mac. |
-| D6 | to do | Theme persistence tests exist; full measured contrast audit is not established. |
+| D6 | statistical text verified; full audit remains | Existing statistics backgrounds are preserved; foreground text uses actual luminance to meet 4.5:1 across five styles/light/dark, all buckets and 101 ramp positions. Full-app/composited/native high-contrast validation remains. |
 | D7 | verified in widget tests | Reduced-motion flash has no key-rate listener. |
-| I1 | chart alternative verified; app-wide audit remains | Each statistics chart has a visible standard details selector and menu rows at least 48 logical px, including actual edge taps at 320 px/3.1× German text. Small painted cells retain their original hit regions; other controls still need measured coverage. |
+| I1 | statistics targets verified; app-wide audit remains | Visible chart selectors/menu rows and character-detail cells have real targets at least 48 logical px, with actual menu/character edge taps and 320 px/3.1× German grid coverage. Small painted chart cells retain their original hit regions; other controls still need measured coverage. |
 | I2 | partial / to do | Secondary-click and modifier regression; attached-tablet keyboard hints and native menus remain. |
 | I3 | verified in tests | Text submission uses IME-safe submission; keying focus/pointer/keyboard suites pass. Native CJK IME remains needs device. |
 | I4 | verified declarations/tests | PopScope drill guard and predictive-back manifest; native back gestures need device. |
@@ -99,7 +99,7 @@ specified OS/hardware. No store acceptance is inferred.
 | X8 | not applicable to remote service | No Internet bootstrap/service; loopback IPC is tested locally and rejects unauthenticated tokens. |
 | X9 | partial / to do | Dart errors have bounded local stacks and CI symbol retention; native-crash diagnostics and symbolized reports still need platform validation. |
 
-## Statistics detail alternatives (I1/I2/I5)
+## Statistics detail alternatives (I1/I2/I5/D6)
 
 The existing calendar, accuracy trend and confusion heatmap keep their painted
 charts and pointer selection. A visible standard selector offers the same local
@@ -110,10 +110,15 @@ Replacing a snapshot dismisses an old menu so its coordinates cannot select a
 different record. The existing heat legend now wraps its labels while preserving
 the colour sequence at large text sizes.
 
-Ten new widget regressions cover first/last keyboard selection and exact detail
+Thirteen new regressions cover first/last keyboard selection and exact detail
 data, semantics actions, real 48 px menu-edge hits, 320 px/3.1× German text,
-pointer-state equivalence, empty data and stale-menu cancellation. The original
-22 statistics regressions still pass. These controls provide an accessible
+pointer-state equivalence, empty data and stale-menu cancellation. Character
+cells now retain a real 48 px minimum target; narrow/large-text grid and straight
+edge hits are tested. Text on the unchanged statistical background palette uses
+the first qualifying theme foreground by actual luminance, with opaque black or
+white only when no theme text passes 4.5:1. All five styles in light/dark, every
+bucket and 101 ramp positions are measured. The full statistics suite still
+passes. These controls provide an accessible
 equivalent path; they do not enlarge each 8–18 px calendar or 30 px heatmap cell,
 or certify a system screen reader. This is MorseCQ product UI: DitMesh has no
 corresponding statistics screen, so X5 does not call for adding one there.
