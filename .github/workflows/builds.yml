@@ -204,6 +204,7 @@ jobs:
       - run: bash tool/ci/package_artifacts.sh --target android
       - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/android
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: evidence-android
           path: build/evidence/
@@ -247,6 +248,7 @@ jobs:
       - run: bash tool/ci/package_artifacts.sh --target ios
       - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/ios
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: evidence-ios
           path: build/evidence/

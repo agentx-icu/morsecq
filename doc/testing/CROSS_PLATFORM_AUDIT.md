@@ -90,7 +90,7 @@ specified OS/hardware. No store acceptance is inferred.
 | W3 | verified source/store tests | Per-OS support directory and atomic serialization; unusual volumes/long paths remain needs device. |
 | W4 | partial / to do | Mac universal release builds; installer/upgrade, Windows signing and Apple notarization/availability outstanding. |
 | F1 | needs device | Frame pacing at 90/120 Hz and mixed refresh. |
-| F2 | targets recorded / to do | Mac 57.0 MB measured; remaining artifact sizes and cold/warm launch latency unmeasured. |
+| F2 | size-budget hard gates implemented; startup needs device | Existing APP_STORE per-architecture artifact/payload limits are enforced on final bytes with retained reports; boundary/oversize and owner-IPA refusal regressions pass. Exact-head artifact results are recorded in the PR. Cold ≤5s / warm ≤2s to usable Learn still needs the release device matrix. |
 | F3 | verified lifecycle tests; needs device | Wake-lock/background cleanup; power/thermal device measurements outstanding. |
 | X1, X3, X4, X7 | needs device | Device matrix and interrupted-flow plan below; no simulator result is promoted to hardware evidence. |
 | X2 | verified actual-font sweep | 775 passed (real fonts); dimensions and detectors documented in TEST_PYRAMID. |

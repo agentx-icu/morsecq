@@ -52,6 +52,16 @@ Windows MSI ≤150 MiB and installed app ≤250 MiB; Linux DEB/RPM ≤100 MiB ea
 installed bundle ≤250 MiB. Cold start to usable Learn ≤5 s and warm reopen ≤2 s
 on the release device matrix are targets, not measurements. The local universal
 macOS release measured 57.1 MB on macOS 27.0.1 arm64; the other artifact sizes and
-startup latency still require measurement. See the [cross-platform audit](../testing/CROSS_PLATFORM_AUDIT.md).
+startup latency still require measurement. `tool/ci/release_size_budget.py` now
+enforces these existing size limits on final packaged files and application
+payloads for each build architecture. Reports include exact bytes and artifact
+SHA-256; MiB is 1,048,576 bytes. Payload uses logical regular-file bytes per
+pathname plus relative symlink-target bytes without traversing links, rather
+than allocated blocks or installer caches. macOS ZIP / Linux tar and iOS app
+payload sizes are recorded without inventing an additional limit. See the
+[current evidence and blocker classifications](STORE_READINESS.md#release-size-budgets)
+and [cross-platform audit](../testing/CROSS_PLATFORM_AUDIT.md). Cold/warm startup
+to usable Learn still requires the release device matrix; a visible CI window
+does not measure it.
 
 App-owned diagnostics exclude supplied stack text and release console error details; [the build guide](../operations/BUILD_AND_DEPLOY.md) documents the local retention, legacy-log replacement and remaining native diagnostics verification.

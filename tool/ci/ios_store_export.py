@@ -19,6 +19,7 @@ import uuid
 
 from distribution_signing import verify_apple_identity
 from macos_runtime import MACHO_MAGICS
+from release_size_budget import record_unsigned_archive, verify_sizes
 
 
 BUNDLE_ID = "icu.agentx.morsecq"
@@ -153,6 +154,7 @@ def inspect_archive(repo, output):
     if not app.is_dir() or list(applications.iterdir()) != [app]:
         raise ValueError("Xcode archive must contain exactly one expected application")
     inspect_app(repo, app, output / "archive-evidence")
+    record_unsigned_archive(app, output / "archive-evidence/size-budget.json")
 
 
 def inspect_export(repo, output, team, certificate, expected_profile):
@@ -186,6 +188,7 @@ def inspect_export(repo, output, team, certificate, expected_profile):
         chain = sorted(extracted.glob("certificate-*"))
         run(["security", "verify-cert", "-p", "codeSign", "-L", "-R", "offline",
              *[arg for path in chain for arg in ("-c", str(path))]], capture_output=True)
+        verify_sizes("ios", "arm64", [ipa], app, output / "export-evidence/size-budget.json")
     evidence.update({"ipa": str(ipa.name), "ipa_sha256": hashlib.sha256(ipa.read_bytes()).hexdigest(),
                      "signing_authority": authority,
                      "scope": "Local export and signature/profile checks; store acceptance and device qualification remain pending"})
