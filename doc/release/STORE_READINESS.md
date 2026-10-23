@@ -12,6 +12,15 @@ have not been inspected. They must be supplied by the owner, never guessed.
 The [previous 65-item audit](../testing/CROSS_PLATFORM_AUDIT.md) remains the
 bounded UI/lifecycle evidence; the following replaces its store-readiness gaps.
 
+The B2/X7 visible-QSO draft gap is covered by
+`apps/morsecq/test/learn/qso_visible_draft_test.dart`: typed/keyed edits reach
+the existing file store through a coalesced 400 ms checkpoint, without waiting
+for background or exit. Real-file reopening, continuous input, clear, submit,
+completion, screen replacement and failed-write recovery are checked locally.
+See the [persistence audit](../testing/PERSISTENCE_AUDIT.md) for the exact scope.
+Native Windows session-end, Linux SIGTERM and power-loss recovery still need
+their separate OS/device evidence; these widget tests do not close those cases.
+
 ## Channel matrix
 
 “Existing” means a repository build/packaging route, not a published listing.
