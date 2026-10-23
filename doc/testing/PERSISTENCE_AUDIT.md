@@ -15,6 +15,18 @@ MorseCQ stores learning and preferences locally and opens directly into Learn. `
 
 Live audio, microphone buffers, pressed keys, selected pages, translator scratch text and unfinished exercise input remain session state. Completed sessions and chosen defaults are durable. Materials and media can be shared using their dedicated tools; those operations are distinct from a whole-application backup. The storage layer for a portable learning backup exists (see the [learning architecture](../architecture/OFFLINE_LEARNING.md#backup-storage-layer)) but has no user-facing action yet.
 
+Unsent QSO replies are resumable drafts: visible typed text and released keyed
+patterns enqueue a checkpoint 400 ms after the first dirty edit, coalescing
+subsequent edits into the latest snapshot. Continuous input does not postpone
+that checkpoint; completion still depends on successful file IO. Clear, submit,
+mode changes, backgrounding and disposal share the same snapshot path; completed
+or disposed screens cannot leave a timer that recreates an old draft. Held keys
+and playback stay transient. `qso_visible_draft_test.dart` reopens the real file
+store with a new controller while the original screen is still visible, and
+covers failed writes, retry and completion/replacement races. This verifies the
+local B2/X7 checkpoint, not Windows session-end or Linux SIGTERM delivery;
+termination before a checkpoint or during unsuccessful IO can still lose edits.
+
 `AppScope` flushes preferences, locale, key profiles and the shared training controller together. Preference failures remain dirty for retry; another setting cannot erase the failure. Backgrounding uses the platform background-task bridge where available. Desktop quit waits for persistence and propagates unresolved errors. Confirmed Clear learning first flushes and retires the active controller, deletes local training/media, then reloads an empty controller so a delayed writer cannot resurrect cleared data. App-wide language/appearance/window choices remain available.
 
 Regression coverage includes concurrent file writes, malformed JSON recovery, preference error/retry and appearance restart behavior; first launch, background flushing, clear durability and learning-UI reload; plus real-platform learning/preference reopening in `integration_test/persistence_test.dart`. On the device file system, `integration_test/storage_contract_test.dart` covers the lifecycle barrier before a kill, clearing racing a late write, corrupt-progress recovery and rapid unawaited writes; `integration_test/app_storage_lifecycle_test.dart` drives the real app through backgrounding with the native background task, the desktop quit hook and the Me page's confirmed clear, each followed by a relaunch. The desktop E2E workflow executes every integration test and the actual UI walk on macOS, Linux and Windows. Fresh counts, CI links, device evidence and artifact verification are maintained in [the validation record](../VALIDATION.md), with [Chinese details](../VALIDATION.zh-CN.md). Reproduce gates and suites through `tool/test_pyramid.sh`; the screenshot and visual-matrix workflows are documented in [the screenshot guide](../../tool/screenshots/README.md).

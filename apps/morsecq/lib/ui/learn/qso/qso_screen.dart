@@ -92,6 +92,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   bool _remotePlaying = false;
   bool _recorded = false;
   bool _disposed = false;
+  Timer? _draftCheckpoint;
   QsoHint? _hint;
   List<QsoIssue> _issues = const <QsoIssue>[];
 
@@ -147,7 +148,10 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       final keyed = _keying.isKeyDown || _keying.markCount != marks;
       marks = _keying.markCount;
       if (keyed && !_active.isRunning && !_session.isDone) _active.start();
-      if (!_disposed) setState(() {});
+      if (!_disposed) {
+        setState(() {});
+        _scheduleDraft();
+      }
     });
   }
 
@@ -180,7 +184,22 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     }
   }
 
+  void _scheduleDraft() {
+    if (_disposed || _recorded || _session.isDone) return;
+    // Coalesce from the first dirty edit, so continuous typing/keying cannot
+    // postpone the latest snapshot indefinitely. The controller owns IO order.
+    _draftCheckpoint ??= Timer(const Duration(milliseconds: 400), () {
+      _draftCheckpoint = null;
+      if (!_disposed && !_recorded && !_session.isDone) {
+        unawaited(_saveDraft());
+      }
+    });
+  }
+
   Future<void> _saveDraft() async {
+    _draftCheckpoint?.cancel();
+    _draftCheckpoint = null;
+    if (_disposed || _recorded) return;
     // Let the decoder commit a pending character / word gap first, so a
     // restored reply keeps its word boundaries.
     final playback = _playback;
@@ -260,6 +279,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     });
     _keying.restart();
     _panel.currentState?.releaseHeld();
+    _scheduleDraft();
   }
 
   void _toggleTyping() {
@@ -295,6 +315,8 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   Future<void> _finish() async {
     if (_recorded) return;
+    _draftCheckpoint?.cancel();
+    _draftCheckpoint = null;
     _recorded = true;
     _active.stop();
     _wake.setActive(false);
@@ -311,9 +333,10 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _disposed = true;
+    _draftCheckpoint?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     if (!_session.isDone && !_recorded) unawaited(_saveDraft());
+    _disposed = true;
     _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_keyingSub?.cancel());
@@ -375,5 +398,6 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     _pendingWasTyped = _typedText.text.trim().isNotEmpty;
     _active.start();
     setState(() {});
+    _scheduleDraft();
   }
 }
