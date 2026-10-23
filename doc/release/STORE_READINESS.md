@@ -130,10 +130,26 @@ The actual exported app must pass the existing identity/signature gate plus exac
 
 | ID | Status | Evidence / boundary |
 | --- | --- | --- |
-| W4 / iOS | controlled preparation gate; owner export pending | Twenty policy/failure regressions, including built SDK/Xcode floor and refusal before export; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
+| W4 / iOS | controlled preparation gate; owner export pending | Twenty-one policy/failure regressions, including built SDK/Xcode floor, refusal before export and final-IPA size budget; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
 | X6 / iOS | final archive payload inspected | Same native/privacy/purpose-localization checks as the existing unsigned IPA; unsigned archive is not a signed delivery or installed-device result. |
 
-Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Twenty helper-policy regressions and the complete 96-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
+Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Twenty-one helper-policy regressions and the complete 105-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
+
+## Release size budgets
+
+F2 uses the already chosen [APP_STORE limits](APP_STORE.md#release-budgets), not a new channel or a relaxed limit: APK/AAB100MiB each, IPA150MiB, Mac app/PKG100MiB each, Windows MSI150MiB/application payload250MiB, Linux DEB/RPM100MiB each/application payload250MiB. MiB means1,048,576 bytes. macOS ZIP and Linux tar are also measured/hashed but have no separately declared compressed limit; iOS app logical bytes are recorded without an installed-size limit. Android installed size is not inferred from APK/AAB bytes.
+
+Every packager invokes one gate after its final signing/stapling/copy mutations and before discarding the matching application payload. The Windows staged tree is the final ZIP source checked against the installed MSI; Mac measures the re-extracted final ZIP app; Linux measures the staged program files used by CPack. Payload means the sum of regular-file logical lengths per pathname plus relative symlink-target text bytes, without following links. It includes hidden files; it excludes directory metadata, filesystem block allocation, user data and system installer caches/registry. Escaping/dangling/absolute links, special files and incomplete artifact sets fail closed. These are application payload budgets, not total machine disk-impact measurements.
+
+`build/evidence/<platform>-size-budget.json` retains exact final artifact bytes, SHA-256, architecture, logical payload bytes, declared limits and violations; size failures fail the package command, while CI still uploads evidence. `ios_store_export.py` applies the same150MiB limit to the actual final owner-exported IPA after its signature/profile checks, preserving `export-evidence/size-budget.json` on refusal. The unsigned archive only records app payload bytes in `archive-evidence/size-budget.json`: its tarball is not an IPA and does not qualify the IPA limit.
+
+| ID / portion | Classification and status | Evidence / remaining blocker |
+| --- | --- | --- |
+| F2 / final artifact and payload sizes | code: enforced; exact-head CI required | Seven size regressions cover exact limits/+1byte, final hashes, complete sets and link boundaries; actual development-packager and owner-export refusal tests reproduced the old acceptance then passed. Per-platform reports accompany CI artifacts. |
+| F2 / cold5s, warm2s to usable Learn | device validation | Measure the selected release identity on the release device matrix with realistic data. The installed visible-window smoke timeout is not a performance result. |
+| F2 / real owner-signed IPA and trusted packages | account material, then artifact/device verification | The gate is implemented; actual owner export/signing remains blocked by existing identity/profile material, not by a new budget decision. No signing was performed here. |
+
+P7 retains the established policy allowing ordinary local-learning app-switcher snapshots. No screenshot restriction or new product/privacy decision is introduced by F2.
 
 ## Installed Windows MSI evidence
 

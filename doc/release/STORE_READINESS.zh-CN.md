@@ -101,10 +101,26 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 
 | ID | 状态 | 证据 / 边界 |
 | --- | --- | --- |
-| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 二十项策略/失败回归，包含实际 SDK/Xcode 门槛与 export 前拒绝；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
+| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 二十一项策略/失败回归，包含实际 SDK/Xcode 门槛、export 前拒绝及最终 IPA 体积预算；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
 | X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
 
-2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。二十项 helper 策略回归及全部 96 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
+2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。二十一项 helper 策略回归及全部 105 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
+
+## 发布体积预算
+
+F2 使用已选定的 [APP_STORE 上限](APP_STORE.zh-CN.md#发布预算)，不新增渠道或放宽限制：APK/AAB 各100MiB、IPA150MiB、Mac app/PKG 各100MiB、Windows MSI150MiB/应用 payload250MiB、Linux DEB/RPM 各100MiB/应用 payload250MiB。MiB 为1,048,576字节。Mac ZIP、Linux tar 也记录大小/hash，但没有另行定义的压缩上限；iOS app 记录逻辑字节，不虚构安装体积上限。Android 安装大小不从 APK/AAB 字节推定。
+
+各 packager 在最终签名/staple/复制完成后、清理对应应用 payload 前调用同一门禁。Windows staged 目录是最终 ZIP 的来源，后续 MSI 安装检查与该 ZIP 精确比较；Mac 测量最终 ZIP 重新解出的应用；Linux 测量 CPack 使用的 staged 程序文件。Payload 口径是普通文件各路径的逻辑长度之和，加相对 symlink 目标文本字节，不跟随链接；包含隐藏文件，不包括目录元数据、磁盘块分配、用户数据或系统 installer 缓存/注册表。逃逸/悬空/绝对链接、特殊文件及不完整制品集合均拒绝。这是应用 payload 预算，不是机器总磁盘占用。
+
+`build/evidence/<platform>-size-budget.json` 保留最终文件精确字节、SHA-256、架构、payload 逻辑字节、上限及超限条目；超限令打包命令失败，CI 仍上传证据。`ios_store_export.py` 在实际所有者导出 IPA 的签名/profile 检查后执行相同150MiB上限，拒绝时保留 `export-evidence/size-budget.json`。Unsigned archive 仅在 `archive-evidence/size-budget.json` 记录 app payload；archive tar 不是 IPA，也不证明满足 IPA 上限。
+
+| ID / 部分 | 分类与状态 | 证据 / 剩余阻塞 |
+| --- | --- | --- |
+| F2 / 最终制品及 payload 体积 | 代码：已执行门禁；须精确 head CI | 七项体积回归覆盖精确边界/+1字节、最终 hash、完整集合与链接边界；实际开发 packager、所有者导出入口超限负例先复现旧接受再通过。CI 每平台保留报告。 |
+| F2 / 冷5秒、热2秒至可用 Learn | 设备验证 | 在发布设备矩阵上，使用选定发行身份及真实数据测量。安装门禁的窗口等待超时不是性能结果。 |
+| F2 / 真实所有者签名 IPA 与可信包 | 账号材料，之后制品/设备验证 | 门禁已实现，真实导出/签名仍依赖既有身份/profile，而非重新决定预算；本次未执行签名。 |
+
+P7 沿用普通本地学习内容允许进入系统切换快照的既有政策；F2 不增加截图限制或新的产品/隐私决定。
 
 ## Windows MSI 安装后证据
 

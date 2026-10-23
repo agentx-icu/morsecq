@@ -106,6 +106,7 @@ jobs:
           python3 tool/ci/ios_store_export_test.py
           python3 tool/ci/distribution_signing_test.py
           python3 tool/ci/release_packager_test.py
+          python3 tool/ci/release_size_budget_test.py
           python3 tool/ci/verify_site_test.py
 
       - name: DST calendar regressions
