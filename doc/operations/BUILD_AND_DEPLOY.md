@@ -39,7 +39,7 @@ local/CI testing. Windows Authenticode signing and macOS Developer ID signing /
 notarization require owner credentials and are not claimed by an unsigned build.
 
 Builds archive Dart split-debug-info and available dSYM/PDB files as separate
-`symbols-*` CI artifacts. App-owned Dart diagnostics retain UTC time, error type, a fixed event name and
+`symbols-*` CI artifacts. App-owned Dart diagnostics retain UTC time, an allowlisted error category, a fixed event name and
 code coordinates / AOT PCs captured inside the recorder in
 `<support>/logs/errors.log`, with one previous file (256 KiB each). Caller-supplied
 stack text, function names, absolute paths, exception messages, learning content
@@ -47,6 +47,12 @@ and recordings are excluded. This is the recorder's capture-point stack, not the
 original exception stack. Unrecognized frames are omitted. Legacy raw logs are
 replaced before recording and excluded from copying. Nothing is uploaded;
 Me → Copy local diagnostics is the explicit export path.
+Custom error `runtimeType` and `toString` getters are never evaluated for these
+records. Links at the logs directory/current/previous paths are refused by
+initialization, recording and copying. Writes stage in a private temporary
+directory and replace directory entries by rename; they never truncate or
+append through an existing log entry. A changed/unsafe path disables diagnostics
+instead of modifying its target. No learning file is migrated by this cleanup.
 
 Error hooks install before startup work without opening storage. On desktop,
 only the exclusive instance owner enables the file sink. Until storage is ready

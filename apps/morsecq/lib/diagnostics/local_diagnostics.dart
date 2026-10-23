@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Code-owned event names, never a path, plugin message or learning content.
@@ -39,7 +41,7 @@ final class LocalDiagnostics {
 
   final File file;
   final int maximumBytes;
-  static const _header = 'MorseCQ diagnostics v2\n';
+  static const _header = 'MorseCQ diagnostics v3\n';
   static LocalDiagnostics? _current;
   static bool _hooksInstalled = false;
 
@@ -94,10 +96,20 @@ final class LocalDiagnostics {
       // A supplied StackTrace can be fromString or a custom implementation.
       // Do not call its toString, even when it resembles a package frame.
       final frames = _codeFrames(StackTrace.current.toString());
-      final type = error.runtimeType.toString();
-      final safeType = RegExp(r'^[A-Za-z_][A-Za-z_0-9]{0,79}$').hasMatch(type)
-          ? type
-          : 'Object';
+      final safeType = switch (error) {
+        FlutterError() => 'FlutterError',
+        PlatformException() => 'PlatformException',
+        MissingPluginException() => 'MissingPluginException',
+        FileSystemException() => 'FileSystemException',
+        TimeoutException() => 'TimeoutException',
+        FormatException() => 'FormatException',
+        StateError() => 'StateError',
+        ArgumentError() => 'ArgumentError',
+        UnsupportedError() => 'UnsupportedError',
+        AssertionError() => 'AssertionError',
+        TypeError() => 'TypeError',
+        _ => 'Object',
+      };
       var entry =
           '${DateTime.now().toUtc().toIso8601String()} '
           '${context.name} $safeType\n';
@@ -108,20 +120,19 @@ final class LocalDiagnostics {
       final bytes = utf8.encode(entry);
       if (bytes.length + _header.length > maximumBytes) return;
       _prepareFiles();
-      if (file.lengthSync() + bytes.length > maximumBytes) {
-        final previous = File('${file.path}.previous');
-        if (previous.existsSync()) previous.deleteSync();
-        file.renameSync(previous.path);
-        file.writeAsStringSync(_header, flush: true);
+      var current = _readCurrent();
+      if (current.length + bytes.length > maximumBytes) {
+        _replace(File('${file.path}.previous'), current);
+        current = utf8.encode(_header);
       }
-      file.writeAsBytesSync(bytes, mode: FileMode.append, flush: true);
+      _replace(file, [...current, ...bytes]);
     } on Object {
       // Neither storage nor a malformed error may break an error hook.
     }
   }
 
   void _prepareFiles() {
-    file.parent.createSync(recursive: true);
+    _checkPaths(create: true);
     final previous = File('${file.path}.previous');
     // Older versions persisted raw stack text. Never retain or export it.
     if (previous.existsSync() &&
@@ -131,7 +142,74 @@ final class LocalDiagnostics {
     if (!file.existsSync() ||
         !_hasHeader(file) ||
         file.lengthSync() > maximumBytes) {
-      file.writeAsStringSync(_header, flush: true);
+      _replace(file, utf8.encode(_header));
+    }
+  }
+
+  /// Reject links before every entry point. Replacements use a private temp
+  /// directory and rename, so swapping a file for a symlink/hardlink cannot
+  /// turn a diagnostic rewrite into a truncate/append of its target.
+  void _checkPaths({bool create = false}) {
+    final parent = file.parent;
+    var kind = FileSystemEntity.typeSync(parent.path, followLinks: false);
+    if (kind == FileSystemEntityType.notFound && create) {
+      parent.createSync(recursive: true);
+      kind = FileSystemEntity.typeSync(parent.path, followLinks: false);
+    }
+    if (kind != FileSystemEntityType.directory &&
+        kind != FileSystemEntityType.notFound) {
+      throw const FileSystemException('Unsafe diagnostic directory');
+    }
+    for (final path in [file.path, '${file.path}.previous']) {
+      final type = FileSystemEntity.typeSync(path, followLinks: false);
+      if (type != FileSystemEntityType.file &&
+          type != FileSystemEntityType.notFound) {
+        throw const FileSystemException('Unsafe diagnostic entry');
+      }
+    }
+  }
+
+  void _replace(File destination, List<int> bytes) {
+    _checkPaths(create: true);
+    final parent = file.parent.resolveSymbolicLinksSync();
+    final temporary = Directory(parent).createTempSync('.diagnostics-');
+    final staged = File('${temporary.path}/entry');
+    try {
+      staged.writeAsBytesSync(bytes, flush: true);
+      _checkPaths();
+      if (file.parent.resolveSymbolicLinksSync() != parent ||
+          FileSystemEntity.typeSync(temporary.path, followLinks: false) !=
+              FileSystemEntityType.directory) {
+        throw const FileSystemException('Diagnostic directory changed');
+      }
+      staged.renameSync('$parent/${destination.uri.pathSegments.last}');
+    } finally {
+      try {
+        if (Directory(parent).resolveSymbolicLinksSync() == parent &&
+            FileSystemEntity.typeSync(temporary.path, followLinks: false) ==
+                FileSystemEntityType.directory) {
+          if (staged.existsSync()) staged.deleteSync();
+          temporary.deleteSync();
+        }
+      } on Object {
+        // Never follow a changed directory during best-effort cleanup.
+      }
+    }
+  }
+
+  List<int> _readCurrent() {
+    _checkPaths();
+    final handle = file.openSync();
+    try {
+      final bytes = handle.readSync(maximumBytes + 1);
+      if (bytes.length > maximumBytes ||
+          !utf8.decode(bytes, allowMalformed: true).startsWith(_header)) {
+        throw const FileSystemException('Diagnostic entry changed');
+      }
+      _checkPaths();
+      return bytes;
+    } finally {
+      handle.closeSync();
     }
   }
 
@@ -162,16 +240,27 @@ final class LocalDiagnostics {
   }
 
   Future<String> readEvidence() async {
+    try {
+      return _readEvidence();
+    } on Object {
+      return 'MorseCQ local diagnostics unavailable';
+    }
+  }
+
+  String _readEvidence() {
+    _checkPaths();
     final parts = <String>[];
     for (final entry in [File('${file.path}.previous'), file]) {
-      if (await entry.exists() && _hasHeader(entry)) {
-        final handle = await entry.open();
+      if (FileSystemEntity.typeSync(entry.path, followLinks: false) ==
+          FileSystemEntityType.file) {
+        final handle = entry.openSync();
         try {
-          parts.add(
-            utf8.decode(await handle.read(maximumBytes), allowMalformed: true),
-          );
+          final bytes = handle.readSync(maximumBytes);
+          _checkPaths();
+          final text = utf8.decode(bytes, allowMalformed: true);
+          if (text.startsWith(_header)) parts.add(text);
         } finally {
-          await handle.close();
+          handle.closeSync();
         }
       }
     }

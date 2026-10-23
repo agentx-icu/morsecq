@@ -129,5 +129,6 @@ jobs:
         run: >-
           flutter test --no-pub
           apps/morsecq/test/platform/diagnostics_privacy_regression_test.dart
+          apps/morsecq/test/platform/diagnostics_filesystem_boundary_test.dart
           --dart-define=dart.vm.product=true
           --dart-define=MORSECQ_TEST_PRODUCT_POLICY=true
