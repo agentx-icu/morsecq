@@ -27,8 +27,15 @@ jobs:
         run: dart pub get --enforce-lockfile
       - name: Install real multilingual fonts
         run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-noto-core fonts-noto-cjk fonts-noto-mono fontconfig
+          # The hosted image's Azure mirror stalled twice downloading these fonts.
+          # Keep its archive keyring and source suites; change only that mirror URL.
+          grep -F 'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' /etc/apt/sources.list.d/ubuntu.sources
+          test -s /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          sudo sed -i 's|^http://azure\.archive\.ubuntu\.com/ubuntu/|https://archive.ubuntu.com/ubuntu/|' /etc/apt/apt-mirrors.txt
+          cat /etc/apt/apt-mirrors.txt
+          apt_options=(-o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2)
+          sudo apt-get "${apt_options[@]}" update
+          sudo apt-get "${apt_options[@]}" install -y fonts-noto-core fonts-noto-cjk fonts-noto-mono fontconfig
           test -s /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
           test -s /usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc
       - name: Every screen at every window size, language and text scale
