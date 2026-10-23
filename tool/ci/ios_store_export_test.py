@@ -209,6 +209,32 @@ class IosStoreExportTests(unittest.TestCase):
         self.assertEqual(store.profile_evidence(profile, profile["Entitlements"], "ABCDE12345", self.fingerprint)["application_identifier"],
                          "PREFIX.icu.agentx.morsecq")
 
+    def test_archive_retains_only_contained_resolving_symbol_links(self):
+        archive = self.root / "Runner.xcarchive"
+        (archive / "Products/Applications/Runner.app").mkdir(parents=True)
+        symbols = archive / "dSYMs"
+        symbols.mkdir()
+        (symbols / "Runner-symbols").write_bytes(b"real fixture content")
+        (symbols / "internal.dSYM").symlink_to("Runner-symbols")
+        with patch.object(store, "inspect_app") as inspect:
+            store.inspect_archive(self.root, self.root)
+            inspect.assert_called_once()
+        (self.root / "outside-symbols").write_bytes(b"outside archive")
+        link = symbols / "invalid.dSYM"
+        for target in (self.root / "outside-symbols", symbols / "missing", symbols / "Runner-symbols"):
+            link.symlink_to(target)
+            with self.subTest(target=target), patch.object(store, "inspect_app") as inspect:
+                with self.assertRaisesRegex(ValueError, "archive symlink"):
+                    store.inspect_archive(self.root, self.root)
+                inspect.assert_not_called()
+            link.unlink()
+        archive.rename(self.root / "real-archive")
+        archive.symlink_to(self.root / "real-archive", target_is_directory=True)
+        with patch.object(store, "inspect_app") as inspect:
+            with self.assertRaisesRegex(ValueError, "real application archive"):
+                store.inspect_archive(self.root, self.root)
+            inspect.assert_not_called()
+
     def test_config_archive_and_export_failures_propagate_without_verification(self):
         # Real subprocess error propagation is exercised at each command boundary;
         # no mocked success is counted as a signed app or a native archive.

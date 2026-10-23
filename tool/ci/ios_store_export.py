@@ -120,7 +120,22 @@ def inspect_app(repo, app, output):
 
 
 def inspect_archive(repo, output):
-    applications = output / "Runner.xcarchive/Products/Applications"
+    archive = output / "Runner.xcarchive"
+    if not archive.is_dir() or archive.is_symlink():
+        raise ValueError("Xcode must produce a real application archive directory")
+    archive = archive.resolve()
+    # tar preserves links; never claim an external/dangling dSYM was retained.
+    for path in archive.rglob("*"):
+        if path.is_symlink():
+            if path.readlink().is_absolute():
+                raise ValueError(f"Non-relocatable archive symlink: {path}")
+            try:
+                target = path.resolve(strict=True)
+            except (OSError, RuntimeError) as error:
+                raise ValueError(f"Invalid archive symlink: {path}") from error
+            if not target.is_relative_to(archive):
+                raise ValueError(f"Escaping archive symlink: {path}")
+    applications = archive / "Products/Applications"
     app = applications / "Runner.app"
     if not app.is_dir() or list(applications.iterdir()) != [app]:
         raise ValueError("Xcode archive must contain exactly one expected application")

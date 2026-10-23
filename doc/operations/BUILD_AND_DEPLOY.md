@@ -22,11 +22,11 @@ Tags must match the numeric `X.Y.Z` part of the app pubspec: `1.0.0+1` uses tag 
 
 ## Platform scope
 
-Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled objective_c native framework’s verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. Windows CI uses Windows Server 2022.
+Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled objective_c native framework’s verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. The installed DEB gate also requires the EGL/GL/GLES dispatch loaders before its test harness. Windows CI uses Windows Server 2022.
 
 ## Compatibility release checks (2026-10-22)
 
-Linux Listen invokes `parecord` and `pactl`: install `pulseaudio-utils` for bare
+Linux Listen invokes `parecord` and `pactl`: install `pulseaudio-utils`, `libegl1`, `libgl1` and `libgles2` for bare
 tar.gz deployments. DEB and RPM now declare it; `gdbus` is used to confirm a live
 tray host (DEB `libglib2.0-bin`, RPM `glib2`). An absent tray host leaves close as
 quit. The native macOS sandbox permits local client/server IPC for the
@@ -67,3 +67,5 @@ For iOS, set the verified `MORSECQ_APPLE_TEAM_ID` and run `bash tool/build_ios_s
 Before publishing, record hashes and the prior signed artifact; test clean install, update with existing learning data, denial/revocation and uninstall as a standard user on each selected channel. Owner credentials, identity/territory/metadata/rights and store-console answers remain blockers until evidenced.
 
 Both CI and local strict packaging use the same payload inspector. Final Mac ZIP inspection also runs actual `codesign --verify --deep --strict`; reading entitlement metadata alone cannot verify resources/signatures.
+
+Desktop CMake intentionally disables optional JNI host discovery: JNI is transitive through Android-only platform code and is unused by MorseCQ on Linux/Windows. This prevents a runner JDK from adding a desktop JVM requirement. Android JNI remains enabled; adding desktop Java later requires explicit runtime/dependency and installed-package verification.

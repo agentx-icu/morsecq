@@ -85,7 +85,7 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readiness/check-archive
 ```
 
-输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；要求声明的主程序是包内具执行权限的真实 Mach-O 文件，拒绝 archive/应用中未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。CI 用 tar 保留 archive mode/symlink，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
+输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；要求声明的主程序是包内具执行权限的真实 Mach-O 文件，拒绝 archive/应用中未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。Archive gate 拒绝包括 dSYM 在内的悬空/外部/不可重定位绝对链接，CI 用 tar 保留 archive mode/有效内链，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
 
 后续仅由所有者在已有签名配置的 Mac 执行本地导出：
 
@@ -99,10 +99,10 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 
 | ID | 状态 | 证据 / 边界 |
 | --- | --- | --- |
-| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十五项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
+| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十六项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
 | X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
 
-2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十五项 helper 策略回归及全部 86 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
+2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十六项 helper 策略回归及全部 92 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
 
 ## Windows MSI 安装后证据
 
@@ -122,6 +122,10 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 | B2、W2 | 行为未改；冒烟执行默认关闭 | Fresh-profile close-to-tray 默认 false，不退出即失败。强杀只清理失败测试，不能当作优雅退出证据；未修改训练/session 层。 |
 
 ## Linux DEB 安装后证据
+
+此前干净 DEB 检查还抓到意外 `libdartjni.so` → 缺失 `libjvm.so`：`path_provider_android` 间接引入 JNI，应用和 desktop 实现没有 Java 调用，生成的 Android registrar 受 `Platform.isAndroid` 限制。JNI 上游仅在宿主恰好有 JDK 时构建其可选桌面库。现于 Linux/Windows generated plugins 前关闭该可选 CMake 发现，Android 不变。真实上游 CMake fixture 先复现宿主污染，再证明仅排除未用 JNI，另一个 native 资产仍实际构建/安装；不删除必需组件、不豁免原生检查。未来若增加 desktop Java 功能，必须重新声明完整 JVM/runtime 依赖并验证已装产物。
+
+Flutter 动态加载 EGL/GL/GLES，`dpkg-shlibdeps` 不能单独证明这部分依赖；DEB 现显式声明 `libegl1`、`libgl1`、`libgles2`，RPM 声明对应 x64 SONAME（未宣称 RPM 实际运行）。容器在 X11 harness 引入图形库之前核精确 loader SONAME、实际文件/CPU 与依赖闭包。
 
 Linux release-build job 现将最终 DEB 安装进官方 Ubuntu 24.04 容器，记录 image digest、包 SHA-256 与 OS/CPU。先只安装 DEB 声明的依赖，在引入 X11 测试工具前逐个 installed ELF 执行 `ldd`，避免测试工具补装的库掩盖 Depends 遗漏。应用入口移除 `LD_LIBRARY_PATH` 独立检查；单个插件 DSO 只使用该已装包的私有 `lib` 目录模拟应用已加载引擎的上下文，该检查环境不会导出给真实 GUI 进程。真实 GUI 使用镜像既有 `nobody` 用户与私有 XDG 目录，不挂载宿主桌面/数据/服务 socket。检查最终包与已装程序/launcher/desktop/icon 文件完全匹配、ELF CPU，要求可见可关闭窗口属于已装 executable 的同一 PID，并加载随包 Flutter engine；发送 `WM_DELETE_WINDOW` 后要求 exit0、启动进程组无残留，再检查卸载后程序文件消失且包不再是 installed 状态（apt remove 可保留配置状态）。强杀只清理失败，不算通过。
 

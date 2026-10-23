@@ -44,11 +44,11 @@ set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS_PRIVATE_DIRS "opt/morsecq/lib")
 # Plus what is only loaded at run time (dlopen), so shlibdeps cannot see it:
-# the tray indicator and ALSA for the sidetone.
+# tray/ALSA and Flutter's dynamically loaded EGL/GL/GLES dispatch libraries.
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-  "libayatana-appindicator3-1, libasound2t64 | libasound2, pulseaudio-utils, libglib2.0-bin")
+  "libayatana-appindicator3-1, libasound2t64 | libasound2, pulseaudio-utils, libglib2.0-bin, libegl1, libgl1, libgles2")
 
-set(CPACK_RPM_PACKAGE_REQUIRES "pulseaudio-utils, glib2")
+set(CPACK_RPM_PACKAGE_REQUIRES "pulseaudio-utils, glib2, libEGL.so.1()(64bit), libGL.so.1()(64bit), libGLESv2.so.2()(64bit)")
 set(CPACK_RPM_PACKAGE_ARCHITECTURE "${MORSECQ_RPM_ARCH}")
 set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-only")
 set(CPACK_RPM_PACKAGE_GROUP "Applications/Education")

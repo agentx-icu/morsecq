@@ -2,9 +2,9 @@ param([Parameter(Mandatory=$true)][string]$InputPath)
 $ErrorActionPreference = 'Stop'
 $identity = $env:MORSECQ_WINDOWS_CERT_SHA1
 if (-not $identity) { throw 'distribution requires MORSECQ_WINDOWS_CERT_SHA1' }
-$files = if (Test-Path $InputPath -PathType Container) {
-  @(Get-ChildItem $InputPath -Recurse -File | Where-Object { $_.Extension -in '.exe', '.dll' })
-} else { @(Get-Item $InputPath) }
+$files = @(if (Test-Path -LiteralPath $InputPath -PathType Container) {
+  Get-ChildItem -LiteralPath $InputPath -Recurse -File | Where-Object { $_.Extension -in '.exe', '.dll' }
+} else { Get-Item -LiteralPath $InputPath })
 if ($files.Count -eq 0) { throw 'No PE or installer files to sign' }
 # Redistributable CRTs must remain the original signed Microsoft components.
 # Refuse damaged/unsigned CRTs before looking up any owner signing tool/key.

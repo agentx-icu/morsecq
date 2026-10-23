@@ -114,7 +114,7 @@ To validate the real archive without distribution material, run from the reposit
 bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readiness/check-archive
 ```
 
-The output directory must be new. The helper resolves the locked workspace dependencies, configures Flutter with `--no-codesign`, and runs `xcodebuild archive` with signing disabled and no automatic-provisioning/device-registration flags. It requires the declared main executable to be a contained executable Mach-O file, rejects extra `.app`/`.appex` targets in the archive or app until their profile policy is reviewed, then reuses the final iOS payload/privacy/localization gate. CI archives this evidence as a tarball to preserve bundle modes and symlinks; `UNSIGNED-ARCHIVE.txt` explicitly prevents mistaking it for a signed, store-submittable IPA.
+The output directory must be new. The helper resolves the locked workspace dependencies, configures Flutter with `--no-codesign`, and runs `xcodebuild archive` with signing disabled and no automatic-provisioning/device-registration flags. It requires the declared main executable to be a contained executable Mach-O file, rejects extra `.app`/`.appex` targets in the archive or app until their profile policy is reviewed, then reuses the final iOS payload/privacy/localization gate. The archive gate rejects dangling, external or non-relocatable absolute links, including dSYM links; CI archives this evidence as a tarball to preserve bundle modes and valid internal symlinks; `UNSIGNED-ARCHIVE.txt` explicitly prevents mistaking it for a signed, store-submittable IPA.
 
 Only the owner on an already configured signing Mac may run a later local export:
 
@@ -128,10 +128,10 @@ The actual exported app must pass the existing identity/signature gate plus exac
 
 | ID | Status | Evidence / boundary |
 | --- | --- | --- |
-| W4 / iOS | controlled preparation gate; owner export pending | Fifteen policy/failure regressions; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
+| W4 / iOS | controlled preparation gate; owner export pending | Sixteen policy/failure regressions; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
 | X6 / iOS | final archive payload inspected | Same native/privacy/purpose-localization checks as the existing unsigned IPA; unsigned archive is not a signed delivery or installed-device result. |
 
-Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Fifteen helper-policy regressions and the complete 86-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
+Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Sixteen helper-policy regressions and the complete 92-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
 
 ## Installed Windows MSI evidence
 
@@ -151,6 +151,10 @@ This script refuses non-GitHub-hosted runners, existing MorseCQ processes and ex
 | B2, W2 | behavior unchanged; smoke exercises default close | The fresh-profile close-to-tray default is false; failure to quit fails the test. Forced termination only cleans a failed test and cannot count as graceful exit evidence. No training/session layer changes. |
 
 ## Installed Linux DEB evidence
+
+The previous clean-DEB check also exposed an unintended `libdartjni.so` → missing `libjvm.so` dependency. `path_provider_android` brings JNI transitively; the desktop implementations and app have no Java calls, and the generated Android registrar is guarded by `Platform.isAndroid`. The JNI package builds its optional desktop library only when a host JDK happens to be found. Linux/Windows now disable that optional CMake discovery before generated plugins; Android remains unchanged. A real upstream-CMake fixture reproduces host-JDK contamination, then proves the policy excludes unused JNI while another native asset still builds/installs. No bundled mandatory library is deleted or exempted from native inspection. A future desktop Java feature requires an explicit JVM runtime/dependency policy and installed qualification.
+
+Flutter dynamically loads EGL/GL/GLES, so `dpkg-shlibdeps` alone does not establish those runtime dependencies. DEB now explicitly requires `libegl1`, `libgl1`, `libgles2` (RPM declares the matching x64 SONAMEs, without claiming RPM execution). The clean container checks exact loader SONAMEs, their files/CPU and dependency closures before the X11 harness can install graphics libraries.
 
 The Linux release-build job now installs the final DEB in an official Ubuntu 24.04 container, recording the image digest, package SHA-256 and OS/CPU. It resolves only the DEB's declared dependencies and checks every installed ELF with `ldd` before installing the X11 test harness, so harness packages cannot conceal a missing package dependency. The application entry is inspected without `LD_LIBRARY_PATH`; individual plugin DSOs use only the installed package's private `lib` directory to model the engine already loaded by the app. This private inspection setting is never exported to the real GUI process. The real GUI then runs as the image's existing `nobody` user with private XDG directories; no host desktop/data/service socket is mounted. The test compares installed program/launcher/desktop/icon files against the final package, checks ELF CPU, requires a visible closable window belonging to the installed executable PID and its bundled Flutter engine mapping, sends `WM_DELETE_WINDOW`, requires exit0 without a surviving launch-group process, and verifies program files are removed and the package no longer has installed registration after uninstall (apt remove may retain configuration state). Forced termination only cleans failures.
 

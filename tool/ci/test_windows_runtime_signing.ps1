@@ -22,14 +22,18 @@ try {
   # This is a nonexistent public thumbprint fixture, never a new credential.
   $env:MORSECQ_WINDOWS_CERT_SHA1 = '0000000000000000000000000000000000000000'
   function Get-Command { throw 'Signing tool lookup must never be reached for damaged CRTs' }
-  $refused = $false
-  try {
-    & (Join-Path $PSScriptRoot 'sign_windows.ps1') -InputPath $damaged
-  } catch {
-    if ($_.Exception.Message -notlike 'MSVC runtime must retain a trusted Microsoft signature*') { throw }
-    $refused = $true
+  # PowerShell unwraps a singleton pipeline; both public input forms must
+  # still reach CRT refusal under StrictMode, never a missing Count property.
+  foreach ($inputPathFixture in @($damaged, $temporary)) {
+    $refused = $false
+    try {
+      & (Join-Path $PSScriptRoot 'sign_windows.ps1') -InputPath $inputPathFixture
+    } catch {
+      if ($_.Exception.Message -notlike 'MSVC runtime must retain a trusted Microsoft signature*') { throw }
+      $refused = $true
+    }
+    if (-not $refused) { throw 'Damaged CRT reached signing without the required refusal' }
   }
-  if (-not $refused) { throw 'Damaged CRT reached signing without the required refusal' }
   Write-Host 'Real tampered Microsoft CRT rejected before owner signing-tool lookup.'
 } finally {
   $env:MORSECQ_WINDOWS_CERT_SHA1 = $previousIdentity
