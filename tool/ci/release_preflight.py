@@ -139,6 +139,11 @@ def check_native_directory(root, platform, architecture):
                 raise ValueError(f'Invalid PE headers: {path}')
             machine = struct.unpack_from('<H', data, offset + 4)[0]
             actual = {0x8664: 'x86_64', 0xaa64: 'arm64', 0x14c: 'x86'}.get(machine)
+        elif (platform == 'windows' and path.name == 'app.so' and path.parent.name == 'data'
+              and (path.parent.parent / 'morsecq.exe').is_file()):
+            # Flutter Windows uses ELF for its canonical AOT snapshot, including in ZIPs.
+            bits, machine, _ = elf_info(path.read_bytes())
+            actual = {(2, 62): 'x86_64', (2, 183): 'arm64'}.get((bits, machine))
         elif platform == 'linux' and (header == b'\x7fELF' or '.so' in path.name or path.name == 'morsecq'):
             bits, machine, _ = elf_info(path.read_bytes())
             actual = {(2, 62): 'x86_64', (2, 183): 'arm64'}.get((bits, machine))

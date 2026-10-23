@@ -98,6 +98,31 @@ class ReleasePreflightTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'architecture'):
             check_native_directory(archive, 'windows', 'x86_64')
 
+    def test_windows_canonical_elf_snapshot_must_match_target_cpu(self):
+        (self.root / 'morsecq.exe').write_bytes(pe())
+        snapshot = self.root / 'data/app.so'
+        snapshot.parent.mkdir()
+        snapshot.write_bytes(elf(machine=62))
+        self.assertEqual(len(check_native_directory(self.root, 'windows', 'x86_64')), 2)
+        snapshot.write_bytes(elf(machine=183))
+        with self.assertRaisesRegex(ValueError, 'architecture'):
+            check_native_directory(self.root, 'windows', 'x86_64')
+        snapshot.write_bytes(b'corrupt')
+        with self.assertRaisesRegex(ValueError, 'ELF'):
+            check_native_directory(self.root, 'windows', 'x86_64')
+
+    def test_windows_zip_snapshot_wrong_architecture_is_rejected(self):
+        archive = self.root / 'windows.zip'
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('morsecq/morsecq.exe', pe())
+            z.writestr('morsecq/data/app.so', elf(machine=183))
+        with self.assertRaisesRegex(ValueError, 'architecture'):
+            check_native_directory(archive, 'windows', 'x86_64')
+        with zipfile.ZipFile(archive, 'w') as z:
+            z.writestr('morsecq/morsecq.exe', pe())
+            z.writestr('morsecq/data/app.so', elf(machine=62))
+        self.assertEqual(len(check_native_directory(archive, 'windows', 'x86_64')), 2)
+
     def test_apple_requires_app_manifest_and_rejects_collected_data(self):
         app = self.root / 'MorseCQ.app'
         app.mkdir()

@@ -16,7 +16,7 @@
 | Developer ID 直接下载 / macOS universal2 | 已有开发 PKG/ZIP；显式发行模式按内到外签名、核对 Team/证书类别、公证并 staple 最终制品 | 提供真实身份、Team、notary profile，运行所有者入口并保留下载隔离/Gatekeeper、安装与升级证据。本次未使用真实凭据或公证服务。 |
 | iOS 兼容版运行于 Apple silicon Mac / Vision Pro | 上次决定为验证前关闭兼容上架；原生 Mac 是另一二进制，实际后台可用性未知 | 所有者分别留存 App Store Connect opt-out。若启用或在同记录替换，验证插件、硬件降级和进度/设置数据连续性，原生 Mac 构建不证明兼容 iOS 行为。 |
 | Google Play / Android mobile armv7、arm64、x86_64 / 地区待定 | 有 AAB/配套 APK，target36/min24，最终 native/manifest/alignment 检查；tag 签名须匹配所有者 upload SHA-256 | R：账号、包名、upload 与 Play 分发证书、Data safety/隐私、访问说明、广告/受众/分级、设备目录与实际投递 APK；C：个人账号封闭测试/生产访问。需 16 KB 真机/镜像运行、签名升级及审核证据；TV/XR/Wear/Automotive 非当前选定产品。 |
-| Windows 直接下载 / x64 MSI+ZIP | 已有开发路径；CI 检查全部 PE 架构及实际 MSI Template Summary，发行模式校验全部 PE/安装器签名 | 所有者提供指纹，测试普通用户安装/升级/卸载及运行时依赖；不能以签名推定 SmartScreen 信誉。 |
+| Windows 直接下载 / x64 MSI+ZIP | 已有开发路径；CI 与本地发行门禁检查全部 PE 架构及 Flutter 标准 `data/app.so` ELF AOT 的 CPU；CI 另检查最终 ZIP 内容和实际 MSI Template Summary；发行模式校验全部 PE/安装器签名 | 所有者提供指纹，测试普通用户安装/升级/卸载及运行时依赖；不能以签名推定 SmartScreen 信誉。 |
 | Microsoft Store hosted MSI/EXE / PC 非游戏 / 地区待定 | 候选，尚无商店提交路径，现有 MSI 源码 | C：10.2.9 要求版本固定不可变 HTTPS URL、离线/静默安装器、安装器及所有 PE 的可信签名；保留身份、分级、隐私和从最终 URL 安装证据。 |
 | Microsoft Store MSIX / x64 / 地区待定 | 未选定，无 MSIX identity/package | 与 MSI 分别选择；所有者提供 Partner Center identity 后实现 capabilities、更新和 WACK。Microsoft 会重签商店提交包，不要仅为 Store MSIX 提交购买 CA 证书。 |
 | Linux 直接下载 / Ubuntu24.04 基线 / x86_64 | DEB/RPM/tar 已有；检查 ELF machine 与媒体/托盘依赖，无发行版仓库批准 | 选定支持发行版/桌面会话及签名/更新信任；干净系统安装、麦克风/托盘、升级/卸载。能生成 RPM 不等于兼容所有发行版。 |
@@ -61,7 +61,7 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 
 macOS27.0.1 arm64、Flutter3.41.9、Xcode SDK26.4：release57.0MB，15个 Mach-O 全含 arm64+x86_64，九个隐私 manifest 和十语言用途检查通过。首轮产物检查抓到 Xcode 注入 `get-task-allow=true`，Release 关闭 base-entitlement 注入后签名权限检查通过。实际 PKG/ZIP 打包和最终 ZIP 解包检查通过。Android APK74.6MB/AAB55.1MB，三个 ABI 的30个模块、最终 manifest、16KB ELF/ZIP/AAB config 通过；本地 Android 为 debug 证书，不能用作分发。
 
-Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共40项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
+Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共42项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
 
 2026-10-23，现有 `/morsecq/privacy/`、`/morsecq/support/` 实测 HTTP404，而 `/morsecq/privacy.html` 为200，Pages 最近部署成功；原因是 Jekyll 页面未设置显式 permalink。现补英/中文 slash permalink 匹配应用 URL，PR Pages 构建在部署前核对六个真实渲染输出路径。现网404在合并触发现有 Pages 部署并 GET 验证前仍阻塞提交，不编造新隐私 URL/联系人/商店记录。
 
