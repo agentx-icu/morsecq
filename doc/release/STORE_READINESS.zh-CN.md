@@ -51,7 +51,7 @@
 
 ## 所有者证据与发行流程
 
-在私有发布记录保存：账号/角色和已接受协议；渠道/地区/受众；bundle/package/store ID；版本/build/上一版本；预期 upload 与投递证书指纹；确切制品哈希和报告；无需登录可访问的公开支持/隐私 URL；文案/截图/权利；审核操作；真实授权/安装更新；后台声明；审核与发布各自状态；操作人/track/分阶段发布和停止条件。凭据、审核密码及私有后台截图不入 Git。
+在私有发布记录保存：账号/角色和已接受协议；下载价格；渠道/地区/受众；bundle/package/store ID；版本/build/上一版本；预期 upload 与投递证书指纹；确切制品哈希和报告；无需登录可访问的公开支持/隐私 URL；文案/截图/权利；审核操作；真实授权/安装更新；后台声明；审核与发布各自状态；操作人/track/分阶段发布和停止条件。凭据、审核密码及私有后台截图不入 Git。
 
 已有站点路径来自 `site/_config.yml` 与应用链接配置，所有者在填表前须实际核对线上 URL、主体/联系信息和正文，本次不编造隐私网址/法律联系人。审核路线：全新启动 → 首课 → 参考 → Listen 授权/拒绝 → 导入/导出 → 我的清除，无需账号、付费功能或审核后端。
 
@@ -61,6 +61,6 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 
 macOS27.0.1 arm64、Flutter3.41.9、Xcode SDK26.4：release57.0MB，15个 Mach-O 全含 arm64+x86_64，九个隐私 manifest 和十语言用途检查通过。首轮产物检查抓到 Xcode 注入 `get-task-allow=true`，Release 关闭 base-entitlement 注入后签名权限检查通过。实际 PKG/ZIP 打包和最终 ZIP 解包检查通过。Android APK74.6MB/AAB55.1MB，三个 ABI 的30个模块、最终 manifest、16KB ELF/ZIP/AAB config 通过；本地 Android 为 debug 证书，不能用作分发。
 
-Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共37项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
+Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共40项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
 
 2026-10-23，现有 `/morsecq/privacy/`、`/morsecq/support/` 实测 HTTP404，而 `/morsecq/privacy.html` 为200，Pages 最近部署成功；原因是 Jekyll 页面未设置显式 permalink。现补英/中文 slash permalink 匹配应用 URL，PR Pages 构建在部署前核对六个真实渲染输出路径。现网404在合并触发现有 Pages 部署并 GET 验证前仍阻塞提交，不编造新隐私 URL/联系人/商店记录。

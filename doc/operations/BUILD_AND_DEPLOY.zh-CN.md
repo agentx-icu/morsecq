@@ -49,10 +49,12 @@ Widget 测试或直接启动 app bundle 不证明安装升级已验证。
 | 目标 | 所有者输入 / 行为 |
 | --- | --- |
 | macOS Developer ID | `MORSECQ_MACOS_APPLICATION_IDENTITY`、`MORSECQ_MACOS_INSTALLER_IDENTITY`、真实 `MORSECQ_APPLE_TEAM_ID` 和已有 `MORSECQ_NOTARY_PROFILE`。从内到外签名，核对真实 Team/证书类别/runtime，公证并 staple app ZIP/PKG，再核对最终 ZIP/安装器；仅由所有者调用，上传至公证服务而非 App Store 提交。 |
-| Windows 直接/hosted MSI | 可用证书存储中的 `MORSECQ_WINDOWS_CERT_SHA1`、`signtool.exe` 与可信签名材料。签未签名 PE，保留有效供应商签名；app/安装器须匹配所有者，所有 PE/MSI 校验。不是尚未实现的 Store MSIX 路径。 |
-| Android | `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`；APK/AAB 须匹配预期 upload 证书，拒绝 debug，验证 AAB 签名内容。tag CI 需 repository variable `ANDROID_UPLOAD_CERT_SHA256` 及已有四个签名 secrets；Play 分发指纹另记。 |
+| Windows 直接/hosted MSI | 可用证书存储中的 `MORSECQ_WINDOWS_CERT_SHA1`、`signtool.exe` 与可信签名材料。签名前先查所有 staged PE 架构，再签未签名 PE，保留有效供应商签名；app/安装器须匹配所有者，所有 PE/MSI 校验。不是尚未实现的 Store MSIX 路径。 |
+| Android | `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`、显式 `MORSECQ_BUNDLETOOL_JAR` 和可执行 `MORSECQ_APKANALYZER` 路径；缺检查工具直接拒绝。复制前重查最终 manifest/ABI/16 KB；APK/AAB 须匹配预期 upload 证书，拒绝 debug，验证 AAB 签名内容。tag CI 需 repository variable `ANDROID_UPLOAD_CERT_SHA256` 及已有四个签名 secrets；Play 分发指纹另记。 |
 | iOS / Linux | 拒绝通用发行标志：iOS 用独立 App Store 签名导出，Linux 仓库信任/签名与更新为所有者发布工作，仍可生成开发包。 |
 
 配置真实 `MORSECQ_APPLE_TEAM_ID` 后用所有者 Xcode signing/export 参数运行 `bash tool/build_ios_store.sh`。导出后解包实际 IPA，检查设备 payload/隐私、distribution 签名/Team 和 App Store provisioning（无开发/ad-hoc 设备列表），生成 `build/evidence/ios-store.json`，不提交商店。CI 未签名 IPA 不是此导出包。
 
 发布前记录最终哈希和上一签名版本，按选定渠道以普通用户测试干净安装、带学习数据升级、授权拒绝/撤销和卸载。凭据、身份/地区/文案/权利与后台声明没有证据前仍是所有者阻塞项。
+
+CI 与本地 strict 打包共用 payload 检查器。最终 Mac ZIP 检查同时执行真实 `codesign --verify --deep --strict`，仅读权限元数据不能验证资源/签名。

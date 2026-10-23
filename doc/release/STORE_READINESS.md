@@ -64,7 +64,7 @@ not timeless numeric thresholds encoded by the test tools.
 ## Owner evidence and release procedure
 
 Before submission, keep a private release record with: publisher/role and accepted
-agreements; selected channel/territory/audience; bundle/package/store IDs;
+agreements; download price; selected channel/territory/audience; bundle/package/store IDs;
 version/build and prior release; expected signing fingerprints (upload and
 store-delivery separately); exact artifact hashes and reports; public support and
 privacy URLs tested unauthenticated; listing locale/assets/rights; review steps;
@@ -90,7 +90,7 @@ binaries; a downgrade needs the existing B7 tests and a separate signed update p
 
 macOS 27.0.1 arm64, Flutter3.41.9, Xcode SDK26.4: release build57.0MB; 15 native Mach-O modules all provide arm64+x86_64, nine privacy manifests and ten purpose localizations inspected. The first preflight rejected Xcode-injected `get-task-allow=true`; disabling base-entitlement injection for Release produced a passing signed-entitlement report. Real PKG/ZIP packaging and re-extracted ZIP preflight passed. Android release APK74.6MB/AAB55.1MB: 30 native modules across the three declared ABIs, merged manifest and16KB ELF/ZIP/AAB config checks passed. These locally debug-signed Android artifacts are not distribution builds.
 
-Python payload/distribution/signing/site regressions plus existing release/runtime/component suites:37passed; platform/localization widgets:18passed; root/tool analyzers and complexity/import/shared/UI gates passed. Signed owner exports, Windows/Linux/iOS host runs and installed upgrades remain open; CI result is recorded in the PR separately.
+Python payload/distribution/signing/site regressions plus existing release/runtime/component suites:40passed; platform/localization widgets:18passed; root/tool analyzers and complexity/import/shared/UI gates passed. Signed owner exports, Windows/Linux/iOS host runs and installed upgrades remain open; CI result is recorded in the PR separately.
 
 Exact local artifacts (rebuilds change hashes):
 

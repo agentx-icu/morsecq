@@ -42,7 +42,12 @@ if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
         [[ -n "${!key:-}" ]] || ci_die "distribution requires $key"
       done ;;
     windows) [[ -n "${MORSECQ_WINDOWS_CERT_SHA1:-}" ]] || ci_die 'distribution requires MORSECQ_WINDOWS_CERT_SHA1' ;;
-    android) [[ -n "${MORSECQ_ANDROID_UPLOAD_CERT_SHA256:-}" ]] || ci_die 'distribution requires MORSECQ_ANDROID_UPLOAD_CERT_SHA256' ;;
+    android)
+      for key in MORSECQ_ANDROID_UPLOAD_CERT_SHA256 MORSECQ_BUNDLETOOL_JAR MORSECQ_APKANALYZER; do
+        [[ -n "${!key:-}" ]] || ci_die "distribution requires $key"
+      done
+      [[ -f "$MORSECQ_BUNDLETOOL_JAR" && -x "$MORSECQ_APKANALYZER" ]] || ci_die 'distribution requires readable bundletool JAR and executable apkanalyzer'
+      ;;
     ios) ci_die 'distribution: use tool/build_ios_store.sh for a signed App Store export; this packager only creates unsigned IPA' ;;
     linux) ci_die 'distribution: Linux repository signing/update trust is an owner release action; only development packages are automated' ;;
   esac
@@ -106,6 +111,7 @@ package_windows() {
   mkdir -p "$stage"
   cp -R "$runner/." "$stage/"
   if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    python "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/windows-strict.json" native "$stage" --platform windows --architecture x86_64
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ci_windows_path "$SCRIPT_DIR/sign_windows.ps1")" -InputPath "$(ci_windows_path "$stage")"
   fi
   (cd "$DIST_DIR/.stage" && 7z a -tzip -bd -bso0 "$(ci_windows_path "$DIST_DIR")/$BASE-windows-x64.zip" morsecq)
@@ -196,6 +202,8 @@ package_android() {
   [[ -f "$apk" ]] || ci_die "Android APK not found: $apk"
   [[ -f "$aab" ]] || ci_die "Android App Bundle not found: $aab"
   if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
+    python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/android-strict.json" android "$apk" "$aab" \
+      --bundletool "$MORSECQ_BUNDLETOOL_JAR" --apkanalyzer "$MORSECQ_APKANALYZER" --target-sdk 36
     python3 "$SCRIPT_DIR/verify_android_signing.py" "$apk" "$aab" --expected-sha256 "$MORSECQ_ANDROID_UPLOAD_CERT_SHA256"
   fi
   cp "$apk" "$DIST_DIR/$BASE-android.apk"

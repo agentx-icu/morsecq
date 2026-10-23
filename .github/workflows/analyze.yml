@@ -97,6 +97,7 @@ jobs:
         run: |
           python3 tool/ci/release_preflight_test.py
           python3 tool/ci/distribution_signing_test.py
+          python3 tool/ci/release_packager_test.py
           python3 tool/ci/verify_site_test.py
 
       - name: DST calendar regressions

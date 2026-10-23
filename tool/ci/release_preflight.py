@@ -175,6 +175,8 @@ def check_apple(app, platform, *, inspect_native=True):
     report = {'bundle_id': info['CFBundleIdentifier'], 'version': info['CFBundleShortVersionString'], 'build': info['CFBundleVersion'], 'build_sdk': info.get('DTSDKName'), 'privacy_manifests': manifests}
     if not inspect_native:
         return report
+    if platform == 'macos':
+        run(['codesign', '--verify', '--deep', '--strict', app])
     for locale in LOCALES:
         path = resources / f'{locale}.lproj/InfoPlist.strings'
         # Xcode compiles strings to binary plists in the final application.
