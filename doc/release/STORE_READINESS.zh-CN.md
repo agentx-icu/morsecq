@@ -61,8 +61,10 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 
 macOS27.0.1 arm64、Flutter3.41.9、Xcode SDK26.4：release57.0MB，15个 Mach-O 全含 arm64+x86_64，九个隐私 manifest 和十语言用途检查通过。首轮产物检查抓到 Xcode 注入 `get-task-allow=true`，Release 关闭 base-entitlement 注入后签名权限检查通过。实际 PKG/ZIP 打包和最终 ZIP 解包检查通过。Android APK74.6MB/AAB55.1MB，三个 ABI 的30个模块、最终 manifest、16KB ELF/ZIP/AAB config 通过；本地 Android 为 debug 证书，不能用作分发。
 
-Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共42项通过，平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
+Python 新产物/发行/签名/站点与既有资产/runtime/component 回归共47项通过（含已有 cache 回归为51项），JDK17.0.17 与 Temurin17.0.20+8 均通过；平台/用途本地化 Widget18项通过；根/tool 分析和复杂度/导入/shared/UI 门禁通过。真实所有者签名导出、Windows/Linux/iOS 目标系统及安装升级仍待测，CI 结果单列于 PR。精确本机制品哈希见[英文记录](STORE_READINESS.md#local-validation-record)，重建会改变哈希。
 
 2026-10-23，现有 `/morsecq/privacy/`、`/morsecq/support/` 实测 HTTP404，而 `/morsecq/privacy.html` 为200，Pages 最近部署成功；原因是 Jekyll 页面未设置显式 permalink。现补英/中文 slash permalink 匹配应用 URL，PR Pages 构建在部署前核对六个真实渲染输出路径。现网404在合并触发现有 Pages 部署并 GET 验证前仍阻塞提交，不编造新隐私 URL/联系人/商店记录。
 
 独立复查补充：本地 strict Windows/Android 入口现于签名/复制前运行相同 payload gate；Android 显式要求 bundletool/apkanalyzer 路径。三个入口负例通过。真实 Mac release 副本仅修改一个签名资源后被递归 codesign 检查拒绝，原包通过；真实 strict Android 尝试先通过 payload 检查，再拒绝 Debug 证书。
+
+AAB 完整性改用 JDK17 `JarFile`：每条 payload 读至 EOF、要求唯一且一致的有效叶证书，拒绝未签名/篡改/重复条目与缺失 bundle 结构，发行模式另绑定所有者证书。PR Android 构建保留真实 AAB 签名报告；开发验证允许测试密钥，tag/本地发行拒绝 Debug。真实本地 AAB 及 manifest-last 副本在 JDK17.0.17/17.0.20+8 下均通过旧文字 gate 和新验证（175 个签名条目），没有观察到这些 MorseCQ 制品的 JDK 特定故障。五项真实签名 JAR 回归覆盖 manifest-last 正例及 unsigned/tamper/duplicate/结构缺失负例；旧 gate 会接受结构缺失 fixture。

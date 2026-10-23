@@ -1,5 +1,6 @@
 """Verify actual APK/AAB release certificates before tagged distribution."""
 import argparse
+import json
 import os
 from pathlib import Path
 import re
@@ -25,6 +26,20 @@ def verify_signing_reports(apk, bundle, expected=None):
         raise ValueError("APK and App Bundle have different signing certificates")
 
 
+def verify_bundle(path, expected=None):
+    # JarFile verifies random-access entries independent of manifest ZIP order.
+    # Read every entry to EOF before trusting its CodeSigners; console warning
+    # text and keytool's certificate listing cannot establish payload integrity.
+    verifier = Path(__file__).resolve().with_name('VerifyAndroidBundle.java')
+    result = subprocess.run(['java', str(verifier), str(path), expected or '-',
+                             'distribution' if expected else 'development'],
+                            capture_output=True, text=True, timeout=120)
+    if result.returncode:
+        raise ValueError(f'AAB integrity verification failed: {result.stderr[-2000:]}')
+    report = json.loads(result.stdout)
+    return f"SHA256: {report['certificate_sha256']}\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("apk")
@@ -38,12 +53,7 @@ def main():
         signer = str(sorted((sdk / "build-tools").glob("*/apksigner"))[-1])
     apk = subprocess.run([signer, "verify", "--print-certs", args.apk],
                          check=True, capture_output=True, text=True).stdout
-    bundle = subprocess.run(["keytool", "-J-Duser.language=en", "-printcert", "-jarfile", args.bundle],
-                            check=True, capture_output=True, text=True).stdout
-    verification = subprocess.run(["jarsigner", "-J-Duser.language=en", "-verify", args.bundle],
-                                  check=True, capture_output=True, text=True).stdout
-    if 'jar verified.' not in verification or 'unsigned entries' in verification:
-        raise ValueError('AAB signature did not verify every entry')
+    bundle = verify_bundle(args.bundle, expected=args.expected_sha256)
     verify_signing_reports(apk, bundle, expected=args.expected_sha256)
     print("Verified matching non-debug APK / App Bundle certificates")
 

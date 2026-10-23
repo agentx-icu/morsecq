@@ -171,6 +171,8 @@ jobs:
             apps/morsecq/build/app/outputs/bundle/release/app-release.aab \
             --bundletool "$RUNNER_TEMP/bundletool.jar" \
             --apkanalyzer "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" --target-sdk 36
+      - name: Verify every signed App Bundle entry
+        run: java tool/ci/VerifyAndroidBundle.java apps/morsecq/build/app/outputs/bundle/release/app-release.aab - development > build/evidence/android-bundle-signing.json
       - name: Verify tagged Android signing identity
         if: startsWith(github.ref, 'refs/tags/v')
         env:
