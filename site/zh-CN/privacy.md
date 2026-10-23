@@ -1,5 +1,6 @@
 ---
 layout: default
+permalink: /zh-CN/privacy/
 title: 隐私政策
 ---
 

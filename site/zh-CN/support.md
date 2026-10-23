@@ -1,5 +1,6 @@
 ---
 layout: default
+permalink: /zh-CN/support/
 title: 支持
 ---
 

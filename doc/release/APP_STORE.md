@@ -2,15 +2,17 @@
 
 # App Store build
 
-Run `bash tool/build_ios_store.sh` with an Apple team, distribution certificate and provisioning profile configured for the application.
+Set the verified owner `MORSECQ_APPLE_TEAM_ID`, then run `bash tool/build_ios_store.sh` with an Apple team, distribution certificate and provisioning profile configured for the application.
 
 Provide current iPhone/iPad screenshots through the [capture pipeline](../../tool/screenshots/README.md), public privacy/support URLs and store metadata. Describe offline learning, local progress and user-triggered microphone decoding. Check learning-material file selection and persistence on a device. The app declares no non-exempt application cryptography (`ITSAppUsesNonExemptEncryption = false`; MorseCQ has no networking and no libsodium).
 
 iPhone supports portrait and both landscape orientations; iPad supports all four and `UIRequiresFullScreen` is not set, so Split View, Slide Over and Stage Manager apply down to 320 pt. The learning-material export anchors its share popover to the tapped control (`sharePositionOrigin`; `test/platform/share_origin_guard_test.dart` fails on a share call without one).
 
+See the [channel matrix and owner gates](STORE_READINESS.md) before choosing App Store, Developer ID, Play or a desktop store. The iOS script verifies the actual exported IPA identity/profile and writes a payload report; it does not upload.
+
 ## Android: SDK levels and 16 KB pages
 
-`compileSdk` 36, `minSdk` 24 and `targetSdk` 36 are pinned in `apps/morsecq/android/app/build.gradle.kts` (not inherited from the Flutter Gradle plugin; `test/platform/mobile_platform_config_test.dart` checks them). Google Play requires API 36 for new apps and updates since 2026-08-31; raise the three together and update this line.
+`compileSdk` 36, `minSdk` 24 and `targetSdk` 36 are pinned in `apps/morsecq/android/app/build.gradle.kts` (not inherited from the Flutter Gradle plugin; `test/platform/mobile_platform_config_test.dart` checks them). Google Play requires API 36 for new apps and updates since 2026-08-31; review target/compile separately from the supported minimum OS and update the dated policy record.
 
 MorseCQ ships no native library of its own, so Google Play's 16 KB page-size requirement (64-bit libraries of apps targeting Android 15+) concerns only the libraries the toolchains produce: `libflutter.so`, `libapp.so` and any plugin code built with Flutter's NDK (28.2 on Flutter 3.41.9, which aligns by default; never pin `ndkVersion` below r28). Check the final APK before a Play upload: `zipalign -c -P 16 -v 4 app-release.apk`, and `llvm-readelf -lW` on every `lib/arm64-v8a/*.so` and `lib/x86_64/*.so` (every `LOAD` `Align` at least `0x4000`).
 
@@ -39,6 +41,8 @@ and [Vision Pro compatibility availability](https://developer.apple.com/help/app
 The API 36 deadline above was checked against
 [Play's current requirement](https://support.google.com/googleplay/android-developer/answer/11926878)
 on 2026-10-22. Actual console settings and signed release verification remain owner actions.
+
+The final APK/AAB are now checked by `tool/ci/release_preflight.py`, including every native module, optional hardware, merged permissions and bundle delivery alignment. The owner upload fingerprint is required for tagged signature checks; Play delivery uses its separate app-signing key. Physical 16 KB execution and console validation remain open.
 
 ## Release budgets
 

@@ -24,6 +24,11 @@ class AndroidSigningTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_signing_reports(apk(), bundle(digest=OTHER))
 
+    def test_unexpected_owner_certificate_is_rejected(self):
+        with self.assertRaises(ValueError):
+            verify_signing_reports(apk(), bundle(), expected=OTHER)
+        verify_signing_reports(apk(), bundle(), expected=CERT)
+
     def test_missing_or_malformed_certificates_are_rejected(self):
         for report in ["", "unverified", apk(digest="abcd")]:
             with self.assertRaises(ValueError):

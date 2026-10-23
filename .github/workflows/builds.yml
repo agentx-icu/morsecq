@@ -35,6 +35,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -71,8 +74,37 @@ jobs:
             apps/morsecq/build/macos/Build/Products/Release/**/*.dSYM
             apps/morsecq/build/windows/x64/runner/Release/*.pdb
           if-no-files-found: error
+      - name: Inspect built Apple release
+        if: runner.os == 'macOS'
+        run: python tool/ci/release_preflight.py --output build/evidence/macos.json apple apps/morsecq/build/macos/Build/Products/Release/MorseCQ.app --platform macos
+      - name: Inspect Linux native payload
+        if: runner.os == 'Linux'
+        run: python tool/ci/release_preflight.py --output build/evidence/linux.json native apps/morsecq/build/linux/x64/release/bundle --platform linux --architecture x86_64
+      - name: Inspect Windows native payload
+        if: runner.os == 'Windows'
+        run: python tool/ci/release_preflight.py --output build/evidence/windows.json native apps/morsecq/build/windows/x64/runner/Release --platform windows --architecture x86_64
       - name: Package
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
+      - name: Hash final packaged artifacts
+        run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/${{ matrix.platform }}
+      - name: Verify final Windows ZIP payload
+        if: runner.os == 'Windows'
+        run: python tool/ci/release_preflight.py --output build/evidence/windows-final.json native dist/windows/morsecq-*-windows-x64.zip --platform windows --architecture x86_64
+      - name: Verify Windows installer metadata
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $msi = (Get-ChildItem dist/windows/*.msi | Select-Object -First 1).FullName
+          $installer = New-Object -ComObject WindowsInstaller.Installer
+          $database = $installer.OpenDatabase($msi, 0)
+          $template = $database.SummaryInformation(0).Property(7)
+          if ($template -notmatch '^x64;') { throw "Unexpected MSI Template Summary: $template" }
+          $template | Out-File build/evidence/windows-msi-template.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evidence-${{ matrix.platform }}
+          path: build/evidence/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.platform }}
@@ -84,6 +116,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -127,15 +162,32 @@ jobs:
           cd apps/morsecq
           flutter build apk --release --split-debug-info=build/symbols/android
           flutter build appbundle --release --split-debug-info=build/symbols/android
+      - name: Inspect final APK and App Bundle
+        run: |
+          curl -fL --retry 3 https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar -o "$RUNNER_TEMP/bundletool.jar"
+          echo 'a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29  '"$RUNNER_TEMP/bundletool.jar" | sha256sum --check
+          python3 tool/ci/release_preflight.py --output build/evidence/android.json android \
+            apps/morsecq/build/app/outputs/flutter-apk/app-release.apk \
+            apps/morsecq/build/app/outputs/bundle/release/app-release.aab \
+            --bundletool "$RUNNER_TEMP/bundletool.jar" \
+            --apkanalyzer "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" --target-sdk 36
       - name: Verify tagged Android signing identity
         if: startsWith(github.ref, 'refs/tags/v')
-        run: python3 tool/ci/verify_android_signing.py apps/morsecq/build/app/outputs/flutter-apk/app-release.apk apps/morsecq/build/app/outputs/bundle/release/app-release.aab
+        env:
+          EXPECTED_UPLOAD_CERT_SHA256: ${{ vars.ANDROID_UPLOAD_CERT_SHA256 }}
+        run: python3 tool/ci/verify_android_signing.py apps/morsecq/build/app/outputs/flutter-apk/app-release.apk apps/morsecq/build/app/outputs/bundle/release/app-release.aab --expected-sha256 "$EXPECTED_UPLOAD_CERT_SHA256"
       - uses: actions/upload-artifact@v4
         with:
           name: symbols-android
           path: apps/morsecq/build/symbols/android/
           if-no-files-found: error
       - run: bash tool/ci/package_artifacts.sh --target android
+      - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evidence-android
+          path: build/evidence/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: release-android
@@ -147,6 +199,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -167,7 +222,15 @@ jobs:
             apps/morsecq/build/symbols/ios/
             apps/morsecq/build/ios/iphoneos/**/*.dSYM
           if-no-files-found: error
+      - name: Inspect built iOS device release
+        run: python tool/ci/release_preflight.py --output build/evidence/ios.json apple apps/morsecq/build/ios/iphoneos/Runner.app --platform ios
       - run: bash tool/ci/package_artifacts.sh --target ios
+      - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/ios
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evidence-ios
+          path: build/evidence/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: release-ios
@@ -182,6 +245,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*

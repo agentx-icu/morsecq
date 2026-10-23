@@ -35,6 +35,8 @@ bash tool/ci/package_artifacts.sh --target macos
 
 Supports Android 7.0+, iOS 14+, macOS 13+, Linux and Windows. See the [build guide](doc/operations/BUILD_AND_DEPLOY.md) for platform tools and packaging commands.
 
+Store submissions and trusted direct downloads have separate owner gates. Current channels, artifact checks and remaining account/device work are in [store readiness](doc/release/STORE_READINESS.md). Default CI packages are development artifacts; a green build is not store approval.
+
 ## Your learning data
 
 Progress, learning materials and recordings stay on your device. Use Me → Clear learning data to remove them after confirmation; language and appearance settings are preserved. Uninstalling the app may delete local data.

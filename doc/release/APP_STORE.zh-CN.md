@@ -2,15 +2,17 @@
 
 # App Store 构建
 
-配置应用的 Apple Team、分发证书和描述文件，运行 `bash tool/build_ios_store.sh`。
+配置应用的 Apple Team、分发证书和描述文件及真实 `MORSECQ_APPLE_TEAM_ID`，运行 `bash tool/build_ios_store.sh`。
 
 通过[截图流程](../../tool/screenshots/README.zh-CN.md)提供当前 iPhone/iPad 截图，填写公开的隐私与支持网址及商店信息。产品介绍说明离线学习、本地进度及用户主动启动的麦克风解码。在设备上检查学习素材文件选择和持久化。应用声明不使用非豁免加密（`ITSAppUsesNonExemptEncryption = false`；MorseCQ 无联网、无 libsodium）。
 
 iPhone 支持竖屏和两个横屏方向；iPad 支持全部四个方向且未设置 `UIRequiresFullScreen`，因此 Split View、Slide Over 和 Stage Manager 都适用，最窄到 320 pt。学习素材导出通过 `sharePositionOrigin` 把分享弹出框锚定到被点击的控件（`test/platform/share_origin_guard_test.dart` 会让没有锚点的分享调用失败）。
 
+先看[渠道矩阵与所有者门禁](STORE_READINESS.zh-CN.md)，再选择 App Store、Developer ID、Play 或桌面商店。iOS 脚本检查实际导出 IPA 的身份/profile 并生成产物报告，不上传。
+
 ## Android：SDK 级别与 16 KB 页
 
-`compileSdk` 36、`minSdk` 24 和 `targetSdk` 36 在 `apps/morsecq/android/app/build.gradle.kts` 中显式固定（不从 Flutter Gradle 插件继承；`test/platform/mobile_platform_config_test.dart` 检查它们）。Google Play 自 2026-08-31 起要求新应用和更新使用 API 36；三个级别要一起提高并同步更新这一行。
+`compileSdk` 36、`minSdk` 24 和 `targetSdk` 36 在 `apps/morsecq/android/app/build.gradle.kts` 中显式固定（不从 Flutter Gradle 插件继承；`test/platform/mobile_platform_config_test.dart` 检查它们）。Google Play 自 2026-08-31 起要求新应用和更新使用 API 36；target/compile 与支持的最低系统分别审核，并更新有日期的政策记录。
 
 MorseCQ 不自带原生库，所以 Google Play 的 16 KB 页要求（面向 Android 15+ 应用的 64 位库）只涉及工具链产出的库：`libflutter.so`、`libapp.so` 以及用 Flutter 的 NDK（Flutter 3.41.9 为 28.2，默认对齐；不要把 `ndkVersion` 固定到 r28 以下）编译的插件代码。上传 Play 前检查最终 APK：`zipalign -c -P 16 -v 4 app-release.apk`，并对每个 `lib/arm64-v8a/*.so` 和 `lib/x86_64/*.so` 运行 `llvm-readelf -lW`（每个 `LOAD` 的 `Align` 至少为 `0x4000`）。
 
@@ -36,6 +38,8 @@ Apple 的[隐私定义](https://developer.apple.com/app-store/app-privacy-detail
 [Vision Pro 兼容版](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-apple-vision-pro/)可用性需要单独设置。
 API 36 截止日期已于 2026-10-22 对照 [Play 当前要求](https://support.google.com/googleplay/android-developer/answer/11926878)核对。
 后台实际状态与签名分发验证仍需所有者执行。
+
+最终 APK/AAB 现由 `tool/ci/release_preflight.py` 检查全部 native 模块、可选硬件、合并权限及 bundle 投递对齐。tag 签名检查需真实 upload 指纹，Play 使用另一个 app-signing 分发密钥；16 KB 实际运行与后台验证仍待完成。
 
 ## 发布预算
 
