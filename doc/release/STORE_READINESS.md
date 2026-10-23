@@ -116,6 +116,8 @@ bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readine
 
 The output directory must be new. The helper resolves the locked workspace dependencies, configures Flutter with `--no-codesign`, and runs `xcodebuild archive` with signing disabled and no automatic-provisioning/device-registration flags. It requires the declared main executable to be a contained executable Mach-O file, rejects extra `.app`/`.appex` targets in the archive or app until their profile policy is reviewed, then reuses the final iOS payload/privacy/localization gate. The archive gate rejects dangling, external or non-relocatable absolute links, including dSYM links; CI archives this evidence as a tarball to preserve bundle modes and valid internal symlinks; `UNSIGNED-ARCHIVE.txt` explicitly prevents mistaking it for a signed, store-submittable IPA.
 
+[Apple's requirements effective 2026-04-28](https://developer.apple.com/news/upcoming-requirements/) require Xcode 26 or later and the iOS/iPadOS 26 SDK or later for App Store Connect uploads. The helper checks the actual built app's `Info.plist`: `DTSDKName` must be a complete `iphoneos` device SDK version at least 26, and `DTXcode` must be a valid four-digit Xcode version at least `2600`. Missing, malformed, simulator or older metadata fails closed in both unsigned preparation and owner export; a bad archive is rejected before the export command, and the exported IPA is checked again. The existing macOS 26 CI runner remains unchanged. The downloaded final #50 archive was rechecked with this gate: `iphoneos26.5` / `2660`, 14 arm64 images and ten privacy manifests passed; copies changed to SDK 18.5 or Xcode 16.4 were rejected. This validates the current toolchain floor, not owner signing or Store acceptance.
+
 Only the owner on an already configured signing Mac may run a later local export:
 
 ```sh
@@ -128,7 +130,7 @@ The actual exported app must pass the existing identity/signature gate plus exac
 
 | ID | Status | Evidence / boundary |
 | --- | --- | --- |
-| W4 / iOS | controlled preparation gate; owner export pending | Sixteen policy/failure regressions; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
+| W4 / iOS | controlled preparation gate; owner export pending | Twenty policy/failure regressions, including built SDK/Xcode floor and refusal before export; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
 | X6 / iOS | final archive payload inspected | Same native/privacy/purpose-localization checks as the existing unsigned IPA; unsigned archive is not a signed delivery or installed-device result. |
 
 Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Sixteen helper-policy regressions and the complete 92-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.

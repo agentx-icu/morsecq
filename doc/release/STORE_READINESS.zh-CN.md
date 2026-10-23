@@ -87,6 +87,8 @@ bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readine
 
 输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；要求声明的主程序是包内具执行权限的真实 Mach-O 文件，拒绝 archive/应用中未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。Archive gate 拒绝包括 dSYM 在内的悬空/外部/不可重定位绝对链接，CI 用 tar 保留 archive mode/有效内链，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
 
+[Apple 自 2026-04-28 生效的要求](https://developer.apple.com/news/upcoming-requirements/)规定上传 App Store Connect 的应用使用 Xcode 26 或更高版本，以及 iOS/iPadOS 26 或更高版本 SDK。入口检查实际构建应用的 `Info.plist`：`DTSDKName` 必须是完整且不低于 26 的 `iphoneos` 设备 SDK 版本，`DTXcode` 必须是有效且不低于 `2600` 的四位 Xcode 版本。Unsigned 准备与所有者导出均拒绝缺失、畸形、模拟器或旧版元数据；坏 archive 在执行 export 命令前即被拒绝，导出 IPA 再检查一次。现有 macOS 26 CI runner 不变。已用此门禁复验下载的 #50 最终 archive：`iphoneos26.5` / `2660`、14 个 arm64 镜像和十个 privacy manifest 通过；将副本改为 SDK 18.5 或 Xcode 16.4 均拒绝。这只验证工具链门槛，不代表所有者签名或商店接受。
+
 后续仅由所有者在已有签名配置的 Mac 执行本地导出：
 
 ```sh
@@ -99,7 +101,7 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 
 | ID | 状态 | 证据 / 边界 |
 | --- | --- | --- |
-| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十六项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
+| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 二十项策略/失败回归，包含实际 SDK/Xcode 门槛与 export 前拒绝；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
 | X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
 
 2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十六项 helper 策略回归及全部 92 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。

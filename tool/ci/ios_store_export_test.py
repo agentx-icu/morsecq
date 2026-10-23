@@ -27,6 +27,7 @@ class IosStoreExportTests(unittest.TestCase):
                         "signingCertificate": self.fingerprint,
                         "provisioningProfiles": {"icu.agentx.morsecq": "owner-profile"}}
         self.path = self.root / "ExportOptions.plist"
+        self.built_info = {"CFBundleExecutable": "Runner", "DTSDKName": "iphoneos26.5", "DTXcode": "2660"}
 
     def options_check(self):
         self.path.write_bytes(plistlib.dumps(self.options))
@@ -99,6 +100,69 @@ class IosStoreExportTests(unittest.TestCase):
             self.assertNotIn("-allowProvisioningUpdates", command)
             self.assertNotIn("-allowProvisioningDeviceRegistration", command)
 
+    def test_store_toolchain_accepts_current_device_sdk_and_xcode(self):
+        for sdk, xcode in (("iphoneos26.0", "2600"), ("iphoneos26.5", "2660"),
+                           ("iphoneos26.1.1", "2611"), ("iphoneos27.0", "2700")):
+            with self.subTest(sdk=sdk, xcode=xcode):
+                store.verify_store_toolchain({"DTSDKName": sdk, "DTXcode": xcode})
+
+    def test_store_toolchain_rejects_missing_malformed_or_old_metadata(self):
+        bad_sdks = (None, "", 26, True, "iphoneos18.5", "iphoneos25.0", "iphoneos26",
+                    "iphonesimulator26.0", "iphoneos26.0beta", "iphoneos26.0\n",
+                    "iphoneos026.0", "iphoneos26..0", "iphoneos26.0.0.0")
+        bad_xcodes = (None, "", 2600, True, "1640", "2599", "260", "02600",
+                      "26.0", "2600beta", "2600\n", " 2600")
+        for field, values in (("DTSDKName", bad_sdks), ("DTXcode", bad_xcodes)):
+            for value in values:
+                info = dict(self.built_info)
+                info[field] = value
+                with self.subTest(field=field, value=value), self.assertRaisesRegex(ValueError, "SDK|Xcode"):
+                    store.verify_store_toolchain(info)
+            info.pop(field)
+            with self.subTest(field=field, missing=True), self.assertRaisesRegex(ValueError, "SDK|Xcode"):
+                store.verify_store_toolchain(info)
+
+    def test_invalid_archive_toolchain_prevents_export_in_both_modes(self):
+        for unsigned in (True, False):
+            for field, value in (("DTSDKName", "iphoneos18.5"), ("DTXcode", "1640")):
+                self.options_check()
+                output = self.root / f"bad-{unsigned}-{field}"
+                calls = []
+                def runner(command, **kwargs):
+                    calls.append(command)
+                    if "archive" in command:
+                        app = output / "Runner.xcarchive/Products/Applications/Runner.app"
+                        app.mkdir(parents=True)
+                        (app / "Info.plist").write_bytes(plistlib.dumps({**self.built_info, field: value}))
+                        (app / "Runner").write_bytes(b"\xcf\xfa\xed\xfe")
+                        (app / "Runner").chmod(0o755)
+                with self.subTest(unsigned=unsigned, field=field), patch.object(store, "run", side_effect=runner), \
+                        patch.object(store, "inspect_export") as exported:
+                    with self.assertRaisesRegex(ValueError, "SDK|Xcode"):
+                        store.build(self.root, output, self.path, "ABCDE12345", self.fingerprint, unsigned)
+                    self.assertEqual(len(calls), 3)
+                    self.assertFalse(any("-exportArchive" in command for command in calls))
+                    exported.assert_not_called()
+                    self.assertFalse((output / "UNSIGNED-ARCHIVE.txt").exists())
+
+    def test_exported_app_checks_toolchain_before_signature(self):
+        (self.root / "ipa").mkdir()
+        (self.root / "ipa/App.ipa").write_bytes(b"fixture, not a signed application")
+        calls = []
+        def runner(command, **kwargs):
+            calls.append(command)
+            if command[0] == "ditto":
+                app = Path(command[-1]) / "Payload/Runner.app"
+                app.mkdir(parents=True)
+                (app / "Info.plist").write_bytes(plistlib.dumps({**self.built_info, "DTXcode": "1640"}))
+                (app / "Runner").write_bytes(b"\xcf\xfa\xed\xfe")
+                (app / "Runner").chmod(0o755)
+        with patch.object(store, "run", side_effect=runner):
+            with self.assertRaisesRegex(ValueError, "Xcode"):
+                store.inspect_export(self.root, self.root, "ABCDE12345", self.fingerprint, "fixture")
+        self.assertEqual([command[0] for command in calls], ["ditto"])
+        self.assertFalse((self.root / "export-evidence/distribution.json").exists())
+
     def test_signing_authority_must_be_distribution_not_development(self):
         self.assertEqual(store.distribution_authority("Authority=Apple Distribution: Owner (ABCDE12345)\nAuthority=Apple Root CA"),
                          "Apple Distribution: Owner (ABCDE12345)")
@@ -164,7 +228,7 @@ class IosStoreExportTests(unittest.TestCase):
     def test_nested_signed_targets_are_rejected_before_native_inspection(self):
         app = self.root / "Runner.app"
         (app / "PlugIns/Unreviewed.appex").mkdir(parents=True)
-        (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleExecutable": "Runner"}))
+        (app / "Info.plist").write_bytes(plistlib.dumps(self.built_info))
         with patch.object(store, "run") as runner:
             with self.assertRaisesRegex(ValueError, "Additional signed targets"):
                 store.inspect_app(self.root, app, self.root)
@@ -179,14 +243,14 @@ class IosStoreExportTests(unittest.TestCase):
         (app / "Link").symlink_to(self.root / "Outside")
         (app / "Text").write_bytes(b"not an executable")
         for entry in ("", ".", "..", "MissingRunner", "Directory", "Link", "Text"):
-            info.write_bytes(plistlib.dumps({"CFBundleExecutable": entry}))
+            info.write_bytes(plistlib.dumps({**self.built_info, "CFBundleExecutable": entry}))
             with self.subTest(entry=entry), patch.object(store, "run") as runner:
                 with self.assertRaisesRegex(ValueError, "executable"):
                     store.inspect_app(self.root, app, self.root)
                 runner.assert_not_called()
         (app / "Runner").write_bytes(b"\xcf\xfa\xed\xfe")
         (app / "Runner").chmod(0o755)
-        info.write_bytes(plistlib.dumps({"CFBundleExecutable": "Runner"}))
+        info.write_bytes(plistlib.dumps(self.built_info))
         with patch.object(store, "run") as runner:
             store.inspect_app(self.root, app, self.root)
             runner.assert_called_once()

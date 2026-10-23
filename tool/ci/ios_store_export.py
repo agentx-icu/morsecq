@@ -24,6 +24,18 @@ from macos_runtime import MACHO_MAGICS
 BUNDLE_ID = "icu.agentx.morsecq"
 
 
+def verify_store_toolchain(info):
+    # Apple's App Store Connect floor applies since 2026-04-28. Inspect the
+    # built payload, rather than assuming the selected host Xcode or SDK.
+    sdk = info.get("DTSDKName")
+    version = re.fullmatch(r"iphoneos([1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){1,2}", sdk) if isinstance(sdk, str) else None
+    if not version or int(version.group(1)) < 26:
+        raise ValueError("Built app must declare a complete iPhoneOS SDK version >= 26 in DTSDKName")
+    xcode = info.get("DTXcode")
+    if not isinstance(xcode, str) or not re.fullmatch(r"[1-9][0-9]{3}", xcode) or int(xcode) < 2600:
+        raise ValueError("Built app must declare a valid Xcode version >= 2600 in DTXcode")
+
+
 def fingerprint(value):
     result = value.replace(":", "").upper()
     if not re.fullmatch(r"[0-9A-F]{40}", result):
@@ -103,6 +115,7 @@ def commands(repo, output, options):
 def inspect_app(repo, app, output):
     # Reuse the same final-native and declaration gates as package CI.
     info = plistlib.loads((app / "Info.plist").read_bytes())
+    verify_store_toolchain(info)
     entry = info["CFBundleExecutable"]
     if list(app.rglob("*.appex")) or list(app.rglob("*.app")):
         raise ValueError("Additional signed targets need a reviewed profile policy")
