@@ -77,7 +77,7 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 
 ## Windows MSI 安装后证据
 
-进一步核对发现实际运行库遗漏：#49 最终 Windows ZIP（Builds run `39886425706`）没有 MSVC runtime DLL，但 `llvm-objdump -p` 检查真实 `morsecq.exe` 可见 `MSVCP140.dll`、`VCRUNTIME140.dll`、`VCRUNTIME140_1.dll` 导入。自带 Visual Studio 的 runner 会掩盖这一问题。现按 [Flutter Windows ZIP 分发指引](https://docs.flutter.dev/platform-integration/windows/building#building-your-own-zip-file-for-windows)，由 Windows CMake 的 `InstallRequiredSystemLibraries` 按目标工具链发现 release CRT，缺任一必需 DLL 即失败，并将其随 ZIP/MSI 放到 exe 旁。Native inventory 校 CPU/hash；安装冒烟校验 Microsoft 可信签名，并确认这些 CRT 与引擎实际从安装 payload 加载，不依赖 runner 全局运行库。
+进一步核对发现实际运行库遗漏：#49 最终 Windows ZIP（Builds run `39886425706`）没有 MSVC runtime DLL，但 `llvm-objdump -p` 检查真实 `morsecq.exe` 可见 `MSVCP140.dll`、`VCRUNTIME140.dll`、`VCRUNTIME140_1.dll` 导入。自带 Visual Studio 的 runner 会掩盖这一问题。现按 [Flutter Windows ZIP 分发指引](https://docs.flutter.dev/platform-integration/windows/building#building-your-own-zip-file-for-windows)，由 Windows CMake 的 `InstallRequiredSystemLibraries` 按目标工具链发现 release CRT，缺任一必需 DLL 即失败，并将其随 ZIP/MSI 放到 exe 旁。Native inventory 校 CPU/hash；安装冒烟校验 Microsoft 可信签名，并确认这些 CRT 与引擎实际从安装 payload 加载，不依赖 runner 全局运行库。所有者本地 strict 签名入口也会在查找签名工具前拒绝损坏/未签/非 Microsoft CRT，不会改用所有者签名覆盖原厂身份。Windows CI 对真实已签 CRT 的副本修改代码字节执行拒绝回归，原组件不变。
 
 包内保留 `licenses/MSVC-runtime.txt`，记录工具链/目标与组件及官方许可入口。[Microsoft 再分发条件](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files)仍需所有者确认适用的 Visual Studio 许可，并在发布记录归档该工具链的确切许可条款；代码实现不等于权利已批准。App-local CRT 的安全更新需随应用更新提供。本次不安装全局 redistributable、不创建凭据、不公开发布。
 

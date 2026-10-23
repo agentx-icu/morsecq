@@ -83,6 +83,10 @@ jobs:
       - name: Inspect Windows native payload
         if: runner.os == 'Windows'
         run: python tool/ci/release_preflight.py --output build/evidence/windows.json native apps/morsecq/build/windows/x64/runner/Release --platform windows --architecture x86_64
+      - name: Refuse damaged Microsoft runtime before owner signing
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tool/ci/test_windows_runtime_signing.ps1 -RuntimePath apps/morsecq/build/windows/x64/runner/Release/msvcp140.dll
       - name: Package
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
       - name: Hash final packaged artifacts
