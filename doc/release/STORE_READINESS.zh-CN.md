@@ -85,7 +85,7 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readiness/check-archive
 ```
 
-输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；拒绝未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。CI 用 tar 保留 archive mode/symlink，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
+输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；要求声明的主程序是包内具执行权限的真实 Mach-O 文件，拒绝 archive/应用中未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。CI 用 tar 保留 archive mode/symlink，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
 
 后续仅由所有者在已有签名配置的 Mac 执行本地导出：
 
@@ -99,10 +99,10 @@ bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist -
 
 | ID | 状态 | 证据 / 边界 |
 | --- | --- | --- |
-| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十二项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
+| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十五项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
 | X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
 
-2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十二项 helper 策略回归及全部 83 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
+2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十五项 helper 策略回归及全部 86 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
 
 ## Windows MSI 安装后证据
 

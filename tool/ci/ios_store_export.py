@@ -17,6 +17,9 @@ import sys
 import tempfile
 import uuid
 
+from distribution_signing import verify_apple_identity
+from macos_runtime import MACHO_MAGICS
+
 
 BUNDLE_ID = "icu.agentx.morsecq"
 
@@ -101,18 +104,26 @@ def inspect_app(repo, app, output):
     # Reuse the same final-native and declaration gates as package CI.
     info = plistlib.loads((app / "Info.plist").read_bytes())
     entry = info["CFBundleExecutable"]
-    if not isinstance(entry, str) or Path(entry).name != entry:
-        raise ValueError("Invalid app executable name")
     if list(app.rglob("*.appex")) or list(app.rglob("*.app")):
         raise ValueError("Additional signed targets need a reviewed profile policy")
+    if not isinstance(entry, str) or not entry or entry in (".", "..") or Path(entry).name != entry:
+        raise ValueError("Invalid app executable name")
+    executable = app / entry
+    if (not executable.is_file() or not executable.resolve().is_relative_to(app.resolve())
+            or not executable.stat().st_mode & 0o111):
+        raise ValueError("App executable must be an executable regular file inside the app")
+    with executable.open("rb") as stream:
+        if stream.read(4) not in MACHO_MAGICS:
+            raise ValueError("App executable must be included in the native Mach-O inventory")
     run([sys.executable, str(repo / "tool/ci/release_preflight.py"), "--output",
          str(output / "apple-preflight.json"), "apple", str(app), "--platform", "ios"])
 
 
 def inspect_archive(repo, output):
-    app = output / "Runner.xcarchive/Products/Applications/Runner.app"
-    if not app.is_dir():
-        raise ValueError("Xcode did not produce the expected application archive")
+    applications = output / "Runner.xcarchive/Products/Applications"
+    app = applications / "Runner.app"
+    if not app.is_dir() or list(applications.iterdir()) != [app]:
+        raise ValueError("Xcode archive must contain exactly one expected application")
     inspect_app(repo, app, output / "archive-evidence")
 
 
@@ -130,10 +141,10 @@ def inspect_export(repo, output, team, certificate, expected_profile):
         app = apps[0]
         inspect_app(repo, app, output / "export-evidence")
         run(["codesign", "--verify", "--deep", "--strict", str(app)])
-        run([sys.executable, str(repo / "tool/ci/distribution_signing.py"), str(app),
-             "--team", team, "--platform", "ios"])
-        authority = distribution_authority(run(["codesign", "--display", "--verbose=4", str(app)],
-                                               capture_output=True, text=True).stderr)
+        display = run(["codesign", "--display", "--verbose=4", str(app)],
+                      capture_output=True, text=True).stderr
+        verify_apple_identity(display, team, "ios")
+        authority = distribution_authority(display)
         entitlements = plistlib.loads(run(["codesign", "--display", "--entitlements", ":-", str(app)],
                                          capture_output=True).stdout)
         profile = plistlib.loads(run(["security", "cms", "-D", "-i", str(app / "embedded.mobileprovision")],

@@ -114,7 +114,7 @@ To validate the real archive without distribution material, run from the reposit
 bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readiness/check-archive
 ```
 
-The output directory must be new. The helper resolves the locked workspace dependencies, configures Flutter with `--no-codesign`, and runs `xcodebuild archive` with signing disabled and no automatic-provisioning/device-registration flags. It rejects extra `.app`/`.appex` targets until their profile policy is reviewed, then reuses the final iOS payload/privacy/localization gate. CI archives this evidence as a tarball to preserve bundle modes and symlinks; `UNSIGNED-ARCHIVE.txt` explicitly prevents mistaking it for a signed, store-submittable IPA.
+The output directory must be new. The helper resolves the locked workspace dependencies, configures Flutter with `--no-codesign`, and runs `xcodebuild archive` with signing disabled and no automatic-provisioning/device-registration flags. It requires the declared main executable to be a contained executable Mach-O file, rejects extra `.app`/`.appex` targets in the archive or app until their profile policy is reviewed, then reuses the final iOS payload/privacy/localization gate. CI archives this evidence as a tarball to preserve bundle modes and symlinks; `UNSIGNED-ARCHIVE.txt` explicitly prevents mistaking it for a signed, store-submittable IPA.
 
 Only the owner on an already configured signing Mac may run a later local export:
 
@@ -128,10 +128,10 @@ The actual exported app must pass the existing identity/signature gate plus exac
 
 | ID | Status | Evidence / boundary |
 | --- | --- | --- |
-| W4 / iOS | controlled preparation gate; owner export pending | Twelve policy/failure regressions; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
+| W4 / iOS | controlled preparation gate; owner export pending | Fifteen policy/failure regressions; actual unsigned archive in CI. Manual local export only; distribution identity/profile and device/Store qualification remain separate. |
 | X6 / iOS | final archive payload inspected | Same native/privacy/purpose-localization checks as the existing unsigned IPA; unsigned archive is not a signed delivery or installed-device result. |
 
-Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Twelve helper-policy regressions and the complete 83-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
+Local validation on 2026-10-23: Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 completed this unsigned archive route; 14 arm64 device Mach-O images and ten privacy manifests passed the existing payload gate. Runner and dSYM UUIDs matched (`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`). Fifteen helper-policy regressions and the complete 86-test Python suite passed (the local CMake fixtures used the installed macOS 26.4 SDK). This does not establish owner-signed export or device installation.
 
 ## Installed Windows MSI evidence
 

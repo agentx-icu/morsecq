@@ -120,7 +120,7 @@ class IosStoreExportTests(unittest.TestCase):
             if command[0] == "ditto":
                 (Path(command[-1]) / "Payload/Runner.app").mkdir(parents=True)
             elif "--verbose=4" in command:
-                result.stderr = "Authority=Apple Distribution: Owner (ABCDE12345)\n"
+                result.stderr = "Authority=Apple Distribution: Owner (ABCDE12345)\nTeamIdentifier=ABCDE12345\n"
             elif "--entitlements" in command:
                 result.stdout = plistlib.dumps(self.profile()["Entitlements"])
             elif command[:2] == ["security", "cms"]:
@@ -169,6 +169,45 @@ class IosStoreExportTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Additional signed targets"):
                 store.inspect_app(self.root, app, self.root)
             runner.assert_not_called()
+
+    def test_bundle_executable_must_be_present_contained_native_file(self):
+        app = self.root / "Runner.app"
+        app.mkdir()
+        info = app / "Info.plist"
+        (app / "Directory").mkdir()
+        (self.root / "Outside").write_bytes(b"\xcf\xfa\xed\xfe")
+        (app / "Link").symlink_to(self.root / "Outside")
+        (app / "Text").write_bytes(b"not an executable")
+        for entry in ("", ".", "..", "MissingRunner", "Directory", "Link", "Text"):
+            info.write_bytes(plistlib.dumps({"CFBundleExecutable": entry}))
+            with self.subTest(entry=entry), patch.object(store, "run") as runner:
+                with self.assertRaisesRegex(ValueError, "executable"):
+                    store.inspect_app(self.root, app, self.root)
+                runner.assert_not_called()
+        (app / "Runner").write_bytes(b"\xcf\xfa\xed\xfe")
+        (app / "Runner").chmod(0o755)
+        info.write_bytes(plistlib.dumps({"CFBundleExecutable": "Runner"}))
+        with patch.object(store, "run") as runner:
+            store.inspect_app(self.root, app, self.root)
+            runner.assert_called_once()
+
+    def test_archive_rejects_unreviewed_sibling_application(self):
+        applications = self.root / "Runner.xcarchive/Products/Applications"
+        (applications / "Runner.app").mkdir(parents=True)
+        (applications / "Other.app").mkdir()
+        with patch.object(store, "inspect_app") as inspect:
+            with self.assertRaisesRegex(ValueError, "exactly one"):
+                store.inspect_archive(self.root, self.root)
+            inspect.assert_not_called()
+
+    def test_existing_distribution_identity_gate_accepts_legacy_authority(self):
+        from distribution_signing import verify_apple_identity
+        display = "Authority=iPhone Distribution: Owner (ABCDE12345)\nTeamIdentifier=ABCDE12345\n"
+        verify_apple_identity(display, "ABCDE12345", "ios")
+        self.assertEqual(store.distribution_authority(display), "iPhone Distribution: Owner (ABCDE12345)")
+        profile = self.profile()
+        self.assertEqual(store.profile_evidence(profile, profile["Entitlements"], "ABCDE12345", self.fingerprint)["application_identifier"],
+                         "PREFIX.icu.agentx.morsecq")
 
     def test_config_archive_and_export_failures_propagate_without_verification(self):
         # Real subprocess error propagation is exercised at each command boundary;
