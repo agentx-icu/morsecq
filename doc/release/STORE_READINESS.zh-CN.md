@@ -11,7 +11,7 @@
 | 渠道 / 地区 / 包模型 | 当前路径与证据 | 所有者后续动作 |
 | --- | --- | --- |
 | GitHub 开发制品 / 地区待定 | 已有 Android APK/AAB、未签名 iOS IPA、Mac PKG/ZIP、Windows x64 MSI/ZIP、Linux x86_64 DEB/RPM/tar；十个制品和校验和，只生成 release 草稿 | 记录版本、tag、哈希、权利与地区，单独批准发布。默认 Apple/Windows 开发包不是商店包或可信分发包。 |
-| Apple App Store / iOS+iPadOS / 地区待定 | 有 `tool/build_ios_store.sh` 签名导出入口；CI 未签名 IPA 只证明编译与产物检查 | R：核实 Team/应用记录、协议、发行 profile、处理后的 build、隐私标签/报告、出口问卷、分级及文案/支持/隐私 URL；C：地区/trader 材料。离线审查不需要测试登录。 |
+| Apple App Store / iOS+iPadOS / 地区待定 | 有 `tool/build_ios_store.sh` 受控本地手工导出入口；CI 同时验证该 unsigned Xcode archive 路径，不操作账号 | R：核实 Team/应用记录、协议、发行 profile、处理后的 build、隐私标签/报告、出口问卷、分级及文案/支持/隐私 URL；C：地区/trader 材料。离线审查不需要测试登录。 |
 | 原生 Mac App Store / universal2 / 地区待定 | 未选定提交路径；原生应用有 sandbox，但无 Store 签名导出包与后台证据 | 决定同一 app record 添加 macOS 还是独立记录；配置商店签名/更新路径，测试 sandbox 麦克风、导入/导出、历史数据升级。Developer ID PKG 是另一路径。 |
 | Developer ID 直接下载 / macOS universal2 | 已有开发 PKG/ZIP；显式发行模式按内到外签名、核对 Team/证书类别、公证并 staple 最终制品 | 提供真实身份、Team、notary profile，运行所有者入口并保留下载隔离/Gatekeeper、安装与升级证据。本次未使用真实凭据或公证服务。 |
 | iOS 兼容版运行于 Apple silicon Mac / Vision Pro | 上次决定为验证前关闭兼容上架；原生 Mac 是另一二进制，实际后台可用性未知 | 所有者分别留存 App Store Connect opt-out。若启用或在同记录替换，验证插件、硬件降级和进度/设置数据连续性，原生 Mac 构建不证明兼容 iOS 行为。 |
@@ -65,7 +65,7 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 | --- | --- | --- |
 | 所有选定渠道：发布主体、地区、受众、权利、上一版本 | 所有者开发者账号资料及应用记录；自有主体/联系、截图/内容权利记录 | 公开 ID 与脱敏决定保存在私有发布记录。阻塞提交路径、listing 和签名升级矩阵选择；未选渠道仍是条件项。 |
 | Apple：Team ID、bundle/应用记录 ID、协议 | [Apple Developer 账号](https://developer.apple.com/account/)的 membership 与 Certificates, Identifiers & Profiles；App Store Connect 应用信息及 Agreements | `MORSECQ_APPLE_TEAM_ID` 是公开标识。所有者核对协议及身份一致性；阻塞 iOS 签名导出及 Apple 提交。 |
-| iOS/iPadOS：既有分发身份及 App Store provisioning profile | Apple Developer 的 Certificates, Identifiers & Profiles，以及所有者 Xcode 的 `icu.agentx.morsecq` 签名/导出配置 | 私钥保存在所有者 keychain，profile 由 Xcode 管理；本机带 export 参数运行 `tool/build_ios_store.sh`。`.p12` 与密码不入 Git。阻塞最终签名 IPA 检查及设备安装。 |
+| iOS/iPadOS：既有分发身份及 App Store provisioning profile | Apple Developer 的 Certificates, Identifiers & Profiles，以及所有者 Xcode 的 `icu.agentx.morsecq` 签名/导出配置 | 私钥保存在所有者 keychain，既有 profile 由 Xcode 管理。从 Keychain Access / `security find-identity -v -p codesigning` 读取非秘密 SHA-1，在签名机配置 `MORSECQ_IOS_CERT_SHA1` 与 `MORSECQ_APPLE_TEAM_ID`，指定本地 manual ExportOptions plist。`.p12` 与密码不入 Git。阻塞最终签名 IPA 检查及设备安装。 |
 | macOS 直接下载：既有 Developer ID Application / Installer 身份、公证 profile | Apple Developer 证书、签名 Mac 的 Keychain Access 以及所有者既有 `notarytool` keychain profile | 在签名机配置 `MORSECQ_MACOS_APPLICATION_IDENTITY`、`MORSECQ_MACOS_INSTALLER_IDENTITY`、`MORSECQ_APPLE_TEAM_ID`、`MORSECQ_NOTARY_PROFILE`。名称只是引用，不是密钥材料。阻塞可信 PKG/ZIP、公证和 Gatekeeper 资格验证；本次不调用公证服务。 |
 | Google Play：既有 upload key、上传与投递证书 SHA-256 | 所有者既有上传 keystore；Play Console 该应用 App integrity / App signing 的证书页面。上传与 Play 投递证书可不同 | 所有者在仓库 Settings → Secrets and variables → Actions 配置既有 `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD` 四个 secret；非秘密上传指纹填 Actions variable `ANDROID_UPLOAD_CERT_SHA256`。本地 strict 使用 `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`。阻塞 tag 签名/身份校验与签名升级；不要将 key 上传仓库。 |
 | Windows 直接下载 / hosted MSI：既有可信签名证书 | 所有者证书提供方和签名机证书存储；用本机证书管理工具读取指纹 | `MORSECQ_WINDOWS_CERT_SHA1` 引用可访问的既有密钥，并使用 Windows SDK `signtool.exe`。阻塞最终 PE/MSI 可信签名；CI 开发 MSI 的安装不证明信任或 SmartScreen 信誉，本次不购买证书。 |
@@ -74,6 +74,35 @@ CI 报告与十个发布下载分开保留，符号亦独立。用上一签名�
 | Apple / Play / Microsoft：隐私、评级、商店素材、审核说明 | 所有者 App Store Connect App Privacy / App Review、Play Console App content、Partner Center 提交表单；以项目 app/SDK 清单和当前政策为依据 | 所有者在后台完成问卷，提供有权使用的本地化文案/截图，并未登录验证公开支持/隐私 URL。本离线无账号应用不需要审核登录。阻塞提交；十语言 UI 不证明十语言 listing 已完成。 |
 | Linux / 额外商店及国内 Android，选定后适用 | 所有者选择支持发行版/会话、签名/更新信任和实际渠道；该渠道发布者后台提供 identity、备案适用性与必要权限 | 密钥留在所选所有者 secret store；包/沙盒/更新证据齐全前阻塞对应渠道。Flathub manifest 作者与提交仍是人工步骤，本次不生成新提交包。 |
 | 各选定发行：上一签名包与设备访问 | 所有者发布归档 / 商店测试轨道及真机或干净系统实验室 | 记录版本/build、SHA-256、签名者与安装结果；阻塞旧版升级、受保护硬件/runtime 及普通用户验证。同版本 MSI repair 是另一测试。 |
+
+## 受控 iOS archive 与本地导出
+
+原 `flutter build ipa` 入口在 Flutter 3.41.9 签名模式下会加入 Xcode 自动 provisioning 更新/设备注册参数。现由 `tool/build_ios_store.sh` 调用 `tool/ci/ios_store_export.py`，拒绝任意 Flutter/Xcode 覆盖参数。本轮未操作账号、上传或执行签名导出。
+
+无分发材料即可从仓库根目录验证真实 archive：
+
+```sh
+bash tool/build_ios_store.sh --unsigned-archive --output build/ios/store-readiness/check-archive
+```
+
+输出目录必须不存在。入口按 lockfile 解析 workspace 依赖，以 `--no-codesign` 配置 Flutter，再直接执行禁签名的 `xcodebuild archive`，不传自动 provisioning/设备注册参数；拒绝未经 profile 策略审查的额外 `.app`/`.appex` target，并复用最终 iOS native/privacy/用途本地化检查。CI 用 tar 保留 archive mode/symlink，`UNSIGNED-ARCHIVE.txt` 明确其不是已签名或可提交 IPA。
+
+后续仅由所有者在已有签名配置的 Mac 执行本地导出：
+
+```sh
+bash tool/build_ios_store.sh --export-options /owner/local/ExportOptions.plist --output build/ios/store-readiness/owner-export
+```
+
+需要既有公开 `MORSECQ_APPLE_TEAM_ID` 与证书指纹 `MORSECQ_IOS_CERT_SHA1`（也可显式 `--team-id` / `--certificate-sha1`）。Plist 必须使用 `method=app-store-connect`、`destination=export`、`signingStyle=manual`，精确 `teamID` 与 `signingCertificate` SHA-1，且 `provisioningProfiles` 只将 `icu.agentx.morsecq` 映射到既有 profile 名称/UUID。Upload、automatic、internal-only TestFlight 与未知 target 均拒绝；先保存已验证 plist 快照，后续源文件修改不能将运行中的导出改为上传。
+
+实际导出包除现有身份/签名检查外，还核精确 signer 指纹、离线可信证书链、指定 profile/team/app/certificate 绑定、profile 有效期与无 debug entitlement。它不会创建/续期证书或 profile、上传 App Store Connect，也不证明商店接受或真机资格。真实所有者签名导出与设备升级仍待既有材料；不要向 agent 提供或提交私密材料。
+
+| ID | 状态 | 证据 / 边界 |
+| --- | --- | --- |
+| W4 / iOS | 已加受控准备门禁；所有者导出待办 | 十二项策略/失败回归；CI 真实 unsigned archive。仅手工本地导出，分发身份/profile 与设备/商店资格仍独立。 |
+| X6 / iOS | 检查最终 archive payload | 复用已有 unsigned IPA 的 native/privacy/用途本地化 gate；unsigned archive 不是已签投递或真机安装结果。 |
+
+2026-10-23 本机 Flutter 3.41.9 / Xcode 26.4.1 / iPhoneOS SDK 26.4 完成该 unsigned archive：14 个 arm64 设备 Mach-O、十个隐私 manifest 通过既有 payload gate；Runner 与 dSYM UUID 一致（`290A4D7A-699C-3244-8E93-E4F3E0F2BDA5`）。十二项 helper 策略回归及全部 83 项 Python 回归通过（本机 CMake fixture 显式使用已安装 macOS 26.4 SDK）。这不代表所有者签名导出或设备安装通过。
 
 ## Windows MSI 安装后证据
 

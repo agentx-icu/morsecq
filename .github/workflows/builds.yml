@@ -256,6 +256,16 @@ jobs:
           name: release-ios
           path: dist/ios/*
           if-no-files-found: error
+      - name: Validate controlled unsigned iOS archive
+        run: python3 tool/ci/ios_store_export.py --unsigned-archive --output build/ios/store-readiness/ci-archive
+      - name: Preserve unsigned archive modes and symlinks
+        run: tar -czf build/ios/store-readiness/ci-archive.tar.gz -C build/ios/store-readiness ci-archive
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-archive
+          path: build/ios/store-readiness/ci-archive.tar.gz
+          retention-days: 7
+          if-no-files-found: error
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [validate, desktop, android, ios]
