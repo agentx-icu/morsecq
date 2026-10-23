@@ -57,6 +57,35 @@
 
 CI 报告与十个发布下载分开保留，符号亦独立。用上一签名版本创建进度，按所选渠道升级，再检查进度、拒绝麦克风、文件访问及卸载无残留进程。保留旧包和备份用于调查；停止 rollout 不会撤销已安装数据迁移。以向前修复为主，二进制降级需既有 B7 测试及单独签名更新路径。
 
+## 所有者材料及获取位置
+
+公开 ID、证书指纹及脱敏证据可进入发布记录。下表请所有者将既有材料配置到指定安全位置；不要在聊天、issue 或 Git 中发送私钥、keystore、密码、token 或未脱敏后台截图。本清单不授权创建账号、扩大权限或提交商店。
+
+| 平台 / 材料 | 用途与所有者获取位置 | 安全配置位置 / 阻塞步骤 |
+| --- | --- | --- |
+| 所有选定渠道：发布主体、地区、受众、权利、上一版本 | 所有者开发者账号资料及应用记录；自有主体/联系、截图/内容权利记录 | 公开 ID 与脱敏决定保存在私有发布记录。阻塞提交路径、listing 和签名升级矩阵选择；未选渠道仍是条件项。 |
+| Apple：Team ID、bundle/应用记录 ID、协议 | [Apple Developer 账号](https://developer.apple.com/account/)的 membership 与 Certificates, Identifiers & Profiles；App Store Connect 应用信息及 Agreements | `MORSECQ_APPLE_TEAM_ID` 是公开标识。所有者核对协议及身份一致性；阻塞 iOS 签名导出及 Apple 提交。 |
+| iOS/iPadOS：既有分发身份及 App Store provisioning profile | Apple Developer 的 Certificates, Identifiers & Profiles，以及所有者 Xcode 的 `icu.agentx.morsecq` 签名/导出配置 | 私钥保存在所有者 keychain，profile 由 Xcode 管理；本机带 export 参数运行 `tool/build_ios_store.sh`。`.p12` 与密码不入 Git。阻塞最终签名 IPA 检查及设备安装。 |
+| macOS 直接下载：既有 Developer ID Application / Installer 身份、公证 profile | Apple Developer 证书、签名 Mac 的 Keychain Access 以及所有者既有 `notarytool` keychain profile | 在签名机配置 `MORSECQ_MACOS_APPLICATION_IDENTITY`、`MORSECQ_MACOS_INSTALLER_IDENTITY`、`MORSECQ_APPLE_TEAM_ID`、`MORSECQ_NOTARY_PROFILE`。名称只是引用，不是密钥材料。阻塞可信 PKG/ZIP、公证和 Gatekeeper 资格验证；本次不调用公证服务。 |
+| Google Play：既有 upload key、上传与投递证书 SHA-256 | 所有者既有上传 keystore；Play Console 该应用 App integrity / App signing 的证书页面。上传与 Play 投递证书可不同 | 所有者在仓库 Settings → Secrets and variables → Actions 配置已有四个签名 secret；非秘密上传指纹填 Actions variable `ANDROID_UPLOAD_CERT_SHA256`。本地 strict 使用 `MORSECQ_ANDROID_UPLOAD_CERT_SHA256`。阻塞 tag 签名/身份校验与签名升级；不要将 key 上传仓库。 |
+| Windows 直接下载 / hosted MSI：既有可信签名证书 | 所有者证书提供方和签名机证书存储；用本机证书管理工具读取指纹 | `MORSECQ_WINDOWS_CERT_SHA1` 引用可访问的既有密钥，并使用 Windows SDK `signtool.exe`。阻塞最终 PE/MSI 可信签名；CI 开发 MSI 的安装不证明信任或 SmartScreen 信誉，本次不购买证书。 |
+| Microsoft Store：产品/包 identity 与包模型选择 | 所有者 Partner Center 产品记录 / Product identity | 选择 hosted MSI 或 MSIX 后记录公开 identity；MSIX 仍需单独实现。Hosted MSI 另需所有者可控的版本固定不可变 HTTPS URL 与最终 hash。阻塞 Store 包与资料；不应仅为 Store MSIX 提交购买 CA 证书。 |
+| Apple / Play / Microsoft：隐私、评级、商店素材、审核说明 | 所有者 App Store Connect App Privacy / App Review、Play Console App content、Partner Center 提交表单；以项目 app/SDK 清单和当前政策为依据 | 所有者在后台完成问卷，提供有权使用的本地化文案/截图，并未登录验证公开支持/隐私 URL。本离线无账号应用不需要审核登录。阻塞提交；十语言 UI 不证明十语言 listing 已完成。 |
+| Linux / 额外商店及国内 Android，选定后适用 | 所有者选择支持发行版/会话、签名/更新信任和实际渠道；该渠道发布者后台提供 identity、备案适用性与必要权限 | 密钥留在所选所有者 secret store；包/沙盒/更新证据齐全前阻塞对应渠道。Flathub manifest 作者与提交仍是人工步骤，本次不生成新提交包。 |
+| 各选定发行：上一签名包与设备访问 | 所有者发布归档 / 商店测试轨道及真机或干净系统实验室 | 记录版本/build、SHA-256、签名者与安装结果；阻塞旧版升级、受保护硬件/runtime 及普通用户验证。同版本 MSI repair 是另一测试。 |
+
+## Windows MSI 安装后证据
+
+`tool/ci/test_windows_installer.ps1` 是已有 Windows release-build job 的必跑步骤：将最终 MSI 安装到含空格目录，按最终 ZIP 比对**每一个文件**（含资源），检查 PE/AOT 架构，要求实际窗口与 fresh-profile 优雅关闭；删除引擎 DLL 后执行 repair、重新检查并启动/关闭，再卸载，拒绝遗留 exe/进程。MSI 操作有超时；即使失败，也在 `evidence-windows/windows-installed` 保留 MSI 日志、安装/repair 清单及 `result.json`，报告绑定 MSI/ZIP SHA-256。[Microsoft 命令行文档](https://learn.microsoft.com/en-us/windows/win32/msi/standard-installer-command-line-options)定义静默、不重启与日志语义。
+
+脚本拒绝非 GitHub-hosted runner、已有 MorseCQ 进程及按 Windows KnownFolder 与已装 exe 版本资源推导的已有 support/cache 目录。不靠改 `APPDATA` 重定向数据、不删除既有 profile、不修改应用持久化。CI runner 一次性且可能提权，不证明普通用户、纯净 OS、真实所有者签名、最低 OS 或旧版本升级。Windows 执行结果以精确 head 的 PR job 为准；其余平台仍按设备矩阵验证安装。
+
+| ID | 状态 | 证据 / 剩余边界 |
+| --- | --- | --- |
+| W4、X6 / Windows MSI | 已加入安装后自动门禁；精确 head 结果见 PR | 实际安装 → 文件/CPU 校验 → 可见启动/优雅退出 → DLL 缺失 repair/重启 → 卸载，保留日志与制品 hash。可信签名、普通用户与旧版升级仍需所有者/设备。 |
+| X5 | 已记录 parity | 本次测试 Windows MSI；macOS/Linux 安装器、移动商店投递升级仍需对应安装矩阵。五平台原有 payload gate 均保留。 |
+| B2、W2 | 行为未改；冒烟执行默认关闭 | Fresh-profile close-to-tray 默认 false，不退出即失败。强杀只清理失败测试，不能当作优雅退出证据；未修改训练/session 层。 |
+
 ## 本机验证记录
 
 macOS27.0.1 arm64、Flutter3.41.9、Xcode SDK26.4：release57.0MB，15个 Mach-O 全含 arm64+x86_64，九个隐私 manifest 和十语言用途检查通过。首轮产物检查抓到 Xcode 注入 `get-task-allow=true`，Release 关闭 base-entitlement 注入后签名权限检查通过。实际 PKG/ZIP 打包和最终 ZIP 解包检查通过。Android APK74.6MB/AAB55.1MB，三个 ABI 的30个模块、最终 manifest、16KB ELF/ZIP/AAB config 通过；本地 Android 为 debug 证书，不能用作分发。

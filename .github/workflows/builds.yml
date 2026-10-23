@@ -100,7 +100,17 @@ jobs:
           $template = $database.SummaryInformation(0).Property(7)
           if ($template -notmatch '^x64;') { throw "Unexpected MSI Template Summary: $template" }
           $template | Out-File build/evidence/windows-msi-template.txt
+      - name: Test installed Windows MSI
+        if: runner.os == 'Windows'
+        shell: pwsh
+        timeout-minutes: 12
+        run: |
+          $msis = @(Get-ChildItem dist/windows/*.msi)
+          $zips = @(Get-ChildItem dist/windows/*.zip)
+          if ($msis.Count -ne 1 -or $zips.Count -ne 1) { throw 'Expected exactly one final MSI and ZIP' }
+          & ./tool/ci/test_windows_installer.ps1 -MsiPath $msis[0].FullName -PayloadZipPath $zips[0].FullName -EvidenceDirectory build/evidence/windows-installed
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: evidence-${{ matrix.platform }}
           path: build/evidence/

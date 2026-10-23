@@ -130,3 +130,6 @@ changes. Media: wired/Bluetooth disconnects, incoming calls and silent controls.
 All targets: install prior signed release, create progress, upgrade and inspect
 actual packaged permissions, architectures and final signatures. Native crashes,
 120 Hz pacing, startup time and store console settings remain explicit gaps.
+
+
+Installed Windows MSI CI now checks final-file hashes, visible launch/graceful close, missing-DLL repair and uninstall. See [current store readiness](../release/STORE_READINESS.md#installed-windows-msi-evidence) for scope and owner/device boundaries; earlier local-Mac-only statements above are historical. Native signing, standard-user and previous-version upgrade are still not verified.
