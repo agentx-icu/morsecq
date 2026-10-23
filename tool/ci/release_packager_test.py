@@ -17,7 +17,7 @@ class StrictPackagerTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.ci = self.root / 'tool/ci'
         self.ci.mkdir(parents=True)
-        for name in ['common.sh', 'package_artifacts.sh', 'release_preflight.py', 'macos_runtime.py']:
+        for name in ['common.sh', 'package_artifacts.sh', 'release_preflight.py', 'macos_runtime.py', 'release_size_budget.py']:
             shutil.copy(CI / name, self.ci / name)
         app = self.root / 'apps/morsecq'
         app.mkdir(parents=True)
@@ -66,6 +66,22 @@ class StrictPackagerTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('16 KB', result.stderr)
         self.assertFalse((self.root / 'dist/android/morsecq-1.0.1-android.apk').exists())
+
+    def test_development_packager_rejects_final_android_bytes_over_existing_budget(self):
+        self.env['MORSECQ_DISTRIBUTION'] = '0'
+        outputs = self.root / 'apps/morsecq/build/app/outputs'
+        apk = outputs / 'flutter-apk/app-release.apk'
+        aab = outputs / 'bundle/release/app-release.aab'
+        for path in (apk, aab):
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b'fixture, not a built app')
+        with apk.open('wb') as stream:
+            stream.truncate(100 * 1024 * 1024 + 1)
+        result = self.invoke('android')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('size budget', result.stderr)
+        evidence = self.root / 'build/evidence/android-size-budget.json'
+        self.assertIn('"outcome": "failed"', evidence.read_text())
 
 if __name__ == '__main__':
     unittest.main()

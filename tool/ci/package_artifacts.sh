@@ -79,6 +79,15 @@ copy_one() {  # <dir> <glob> <dest>
   cp "${hits[0]}" "$3"
 }
 
+check_size_budget() {  # <architecture> [final/staged application payload]
+  local budget_python=python3
+  [[ "$TARGET" != windows ]] || budget_python=python
+  local -a args=(--platform "$TARGET" --architecture "$1" --artifacts "$DIST_DIR"
+    --output "$REPO_ROOT/build/evidence/$TARGET-size-budget.json")
+  [[ -z "${2:-}" ]] || args+=(--payload "$2")
+  "$budget_python" "$SCRIPT_DIR/release_size_budget.py" "${args[@]}"
+}
+
 package_linux() {
   local bundle="$BUILD_DIR/linux/x64/release/bundle" stage installer
   [[ -x "$bundle/morsecq" ]] || ci_die "Linux bundle not found: $bundle"
@@ -100,6 +109,7 @@ package_linux() {
   (cd "$installer" && cpack -G "DEB;RPM")
   copy_one "$installer" '*.deb' "$DIST_DIR/$BASE-linux-x86_64.deb"
   copy_one "$installer" '*.rpm' "$DIST_DIR/$BASE-linux-x86_64.rpm"
+  check_size_budget x86_64 "$stage"
   rm -rf "$DIST_DIR/.stage"
 }
 
@@ -128,6 +138,7 @@ package_windows() {
   if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ci_windows_path "$SCRIPT_DIR/sign_windows.ps1")" -InputPath "$(ci_windows_path "$DIST_DIR/$BASE-windows-x64.msi")"
   fi
+  check_size_budget x86_64 "$stage"
   rm -rf "$DIST_DIR/.stage"
 }
 
@@ -193,6 +204,7 @@ package_macos() {
     python3 "$SCRIPT_DIR/distribution_signing.py" "$DIST_DIR/.verify/MorseCQ.app" --team "$MORSECQ_APPLE_TEAM_ID" --platform macos
     xcrun stapler validate "$DIST_DIR/.verify/MorseCQ.app"
   fi
+  check_size_budget "$arch" "$DIST_DIR/.verify/MorseCQ.app"
   rm -rf "$DIST_DIR/.verify"
 }
 
@@ -208,6 +220,7 @@ package_android() {
   fi
   cp "$apk" "$DIST_DIR/$BASE-android.apk"
   cp "$aab" "$DIST_DIR/$BASE-android.aab"
+  check_size_budget 'armeabi-v7a,arm64-v8a,x86_64'
 }
 
 package_ios() {
@@ -218,6 +231,7 @@ package_ios() {
   mkdir -p "$payload"
   ditto "$app" "$payload/Runner.app"
   (cd "$DIST_DIR/.ipa" && zip -qry "$DIST_DIR/$BASE-ios-unsigned.ipa" Payload)
+  check_size_budget arm64 "$payload/Runner.app"
   rm -rf "$DIST_DIR/.ipa"
 }
 

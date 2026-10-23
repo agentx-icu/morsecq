@@ -46,4 +46,4 @@ API 36 截止日期已于 2026-10-22 对照 [Play 当前要求](https://support.
 初始工程限制，发布时按架构检查：Android APK/AAB 各 ≤100 MiB；iOS IPA ≤150 MiB；macOS 应用与 PKG 各 ≤100 MiB；Windows MSI ≤150 MiB、安装后应用 ≤250 MiB；Linux DEB/RPM 各 ≤100 MiB、安装后目录 ≤250 MiB。
 发布设备矩阵上的冷启动至可用 Learn ≤5 秒、热重开 ≤2 秒是目标，尚未测量。
 本机 macOS 27.0.1 arm64 上 universal release 构建为 57.1 MB；其余包体与启动延迟待测。
-详见[跨平台审计](../testing/CROSS_PLATFORM_AUDIT.zh-CN.md)。
+`tool/ci/release_size_budget.py` 现按构建架构对最终打包文件和应用 payload 执行上述既有体积限制，报告精确字节及制品 SHA-256；MiB 为 1,048,576 字节。Payload 口径是各普通文件路径的逻辑字节，加相对 symlink 目标文本字节，不跟随链接重复遍历，不包含磁盘块分配或系统 installer 缓存。Mac ZIP、Linux tar 和 iOS 应用 payload 仅记录大小，不虚构额外上限。详见[当前证据与阻塞分类](STORE_READINESS.zh-CN.md#发布体积预算)和[跨平台审计](../testing/CROSS_PLATFORM_AUDIT.zh-CN.md)。冷/热启动至可用 Learn 仍需发布设备矩阵，CI 可见窗口不能替代该测量。
