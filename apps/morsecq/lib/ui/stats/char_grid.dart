@@ -74,11 +74,11 @@ class CharCell extends StatelessWidget {
     final background = palette.bucketBackground(b);
     final foreground = palette.bucketForeground(b);
     final wide = char.length > 1;
-    // Grows with the text size so the glyph and its attempt badge stay
-    // inside the cell (a fixed 40 px box clipped them from 2x text).
+    // Keep a real 48 px target, then grow with text so the glyph and attempt
+    // badge stay inside the cell (a fixed 40 px box clipped them from 2x).
     final double side = MediaQuery.textScalerOf(
       context,
-    ).scale(40).clamp(40.0, 72.0);
+    ).scale(40).clamp(kMinInteractiveDimension, 72.0);
     final semantics = stats.attempts == 0
         ? '$char, ${s.statsCharsNotStarted}'
         : '$char, ${formatPercent(s, stats.accuracy)}, '

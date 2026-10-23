@@ -3,6 +3,7 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import '../../i18n/l10n_extension.dart';
 import 'confusion_heatmap.dart';
+import 'stats_details_picker.dart';
 import 'stats_math.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
@@ -10,6 +11,7 @@ import 'stats_widgets.dart';
 
 /// GitHub-style heat squares for the last 12 weeks of practice: one column
 /// per ISO week, Monday at the top. Tap a square to read its date and count.
+/// The standard selector exposes the same details to keyboard/assistive input.
 class PracticeCalendar extends StatefulWidget {
   const PracticeCalendar({super.key, required this.snapshot});
 
@@ -87,6 +89,20 @@ class _PracticeCalendarState extends State<PracticeCalendar> {
             },
           ),
           const SizedBox(height: 8),
+          StatsDetailsPicker(
+            key: ObjectKey(widget.snapshot),
+            label: s.statsCalendarTitle,
+            options: [
+              for (final day in days)
+                '${s.statsCalendarDay(DateFormat.yMd(locale).format(day.day), day.chars)}'
+                    '${day.listeningSessions > 0 ? ' / ${s.comprehensionTitle} / ${s.statsSessions(day.listeningSessions)}' : ''}',
+            ],
+            selectedLabels: [
+              for (final day in days) DateFormat.yMd(locale).format(day.day),
+            ],
+            selected: sel,
+            onSelected: (index) => setState(() => _selected = index),
+          ),
           if (sel != null &&
               sel < days.length &&
               (days[sel].chars > 0 || days[sel].listeningSessions == 0))
