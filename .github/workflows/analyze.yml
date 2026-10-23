@@ -100,6 +100,8 @@ jobs:
       - name: Release payload and distribution refusal regressions
         run: |
           python3 tool/ci/release_preflight_test.py
+          python3 tool/ci/windows_runtime_test.py
+          python3 tool/ci/linux_installed_smoke_test.py
           python3 tool/ci/distribution_signing_test.py
           python3 tool/ci/release_packager_test.py
           python3 tool/ci/verify_site_test.py

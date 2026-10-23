@@ -87,6 +87,10 @@ jobs:
         run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
       - name: Hash final packaged artifacts
         run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/${{ matrix.platform }}
+      - name: Test installed Linux DEB
+        if: runner.os == 'Linux'
+        timeout-minutes: 15
+        run: python3 tool/ci/linux_installed_smoke.py --app morsecq --architecture x86_64 --package-dir dist/linux --evidence-dir build/evidence/linux-installed
       - name: Verify final Windows ZIP payload
         if: runner.os == 'Windows'
         run: python tool/ci/release_preflight.py --output build/evidence/windows-final.json native dist/windows/morsecq-*-windows-x64.zip --platform windows --architecture x86_64

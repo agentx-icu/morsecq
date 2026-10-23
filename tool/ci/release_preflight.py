@@ -191,6 +191,20 @@ def check_installed_payload(root, archive_path):
     return records
 
 
+def check_windows_runtime(records):
+    paths = {PurePosixPath(record['path'].replace('\\', '/').lower()): record
+             for record in records}
+    runners = [path for path in paths if path.name == 'morsecq.exe']
+    if len(runners) != 1:
+        raise ValueError('Expected one Windows release runner')
+    directory = runners[0].parent
+    required = [directory / name for name in
+                ['msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']]
+    if not all(path in paths for path in required):
+        raise ValueError('Missing app-local MSVC runtime next to the release runner')
+    return [paths[path] for path in required]
+
+
 def check_apple(app, platform, *, inspect_native=True):
     app = Path(app).resolve()
     resources = app / 'Contents/Resources' if platform == 'macos' else app
@@ -295,6 +309,8 @@ def main():
         report = check_apple(args.app, args.platform)
     elif args.kind == 'native':
         report = {'binaries': check_native_directory(args.root, args.platform, args.architecture)}
+        if args.platform == 'windows':
+            report['windows_runtime'] = check_windows_runtime(report['binaries'])
         if args.expected_zip:
             if args.platform != 'windows' or not args.root.is_dir():
                 raise ValueError('--expected-zip requires an installed Windows directory')

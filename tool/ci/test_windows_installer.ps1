@@ -41,13 +41,20 @@ function Invoke-Msi([string]$Stage, [string[]]$Arguments, [switch]$AllowAbsent) 
 }
 
 function Assert-InstalledPayload([string]$Stage) {
-  foreach ($file in @('morsecq.exe', 'flutter_windows.dll', 'data/app.so', 'data/icudtl.dat')) {
+  foreach ($file in @('morsecq.exe', 'flutter_windows.dll', 'data/app.so', 'data/icudtl.dat', 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll', 'licenses/MSVC-runtime.txt')) {
     if (-not (Test-Path -LiteralPath (Join-Path $installRoot $file) -PathType Leaf)) {
       throw "MSI omitted required release payload: $file"
     }
   }
   & python $preflight --output (Join-Path $evidence "$Stage.json") native $installRoot --platform windows --architecture x86_64 --expected-zip $zip
   if ($LASTEXITCODE -ne 0) { throw "Installed payload verification failed: $Stage" }
+  $runtimeFiles = @(Get-ChildItem -LiteralPath $installRoot -File | Where-Object { $_.Name -match '^(?:msvcp140|vcruntime140|concrt140).*\.dll$' })
+  foreach ($file in $runtimeFiles) {
+    $signature = Get-AuthenticodeSignature -LiteralPath $file.FullName
+    if ($signature.Status -ne 'Valid' -or $null -eq $signature.SignerCertificate -or $signature.SignerCertificate.Subject -notmatch '(^|,\s*)O=Microsoft Corporation(,|$)') {
+      throw "MSVC runtime does not retain its trusted Microsoft signature: $($file.Name)"
+    }
+  }
   $report.stages.Add("$Stage hashes and native architecture verified")
 }
 
@@ -63,6 +70,17 @@ function Test-InstalledWindow([string]$Stage) {
   Start-Sleep -Seconds 10
   $script:app.Refresh()
   if ($script:app.HasExited) { throw "Installed application exited during startup: $($script:app.ExitCode)" }
+  $loaded = @($script:app.Modules)
+  $runtimeModules = @()
+  foreach ($name in @('flutter_windows.dll', 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll')) {
+    $modules = @($loaded | Where-Object { $_.ModuleName -ieq $name })
+    $expected = [IO.Path]::GetFullPath((Join-Path $installRoot $name))
+    if ($modules.Count -ne 1 -or -not [string]::Equals($modules[0].FileName, $expected, [StringComparison]::OrdinalIgnoreCase)) {
+      throw "Installed application did not load $name from its own payload directory"
+    }
+    $runtimeModules += @{ name = $name; path = $modules[0].FileName; version = $modules[0].FileVersionInfo.FileVersion }
+  }
+  $report["${Stage}_runtime_modules"] = $runtimeModules
   # Fresh runner preferences leave close-to-tray disabled. A forced cleanup
   # below must never turn a refused close or an orphan process into a pass.
   if (-not $script:app.CloseMainWindow()) { throw 'Installed window did not accept the close request' }
@@ -79,14 +97,14 @@ function Get-MsiProductState {
   try {
     $database = $installer.OpenDatabase($msi, 0)
     $view = $database.OpenView('SELECT `Value` FROM `Property` WHERE `Property` = ''ProductCode''')
-    $view.Execute()
+    [void]$view.Execute()
     $record = $view.Fetch()
     if (-not $record) { throw 'MSI ProductCode is missing' }
     $code = $record.StringData(1)
     $state = $installer.GetType().InvokeMember('ProductState', 'GetProperty', $null, $installer, @($code))
-    return @{ product_code = $code; state = $state }
+    return [pscustomobject]@{ product_code = $code; state = $state }
   } finally {
-    if ($view) { $view.Close() }
+    if ($view) { [void]$view.Close() }
     foreach ($item in @($record, $view, $database, $installer)) {
       if ($item) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($item) }
     }

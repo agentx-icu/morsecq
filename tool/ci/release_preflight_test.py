@@ -155,6 +155,18 @@ class ReleasePreflightTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'missing morsecq.exe'):
             check_installed_payload(self.root, archive)
 
+    def test_windows_release_requires_app_local_crt_next_to_runner(self):
+        from release_preflight import check_windows_runtime
+        records = [{'path': 'morsecq/morsecq.exe'}]
+        with self.assertRaisesRegex(ValueError, 'app-local MSVC'):
+            check_windows_runtime(records)
+        for name in ['msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll']:
+            records.append({'path': 'morsecq/' + name})
+        self.assertEqual(len(check_windows_runtime(records)), 3)
+        records[-1]['path'] = 'morsecq/subdirectory/vcruntime140_1.dll'
+        with self.assertRaisesRegex(ValueError, 'app-local MSVC'):
+            check_windows_runtime(records)
+
     def test_installed_payload_rejects_unsafe_or_duplicate_zip_entries(self):
         from release_preflight import check_installed_payload
         archive = self.root / 'windows.zip'
