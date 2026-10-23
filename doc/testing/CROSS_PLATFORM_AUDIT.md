@@ -55,11 +55,11 @@ specified OS/hardware. No store acceptance is inferred.
 | D4 | needs device | Mixed-DPI monitor movement/removal on Windows, Retina/non-Retina on Mac. |
 | D6 | to do | Theme persistence tests exist; full measured contrast audit is not established. |
 | D7 | verified in widget tests | Reduced-motion flash has no key-rate listener. |
-| I1 | to do | Add/record measured touch-target guideline evidence on all reachable controls. |
+| I1 | chart alternative verified; app-wide audit remains | Each statistics chart has a visible standard details selector and menu rows at least 48 logical px, including actual edge taps at 320 px/3.1× German text. Small painted cells retain their original hit regions; other controls still need measured coverage. |
 | I2 | partial / to do | Secondary-click and modifier regression; attached-tablet keyboard hints and native menus remain. |
 | I3 | verified in tests | Text submission uses IME-safe submission; keying focus/pointer/keyboard suites pass. Native CJK IME remains needs device. |
 | I4 | verified declarations/tests | PopScope drill guard and predictive-back manifest; native back gestures need device. |
-| I5 | needs device | VoiceOver, TalkBack, Narrator and Orca through first lesson, receive, Listen start/stop. |
+| I5 | chart semantics verified; native qualification needs device | Existing calendar/session/confusion details are available through localized standard selectors, keyboard focus and actual semantics actions. VoiceOver, TalkBack, Narrator and Orca still need complete native-flow validation. |
 | I6 | verified in tests | Civil-date DST and system time/week formatting regressions. |
 | I7 | verified in tests | Pointer cancellation releases keys; mnemonic secondary-click and visible row action. |
 | I8 | not applicable | No incoming verified links or protocol handlers; outgoing website links use OS browser. |
@@ -98,6 +98,25 @@ specified OS/hardware. No store acceptance is inferred.
 | X6 | partial / to do | All-platform release workflow exists; only local Mac release build/run exercised, no installed-upgrade claim. |
 | X8 | not applicable to remote service | No Internet bootstrap/service; loopback IPC is tested locally and rejects unauthenticated tokens. |
 | X9 | partial / to do | Dart errors have bounded local stacks and CI symbol retention; native-crash diagnostics and symbolized reports still need platform validation. |
+
+## Statistics detail alternatives (I1/I2/I5)
+
+The existing calendar, accuracy trend and confusion heatmap keep their painted
+charts and pointer selection. A visible standard selector offers the same local
+snapshot entries and updates the same selected-detail state. It supports Tab,
+Enter and arrow navigation, localized menu labels/selected values and standard
+semantics actions; no network, permission or new statistics feature is added.
+Replacing a snapshot dismisses an old menu so its coordinates cannot select a
+different record. The existing heat legend now wraps its labels while preserving
+the colour sequence at large text sizes.
+
+Ten new widget regressions cover first/last keyboard selection and exact detail
+data, semantics actions, real 48 px menu-edge hits, 320 px/3.1× German text,
+pointer-state equivalence, empty data and stale-menu cancellation. The original
+22 statistics regressions still pass. These controls provide an accessible
+equivalent path; they do not enlarge each 8–18 px calendar or 30 px heatmap cell,
+or certify a system screen reader. This is MorseCQ product UI: DitMesh has no
+corresponding statistics screen, so X5 does not call for adding one there.
 
 ## Verification
 
