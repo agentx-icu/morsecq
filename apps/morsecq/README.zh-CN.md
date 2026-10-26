@@ -6,6 +6,8 @@
 
 在 workspace 根目录运行 `dart pub get --enforce-lockfile`、`flutter analyze apps/morsecq` 和 `(cd apps/morsecq && flutter test --no-pub)`。用 `(cd apps/morsecq && flutter run -d macos)` 或其他受支持设备启动。原生测试位于 `integration_test/`，通过 `bash tool/test_pyramid.sh --level e2e --device <id>` 或 `tool/ci/run_integration_tests.sh -d <id>` 运行。
 
+选中“参考”时，macOS/iOS 的 Command+K 或 Windows/Linux/Android 的 Ctrl+K 可聚焦搜索框。命令只作用于当前页面及路由，不切换导航；编辑器已有焦点时，按键和 IME 组合输入仍由文本系统处理。长按重复事件不重复执行应用命令。侧音 intent 仍只是定义，未绑定到外壳；原生菜单和 iPad 实体键盘验证仍待办。
+
 | 路径 | 负责 |
 | --- | --- |
 | `lib/main.dart`、`lib/di/` | 启动、`settings.json`、`AppScope` 服务与本机偏好 |

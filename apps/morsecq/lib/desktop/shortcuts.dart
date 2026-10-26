@@ -30,8 +30,12 @@ Map<ShortcutActivator, Intent> desktopShortcutBindings({
   TargetPlatform? platform,
 }) {
   final command = usesCommandModifier(platform ?? defaultTargetPlatform);
-  SingleActivator primary(LogicalKeyboardKey key) =>
-      SingleActivator(key, meta: command, control: !command);
+  SingleActivator primary(LogicalKeyboardKey key) => SingleActivator(
+    key,
+    meta: command,
+    control: !command,
+    includeRepeats: false,
+  );
   return <ShortcutActivator, Intent>{
     primary(LogicalKeyboardKey.keyK): const FocusSearchIntent(),
     SingleActivator(

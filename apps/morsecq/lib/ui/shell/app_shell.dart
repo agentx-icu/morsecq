@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../desktop/shortcuts.dart';
 import '../../i18n/l10n_extension.dart';
 import '../pages/learn_page.dart';
 import '../pages/offline_me_page.dart';
@@ -52,6 +53,18 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
+  final FocusNode _commandFocus = FocusNode(debugLabel: 'shell-commands');
+  final FocusNode _referenceSearch = FocusNode(debugLabel: 'reference-search');
+
+  int get _referenceIndex =>
+      kShellDestinations.indexWhere((d) => d.page is ReferencePage);
+
+  @override
+  void dispose() {
+    _commandFocus.dispose();
+    _referenceSearch.dispose();
+    super.dispose();
+  }
 
   /// Keeps the page stack mounted when the layout class flips. Rotating a
   /// phone to landscape (or unfolding a foldable) crosses the 600 px
@@ -63,6 +76,22 @@ class _AppShellState extends State<AppShell> {
   void _select(int index) {
     if (index < 0 || index == _selectedIndex) return;
     setState(() => _selectedIndex = index);
+    // Return command focus from the hidden editor to the exposed shell.
+    // A covering route retains its own focus.
+    if (ModalRoute.of(context)?.isCurrent ?? true) {
+      _commandFocus.requestFocus();
+    }
+  }
+
+  bool _canFocusSearch() {
+    if (_selectedIndex != _referenceIndex ||
+        ModalRoute.of(context)?.isCurrent == false) {
+      return false;
+    }
+    final focused = FocusManager.instance.primaryFocus?.context;
+    return focused == null ||
+        (focused.widget is! EditableText &&
+            focused.findAncestorWidgetOfExactType<EditableText>() == null);
   }
 
   /// Bottom-bar labels stay on one line: clamped like the AppBar title, and
@@ -88,6 +117,31 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    return Shortcuts(
+      shortcuts: {
+        for (final entry in desktopShortcutBindings(
+          platform: Theme.of(context).platform,
+        ).entries)
+          if (entry.value is FocusSearchIntent) entry.key: entry.value,
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          FocusSearchIntent: _ReferenceSearchAction(
+            enabled: _canFocusSearch,
+            focus: _referenceSearch.requestFocus,
+          ),
+        },
+        child: Focus(
+          focusNode: _commandFocus,
+          autofocus: true,
+          skipTraversal: true,
+          child: _buildShell(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShell(BuildContext context) {
     final s = context.s;
     final layout = layoutClassOf(context);
     final body = KeyedSubtree(
@@ -96,7 +150,15 @@ class _AppShellState extends State<AppShell> {
         index: _selectedIndex,
         children: [
           for (final (i, d) in kShellDestinations.indexed)
-            TickerMode(enabled: i == _selectedIndex, child: d.page),
+            ExcludeFocus(
+              excluding: i != _selectedIndex,
+              child: TickerMode(
+                enabled: i == _selectedIndex,
+                child: d.page is ReferencePage
+                    ? ReferencePage(searchFocusNode: _referenceSearch)
+                    : d.page,
+              ),
+            ),
         ],
       ),
     );
@@ -166,5 +228,21 @@ class _AppShellState extends State<AppShell> {
           ),
         );
     }
+  }
+}
+
+class _ReferenceSearchAction extends Action<FocusSearchIntent> {
+  _ReferenceSearchAction({required this.enabled, required this.focus});
+
+  final bool Function() enabled;
+  final VoidCallback focus;
+
+  @override
+  bool isEnabled(FocusSearchIntent intent) => enabled();
+
+  @override
+  Object? invoke(FocusSearchIntent intent) {
+    focus();
+    return null;
   }
 }

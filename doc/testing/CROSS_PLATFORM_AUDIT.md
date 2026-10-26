@@ -56,7 +56,7 @@ specified OS/hardware. No store acceptance is inferred.
 | D6 | statistical text verified; full audit remains | Existing statistics backgrounds are preserved; foreground text uses actual luminance to meet 4.5:1 across five styles/light/dark, all buckets and 101 ramp positions. Full-app/composited/native high-contrast validation remains. |
 | D7 | verified in widget tests | Reduced-motion flash has no key-rate listener. |
 | I1 | statistics targets verified; app-wide audit remains | Visible chart selectors/menu rows and character-detail cells have real targets at least 48 logical px, with actual menu/character edge taps and 320 px/3.1× German grid coverage. Small painted chart cells retain their original hit regions; other controls still need measured coverage. |
-| I2 | partial / to do | Secondary-click and modifier regression; attached-tablet keyboard hints and native menus remain. |
+| I2 | partial / to do | Reference search binds primary+K only on its selected, current route, with editor/IME and repeat guards; 18 real keyboard-event widget regressions cover five platform semantics and responsive navigation. Native menus and physical tablet keyboard/assistive input validation remain. |
 | I3 | verified in tests | Text submission uses IME-safe submission; keying focus/pointer/keyboard suites pass. Native CJK IME remains needs device. |
 | I4 | verified declarations/tests | PopScope drill guard and predictive-back manifest; native back gestures need device. |
 | I5 | chart semantics verified; native qualification needs device | Existing calendar/session/confusion details are available through localized standard selectors, keyboard focus and actual semantics actions. VoiceOver, TalkBack, Narrator and Orca still need complete native-flow validation. |
