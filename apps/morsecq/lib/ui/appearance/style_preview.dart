@@ -56,7 +56,6 @@ class _PreviewBody extends StatelessWidget {
                   Expanded(
                     child: Text(
                       s.learnLessonOf(4, 42),
-                      maxLines: 2,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontSize: 16 * scale,
                       ),
