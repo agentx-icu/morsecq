@@ -1,10 +1,11 @@
 import 'receive_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'exercise_outcome.dart';
 
 /// Recording a finished [ReceiveSession]; an extension so the controller
 /// stays within the size gate. Exported by `training_controller.dart`.
-extension ReceiveSessionRecording on TrainingController {
+extension ReceiveSessionRecording on TrainingCore {
   /// Folds a finished receive session into progress (stats, streak, SRS,
   /// confusion) and, for lesson sessions, applies the Koch unlock rule.
   /// A session played under radio conditions (F11) is recorded with its

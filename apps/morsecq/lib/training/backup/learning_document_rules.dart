@@ -1,12 +1,6 @@
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
-import '../audio_material_store.dart';
-import '../file_trainer_store.dart';
-import '../material_store.dart';
-import '../qso_practice.dart';
-import '../send_detail_store.dart';
-import '../telegraph_sessions.dart';
-import '../training_settings_store.dart';
 
 /// Which files of the `training/` directory a learning backup carries, and
 /// how each is checked before it is exported or restored.
@@ -64,11 +58,11 @@ abstract final class LearningDocumentRules {
 
   static void _check(String path, Map<String, Object?> json) {
     if (path == progress) {
-      FileTrainerStore.decode(json);
+      TrainerProgressCodec.decode(json);
       return;
     }
     if (path == settings) {
-      FileTrainingSettingsStore.decode(json);
+      TrainingSettingsCodec.decode(json);
       return;
     }
     final name = docName(path);

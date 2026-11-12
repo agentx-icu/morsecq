@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/l10n/generated/s.dart';
-import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/ui/learn/receive/drill_picker_sheet.dart';
 
 const List<ReceiveDrillKind> _all = <ReceiveDrillKind>[

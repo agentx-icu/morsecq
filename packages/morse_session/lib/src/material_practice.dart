@@ -1,12 +1,12 @@
 import 'package:morse_trainer/morse_trainer.dart';
 
 import 'receive_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// Receive practice over a [TrainingMaterial] (functional spec §9.2): the
 /// usual session and scoring, never a lesson unlock; learned-symbol copies
 /// update weaknesses and SRS, other symbols are practised freely.
-extension MaterialPractice on TrainingController {
+extension MaterialPractice on TrainingCore {
   /// Null when no item is usable in the chosen mode.
   ReceiveSession? startMaterialSession(
     TrainingMaterial material, {

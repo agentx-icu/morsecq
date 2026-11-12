@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/audio_material_store.dart';
 import '../../../training/local_learning_store.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';

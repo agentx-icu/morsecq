@@ -18,6 +18,8 @@ dependencies:
   morse_core: ^0.1.0
   morse_io: ^0.1.0
   morse_trainer: ^0.1.0
+  # Learning sessions and the training controller core (pure Dart).
+  morse_session: ^0.1.0
   # Audio Morse decoding (lib/ui/listen/): pure-Dart DSP + microphone PCM
   # stream. record 6.2.x is the newest line that resolves on Dart 3.11 /
   # Flutter 3.41 (7.x needs Dart ^3.12, Flutter >=3.44).

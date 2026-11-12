@@ -1,7 +1,8 @@
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
-import 'training_controller.dart';
+import 'training_core.dart';
+import 'exercise_outcome.dart';
 
 /// Persistence and crediting for the interactive QSO simulator (F02).
 ///
@@ -9,7 +10,7 @@ import 'training_controller.dart';
 /// kept as a draft document so an interrupted QSO can be resumed. A
 /// finished QSO is one exercise of source `qso`: activity credit only, its
 /// semantic score never touches copying statistics or lesson unlocks.
-extension QsoPractice on TrainingController {
+extension QsoPractice on TrainingCore {
   static const String draftDoc = 'qso_draft';
   static const String stationDoc = 'qso_station';
 

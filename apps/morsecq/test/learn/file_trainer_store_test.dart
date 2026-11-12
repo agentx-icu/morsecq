@@ -6,7 +6,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/file_trainer_store.dart';
 import 'package:morsecq/ui/learn/learn_scope.dart';
 import 'package:morsecq/training/training_settings_store.dart';
-import 'package:morsecq/training/training_settings.dart';
+import 'package:morse_session/morse_session.dart' show TrainingSettings;
 import 'package:morsecq/training/training_doc_store.dart';
 import 'package:path/path.dart' as p;
 
@@ -58,24 +58,38 @@ void main() {
 
   for (final name in ['materials', 'audio_materials', 'telegraph_recall']) {
     for (final companion in ['', '.bak']) {
-      test('future $name$companion is preserved before a document save', () async {
-        final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
-        await docs.write(name, {'v': 1});
-        final file = File('${docs.directory.path}/$name.json$companion');
-        const future = '{"v":2,"newField":"preserve me"}';
-        await file.writeAsString(future);
-        if (companion.isEmpty) await expectLater(docs.read(name), throwsA(isA<UnsupportedDataVersion>()));
-        await expectLater(docs.write(name, {'v': 1}), throwsA(isA<UnsupportedDataVersion>()));
-        expect(await file.readAsString(), future);
-      });
+      test(
+        'future $name$companion is preserved before a document save',
+        () async {
+          final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
+          await docs.write(name, {'v': 1});
+          final file = File('${docs.directory.path}/$name.json$companion');
+          const future = '{"v":2,"newField":"preserve me"}';
+          await file.writeAsString(future);
+        if (companion.isEmpty) {
+            await expectLater(
+              docs.read(name),
+              throwsA(isA<UnsupportedDataVersion>()),
+            );
+        }
+          await expectLater(
+            docs.write(name, {'v': 1}),
+            throwsA(isA<UnsupportedDataVersion>()),
+          );
+          expect(await file.readAsString(), future);
+        },
+      );
     }
   }
 
-  test('generic document store does not impose owned schema on foreign docs', () async {
-    final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
-    await docs.write('custom_document', {'v': 99, 'custom': 'value'});
-    expect(await docs.read('custom_document'), {'v': 99, 'custom': 'value'});
-  });
+  test(
+    'generic document store does not impose owned schema on foreign docs',
+    () async {
+      final docs = FileTrainingDocStore.inDataDirectory(tmp.path);
+      await docs.write('custom_document', {'v': 99, 'custom': 'value'});
+      expect(await docs.read('custom_document'), {'v': 99, 'custom': 'value'});
+    },
+  );
 
   test('future backup is never rotated over by an older primary', () async {
     final s = store();

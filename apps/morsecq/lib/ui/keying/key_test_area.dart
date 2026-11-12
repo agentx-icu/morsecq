@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../keying/key_profile.dart';
 import '../../keying/profile_keyer.dart';
-import '../../training/training_settings.dart';
 
 /// Tries a key profile (F12): the on-screen key(s) with the draft's
 /// bindings, a live "key down" lamp, the app sidetone if the draft keeps

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/send_session.dart';
 import 'send_tips.dart';
 import '../../appearance/style_tokens.dart';
 import '../../appearance/ui_style.dart';

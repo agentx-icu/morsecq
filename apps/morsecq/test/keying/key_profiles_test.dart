@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/keying/key_profile.dart';
 import 'package:morsecq/keying/key_profiles.dart';
 import 'package:morsecq/keying/profile_keyer.dart';
 import 'package:morse_io/testing.dart';
-import 'package:morsecq/training/training_settings.dart';
 
 KeyProfile _vail() => KeyProfile(
   id: 'vail',

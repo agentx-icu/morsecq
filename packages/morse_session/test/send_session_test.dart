@@ -1,9 +1,9 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/send_session.dart';
 
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 /// Keys [pattern] (`.`/`-`, space = word gap) into [session] at PARIS
 /// timing with unit [dit], starting at [start]. Returns the time after the

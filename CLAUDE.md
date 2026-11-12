@@ -11,6 +11,9 @@ Run Pub resolution once from the repository root with Flutter 3.41.9 / Dart
 3.11.5: `dart pub get --enforce-lockfile`. The root lockfile is committed.
 
 - `morse_core`, `morse_trainer`, `morse_dsp` and `radio_tools` stay pure Dart.
+- `morse_session` (training controller core, sessions, codecs, atomic document
+  writer) is pure Dart too and compiles with dart2js; the app subclasses its
+  `TrainingCore` with `ChangeNotifier`. It is not shared with DitMesh.
 - `morse_io` supplies Flutter audio, screen flash, haptics and touch/keyboard keys.
 - `apps/morsecq` owns the three-destination shell, local learning controller,
   JSON stores, localization, reference/radio tools and desktop lifecycle.
@@ -51,7 +54,7 @@ python3 tool/screenshots/capture_import_test.py
 
 The complexity gate caps production files at 500 lines with its recorded
 baseline; do not suppress failures. The import gate forbids chat/transport SDKs
-and protects pure-Dart packages. The five `packages/` are shared with DitMesh
+and protects pure-Dart packages. Five of the six `packages/` (all but `morse_session`) are shared with DitMesh
 and pinned in `tool/shared_packages.lock.json`; follow the sync procedure in
 `doc/testing/TEST_PYRAMID.md`. User-facing strings come from ARB resources.
 Regenerate localization after changing keys. Keep all ten canonical locales

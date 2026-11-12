@@ -11,6 +11,7 @@ Start with the [maintenance guide](HANDOVER.md). Every page below also has a Sim
 - [Current product concept](designs/product-2026-10-08/README.md) and [visual styles](designs/ui-styles-2026-10-01/README.md)
 - [Application layout](../apps/morsecq/README.md), [desktop shell](../apps/morsecq/lib/desktop/README.md) and [localization](../apps/morsecq/lib/l10n/README.md)
 - Shared packages: [morse_core](../packages/morse_core/README.md), [morse_trainer](../packages/morse_trainer/README.md), [morse_dsp](../packages/morse_dsp/README.md), [morse_io](../packages/morse_io/README.md) and [radio_tools](../packages/radio_tools/README.md)
+- Session layer: [morse_session](../packages/morse_session/README.md) (pure Dart, MorseCQ only)
 
 ## Testing and validation
 

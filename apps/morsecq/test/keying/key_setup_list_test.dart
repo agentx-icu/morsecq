@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/keying/key_profile.dart';
@@ -9,8 +10,6 @@ import 'package:morsecq/keying/key_profiles.dart';
 import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_controller_host.dart';
-import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';
 import 'package:provider/provider.dart';
 

@@ -1,11 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/qso_practice.dart';
-import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_doc_store.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 final class _FailingStore implements TrainerStore {
   final delegate = InMemoryTrainerStore(TrainerProgress(currentLesson: 30));
@@ -37,12 +34,12 @@ QsoSession _finished() {
   return session;
 }
 
-Future<TrainingController> _controller(
+Future<TrainingCore> _controller(
   TrainerStore store,
   InMemoryTrainingDocStore docs,
   TestClock clock,
 ) async {
-  final controller = TrainingController(
+  final controller = TestTrainingCore(
     progressStore: store,
     settingsStore: InMemoryTrainingSettingsStore(),
     docs: docs,

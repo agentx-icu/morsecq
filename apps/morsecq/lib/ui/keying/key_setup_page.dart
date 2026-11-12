@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../keying/key_profile.dart';
 import '../../keying/key_profiles.dart';
 import '../../training/training_controller_host.dart';
-import '../../training/training_settings.dart';
 import '../common/adaptive_fab.dart';
 import '../common/app_bar_title.dart';
 import '../responsive.dart';

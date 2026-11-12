@@ -4,10 +4,10 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import 'receive_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// Replays the saved exercise, with its original timing and radio seed.
-extension MistakePractice on TrainingController {
+extension MistakePractice on TrainingCore {
   ReceiveSession startMistakeSession(MistakeEntry entry) {
     if (entry.listeningContext != null) {
       throw ArgumentError('semantic mistakes require an information retry');

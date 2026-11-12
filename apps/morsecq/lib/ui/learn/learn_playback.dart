@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
-import '../../training/training_settings.dart';
 import 'learn_playback_output.dart';
 
 /// Everything a Learn screen needs to make Morse perceivable, built once per

@@ -1,13 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/qso_practice.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_doc_store.dart';
-import 'package:morsecq/training/training_plan.dart';
-import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 
 void main() {
   test('deleting the failed document resolves its pending failure', () async {

@@ -4,11 +4,11 @@ import 'package:morse_core/morse_core.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import 'receive_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
 
 /// Chinese telegraph-code practice on top of the controller (F13); an
 /// extension so the controller stays within the size gate.
-extension TelegraphSessions on TrainingController {
+extension TelegraphSessions on TrainingCore {
   /// Name of the codebook-recall statistics document.
   static const String recallDoc = 'telegraph_recall';
 

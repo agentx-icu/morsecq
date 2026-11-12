@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_settings.dart';
 import 'material_file_gateway.dart';
 
 /// Audio export of a material (functional spec §9.2): PCM WAV, 16-bit mono

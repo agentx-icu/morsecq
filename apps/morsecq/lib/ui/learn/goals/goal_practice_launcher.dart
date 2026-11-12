@@ -1,9 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import '../../../training/receive_session.dart';
-import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../comprehension/listening_comprehension_screen.dart';
 import '../learn_playback.dart';

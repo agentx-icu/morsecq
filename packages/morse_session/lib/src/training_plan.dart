@@ -5,12 +5,14 @@ import 'package:morse_trainer/morse_trainer.dart';
 
 import 'receive_session.dart';
 import 'send_session.dart';
-import 'training_controller.dart';
+import 'training_core.dart';
+import 'receive_session_start.dart';
+import 'send_practice_start.dart';
 
-/// Daily plans and speed advice on top of [TrainingController] (functional
+/// Daily plans and speed advice on top of [TrainingCore] (functional
 /// spec §4). The pure generator in `morse_trainer` decides; this layer
 /// freezes, persists and executes its steps.
-extension TrainingPlan on TrainingController {
+extension TrainingPlan on TrainingCore {
   /// Today's plan, or null when none was made today (or it belongs to
   /// another profile).
   DailyPlan? get todayPlan {
@@ -231,7 +233,7 @@ extension TrainingPlan on TrainingController {
         : RandomGroupsDrill(
             chars: step.pool,
             groupCount: 1,
-            groupSize: TrainingController.sendTargetChars,
+            groupSize: TrainingCore.sendTargetChars,
           );
     return SendSession(
       target: generator.generate(seeded).text,

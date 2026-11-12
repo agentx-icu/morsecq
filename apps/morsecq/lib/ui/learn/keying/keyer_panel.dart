@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../keying/key_profiles.dart';
 import '../../../keying/profile_keyer.dart';
-import '../../../training/send_session.dart';
-import '../../../training/training_settings.dart';
+import '../../../training/send_session_key_target.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../send/keyer_legend.dart';
@@ -89,7 +89,7 @@ class KeyerPanelState extends State<KeyerPanel> {
     _keyer = ProfileKeyer.build(
       profile: KeyProfiles.of(context, listen: false),
       mode: widget.mode,
-      target: widget.session,
+      target: SendSessionKeyTarget(widget.session),
       sink: playback.sink,
       sidetone: playback.sidetone,
       clock: playback.clock,

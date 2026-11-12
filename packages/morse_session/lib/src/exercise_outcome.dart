@@ -46,7 +46,7 @@ final class ReceiveOutcome {
   bool get assisted => credit.activity && !credit.receiveStats;
 
   /// False when writing progress failed. The session still counts in memory
-  /// and is written by [TrainingController.retryProgressSave] or the next
+  /// and is written by [TrainingCore.retryProgressSave] or the next
   /// successful save.
   final bool saved;
 
@@ -128,7 +128,7 @@ TrainerProgress completePlanStep(
   );
 }
 
-/// The pure part of `TrainingController.recordExercise`: builds the
+/// The pure part of `TrainingCore.recordExercise`: builds the
 /// exercise record, applies [CreditPolicy], the Koch rule (course sessions
 /// with unlock credit for the current lesson only) and the plan step, and
 /// returns the progress to commit in one write.

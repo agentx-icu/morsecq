@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../i18n/l10n_extension.dart';
-import '../training/training_settings.dart';
 import 'key_profile.dart';
 
 /// The keyer of one Learn keying surface under a [KeyProfile] (F12): the

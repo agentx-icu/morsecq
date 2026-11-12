@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/ui/learn/receive/round_result_view.dart';
 
 import 'helpers/l10n.dart';

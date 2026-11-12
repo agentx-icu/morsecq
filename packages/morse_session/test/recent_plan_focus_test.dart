@@ -1,7 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/training_plan.dart';
-import 'helpers/test_controller.dart';
+import 'helpers/test_core.dart';
 
 void main() {
   final good = SessionSummary(

@@ -6,12 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/qso_practice.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_doc_store.dart';
-import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq/ui/learn/qso/qso_screen.dart';
 
 import 'helpers/fake_playback.dart';
