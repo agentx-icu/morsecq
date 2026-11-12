@@ -421,10 +421,9 @@
   "appearanceRestore": "Rétablir les valeurs par défaut",
   "appearanceApplied": "Apparence enregistrée",
   "appearanceSaveFailed": "Impossible d’enregistrer l’apparence. Réessayez.",
-  "appearanceClassic": "Laiton classique",
-  "appearanceModern": "Calme moderne",
+  "appearanceClassic": "Manuel en laiton",
+  "appearanceWhite": "Blanc minimaliste",
   "appearanceRadio": "Radio de nuit",
-  "appearancePaper": "Manuel papier",
   "appearanceCartoon": "Dessin pétillant",
   "appearanceLight": "Clair",
   "appearanceDark": "Sombre",
@@ -1059,5 +1058,6 @@
   "listenMissingCaptureTool": "Installez pulseaudio-utils pour utiliser le microphone sous Linux.",
   "diagnosticsCopy": "Copier le diagnostic local",
   "learnNewerData": "Ces données proviennent d’une version plus récente de MorseCQ. Mettez l’application à jour. Vos fichiers sont conservés.",
-  "diagnosticsCopied": "Diagnostic local copié"
+  "diagnosticsCopied": "Diagnostic local copié",
+  "learnSettingsSaveFailed": "Impossible d’enregistrer les paramètres d’entraînement. Réessayez."
 }

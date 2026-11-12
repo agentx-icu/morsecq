@@ -421,10 +421,9 @@
   "appearanceRestore": "還原預設",
   "appearanceApplied": "外觀已儲存",
   "appearanceSaveFailed": "無法儲存外觀，請重試。",
-  "appearanceClassic": "經典黃銅",
-  "appearanceModern": "清爽現代",
+  "appearanceClassic": "黃銅手冊",
+  "appearanceWhite": "純白簡約",
   "appearanceRadio": "夜航電台",
-  "appearancePaper": "紙感手冊",
   "appearanceCartoon": "清新卡通",
   "appearanceLight": "淺色",
   "appearanceDark": "深色",
@@ -1059,5 +1058,6 @@
   "listenMissingCaptureTool": "請安裝 pulseaudio-utils 以在 Linux 上使用麥克風。",
   "diagnosticsCopy": "複製本機診斷資訊",
   "learnNewerData": "學習資料由較新版本的 MorseCQ 寫入。請更新應用程式後開啟；原始檔案已保留。",
-  "diagnosticsCopied": "已複製本機診斷資訊"
+  "diagnosticsCopied": "已複製本機診斷資訊",
+  "learnSettingsSaveFailed": "無法儲存訓練設定，請重試。"
 }

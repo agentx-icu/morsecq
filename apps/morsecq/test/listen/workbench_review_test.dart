@@ -16,6 +16,7 @@ import '../learn/helpers/l10n.dart';
 import '../learn/helpers/test_controller.dart';
 import 'fake_pcm_source.dart';
 import 'workbench_support.dart';
+import 'workbench_wait.dart';
 
 /// Progress that can never be written (save-failure path).
 final class _FailingStore implements TrainerStore {
@@ -38,15 +39,6 @@ void main() {
   });
   tearDown(() => root.delete(recursive: true));
 
-  Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 250; i++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 2)),
-      );
-      await tester.pump(const Duration(milliseconds: 16));
-    }
-  }
-
   Future<FakeClipPlayer> pumpScreen(
     WidgetTester tester,
     TrainingController training,
@@ -67,11 +59,17 @@ void main() {
         ),
       ),
     );
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-import-empty')),
+    );
     await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-decode')),
+    );
     await tester.tap(find.byKey(const ValueKey('workbench-decode')));
-    await settle(tester);
+    await waitForWorkbench(tester, find.text(en.workbenchDecoderHidden));
     return player;
   }
 
@@ -92,7 +90,11 @@ void main() {
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbenchCondition(
+      tester,
+      () => t.controller.progress.history.isNotEmpty,
+      description: 'record the copy attempt',
+    );
     final record = t.controller.progress.history.single;
     expect(record.assistance, contains(Assistance.decoder));
   });
@@ -108,13 +110,20 @@ void main() {
     await tester.pump();
     // A fresh result for the unchanged selection and tuning.
     await tester.tap(find.byKey(const ValueKey('workbench-decode')));
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-decode')),
+    );
     await tester.enterText(
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbenchCondition(
+      tester,
+      () => t.controller.progress.history.isNotEmpty,
+      description: 'record the copy attempt',
+    );
     final record = t.controller.progress.history.single;
     expect(record.assistance, contains(Assistance.decoder));
   });
@@ -146,7 +155,7 @@ void main() {
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbench(tester, find.text(en.learnProgressSaveFailed));
     expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
     expect(find.text(en.learnProgressSaveFailed), findsOneWidget);
     expect(find.text(en.actionRetry), findsOneWidget);
@@ -270,8 +279,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(source.isStreaming, isTrue);
     await tester.tap(find.byKey(const ValueKey('listen-open-workbench')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    await waitForWorkbenchCondition(
+      tester,
+      () =>
+          !source.isStreaming &&
+          find.byType(WorkbenchScreen).evaluate().isNotEmpty,
+      description: 'stop the microphone and open the workbench',
+    );
     expect(source.isStreaming, isFalse);
     expect(find.byType(WorkbenchScreen), findsOneWidget);
   });

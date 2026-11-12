@@ -58,7 +58,7 @@ and protects pure-Dart packages. Five of the six `packages/` (all but `morse_ses
 and pinned in `tool/shared_packages.lock.json`; follow the sync procedure in
 `doc/testing/TEST_PYRAMID.md`. User-facing strings come from ARB resources.
 Regenerate localization after changing keys. Keep all ten canonical locales
-and five styles, light/dark/system themes, narrow layouts and physical keys.
+and four styles, light/dark/system themes, narrow layouts and physical keys.
 
 UI, layout, lifecycle, permission, media and packaging changes are checked
 against the `cross-platform-app-checklist` skill

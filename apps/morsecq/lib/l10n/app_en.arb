@@ -2137,21 +2137,17 @@
   "@appearanceSaveFailed": {
     "description": "Appearance page: snackbar when saving failed"
   },
-  "appearanceClassic": "Classic Brass",
+  "appearanceClassic": "Brass Handbook",
   "@appearanceClassic": {
-    "description": "Appearance style name (brass-instrument themed); translate as a name"
+    "description": "Appearance style name (warm brass and printed paper theme)"
   },
-  "appearanceModern": "Modern Calm",
-  "@appearanceModern": {
-    "description": "Appearance style name (calm modern theme); translate as a name"
+  "appearanceWhite": "Minimal White",
+  "@appearanceWhite": {
+    "description": "Appearance style name (minimal theme with a white base in light mode)"
   },
   "appearanceRadio": "Night Radio",
   "@appearanceRadio": {
     "description": "Appearance style name (dark radio-room theme); translate as a name"
-  },
-  "appearancePaper": "Paper Handbook",
-  "@appearancePaper": {
-    "description": "Appearance style name (printed handbook theme); translate as a name"
   },
   "appearanceCartoon": "Fresh Cartoon",
   "@appearanceCartoon": {
@@ -5153,5 +5149,9 @@
   "@listenMissingCaptureTool": {"description": "Linux microphone error with the package to install"},
   "@diagnosticsCopy": {"description": "Me: explicit action copying local error types and stacks, never uploaded"},
   "@learnNewerData": {"description": "Incompatible future learning-data error; explains preservation and update recovery"},
-  "@diagnosticsCopied": {"description": "Snackbar confirming diagnostics were copied to the clipboard"}
+  "@diagnosticsCopied": {"description": "Snackbar confirming diagnostics were copied to the clipboard"},
+  "learnSettingsSaveFailed": "Couldn't save training settings. Try again.",
+  "@learnSettingsSaveFailed": {
+    "description": "Training settings: snack bar when saving fails and the last saved values are restored."
+  }
 }

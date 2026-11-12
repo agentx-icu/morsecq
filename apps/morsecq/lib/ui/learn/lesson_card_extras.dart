@@ -4,7 +4,6 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../training/training_controller.dart';
 import '../appearance/style_tokens.dart';
-import '../appearance/ui_style.dart';
 
 /// How a symbol chip on the lesson card is coloured. Honest states instead
 /// of "learned" for everything that was merely unlocked.
@@ -33,7 +32,7 @@ CharChipState chipStateOf(
 (Color, Color) chipColors(BuildContext context, CharChipState state) {
   final scheme = Theme.of(context).colorScheme;
   final tokens = StyleTokens.of(context);
-  final styled = tokens != null && tokens.style != UiStyle.classic;
+  final styled = tokens != null;
   return switch (state) {
     CharChipState.newest =>
       styled

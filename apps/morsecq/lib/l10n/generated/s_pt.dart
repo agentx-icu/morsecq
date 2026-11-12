@@ -1539,16 +1539,13 @@ class SPt extends S {
   String get appearanceSaveFailed => 'Não foi possível salvar a aparência. Tente novamente.';
 
   @override
-  String get appearanceClassic => 'Latão clássico';
+  String get appearanceClassic => 'Manual de latão';
 
   @override
-  String get appearanceModern => 'Calma moderna';
+  String get appearanceWhite => 'Branco minimalista';
 
   @override
   String get appearanceRadio => 'Rádio noturno';
-
-  @override
-  String get appearancePaper => 'Manual de papel';
 
   @override
   String get appearanceCartoon => 'Desenho leve';
@@ -3575,4 +3572,7 @@ class SPt extends S {
 
   @override
   String get diagnosticsCopied => 'Diagnóstico local copiado';
+
+  @override
+  String get learnSettingsSaveFailed => 'Não foi possível salvar as configurações de treino. Tente novamente.';
 }

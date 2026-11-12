@@ -421,10 +421,9 @@
   "appearanceRestore": "Восстановить настройки по умолчанию",
   "appearanceApplied": "Внешний вид сохранён",
   "appearanceSaveFailed": "Не удалось сохранить внешний вид. Попробуйте ещё раз.",
-  "appearanceClassic": "Классическая латунь",
-  "appearanceModern": "Современное спокойствие",
+  "appearanceClassic": "Латунный справочник",
+  "appearanceWhite": "Белый минимализм",
   "appearanceRadio": "Ночное радио",
-  "appearancePaper": "Бумажный справочник",
   "appearanceCartoon": "Яркий мультфильм",
   "appearanceLight": "Светлый",
   "appearanceDark": "Тёмный",
@@ -1059,5 +1058,6 @@
   "listenMissingCaptureTool": "Установите pulseaudio-utils для использования микрофона в Linux.",
   "diagnosticsCopy": "Копировать локальную диагностику",
   "learnNewerData": "Данные сохранены новой версией MorseCQ. Обновите приложение. Исходные файлы сохранены.",
-  "diagnosticsCopied": "Локальная диагностика скопирована"
+  "diagnosticsCopied": "Локальная диагностика скопирована",
+  "learnSettingsSaveFailed": "Не удалось сохранить настройки тренировки. Повторите попытку."
 }

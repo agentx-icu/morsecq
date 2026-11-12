@@ -89,6 +89,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   late SendSession _keying;
   StreamSubscription<void>? _keyingSub;
   bool _remotePlaying = false;
+  bool _backgrounded = false;
+  late bool _initialRemotePending =
+      widget.resumed == null && _session.learnerTurns == 0;
   bool _recorded = false;
   bool _disposed = false;
   Timer? _draftCheckpoint;
@@ -110,7 +113,12 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _newKeying();
-    _active.start();
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    if (lifecycle != null) {
+      _backgrounded = isDrillBackground(lifecycle);
+      _wake.onLifecycle(lifecycle);
+    }
+    if (!_backgrounded) _active.start();
     _wake.setActive(true);
     unawaited(_setup());
   }
@@ -156,10 +164,13 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   void _playRemote(String? text) {
     final playback = _playback;
-    if (text == null || playback == null || _disposed) return;
+    if (text == null || playback == null || _disposed || _backgrounded) return;
     _panel.currentState?.releaseHeld();
     _active.start();
-    setState(() => _remotePlaying = true);
+    setState(() {
+      _initialRemotePending = false;
+      _remotePlaying = true;
+    });
     playback.player.play(MorseEncoder.encode(text, _remoteTiming));
   }
 
@@ -174,7 +185,11 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _wake.onLifecycle(state);
-    if (isDrillBackground(state)) {
+    final backgrounded = isDrillBackground(state);
+    if (_backgrounded != backgrounded) {
+      setState(() => _backgrounded = backgrounded);
+    }
+    if (_backgrounded) {
       _pause();
       _active.stop();
       unawaited(_saveDraft());
@@ -238,7 +253,11 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   Future<void> _send() async {
     // An enabled button callback may survive until the next frame. Check
     // current state before clearing input or creating a new reply id.
-    if (_disposed || _session.isDone || _remotePlaying || _playback == null) {
+    if (_disposed ||
+        _backgrounded ||
+        _session.isDone ||
+        _remotePlaying ||
+        _playback == null) {
       return;
     }
     if (_typing

@@ -427,10 +427,9 @@
   "appearanceRestore": "恢复默认",
   "appearanceApplied": "外观已保存",
   "appearanceSaveFailed": "无法保存外观，请重试。",
-  "appearanceClassic": "经典黄铜",
-  "appearanceModern": "清爽现代",
+  "appearanceClassic": "黄铜手册",
+  "appearanceWhite": "纯白简约",
   "appearanceRadio": "夜航电台",
-  "appearancePaper": "纸感手册",
   "appearanceCartoon": "清新卡通",
   "appearanceLight": "浅色",
   "appearanceDark": "深色",
@@ -1072,5 +1071,6 @@
   "listenMissingCaptureTool": "请安装 pulseaudio-utils 以在 Linux 上使用麦克风。",
   "diagnosticsCopy": "复制本地诊断信息",
   "learnNewerData": "学习数据由较新版本的 MorseCQ 写入。请更新应用后打开；原文件已保留。",
-  "diagnosticsCopied": "已复制本地诊断信息"
+  "diagnosticsCopied": "已复制本地诊断信息",
+  "learnSettingsSaveFailed": "无法保存训练设置，请重试。"
 }

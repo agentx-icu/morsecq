@@ -2636,29 +2636,23 @@ abstract class S {
   /// **'Could not save appearance. Try again.'**
   String get appearanceSaveFailed;
 
-  /// Appearance style name (brass-instrument themed); translate as a name
+  /// Appearance style name (warm brass and printed paper theme)
   ///
   /// In en, this message translates to:
-  /// **'Classic Brass'**
+  /// **'Brass Handbook'**
   String get appearanceClassic;
 
-  /// Appearance style name (calm modern theme); translate as a name
+  /// Appearance style name (minimal theme with a white base in light mode)
   ///
   /// In en, this message translates to:
-  /// **'Modern Calm'**
-  String get appearanceModern;
+  /// **'Minimal White'**
+  String get appearanceWhite;
 
   /// Appearance style name (dark radio-room theme); translate as a name
   ///
   /// In en, this message translates to:
   /// **'Night Radio'**
   String get appearanceRadio;
-
-  /// Appearance style name (printed handbook theme); translate as a name
-  ///
-  /// In en, this message translates to:
-  /// **'Paper Handbook'**
-  String get appearancePaper;
 
   /// Appearance style name (bright cartoon theme); translate as a name
   ///
@@ -6247,6 +6241,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Local diagnostics copied'**
   String get diagnosticsCopied;
+
+  /// Training settings: snack bar when saving fails and the last saved values are restored.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save training settings. Try again.'**
+  String get learnSettingsSaveFailed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
