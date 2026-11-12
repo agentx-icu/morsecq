@@ -18,7 +18,10 @@ MorseCQ 的学习会话层，**纯 Dart**（不依赖 Flutter，也不用 `dart:
 | 会话入口 | `TrainingCore` 上的扩展：`ReceiveSessionStart`（课程挑战、引导级别、首课、练习类型、复习、专项）、`SendPracticeStart`、`TrainingPlan`、`QsoPractice`、`MistakePractice`、`MaterialPractice`、`TelegraphSessions`、`AdvancedLearning`。 |
 | 会话 | `ReceiveSession` / `ReceiveRound`、`SendSession`（实现 `SendKeyTarget`）、`recordReceiveSession`、`applyExercise`（记分、去重、解锁）、`ReceiveVerdict` / `verdictOf`、`DrillCatalog`。 |
 | 设置与文档 | `TrainingSettings`、`TrainingSettingsStore` + `TrainingSettingsCodec`、`TrainingDocStore`、`TrainerProgressCodec`、`MaterialStore`、`AudioMaterialStore`、`SendDetailStore`。 |
-| 存储算法 | 基于宿主提供的 `DocumentFs` 的 `AtomicDocument`：先写临时文件，校验旧文档后轮转为 `.bak`（损坏的旧文档移到一旁），再重命名就位；读取时失败回退到备份。 |
+| 存储算法 | 基于宿主提供的 `DocumentFs` 的 `AtomicDocument`：先校验主文件和备份，再写临时文件，把旧文档轮转为 `.bak`（损坏的旧文档移到一旁），最后重命名就位；读取时失败回退到备份。 |
+
+未来版本的文档会抛出 `UnsupportedDataVersion`，不会变成可写的默认数据。保存不会
+覆盖未来版本的主文件或备份；连续出现损坏文档时，也会保留之前的恢复副本。
 
 ## 宿主
 

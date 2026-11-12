@@ -3528,4 +3528,28 @@ class SKo extends S {
 
   @override
   String get comprehensionListen => '듣기';
+
+  @override
+  String get desktopCloseToTray => '창을 닫아도 트레이에서 계속 실행';
+
+  @override
+  String get desktopCloseToTrayDescription => '끄면 창을 닫을 때 앱이 종료됩니다. 사용 가능한 시스템 트레이가 필요합니다.';
+
+  @override
+  String get learnFlashNotice => '작은 표시등이 깜박입니다. 광과민성이 있으면 사용하지 마세요. 동작 줄이기 설정에서는 계속 켜집니다.';
+
+  @override
+  String get learnHapticUnavailable => '이 기기에서는 진동을 사용할 수 없습니다.';
+
+  @override
+  String get listenMissingCaptureTool => 'Linux에서 마이크를 사용하려면 pulseaudio-utils를 설치하세요.';
+
+  @override
+  String get diagnosticsCopy => '로컬 진단 정보 복사';
+
+  @override
+  String get learnNewerData => '더 최신 MorseCQ에서 저장한 학습 데이터입니다. 앱을 업데이트하세요. 원본 파일은 보존됩니다.';
+
+  @override
+  String get diagnosticsCopied => '로컬 진단 정보 복사됨';
 }

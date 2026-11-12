@@ -1051,5 +1051,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "desktopCloseToTray": "Nach dem Schließen im Infobereich weiterlaufen",
+  "desktopCloseToTrayDescription": "Aus: Das Schließen des Fensters beendet die App. Erfordert einen verfügbaren Infobereich.",
+  "learnFlashNotice": "Kleine blinkende Anzeige. Bei Lichtempfindlichkeit vermeiden; bei reduzierter Bewegung leuchtet sie konstant.",
+  "learnHapticUnavailable": "Vibration ist auf diesem Gerät nicht verfügbar.",
+  "listenMissingCaptureTool": "Installiere pulseaudio-utils, um das Mikrofon unter Linux zu verwenden.",
+  "diagnosticsCopy": "Lokale Diagnose kopieren",
+  "learnNewerData": "Die Lerndaten stammen von einer neueren MorseCQ-Version. Aktualisiere die App. Die Dateien bleiben erhalten.",
+  "diagnosticsCopied": "Lokale Diagnose kopiert"
 }

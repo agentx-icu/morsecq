@@ -30,6 +30,7 @@ _harness({
   Future<void> Function()? onBeforeQuit,
   void Function(bool enabled)? onToggleSound,
   S? strings,
+  Future<bool> Function()? trayHostAvailable,
 }) {
   final store = InMemoryKeyValueStore(stored);
   final log = <String>[];
@@ -43,6 +44,7 @@ _harness({
       closeToTray: closeToTray,
       onBeforeQuit: onBeforeQuit,
       onToggleSound: onToggleSound,
+      trayHostAvailable: trayHostAvailable,
       persistDebounce: Duration.zero,
       log: log.add,
     ),
@@ -64,6 +66,47 @@ _harness({
 Future<void> _drain() => Future<void>.delayed(Duration.zero);
 
 void main() {
+  test('activation restores a minimized window', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    h.window.minimized = true;
+    await h.controller.showWindow();
+    expect(h.window.minimized, isFalse);
+    expect(h.window.focused, isTrue);
+  });
+
+  test('missing tray host makes close exit instead of hiding', () async {
+    final h = _harness(trayHostAvailable: () async => false);
+    await h.controller.initialize();
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.handleCloseRequested();
+    expect(h.window.destroyed, isTrue);
+    expect(h.window.calls, isNot(contains('hide')));
+  });
+  test('full-screen and minimized dimensions do not replace normal bounds', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    final normal = h.window.bounds;
+    h.window.fullScreen = true;
+    h.window.bounds = const Rect.fromLTWH(0, 0, 1920, 1080);
+    await h.controller.persistWindowState();
+    expect(WindowBounds.decode(h.store.values[DesktopShellController.boundsKey])?.rect, normal);
+    h.window.fullScreen = false;
+    h.window.minimized = true;
+    h.window.bounds = const Rect.fromLTWH(-32000, -32000, 160, 20);
+    await h.controller.persistWindowState();
+    expect(WindowBounds.decode(h.store.values[DesktopShellController.boundsKey])?.rect, normal);
+  });
+
+  test('tray sound is absent without an audio owner', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    expect(
+      h.controller.trayMenu.map((e) => e.key),
+      isNot(contains(TrayMenuKeys.sound)),
+    );
+  });
+
   test('tray sound choice survives controller recreation', () async {
     final h = _harness();
     await h.controller.initialize();
@@ -141,10 +184,26 @@ void main() {
   });
 
   group('bounds persistence', () {
+    test('maximized persistence retains the last normal rectangle', () async {
+      final h = _harness();
+      await h.controller.initialize();
+      h.window.bounds = const Rect.fromLTWH(50, 60, 800, 700);
+      await h.controller.persistWindowState();
+      h.window.bounds = const Rect.fromLTWH(0, 0, 1920, 1040);
+      h.window.maximized = true;
+      await h.controller.persistWindowState();
+      final saved = WindowBounds.decode(
+        h.store.values[DesktopShellController.boundsKey],
+      );
+      expect(saved?.rect, const Rect.fromLTWH(50, 60, 800, 700));
+      expect(saved?.maximized, isTrue);
+    });
+
     test('persists bounds and maximised flag on close', () async {
       final h = _harness(closeToTray: false);
       await h.controller.initialize();
       h.window.bounds = const Rect.fromLTWH(50, 60, 800, 700);
+      await h.controller.persistWindowState();
       h.window.maximized = true;
 
       await h.controller.handleCloseRequested();
@@ -296,7 +355,7 @@ void main() {
 
   group('tray', () {
     test('uses the platform icon and initial tooltip / menu', () async {
-      final h = _harness();
+      final h = _harness(onToggleSound: (_) {});
       await h.controller.initialize();
 
       expect(h.tray.iconAsset, TrayIconAssets.linuxPng);

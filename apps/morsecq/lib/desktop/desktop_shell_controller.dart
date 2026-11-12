@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 import '../i18n/current_strings.dart';
+import '../diagnostics/local_diagnostics.dart';
+import 'desktop_diagnostics.dart';
 import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'screen_api.dart';
@@ -64,6 +66,7 @@ class DesktopShellController extends ChangeNotifier
   bool _trayAvailable = false;
   bool _windowVisible = false;
   bool _closing = false;
+  Rect? _normalBounds;
   bool _closeToTray;
   bool _soundEnabled;
   S _s;
@@ -90,7 +93,6 @@ class DesktopShellController extends ChangeNotifier
 
   bool get soundEnabled => _soundEnabled;
 
-
   /// The strings the title, tooltip and menu currently render from.
   S get strings => _s;
 
@@ -107,11 +109,12 @@ class DesktopShellController extends ChangeNotifier
           ? _s.desktopTrayHide(config.appName)
           : _s.desktopTrayShow(config.appName),
     ),
-    TrayMenuEntry(
-      key: TrayMenuKeys.sound,
-      label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
-      checked: _soundEnabled,
-    ),
+    if (config.onToggleSound != null)
+      TrayMenuEntry(
+        key: TrayMenuKeys.sound,
+        label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
+        checked: _soundEnabled,
+      ),
     const TrayMenuEntry.separator(),
     TrayMenuEntry(
       key: TrayMenuKeys.quit,
@@ -165,6 +168,7 @@ class DesktopShellController extends ChangeNotifier
       minimumSize: minSize,
       size: target.rect.size,
     );
+    _normalBounds = target.rect;
     await _window.setBounds(target.rect);
     await _window.show();
     await _window.focus();
@@ -179,6 +183,7 @@ class DesktopShellController extends ChangeNotifier
     final icon = TrayIconAssets.forPlatform(config.effectivePlatform);
     if (icon == null) return;
     try {
+      if (!await _hasTrayHost()) return;
       _tray.setEventHandler(this);
       await _tray.setIcon(icon, isTemplate: config.isMacOS);
       _trayAvailable = true;
@@ -188,19 +193,26 @@ class DesktopShellController extends ChangeNotifier
       // real quit so the user can never lose the window.
       _trayAvailable = false;
       _tray.setEventHandler(null);
-      config.logger(
-        '[DesktopShell] tray unavailable, continuing without it: $e',
-      );
+      config.diagnose(DiagnosticContext.desktopTray, e);
       return;
     }
     await _applyTrayState();
+  }
+
+  Future<bool> _hasTrayHost() async {
+    try {
+      return await config.trayHostAvailable?.call() ?? true;
+    } on Object catch (error) {
+      config.diagnose(DiagnosticContext.desktopTrayHost, error);
+      return false;
+    }
   }
 
   Future<List<Rect>> _workAreas() async {
     try {
       return await _screen.workAreas();
     } catch (e) {
-      config.logger('[DesktopShell] display lookup failed: $e');
+      config.diagnose(DiagnosticContext.desktopDisplay, e);
       return const [];
     }
   }
@@ -209,10 +221,7 @@ class DesktopShellController extends ChangeNotifier
     if (!_trayAvailable) return;
     await _tolerate('setToolTip', () => _tray.setToolTip(trayTooltip));
     if (config.isMacOS) {
-      await _tolerate(
-        'setTitle',
-        () => _tray.setTitle(''),
-      );
+      await _tolerate('setTitle', () => _tray.setTitle(''));
     }
     await _tolerate('setMenu', () => _tray.setMenu(trayMenu));
   }
@@ -230,6 +239,7 @@ class DesktopShellController extends ChangeNotifier
 
   Future<void> showWindow() async {
     if (!_active) return;
+    if (await _window.isMinimized()) await _window.restore();
     await _window.show();
     await _window.focus();
     _setWindowVisible(true);
@@ -238,7 +248,7 @@ class DesktopShellController extends ChangeNotifier
   /// Hides the window; the tray is the only way back, so this is refused
   /// when the tray is unavailable.
   Future<void> hideToTray() async {
-    if (!_active || !_trayAvailable) return;
+    if (!_active || !_trayAvailable || !await _hasTrayHost()) return;
     await persistWindowState();
     await _window.hide();
     _setWindowVisible(false);
@@ -267,12 +277,20 @@ class DesktopShellController extends ChangeNotifier
     try {
       final rect = await _window.getBounds();
       final maximized = await _window.isMaximized();
+      if (!maximized &&
+          !await _window.isFullScreen() &&
+          !await _window.isMinimized()) {
+        _normalBounds = rect;
+      }
       await config.store.set(
         boundsKey,
-        WindowBounds(rect: rect, maximized: maximized).encode(),
+        WindowBounds(
+          rect: _normalBounds ?? rect,
+          maximized: maximized,
+        ).encode(),
       );
     } catch (e) {
-      config.logger('[DesktopShell] could not persist window state: $e');
+      config.diagnose(DiagnosticContext.desktopWindowSave, e);
     }
   }
 
@@ -292,7 +310,7 @@ class DesktopShellController extends ChangeNotifier
         _closeToTray = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist closeToTray: $e');
+      config.diagnose(DiagnosticContext.desktopCloseSave, e);
     }
   }
 
@@ -324,13 +342,13 @@ class DesktopShellController extends ChangeNotifier
         _soundEnabled = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist sound: $e');
+      config.diagnose(DiagnosticContext.desktopSoundSave, e);
       return;
     }
     try {
       await config.onToggleSound?.call(enabled);
     } catch (e) {
-      config.logger('[DesktopShell] onToggleSound failed: $e');
+      config.diagnose(DiagnosticContext.desktopSoundChange, e);
     }
     if (_active) _enqueueTray(_applyTrayState);
   }
@@ -349,13 +367,13 @@ class DesktopShellController extends ChangeNotifier
       }
     } catch (e) {
       _closing = false;
-      config.logger('[DesktopShell] could not save session before quit: $e');
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
       return;
     }
     try {
       await config.onBeforeQuit?.call();
     } catch (e) {
-      config.logger('[DesktopShell] onBeforeQuit failed: $e');
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
     }
     await _tolerate('destroy tray', _tray.destroy);
     await _window.destroy();
@@ -372,7 +390,7 @@ class DesktopShellController extends ChangeNotifier
   /// exit path.
   Future<void> handleCloseRequested() async {
     if (!_active || _closing) return;
-    if (_closeToTray && _trayAvailable) {
+    if (_closeToTray && _trayAvailable && await _hasTrayHost()) {
       await hideToTray();
       return;
     }
@@ -432,7 +450,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await config.store.get(key);
     } catch (e) {
-      config.logger('[DesktopShell] could not read $key: $e');
+      config.diagnose(DiagnosticContext.desktopRead, e);
       return null;
     }
   }
@@ -445,7 +463,7 @@ class DesktopShellController extends ChangeNotifier
     } catch (e) {
       if (_trayGapWarned) return;
       _trayGapWarned = true;
-      config.logger('[DesktopShell] $label unavailable on this platform: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
     }
   }
 
@@ -453,7 +471,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await op();
     } catch (e) {
-      config.logger('[DesktopShell] $label failed: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
       return null;
     }
   }

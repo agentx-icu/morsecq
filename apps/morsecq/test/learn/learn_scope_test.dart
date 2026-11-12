@@ -11,6 +11,27 @@ import 'package:provider/provider.dart';
 import 'helpers/l10n.dart';
 
 void main() {
+  testWidgets('future-schema load shows update recovery instead of training', (
+    tester,
+  ) async {
+    var opened = false;
+    await tester.pumpWidget(
+      l10nApp(
+        home: LearnScope(
+          controllerFactory: (_) async =>
+              throw const UnsupportedDataVersion('Training progress', 2),
+          builder: (_, controller, _) {
+            opened = true;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(opened, isFalse);
+    expect(find.text(en.learnNewerData), findsOneWidget);
+  });
+
   testWidgets('host controller reloads after confirmed local clearing', (
     tester,
   ) async {

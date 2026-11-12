@@ -3,13 +3,15 @@ import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
 import 'stats_math.dart';
+import 'stats_details_picker.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
 import 'stats_widgets.dart';
 
 /// Target x answered heatmap of wrong answers for the learned set, built from
 /// the lifetime [ConfusionMatrix]. Rows/columns without data are hidden.
-/// Scrolls horizontally on narrow screens; tap a cell to read it.
+/// Scrolls horizontally on narrow screens; tap a cell to read it. A standard
+/// selector exposes the same existing details to keyboard/assistive input.
 class ConfusionHeatmap extends StatefulWidget {
   const ConfusionHeatmap({super.key, required this.snapshot});
 
@@ -105,6 +107,29 @@ class _ConfusionHeatmapState extends State<ConfusionHeatmap> {
             ),
           ),
           const SizedBox(height: 8),
+          StatsDetailsPicker(
+            key: ObjectKey(widget.snapshot),
+            label: s.statsHeatmapTitle,
+            options: [
+              for (final target in targets)
+                for (final answer in answers)
+                  s.statsHeatmapCell(
+                    target,
+                    _answerLabel(s, answer),
+                    widget.snapshot.confusionCount(target, answer),
+                  ),
+            ],
+            selectedLabels: [
+              for (final target in targets)
+                for (final answer in answers)
+                  '$target → ${_answerLabel(s, answer)}',
+            ],
+            selected: sel == null ? null : sel.$1 * answers.length + sel.$2,
+            onSelected: (index) => setState(
+              () =>
+                  _selected = (index ~/ answers.length, index % answers.length),
+            ),
+          ),
           if (sel != null)
             Text(
               s.statsHeatmapCell(
@@ -149,24 +174,29 @@ class HeatLegend extends StatelessWidget {
     final style = Theme.of(
       context,
     ).textTheme.labelSmall?.copyWith(color: palette.axisText);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: <Widget>[
         Text(lowLabel ?? context.s.statsHeatmapLegendLow, style: style),
-        const SizedBox(width: 6),
-        for (var level = 0; level < levels; level++)
-          Padding(
-            padding: const EdgeInsets.only(right: 3),
-            child: Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                color: palette.sequentialLevel(level, levels: levels),
-                borderRadius: BorderRadius.circular(3),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var level = 0; level < levels; level++)
+              Padding(
+                padding: const EdgeInsets.only(right: 3),
+                child: Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: palette.sequentialLevel(level, levels: levels),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
               ),
-            ),
-          ),
-        const SizedBox(width: 3),
+          ],
+        ),
         Text(highLabel ?? context.s.statsHeatmapLegendHigh, style: style),
       ],
     );

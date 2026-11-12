@@ -3551,4 +3551,28 @@ class SPt extends S {
 
   @override
   String get comprehensionListen => 'Ouvir';
+
+  @override
+  String get desktopCloseToTray => 'Continuar na bandeja ao fechar a janela';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Desativado: fechar a janela encerra o aplicativo. Requer uma bandeja disponível.';
+
+  @override
+  String get learnFlashNotice => 'Indicador pequeno intermitente. Evite em caso de fotossensibilidade; Reduzir movimento o mantém fixo.';
+
+  @override
+  String get learnHapticUnavailable => 'A vibração não está disponível neste dispositivo.';
+
+  @override
+  String get listenMissingCaptureTool => 'Instale pulseaudio-utils para usar o microfone no Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Copiar diagnóstico local';
+
+  @override
+  String get learnNewerData => 'Uma versão mais recente do MorseCQ salvou os dados. Atualize o aplicativo. Os arquivos foram preservados.';
+
+  @override
+  String get diagnosticsCopied => 'Diagnóstico local copiado';
 }

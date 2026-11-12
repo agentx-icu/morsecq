@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# Build the offline trainer for App Store distribution (owner signing required).
+# Local archive/export using existing owner identity only; no account changes.
 set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$repo"
-dart pub get --enforce-lockfile
-cd apps/morsecq
-flutter build ipa --release "$@"
+# argparse accepts only the reviewed helper options, never arbitrary Flutter/Xcode flags.
+exec python3 "$repo/tool/ci/ios_store_export.py" "$@"

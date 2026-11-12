@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:morse_trainer/morse_trainer.dart' show UnsupportedDataVersion;
+
 /// The file operations an [AtomicDocument] needs, supplied by the host: the
 /// app implements it over `dart:io`, the mini-program bridge over the mini
 /// program's file system manager.
@@ -94,6 +96,16 @@ final class AtomicDocument {
     String encoded,
     void Function(Map<String, Object?> json)? validate,
   ) async {
+    // Future data is incompatible, not corrupt. Check both recovery sources
+    // before changing any primary, backup or pre-existing temporary file.
+    for (final existing in [path, backupPath]) {
+      if (await fs.exists(existing)) {
+        await _tryRead(existing, (json) {
+          validate?.call(json);
+          return json;
+        });
+      }
+    }
     await fs.writeText(tempPath, encoded);
     if (await fs.exists(path)) {
       final previous = await _tryRead(path, (json) {
@@ -140,9 +152,13 @@ final class AtomicDocument {
       if (decoded is! Map<String, Object?>) return null;
       try {
         return decode(decoded);
+      } on UnsupportedDataVersion {
+        rethrow;
       } on Object {
         return null;
       }
+    } on UnsupportedDataVersion {
+      rethrow;
     } on FormatException {
       return null;
     }
@@ -172,7 +188,10 @@ final class AtomicDocument {
   Future<void> _setAside() async {
     try {
       if (await fs.exists(corruptPath)) {
-        await fs.delete(corruptPath);
+        await fs.rename(
+          corruptPath,
+          '$corruptPath.${DateTime.now().microsecondsSinceEpoch}',
+        );
       }
       await fs.rename(path, corruptPath);
     } on Object catch (error) {

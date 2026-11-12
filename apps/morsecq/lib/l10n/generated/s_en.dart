@@ -3549,4 +3549,28 @@ class SEn extends S {
 
   @override
   String get comprehensionListen => 'Listen';
+
+  @override
+  String get desktopCloseToTray => 'Keep running in the tray when the window closes';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Off: closing the window quits. Requires a working system tray.';
+
+  @override
+  String get learnFlashNotice => 'Uses a small flashing indicator. Avoid if photosensitive; Reduce Motion keeps it steady.';
+
+  @override
+  String get learnHapticUnavailable => 'Vibration is unavailable on this device.';
+
+  @override
+  String get listenMissingCaptureTool => 'Install pulseaudio-utils to use the microphone on Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Copy local diagnostics';
+
+  @override
+  String get learnNewerData => 'Learning data was written by a newer MorseCQ. Update the app to open it; your files have been kept.';
+
+  @override
+  String get diagnosticsCopied => 'Local diagnostics copied';
 }

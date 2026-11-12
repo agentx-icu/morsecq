@@ -1064,5 +1064,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "desktopCloseToTray": "关闭窗口后继续在托盘运行",
+  "desktopCloseToTrayDescription": "关闭此项时，关闭窗口将退出应用。需要可用的系统托盘。",
+  "learnFlashNotice": "使用小范围闪光指示灯。光敏感用户请勿开启；减少动态效果时指示灯保持常亮。",
+  "learnHapticUnavailable": "此设备不支持振动。",
+  "listenMissingCaptureTool": "请安装 pulseaudio-utils 以在 Linux 上使用麦克风。",
+  "diagnosticsCopy": "复制本地诊断信息",
+  "learnNewerData": "学习数据由较新版本的 MorseCQ 写入。请更新应用后打开；原文件已保留。",
+  "diagnosticsCopied": "已复制本地诊断信息"
 }

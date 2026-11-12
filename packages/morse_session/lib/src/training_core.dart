@@ -10,8 +10,8 @@ import 'exercise_outcome.dart';
 import 'send_session.dart';
 import 'training_settings.dart';
 import 'training_doc_store.dart';
+import 'training_load.dart';
 import 'training_settings_store.dart';
-
 
 /// Learner state for the Learn tab: loads progress and settings, exposes the
 /// Koch position, SRS due list and streak, starts sessions and records their
@@ -87,25 +87,19 @@ abstract base class TrainingCore {
 
   Future<void> load() async {
     _ensureActive();
-    var progress = TrainerProgress();
-    var settings = TrainingSettings.defaults;
-    Object? loadError;
-    try {
-      progress = await _progressStore.load() ?? progress;
-    } on Object catch (error) {
-      loadError = error;
-    }
+    final (progress, progressError) = await loadCompatibleTrainingData(
+      _progressStore.load,
+    );
     if (_disposed) return;
-    try {
-      settings = await _settingsStore.load() ?? settings;
-    } on Object catch (error) {
-      loadError ??= error;
-    }
+    final (storedSettings, settingsError) = await loadCompatibleTrainingData(
+      _settingsStore.load,
+    );
     if (_disposed) return;
-    _progress = _clampLesson(progress);
+    final settings = storedSettings ?? TrainingSettings.defaults;
+    _progress = _clampLesson(progress ?? TrainerProgress());
     _settings = settings;
     _savedSettings = settings;
-    _loadError = loadError;
+    _loadError = progressError ?? settingsError;
     _loaded = true;
     notifyListeners();
   }

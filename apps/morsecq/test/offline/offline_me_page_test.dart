@@ -5,12 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/training_controller.dart';
+import 'package:morsecq/desktop/desktop.dart' as desktop;
+import 'package:morsecq/desktop/testing/testing.dart';
 import 'package:morsecq/training/training_controller_host.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 import 'package:morsecq/ui/pages/offline_me_page.dart';
 import 'package:morsecq/ui/settings/settings_routes.dart';
 import 'package:provider/provider.dart';
+import 'package:morsecq/i18n/locale_controller.dart';
+import 'package:morsecq/i18n/key_value_store.dart' as i18n;
 
 import '../learn/helpers/l10n.dart';
 import '../moderation/fake_url_launcher.dart';
@@ -70,6 +74,40 @@ Future<TrainingController> _controller(WidgetTester tester) => _drive(
 );
 
 void main() {
+  testWidgets('desktop close preference is visible and persists from Me', (
+    tester,
+  ) async {
+    final store = InMemoryKeyValueStore();
+    final shell = desktop.DesktopShellController(
+      config: desktop.DesktopShellConfig(
+        store: store,
+        platform: TargetPlatform.macOS,
+      ),
+      window: FakeWindowApi(),
+      tray: FakeTrayApi(),
+      screen: FakeScreenApi(const [Rect.fromLTWH(0, 0, 1920, 1080)]),
+    );
+    await shell.initialize();
+    addTearDown(shell.dispose);
+    await tester.pumpWidget(
+      ChangeNotifierProvider<desktop.DesktopShellController?>.value(
+        value: shell,
+        child: ChangeNotifierProvider(
+          create: (_) => LocaleController(i18n.InMemoryKeyValueStore()),
+          child: l10nApp(home: const OfflineMePage()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final tile = find.byKey(const ValueKey('desktop-close-to-tray'));
+    await tester.ensureVisible(tile);
+    expect(tester.widget<SwitchListTile>(tile).value, isFalse);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    expect(shell.closeToTray, isTrue);
+    expect(store.values[desktop.DesktopShellController.closeToTrayKey], 'true');
+  });
+
   testWidgets('training defaults opens the shared controller settings', (
     tester,
   ) async {

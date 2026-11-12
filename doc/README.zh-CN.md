@@ -24,6 +24,9 @@
 
 - [构建与发布](operations/BUILD_AND_DEPLOY.zh-CN.md)
 - [App Store 与 Google Play 构建](release/APP_STORE.zh-CN.md)
+- [商店准备度与渠道矩阵](release/STORE_READINESS.zh-CN.md)：产物门禁、政策来源和所有者动作
 - [添加界面语言](i18n/ADDING_A_LANGUAGE.zh-CN.md)
 - [截图库](screenshots/README.zh-CN.md)和[截图流程](../tool/screenshots/README.zh-CN.md)
 - [网站](../site/README.zh-CN.md)：产品、隐私、条款与支持页面
+
+- [跨平台审计](testing/CROSS_PLATFORM_AUDIT.zh-CN.md)：2026-10-22 修复、证据与真机缺口

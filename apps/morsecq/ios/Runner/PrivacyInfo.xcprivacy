@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- MorseCQ stores learning data locally and collects no personal data. Plugins declare their required-reason APIs separately. -->
+<!-- App-container / user-selected file metadata via Dart IO: C617.1. Preferences are JSON, not UserDefaults. SDKs retain their own manifests. -->
 <plist version="1.0">
 <dict>
 	<key>NSPrivacyTracking</key>
@@ -11,14 +11,6 @@
 	<array/>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
-		<dict>
-			<key>NSPrivacyAccessedAPIType</key>
-			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
-			<key>NSPrivacyAccessedAPITypeReasons</key>
-			<array>
-				<string>CA92.1</string>
-			</array>
-		</dict>
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>

@@ -33,11 +33,13 @@ class ReferenceScreen extends StatefulWidget {
     super.key,
     this.playerFactory,
     this.settings,
+    this.searchFocusNode,
     this.initialSection = ReferenceSection.alphabet,
   });
 
   final MorsePlayerFactory? playerFactory;
   final ReferencePlaybackSettings? settings;
+  final FocusNode? searchFocusNode;
   final ReferenceSection initialSection;
 
   /// Key of the search field, for tests and driving harnesses.
@@ -166,6 +168,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
         return TextField(
           key: ReferenceScreen.searchFieldKey,
           controller: _search,
+          focusNode: widget.searchFocusNode,
           onChanged: _onQueryChanged,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(

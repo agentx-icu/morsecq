@@ -37,8 +37,8 @@ val morsecqReleaseSigning: Map<String, String>? = run {
 android {
     namespace = "icu.agentx.morsecq"
     // SDK levels are pinned here rather than taken from the Flutter Gradle
-    // plugin, so a Flutter upgrade cannot move them silently. Raise all three
-    // together and update doc/release/APP_STORE.md; test/platform/
+    // plugin, so a Flutter upgrade cannot move them silently. Review target/compile against submission rules; keep the supported
+    // minimum independent and update doc/release/APP_STORE.md; test/platform/
     // mobile_platform_config_test.dart pins the values. targetSdk 36 is what
     // Play requires for new apps and updates since 2026-08-31 (Flutter 3.41.9
     // defaults to the same three values).

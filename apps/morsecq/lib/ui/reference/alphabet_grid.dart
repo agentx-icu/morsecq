@@ -147,6 +147,7 @@ class AlphabetCard extends StatelessWidget {
         child: InkWell(
           onTap: () => controller.toggle(entry.id, entry.playText),
           onLongPress: () => showReferenceMnemonic(context, entry),
+          onSecondaryTap: () => showReferenceMnemonic(context, entry),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             child: Column(

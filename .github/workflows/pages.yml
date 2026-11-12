@@ -7,6 +7,9 @@ on:
   push:
     branches: [master]
     paths: ["site/**", ".github/workflows/pages.yml"]
+  pull_request:
+    branches: [master]
+    paths: ["site/**", ".github/workflows/pages.yml", "tool/ci/verify_site*.py"]
   workflow_dispatch:
 
 permissions:
@@ -28,9 +31,12 @@ jobs:
         with:
           source: ./site
           destination: ./_site
+      - name: Check rendered privacy/support routes
+        run: python3 tool/ci/verify_site.py _site
       - uses: actions/upload-pages-artifact@v3
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

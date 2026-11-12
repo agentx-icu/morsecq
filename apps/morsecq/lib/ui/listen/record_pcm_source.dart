@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:record/record.dart';
 
 import 'pcm_source.dart';
+import '../../diagnostics/local_diagnostics.dart';
 
 /// [PcmSource] backed by the `record` plugin (Android, iOS, macOS, Windows,
 /// Linux via `parecord`, web).
@@ -101,7 +102,7 @@ final class RecordPcmSource implements PcmSource {
       final devices = await _recorder.listInputDevices();
       return devices.isNotEmpty;
     } catch (error) {
-      debugPrint('[RecordPcmSource] listInputDevices failed: $error');
+      LocalDiagnostics.report(DiagnosticContext.inputDeviceList, error);
       return null;
     }
   }

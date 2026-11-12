@@ -3551,4 +3551,28 @@ class SFr extends S {
 
   @override
   String get comprehensionListen => 'Écouter';
+
+  @override
+  String get desktopCloseToTray => 'Rester dans la zone de notification à la fermeture';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Désactivé : fermer la fenêtre quitte l’application. Nécessite une zone de notification disponible.';
+
+  @override
+  String get learnFlashNotice => 'Petit voyant clignotant. À éviter en cas de photosensibilité ; Réduire les animations le garde fixe.';
+
+  @override
+  String get learnHapticUnavailable => 'La vibration n’est pas disponible sur cet appareil.';
+
+  @override
+  String get listenMissingCaptureTool => 'Installez pulseaudio-utils pour utiliser le microphone sous Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Copier le diagnostic local';
+
+  @override
+  String get learnNewerData => 'Ces données proviennent d’une version plus récente de MorseCQ. Mettez l’application à jour. Vos fichiers sont conservés.';
+
+  @override
+  String get diagnosticsCopied => 'Diagnostic local copié';
 }

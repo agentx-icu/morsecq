@@ -20,7 +20,11 @@ This package is specific to MorseCQ and is **not** shared with DitMesh
 | Session starters | Extensions on `TrainingCore`: `ReceiveSessionStart` (lesson challenge, guided levels, onboarding, practice kinds, review, focus), `SendPracticeStart`, `TrainingPlan`, `QsoPractice`, `MistakePractice`, `MaterialPractice`, `TelegraphSessions`, `AdvancedLearning`. |
 | Sessions | `ReceiveSession` / `ReceiveRound`, `SendSession` (implements `SendKeyTarget`), `recordReceiveSession`, `applyExercise` (credit, dedupe, unlock), `ReceiveVerdict` / `verdictOf`, `DrillCatalog`. |
 | Settings and documents | `TrainingSettings`, `TrainingSettingsStore` + `TrainingSettingsCodec`, `TrainingDocStore`, `TrainerProgressCodec`, `MaterialStore`, `AudioMaterialStore`, `SendDetailStore`. |
-| Storage algorithm | `AtomicDocument` over a host-supplied `DocumentFs`: temp file, validate the previous document, rotate it to `.bak` or set a corrupt one aside, rename into place; defensive reads with backup fallback. |
+| Storage algorithm | `AtomicDocument` over a host-supplied `DocumentFs`: validate the primary and backup before writing a temp file, rotate the previous document to `.bak` or set a corrupt one aside, rename into place; defensive reads with backup fallback. |
+
+Future document versions raise `UnsupportedDataVersion` rather than loading
+writable defaults. Saving never overwrites a future primary or backup, and
+successive corrupt documents retain earlier recovery copies.
 
 ## Hosts
 

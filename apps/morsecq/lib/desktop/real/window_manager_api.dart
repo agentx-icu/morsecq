@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show SystemNavigator;
 import 'package:window_manager/window_manager.dart';
 
 import '../window_api.dart';
@@ -44,7 +46,16 @@ class WindowManagerApi implements WindowApi {
   Future<bool> isMaximized() => windowManager.isMaximized();
 
   @override
+  Future<bool> isFullScreen() => windowManager.isFullScreen();
+
+  @override
+  Future<bool> isMinimized() => windowManager.isMinimized();
+
+  @override
   Future<void> maximize() => windowManager.maximize();
+
+  @override
+  Future<void> restore() => windowManager.restore();
 
   @override
   Future<bool> isVisible() => windowManager.isVisible();
@@ -59,7 +70,16 @@ class WindowManagerApi implements WindowApi {
   Future<void> focus() => windowManager.focus();
 
   @override
-  Future<void> destroy() => windowManager.destroy();
+  Future<void> destroy() {
+    if (defaultTargetPlatform == TargetPlatform.linux) {
+      // The controller has already awaited preferences, learning saves and
+      // cleanup. window_manager 0.5.x closes the GTK window synchronously,
+      // destroying its GL context while the engine still has pending work.
+      // Flutter's platform exit quits GApplication without that teardown order.
+      return SystemNavigator.pop();
+    }
+    return windowManager.destroy();
+  }
 
   @override
   void setEventHandler(WindowEventHandler? handler) {

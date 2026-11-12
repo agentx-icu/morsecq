@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morse_core/morse_core.dart';
@@ -27,10 +28,8 @@ Future<FakeReferencePlayer> _pump(
   return fake;
 }
 
-Finder _card(String label) => find.ancestor(
-      of: find.text(label),
-      matching: find.byType(AlphabetCard),
-    );
+Finder _card(String label) =>
+    find.ancestor(of: find.text(label), matching: find.byType(AlphabetCard));
 
 void main() {
   group('ReferenceScreen layout', () {
@@ -39,11 +38,15 @@ void main() {
       expect(find.byType(TabBar), findsOneWidget);
       expect(find.byType(AlphabetGrid), findsOneWidget);
       expect(_card('A'), findsOneWidget);
-      expect(find.text(displayMorsePattern('.-'), findRichText: true),
-          findsWidgets);
+      expect(
+        find.text(displayMorsePattern('.-'), findRichText: true),
+        findsWidgets,
+      );
     });
 
-    testWidgets('wide window shows a section rail instead of tabs', (tester) async {
+    testWidgets('wide window shows a section rail instead of tabs', (
+      tester,
+    ) async {
       await _pump(tester, size: kDesktop);
       expect(find.byType(TabBar), findsNothing);
       expect(find.byType(ReferenceSectionRail), findsOneWidget);
@@ -56,11 +59,23 @@ void main() {
     testWidgets('Koch order lists positions', (tester) async {
       await _pump(tester, initialSection: ReferenceSection.koch);
       final first = find.byType(ReferenceEntryTile).first;
-      expect(find.descendant(of: first, matching: find.text('1')), findsOneWidget);
-      expect(find.descendant(of: first, matching: find.text('K')), findsOneWidget);
+      expect(
+        find.descendant(of: first, matching: find.text('1')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: first, matching: find.text('K')),
+        findsOneWidget,
+      );
       final second = find.byType(ReferenceEntryTile).at(1);
-      expect(find.descendant(of: second, matching: find.text('2')), findsOneWidget);
-      expect(find.descendant(of: second, matching: find.text('M')), findsOneWidget);
+      expect(
+        find.descendant(of: second, matching: find.text('2')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: second, matching: find.text('M')),
+        findsOneWidget,
+      );
     });
   });
 
@@ -94,20 +109,30 @@ void main() {
       expect(find.text('QRZ'), findsOneWidget);
     });
 
-    testWidgets('a character appears under Alphabet and Koch order', (tester) async {
+    testWidgets('a character appears under Alphabet and Koch order', (
+      tester,
+    ) async {
       await _pump(tester);
       // The mnemonic phrase for K only; a bare "K" would also hit every
       // meaning containing the letter and push the Koch header off-screen.
-      await tester.enterText(find.byKey(ReferenceScreen.searchFieldKey), 'KANG');
+      await tester.enterText(
+        find.byKey(ReferenceScreen.searchFieldKey),
+        'KANG',
+      );
       await tester.pumpAndSettle();
       expect(find.text(en.referenceSectionAlphabet), findsOneWidget);
       expect(find.text(en.referenceSectionKoch), findsOneWidget);
       expect(find.byType(ReferenceEntryTile), findsNWidgets(2));
     });
 
-    testWidgets('no hits shows the empty message; clear restores tabs', (tester) async {
+    testWidgets('no hits shows the empty message; clear restores tabs', (
+      tester,
+    ) async {
       await _pump(tester);
-      await tester.enterText(find.byKey(ReferenceScreen.searchFieldKey), 'zzzzzz');
+      await tester.enterText(
+        find.byKey(ReferenceScreen.searchFieldKey),
+        'zzzzzz',
+      );
       await tester.pumpAndSettle();
       expect(find.text(en.referenceNoResults), findsOneWidget);
       await tester.tap(find.byTooltip(en.referenceClearSearch));
@@ -117,7 +142,9 @@ void main() {
   });
 
   group('playback', () {
-    testWidgets('tapping a card plays it through the injected player', (tester) async {
+    testWidgets('tapping a card plays it through the injected player', (
+      tester,
+    ) async {
       final fake = await _pump(tester);
       // The player is created lazily on first use, not when the screen is
       // built (the shell's IndexedStack must not touch the audio engine).
@@ -184,8 +211,9 @@ void main() {
       );
     });
 
-    testWidgets('disposing the screen stops playback and releases the sink',
-        (tester) async {
+    testWidgets('disposing the screen stops playback and releases the sink', (
+      tester,
+    ) async {
       final fake = await _pump(tester);
       await tester.tap(_card('K'));
       await tester.pump();
@@ -198,6 +226,17 @@ void main() {
   });
 
   group('mnemonics', () {
+    testWidgets('secondary click opens a mnemonic', (tester) async {
+      await _pump(tester, size: kDesktop);
+      await tester.tap(
+        _card('A'),
+        buttons: kSecondaryMouseButton,
+        kind: PointerDeviceKind.mouse,
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
     testWidgets('long-pressing a card shows the mnemonic', (tester) async {
       await _pump(tester);
       await tester.longPress(_card('A'));

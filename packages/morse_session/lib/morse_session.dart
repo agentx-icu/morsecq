@@ -32,6 +32,7 @@ export 'src/telegraph_sessions.dart';
 export 'src/trainer_progress_codec.dart';
 export 'src/training_core.dart';
 export 'src/training_doc_store.dart';
+export 'src/training_load.dart';
 export 'src/training_plan.dart';
 export 'src/training_settings.dart';
 export 'src/training_settings_store.dart';

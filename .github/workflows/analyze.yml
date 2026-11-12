@@ -22,6 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -87,6 +94,26 @@ jobs:
       - name: Apple plugin cache regression tests
         run: python3 tool/ci/clean_apple_plugin_cache_test.py
 
+      - name: Android signing regression tests
+        run: python3 tool/ci/verify_android_signing_test.py
+
+      - name: Release payload and distribution refusal regressions
+        run: |
+          python3 tool/ci/release_preflight_test.py
+          python3 tool/ci/windows_runtime_test.py
+          python3 tool/ci/desktop_jni_test.py
+          python3 tool/ci/linux_installed_smoke_test.py
+          python3 tool/ci/ios_store_export_test.py
+          python3 tool/ci/distribution_signing_test.py
+          python3 tool/ci/release_packager_test.py
+          python3 tool/ci/release_size_budget_test.py
+          python3 tool/ci/verify_site_test.py
+
+      - name: DST calendar regressions
+        env:
+          TZ: Europe/Berlin
+        run: flutter test apps/morsecq/test/stats/stats_model_test.dart --no-pub
+
       - name: Tests
         run: |
           set -euo pipefail
@@ -98,3 +125,11 @@ jobs:
             (cd "$dir" && flutter test --no-pub)
             echo "::endgroup::"
           done
+
+      - name: Diagnostics product-policy regressions
+        run: >-
+          flutter test --no-pub
+          apps/morsecq/test/platform/diagnostics_privacy_regression_test.dart
+          apps/morsecq/test/platform/diagnostics_filesystem_boundary_test.dart
+          --dart-define=dart.vm.product=true
+          --dart-define=MORSECQ_TEST_PRODUCT_POLICY=true

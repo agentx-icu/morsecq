@@ -24,6 +24,9 @@ Start with the [maintenance guide](HANDOVER.md). Every page below also has a Sim
 
 - [Build and release](operations/BUILD_AND_DEPLOY.md)
 - [App Store and Google Play build](release/APP_STORE.md)
+- [Store readiness and channel matrix](release/STORE_READINESS.md): artifact gates, policy sources and owner actions
 - [Adding a language](i18n/ADDING_A_LANGUAGE.md)
 - [Screenshot gallery](screenshots/README.md) and [capture pipeline](../tool/screenshots/README.md)
 - [Website](../site/README.md): product, privacy, terms and support pages
+
+- [Cross-platform audit](testing/CROSS_PLATFORM_AUDIT.md): 2026-10-22 fixes, evidence and device gaps

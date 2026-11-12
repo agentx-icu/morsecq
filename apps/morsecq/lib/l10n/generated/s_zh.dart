@@ -3528,6 +3528,30 @@ class SZh extends S {
 
   @override
   String get comprehensionListen => '收听';
+
+  @override
+  String get desktopCloseToTray => '关闭窗口后继续在托盘运行';
+
+  @override
+  String get desktopCloseToTrayDescription => '关闭此项时，关闭窗口将退出应用。需要可用的系统托盘。';
+
+  @override
+  String get learnFlashNotice => '使用小范围闪光指示灯。光敏感用户请勿开启；减少动态效果时指示灯保持常亮。';
+
+  @override
+  String get learnHapticUnavailable => '此设备不支持振动。';
+
+  @override
+  String get listenMissingCaptureTool => '请安装 pulseaudio-utils 以在 Linux 上使用麦克风。';
+
+  @override
+  String get diagnosticsCopy => '复制本地诊断信息';
+
+  @override
+  String get learnNewerData => '学习数据由较新版本的 MorseCQ 写入。请更新应用后打开；原文件已保留。';
+
+  @override
+  String get diagnosticsCopied => '已复制本地诊断信息';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7054,4 +7078,28 @@ class SZhHant extends SZh {
 
   @override
   String get comprehensionListen => '收聽';
+
+  @override
+  String get desktopCloseToTray => '關閉視窗後繼續在系統匣執行';
+
+  @override
+  String get desktopCloseToTrayDescription => '關閉此選項時，關閉視窗會結束應用程式。需要可用的系統匣。';
+
+  @override
+  String get learnFlashNotice => '使用小範圍閃光指示燈。光敏感使用者請勿開啟；減少動態效果時指示燈保持常亮。';
+
+  @override
+  String get learnHapticUnavailable => '此裝置不支援震動。';
+
+  @override
+  String get listenMissingCaptureTool => '請安裝 pulseaudio-utils 以在 Linux 上使用麥克風。';
+
+  @override
+  String get diagnosticsCopy => '複製本機診斷資訊';
+
+  @override
+  String get learnNewerData => '學習資料由較新版本的 MorseCQ 寫入。請更新應用程式後開啟；原始檔案已保留。';
+
+  @override
+  String get diagnosticsCopied => '已複製本機診斷資訊';
 }
