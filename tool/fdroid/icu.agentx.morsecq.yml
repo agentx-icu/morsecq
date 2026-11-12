@@ -1,0 +1,77 @@
+Categories:
+  - Science & Education
+License: GPL-3.0-only
+AuthorName: MorseCQ contributors
+AuthorWebSite: https://github.com/agentx-icu
+WebSite: https://agentx-icu.github.io/morsecq/
+SourceCode: https://github.com/agentx-icu/morsecq
+IssueTracker: https://github.com/agentx-icu/morsecq/issues
+Changelog: https://github.com/agentx-icu/morsecq/releases
+
+AutoName: MorseCQ
+
+RepoType: git
+Repo: https://github.com/agentx-icu/morsecq.git
+
+Builds:
+  - versionName: 1.0.1
+    versionCode: 2
+    commit: 39b61e895281858c96f9d465faeaee175d37641c
+    subdir: apps/morsecq
+    sudo:
+      - apt-get update
+      - apt-get install -y cmake make
+    patch:
+      - remove-upstream-signing.patch
+    output: build/app/outputs/flutter-apk/app-release.apk
+    srclibs:
+      - flutter@00b0c91f06209d9e4a41f71b7a512d6eb3b9c694
+      - ogg@db5c7a49ce7ebda47b15b78471e78fb7f2483e22
+      - vorbis@84c023699cdf023a32fa4ded32019f194afcdad0
+      - opus@c79a9bd1dd2898cd57bb793e037d58c937555c2c
+      - FLAC@9547dbc2ddfca06a70ea937dbb605bbe78ea5f90
+    rm:
+      - apps/morsecq/ios
+      - apps/morsecq/macos
+      - apps/morsecq/linux
+      - apps/morsecq/windows
+    prebuild:
+      - cd ../..
+      - export PUB_CACHE="$PWD/.pub-cache"
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - export so="$PUB_CACHE/hosted/pub.dev/flutter_soloud-4.1.7"
+      - test -f "$so/xiph/build_Android.sh"
+      - rm -rf "$so/android/libs"
+      - cp -a $$ogg$$ "$so/xiph/ogg"
+      - cp -a $$vorbis$$ "$so/xiph/vorbis"
+      - cp -a $$opus$$ "$so/xiph/opus"
+      - cp -a $$FLAC$$ "$so/xiph/flac"
+      - sed -i 's@prebuilt/darwin-x86_64/bin/llvm-strip@prebuilt/linux-x86_64/bin/llvm-strip@'
+        "$so/xiph/build_Android.sh"
+    scandelete:
+      - .pub-cache
+    build:
+      - cd ../..
+      - export PUB_CACHE="$PWD/.pub-cache"
+      - export ANDROID_NDK_HOME="$$NDK$$"
+      - export CMAKE_BUILD_PARALLEL_LEVEL=6
+      - pushd "$PUB_CACHE/hosted/pub.dev/flutter_soloud-4.1.7/xiph"
+      - bash build_Android.sh
+      - popd
+      - cd apps/morsecq
+      - $$flutter$$/bin/flutter build apk --release --build-number=$$VERCODE$$
+    ndk: 28.2.13676358
+
+MaintainerNotes: |
+  The Pub dependency flutter_soloud 4.1.7 contains prebuilt Xiph libraries. This recipe deletes those binaries before scanning and rebuilds Ogg, Vorbis, Opus and FLAC from pinned source during the build phase. The patch makes the multiline upstream signing assignment compatible with fdroidserver signing-config removal.
+
+  Upstream reproducible builds are not configured: the existing release uses prebuilt codec libraries, while this recipe rebuilds them. Review the signing/reproducibility decision before the first accepted release. Refresh the source commit and release version before submission; the upstream Fastlane files must be publicly available at the selected revision.
+
+  A universal APK retains the upstream version code and all three supported Android ABIs. ABI-split versioning is deferred; Flutter 3.41.9 adds ABI offsets to split APK codes, so a future split recipe must verify the final manifest version codes rather than assuming the --build-number value is unchanged.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: apps/morsecq/pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
+CurrentVersion: 1.0.1
+CurrentVersionCode: 2

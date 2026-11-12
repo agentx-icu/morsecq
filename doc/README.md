@@ -24,6 +24,7 @@ Start with the [maintenance guide](HANDOVER.md). Every page below also has a Sim
 
 - [Build and release](operations/BUILD_AND_DEPLOY.md)
 - [App Store and Google Play build](release/APP_STORE.md)
+- [F-Droid main-repository preparation](release/F_DROID.md): listing, source-built audio dependencies, candidate recipe and deferred inclusion
 - [Store readiness and channel matrix](release/STORE_READINESS.md): artifact gates, policy sources and owner actions
 - [Adding a language](i18n/ADDING_A_LANGUAGE.md)
 - [Screenshot gallery](screenshots/README.md) and [capture pipeline](../tool/screenshots/README.md)

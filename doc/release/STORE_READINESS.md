@@ -44,7 +44,8 @@ inapplicable: its owner must choose it before implementation/submission.
 | Huawei AppGallery / mainland China Android APK | Unselected; detailed public review pages not readable | Owner checks current account, APK-specific guide, qualifications/filing applicability, privacy labels and console rules. HarmonyOS/quick apps are different targets. |
 | Xiaomi / mainland China Android APK | Unselected; public listing rules inspected | Current guide calls for first-run privacy accept/reject and matching developer/contact/policy information. Current account-free app intentionally has no acceptance gate; implement a channel-specific flow only after owner selection and scoped design. |
 | OPPO / mainland China Android APK | Unselected; public portal requires JavaScript | Owner obtains migrated review guide and confirms entity, qualifications, privacy/review access and territory requirements. A passing Play artifact does not certify it. |
-| WinGet, Homebrew Cask, F-Droid, distro repositories | Unselected additional routes | Each needs its own source/licensing, identity, signatures, recipe/hash and installed update evidence. No submissions are generated here. |
+| F-Droid main repository / Android APK | 2026-11-12 preparation: [listing and candidate source-build recipe](F_DROID.md), metadata checks and 24 source-built codec libraries; owner deferred submission | Recheck the three-month/exception criterion, publish reviewed upstream metadata and a release, then complete the official Linux build/scanner, runtime and signing checks before opening an inclusion MR. No application has been submitted or published. |
+| WinGet, Homebrew Cask, distro repositories | Unselected additional routes | Each needs its own source/licensing, identity, signatures, recipe/hash and installed update evidence. No submissions are generated here. |
 
 ## Checklist record
 

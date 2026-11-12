@@ -37,6 +37,8 @@ bash tool/ci/package_artifacts.sh --target macos
 
 商店提交与可信直接分发有各自的所有者门禁。[商店准备度](doc/release/STORE_READINESS.zh-CN.md)记录当前渠道、产物检查和账号/设备待办。CI 默认生成开发制品，绿色构建不代表商店批准。
 
+[F-Droid 提交材料](doc/release/F_DROID.zh-CN.md)已准备；满足收录政策并完成其余构建检查后，再申请官方收录。
+
 ## 学习数据
 
 学习进度、素材和录音保存在设备上。在「我的 → 清除学习数据」中确认后可删除这些内容，语言和外观设置会保留。卸载应用可能删除本地数据。

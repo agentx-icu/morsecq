@@ -24,6 +24,7 @@
 
 - [构建与发布](operations/BUILD_AND_DEPLOY.zh-CN.md)
 - [App Store 与 Google Play 构建](release/APP_STORE.zh-CN.md)
+- [F-Droid 官方仓库准备](release/F_DROID.zh-CN.md)：商店资料、音频依赖源码构建、候选配方及延期收录条件
 - [商店准备度与渠道矩阵](release/STORE_READINESS.zh-CN.md)：产物门禁、政策来源和所有者动作
 - [添加界面语言](i18n/ADDING_A_LANGUAGE.zh-CN.md)
 - [截图库](screenshots/README.zh-CN.md)和[截图流程](../tool/screenshots/README.zh-CN.md)

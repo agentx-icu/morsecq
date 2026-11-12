@@ -1,0 +1,13 @@
+Learn Morse code at your own pace without an account. MorseCQ keeps learning history, settings, materials and recordings on your device.
+
+Start with dit/dah and K/M, then move through guided recognition, sending practice and independent copying. Koch-method lessons, per-character progress, assessment and spaced review support continued practice. Assisted exercises are kept separate from independent mastery.
+
+Features include:
+• Guided lessons, recognition drills and touch or physical-keyboard sending practice
+• Simulated radio exchanges and a persistent mistake notebook
+• Morse reference, text translation and Chinese telegraph codes
+• Optional microphone decoding and a local recorded-audio workbench
+• Amateur-radio tools, learning statistics and local learning-material import/export
+• Ten interface languages and five visual styles
+
+Microphone permission is requested when you start live audio decoding. File selection and sharing are explicit user actions. Learning works offline. There are no accounts, ads or analytics SDKs.
