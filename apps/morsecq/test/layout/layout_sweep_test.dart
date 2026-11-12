@@ -375,7 +375,7 @@ void main() {
             prepare: scene.prepare,
             shown: scene.shown,
             // Paper's serif headings, on iOS typography.
-            style: UiStyle.paper,
+            style: UiStyle.classic,
           );
           expect(problems, isEmpty, reason: problems.join('\n'));
         },

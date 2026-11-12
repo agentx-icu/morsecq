@@ -421,10 +421,9 @@
   "appearanceRestore": "기본값 복원",
   "appearanceApplied": "화면 모양을 저장했습니다",
   "appearanceSaveFailed": "화면 모양을 저장할 수 없습니다. 다시 시도하세요.",
-  "appearanceClassic": "고전적인 황동",
-  "appearanceModern": "차분한 현대",
+  "appearanceClassic": "황동 핸드북",
+  "appearanceWhite": "미니멀 화이트",
   "appearanceRadio": "밤의 무선국",
-  "appearancePaper": "종이 수첩",
   "appearanceCartoon": "산뜻한 만화",
   "appearanceLight": "밝게",
   "appearanceDark": "어둡게",
@@ -1059,5 +1058,6 @@
   "listenMissingCaptureTool": "Linux에서 마이크를 사용하려면 pulseaudio-utils를 설치하세요.",
   "diagnosticsCopy": "로컬 진단 정보 복사",
   "learnNewerData": "더 최신 MorseCQ에서 저장한 학습 데이터입니다. 앱을 업데이트하세요. 원본 파일은 보존됩니다.",
-  "diagnosticsCopied": "로컬 진단 정보 복사됨"
+  "diagnosticsCopied": "로컬 진단 정보 복사됨",
+  "learnSettingsSaveFailed": "훈련 설정을 저장할 수 없습니다. 다시 시도해 주세요."
 }

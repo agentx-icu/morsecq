@@ -190,8 +190,8 @@ Future<void> _appearance(WidgetTester tester, S s) async {
   );
   await tapHittable(
     tester,
-    find.byKey(const ValueKey('style-paper')),
-    'paper style',
+    find.byKey(const ValueKey('style-classic')),
+    'brass style',
   );
   await tapHittable(
     tester,
@@ -207,7 +207,7 @@ Future<void> _appearance(WidgetTester tester, S s) async {
   final settings = tester
       .element(find.byType(AppShell, skipOffstage: false))
       .read<AppSettings>();
-  expect(settings.style, UiStyle.paper);
+  expect(settings.style, UiStyle.classic);
   expect(settings.themeMode, ThemeMode.dark);
   expect(
     Theme.of(tester.element(find.byType(AppearancePage))).brightness,
@@ -248,7 +248,7 @@ void _expectPreferences(WidgetTester tester) {
   expect(context.read<LocaleController>().locale, _german);
   expect(find.text(lookupS(_german).navLearn), findsWidgets);
   final appearance = context.read<AppSettings>();
-  expect(appearance.style, UiStyle.paper);
+  expect(appearance.style, UiStyle.classic);
   expect(appearance.themeMode, ThemeMode.dark);
   final keys = context.read<KeyProfiles?>()!;
   expect(keys.active.name, _profileName);

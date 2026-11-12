@@ -421,10 +421,9 @@
   "appearanceRestore": "Restaurar padrões",
   "appearanceApplied": "Aparência salva",
   "appearanceSaveFailed": "Não foi possível salvar a aparência. Tente novamente.",
-  "appearanceClassic": "Latão clássico",
-  "appearanceModern": "Calma moderna",
+  "appearanceClassic": "Manual de latão",
+  "appearanceWhite": "Branco minimalista",
   "appearanceRadio": "Rádio noturno",
-  "appearancePaper": "Manual de papel",
   "appearanceCartoon": "Desenho leve",
   "appearanceLight": "Claro",
   "appearanceDark": "Escuro",
@@ -1059,5 +1058,6 @@
   "listenMissingCaptureTool": "Instale pulseaudio-utils para usar o microfone no Linux.",
   "diagnosticsCopy": "Copiar diagnóstico local",
   "learnNewerData": "Uma versão mais recente do MorseCQ salvou os dados. Atualize o aplicativo. Os arquivos foram preservados.",
-  "diagnosticsCopied": "Diagnóstico local copiado"
+  "diagnosticsCopied": "Diagnóstico local copiado",
+  "learnSettingsSaveFailed": "Não foi possível salvar as configurações de treino. Tente novamente."
 }

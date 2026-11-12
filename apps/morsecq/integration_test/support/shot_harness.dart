@@ -13,7 +13,7 @@
 //   MORSECQ_SHOT_PIXEL_RATIO  capture scale; default 1.0 on desktop, the native dpr on iOS
 //                             (App Store sizes), min(dpr, 2) on Android
 //   MORSECQ_SHOT_WINDOW       desktop window size `WxH`, default 1280x800
-//   MORSECQ_SHOT_STYLE        classic | modern (default) | radio | paper | cartoon
+//   MORSECQ_SHOT_STYLE        white (default) | classic | radio | cartoon
 //   MORSECQ_SHOT_THEME        light (default) | dark | system
 import 'dart:convert';
 import 'dart:io';
@@ -51,7 +51,7 @@ const String _themeDefine = String.fromEnvironment(
 
 const String _styleDefine = String.fromEnvironment(
   'MORSECQ_SHOT_STYLE',
-  defaultValue: 'modern',
+  defaultValue: 'white',
 );
 
 /// Key under `binding.reportData` holding the captured frames.

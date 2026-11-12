@@ -1537,16 +1537,13 @@ class SEn extends S {
   String get appearanceSaveFailed => 'Could not save appearance. Try again.';
 
   @override
-  String get appearanceClassic => 'Classic Brass';
+  String get appearanceClassic => 'Brass Handbook';
 
   @override
-  String get appearanceModern => 'Modern Calm';
+  String get appearanceWhite => 'Minimal White';
 
   @override
   String get appearanceRadio => 'Night Radio';
-
-  @override
-  String get appearancePaper => 'Paper Handbook';
 
   @override
   String get appearanceCartoon => 'Fresh Cartoon';
@@ -3573,4 +3570,7 @@ class SEn extends S {
 
   @override
   String get diagnosticsCopied => 'Local diagnostics copied';
+
+  @override
+  String get learnSettingsSaveFailed => 'Couldn\'t save training settings. Try again.';
 }

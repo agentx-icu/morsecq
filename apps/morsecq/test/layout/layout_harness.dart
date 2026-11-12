@@ -197,7 +197,7 @@ Future<Set<String>> sweepScreen(
   TrainingSettings settings = kShortSettings,
   Finder Function(WidgetTester tester)? shown,
   ScreenPrepare? refresh,
-  UiStyle style = UiStyle.modern,
+  UiStyle style = UiStyle.white,
 }) async {
   final t = await TestTraining.create(
     progress: TrainerProgress(currentLesson: 8, dailyGoalChars: 30),

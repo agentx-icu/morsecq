@@ -4,7 +4,6 @@ import 'package:morse_session/morse_session.dart';
 import '../../../i18n/l10n_extension.dart';
 import 'send_tips.dart';
 import '../../appearance/style_tokens.dart';
-import '../../appearance/ui_style.dart';
 
 /// Live send-practice readout: the target (or a "hidden" placeholder), the
 /// decoded text so far, the pattern of the character being keyed and the
@@ -42,7 +41,7 @@ class _Body extends StatelessWidget {
     final scheme = theme.colorScheme;
     final s = context.s;
     final tokens = StyleTokens.of(context);
-    final styled = tokens != null && tokens.style != UiStyle.classic;
+    final styled = tokens != null;
     final mono = theme.textTheme.headlineSmall?.copyWith(
       fontFamily: 'monospace',
       letterSpacing: 2,

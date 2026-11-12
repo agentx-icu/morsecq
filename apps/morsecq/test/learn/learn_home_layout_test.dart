@@ -10,11 +10,12 @@ import 'helpers/fake_playback.dart';
 import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
-Future<TestTraining> _pumpClassic(
+Future<TestTraining> _pumpLearnHome(
   WidgetTester tester, {
   required Size size,
   required double scale,
   required int lesson,
+  UiStyle? style = UiStyle.classic,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -28,7 +29,7 @@ Future<TestTraining> _pumpClassic(
   addTearDown(training.controller.dispose);
   await tester.pumpWidget(
     l10nApp(
-      theme: MorsecqTheme.light(style: UiStyle.classic),
+      theme: style == null ? null : MorsecqTheme.light(style: style),
       home: LearnHome(
         controller: training.controller,
         playback: FakeLearnPlaybackFactory(),
@@ -47,9 +48,9 @@ void main() {
   ]) {
     for (final scale in [1.0, 1.8]) {
       testWidgets(
-        'Classic lesson action precedes compact chips at $size/$scale',
+        'Brass Handbook lesson action precedes compact chips at $size/$scale',
         (tester) async {
-          await _pumpClassic(tester, size: size, scale: scale, lesson: 4);
+          await _pumpLearnHome(tester, size: size, scale: scale, lesson: 4);
           final chips = find.byType(LearnedCharChip);
           final first = tester.getRect(chips.at(0));
           final second = tester.getRect(chips.at(1));
@@ -69,13 +70,14 @@ void main() {
   }
 
   testWidgets(
-    'long Classic learned set shows newest and expands all characters',
+    'unstyled long learned set shows newest and expands all characters',
     (tester) async {
-      final training = await _pumpClassic(
+      final training = await _pumpLearnHome(
         tester,
         size: const Size(320, 640),
         scale: 1.8,
         lesson: 42,
+        style: null,
       );
       final learned = training.controller.learnedChars;
       expect(learned.length, greaterThan(10));

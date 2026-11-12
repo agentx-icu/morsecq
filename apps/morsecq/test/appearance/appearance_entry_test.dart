@@ -6,7 +6,7 @@ import 'package:morsecq/ui/pages/offline_me_page.dart';
 import '../support/test_app.dart';
 
 void main() {
-  testWidgets('Me opens an appearance chooser with five styles', (
+  testWidgets('Me opens an appearance chooser with four styles', (
     tester,
   ) async {
     await pumpApp(tester);
@@ -21,14 +21,15 @@ void main() {
     expect(find.text('Appearance'), findsOneWidget);
     await tapVisible(tester, find.text('Appearance'));
     for (final name in [
-      'Classic Brass',
-      'Modern Calm',
+      'Minimal White',
+      'Brass Handbook',
       'Night Radio',
-      'Paper Handbook',
       'Fresh Cartoon',
     ]) {
       expect(find.text(name), findsOneWidget);
     }
+    expect(find.text('Modern Calm'), findsNothing);
+    expect(find.text('Paper Handbook'), findsNothing);
     expect(find.text('Apply style'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

@@ -29,7 +29,9 @@ jobs:
             platform: linux
           - os: windows-2022
             platform: windows
-          - os: macos-15
+          # The universal desktop binary can be built on Intel runners.
+          # Keep the Apple Silicon runner for tagged distribution builds.
+          - os: ${{ startsWith(github.ref, 'refs/tags/v') && 'macos-15' || 'macos-15-intel' }}
             platform: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -76,7 +78,10 @@ jobs:
           if-no-files-found: error
       - name: Inspect built Apple release
         if: runner.os == 'macOS'
-        run: python tool/ci/release_preflight.py --output build/evidence/macos.json apple apps/morsecq/build/macos/Build/Products/Release/MorseCQ.app --platform macos
+        run: |
+          app=apps/morsecq/build/macos/Build/Products/Release/MorseCQ.app
+          lipo "$app/Contents/MacOS/MorseCQ" -verify_arch arm64 x86_64
+          python tool/ci/release_preflight.py --output build/evidence/macos.json apple "$app" --platform macos
       - name: Inspect Linux native payload
         if: runner.os == 'Linux'
         run: python tool/ci/release_preflight.py --output build/evidence/linux.json native apps/morsecq/build/linux/x64/release/bundle --platform linux --architecture x86_64

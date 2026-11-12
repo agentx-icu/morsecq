@@ -10,4 +10,4 @@ Keep assisted practice, comprehension scores and simulated QSOs out of Koch unlo
 
 Five of the six `packages/` (all but `morse_session`) are shared with DitMesh. A change there needs `tool/shared_sync.dart` re-pinning and, when the copies differ, a divergence rule; see the [shared-package procedure](testing/TEST_PYRAMID.md#shared-packages).
 
-Use phone and desktop layouts to check all ten languages and five styles; the Layout CI catches overflow, clipping and inset problems on pushes to and pull requests against `main`/`master`. Device checks cover microphone decoding, key timing, haptics, learning-material selection and local persistence.
+Use phone and desktop layouts to check all ten languages and four styles; the Layout CI catches overflow, clipping and inset problems on pushes to and pull requests against `main`/`master`. Device checks cover microphone decoding, key timing, haptics, learning-material selection and local persistence.
