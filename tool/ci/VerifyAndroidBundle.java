@@ -8,13 +8,15 @@ import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Set;
 import java.util.jar.JarFile;
+import javax.naming.ldap.LdapName;
 
 /** Verify every AAB entry with the JDK's JAR verifier, not certificate text alone. */
 public class VerifyAndroidBundle {
   public static void main(String[] args) throws Exception {
-    if (args.length != 3) throw new IllegalArgumentException("aab expected-sha256|- development|distribution");
+    if (args.length != 3) throw new IllegalArgumentException("aab expected-sha256|- development|store|distribution");
     boolean distribution = args[2].equals("distribution");
-    if (!distribution && !args[2].equals("development")) throw new IllegalArgumentException("Unknown signing mode");
+    boolean store = args[2].equals("store");
+    if (!distribution && !store && !args[2].equals("development")) throw new IllegalArgumentException("Unknown signing mode");
     String expected = args[1].replace(":", "").toLowerCase(Locale.ROOT);
     if (!expected.equals("-") && !expected.matches("[0-9a-f]{64}")) throw new IllegalArgumentException("Invalid expected SHA256");
     if (distribution && expected.equals("-")) throw new IllegalArgumentException("Distribution needs expected upload certificate SHA256");
@@ -45,9 +47,14 @@ public class VerifyAndroidBundle {
         certificate.checkValidity();
         String fingerprint = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded()));
         if (!expected.equals("-") && !expected.equals(fingerprint)) throw new SecurityException("Wrong AAB upload certificate");
-        String subject = (certificate.getSubjectX500Principal().getName() + ",").replace(" ", "").toLowerCase(Locale.ROOT);
-        if (distribution && subject.contains("cn=androiddebug,")) throw new SecurityException("Android debug certificate is not distribution signing");
-        fingerprints.add(fingerprint);
+        if (fingerprints.add(fingerprint) && (store || distribution)) {
+          for (var rdn : new LdapName(certificate.getSubjectX500Principal().getName()).getRdns()) {
+            var commonName = rdn.toAttributes().get("CN");
+            if (commonName != null && "Android Debug".equalsIgnoreCase(commonName.get().toString())) {
+              throw new SecurityException("Android Debug certificate cannot sign a store AAB");
+            }
+          }
+        }
         signedEntries++;
       }
     }

@@ -152,6 +152,25 @@ jobs:
           channel: stable
           cache: true
       - run: dart pub get --enforce-lockfile
+      - name: Reject a configured debug certificate for store APKs and AABs
+        working-directory: apps/morsecq
+        run: |
+          keytool -genkeypair -keystore "$RUNNER_TEMP/store-debug.p12" \
+            -alias fixture -keyalg RSA -keysize 2048 -validity 30 \
+            -dname 'CN=Android Debug,O=Android,C=US' -storepass fixture-password -noprompt
+          for artifact in apk appbundle; do
+            log="$RUNNER_TEMP/store-debug-$artifact.log"
+            if MORSECQ_ANDROID_KEYSTORE="$RUNNER_TEMP/store-debug.p12" \
+              MORSECQ_ANDROID_KEYSTORE_PASSWORD=fixture-password MORSECQ_ANDROID_KEY_ALIAS=fixture \
+              MORSECQ_ANDROID_KEY_PASSWORD=fixture-password \
+              flutter build "$artifact" --release -PstoreRelease --target-platform=android-arm64 \
+              > "$log" 2>&1; then
+              echo "The store $artifact build accepted an Android Debug certificate." >&2
+              exit 1
+            fi
+            cat "$log"
+            grep -Fq 'Android Debug certificate cannot sign a store' "$log"
+          done
       - name: Prepare release signing
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

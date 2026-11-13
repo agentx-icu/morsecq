@@ -57,15 +57,32 @@ class BundleIntegrityTest(unittest.TestCase):
     def tearDownClass(cls):
         cls.temp.cleanup()
 
-    def signed(self, *, bundle_structure=True):
+    def signed(self, *, bundle_structure=True, key=None):
         path = self.root / 'fixture.aab'
         with zipfile.ZipFile(path, 'w') as archive:
             archive.writestr('base/manifest/AndroidManifest.xml', b'signed payload')
             if bundle_structure:
                 archive.writestr('BundleConfig.pb', b'bundle configuration')
-        subprocess.run(['jarsigner', '-keystore', str(self.key), '-storepass',
+        subprocess.run(['jarsigner', '-keystore', str(key or self.key), '-storepass',
                         'fixture-password', str(path), 'fixture'], capture_output=True, check=True)
         return path
+
+    def test_store_mode_rejects_debug_and_accepts_release(self):
+        verifier = Path(__file__).with_name('VerifyAndroidBundle.java')
+        command = ['java', str(verifier), str(self.signed()), '-', 'store']
+        release = subprocess.run(command, capture_output=True, text=True, check=False)
+        self.assertEqual(release.returncode, 0, release.stderr)
+        debug_key = self.root / 'debug.p12'
+        subprocess.run(['keytool', '-genkeypair', '-alias', 'fixture', '-keystore', str(debug_key),
+                        '-storepass', 'fixture-password', '-keyalg', 'RSA', '-keysize', '2048',
+                        '-validity', '30', '-dname', 'CN=Android Debug,O=Android,C=US', '-noprompt'],
+                       capture_output=True, check=True)
+        path = self.signed(key=debug_key)
+        self.assertIn('SHA256:', verify_bundle(path))
+        debug = subprocess.run(['java', str(verifier), str(path), '-', 'store'],
+                               capture_output=True, text=True, check=False)
+        self.assertNotEqual(debug.returncode, 0)
+        self.assertIn('Android Debug certificate cannot sign a store AAB', debug.stderr)
 
     def test_manifest_last_self_signed_android_bundle_is_accepted(self):
         path = self.signed()
