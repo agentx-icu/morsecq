@@ -2651,10 +2651,7 @@ class SJa extends S {
   String get aboutTermsOfUse => '利用規約';
 
   @override
-  String get aboutSupport => 'サポート・お問い合わせ';
-
-  @override
-  String get aboutLinkFailed => 'リンクを開けなかったため、コピーしました。';
+  String get aboutSupport => '技術サポート';
 
   @override
   String get offlineClearData => '学習データを消去';
@@ -3552,4 +3549,64 @@ class SJa extends S {
 
   @override
   String get learnSettingsSaveFailed => 'トレーニング設定を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get accountSectionPrivacy => 'プライバシーと権限';
+
+  @override
+  String get accountPersonalInfoList => '収集する個人情報';
+
+  @override
+  String get accountThirdPartyShareList => '第三者との共有';
+
+  @override
+  String get accountPermissionList => '権限';
+
+  @override
+  String get technicalSupportText => 'マイク\n「受信する」を開始できない場合は、システム設定で MorseCQ にマイクの使用が許可されていることと、マイクが使えることを確認してください。うまく解読できないときは、音源をマイクに近づけてください。\n\n問題を報告する\n端末、OS、分かる場合はアプリのバージョン、問題を再現する手順を控えてください。診断情報を添える場合は、「自分 → アプリについて」で「ローカル診断情報をコピー」を選んでください。';
+
+  @override
+  String get privacyConsentTitle => 'MorseCQ へようこそ';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ はオフラインで動作し、アカウントは不要です。個人情報の収集やアップロードは行いません。続行する前に、プライバシーポリシーと利用規約をご確認ください。';
+
+  @override
+  String get privacyConsentAccept => '同意して続ける';
+
+  @override
+  String get privacyConsentDecline => '同意せずに終了';
+
+  @override
+  String get privacyConsentSaving => '保存中…';
+
+  @override
+  String get privacyConsentSaveFailed => '選択を保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get privacyConsentStorageFailed => '端末のストレージを開けませんでした。もう一度お試しください。';
+
+  @override
+  String get listenMicPurposeTitle => 'マイクへのアクセス';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ は「受信する」画面でモールス信号を解読するためにのみマイクを使用します。音声は端末内で処理され、アップロードされません。';
+
+  @override
+  String get listenMicPurposeContinue => '続ける';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ はアカウント不要のオフラインのモールス信号練習アプリです。個人情報の収集、アップロード、共有は行いません。\n\nマイク\n「受信する」画面でリアルタイムの解読を開始するときにのみ、マイクの権限（RECORD_AUDIO）を求めます。音声は端末内で処理され、アップロードされません。ほかの機能はこの権限なしで利用できます。\n\n端末内のデータ\n学習の進捗、教材、読み込んだ録音、アプリ設定は端末内に保存されます。「自分 → 学習データを消去」で、学習データと MorseCQ が管理する録音を削除できます。アプリ設定は保持されます。システム設定に応じて、Android や iOS が学習データと設定をバックアップする場合があります。\n\n外部コンポーネントと共有\nMorseCQ は Flutter と、音声、ファイル選択、共有、端末内ストレージ用のプラグインを使用します。自分で開いたり共有したりするファイルは OS が処理します。個人情報を第三者に販売、共有、開示することはありません。広告や分析用の SDK は含まれていません。\n\n診断ログ\nMorseCQ は機微な情報を除いたエラーログを端末に保存します。ログにはエラーの種類とコード上の位置が含まれます。例外メッセージや学習内容は記録されません。「自分 → このアプリについて」の「ローカル診断情報をコピー」から自分でコピーできます。\n\nお子さま\nMorseCQ は子どもを主な対象としておらず、個人情報を故意に収集することはありません。\n\n変更\nポリシーに重要な変更があった場合、Android のリリース版で改めて同意を求めます。\n\n発効日：2026年11月13日';
+
+  @override
+  String get termsOfUseText => 'この規約は MorseCQ の利用に適用されます。\n\n目的\nMorseCQ はモールス信号をオフラインで学ぶためのアプリです。メッセージ、アカウント、クラウドのサービスは提供しません。\n\nデータ\n学習データは端末内に保存されます。必要なファイルのコピーはご自身で保管してください。学習データの消去やアプリのアンインストールにより、端末内のデータが削除されることがあります。\n\nライセンス\nMorseCQ は GPL-3.0 ライセンスのフリーソフトウェアです。ソースコードは「自分 → アプリについて」から確認できます。\n\n保証\nアプリは現状のまま提供され、保証はありません。\n\nヘルプ\nご質問は「自分 → プライバシーと権限 → 技術サポート」をご覧ください。';
+
+  @override
+  String get personalInfoListText => 'MorseCQ は個人情報を収集しません。学習の進捗、アプリ設定、読み込んだ教材や録音は端末内に保存されます。「自分 → 学習データを消去」で、学習データと MorseCQ が管理する録音を削除できます。アプリ設定は保持されます。';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ は個人情報を第三者と共有しません。Flutter と、音声、ファイル選択、共有用のプラグインを使用します。選択したファイルは OS が処理します。広告や分析用の SDK は含まれていません。';
+
+  @override
+  String get permissionListText => 'マイク（RECORD_AUDIO）\n「受信する」画面でモールス信号をリアルタイムに解読するために使用します。音声は端末内で処理され、アップロードされません。ほかの機密性の高い権限は要求しません。';
 }

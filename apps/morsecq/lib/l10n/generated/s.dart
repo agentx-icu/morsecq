@@ -4592,17 +4592,11 @@ abstract class S {
   /// **'Terms of use'**
   String get aboutTermsOfUse;
 
-  /// About: support and contact link
+  /// Me page tile and title for in-app technical support
   ///
   /// In en, this message translates to:
-  /// **'Support and contact'**
+  /// **'Technical support'**
   String get aboutSupport;
-
-  /// About: a link could not be opened and was copied
-  ///
-  /// In en, this message translates to:
-  /// **'The link could not be opened, so it was copied.'**
-  String get aboutLinkFailed;
 
   /// Offline build Me: clear the local learning data
   ///
@@ -6247,6 +6241,126 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Couldn\'t save training settings. Try again.'**
   String get learnSettingsSaveFailed;
+
+  /// Me page header for the in-app privacy, terms, data-list and permission pages
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and permissions'**
+  String get accountSectionPrivacy;
+
+  /// Me page tile and page title for the collected-personal-information list
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information collected'**
+  String get accountPersonalInfoList;
+
+  /// Me page tile and page title for the third-party-sharing list
+  ///
+  /// In en, this message translates to:
+  /// **'Third-party sharing'**
+  String get accountThirdPartyShareList;
+
+  /// Me page tile and page title for the permission list
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get accountPermissionList;
+
+  /// In-app troubleshooting and instructions for preparing a bug report
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone\nIf Listen cannot start, check that MorseCQ has microphone access in your system settings and that the microphone is available. Move the sound source closer if decoding is unreliable.\n\nReporting a problem\nNote your device, operating system, app version if known, and the steps to reproduce the problem. In Me > About, tap Copy local diagnostics if you want to include diagnostic information.'**
+  String get technicalSupportText;
+
+  /// First-run privacy gate heading
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to MorseCQ'**
+  String get privacyConsentTitle;
+
+  /// First-run privacy gate summary above the agree and disagree buttons
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ is offline and account-free. It does not collect or upload personal data. Please review the privacy policy and terms of use before you continue.'**
+  String get privacyConsentSummary;
+
+  /// First-run privacy gate button that accepts the policy and opens the app
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and continue'**
+  String get privacyConsentAccept;
+
+  /// First-run privacy gate button that declines the policy and exits the app
+  ///
+  /// In en, this message translates to:
+  /// **'Disagree and exit'**
+  String get privacyConsentDecline;
+
+  /// First-run privacy gate button label while saving the choice
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get privacyConsentSaving;
+
+  /// First-run privacy gate message when saving the choice fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your choice. Please try again.'**
+  String get privacyConsentSaveFailed;
+
+  /// Android privacy startup could not open a persistent store
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open local storage. Please try again.'**
+  String get privacyConsentStorageFailed;
+
+  /// Listen screen dialog title explaining microphone use before the permission prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access'**
+  String get listenMicPurposeTitle;
+
+  /// Listen screen dialog body explaining microphone use before the permission prompt
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ uses the microphone only to decode Morse code from audio on the Listen screen. Audio is processed on your device and is not uploaded.'**
+  String get listenMicPurposeBody;
+
+  /// Listen screen dialog button that proceeds to the microphone permission prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get listenMicPurposeContinue;
+
+  /// In-app privacy policy body text
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ is an account-free, offline Morse code trainer. It does not collect, upload or share personal information.\n\nMicrophone\nThe microphone is used only for live Morse decoding on the Listen screen. MorseCQ processes the live audio on your device and does not upload it.\n\nPermissions\nMorseCQ requests only the microphone permission (RECORD_AUDIO), and only when you start live decoding. Every other feature works without it. Depending on your system settings, Android or iOS may back up your local learning data and preferences.\n\nLocal data\nYour learning progress, materials, imported recordings and app preferences are stored on your device. Me > Clear learning data removes local learning data and recordings managed by MorseCQ. App preferences are kept.\n\nDiagnostic logs\nMorseCQ keeps redacted error logs on your device. Logs contain error types and code locations. Exception messages and learning content are omitted. To copy the logs yourself, select “Copy local diagnostics” under Me > About.\n\nThird-party components\nMorseCQ is built with Flutter and standard plugins for audio capture, file selection, sharing and local storage. The operating system handles files you choose to open or share. There are no advertising or analytics SDKs.\n\nSharing\nMorseCQ does not sell, share or disclose personal information to third parties.\n\nChildren\nMorseCQ is not directed at children and does not knowingly collect personal information from anyone.\n\nChanges\nAfter a material change to this policy, release builds on Android will ask for consent again.\n\nEffective date: 2026-11-13'**
+  String get privacyPolicyText;
+
+  /// In-app terms of use body text
+  ///
+  /// In en, this message translates to:
+  /// **'By using MorseCQ you agree to these terms.\n\nPurpose\nMorseCQ is provided as an offline Morse code learning tool. It does not provide a messaging, account or cloud service.\n\nYour data\nLearning data stays on your device. You are responsible for keeping copies you need; clearing learning data or uninstalling can remove local records.\n\nLicence\nMorseCQ is free software under the GPL-3.0 licence. See Me > About for the source code.\n\nNo warranty\nThe app is provided as-is, without warranty of any kind.\n\nHelp\nQuestions: see Me > Privacy and permissions > Technical support.'**
+  String get termsOfUseText;
+
+  /// In-app collected-personal-information list body text
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ does not collect personal information. It stores only your learning progress, preferences, imported learning materials and recordings on this device. Me > Clear learning data removes local learning data and recordings managed by MorseCQ. App preferences are kept.'**
+  String get personalInfoListText;
+
+  /// In-app third-party-sharing list body text
+  ///
+  /// In en, this message translates to:
+  /// **'MorseCQ does not share personal information with third parties. It uses the Flutter framework and standard plugins for audio, file selection, sharing. The operating system handles the files you choose. There are no advertising or analytics SDKs.'**
+  String get thirdPartyShareText;
+
+  /// In-app permission list body text
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone (RECORD_AUDIO)\nUsed only for live Morse decoding on the Listen screen. Audio is processed on your device and is not uploaded. MorseCQ requests no other sensitive permissions.'**
+  String get permissionListText;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -31,7 +31,7 @@ Linux Listen 调用 `parecord` 和 `pactl`；tar.gz 部署需要安装 `pulseaud
 macOS 沙盒允许单实例激活套接字所需的本机客户端/服务器 IPC，不连接互联网服务。
 
 Android 标签构建必须提供四项所有者签名 secret；`tool/ci/verify_android_signing.py` 检查产物 APK/AAB 使用同一非调试证书。
-非标签调试签名产物仅用于本机/CI 测试。Windows Authenticode、macOS Developer ID 与公证仍需所有者凭据，不能由未签名构建推定完成。
+非标签调试签名产物仅用于本机/CI 测试。构建商店产物时，给 `flutter build apk --release` 或 `flutter build appbundle --release` 加 `-PstoreRelease`。构建要求配置 release keystore（环境变量或 `android/key.properties`），验证 AAB 和每个 APK 的签名，并拒绝 Android Debug 证书。Windows Authenticode、macOS Developer ID 与公证仍需所有者凭据，不能由未签名构建推定完成。
 
 CI 以独立 `symbols-*` artifact 保存 Dart split-debug-info 及可用 dSYM/PDB。
 应用自身的 Dart 诊断仅保存 UTC 时间、白名单错误类别、固定事件名，以及记录器内部捕获的代码坐标 / AOT PC，

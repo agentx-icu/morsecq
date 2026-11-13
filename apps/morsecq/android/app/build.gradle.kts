@@ -1,4 +1,10 @@
+import com.android.apksig.ApkVerifier
+import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.variant.BuiltArtifactsLoader
+import org.gradle.process.ExecOperations
 import java.util.Properties
+import javax.inject.Inject
+import javax.naming.ldap.LdapName
 
 plugins {
     id("com.android.application")
@@ -33,6 +39,9 @@ val morsecqReleaseSigning: Map<String, String>? = run {
         .takeIf { keys -> keys.values.all { it.isNotEmpty() } }
         ?: throw GradleException("android/key.properties must set $morsecqSigningKeys")
 }
+
+// Opt in with `-PstoreRelease` on Flutter APK and App Bundle builds.
+val storeRelease = project.hasProperty("storeRelease")
 
 android {
     namespace = "icu.agentx.morsecq"
@@ -82,10 +91,102 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName(
-                if (morsecqReleaseSigning != null) "release" else "debug",
-            )
+            signingConfig = when {
+                morsecqReleaseSigning != null -> signingConfigs.getByName("release")
+                storeRelease -> throw GradleException(
+                    "Store release requires the MORSECQ_ANDROID signing keys " +
+                        "(env or android/key.properties); refusing to sign with the debug key"
+                )
+                else -> signingConfigs.getByName("debug")
+            }
         }
+    }
+}
+
+abstract class VerifyStoreApkSigning : DefaultTask() {
+    @get:InputDirectory
+    abstract val apkDirectory: DirectoryProperty
+
+    @get:Internal
+    abstract val artifactLoader: Property<BuiltArtifactsLoader>
+
+    @TaskAction
+    fun verify() {
+        val artifacts = artifactLoader.get().load(apkDirectory.get())
+            ?: throw GradleException("Missing store APK output metadata")
+        if (artifacts.elements.isEmpty()) throw GradleException("No store APKs were built")
+
+        for (artifact in artifacts.elements) {
+            val apk = File(artifact.outputFile)
+            val result = ApkVerifier.Builder(apk).build().verify()
+            if (!result.isVerified || result.signerCertificates.isEmpty()) {
+                throw GradleException("Could not verify store APK signature for ${apk.name}")
+            }
+            val certificates = result.signerCertificates +
+                result.signingCertificateLineage?.certificatesInLineage.orEmpty()
+            val hasDebugSigner = certificates.any { certificate ->
+                LdapName(certificate.subjectX500Principal.name).rdns.any { rdn ->
+                    rdn.toAttributes().get("CN")?.get()?.toString()
+                        .equals("Android Debug", ignoreCase = true)
+                }
+            }
+            if (hasDebugSigner) {
+                throw GradleException("Android Debug certificate cannot sign a store APK (${apk.name})")
+            }
+        }
+    }
+}
+
+abstract class VerifyStoreBundleSigning @Inject constructor(
+    private val execOperations: ExecOperations,
+) : DefaultTask() {
+    @get:InputFile
+    abstract val bundle: RegularFileProperty
+
+    @get:InputFile
+    abstract val verifier: RegularFileProperty
+
+    @get:OutputFile
+    abstract val verifiedBundle: RegularFileProperty
+
+    @TaskAction
+    fun verify() {
+        val source = bundle.get().asFile
+        val output = verifiedBundle.get().asFile
+        val javaBin = File(System.getProperty("java.home"), "bin")
+        val java = javaBin.resolve("java").takeIf { it.isFile } ?: javaBin.resolve("java.exe")
+        if (output.exists() && !output.delete()) {
+            throw GradleException("Could not remove the previous verified store AAB")
+        }
+        execOperations.exec {
+            commandLine(java, verifier.get().asFile, source, "-", "store")
+        }
+        source.copyTo(output)
+    }
+}
+
+if (storeRelease) {
+    androidComponents.onVariants(androidComponents.selector().withBuildType("release")) { variant ->
+        val verification = tasks.register<VerifyStoreApkSigning>(
+            variant.computeTaskName("verify", "StoreApkSigning"),
+        ) {
+            apkDirectory.set(variant.artifacts.get(SingleArtifact.APK))
+            artifactLoader.set(variant.artifacts.getBuiltArtifactsLoader())
+        }
+        // Run after AGP packages every APK and before Flutter copies the outputs.
+        val assembleTask = "assemble${variant.name.replaceFirstChar { it.uppercaseChar() }}"
+        tasks.matching { it.name == assembleTask }.configureEach {
+            dependsOn(verification)
+        }
+
+        val bundleVerification = tasks.register<VerifyStoreBundleSigning>(
+            variant.computeTaskName("verify", "StoreBundleSigning"),
+        ) {
+            verifier.set(rootProject.file("../../../tool/ci/VerifyAndroidBundle.java"))
+        }
+        variant.artifacts.use(bundleVerification)
+            .wiredWithFiles(VerifyStoreBundleSigning::bundle, VerifyStoreBundleSigning::verifiedBundle)
+            .toTransform(SingleArtifact.BUNDLE)
     }
 }
 

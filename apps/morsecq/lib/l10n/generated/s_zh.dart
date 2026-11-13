@@ -2651,10 +2651,7 @@ class SZh extends S {
   String get aboutTermsOfUse => '使用条款';
 
   @override
-  String get aboutSupport => '技术支持与联系';
-
-  @override
-  String get aboutLinkFailed => '无法打开链接，已复制链接。';
+  String get aboutSupport => '技术支持';
 
   @override
   String get offlineClearData => '清除学习数据';
@@ -3552,6 +3549,66 @@ class SZh extends S {
 
   @override
   String get learnSettingsSaveFailed => '无法保存训练设置，请重试。';
+
+  @override
+  String get accountSectionPrivacy => '隐私与权限';
+
+  @override
+  String get accountPersonalInfoList => '个人信息收集清单';
+
+  @override
+  String get accountThirdPartyShareList => '第三方共享清单';
+
+  @override
+  String get accountPermissionList => '权限说明';
+
+  @override
+  String get technicalSupportText => '麦克风\n如果无法开始收听，请在系统设置中检查 MorseCQ 的麦克风权限，并确认麦克风可用。如果解码不稳定，请将声源靠近麦克风。\n\n报告问题\n记下设备型号、操作系统、应用版本（如果知道）和复现步骤。如需附上诊断信息，可在“我 → 关于”中点击“复制本地诊断信息”。';
+
+  @override
+  String get privacyConsentTitle => '欢迎使用 MorseCQ';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ 完全离线且无需账号，不收集、不上传个人数据。请先阅读隐私政策与使用条款，再继续使用。';
+
+  @override
+  String get privacyConsentAccept => '同意并继续';
+
+  @override
+  String get privacyConsentDecline => '不同意并退出';
+
+  @override
+  String get privacyConsentSaving => '正在保存…';
+
+  @override
+  String get privacyConsentSaveFailed => '无法保存你的选择，请重试。';
+
+  @override
+  String get privacyConsentStorageFailed => '无法打开本地存储，请重试。';
+
+  @override
+  String get listenMicPurposeTitle => '麦克风权限';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ 仅使用麦克风在“收听”页解码摩斯电码。音频在本设备上处理，不会上传。';
+
+  @override
+  String get listenMicPurposeContinue => '继续';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ 是一款无需账号、完全离线的摩斯电码训练工具，不收集、不上传、不共享个人信息。\n\n麦克风\n麦克风仅在“收听”页进行实时电码解码时使用。实时音频在本设备上处理，不会上传。\n\n权限\nMorseCQ 仅在你开始实时解码时申请麦克风权限（RECORD_AUDIO），其他功能无需任何权限。视系统设置而定，Android 或 iOS 可能对本地的学习数据和偏好进行系统备份。\n\n本地数据\n学习进度、学习素材、导入的录音和应用偏好保存在本设备上。“我 → 清除学习数据”会删除本地学习数据和 MorseCQ 管理的录音，应用偏好会保留。\n\n诊断日志\nMorseCQ 在本机保存脱敏错误日志，记录错误类型和代码位置，省略异常消息和学习内容。你可以在「我 → 关于」中主动选择「复制本地诊断信息」来复制日志。\n\n第三方组件\nMorseCQ 基于 Flutter 及用于音频采集、文件选择、分享和本地存储的常规插件构建。你主动选择打开或分享的文件由操作系统处理。应用不含广告或统计分析 SDK。\n\n共享\nMorseCQ 不会向第三方出售、共享或披露个人信息。\n\n未成年人\nMorseCQ 不以未成年人为目标用户，也不会在知情的情况下收集任何人的个人信息。\n\n变更\n本政策发生实质性变更后，Android 正式版会再次请求你同意。\n\n生效日期：2026-11-13';
+
+  @override
+  String get termsOfUseText => '使用 MorseCQ 即表示你同意以下条款。\n\n用途\nMorseCQ 是一款离线的摩斯电码学习工具，不提供消息、账号或云服务。\n\n你的数据\n学习数据保存在本设备上。请自行保留所需的副本；清除学习数据或卸载应用可能删除本地记录。\n\n许可\nMorseCQ 是采用 GPL-3.0 许可的免费软件，源码见“我 → 关于”。\n\n无担保\n本应用按“现状”提供，不作任何担保。\n\n帮助\n如有疑问，请见“我 → 隐私与权限 → 技术支持”。';
+
+  @override
+  String get personalInfoListText => 'MorseCQ 不收集个人信息。它仅在本设备上保存你的学习进度、偏好、导入的学习素材和录音。“我 → 清除学习数据”会删除本地学习数据和 MorseCQ 管理的录音，应用偏好会保留。';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ 不与第三方共享个人信息。它使用 Flutter 框架以及用于音频、文件选择、分享的常规插件。你主动选择的文件由操作系统处理。应用不含广告或统计分析 SDK。';
+
+  @override
+  String get permissionListText => '麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -6201,10 +6258,7 @@ class SZhHant extends SZh {
   String get aboutTermsOfUse => '使用條款';
 
   @override
-  String get aboutSupport => '技術支援與聯絡';
-
-  @override
-  String get aboutLinkFailed => '無法開啟連結，已複製連結。';
+  String get aboutSupport => '技術支援';
 
   @override
   String get offlineClearData => '清除學習資料';
@@ -7102,4 +7156,64 @@ class SZhHant extends SZh {
 
   @override
   String get learnSettingsSaveFailed => '無法儲存訓練設定，請重試。';
+
+  @override
+  String get accountSectionPrivacy => '隱私與權限';
+
+  @override
+  String get accountPersonalInfoList => '個人資訊收集清單';
+
+  @override
+  String get accountThirdPartyShareList => '第三方共享清單';
+
+  @override
+  String get accountPermissionList => '權限說明';
+
+  @override
+  String get technicalSupportText => '麥克風\n如果無法開始收聽，請在系統設定中檢查 MorseCQ 的麥克風權限，並確認麥克風可用。如果解碼不穩定，請將聲源靠近麥克風。\n\n回報問題\n記下裝置型號、作業系統、應用程式版本（如果知道）和重現步驟。如需附上診斷資訊，可在「我 → 關於」中點選「複製本機診斷資訊」。';
+
+  @override
+  String get privacyConsentTitle => '歡迎使用 MorseCQ';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ 完全離線且無需帳號，不收集、不上傳個人資料。請先閱讀隱私政策與使用條款，再繼續使用。';
+
+  @override
+  String get privacyConsentAccept => '同意並繼續';
+
+  @override
+  String get privacyConsentDecline => '不同意並退出';
+
+  @override
+  String get privacyConsentSaving => '正在儲存…';
+
+  @override
+  String get privacyConsentSaveFailed => '無法儲存你的選擇，請重試。';
+
+  @override
+  String get privacyConsentStorageFailed => '無法開啟本機儲存空間，請重試。';
+
+  @override
+  String get listenMicPurposeTitle => '麥克風權限';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ 僅使用麥克風在「收聽」頁解碼摩斯電碼。音訊在本裝置上處理，不會上傳。';
+
+  @override
+  String get listenMicPurposeContinue => '繼續';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ 是一款無需帳號、完全離線的摩斯電碼訓練工具，不收集、不上傳、不共享個人資訊。\n\n麥克風\n麥克風僅在「收聽」頁進行即時電碼解碼時使用。即時音訊在本裝置上處理，不會上傳。\n\n權限\nMorseCQ 僅在你開始即時解碼時申請麥克風權限（RECORD_AUDIO），其他功能無需任何權限。視系統設定而定，Android 或 iOS 可能對本地的學習資料和偏好進行系統備份。\n\n本機資料\n學習進度、學習素材、匯入的錄音和應用程式偏好設定儲存在本裝置上。「我 → 清除學習資料」會刪除本機學習資料和 MorseCQ 管理的錄音，應用程式偏好設定會保留。\n\n診斷記錄\nMorseCQ 在裝置上儲存已移除敏感資料的錯誤記錄，內容包含錯誤類型和程式碼位置，省略例外訊息與學習內容。你可以在「我 → 關於」中主動選擇「複製本機診斷資訊」來複製記錄。\n\n第三方元件\nMorseCQ 基於 Flutter 及用於音訊採集、檔案選擇、分享和本機儲存的常規外掛構建。你主動選擇開啟或分享的檔案由作業系統處理。應用程式不含廣告或分析 SDK。\n\n共享\nMorseCQ 不會向第三方出售、共享或披露個人資訊。\n\n未成年人\nMorseCQ 不以未成年人為目標使用者，也不會在知情的情況下收集任何人的個人資訊。\n\n變更\n本政策有重大變更後，Android 正式版會再次請你同意。\n\n生效日期：2026-11-13';
+
+  @override
+  String get termsOfUseText => '使用 MorseCQ 即表示你同意以下條款。\n\n用途\nMorseCQ 是一款離線的摩斯電碼學習工具，不提供訊息、帳號或雲端服務。\n\n你的資料\n學習資料保存在本裝置上。請自行保留所需的副本；清除學習資料或解除安裝應用程式可能刪除本機記錄。\n\n許可\nMorseCQ 是採用 GPL-3.0 許可的免費軟體，原始碼見「我 → 關於」。\n\n無擔保\n本應用按「現狀」提供，不作任何擔保。\n\n說明\n如有疑問，請見「我 → 隱私與權限 → 技術支援」。';
+
+  @override
+  String get personalInfoListText => 'MorseCQ 不收集個人資訊。它僅在本裝置上保存你的學習進度、偏好、匯入的學習素材和錄音。「我 → 清除學習資料」會刪除本機學習資料和 MorseCQ 管理的錄音，應用程式偏好設定會保留。';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ 不與第三方共享個人資訊。它使用 Flutter 框架以及用於音訊、檔案選擇、分享的常規外掛。你主動選擇的檔案由作業系統處理。應用程式不含廣告或分析 SDK。';
+
+  @override
+  String get permissionListText => '麥克風（RECORD_AUDIO）\n僅在「收聽」頁進行即時電碼解碼時使用。音訊在本機處理，不會上傳。MorseCQ 不申請其他敏感權限。';
 }

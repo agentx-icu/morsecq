@@ -35,8 +35,13 @@ single-instance activation socket; no Internet service is contacted.
 Tagged Android builds require all four owner-signing secrets. The built APK
 and AAB must have matching non-debug certificates, checked by
 `tool/ci/verify_android_signing.py`; non-tag debug-signed artifacts remain for
-local/CI testing. Windows Authenticode signing and macOS Developer ID signing /
-notarization require owner credentials and are not claimed by an unsigned build.
+local/CI testing. Pass `-PstoreRelease` to `flutter build apk --release` or
+`flutter build appbundle --release` for a store build. Both require a configured
+release keystore (env or `android/key.properties`). Gradle verifies the signed
+AAB and every output APK and rejects Android Debug certificates.
+Windows Authenticode signing and macOS
+Developer ID signing / notarization require owner credentials and are not
+claimed by an unsigned build.
 
 Builds archive Dart split-debug-info and available dSYM/PDB files as separate
 `symbols-*` CI artifacts. App-owned Dart diagnostics retain UTC time, an allowlisted error category, a fixed event name and
