@@ -10,6 +10,7 @@ import 'package:morsecq/desktop/testing/testing.dart';
 import 'package:morsecq/training/training_controller_host.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
+import 'package:morsecq/ui/legal/legal_pages.dart';
 import 'package:morsecq/ui/pages/offline_me_page.dart';
 import 'package:morsecq/ui/settings/settings_routes.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,6 @@ import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/i18n/key_value_store.dart' as i18n;
 
 import '../learn/helpers/l10n.dart';
-import '../moderation/fake_url_launcher.dart';
 import '../support/test_app.dart';
 
 /// Records clipboard writes for the duration of one test.
@@ -167,26 +167,57 @@ void main() {
     expect(find.text(en.accountAboutSourceCopied), findsOneWidget);
   });
 
-  group('site links', () {
-    testWidgets('open in the browser, in English for English readers', (
-      tester,
-    ) async {
-      final launcher = FakeUrlLauncher.install();
+  group('privacy and support pages', () {
+    testWidgets('privacy and terms open in-app pages', (tester) async {
       await _openMe(tester);
-      for (final key in ['about-privacy', 'about-terms', 'about-support']) {
-        await tapVisible(tester, find.byKey(ValueKey(key)));
-      }
-      expect(launcher.launched, [kPrivacyPolicyUrl, kTermsUrl, kSupportUrl]);
+
+      await tapVisible(tester, find.byKey(const ValueKey('about-privacy')));
+      expect(find.byType(PrivacyPolicyPage), findsOneWidget);
+      await tester.pageBack();
+      await settle(tester);
+
+      await tapVisible(tester, find.byKey(const ValueKey('about-terms')));
+      expect(find.byType(TermsOfUsePage), findsOneWidget);
     });
 
-    testWidgets('without a browser the link is copied instead', (tester) async {
-      final launcher = FakeUrlLauncher.install()..opens = false;
+    testWidgets('the double-list and permission pages open from Me', (
+      tester,
+    ) async {
+      await _openMe(tester);
+
+      await tapVisible(
+        tester,
+        find.byKey(const ValueKey('account-personal-info')),
+      );
+      expect(find.byType(PersonalInfoListPage), findsOneWidget);
+      await tester.pageBack();
+      await settle(tester);
+
+      await tapVisible(
+        tester,
+        find.byKey(const ValueKey('account-third-party')),
+      );
+      expect(find.byType(ThirdPartyShareListPage), findsOneWidget);
+      await tester.pageBack();
+      await settle(tester);
+
+      await tapVisible(
+        tester,
+        find.byKey(const ValueKey('account-permissions')),
+      );
+      expect(find.byType(PermissionListPage), findsOneWidget);
+    });
+
+    testWidgets('technical support shows troubleshooting in the app', (
+      tester,
+    ) async {
       final copied = _recordClipboard(tester);
       await _openMe(tester);
-      await tapVisible(tester, find.byKey(const ValueKey('about-terms')));
-      expect(launcher.launched, [kTermsUrl]);
-      expect(copied, [kTermsUrl]);
-      expect(find.text(en.aboutLinkFailed), findsOneWidget);
+      await tapVisible(tester, find.byKey(const ValueKey('about-support')));
+      expect(find.text('Technical support'), findsOneWidget);
+      expect(find.textContaining('Copy local diagnostics'), findsOneWidget);
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
+      expect(copied, isEmpty);
     });
   });
 

@@ -19,8 +19,6 @@ PODS:
     - Flutter
   - torch_light (0.0.1):
     - Flutter
-  - url_launcher_ios (0.0.1):
-    - Flutter
   - vibration (3.0.0):
     - Flutter
   - wakelock_plus (0.0.1):
@@ -37,7 +35,6 @@ DEPENDENCIES:
   - record_ios (from `.symlinks/plugins/record_ios/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - torch_light (from `.symlinks/plugins/torch_light/ios`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - vibration (from `.symlinks/plugins/vibration/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
 
@@ -62,8 +59,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share_plus/ios"
   torch_light:
     :path: ".symlinks/plugins/torch_light/ios"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
   vibration:
     :path: ".symlinks/plugins/vibration/ios"
   wakelock_plus:
@@ -80,7 +75,6 @@ SPEC CHECKSUMS:
   record_ios: 980fd386a97a35987d0fce3dfda4b26a38c90f4c
   share_plus: eccd7beb7cea61271aeed1800e8ccb2b952c0c7f
   torch_light: d093d579a221a59ef8a6b8c0eca20d52f7178087
-  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   vibration: ca8104a8875b9c493e15b21b04e456befd0ff6eb
   wakelock_plus: e29112ab3ef0b318e58cfa5c32326458be66b556
 

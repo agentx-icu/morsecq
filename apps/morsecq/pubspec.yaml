@@ -34,9 +34,6 @@ dependencies:
   provider: ^6.1.0
   file_picker: ^13.1.0
   share_plus: ^13.3.0
-  # Opens the privacy policy / terms / support pages from Me → About (App
-  # Review 5.1.1) and the guidelines page; no mail, no other scheme.
-  url_launcher: ^6.3.2
   # Desktop shell (lib/desktop/): window persistence + system tray. All calls
   # are gated on defaultTargetPlatform; the plugins federate to no-ops on mobile.
   window_manager: ^0.5.2
@@ -53,10 +50,6 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   flutter_lints: ^6.0.0
-  # test/moderation/: a fake UrlLauncherPlatform records the site links
-  # instead of opening a browser.
-  url_launcher_platform_interface: ^2.3.2
-  plugin_platform_interface: ^2.1.8
   # Used only by tool/gen_tray_icons.dart to render assets/tray/*.png|ico.
   image: ^4.10.1
 

@@ -2672,10 +2672,7 @@ class SEs extends S {
   String get aboutTermsOfUse => 'Condiciones de uso';
 
   @override
-  String get aboutSupport => 'Ayuda y contacto';
-
-  @override
-  String get aboutLinkFailed => 'No se pudo abrir el enlace, así que se copió.';
+  String get aboutSupport => 'Soporte técnico';
 
   @override
   String get offlineClearData => 'Borrar los datos de aprendizaje';
@@ -3574,4 +3571,64 @@ class SEs extends S {
 
   @override
   String get learnSettingsSaveFailed => 'No se pudo guardar la configuración del entrenamiento. Inténtalo de nuevo.';
+
+  @override
+  String get accountSectionPrivacy => 'Privacidad y permisos';
+
+  @override
+  String get accountPersonalInfoList => 'Datos personales recopilados';
+
+  @override
+  String get accountThirdPartyShareList => 'Datos compartidos con terceros';
+
+  @override
+  String get accountPermissionList => 'Permisos';
+
+  @override
+  String get technicalSupportText => 'Micrófono\nSi no puedes iniciar la escucha, comprueba en los ajustes del sistema que MorseCQ tiene acceso al micrófono y que el micrófono está disponible. Acerca la fuente de sonido si la decodificación falla.\n\nInformar de un problema\nAnota el dispositivo, el sistema operativo, la versión de la aplicación si la conoces y los pasos para reproducir el problema. En «Yo → Acerca de», toca «Copiar diagnóstico local» si quieres incluir información de diagnóstico.';
+
+  @override
+  String get privacyConsentTitle => 'Te damos la bienvenida a MorseCQ';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ funciona sin conexión y sin cuenta. La aplicación no recopila ni sube datos personales. Lee la política de privacidad y las condiciones de uso antes de continuar.';
+
+  @override
+  String get privacyConsentAccept => 'Aceptar y continuar';
+
+  @override
+  String get privacyConsentDecline => 'Rechazar y salir';
+
+  @override
+  String get privacyConsentSaving => 'Guardando…';
+
+  @override
+  String get privacyConsentSaveFailed => 'No se pudo guardar tu elección. Inténtalo de nuevo.';
+
+  @override
+  String get privacyConsentStorageFailed => 'No se pudo abrir el almacenamiento local. Inténtalo de nuevo.';
+
+  @override
+  String get listenMicPurposeTitle => 'Acceso al micrófono';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ solo usa el micrófono para descodificar código morse en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube.';
+
+  @override
+  String get listenMicPurposeContinue => 'Continuar';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ es una aplicación para practicar código morse sin conexión y sin cuenta. No recopila, sube ni comparte datos personales.\n\nMicrófono\nMorseCQ solo solicita el permiso de micrófono (RECORD_AUDIO) al iniciar la descodificación en directo en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube. Las demás funciones están disponibles sin este permiso.\n\nDatos locales\nEl progreso, los materiales de aprendizaje, las grabaciones importadas y los ajustes de la aplicación se guardan en tu dispositivo. En «Yo → Borrar los datos de aprendizaje» puedes eliminar tus datos de aprendizaje y las grabaciones que gestiona MorseCQ. Los ajustes de la aplicación se conservan. Según la configuración del sistema, Android o iOS pueden hacer copias de seguridad de los datos de aprendizaje y los ajustes.\n\nComponentes de terceros y datos compartidos\nMorseCQ usa Flutter y complementos de audio, selección de archivos, uso compartido y almacenamiento local. El sistema operativo gestiona los archivos que eliges abrir o compartir. MorseCQ no vende ni comunica datos personales a terceros. La aplicación no incluye SDK de publicidad ni de análisis.\n\nRegistros de diagnóstico\nMorseCQ guarda en tu dispositivo registros de errores sin datos sensibles. Contienen los tipos de error y las ubicaciones en el código. Se omiten los mensajes de excepción y el contenido de aprendizaje. Puedes copiarlos desde «Yo → Acerca de» con «Copiar diagnóstico local».\n\nMenores\nMorseCQ no se dirige específicamente a menores ni recopila deliberadamente datos personales de nadie.\n\nCambios\nSi la política cambia de forma sustancial, se volverá a pedir el consentimiento en las versiones de producción para Android.\n\nFecha de entrada en vigor: 13 de noviembre de 2026';
+
+  @override
+  String get termsOfUseText => 'Estas condiciones se aplican al uso de MorseCQ.\n\nFinalidad\nMorseCQ es una herramienta para aprender código morse sin conexión. La aplicación no ofrece servicios de mensajería, cuentas ni servicios en la nube.\n\nTus datos\nLos datos de aprendizaje se guardan en tu dispositivo. Conserva una copia de los archivos que quieras mantener. Borrar los datos de aprendizaje o desinstalar la aplicación puede eliminar datos locales.\n\nLicencia\nMorseCQ es software libre bajo la licencia GPL-3.0. El código fuente está en «Yo → Acerca de».\n\nGarantía\nLa aplicación se proporciona tal cual, sin garantía.\n\nAyuda\nSi tienes preguntas, ve a «Yo → Privacidad y permisos → Soporte técnico».';
+
+  @override
+  String get personalInfoListText => 'MorseCQ no recopila datos personales. Guarda en tu dispositivo el progreso, los ajustes, los materiales importados y las grabaciones. En «Yo → Borrar los datos de aprendizaje» puedes eliminar tus datos de aprendizaje y las grabaciones que gestiona MorseCQ. Los ajustes de la aplicación se conservan.';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ no comparte datos personales con terceros. Usa Flutter y complementos de audio, selección de archivos, uso compartido. El sistema operativo gestiona los archivos que eliges. La aplicación no incluye SDK de publicidad ni de análisis.';
+
+  @override
+  String get permissionListText => 'Micrófono (RECORD_AUDIO)\nSe usa para descodificar código morse en directo en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube. MorseCQ no solicita otros permisos sensibles.';
 }

@@ -2651,10 +2651,7 @@ class SKo extends S {
   String get aboutTermsOfUse => '이용약관';
 
   @override
-  String get aboutSupport => '지원 및 문의';
-
-  @override
-  String get aboutLinkFailed => '링크를 열 수 없어 복사했습니다.';
+  String get aboutSupport => '기술 지원';
 
   @override
   String get offlineClearData => '학습 데이터 지우기';
@@ -3552,4 +3549,64 @@ class SKo extends S {
 
   @override
   String get learnSettingsSaveFailed => '훈련 설정을 저장할 수 없습니다. 다시 시도해 주세요.';
+
+  @override
+  String get accountSectionPrivacy => '개인정보 및 권한';
+
+  @override
+  String get accountPersonalInfoList => '수집하는 개인정보';
+
+  @override
+  String get accountThirdPartyShareList => '제3자 제공';
+
+  @override
+  String get accountPermissionList => '권한';
+
+  @override
+  String get technicalSupportText => '마이크\n듣기를 시작할 수 없다면 시스템 설정에서 MorseCQ에 마이크 권한이 있는지, 마이크를 사용할 수 있는지 확인하세요. 해독이 잘 되지 않으면 소리가 나는 곳을 마이크 가까이 옮겨 보세요.\n\n문제 보고\n기기, 운영체제, 알고 있는 경우 앱 버전, 문제를 재현하는 단계를 적어 두세요. 진단 정보를 함께 제공하려면 ‘내 정보 → 앱 정보’에서 ‘로컬 진단 정보 복사’를 선택하세요.';
+
+  @override
+  String get privacyConsentTitle => 'MorseCQ에 오신 것을 환영합니다';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ는 계정 없이 오프라인에서 작동합니다. 개인정보를 수집하거나 업로드하지 않습니다. 계속하기 전에 개인정보 처리방침과 이용약관을 확인해 주세요.';
+
+  @override
+  String get privacyConsentAccept => '동의하고 계속';
+
+  @override
+  String get privacyConsentDecline => '동의하지 않고 종료';
+
+  @override
+  String get privacyConsentSaving => '저장 중…';
+
+  @override
+  String get privacyConsentSaveFailed => '선택을 저장하지 못했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get privacyConsentStorageFailed => '기기의 저장 공간을 열 수 없습니다. 다시 시도해 주세요.';
+
+  @override
+  String get listenMicPurposeTitle => '마이크 접근';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ는 ‘듣기’ 화면에서 모스 부호를 해독하는 데만 마이크를 사용합니다. 오디오는 기기에서 처리되며 업로드되지 않습니다.';
+
+  @override
+  String get listenMicPurposeContinue => '계속';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ는 계정 없이 오프라인에서 사용하는 모스 부호 연습 앱입니다. 개인정보를 수집, 업로드 또는 공유하지 않습니다.\n\n마이크\n‘듣기’ 화면에서 실시간 해독을 시작할 때만 마이크 권한(RECORD_AUDIO)을 요청합니다. 오디오는 기기에서 처리되며 업로드되지 않습니다. 다른 기능은 이 권한 없이 사용할 수 있습니다.\n\n로컬 데이터\n학습 진도, 학습 자료, 가져온 녹음과 앱 설정은 기기에 저장됩니다. ‘내 정보 → 학습 데이터 지우기’에서 학습 데이터와 MorseCQ가 관리하는 녹음을 삭제할 수 있습니다. 앱 설정은 유지됩니다. 시스템 설정에 따라 Android 또는 iOS에서 학습 데이터와 설정을 백업할 수 있습니다.\n\n제3자 구성 요소 및 제공\nMorseCQ는 Flutter와 오디오, 파일 선택, 공유 및 로컬 저장용 플러그인을 사용합니다. 사용자가 열거나 공유하기로 선택한 파일는 운영체제에서 처리합니다. MorseCQ는 개인정보를 제3자에게 판매하거나 제공하지 않습니다. 광고 또는 분석용 SDK는 포함되어 있지 않습니다.\n\n진단 로그\nMorseCQ는 민감한 정보를 제외한 오류 로그를 기기에 저장합니다. 로그에는 오류 유형과 코드 위치가 포함됩니다. 예외 메시지와 학습 내용은 기록하지 않습니다. ‘나 → 정보’에서 ‘로컬 진단 정보 복사’를 선택해 직접 복사할 수 있습니다.\n\n아동\nMorseCQ는 아동을 주요 대상으로 하지 않으며 누구의 개인정보도 고의로 수집하지 않습니다.\n\n변경\n중요한 변경이 있는 경우 Android 배포 버전에서 다시 동의를 요청합니다.\n\n시행일: 2026년 11월 13일';
+
+  @override
+  String get termsOfUseText => '이 약관은 MorseCQ 이용에 적용됩니다.\n\n목적\nMorseCQ는 오프라인으로 모스 부호를 배우는 앱입니다. 메시지, 계정 또는 클라우드 서비스를 제공하지 않습니다.\n\n데이터\n학습 데이터는 기기에 저장됩니다. 필요한 파일은 직접 백업해 주세요. 학습 데이터를 지우거나 앱을 삭제하면 기기의 데이터가 삭제될 수 있습니다.\n\n라이선스\nMorseCQ는 GPL-3.0 라이선스를 따르는 자유 소프트웨어입니다. 소스 코드는 ‘내 정보 → 앱 정보’에서 확인할 수 있습니다.\n\n보증\n앱은 현 상태로 제공되며 어떠한 보증도 제공하지 않습니다.\n\n도움말\n궁금한 점이 있으면 ‘내 정보 → 개인정보 및 권한 → 기술 지원’를 이용해 주세요.';
+
+  @override
+  String get personalInfoListText => 'MorseCQ는 개인정보를 수집하지 않습니다. 학습 진도, 앱 설정, 가져온 학습 자료와 녹음은 기기에 저장됩니다. ‘내 정보 → 학습 데이터 지우기’에서 학습 데이터와 MorseCQ가 관리하는 녹음을 삭제할 수 있습니다. 앱 설정은 유지됩니다.';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ는 개인정보를 제3자에게 제공하지 않습니다. Flutter와 오디오, 파일 선택, 공유용 플러그인을 사용합니다. 사용자가 선택한 파일은 운영체제에서 처리합니다. 광고 또는 분석용 SDK는 포함되어 있지 않습니다.';
+
+  @override
+  String get permissionListText => '마이크(RECORD_AUDIO)\n‘듣기’ 화면에서 실시간으로 모스 부호를 해독하는 데 사용합니다. 오디오는 기기에서 처리되며 업로드되지 않습니다. MorseCQ는 다른 민감한 권한을 요청하지 않습니다.';
 }

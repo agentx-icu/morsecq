@@ -20,6 +20,19 @@ Predictive back is enabled (`android:enableOnBackInvokedCallback="true"`); Andro
 
 See the [build guide](../operations/BUILD_AND_DEPLOY.md) and [validation record](../VALIDATION.md).
 
+### Privacy consent and in-app policy (release Android)
+
+Release Android builds ask users to agree to the privacy policy and terms of
+use before the app opens. The app stores the accepted version under
+`privacy.consent` in Android's no-backup directory. A new installation
+asks for consent even when system backup restores preferences. A material
+policy change also prompts for consent again. In Me >
+Privacy and permissions, users can read the privacy policy, terms of use,
+personal-information and third-party-sharing lists, permission details, and
+technical support guidance.
+The Listen screen explains why it needs the microphone before requesting
+access. Users can use the rest of the app if they decline.
+
 ## Submission answers and compatibility surfaces (2026-10-22)
 
 These are source-based draft answers for the owner to enter and verify in the
@@ -28,7 +41,7 @@ store consoles, not evidence of an accepted submission.
 | Question | Current product answer |
 | --- | --- |
 | App Store privacy / Play Data safety | No developer collection, sharing, tracking, advertising or analytics. Learning, recordings and redacted diagnostics remain on-device. User-requested exports and OS backup are explicit/system-owned paths. |
-| Microphone | Optional live Morse decoding and local recording; no audio upload. |
+| Microphone | Optional live Morse decoding on the device. The app does not upload microphone audio. |
 | Accounts / purchases / UGC service | None. No account deletion or server moderation flow applies. |
 | Age-rating content flags | No violence, sexual content, gambling, alcohol/drugs, advertising, unrestricted in-app web browsing or user-to-user communication. Complete each store's current questionnaire; do not infer a store age label from this list. |
 | iOS binary on Apple silicon Mac | Do not offer the compatibility binary; ship the separately tested native macOS application. Owner must deselect compatibility availability in App Store Connect. |
