@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -99,6 +100,30 @@ void main() {
     expect(c.name, 'a.wav');
   });
 
+  test('a second import cannot overwrite the first staged recording', () async {
+    final started = Completer<void>();
+    final finish = Completer<void>();
+    final importing = c.importRecording(
+      PickedRecording(
+        name: 'first.wav',
+        read: () async* {
+          started.complete();
+          await finish.future;
+          yield cwWav('SOS');
+        },
+      ),
+    );
+    await started.future;
+    final acceptedSecond = await c.importRecording(
+      PickedRecording(name: 'second.wav', bytes: cwWav('E')),
+    );
+    finish.complete();
+    expect(acceptedSecond, isFalse);
+    expect(await importing, isTrue);
+    expect(c.name, 'first.wav');
+    await waveform();
+  });
+
   test('decodes a selection; changing it invalidates the result', () async {
     await c.importRecording(
       PickedRecording(name: 'a.wav', bytes: cwWav('SOS TEST')),
@@ -120,6 +145,19 @@ void main() {
     await running;
     expect(c.result, isNull);
     expect(c.decoding, isFalse);
+  });
+
+  test('a recording read failure clears the decode progress', () async {
+    await c.importRecording(
+      PickedRecording(name: 'a.wav', bytes: cwWav('SOS TEST')),
+    );
+    await waveform();
+    await closeReader(c.reader);
+    await expectLater(c.decode(), completes);
+    expect(c.decoding, isFalse);
+    expect(c.progress, isNull);
+    expect(c.failure, WorkbenchFailure.io);
+    expect(c.result, isNull);
   });
 
   test('plays the selection as a mono WAV clip, optionally looping', () async {

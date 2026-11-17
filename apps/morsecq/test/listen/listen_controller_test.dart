@@ -65,6 +65,48 @@ void main() {
     expect(controller.text.trim(), 'SOS');
   });
 
+  for (final endCapture in ['stop', 'end', 'error']) {
+    test('$endCapture finishes the current capture before restart', () async {
+      if (endCapture == 'error') _captureDebugPrint();
+      final source = FakePcmSource();
+      final controller = ListenController(
+        source: source,
+        settings: const ListenSettings(autoTune: false),
+      );
+      addTearDown(controller.dispose);
+      await controller.start();
+      final first = SyntheticMorse(
+        tail: Duration.zero,
+        rampMs: 0,
+      ).renderText('E');
+      for (final chunk in SyntheticMorse.toByteChunks(first, 960)) {
+        source.push(chunk);
+      }
+      expect(controller.meter.value.toneOn, isTrue);
+
+      switch (endCapture) {
+        case 'stop':
+          await controller.stop();
+        case 'end':
+          await source.endStream();
+        case 'error':
+          source.failStream(StateError('capture ended'));
+      }
+      expect(controller.text.trim(), 'E');
+      expect(controller.meter.value.toneOn, isFalse);
+
+      await controller.start();
+      final next = SyntheticMorse(
+        leadIn: const Duration(milliseconds: 30),
+        rampMs: 0,
+      ).renderText('E');
+      for (final chunk in SyntheticMorse.toByteChunks(next, 960)) {
+        source.push(chunk);
+      }
+      expect(controller.text.trim(), 'E E');
+    });
+  }
+
   test('permission denied does not start the stream', () async {
     final source = FakePcmSource(permissionGranted: false);
     final controller = ListenController(source: source);

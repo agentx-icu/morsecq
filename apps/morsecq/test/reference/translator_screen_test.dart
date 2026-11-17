@@ -125,6 +125,22 @@ void main() {
       expect(find.byKey(TextToMorseView.codebookKey), findsNothing);
     });
 
+    testWidgets('clearing the input stops playback of the previous text', (
+      tester,
+    ) async {
+      final fake = await _pump(tester);
+      await tester.enterText(find.byKey(TextToMorseView.inputKey), 'HELLO');
+      await tester.pump();
+      await tester.tap(find.byKey(TextToMorseView.playKey));
+      await tester.pump();
+      expect(fake.sink.isOn, isTrue);
+
+      await tester.enterText(find.byKey(TextToMorseView.inputKey), '');
+      await tester.pump();
+      expect(fake.sink.isOn, isFalse);
+      expect(find.text(en.referenceStop), findsNothing);
+    });
+
     testWidgets('play keys the injected player and highlights progress', (tester) async {
       final fake = await _pump(tester);
       await tester.enterText(find.byKey(TextToMorseView.inputKey), 'EE');
@@ -180,6 +196,13 @@ void main() {
   });
 
   group('Morse -> Text', () {
+    testWidgets('pasted tabs and newlines separate characters', (tester) async {
+      await _pump(tester, mode: TranslatorMode.morseToText);
+      await tester.enterText(find.byKey(MorseToTextView.inputKey), '.\n-\t.');
+      await tester.pump();
+      expect(find.text('ETE'), findsOneWidget);
+    });
+
     testWidgets('typed pattern decodes to text', (tester) async {
       await _pump(tester, mode: TranslatorMode.morseToText);
       await tester.enterText(find.byKey(MorseToTextView.inputKey), '.- -...');

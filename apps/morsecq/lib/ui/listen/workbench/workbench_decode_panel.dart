@@ -79,6 +79,14 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
     }
   }
 
+  Future<void> _decode() async {
+    if (!await _c.decode() && mounted) {
+      ScaffoldMessenger.maybeOf(
+        context,
+      )?.showSnackBar(SnackBar(content: Text(context.s.workbenchErrorIo)));
+    }
+  }
+
   Future<void> _submit() async {
     final result = _c.result;
     if (result == null || _score != null) return;
@@ -169,7 +177,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         else
           FilledButton.icon(
             key: const ValueKey('workbench-decode'),
-            onPressed: _c.end > _c.start ? () => unawaited(_c.decode()) : null,
+            onPressed: !_c.busy && _c.end > _c.start ? _decode : null,
             icon: const Icon(Icons.graphic_eq),
             label: Text(s.workbenchDecode),
             style: FilledButton.styleFrom(

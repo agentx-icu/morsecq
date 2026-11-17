@@ -5,7 +5,10 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
+import '../../../training/kept_recordings.dart';
+import '../../../training/training_controller.dart';
 import 'recording_files.dart';
 
 /// Why an import or open failed; the UI localises each.
@@ -49,6 +52,7 @@ class WorkbenchController extends ChangeNotifier {
   double? _progress;
   SegmentDecodeResult? _result;
   bool _playing = false;
+  bool _preparingPlayback = false;
   bool _loop = false;
   bool _busy = false;
   bool _disposed = false;
@@ -76,6 +80,7 @@ class WorkbenchController extends ChangeNotifier {
   double? get progress => _progress;
   SegmentDecodeResult? get result => _result;
   bool get playing => _playing;
+  bool get preparingPlayback => _preparingPlayback;
   bool get loop => _loop;
   bool get busy => _busy;
   WorkbenchFailure? get failure => _failure;
@@ -86,15 +91,47 @@ class WorkbenchController extends ChangeNotifier {
 
   /// Imports [picked]; on failure the open recording stays as it was.
   Future<bool> importRecording(PickedRecording picked) => _guard(() async {
-    final reader = await library.importTo(
-      picked,
-      beforeReplace: () async {
-        await stopPlayback();
-        _cancelDecode();
-        await closeReader(_reader);
-        _reader = null;
-      },
-    );
+    final previous = _reader;
+    final previousFile = _file;
+    final WavPcmReader reader;
+    try {
+      reader = await library.importTo(
+        picked,
+        beforeReplace: () async {
+          if (_disposed) throw StateError('workbench closed');
+          await stopPlayback();
+          if (_disposed) throw StateError('workbench closed');
+          _cancelDecode();
+          if (previousFile == RecordingLibrary.workingFile) {
+            _waveGen++;
+            await closeReader(previous);
+            _reader = null;
+          }
+          if (_disposed) throw StateError('workbench closed');
+        },
+      );
+    } on Object {
+      if (!_disposed && previous != null && _reader == null) {
+        try {
+          final reopened = await library.open(previousFile);
+          if (_disposed) {
+            await closeReader(reopened);
+          } else {
+            _reader = reopened;
+            if (_waveform == null) unawaited(_buildWaveform(reopened));
+          }
+        } on Object {
+          // The existing file could no longer be opened either.
+        }
+      }
+      rethrow;
+    }
+    if (_disposed) {
+      await closeReader(reader);
+      return;
+    }
+    _waveGen++;
+    await closeReader(_reader);
     if (_disposed) {
       await closeReader(reader);
       return;
@@ -117,9 +154,15 @@ class WorkbenchController extends ChangeNotifier {
       await closeReader(reader);
       return;
     }
-    await stopPlayback();
-    _cancelDecode();
-    await closeReader(_reader);
+    try {
+      await stopPlayback();
+      _cancelDecode();
+      _waveGen++;
+      await closeReader(_reader);
+    } on Object {
+      await closeReader(reader);
+      rethrow;
+    }
     if (_disposed) {
       await closeReader(reader);
       return;
@@ -133,8 +176,35 @@ class WorkbenchController extends ChangeNotifier {
     }
   });
 
+  Future<bool> relinkRecording(PickedRecording picked, String file) =>
+      _guard(() async {
+        final reader = await library.importTo(
+          picked,
+          relativePath: file,
+          beforeReplace: () async {
+            if (_disposed) throw StateError('workbench closed');
+          },
+        );
+        await closeReader(reader);
+      });
+
+  Future<bool> deleteSaved(
+    TrainingController training,
+    AudioMaterial material,
+  ) => _guard(() async {
+    final stillUsed = await training.deleteAudioMaterial(material.id);
+    if (stillUsed) return;
+    final file = material.file;
+    await KeptRecordings(library.root).release(file);
+    // An open recording remains usable. The next workbench sweeps it
+    // unless it is saved as another selection before then.
+    if (file != _file && file != RecordingLibrary.workingFile) {
+      await library.delete(file);
+    }
+  });
+
   Future<bool> _guard(Future<void> Function() body) async {
-    if (_disposed) return false;
+    if (_disposed || _busy) return false;
     _busy = true;
     _failure = null;
     _wavError = null;
@@ -171,11 +241,20 @@ class WorkbenchController extends ChangeNotifier {
 
   Future<void> _buildWaveform(WavPcmReader reader) async {
     final gen = ++_waveGen;
-    final envelope = await WaveformEnvelope.build(
-      reader,
-      math.max(1, math.min(waveformBuckets, reader.info.frameCount)),
-      isCancelled: () => _disposed || gen != _waveGen,
-    );
+    final WaveformEnvelope? envelope;
+    try {
+      envelope = await WaveformEnvelope.build(
+        reader,
+        math.max(1, math.min(waveformBuckets, reader.info.frameCount)),
+        isCancelled: () => _disposed || gen != _waveGen,
+      );
+    } on Object {
+      if (!_disposed && gen == _waveGen) {
+        _failure = WorkbenchFailure.io;
+        notifyListeners();
+      }
+      return;
+    }
     if (_disposed || gen != _waveGen || envelope == null) return;
     _waveform = envelope;
     notifyListeners();
@@ -207,8 +286,7 @@ class WorkbenchController extends ChangeNotifier {
   void _invalidate() {
     _cancelDecode();
     // Playback of the old selection or tuning is stale too.
-    if (_playing) unawaited(stopPlayback());
-    _playGen++;
+    if (_playing || _preparingPlayback) unawaited(stopPlayback());
     _result = null;
     notifyListeners();
   }
@@ -221,34 +299,45 @@ class WorkbenchController extends ChangeNotifier {
 
   /// Decodes the selection. A cancel (or a selection/tuning change) stops
   /// every later update of this run.
-  Future<void> decode() async {
+  Future<bool> decode() async {
     final reader = _reader;
-    if (reader == null || _end <= _start) return;
+    if (_disposed || _busy || reader == null || _end <= _start) return true;
     _cancelDecode();
     final token = DecodeCancelToken();
     _token = token;
     _result = null;
+    _failure = null;
     _progress = 0;
     notifyListeners();
-    final result = await decodeSegment(
-      reader,
-      startFrame: _start,
-      endFrame: _end,
-      autoTune: _autoTune,
-      manualToneHz: _manualHz,
-      cancel: token,
-      onProgress: (p) {
-        if (identical(_token, token) && !_disposed) {
-          _progress = p;
-          notifyListeners();
-        }
-      },
-    );
-    if (_disposed || !identical(_token, token) || token.isCancelled) return;
-    _token = null;
-    _progress = null;
-    _result = result;
-    notifyListeners();
+    bool isCurrent() => !_disposed && identical(_token, token);
+    try {
+      final result = await decodeSegment(
+        reader,
+        startFrame: _start,
+        endFrame: _end,
+        autoTune: _autoTune,
+        manualToneHz: _manualHz,
+        cancel: token,
+        onProgress: (p) {
+          if (isCurrent()) {
+            _progress = p;
+            notifyListeners();
+          }
+        },
+      );
+      if (isCurrent()) _result = result;
+      return true;
+    } on Object {
+      if (!isCurrent()) return true;
+      _failure = WorkbenchFailure.io;
+      return false;
+    } finally {
+      if (isCurrent()) {
+        _token = null;
+        _progress = null;
+        notifyListeners();
+      }
+    }
   }
 
   void cancelDecode() {
@@ -260,29 +349,55 @@ class WorkbenchController extends ChangeNotifier {
   /// play request still reading PCM must not start sound afterwards.
   int _playGen = 0;
 
-  Future<void> togglePlay() async {
-    if (_playing) {
+  Future<bool> togglePlay() async {
+    if (_disposed || _busy) return true;
+    if (_playing || _preparingPlayback) {
       await stopPlayback();
-      return;
+      return true;
     }
     final reader = _reader;
-    if (reader == null || _end <= _start) return;
+    if (reader == null || _end <= _start) return true;
     final gen = ++_playGen;
     final frames = math.min(_end - _start, reader.info.frameAt(maxPlay));
-    final mono = await reader.readMono(_start, frames);
-    if (_disposed || gen != _playGen || !identical(reader, _reader)) return;
-    await player.play(
-      monoWav(mono, reader.info.sampleRate),
-      length: reader.info.durationOf(frames),
-      loop: _loop,
-    );
+    bool isCurrent() => !_disposed && gen == _playGen;
+    _preparingPlayback = true;
+    notifyListeners();
+    try {
+      final mono = await reader.readMono(_start, frames);
+      if (!isCurrent()) return true;
+      await player.play(
+        monoWav(mono, reader.info.sampleRate),
+        length: reader.info.durationOf(mono.length),
+        loop: _loop,
+      );
+      return true;
+    } on Object {
+      if (!isCurrent()) return true;
+      await stopPlayback();
+      return false;
+    } finally {
+      if (isCurrent()) {
+        _preparingPlayback = false;
+        _playing = player.isPlaying;
+        notifyListeners();
+      }
+    }
   }
 
   /// Background / leaving: stop sound (also one still being prepared);
   /// resuming is up to the learner.
-  Future<void> stopPlayback() {
+  Future<void> stopPlayback() async {
     _playGen++;
-    return player.stop();
+    _preparingPlayback = false;
+    try {
+      await player.stop();
+    } on Object {
+      // The backend may already be unavailable.
+    }
+    if (!_disposed) {
+      _playing = player.isPlaying;
+      notifyListeners();
+    }
   }
 
   /// PCM16 mono WAV bytes of [samples] (-1..1) at [sampleRate].
@@ -322,7 +437,7 @@ class WorkbenchController extends ChangeNotifier {
     _playGen++;
     _cancelDecode();
     unawaited(_playerSub?.cancel());
-    unawaited(player.stop());
+    unawaited(stopPlayback());
     unawaited(closeReader(_reader));
     super.dispose();
   }

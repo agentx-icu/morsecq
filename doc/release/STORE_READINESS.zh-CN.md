@@ -30,7 +30,7 @@ Windows 会话结束、Linux SIGTERM 和断电恢复仍需独立 OS/设备证据
 | Linux 直接下载 / Ubuntu24.04 基线 / x86_64 | DEB/RPM/tar 已有；检查 ELF machine 与媒体/托盘依赖，无发行版仓库批准 | 选定支持发行版/桌面会话及签名/更新信任；干净系统安装、麦克风/托盘、升级/卸载。能生成 RPM 不等于兼容所有发行版。 |
 | Flathub / Snap Store | 均未选定，未生成 manifest/snap/listing | 所有者决定 runtime、confinement、portal/interface、权利和更新测试。Flathub 当前 manifest、提交及评审交互需人类处理，已知 AI 材料需披露；本项目 PR 不是 Flathub 提交。Snap stable 需合格 confinement 与真实 interface 授权。 |
 | 华为 AppGallery / 中国大陆 Android APK | 未选定，详细公开审核文档未读到 | 所有者核对当前账号、APK 专属指引、资质/备案适用性、隐私标签及后台要求；HarmonyOS/快应用不是同一目标。 |
-| 小米 / 中国大陆 Android APK | 未选定，已读公开上架要求 | 当前指引包含首启隐私同意/拒绝，以及与主体一致的开发者/联系/隐私材料。本离线应用当前刻意无接受门槛；选定渠道并确认设计后才加入该流程。 |
+| 小米 / 中国大陆 Android APK | 未选定，已读公开上架要求 | 当前指引包含首启隐私同意/拒绝，以及与主体一致的开发者/联系/隐私材料。Android 正式版首启可选择同意或拒绝，并提供应用内隐私政策与使用条款入口。选定渠道后仍须核对发布主体、联系信息和政策。 |
 | OPPO / 中国大陆 Android APK | 未选定，公共文档需 JavaScript | 所有者取得迁移后的指引，核对主体、资质、隐私、审核访问与地区；Play 通过不能替代。 |
 | F-Droid 官方仓库 / Android APK | 2026-11-12 已准备[商店资料与候选源码构建配方](F_DROID.zh-CN.md)，元数据检查和 24 个编解码库源码构建通过；所有者选择延期提交 | 重查三个月/例外条件，发布已审核的上游元数据和版本，再完成官方 Linux 构建/扫描、运行和签名检查后创建收录 MR。尚未提交或发布。 |
 | WinGet、Homebrew Cask、发行版仓库 | 未选定额外路径 | 各自核对源码/依赖许可、identity、签名、recipe/hash 和安装更新；本次不生成提交。 |

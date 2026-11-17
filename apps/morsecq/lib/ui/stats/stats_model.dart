@@ -104,11 +104,8 @@ final class StatsSnapshot {
       }
     }
 
-    final windowStart = math.max(0, progress.history.length - trendWindow);
-    final window = progress.history
-        .sublist(windowStart)
-        .where(countsAsCopying)
-        .toList();
+    final copying = progress.history.where(countsAsCopying).toList();
+    final window = copying.sublist(math.max(0, copying.length - trendWindow));
     final trend = <TrendPoint>[
       for (var i = 0; i < window.length; i++)
         TrendPoint(

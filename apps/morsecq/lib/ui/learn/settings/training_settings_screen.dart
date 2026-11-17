@@ -13,6 +13,7 @@ import '../../common/app_bar_title.dart';
 import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import 'settings_slider_tile.dart';
 import '../../common/wrapping_choice_chip.dart';
 
@@ -66,7 +67,6 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
 
   /// Daily goal while its slider is dragged; written on release.
   int? _goalDraft;
-
   int _draftRevision = 0;
 
   TrainerSettings get _t => _draft.trainer;
@@ -299,11 +299,15 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
             max: 500,
             divisions: 19,
             label: s.learnCharsCount(goal),
-            // Shown live while dragging, written once on release.
             onChanged: (v) => setState(() => _goalDraft = v.round()),
-            onChangeEnd: (v) {
+            onChangeEnd: (v) async {
               setState(() => _goalDraft = null);
-              unawaited(widget.controller.setDailyGoal(v.round()));
+              try {
+                await widget.controller.setDailyGoal(v.round());
+              } on Object {
+                if (!context.mounted) return;
+                showProgressSaveFailed(context, widget.controller);
+              }
             },
           ),
         ),

@@ -423,7 +423,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         training.controller.progress.listeningAttempts.single.assisted,
-        isTrue,
+        isFalse,
       );
     },
   );

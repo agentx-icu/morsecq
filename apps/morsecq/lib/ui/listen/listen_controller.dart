@@ -229,7 +229,7 @@ final class ListenController extends ChangeNotifier {
     }
     if (_disposed) return;
     if (_status == ListenStatus.listening || _status == ListenStatus.starting) {
-      _decoder.commitPending();
+      if (isListening) _finishCapture();
       _stoppedInBackground = fromBackground;
       _setStatus(ListenStatus.idle);
     }
@@ -255,7 +255,7 @@ final class ListenController extends ChangeNotifier {
   void _onStreamDone() {
     if (_disposed || _pcmSub == null) return;
     _pcmSub = null;
-    _decoder.commitPending();
+    _finishCapture();
     _setStatus(ListenStatus.idle);
   }
 
@@ -278,9 +278,20 @@ final class ListenController extends ChangeNotifier {
       final sub = _pcmSub;
       _pcmSub = null;
       unawaited(sub?.cancel());
+      if (sub != null) _finishCapture();
       unawaited(_source.stop().catchError((Object _) {}));
     }
     _setStatus(ListenStatus.failed);
+  }
+
+  void _finishCapture() {
+    _decoder.endOfInput();
+    _decoder.commitPending();
+    _replaceDecoder();
+    if (_history.isNotEmpty && !_history.endsWith(' ')) _history += ' ';
+    _shownHz = frequencyHz;
+    _shownLocked = false;
+    meter.value = const ListenMeter();
   }
 
   // ---------------------------------------------------------------------------
@@ -312,15 +323,19 @@ final class ListenController extends ChangeNotifier {
     _settings = next;
     if (rebuild) {
       _decoder.commitPending();
-      _history = text;
-      _eventSub?.cancel().ignore();
-      _decoder.dispose();
-      _decoder = _buildDecoder();
+      _replaceDecoder();
     } else {
       _decoder.autoTune = next.autoTune;
       if (!next.autoTune) _decoder.manualFrequencyHz = next.manualHz;
     }
     notifyListeners();
+  }
+
+  void _replaceDecoder() {
+    _history = text;
+    _eventSub?.cancel().ignore();
+    _decoder.dispose();
+    _decoder = _buildDecoder();
   }
 
   AudioMorseDecoder _buildDecoder() {

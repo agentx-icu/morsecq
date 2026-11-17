@@ -71,16 +71,20 @@ extension QsoPractice on TrainingCore {
 
   /// The draft in [json]; throws when the app could not resume it. Shared
   /// with the learning backup checks.
-  static QsoDraft decodeDraft(Map<String, Object?> json) => QsoDraft(
-    session: QsoSession.fromJson(json['session']! as Map<String, Object?>),
-    pendingText: json['pendingText'] as String? ?? '',
-    pendingId: json['pendingId'] as String?,
-    typedReply: json['typedReply'] as bool? ?? false,
-    pendingWasTyped:
-        json['pendingWasTyped'] as bool? ??
-        (json['typedReply'] as bool? ?? false),
-    active: _activeOf(json),
-  );
+  static QsoDraft decodeDraft(Map<String, Object?> json) {
+    final pendingText = json['pendingText'] as String? ?? '';
+    final typedReply = json['typedReply'] as bool? ?? false;
+    return QsoDraft(
+      session: QsoSession.fromJson(json['session']! as Map<String, Object?>),
+      pendingText: pendingText,
+      pendingId: json['pendingId'] as String?,
+      typedReply: typedReply,
+      pendingWasTyped:
+          json['pendingWasTyped'] as bool? ??
+          (typedReply && pendingText.trim().isNotEmpty),
+      active: _activeOf(json),
+    );
+  }
 
   /// A parked finished QSO; throws when [recoverFinishedQso] could not
   /// credit it. Shared with the learning backup checks.

@@ -184,9 +184,40 @@ void main() {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     },
   );
+  testWidgets('a new background save starts while the old task is ending', (
+    tester,
+  ) async {
+    final ending = Completer<void>();
+    final background = _RecordingBackgroundTask(firstEnd: ending.future);
+    final locale = LocaleController(InMemoryKeyValueStore());
+    var saves = 0;
+    final services = AppServices(
+      locale: locale,
+      backgroundTasks: background,
+      flush: () async => saves++,
+    )..start();
+    addTearDown(locale.dispose);
+    addTearDown(services.dispose);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(saves, 1);
+    expect(background.ended, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(saves, 2);
+    expect(background.started, 2);
+    ending.complete();
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+  });
 }
 
 final class _RecordingBackgroundTask implements BackgroundTaskApi {
+  _RecordingBackgroundTask({this.firstEnd});
+
+  final Future<void>? firstEnd;
   var started = 0;
   var ended = 0;
   @override
@@ -194,6 +225,7 @@ final class _RecordingBackgroundTask implements BackgroundTaskApi {
   @override
   Future<void> end(int token) async {
     ended++;
+    if (token == 1) await firstEnd;
   }
 }
 

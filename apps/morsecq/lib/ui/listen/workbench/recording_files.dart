@@ -68,20 +68,27 @@ final class FileByteSource implements ByteSource {
 
   static Future<FileByteSource> open(File file) async {
     final raf = await file.open();
-    return FileByteSource._(raf, await raf.length());
+    try {
+      return FileByteSource._(raf, await raf.length());
+    } on Object {
+      await raf.close();
+      rethrow;
+    }
   }
 
   final RandomAccessFile _file;
   Future<void> _tail = Future<void>.value();
-  bool _closed = false;
+  Future<void>? _closing;
 
   @override
   final int length;
 
   @override
   Future<Uint8List> read(int offset, int count) {
+    if (_closing != null) {
+      return Future.error(StateError('recording closed'));
+    }
     final done = _tail.then((_) async {
-      if (_closed) throw StateError('recording closed');
       final n = count.clamp(0, length - offset.clamp(0, length));
       await _file.setPosition(offset);
       return _file.read(n);
@@ -90,12 +97,7 @@ final class FileByteSource implements ByteSource {
     return done;
   }
 
-  Future<void> close() async {
-    await _tail;
-    if (_closed) return;
-    _closed = true;
-    await _file.close();
-  }
+  Future<void> close() => _closing ??= _tail.then((_) => _file.close());
 }
 
 /// Managed recordings stored in the local learning profile under
@@ -169,7 +171,8 @@ final class RecordingLibrary {
     }
     final target = fileFor(relativePath);
     await target.parent.create(recursive: true);
-    final staged = File('${target.path}.importing');
+    final staging = await target.parent.createTemp('.importing-');
+    final staged = File(p.join(staging.path, 'recording.wav'));
     try {
       final path = picked.path;
       if (path != null) {
@@ -189,13 +192,16 @@ final class RecordingLibrary {
       } finally {
         await probe.close();
       }
-    } on Object {
-      if (await staged.exists()) await staged.delete();
-      rethrow;
+      await beforeReplace?.call();
+      await staged.rename(target.path);
+      return await open(relativePath);
+    } finally {
+      try {
+        await staging.delete(recursive: true);
+      } on FileSystemException {
+        // Cleanup must not mask the import result.
+      }
     }
-    await beforeReplace?.call();
-    await staged.rename(target.path);
-    return open(relativePath);
   }
 
   /// Streams into [target], refusing to write past the size limit.

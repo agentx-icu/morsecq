@@ -36,7 +36,63 @@ final class _ControlledSettingsStore implements TrainingSettingsStore {
   Future<void> clear() async {}
 }
 
+final class _GoalProgressStore implements TrainerStore {
+  TrainerProgress? saved;
+  bool fail = true;
+
+  @override
+  Future<TrainerProgress?> load() async => saved;
+
+  @override
+  Future<void> save(TrainerProgress progress) async {
+    if (fail) throw StateError('simulated disk full');
+    saved = progress;
+  }
+
+  @override
+  Future<void> clear() async => saved = null;
+}
+
 void main() {
+  testWidgets('daily goal persistence failure offers a retry', (tester) async {
+    tester.view.physicalSize = const Size(430, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final store = _GoalProgressStore();
+    final controller = TrainingController(
+      progressStore: store,
+      settingsStore: InMemoryTrainingSettingsStore(),
+    );
+    await controller.load();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      l10nApp(
+        home: TrainingSettingsScreen(
+          controller: controller,
+          playback: FakeLearnPlaybackFactory(),
+          hapticAvailability: () async => false,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final slider = tester.widget<Slider>(
+      find.byWidgetPredicate((widget) => widget is Slider && widget.max == 500),
+    );
+    final errors = <Object>[];
+    runZonedGuarded(() => slider.onChangeEnd!(125), (error, _) {
+      errors.add(error);
+    });
+    await tester.pumpAndSettle();
+    expect(errors, isEmpty);
+    expect(controller.dailyGoal, 125);
+    expect(store.saved, isNull);
+    expect(find.text(en.learnProgressSaveFailed), findsOneWidget);
+    store.fail = false;
+    await tester.tap(find.text(en.actionRetry));
+    await tester.pumpAndSettle();
+    expect(store.saved?.dailyGoalChars, 125);
+  });
+
   testWidgets('an older failed save does not replace the newer draft', (
     tester,
   ) async {
