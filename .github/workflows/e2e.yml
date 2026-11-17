@@ -192,7 +192,8 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.pull_request.labels.*.name, 'ci:e2e')
     timeout-minutes: 75
-    runs-on: macos-26
+    # The arm64 pool repeatedly stalled after building the first simulator app.
+    runs-on: macos-26-intel
     steps:
       - uses: actions/checkout@v4
 
