@@ -6,9 +6,9 @@
 
 `tool/test_pyramid.sh --level gates|unit|widget|e2e|all` 从根目录运行。gates 包含所有包/应用与工具的零问题分析、复杂度、分层及本地化检查；unit 验证 Morse 核心、训练、DSP、音频 I/O 与无线电工具，以及仓库工具自身的测试（`dart test tool/test`）；widget 验证本地学习、键控、参考、录音、统计和设置；e2e 在真实桌面或设备上启动应用、重新打开本地持久化、验证原生脑内听抄音频与进阶学习持久化、完整首日学习路径并遍历十二个截图场景。
 
-默认安装必须无需账号立即打开学习，只有学习/参考/我的三个目标。确认清除学习数据时，先保存待写入内容并释放当前控制器，再删除学习文件并重建空白学习状态。生命周期暂停和桌面退出必须等待本地持久化。
+新安装无需账号即可进入学习，应用只提供学习、参考和我三个入口。Android 发布版须先同意隐私政策。`privacy_walk_test.dart` 从首启界面点击隐私政策和使用条款，同意后用磁盘数据重启，再逐一打开“我”页面下的隐私与支持入口。确认清除学习数据时，先保存待写入内容并释放当前控制器，再删除学习文件并重建空白学习状态。生命周期暂停和桌面退出必须等待本地持久化。
 
-E2E：`bash tool/test_pyramid.sh --level e2e --device macos`。截图：`bash tool/screenshots/capture.sh --platforms macos --locales en,zh`。CI 的 E2E 工作流通过手动运行或 PR 标签 `ci:e2e` 启用，经 `tool/ci/run_integration_tests.sh` 在 macOS、Linux、Windows 运行器、iPhone 模拟器和 Android 模拟器（API 34）上运行全部集成测试：每个文件启动一次应用，失败的文件重试一次并留下警告注释。没有后端开关或原生聊天测试。
+E2E：`bash tool/test_pyramid.sh --level e2e --device macos`。截图：`bash tool/screenshots/capture.sh --platforms macos --locales en,zh`。本地 E2E 命令和 CI 共用 `tool/ci/run_integration_tests.sh`，自动发现全部 `integration_test/*_test.dart` 文件。每个文件启动一次应用，失败后重试一次，并留下警告注释。可通过手动运行或 PR 标签 `ci:e2e` 启用 CI，在 macOS、Linux、Windows、iPhone 模拟器和 Android 模拟器（API 34）上执行。
 
 Layout CI 在每次 push 和 pull request 时运行 `apps/morsecq/test/layout/`。`layout_sweep_test.dart` 覆盖所有界面、应用外壳（每个导航目的地）以及从“我”打开的页面；`layout_overlays_test.dart` 覆盖对话框、底部面板、菜单、下拉列表、Snackbar、错误状态和练习结果。每个场景都会实时调整窗口，经过带安全区的设备配置（iPhone SE 和刘海屏手机的竖屏 / 横屏、手势导航的 Android 手机、iPad 竖屏 / 横屏、无安全区的桌面最小窗口和完整桌面，以及在有可聚焦输入框时弹出软键盘的手机），字号为 1.0、1.3、2.0、3.1（iOS 最大辅助字号）；界面场景另加一种非线性缩放，而整个应用的场景（应用外壳、外观、按键以及整个应用内的对话框）只使用平台的线性字号，因为应用自身的 MaterialApp 只读取它。界面场景还会以 iOS 字体排版和纸张风格再跑一遍。出现以下任一情况即失败：溢出；可见文字被省略号截断；文字被布局缩小到 12 px 以下；可见文字落在状态栏、刘海、Home 指示条或键盘下（顶部安全区在滚动视图位于顶端时检查，底部在末端时检查）；滚动到底后仍被悬浮按钮遮住的文字；悬浮按钮的文字超出按钮；标题栏标题超出标题栏；或调整窗口后场景状态丢失。测试框架用自带的样例自检（`harness checks`）。它需要真实字体（测试字体的方块字形会让拉丁文字宽得多）：传入 `--dart-define=MORSECQ_MATRIX_FONT=<NotoSansCJK-Regular.ttc>`、`MORSECQ_MATRIX_MONO_FONT=<NotoSansMono-Regular.ttf>` 和 `MORSECQ_MATRIX_SERIF_FONT=<NotoSerifCJK-Regular.ttc>`；未传入时跳过。真实平台上的旋转由 `integration_test/rotation_test.dart` 覆盖（仅 iOS / Android，桌面跳过）：通过系统旋转屏幕，并检查当前标签页、已输入文字、输入焦点和进行中的练习都被保留。
 

@@ -22,11 +22,15 @@ Future<void> _pump(
   FakePcmSource source, {
   ListenPreferences? preferences,
   Locale locale = const Locale('en'),
+  Size size = const Size(390, 844),
+  double textScale = 1,
 }) async {
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
   await tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: S.localizationsDelegates,
@@ -187,6 +191,47 @@ void main() {
     expect(source.startCalls, 0);
     expect(source.permissionRequests, [false]);
     expect(find.text(en.listenStart), findsOneWidget);
+  });
+
+  testWidgets('microphone choices remain tappable in a short window', (
+    tester,
+  ) async {
+    final source = FakePcmSource(permissionGranted: false);
+    await _pump(tester, source, size: const Size(568, 320), textScale: 3.1);
+    final listen = find.byType(FloatingActionButton);
+    final dialog = find.byType(AlertDialog);
+    Future<void> tapDialogAction(String label) async {
+      final action = find.descendant(of: dialog, matching: find.text(label));
+      final scrollable = find.descendant(
+        of: dialog,
+        matching: find.byType(Scrollable),
+      );
+      await tester.scrollUntilVisible(action, 100, scrollable: scrollable);
+      await tester.pumpAndSettle();
+      expect(action.hitTestable(), findsOneWidget);
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+    }
+
+    expect(listen.hitTestable(), findsOneWidget);
+    await tester.tap(listen);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false]);
+    await tapDialogAction(en.actionCancel);
+    expect(dialog, findsNothing);
+    expect(source.startCalls, 0);
+
+    await tester.tap(listen);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false, false]);
+    await tapDialogAction(en.listenMicPurposeContinue);
+    expect(dialog, findsNothing);
+    expect(source.permissionRequests, [false, false, true]);
+    expect(source.startCalls, 0);
+    expect(find.text(en.listenPermissionDenied), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('repeated starts share one microphone purpose prompt', (
