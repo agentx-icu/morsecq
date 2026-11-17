@@ -7,8 +7,8 @@
 #           pins, UI literal guard
 #   unit    packages/*  — pure-Dart Morse engines; tool/test — gate tools
 #   widget  apps/morsecq/test — hermetic widget tests (local learning, no host)
-#   e2e     apps/morsecq/integration_test on a real device/desktop window:
-#           the real main() click-through + the screenshot scene walk
+#   e2e     every apps/morsecq/integration_test/*_test.dart on a real device
+#           or desktop window, using the same runner as CI
 #   all     every level in that order (default)
 #
 # E2E needs a device: --device, otherwise the host desktop.
@@ -80,13 +80,7 @@ level_e2e() {
   local device="$DEVICE"
   [[ -z "$device" ]] && device="$(host_device)"
   [[ -z "$device" ]] && { echo "e2e: no device (use --device)" >&2; return 1; }
-  run_step "e2e launch [$device]" bash -c "cd apps/morsecq && flutter test integration_test/app_launch_test.dart -d '$device'"
-  run_step "e2e persistence [$device]" bash -c "cd apps/morsecq && flutter test integration_test/persistence_test.dart -d '$device'"
-  run_step "e2e storage contract [$device]" bash -c "cd apps/morsecq && flutter test integration_test/storage_contract_test.dart -d '$device'"
-  run_step "e2e app storage lifecycle [$device]" bash -c "cd apps/morsecq && flutter test integration_test/app_storage_lifecycle_test.dart -d '$device'"
-  run_step "e2e advanced [$device]" bash -c "cd apps/morsecq && flutter test integration_test/advanced_learning_test.dart -d '$device'"
-  run_step "e2e first day [$device]" bash -c "cd apps/morsecq && flutter test integration_test/first_day_learning_test.dart -d '$device'"
-  run_step "e2e scenes [$device]" bash -c "cd apps/morsecq && flutter test integration_test/screenshots_test.dart -d '$device'"
+  run_step "e2e [$device]" bash tool/ci/run_integration_tests.sh -d "$device"
 }
 
 case "$LEVEL" in

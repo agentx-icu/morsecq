@@ -82,6 +82,9 @@ jobs:
       - name: Screenshot import regression tests
         run: python3 tool/screenshots/capture_import_test.py
 
+      - name: Local E2E discovery regression tests
+        run: python3 -m unittest discover -s tool/ci -p test_pyramid_test.py
+
       - name: macOS installer component regression tests
         run: python3 tool/ci/macos_components_test.py
 
