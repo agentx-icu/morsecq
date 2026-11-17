@@ -64,6 +64,7 @@ class _ListeningComprehensionScreenState
   bool _playing = false;
   bool _heard = false;
   bool _started = false;
+  bool _playedMark = false;
   bool _replayed = false;
   bool _revealed = false;
   bool _backgrounded = false;
@@ -160,6 +161,7 @@ class _ListeningComprehensionScreenState
     _playing = false;
     _heard = false;
     _started = false;
+    _playedMark = false;
     _replayed = false;
     _revealed = false;
     _saving = false;
@@ -169,6 +171,7 @@ class _ListeningComprehensionScreenState
 
   void _onPlayerEvent(PlayerEvent event) {
     if (!mounted) return;
+    if (event is PlayerElementStarted && event.element.on) _playedMark = true;
     if (event is PlayerStopped && event.error != null) {
       _failPlayback();
       return;
@@ -201,7 +204,7 @@ class _ListeningComprehensionScreenState
       return;
     }
     setState(() {
-      if (_started) _replayed = true;
+      if (_playedMark) _replayed = true;
       _started = true;
       _playing = true;
     });

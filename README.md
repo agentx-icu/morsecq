@@ -4,7 +4,7 @@
 
 MorseCQ is an account-free offline Morse code trainer. Open the app and start learning. For Morse chat, use [DitMesh](https://github.com/agentx-icu/ditmesh).
 
-Start by hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lessons advance through challenges using per-character evidence. Practice summaries distinguish assisted exercises from course mastery. Assessment, spaced review, simulated QSOs with readiness hints, learning materials, statistics, reference, translation, Chinese telegraph codes, microphone decoding, recorded-audio workbench and amateur-radio tools support continued practice. Touch and physical keyboards work across phone, tablet and desktop, with ten interface languages and five visual styles.
+Start by hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lessons advance through challenges using per-character evidence. Practice summaries distinguish assisted exercises from course mastery. Assessment, spaced review, simulated QSOs with readiness hints, learning materials, statistics, reference, translation, Chinese telegraph codes, microphone decoding, recorded-audio workbench and amateur-radio tools support continued practice. Touch and physical keyboards work across phone, tablet and desktop, with ten interface languages and four visual styles.
 
 Use **Learn / Reference / Me** to navigate. Microphone access is requested when you start live audio decoding; file selection and sharing let you work with your learning materials.
 

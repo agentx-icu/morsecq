@@ -62,7 +62,18 @@ class _WorkbenchWaveformState extends State<WorkbenchWaveform> {
   int _frameAtSeconds(String text) {
     final info = _c.info!;
     final v = double.tryParse(text.replaceAll(',', '.')) ?? 0;
-    return info.frameAt(Duration(microseconds: (v * 1e6).round()));
+    final seconds = v.clamp(0, info.frameCount / info.sampleRate);
+    return (seconds * info.sampleRate).round();
+  }
+
+  void _commitTime(String text, {required bool start}) {
+    final frame = _frameAtSeconds(text);
+    if (start) {
+      _c.setSelection(frame, _c.end);
+    } else {
+      _c.setSelection(_c.start, frame);
+    }
+    _sync();
   }
 
   int _frameAtX(double x, double width) {
@@ -132,13 +143,13 @@ class _WorkbenchWaveformState extends State<WorkbenchWaveform> {
             _timeField(
               s.workbenchStart,
               _startField,
-              (t) => _c.setSelection(_frameAtSeconds(t), _c.end),
+              (t) => _commitTime(t, start: true),
               const ValueKey('workbench-start'),
             ),
             _timeField(
               s.workbenchEnd,
               _endField,
-              (t) => _c.setSelection(_c.start, _frameAtSeconds(t)),
+              (t) => _commitTime(t, start: false),
               const ValueKey('workbench-end'),
             ),
             TextButton(

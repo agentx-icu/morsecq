@@ -155,6 +155,26 @@ void main() {
     },
   );
 
+  testWidgets('retry after partial output is assisted', (tester) async {
+    final api = _SoloudOutput()..failFadeAt = 2;
+    final playback = _SidetonePlayback(api);
+    final training = await _open(tester, playback);
+    await _complete(tester, playback);
+    expect(find.text(en.comprehensionAudioFailed), findsOneWidget);
+    await tester.runAsync(() async => Future<void>.delayed(Duration.zero));
+    await tester.ensureVisible(find.text(en.actionRetry));
+    await tester.tap(find.text(en.actionRetry));
+    await tester.pumpAndSettle();
+    await _complete(tester, playback);
+    await tester.enterText(find.byType(TextField), 'WRONG');
+    await tester.tap(find.byKey(const ValueKey('comprehension-submit')));
+    await tester.pumpAndSettle();
+    expect(
+      training.controller.progress.listeningAttempts.single.assisted,
+      isTrue,
+    );
+  });
+
   testWidgets(
     'failed replay revokes prior completion until a full audible retry',
     (tester) async {

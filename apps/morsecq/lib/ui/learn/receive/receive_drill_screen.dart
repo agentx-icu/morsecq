@@ -76,6 +76,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       ? null
       : widget.conditionsPlayback ?? ConditionsPlayback();
   StreamSubscription<bool>? _conditionsSub;
+  int _conditionsRun = 0;
 
   /// Set right before we stop the conditions audio ourselves, so that stop
   /// does not count as having heard the round.
@@ -202,6 +203,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     final conditions = _conditions;
     if (conditions != null) {
       if (_conditionsBlocked) return;
+      final run = ++_conditionsRun;
       setState(() {
         _playing = true;
         _conditionsFailed = false;
@@ -209,11 +211,13 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       conditions
           .play(_session.currentDrill.text, _session.currentConditions!)
           .then((started) {
-            // Dropped by a stop during rendering: no event will reset it.
-            if (!started && mounted) setState(() => _playing = false);
+            // Rendering or loading was cancelled before a clip started.
+            if (!started && mounted && run == _conditionsRun) {
+              setState(() => _playing = false);
+            }
           })
           .catchError((Object _) {
-            if (mounted) {
+            if (mounted && run == _conditionsRun) {
               setState(() {
                 _playing = false;
                 _conditionsFailed = true;

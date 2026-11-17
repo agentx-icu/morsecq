@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
@@ -7,6 +9,7 @@ import 'helpers/test_core.dart';
 final class _FailingStore implements TrainerStore {
   final delegate = InMemoryTrainerStore(TrainerProgress(currentLesson: 30));
   bool fail = true;
+  Future<void>? saveGate;
 
   @override
   Future<TrainerProgress?> load() => delegate.load();
@@ -14,6 +17,7 @@ final class _FailingStore implements TrainerStore {
   Future<void> clear() => delegate.clear();
   @override
   Future<void> save(TrainerProgress progress) async {
+    await saveGate;
     if (fail) throw StateError('progress disk unavailable');
     await delegate.save(progress);
   }
@@ -52,6 +56,39 @@ Future<TrainingCore> _controller(
 const _doc = '${QsoPractice.finishedPrefix}shortexchange_88';
 
 void main() {
+  test(
+    'a duplicate waits for pending progress before reporting saved',
+    () async {
+      final gate = Completer<void>();
+      final store = _FailingStore()..saveGate = gate.future;
+      final c = await _controller(
+        store,
+        InMemoryTrainingDocStore(),
+        TestClock(),
+      );
+      addTearDown(c.dispose);
+      final session = _finished();
+      final first = c.recordQso(session, Duration.zero);
+      var duplicateReturned = false;
+      final duplicate = c.recordQso(session, Duration.zero).then((value) {
+        duplicateReturned = true;
+        return value;
+      });
+      await Future<void>.delayed(Duration.zero);
+      final returnedBeforeWrite = duplicateReturned;
+      gate.complete();
+      expect((await first).saved, isFalse);
+      final result = await duplicate;
+      expect(returnedBeforeWrite, isFalse);
+      expect(result.duplicate, isTrue);
+      expect(result.saved, isFalse);
+
+      store.fail = false;
+      expect((await c.recordQso(session, Duration.zero)).saved, isTrue);
+      expect((await store.load())!.history, hasLength(1));
+    },
+  );
+
   test('failed save parks the original completion timestamp', () async {
     final store = _FailingStore();
     final docs = InMemoryTrainingDocStore();

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/kept_recordings.dart';
 import '../../../training/training_controller.dart';
 import '../../common/feedback.dart';
 import '../../common/field_label.dart';
@@ -92,7 +91,7 @@ Future<void> showWorkbenchLibrary(
   required WorkbenchController controller,
   required TrainingController training,
   required RecordingPicker? picker,
-  required VoidCallback onFailure,
+  required ValueChanged<WorkbenchController?> onFailure,
 }) => showModalBottomSheet<void>(
   context: context,
   useSafeArea: true,
@@ -117,7 +116,7 @@ class _LibrarySheet extends StatefulWidget {
   final WorkbenchController controller;
   final TrainingController training;
   final RecordingPicker? picker;
-  final VoidCallback onFailure;
+  final ValueChanged<WorkbenchController?> onFailure;
 
   @override
   State<_LibrarySheet> createState() => _LibrarySheetState();
@@ -125,11 +124,24 @@ class _LibrarySheet extends StatefulWidget {
 
 class _LibrarySheetState extends State<_LibrarySheet> {
   List<(AudioMaterial, bool)>? _items;
+  bool _busy = false;
 
   @override
   void initState() {
     super.initState();
-    unawaited(_reload());
+    unawaited(_run(_reload));
+  }
+
+  Future<void> _run(Future<void> Function() action) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await action();
+    } on Object {
+      if (mounted) widget.onFailure(null);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _reload() async {
@@ -140,49 +152,41 @@ class _LibrarySheetState extends State<_LibrarySheet> {
     if (mounted) setState(() => _items = items);
   }
 
-  Future<void> _open(AudioMaterial m) async {
+  Future<void> _open(AudioMaterial m) => _run(() async {
     final ok = await widget.controller.openSaved(
       m.file,
       m.title,
       selection: (m.start, m.end),
     );
-    if (!mounted) return;
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
     Navigator.of(context).pop();
-    if (!ok) widget.onFailure();
-  }
+    if (!ok) widget.onFailure(widget.controller);
+  });
 
-  Future<void> _relink(AudioMaterial m) async {
+  Future<void> _relink(AudioMaterial m) => _run(() async {
     final picked =
         await (widget.picker ??
                 PlatformRecordingPicker(dialogTitle: context.s.workbenchRelink))
             .pick();
-    if (picked == null) return;
-    try {
-      final reader = await widget.controller.library.importTo(
-        picked,
-        relativePath: m.file,
-      );
-      await closeReader(reader);
-    } on Object {
-      widget.onFailure();
+    if (picked == null ||
+        !mounted ||
+        ModalRoute.of(context)?.isCurrent != true) {
       return;
     }
-    await _reload();
-  }
-
-  Future<void> _delete(AudioMaterial m) async {
-    final stillUsed = await widget.training.deleteAudioMaterial(m.id);
-    // The recording that is open stays on disk: saving another selection
-    // of it must not point at a deleted file. It is pruned the next time
-    // the workbench opens if nothing refers to it any more.
-    final open = m.file == widget.controller.file;
-    final library = widget.controller.library;
-    if (!stillUsed) await KeptRecordings(library.root).release(m.file);
-    if (!stillUsed && !open && m.file != RecordingLibrary.workingFile) {
-      await library.delete(m.file);
+    if (await widget.controller.relinkRecording(picked, m.file)) {
+      if (mounted) await _reload();
+    } else if (mounted) {
+      widget.onFailure(widget.controller);
     }
-    await _reload();
-  }
+  });
+
+  Future<void> _delete(AudioMaterial m) => _run(() async {
+    final ok = await widget.controller.deleteSaved(widget.training, m);
+    if (mounted) {
+      if (!ok) widget.onFailure(widget.controller);
+      await _reload();
+    }
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +205,13 @@ class _LibrarySheetState extends State<_LibrarySheet> {
             ),
             const SizedBox(height: 8),
             if (items == null)
-              const Center(child: CircularProgressIndicator())
+              if (_busy)
+                const Center(child: CircularProgressIndicator())
+              else
+                TextButton(
+                  onPressed: () => _run(_reload),
+                  child: Text(s.actionRetry),
+                )
             else if (items.isEmpty)
               Text(s.workbenchLibraryEmpty)
             else
@@ -220,19 +230,19 @@ class _LibrarySheetState extends State<_LibrarySheet> {
                                     '${m.note.isEmpty ? '' : '\n${m.note}'}'
                               : s.workbenchMissing,
                         ),
-                        onTap: present ? () => unawaited(_open(m)) : null,
+                        onTap: present && !_busy ? () => _open(m) : null,
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             if (!present)
                               IconButton(
                                 tooltip: s.workbenchRelink,
-                                onPressed: () => unawaited(_relink(m)),
+                                onPressed: _busy ? null : () => _relink(m),
                                 icon: const Icon(Icons.link),
                               ),
                             IconButton(
                               tooltip: s.workbenchDelete,
-                              onPressed: () => unawaited(_delete(m)),
+                              onPressed: _busy ? null : () => _delete(m),
                               icon: const Icon(Icons.delete_outline),
                             ),
                           ],

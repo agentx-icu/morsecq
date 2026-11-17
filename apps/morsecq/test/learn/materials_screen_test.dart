@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_doc_store.dart';
 import 'package:morsecq/ui/learn/materials/material_file_gateway.dart';
 import 'package:morsecq/ui/learn/materials/materials_screen.dart';
@@ -51,6 +53,57 @@ Future<void> _menu(WidgetTester tester, String item) async {
   await tester.tap(find.text(item).last);
   await tester.pumpAndSettle();
 }
+
+final class _WritableDocs implements TrainingDocStore {
+  final _delegate = InMemoryTrainingDocStore();
+  bool fail = false;
+
+  @override
+  Future<Map<String, Object?>?> read(String name) => _delegate.read(name);
+
+  @override
+  Future<void> write(String name, Map<String, Object?> json) async {
+    if (fail) throw StateError('simulated disk full');
+    await _delegate.write(name, json);
+  }
+
+  @override
+  Future<void> delete(String name) => _delegate.delete(name);
+
+  @override
+  Future<List<String>> names() => _delegate.names();
+}
+
+final class _DelayedExport implements MaterialFileGateway {
+  final pending = Completer<bool>();
+  bool started = false;
+
+  @override
+  Future<PickedFile?> pick({required int maxBytes}) async => null;
+
+  @override
+  Future<bool> save(
+    Uint8List bytes, {
+    required String fileName,
+    required String mimeType,
+    Rect? shareOrigin,
+  }) {
+    started = true;
+    return pending.future;
+  }
+}
+
+Future<void> _createMaterial(TrainingController controller) =>
+    controller.upsertMaterial(
+      MaterialImport.create(
+        id: 'words',
+        title: 'Words',
+        kind: MaterialKind.text,
+        text: 'CQ',
+        analysis: MaterialImport.analyze('CQ', MaterialKind.text),
+        now: controller.now(),
+      ),
+    );
 
 void main() {
   testWidgets('the editor previews unsupported characters before saving', (
@@ -252,6 +305,75 @@ void main() {
     final (name, bytes) = gateway.saved.single;
     expect(name, 'Calls.txt');
     expect(utf8.decode(bytes), 'K1ABC\nDL2XY');
+  });
+
+  testWidgets('failed edits to individual materials keep the library intact', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final docs = _WritableDocs();
+    final controller = TrainingController(
+      progressStore: InMemoryTrainerStore(),
+      settingsStore: InMemoryTrainingSettingsStore(),
+      docs: docs,
+    );
+    await controller.load();
+    addTearDown(controller.dispose);
+    await _createMaterial(controller);
+    docs.fail = true;
+    await tester.pumpWidget(
+      l10nApp(
+        home: MaterialsScreen(
+          controller: controller,
+          playback: FakeLearnPlaybackFactory(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip(en.materialsFavorite));
+    await tester.pumpAndSettle();
+    expect(find.text(en.materialsSaveFailed), findsOneWidget);
+    expect((await controller.loadMaterials()).single.favorite, isFalse);
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+
+    await _menu(tester, en.materialsDelete);
+    await tester.tap(find.widgetWithText(FilledButton, en.materialsDelete));
+    await tester.pumpAndSettle();
+    expect(find.text(en.materialsSaveFailed), findsOneWidget);
+    expect((await controller.loadMaterials()).single.id, 'words');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('closing the library while exporting releases its UI', (
+    tester,
+  ) async {
+    final t = await TestTraining.create();
+    addTearDown(t.controller.dispose);
+    await _createMaterial(t.controller);
+    final gateway = _DelayedExport();
+    await tester.pumpWidget(
+      Provider<MaterialFileGateway>.value(
+        value: gateway,
+        child: l10nApp(
+          home: MaterialsScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(en.materialsExportJson));
+    await tester.pumpAndSettle();
+    expect(gateway.started, isTrue);
+    await tester.pumpWidget(const SizedBox.shrink());
+    gateway.pending.complete(true);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 
   test('materials live under the training directory (in backups)', () {

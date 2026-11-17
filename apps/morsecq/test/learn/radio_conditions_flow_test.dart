@@ -17,6 +17,29 @@ import 'helpers/test_controller.dart';
 /// F11 in the app: a receive session under radio conditions plays rendered
 /// audio only, keeps speeds, records its scenario, and earns activity only.
 void main() {
+  test('a native load error after Stop is treated as cancellation', () async {
+    final clip = _LoadingClipPlayer();
+    final playback = ConditionsPlayback(
+      player: clip,
+      render: (_, _) async => (Uint8List(0), Duration.zero),
+    );
+    addTearDown(playback.dispose);
+    const scenario = RadioScenario(
+      preset: RadioPreset.light,
+      seed: 1,
+      characterWpm: 20,
+      effectiveWpm: 15,
+      toneHz: 650,
+    );
+    final pending = playback.play('K', scenario);
+    await Future<void>.delayed(Duration.zero);
+    expect(clip.loadCalls, 1);
+    await playback.stop();
+    final result = expectLater(pending, completion(false));
+    clip.firstLoad.completeError(StateError('load cancelled'));
+    await result;
+  });
+
   test('a conditions session keeps speeds, never counts toward the lesson', () async {
     final t = await TestTraining.create(settings: kShortSettings, seed: 3);
     addTearDown(t.controller.dispose);
@@ -241,6 +264,58 @@ void main() {
       expect(session.isAssisted, isFalse);
     });
 
+    testWidgets('a native load cancelled in the background leaves Replay enabled', (
+      tester,
+    ) async {
+      final t = await TestTraining.create(settings: kShortSettings);
+      addTearDown(t.controller.dispose);
+      final clip = _LoadingClipPlayer();
+      final session = t.controller.startReceiveSession(
+        ReceiveDrillKind.groups,
+        preset: RadioPreset.light,
+      );
+      await tester.pumpWidget(
+        l10nApp(
+          home: ReceiveDrillScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+            session: session,
+            conditionsPlayback: ConditionsPlayback(
+              player: clip,
+              render: (_, _) async => (Uint8List(0), const Duration(seconds: 1)),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(clip.loadCalls, 1);
+
+      for (final state in [
+        AppLifecycleState.inactive,
+        AppLifecycleState.hidden,
+        AppLifecycleState.paused,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      clip.firstLoad.complete();
+      for (final state in [
+        AppLifecycleState.hidden,
+        AppLifecycleState.inactive,
+        AppLifecycleState.resumed,
+      ]) {
+        tester.binding.handleAppLifecycleStateChanged(state);
+      }
+      await tester.pumpAndSettle();
+
+      expect(clip.isPlaying, isFalse);
+      expect(find.text(en.learnReady), findsOneWidget);
+      await tester.tap(find.text(en.learnReplay));
+      await tester.pumpAndSettle();
+      expect(clip.isPlaying, isTrue);
+      expect(clip.loadCalls, 2);
+      expect(session.isAssisted, isFalse);
+    });
+
     testWidgets('dispose releases the audio', (tester) async {
       final (_, _, _, clip) = await pump(tester);
       await tester.pumpWidget(const SizedBox());
@@ -248,6 +323,41 @@ void main() {
       expect(clip.disposed, isTrue);
     });
   });
+}
+
+final class _LoadingClipPlayer implements ClipPlayer {
+  final _delegate = FakeClipPlayer();
+  final firstLoad = Completer<void>();
+  bool _firstLoadCancelled = false;
+  int loadCalls = 0;
+
+  @override
+  bool get isPlaying => _delegate.isPlaying;
+
+  @override
+  Stream<bool> get playing => _delegate.playing;
+
+  @override
+  Future<void> play(
+    Uint8List wav, {
+    required Duration length,
+    bool loop = false,
+  }) async {
+    if (++loadCalls == 1) {
+      await firstLoad.future;
+      if (_firstLoadCancelled) return;
+    }
+    await _delegate.play(wav, length: length, loop: loop);
+  }
+
+  @override
+  Future<void> stop() {
+    _firstLoadCancelled = true;
+    return _delegate.stop();
+  }
+
+  @override
+  Future<void> dispose() => _delegate.dispose();
 }
 
 final class _FailingClipPlayer implements ClipPlayer {

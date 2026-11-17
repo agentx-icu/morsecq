@@ -21,7 +21,7 @@ class MorseToTextView extends StatefulWidget {
 
   /// Characters the pattern field accepts: marks, gaps, and the display /
   /// lookalike glyphs [PatternDecoder.normalize] understands.
-  static final RegExp allowedInput = RegExp(r'[.\-/ |_*·−•–—]');
+  static final RegExp allowedInput = RegExp(r'[.\-/\s|_*·−•–—]');
 
   @override
   State<MorseToTextView> createState() => _MorseToTextViewState();

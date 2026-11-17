@@ -122,6 +122,23 @@ void main() {
       expect(s.trend.last.summary.at, kNow);
     });
 
+    test('activity-only sessions do not displace copying trend points', () {
+      final copying = buildProgress(days: 3, withSendToday: true).history;
+      final activity = SessionSummary(
+        at: kNow,
+        totalChars: 3,
+        correctChars: 3,
+        source: ExerciseSource.qso,
+      );
+      final snapshot = StatsSnapshot.from(
+        TrainerProgress(history: [...copying, activity, activity]),
+        now: kNow,
+        trendWindow: 2,
+      );
+      expect(snapshot.trend.map((point) => point.summary), copying.skip(2));
+      expect(snapshot.trendHasBothKinds, isTrue);
+    });
+
     test('single-kind history draws one series', () {
       final s = StatsSnapshot.from(buildProgress(days: 2), now: kNow);
       expect(s.trendHasBothKinds, isFalse);

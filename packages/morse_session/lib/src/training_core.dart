@@ -361,8 +361,13 @@ abstract base class TrainingCore {
     );
     if (outcome.duplicate) {
       // Already credited in memory; "saved" only when it is on disk too.
-      final unsaved = _writeErrors.containsKey(_progressStore);
-      return outcome.withSaved(!unsaved || await retryProgressSave());
+      await _writes;
+      if (!_progress.hasCommitted(id)) return outcome.withSaved(false);
+      if (!_writeErrors.containsKey(_progressStore)) {
+        return outcome.withSaved(true);
+      }
+      final saved = !_closing && !_disposed && await retryProgressSave();
+      return outcome.withSaved(saved);
     }
     final saved = await _commitKeepingResult(
       mistakeNotebook == null

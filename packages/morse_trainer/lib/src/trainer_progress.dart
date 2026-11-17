@@ -322,10 +322,17 @@ final class TrainerProgress {
     final ids = <String>[...committedIds, id];
     // Evict the oldest ordinary ids. Ids of results that can be parked
     // across launches (prefix `qso_`, one per finished QSO) are never
-    // evicted, so a parked result can never be credited twice.
+    // evicted, so a parked result can never be credited twice. Always keep
+    // the id just committed, even if protected ids alone fill the budget.
     var excess = ids.length - maxCommittedIds;
     if (excess > 0) {
-      ids.removeWhere((x) => excess-- > 0 && !x.startsWith(protectedIdPrefix));
+      ids.removeWhere((x) {
+        if (excess <= 0 || x == id || x.startsWith(protectedIdPrefix)) {
+          return false;
+        }
+        excess--;
+        return true;
+      });
     }
     return ids;
   }

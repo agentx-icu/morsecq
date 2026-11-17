@@ -58,6 +58,31 @@
       "reason": "Cross-platform schema and accessibility changes are ported independently to each existing product baseline; remaining file differences retain MorseCQ training behavior and regression coverage."
     },
     {
+      "path": "packages/morse_io/lib/src/clip_player.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Serializes playback replacement and prevents a pending clip from starting after Stop."
+    },
+    {
+      "path": "packages/morse_io/lib/src/widgets/paddle_buttons.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Keeps a paddle held until all of its bound physical keys are released."
+    },
+    {
+      "path": "packages/morse_io/lib/src/widgets/straight_key_button.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Keeps the straight key held until all of its bound physical keys are released."
+    },
+    {
+      "path": "packages/morse_io/test/clip_player_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Regression coverage for cancelling clip playback during source replacement."
+    },
+    {
+      "path": "packages/morse_io/test/widgets_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Regression coverage for two physical keys bound to one action."
+    },
+    {
       "path": "packages/morse_trainer/README.md",
       "kind": "product",
       "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself, and documents the beginner-progression and advanced-learning modules DitMesh has not taken."
@@ -210,7 +235,7 @@
     {
       "path": "packages/morse_trainer/lib/src/trainer_progress.dart",
       "kind": "morsecq-ahead",
-      "reason": "Beginner progression (78fbbf8) and advanced learning (9b47bad) changes not taken by DitMesh."
+      "reason": "Beginner progression (78fbbf8), advanced learning (9b47bad), and committed-ID eviction fixes not taken by DitMesh."
     },
     {
       "path": "packages/morse_trainer/test/advanced_progress_test.dart",
@@ -220,7 +245,7 @@
     {
       "path": "packages/morse_trainer/test/exercise_record_test.dart",
       "kind": "product",
-      "reason": "Uses ExerciseSource.material where DitMesh uses ExerciseSource.chat (396a7c1)."
+      "reason": "Uses ExerciseSource.material where DitMesh uses ExerciseSource.chat (396a7c1), and covers committed-ID eviction with protected QSO IDs."
     },
     {
       "path": "packages/morse_trainer/test/goal_plan_test.dart",
@@ -454,7 +479,10 @@
       "morsecq": "127f9f2b00c64fade53b2861da4948452cc5d0b3d5c6e288aefaf10f5533fc54",
       "ditmesh": "31e85fc23003e49c9ad5a2342260dd9619854fc5b9482ac4adbd0bf99bdb4762"
     },
-    "packages/morse_io/lib/src/clip_player.dart": "e3868324a18ab853855b92c6fd6addb07da99d9c9229c30aa0357424241f3487",
+    "packages/morse_io/lib/src/clip_player.dart": {
+      "morsecq": "89f3073e2d668772815a36fe58c848a4e80b8a09b68767587378383b5ab2c03b",
+      "ditmesh": "e3868324a18ab853855b92c6fd6addb07da99d9c9229c30aa0357424241f3487"
+    },
     "packages/morse_io/lib/src/clock.dart": "8d9589be4c42b4398c8d70c92420c53bd0d9f001e821f36772c20037ae70f7d4",
     "packages/morse_io/lib/src/engine_leases.dart": "62b6a36dece255af506804f307eb0edc3b19b86eda660695a9f65953025ffa69",
     "packages/morse_io/lib/src/flash_sink.dart": "a58519ba02964efe529b9f5811db58f6c4be119380b22ae5bd3a6dba03fefd5e",
@@ -477,12 +505,22 @@
     "packages/morse_io/lib/src/testing/recording_sink.dart": "b09a1a04ca12f04ea8641e5dc19c7b58e3183411da6ab0bf00cd95679d0db084",
     "packages/morse_io/lib/src/wav_export.dart": "53ed861ebf7f2b40ce2d91f5e86b5cc3b2cec68a56e3994d940d101b27a526ed",
     "packages/morse_io/lib/src/widgets/flash_overlay.dart": "3796de04550b3d84f7bb5c91a0d084a29d9fe999dfe0f1b75b337afe845e756d",
-    "packages/morse_io/lib/src/widgets/paddle_buttons.dart": "65ab0cb32f6b9194de4ae7b61fc32cbe06bd990a7b3f3deaf3e4366486ffe497",
-    "packages/morse_io/lib/src/widgets/straight_key_button.dart": "afcb7beaf61deba65195ea8a29df074486fce50c7eb89196ecb5d6041933fecd",
+    "packages/morse_io/lib/src/widgets/paddle_buttons.dart": {
+      "morsecq": "afb1144e42eb9cebe013f04d427cb6a0e81c3794c0a394a6ae47f39b7affb40a",
+      "ditmesh": "65ab0cb32f6b9194de4ae7b61fc32cbe06bd990a7b3f3deaf3e4366486ffe497"
+    },
+    "packages/morse_io/lib/src/widgets/straight_key_button.dart": {
+      "morsecq": "23a1e0d5d0c59115c40604f7e8ade57de0a5a2df20ae9725e5b89b1f73b3a4fd",
+      "ditmesh": "afcb7beaf61deba65195ea8a29df074486fce50c7eb89196ecb5d6041933fecd"
+    },
     "packages/morse_io/lib/testing.dart": "a1f84b33bf51687ee6f21a9117050fd85dcd1a9ae369f54815d6e4d16d9d9891",
     "packages/morse_io/pubspec.yaml": "7af9b6d771cd5bf975184c605aa0a3d9cfdd8213a27fe88190420211782f2a84",
     "packages/morse_io/test/app_foreground_test.dart": "af6fb1fdf67efba04e6acaa31d818a6b0e0fc922b18e90b07a439e77b3739e0a",
     "packages/morse_io/test/audio_session_api_test.dart": "1ff84cba33cf7cdb7e11141bc1f9010f0e285dfbdd8070434e54abc920f81a32",
+    "packages/morse_io/test/clip_player_test.dart": {
+      "morsecq": "e837669dc2f2079240d68ec2f9ef7d14e7d0c654c166de7fc68fc60fe7f1dd05",
+      "ditmesh": null
+    },
     "packages/morse_io/test/engine_leases_test.dart": "5fd087838b43bc78d5de2f28d4d1eed4ec3d1f703a1b5679e5ec4d5551bee437",
     "packages/morse_io/test/flash_overlay_test.dart": "fd1f0a3b8f0135e65f9b9a7fd03d419900771cf1674cc1484c6c24e1059f6e57",
     "packages/morse_io/test/flash_sink_test.dart": "446a16fd9191e60d1fca013ede5a972462537728dc1cc77dd40396a4641418e4",
@@ -501,7 +539,10 @@
     "packages/morse_io/test/straight_key_test.dart": "472a535d982bc0aa3a6c129d8c5d2a7b79a6a1ce06567d97e63fe64dbdd9826f",
     "packages/morse_io/test/wav_export_test.dart": "08a5a862ce84e367ae2f5b567d071862e5917ccee8e32c3177c63b545b928829",
     "packages/morse_io/test/widget_insets_semantics_test.dart": "24f449fc7516737e8545b0d6284008bad57e9147c86237ea931041bca512a407",
-    "packages/morse_io/test/widgets_test.dart": "1c01d9a094407a58f4f53cd63fbd576f5ae5473f72d55ee0598fe4adc9a9c9be",
+    "packages/morse_io/test/widgets_test.dart": {
+      "morsecq": "ce771ac7080c03090fd7d1b61909da07dbabe1b0f9f1098b39d71683c1a24b09",
+      "ditmesh": "1c01d9a094407a58f4f53cd63fbd576f5ae5473f72d55ee0598fe4adc9a9c9be"
+    },
     "packages/morse_trainer/README.md": {
       "morsecq": "3aae1f5991493af41fa88fe8db7ce9e48b8177d411205af61d4f6945c4ee042c",
       "ditmesh": "90ba50b694f64adb9a7f916945a085508d67db49cfb70c97c3813d47730cb8ae"
@@ -640,7 +681,7 @@
       "ditmesh": "87fd905e36b09ebaf0f924ab71ca0b5b63c0d839617d333ce789dc4cd67cc2e1"
     },
     "packages/morse_trainer/lib/src/trainer_progress.dart": {
-      "morsecq": "df36b5306bd5ca2b8208efba0a12419882e3218e3a81e651699308ec34d6b6c8",
+      "morsecq": "ab9c28aa9367364056c8624a079e671f6d8f72ff915151da676ed93474ca5815",
       "ditmesh": "20d6695c66f5bbde4add11d67c4ea96961a84681abb98e912a052deef3bc17e3"
     },
     "packages/morse_trainer/lib/src/trainer_settings.dart": "d6b66a58ba0d7dd8e101d2ff95fea3cc68f54185b38e6ead359c3bc91155b201",
@@ -657,7 +698,7 @@
     "packages/morse_trainer/test/daily_plan_test.dart": "6cd01411594054be59697403727f797991a6ad585e72d9b42b22e9ba13de21de",
     "packages/morse_trainer/test/drills_test.dart": "613ffee361f0d1c30a2512be02a32f8568734611759a9e34eb1d714117d6e56e",
     "packages/morse_trainer/test/exercise_record_test.dart": {
-      "morsecq": "87f4adc70d866ce25aea43d10b41879e9652ecc3f4d3d79f84b74fcc7655d9a6",
+      "morsecq": "97b8db4de91f52e28a56f2f090f332e19ed4d160f404b9ca34eba64e0e492f32",
       "ditmesh": "241941edf0a6cc1a4ba9e7839de677c5fde430ab92c4e25fb1b544491746e55a"
     },
     "packages/morse_trainer/test/future_schema_test.dart": "1ebf2ffcb27b195cc5fabba22e960d546bbd91530e752c98661e409bace307ae",

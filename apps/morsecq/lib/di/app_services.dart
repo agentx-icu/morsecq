@@ -23,7 +23,7 @@ final class AppServices with WidgetsBindingObserver {
   final BackgroundTaskApi _background;
   static const _activation = MethodChannel('morsecq/desktop_activation');
   bool _started = false;
-  Future<void>? _flushing;
+  bool _flushing = false;
   bool _flushAgain = false;
   void start() {
     if (_started) return;
@@ -51,17 +51,15 @@ final class AppServices with WidgetsBindingObserver {
 
   // A request arriving during a save may follow newer writes that the running
   // barrier does not cover, so it schedules one more barrier.
-  Future<void> _flushInBackground() {
-    if (_flushing != null) {
+  Future<void> _flushInBackground() async {
+    if (_flushing) {
       _flushAgain = true;
-      return _flushing!;
+      return;
     }
-    return _flushing = _save().whenComplete(() => _flushing = null);
-  }
-
-  Future<void> _save() async {
-    final token = await _background.begin();
+    _flushing = true;
+    int? token;
     try {
+      token = await _background.begin();
       do {
         _flushAgain = false;
         try {
@@ -71,6 +69,9 @@ final class AppServices with WidgetsBindingObserver {
         }
       } while (_flushAgain);
     } finally {
+      // The save barrier has drained. A new lifecycle event needs its own
+      // grace period even if the platform is still acknowledging this end.
+      _flushing = false;
       if (token != null) await _background.end(token);
     }
   }

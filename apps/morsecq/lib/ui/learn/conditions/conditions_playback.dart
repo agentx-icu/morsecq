@@ -47,10 +47,15 @@ final class ConditionsPlayback with WidgetsBindingObserver {
   Future<bool> play(String text, RadioScenario scenario) async {
     if (_disposed) return false;
     final generation = ++_generation;
-    final (wav, length) = await _render(text, scenario);
-    if (_disposed || generation != _generation) return false;
-    await _player.play(wav, length: length);
-    return true;
+    try {
+      final (wav, length) = await _render(text, scenario);
+      if (generation != _generation) return false;
+      await _player.play(wav, length: length);
+    } on Object {
+      if (generation != _generation) return false;
+      rethrow;
+    }
+    return generation == _generation;
   }
 
   /// Renders on a background isolate: a long round is millions of samples.

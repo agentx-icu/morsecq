@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/ui/listen/workbench/recording_files.dart';
+import 'package:morsecq/ui/listen/workbench/workbench_controller.dart';
+import 'package:morsecq/ui/listen/workbench/workbench_library_sheet.dart';
 import 'package:morsecq/ui/listen/workbench/workbench_screen.dart';
 import 'package:path/path.dart' as p;
 
@@ -50,6 +53,11 @@ void main() {
     await waitForWorkbench(
       tester,
       find.byKey(const ValueKey('workbench-import-empty')),
+    );
+    await waitForWorkbenchCondition(
+      tester,
+      () => tester.widget<IconButton>(_libraryButton).onPressed != null,
+      description: 'enable the recording library',
     );
     return (t, picker, player);
   }
@@ -113,6 +121,69 @@ void main() {
     );
   });
 
+  testWidgets('a pending picker owns the import and library actions', (
+    tester,
+  ) async {
+    final (_, picker, _) = await pumpScreen(tester);
+    final pending = Completer<PickedRecording?>();
+    picker.onPick = () => pending.future;
+    final import = find.byKey(const ValueKey('workbench-import'));
+    await tester.tap(import);
+    await tester.pump();
+    expect(tester.widget<IconButton>(import).onPressed, isNull);
+    expect(tester.widget<IconButton>(_libraryButton).onPressed, isNull);
+    expect(picker.calls, 1);
+    pending.complete(null);
+    await tester.pumpAndSettle();
+    expect(tester.widget<IconButton>(import).onPressed, isNotNull);
+  });
+
+  testWidgets('a picker failure reports an error and allows retry', (
+    tester,
+  ) async {
+    final (_, picker, _) = await pumpScreen(tester);
+    picker.onPick = () async => throw StateError('native picker failed');
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    await waitForWorkbench(tester, find.text(en.workbenchErrorIo));
+    expect(tester.takeException(), isNull);
+    expect(
+      find.byKey(const ValueKey('workbench-import-empty')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('playback failure is shown and the clip can be retried', (
+    tester,
+  ) async {
+    final (_, _, player) = await pumpScreen(tester);
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    final play = find.byKey(const ValueKey('workbench-play'));
+    await waitForWorkbench(tester, play);
+    player.playError = StateError('output device gone');
+    await tester.tap(play);
+    await waitForWorkbench(tester, find.text(en.comprehensionAudioFailed));
+    expect(tester.takeException(), isNull);
+    player.playError = null;
+    await tester.tap(play);
+    await waitForWorkbench(tester, find.text(en.workbenchStop));
+    expect(player.plays, hasLength(1));
+  });
+
+  testWidgets('a large pasted selection time is clamped before conversion', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    final end = find.byKey(const ValueKey('workbench-end'));
+    await waitForWorkbench(tester, end);
+    final previous = tester.widget<TextField>(end).controller!.text;
+    await tester.enterText(end, '9' * 320);
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<TextField>(end).controller!.text, previous);
+  });
+
   testWidgets('a saved selection with missing media offers relink', (
     tester,
   ) async {
@@ -158,6 +229,51 @@ void main() {
       ),
       isTrue,
     );
+  });
+
+  testWidgets('a failed first library load can be retried in the sheet', (
+    tester,
+  ) async {
+    final controller = WorkbenchController(
+      library: RecordingLibrary(dataDir),
+      player: FakeClipPlayer(),
+    );
+    addTearDown(controller.dispose);
+    final training = TrainingController(
+      progressStore: InMemoryTrainerStore(),
+      settingsStore: InMemoryTrainingSettingsStore(),
+      docs: _UnreadableOnce(),
+    );
+    addTearDown(training.dispose);
+    var failures = 0;
+    const openKey = Key('open-library-fixture');
+    await tester.pumpWidget(
+      l10nApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              key: openKey,
+              onPressed: () => showWorkbenchLibrary(
+                context,
+                controller: controller,
+                training: training,
+                picker: null,
+                onFailure: (_) => failures++,
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byKey(openKey));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(failures, 1);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    await tester.tap(find.text(en.actionRetry));
+    await tester.pumpAndSettle();
+    expect(find.text(en.workbenchLibraryEmpty), findsOneWidget);
   });
 
   testWidgets('save a selection, then restore it from the list', (
@@ -210,4 +326,25 @@ void main() {
     await waitForWorkbench(tester, find.text(en.workbenchDecoderHidden));
     expect(tester.takeException(), isNull);
   });
+}
+
+final _libraryButton = find.widgetWithIcon(
+  IconButton,
+  Icons.library_music_outlined,
+);
+
+final class _UnreadableOnce implements TrainingDocStore {
+  bool _fail = true;
+
+  @override
+  Future<Map<String, Object?>?> read(String name) async {
+    if (_fail) {
+      _fail = false;
+      throw const FileSystemException('recording metadata unavailable');
+    }
+    return null;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

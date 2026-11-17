@@ -58,9 +58,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     text: widget.resumed?.typedReply == true ? widget.resumed!.pendingText : '',
   );
   late bool _typing = widget.resumed?.typedReply ?? false;
-  late bool _pendingWasTyped =
-      (widget.resumed?.pendingWasTyped ?? false) ||
-      (widget.resumed?.typedReply ?? false);
+  late bool _pendingWasTyped = widget.resumed?.pendingWasTyped ?? false;
   late final Duration _activeBefore = widget.resumed?.active ?? Duration.zero;
 
   /// A keyed but unsent reply restored from the draft, and its id.
