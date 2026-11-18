@@ -38,6 +38,11 @@
       "reason": "Names MorseCQ (and its workspace paths) where DitMesh names itself."
     },
     {
+      "path": "packages/morse_dsp/lib/src/wav_pcm_reader.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Validates the complete PCM subformat GUID and reads only the needed WAV format fields."
+    },
+    {
       "path": "packages/morse_dsp/test/audio_morse_decoder_test.dart",
       "kind": "product",
       "reason": "Test phrase is CQ DE MORSECQ instead of CQ DE DITMESH."
@@ -46,6 +51,16 @@
       "path": "packages/morse_dsp/test/envelope_gate_warmup_test.dart",
       "kind": "morsecq-ahead",
       "reason": "New coverage tests added in MorseCQ's test-coverage pass; not yet taken by DitMesh."
+    },
+    {
+      "path": "packages/morse_dsp/test/support/wav_bytes.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Provides a valid extensible PCM header for WAV reader regression tests."
+    },
+    {
+      "path": "packages/morse_dsp/test/wav_pcm_reader_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Covers malformed WAV format extensions and subformat validation."
     },
     {
       "path": "packages/morse_io/README.md",
@@ -105,12 +120,12 @@
     {
       "path": "packages/morse_trainer/lib/src/daily_plan.dart",
       "kind": "morsecq-ahead",
-      "reason": "Beginner progression (78fbbf8) and advanced learning (9b47bad) changes not taken by DitMesh."
+      "reason": "Contains MorseCQ's beginner and advanced learning changes and repairs duplicate step IDs in saved plans."
     },
     {
       "path": "packages/morse_trainer/lib/src/daily_plan_builder.dart",
       "kind": "morsecq-ahead",
-      "reason": "Beginner progression (78fbbf8) and advanced learning (9b47bad) changes not taken by DitMesh."
+      "reason": "Contains MorseCQ's beginner and advanced learning changes and allocates distinct step IDs during refreshes."
     },
     {
       "path": "packages/morse_trainer/lib/src/exercise.dart",
@@ -241,6 +256,11 @@
       "path": "packages/morse_trainer/test/advanced_progress_test.dart",
       "kind": "morsecq-ahead",
       "reason": "Advanced learning (9b47bad): goals, listening comprehension, mistake notebook, advanced progress; not taken by DitMesh."
+    },
+    {
+      "path": "packages/morse_trainer/test/daily_plan_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Covers stable daily-plan identities across refreshes and duplicate step IDs in legacy saves."
     },
     {
       "path": "packages/morse_trainer/test/exercise_record_test.dart",
@@ -447,7 +467,10 @@
     "packages/morse_dsp/lib/src/pcm.dart": "276eb305d03738de66ff53e9d158d3cf1cb2c5b648b74ebef70441442ff48632",
     "packages/morse_dsp/lib/src/synthetic_morse.dart": "136954e6196d14849dba5471c6898620a4826757894f4378975e07ce29417cc7",
     "packages/morse_dsp/lib/src/tone_finder.dart": "e9e720b70c9153618e832ba2f6778042ef6122c0d3ae9a4b896f59e50d76dd2e",
-    "packages/morse_dsp/lib/src/wav_pcm_reader.dart": "712e1cd2b39a5f5f482609f8fb962fc24a01fcceb98fb15071cb639bd543d7ae",
+    "packages/morse_dsp/lib/src/wav_pcm_reader.dart": {
+      "morsecq": "d8a58b5fd0ca22bbf6f296f3260b45cd334c70658760c56740e31202329cab4b",
+      "ditmesh": "712e1cd2b39a5f5f482609f8fb962fc24a01fcceb98fb15071cb639bd543d7ae"
+    },
     "packages/morse_dsp/lib/testing.dart": "f6967d81b31c27b4c6683176a9c225cee69f7b715d7fb53c35c38905a6986385",
     "packages/morse_dsp/pubspec.yaml": "f155e1b427e4d7bf6d7512409317cc22db7f08ad2ec1ae5072db028c6ed1ab10",
     "packages/morse_dsp/test/audio_decode_segment_test.dart": "06d10a424ae0cb63eef56bee3e4cc56a4181521a812e00c7e62024276d62cace",
@@ -462,9 +485,15 @@
     },
     "packages/morse_dsp/test/goertzel_test.dart": "7d64e8ba54708699cc4aa79c954bdd62a4fb1d97139ab0b805b64fc00ae82a6d",
     "packages/morse_dsp/test/pcm_test.dart": "14184a14c0f222658b58ea5b26bb0c02eab4d56957288c8fe36bea4f4db7c6e5",
-    "packages/morse_dsp/test/support/wav_bytes.dart": "d7a04355ace33007ff8b6e529e793ddb7d1d030f2f1d7a27e3772fb6589e352b",
+    "packages/morse_dsp/test/support/wav_bytes.dart": {
+      "morsecq": "4bcadb3d59e4a16ad1ac24b6111f4ec3e60d9fed4a4bf0ddb28949ede9fa0129",
+      "ditmesh": "d7a04355ace33007ff8b6e529e793ddb7d1d030f2f1d7a27e3772fb6589e352b"
+    },
     "packages/morse_dsp/test/tone_finder_test.dart": "dbde71c913333ff1df24743700f6f7839319d44b49ea4ba9afdb2df5b660c972",
-    "packages/morse_dsp/test/wav_pcm_reader_test.dart": "239e23883c654a47e945a214af708c2e2af43961013ed6bcff3a00a9fd7b2f3c",
+    "packages/morse_dsp/test/wav_pcm_reader_test.dart": {
+      "morsecq": "de7e7f1f3bd5880ddb019da4581c9ec236e74263d1859406ffcdba0476ca6dfd",
+      "ditmesh": "239e23883c654a47e945a214af708c2e2af43961013ed6bcff3a00a9fd7b2f3c"
+    },
     "packages/morse_io/README.md": {
       "morsecq": "e008ac8efd94912b69365b7038f2fe850732b4b39cf2e4d61edb0e05f11453b7",
       "ditmesh": "e9f72d3ec813398f402aea019d2a69ff5497961c2bf3cf2bd81c16fbe78f19d8"
@@ -567,11 +596,11 @@
     "packages/morse_trainer/lib/src/confusion_matrix.dart": "5e34206a9b0104a0e6ca34cc7733cb11edd93517189b32e3b97082ad393498ae",
     "packages/morse_trainer/lib/src/contest_drill.dart": "9f6a2503a30453f582f1988e2732fca473dcf913e4e10c52455edbcccc3a446b",
     "packages/morse_trainer/lib/src/daily_plan.dart": {
-      "morsecq": "80c947f2d9dd8b4c3f9992629b02b0b04af90800563d217134dd3b0547c32f89",
+      "morsecq": "9edb93ff8c79d92b468e7156925aa83257a05f32d968470dfd224f748c3b18f1",
       "ditmesh": "b6895318afc2a14f1313b3d374c117fcfbb15852572fc47312f92993ac05a3e0"
     },
     "packages/morse_trainer/lib/src/daily_plan_builder.dart": {
-      "morsecq": "e17a0a511a0289e1feea7e150178240e2ac786bb0776a6d7fa7e3e4bab740e95",
+      "morsecq": "b70e022579f29b5c139d2bd4430153c383aeb5babc3d68e2832649f848c32e0e",
       "ditmesh": "2220aa587d9b70f2bd18ddea0a72368c79536344e62f82fda384097799033b96"
     },
     "packages/morse_trainer/lib/src/drill.dart": "198433c7afa8f54b923d5c78fdd7d25ceb453f2b2a6b436961924d9b40e61307",
@@ -695,7 +724,10 @@
       "ditmesh": null
     },
     "packages/morse_trainer/test/char_weights_test.dart": "2d4818c83716208b03e1276c90c9086f13e2b0b9586ecafd6dd59d783dfde7ce",
-    "packages/morse_trainer/test/daily_plan_test.dart": "6cd01411594054be59697403727f797991a6ad585e72d9b42b22e9ba13de21de",
+    "packages/morse_trainer/test/daily_plan_test.dart": {
+      "morsecq": "9d5151c31f5bbe19ec41722b509e110333ecd879f22605148f7e5299eb0d515e",
+      "ditmesh": "6cd01411594054be59697403727f797991a6ad585e72d9b42b22e9ba13de21de"
+    },
     "packages/morse_trainer/test/drills_test.dart": "613ffee361f0d1c30a2512be02a32f8568734611759a9e34eb1d714117d6e56e",
     "packages/morse_trainer/test/exercise_record_test.dart": {
       "morsecq": "97b8db4de91f52e28a56f2f090f332e19ed4d160f404b9ca34eba64e0e492f32",

@@ -2515,6 +2515,9 @@ class SJa extends S {
   }
 
   @override
+  String get keysSaveFailed => 'キープロファイルの変更を保存できませんでした。もう一度お試しください。';
+
+  @override
   String get keysMissing => 'このキーヤーモードに必要なキーを設定してください（iambic では両方のパドル）。';
 
   @override

@@ -13,16 +13,37 @@ import 'package:provider/provider.dart';
 
 import '../learn/helpers/l10n.dart';
 
+final class _RetryStore implements KeyValueStore {
+  final saved = InMemoryKeyValueStore();
+  bool failNext = true;
+
+  @override
+  String? getString(String key) => saved.getString(key);
+
+  @override
+  Future<void> setString(String key, String value) async {
+    if (failNext) {
+      failNext = false;
+      throw StateError('profile storage unavailable');
+    }
+    await saved.setString(key, value);
+  }
+
+  @override
+  Future<void> remove(String key) => saved.remove(key);
+}
+
 void main() {
   late KeyProfiles profiles;
   late RecordingSink sink;
 
-  setUp(() {
-    profiles = KeyProfiles(InMemoryKeyValueStore());
+  Future<void> pumpEditor(
+    WidgetTester tester,
+    KeyProfile profile, {
+    KeyValueStore? store,
+  }) async {
+    profiles = KeyProfiles(store ?? InMemoryKeyValueStore());
     sink = RecordingSink(clock: FakeClock());
-  });
-
-  Future<void> pumpEditor(WidgetTester tester, KeyProfile profile) async {
     tester.view.physicalSize = const Size(600, 2000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -84,13 +105,35 @@ void main() {
     expect(find.textContaining('Tab'), findsWidgets);
     await capture(tester, KeyerAction.dah, LogicalKeyboardKey.bracketRight);
     await tester.tap(find.byKey(const Key('keys-save')));
-    // The save's store write, then the pop.
-    await tester.runAsync(() => profiles.flush());
     await tester.pumpAndSettle();
     expect(find.byType(KeyProfileEditorPage), findsNothing);
     expect(profiles.active.name, 'Vail');
     expect(profiles.active.dit, {LogicalKeyboardKey.bracketLeft});
     expect(profiles.active.dah, {LogicalKeyboardKey.bracketRight});
+  });
+
+  testWidgets('a failed profile save keeps the draft open for retry', (
+    tester,
+  ) async {
+    await pumpEditor(
+      tester,
+      KeyProfile.defaults.copyWith(id: 'retry'),
+      store: _RetryStore(),
+    );
+    await tester.enterText(find.byKey(const Key('keys-name')), 'Retry profile');
+    final save = find.byKey(const Key('keys-save'));
+
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('keys-error')), findsOneWidget);
+    expect(find.byType(KeyProfileEditorPage), findsOneWidget);
+    expect(profiles.active.isDefault, isTrue);
+
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(find.byType(KeyProfileEditorPage), findsNothing);
+    expect(profiles.active.name, 'Retry profile');
   });
 
   testWidgets('the test area keys with the draft bindings; repeats ignored; '

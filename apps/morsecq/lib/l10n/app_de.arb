@@ -710,6 +710,7 @@
   "keysReserved": "{key} ist vom System oder der App reserviert; wähle eine andere Taste.",
   "keysConflict": "{key} wird bereits für {action} verwendet.",
   "keysConflictSave": "Jede Taste darf nur eine Aufgabe haben: {keys} ist doppelt belegt.",
+  "keysSaveFailed": "Die Änderung am Tastenprofil konnte nicht gespeichert werden. Versuche es erneut.",
   "keysMissing": "Lege die Tasten fest, die dieser Keyer-Modus braucht (beide Paddles bei Iambic).",
   "keysSwapPaddles": "Paddles tauschen (Linkshänder)",
   "keysKeyerMode": "Keyer-Modus",

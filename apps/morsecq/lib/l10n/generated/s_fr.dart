@@ -2534,6 +2534,9 @@ class SFr extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Impossible d’enregistrer la modification du profil de touches. Réessayez.';
+
+  @override
   String get keysMissing => 'Définissez les touches requises par ce mode (les deux palettes en iambique).';
 
   @override

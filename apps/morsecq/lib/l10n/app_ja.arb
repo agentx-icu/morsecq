@@ -710,6 +710,7 @@
   "keysReserved": "{key} はシステムまたはアプリが使用するため設定できません。別のキーを選んでください。",
   "keysConflict": "{key} はすでに「{action}」に使われています。",
   "keysConflictSave": "1 つのキーに割り当てられる動作は 1 つだけです：{keys} が重複しています。",
+  "keysSaveFailed": "キープロファイルの変更を保存できませんでした。もう一度お試しください。",
   "keysMissing": "このキーヤーモードに必要なキーを設定してください（iambic では両方のパドル）。",
   "keysSwapPaddles": "パドルを入れ替える（左利き）",
   "keysKeyerMode": "キーヤーモード",

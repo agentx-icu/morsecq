@@ -3652,6 +3652,10 @@
       }
     }
   },
+  "keysSaveFailed": "Couldn't save the key profile change. Try again.",
+  "@keysSaveFailed": {
+    "description": "Saving, selecting or deleting a key profile failed."
+  },
   "keysMissing": "Set the keys this keyer mode needs (both paddles for iambic).",
   "@keysMissing": {
     "description": "Key profile save refused: keys missing for the mode"

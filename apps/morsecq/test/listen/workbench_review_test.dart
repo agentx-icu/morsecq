@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -260,13 +261,14 @@ void main() {
     });
   });
 
-  testWidgets('opening the workbench stops the microphone first', (
+  testWidgets('repeated workbench requests share a pending microphone stop', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final source = FakePcmSource();
+    final stop = Completer<void>();
+    final source = FakePcmSource()..stopGate = stop;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: S.localizationsDelegates,
@@ -278,7 +280,12 @@ void main() {
     await tester.tap(find.text(en.listenStart));
     await tester.pumpAndSettle();
     expect(source.isStreaming, isTrue);
-    await tester.tap(find.byKey(const ValueKey('listen-open-workbench')));
+    final open = find.byKey(const ValueKey('listen-open-workbench'));
+    await tester.tap(open);
+    await tester.tap(open);
+    expect(source.stopCalls, 1);
+    expect(find.byType(WorkbenchScreen), findsNothing);
+    stop.complete();
     await waitForWorkbenchCondition(
       tester,
       () =>
@@ -286,7 +293,8 @@ void main() {
           find.byType(WorkbenchScreen).evaluate().isNotEmpty,
       description: 'stop the microphone and open the workbench',
     );
+    await tester.pumpAndSettle();
     expect(source.isStreaming, isFalse);
-    expect(find.byType(WorkbenchScreen), findsOneWidget);
+    expect(find.byType(WorkbenchScreen, skipOffstage: false), findsOneWidget);
   });
 }

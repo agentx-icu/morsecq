@@ -2534,6 +2534,9 @@ class SPt extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Não foi possível salvar a alteração no perfil de teclas. Tente novamente.';
+
+  @override
   String get keysMissing => 'Defina as teclas que este modo precisa (as duas paletas no iâmbico).';
 
   @override

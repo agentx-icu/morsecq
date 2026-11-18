@@ -56,6 +56,30 @@ void main() {
       expect(find.byType(AlphabetGrid), findsNothing);
     });
 
+    testWidgets('keeps the selected section when the reference resizes', (
+      tester,
+    ) async {
+      await _pump(tester);
+      await tester.tap(find.text(en.referenceSectionPunctuation));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlphabetGrid), findsNothing);
+
+      tester.view.physicalSize = kDesktop;
+      await tester.pumpAndSettle();
+      final rail = find.byType(ReferenceSectionRail);
+      expect(
+        tester.widget<ReferenceSectionRail>(rail).selected,
+        ReferenceSection.punctuation,
+      );
+      await tester.tap(find.text(en.referenceSectionQCodes));
+      await tester.pumpAndSettle();
+
+      tester.view.physicalSize = kPhone;
+      await tester.pumpAndSettle();
+      expect(find.byType(TabBar), findsOneWidget);
+      expect(find.text('QRL'), findsOneWidget);
+    });
+
     testWidgets('Koch order lists positions', (tester) async {
       await _pump(tester, initialSection: ReferenceSection.koch);
       final first = find.byType(ReferenceEntryTile).first;

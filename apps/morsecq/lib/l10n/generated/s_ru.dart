@@ -2573,6 +2573,9 @@ class SRu extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Не удалось сохранить изменение профиля клавиш. Повторите попытку.';
+
+  @override
   String get keysMissing => 'Задайте клавиши, нужные этому режиму (обе лопатки для ямбического).';
 
   @override

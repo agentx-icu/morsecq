@@ -175,6 +175,25 @@ void main() {
     expect(player.isPlaying, isFalse);
   });
 
+  test(
+    'reopening a saved selection restores its exact sample frames',
+    () async {
+      await c.importRecording(
+        PickedRecording(name: 'a.wav', bytes: cwWav('E', sampleRate: 48000)),
+      );
+      c.setSelection(1, c.end - 1);
+      final start = c.start;
+      final end = c.end;
+      final selection = (c.positionOf(start), c.positionOf(end));
+      const saved = 'media/recordings/saved.wav';
+      await c.library.keepWorkingAs(saved);
+
+      expect(await c.openSaved(saved, 'Saved', selection: selection), isTrue);
+      expect((c.start, c.end), (start, end));
+      await waveform();
+    },
+  );
+
   test('audio materials round trip; missing media and bad entries', () async {
     final t = await TestTraining.create();
     final ctl = t.controller;

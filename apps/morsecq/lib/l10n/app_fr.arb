@@ -710,6 +710,7 @@
   "keysReserved": "{key} est réservée par le système ou l'app ; choisissez une autre touche.",
   "keysConflict": "{key} est déjà utilisée pour {action}.",
   "keysConflictSave": "Chaque touche ne peut faire qu'une chose : {keys} est affectée deux fois.",
+  "keysSaveFailed": "Impossible d’enregistrer la modification du profil de touches. Réessayez.",
   "keysMissing": "Définissez les touches requises par ce mode (les deux palettes en iambique).",
   "keysSwapPaddles": "Inverser les palettes (gaucher)",
   "keysKeyerMode": "Mode du manipulateur",

@@ -36,6 +36,7 @@ final class FakePcmSource implements PcmSource {
   Completer<void>? permissionGate;
   Completer<void>? startGate;
   Completer<void>? inputDeviceGate;
+  Completer<void>? stopGate;
 
   StreamController<Uint8List>? _controller;
   int startCalls = 0;
@@ -81,6 +82,10 @@ final class FakePcmSource implements PcmSource {
   @override
   Future<void> stop() async {
     stopCalls++;
+    if (stopGate case final gate?) {
+      stopGate = null;
+      await gate.future;
+    }
     // The controller is synchronous, so close() is immediate; its future is
     // the root-zone `_nullFuture` once the listener cancelled, which never
     // resumes under FakeAsync, so it must not be awaited.

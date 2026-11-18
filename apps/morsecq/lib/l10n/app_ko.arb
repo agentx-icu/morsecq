@@ -710,6 +710,7 @@
   "keysReserved": "{key}은(는) 시스템이나 앱이 사용하는 키입니다. 다른 키를 고르세요.",
   "keysConflict": "{key}은(는) 이미 {action}에 쓰이고 있습니다.",
   "keysConflictSave": "키 하나에는 동작 하나만 지정할 수 있습니다: {keys}이(가) 중복되었습니다.",
+  "keysSaveFailed": "키 프로필 변경 사항을 저장하지 못했습니다. 다시 시도하세요.",
   "keysMissing": "이 키어 모드에 필요한 키를 지정하세요(아이앰빅은 두 패들 모두).",
   "keysSwapPaddles": "패들 바꾸기(왼손잡이)",
   "keysKeyerMode": "키어 모드",

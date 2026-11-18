@@ -169,10 +169,15 @@ class WorkbenchController extends ChangeNotifier {
     }
     _install(reader, name, file);
     if (selection != null) {
-      setSelection(
-        reader.info.frameAt(selection.$1),
-        reader.info.frameAt(selection.$2),
-      );
+      // The stored time is rounded down to whole microseconds. Round back
+      // to the nearest frame to recover the original selection boundary.
+      final info = reader.info;
+      int restoreFrame(Duration position) =>
+          (position.inMicroseconds.clamp(0, info.duration.inMicroseconds) *
+                  info.sampleRate /
+                  Duration.microsecondsPerSecond)
+              .round();
+      setSelection(restoreFrame(selection.$1), restoreFrame(selection.$2));
     }
   });
 

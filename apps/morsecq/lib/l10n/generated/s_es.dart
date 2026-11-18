@@ -2533,6 +2533,9 @@ class SEs extends S {
   }
 
   @override
+  String get keysSaveFailed => 'No se pudo guardar el cambio en el perfil de teclas. Inténtalo de nuevo.';
+
+  @override
   String get keysMissing => 'Define las teclas que necesita este modo (ambas paletas en yámbico).';
 
   @override

@@ -215,7 +215,7 @@ extension QsoPractice on TrainingCore {
     return recordExercise(
       score: score,
       id: 'qso_${session.scenario.name}_${session.seed}',
-      planStepId: session.planStepId,
+      planStepId: completionDateKnown ? session.planStepId : null,
       planAccuracy: session.answerStages > 0
           ? session.firstTryStages / session.answerStages
           : null,

@@ -65,6 +65,19 @@ _harness({
 
 Future<void> _drain() => Future<void>.delayed(Duration.zero);
 
+final class _RetryWindow extends FakeWindowApi {
+  bool failNextDestroy = true;
+
+  @override
+  Future<void> destroy() async {
+    if (failNextDestroy) {
+      failNextDestroy = false;
+      throw StateError('native close failed');
+    }
+    await super.destroy();
+  }
+}
+
 void main() {
   test('activation restores a minimized window', () async {
     final h = _harness();
@@ -350,6 +363,26 @@ void main() {
       await h.controller.quit();
       expect(h.window.destroyed, isTrue);
       expect(h.log.single, contains('onBeforeQuit failed'));
+    });
+
+    test('native quit failure restores the tray and allows another quit', () async {
+      final h = _harness(window: _RetryWindow());
+      addTearDown(h.controller.dispose);
+      await h.controller.initialize();
+      await h.controller.hideToTray();
+
+      await h.controller.quit();
+      expect(h.window.destroyed, isFalse);
+      expect(h.controller.isTrayAvailable, isTrue);
+      expect(h.tray.calls.where((call) => call == 'setIcon'), hasLength(2));
+      expect(h.log.single, contains('destroy window failed'));
+
+      h.tray.simulateClick();
+      await _drain();
+      expect(h.controller.isWindowVisible, isTrue);
+
+      await h.controller.quit();
+      expect(h.window.destroyed, isTrue);
     });
   });
 

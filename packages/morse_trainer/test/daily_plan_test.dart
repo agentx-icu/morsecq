@@ -146,6 +146,44 @@ void main() {
     expect(course12.lesson, 12);
   });
 
+  test('a second refresh keeps a started send step distinct from new work', () {
+    final withoutReview = inputs(due: const []);
+    final first = DailyPlanBuilder.refreshPending(
+      DailyPlanBuilder.build(withoutReview),
+      withoutReview,
+    );
+    final send = first.steps.singleWhere(
+      (step) => step.kind == PlanStepKind.send,
+    );
+    final reopened = DailyPlan.fromJson(first.start(send.id).toJson());
+    final refreshed = DailyPlanBuilder.refreshPending(reopened, inputs());
+
+    expect(refreshed.steps.map((step) => step.id).toSet(), hasLength(3));
+    final kept = refreshed.stepById(send.id)!;
+    expect(kept.toJson(), reopened.stepById(send.id)!.toJson());
+    final course = refreshed.steps.singleWhere(
+      (step) => step.kind == PlanStepKind.course,
+    );
+    final finished = refreshed.complete(send.id, exerciseId: 'send-result');
+    expect(finished.stepById(course.id)!.isDone, isFalse);
+  });
+
+  test('stored steps with colliding ids can be completed independently', () {
+    final plan = DailyPlanBuilder.build(inputs(due: const []));
+    final json = plan.start(plan.steps.first.id).toJson();
+    final steps = json['steps']! as List<Map<String, Object?>>;
+    steps[1]['id'] = steps.first['id'];
+
+    final repaired = DailyPlan.fromJson(json);
+    final course = repaired.steps.first;
+    final send = repaired.steps.last;
+    expect(course.id, plan.steps.first.id);
+    expect(course.state, PlanStepState.active);
+    expect(send.id, isNot(course.id));
+    expect(send.state, PlanStepState.pending);
+    expect(repaired.complete(course.id, exerciseId: 'course').doneCount, 1);
+  });
+
   test('progress keeps today plan and moves an older one aside', () {
     final yesterday = DailyPlanBuilder.build(
       inputs(now: DateTime(2026, 10, 2, 8)),

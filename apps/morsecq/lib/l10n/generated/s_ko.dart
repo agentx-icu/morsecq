@@ -2515,6 +2515,9 @@ class SKo extends S {
   }
 
   @override
+  String get keysSaveFailed => '키 프로필 변경 사항을 저장하지 못했습니다. 다시 시도하세요.';
+
+  @override
   String get keysMissing => '이 키어 모드에 필요한 키를 지정하세요(아이앰빅은 두 패들 모두).';
 
   @override

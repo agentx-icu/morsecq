@@ -2532,6 +2532,9 @@ class SEn extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Couldn\'t save the key profile change. Try again.';
+
+  @override
   String get keysMissing => 'Set the keys this keyer mode needs (both paddles for iambic).';
 
   @override

@@ -111,6 +111,58 @@ final class _FailOnceStore implements TrainerStore {
 }
 
 void main() {
+  testWidgets('placement retries the chosen lesson if saving fails', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final store = _FailOnceStore();
+    await store.inner.save(TrainerProgress(currentLesson: 5));
+    final controller = TrainingController(
+      progressStore: store,
+      settingsStore: InMemoryTrainingSettingsStore(),
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+    const open = ValueKey('open-placement');
+    await tester.pumpWidget(
+      l10nApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            key: open,
+            onPressed: () => Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => PlacementScreen(
+                  controller: controller,
+                  playback: FakeLearnPlaybackFactory(),
+                ),
+              ),
+            ),
+            child: const Text('Placement'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byKey(open));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('placement-start')));
+    await tester.pump();
+    await tester.tap(find.text(en.placementStop));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('placement-adopt')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(PlacementScreen), findsOneWidget);
+    expect(controller.currentLesson, 1);
+    expect((await store.load())!.currentLesson, 5);
+    await tester.tap(find.text(en.actionRetry));
+    await tester.pumpAndSettle();
+    expect((await store.load())!.currentLesson, 1);
+    expect(find.byType(PlacementScreen), findsNothing);
+  });
+
   testWidgets(
     'audit: placement offers a persistence retry after stopping early',
     (tester) async {
@@ -129,17 +181,19 @@ void main() {
         course: controller.course,
         seed: 5,
       );
+      final playback = FakeLearnPlaybackFactory();
       await tester.pumpWidget(
         l10nApp(
           home: PlacementScreen(
             controller: controller,
-            playback: FakeLearnPlaybackFactory(),
+            playback: playback,
             seed: 5,
           ),
         ),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('placement-start')));
+      playback.clock.advance(const Duration(minutes: 1));
       await tester.pump();
       await tester.enterText(
         find.byType(TextField),

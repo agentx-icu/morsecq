@@ -58,14 +58,18 @@ class _PlacementScreenState extends State<PlacementScreen>
   int _round = 0;
   bool _playing = false;
   bool _heard = false;
+  bool _playedMark = false;
   bool _lastPassed = false;
   bool _disposed = false;
   bool _backgrounded = false;
   bool _audioFailed = false;
   bool _settingUp = false;
+  bool _adopting = false;
   final String _id = ExerciseIds.next(DateTime.now(), Random());
 
   PlacementTier get _tier => _assessment.currentTier!;
+  bool get _canSubmit =>
+      _phase == _Phase.round && _heard && !_playing && !_backgrounded;
 
   @override
   void initState() {
@@ -93,6 +97,7 @@ class _PlacementScreenState extends State<PlacementScreen>
         return;
       }
       _sub = playback.player.events.listen((e) {
+        if (e is PlayerElementStarted && e.element.on) _playedMark = true;
         if (e is PlayerCompleted) _heard = true;
         if ((e is PlayerCompleted || e is PlayerStopped) && !_disposed) {
           setState(() {
@@ -118,7 +123,7 @@ class _PlacementScreenState extends State<PlacementScreen>
   void _play({bool replay = false}) {
     final playback = _playback;
     if (playback == null || _playing || _backgrounded) return;
-    if (replay && _heard) {
+    if (replay && _playedMark) {
       _assisted.add(_round);
       _anyAssisted = true;
     }
@@ -136,17 +141,18 @@ class _PlacementScreenState extends State<PlacementScreen>
     _assisted.clear();
     _round = 0;
     _heard = false;
+    _playedMark = false;
     setState(() => _phase = _Phase.round);
     _play();
   }
 
   void _submit() {
-    if (_audioFailed || _playback == null || _backgrounded) return;
-    _playback?.player.stop();
+    if (!_canSubmit) return;
     _answers.add(_answer.text);
     _copies.add((_tier.rounds[_round], _answer.text));
     _answer.clear();
     _heard = false;
+    _playedMark = false;
     if (_round + 1 < _tier.rounds.length) {
       setState(() => _round++);
       _play();
@@ -193,8 +199,35 @@ class _PlacementScreenState extends State<PlacementScreen>
   }
 
   Future<void> _adopt(int lesson) async {
-    await widget.controller.setLesson(lesson);
-    if (mounted) Navigator.of(context).pop(lesson);
+    if (!mounted || _adopting || ModalRoute.isCurrentOf(context) != true) {
+      return;
+    }
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    messenger?.hideCurrentSnackBar();
+    setState(() => _adopting = true);
+    try {
+      await widget.controller.setLesson(lesson);
+    } on Object {
+      if (!mounted) return;
+      setState(() => _adopting = false);
+      final s = context.s;
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(s.learnProgressSaveFailed),
+          action: SnackBarAction(
+            label: s.actionRetry,
+            onPressed: () => unawaited(_adopt(lesson)),
+          ),
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
+    if (ModalRoute.isCurrentOf(context) == true) {
+      Navigator.of(context).pop(lesson);
+    } else {
+      setState(() => _adopting = false);
+    }
   }
 
   @override
@@ -340,7 +373,7 @@ class _PlacementScreenState extends State<PlacementScreen>
         const SizedBox(height: 12),
         FilledButton(
           key: const ValueKey('placement-submit'),
-          onPressed: !_audioFailed && !_backgrounded ? _submit : null,
+          onPressed: _canSubmit ? _submit : null,
           child: Text(s.learnSubmit),
         ),
       ],
@@ -382,11 +415,13 @@ class _PlacementScreenState extends State<PlacementScreen>
         const SizedBox(height: 24),
         FilledButton(
           key: const ValueKey('placement-adopt'),
-          onPressed: () => unawaited(_adopt(r.suggestedLesson)),
+          onPressed: _adopting
+              ? null
+              : () => unawaited(_adopt(r.suggestedLesson)),
           child: Text(s.placementAdopt(r.suggestedLesson)),
         ),
         TextButton(
-          onPressed: () => unawaited(_adopt(1)),
+          onPressed: _adopting ? null : () => unawaited(_adopt(1)),
           child: Text(s.placementFromZero),
         ),
       ],
