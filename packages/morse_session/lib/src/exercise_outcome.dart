@@ -99,7 +99,10 @@ TrainerProgress completePlanStep(
   required String profileKey,
   double? accuracy,
 }) {
-  final plan = next.dailyPlan;
+  final current = next.dailyPlan;
+  final previous = next.previousPlan;
+  // A parked exercise can finish saving after a new day has started.
+  final plan = current?.isFor(now) == true ? current : previous;
   final step = stepId == null ? null : plan?.stepById(stepId);
   if (plan == null ||
       step == null ||
@@ -111,21 +114,20 @@ TrainerProgress completePlanStep(
       plan.profileKey != profileKey) {
     return next;
   }
-  if (step.kind == PlanStepKind.send) {
+  final sending = step.kind == PlanStepKind.send;
+  if (sending) {
     // A send step completes after its number of keyed targets.
     final attempts = next.history.where((s) => s.planStepId == stepId).length;
     if (attempts < step.charBudget) return next;
-    return next.copyWith(
-      dailyPlan: plan.complete(stepId!, exerciseId: exerciseId),
-    );
   }
-  return next.copyWith(
-    dailyPlan: plan.complete(
-      stepId!,
-      exerciseId: exerciseId,
-      accuracy: accuracy ?? score.strictAccuracy,
-    ),
+  final completed = plan.complete(
+    step.id,
+    exerciseId: exerciseId,
+    accuracy: sending ? null : accuracy ?? score.strictAccuracy,
   );
+  return identical(plan, current)
+      ? next.copyWith(dailyPlan: completed)
+      : next.copyWith(previousPlan: completed);
 }
 
 /// The pure part of `TrainingCore.recordExercise`: builds the
@@ -214,7 +216,7 @@ TrainerProgress completePlanStep(
       planStepId,
       id,
       score,
-      now: now,
+      now: summary.at,
       profileKey: profileKey,
       accuracy: planAccuracy,
     );

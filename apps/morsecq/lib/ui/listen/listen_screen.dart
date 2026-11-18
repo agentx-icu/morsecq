@@ -65,6 +65,7 @@ class _ListenScreenState extends State<ListenScreen>
   ListenPreferences? _preferences;
   bool _keepingAwake = false;
   bool _micPurposeExplained = false;
+  bool _openingWorkbench = false;
   DialogRoute<bool>? _micPurposeDialog;
 
   @override
@@ -199,11 +200,19 @@ class _ListenScreenState extends State<ListenScreen>
   /// The microphone stops before the workbench plays anything (it would
   /// otherwise decode the playback); the learner restarts it by hand.
   Future<void> _openWorkbench() async {
-    if (_controller.isListening || _controller.isBusy) await _controller.stop();
-    if (!mounted) return;
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()));
+    if (_openingWorkbench) return;
+    _openingWorkbench = true;
+    try {
+      if (_controller.isListening || _controller.isBusy) {
+        await _controller.stop();
+      }
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()));
+    } finally {
+      _openingWorkbench = false;
+    }
   }
 
   @override

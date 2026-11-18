@@ -4370,6 +4370,12 @@ abstract class S {
   /// **'Each key can do only one thing: {keys} is bound twice.'**
   String keysConflictSave(String keys);
 
+  /// Saving, selecting or deleting a key profile failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save the key profile change. Try again.'**
+  String get keysSaveFailed;
+
   /// Key profile save refused: keys missing for the mode
   ///
   /// In en, this message translates to:

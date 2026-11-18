@@ -376,7 +376,23 @@ class DesktopShellController extends ChangeNotifier
       config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
     }
     await _tolerate('destroy tray', _tray.destroy);
-    await _window.destroy();
+    try {
+      await _window.destroy();
+    } on Object catch (error) {
+      config.diagnose(
+        DiagnosticContext.desktopOperation,
+        error,
+        operation: 'destroy window',
+      );
+      if (_trayAvailable) {
+        _trayAvailable = false;
+        await _initTray();
+      }
+      if (!_trayAvailable && !_windowVisible) {
+        await _tolerate('show window', showWindow);
+      }
+      _closing = false;
+    }
   }
 
   // ---------------------------------------------------------------- events

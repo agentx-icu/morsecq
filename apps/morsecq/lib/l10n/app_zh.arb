@@ -723,6 +723,7 @@
   "keysReserved": "{key} 已被系统或应用占用，请换一个键。",
   "keysConflict": "{key} 已用于“{action}”。",
   "keysConflictSave": "每个键只能有一种用途：{keys} 被重复绑定。",
+  "keysSaveFailed": "无法保存键位配置更改。请重试。",
   "keysMissing": "请设置此电键模式需要的键（自动键需同时设置两只桨）。",
   "keysSwapPaddles": "交换双桨（左手）",
   "keysKeyerMode": "电键模式",

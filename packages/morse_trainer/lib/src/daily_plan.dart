@@ -197,6 +197,7 @@ final class PlanStep {
   bool get isDone => state == PlanStepState.done;
 
   PlanStep copyWith({
+    String? id,
     PlanStepState? state,
     String? resultRef,
     double? accuracy,
@@ -205,7 +206,7 @@ final class PlanStep {
     bool? unlockEligible,
     PlanSettings? settings,
   }) => PlanStep(
-    id: id,
+    id: id ?? this.id,
     kind: kind,
     pool: pool,
     minutes: minutes,
@@ -289,6 +290,22 @@ final class DailyPlan {
   final int budgetMinutes;
   final PlanSettings settings;
   final List<PlanStep> steps;
+
+  /// The first unused index after all allocated steps. Refreshes may leave
+  /// gaps, and a goal step can use the course index with a kind suffix.
+  int get nextStepIndex => _nextStepIndex(id, steps);
+
+  static int _nextStepIndex(String id, List<PlanStep> steps) {
+    final prefix = '$id/';
+    var next = steps.length;
+    for (final step in steps) {
+      if (!step.id.startsWith(prefix)) continue;
+      final suffix = step.id.substring(prefix.length).split('_').first;
+      final index = int.tryParse(suffix);
+      if (index != null && index >= next) next = index + 1;
+    }
+    return next;
+  }
 
   static String dateKey(DateTime local) =>
       '${local.year.toString().padLeft(4, '0')}-'
@@ -405,23 +422,33 @@ final class DailyPlan {
   };
 
   factory DailyPlan.fromJson(Map<String, Object?> json) {
+    final id = json['id'] as String;
     final settings = PlanSettings.fromJson(
       json['settings']! as Map<String, Object?>,
     );
+    final steps = [
+      for (final raw in json['steps']! as List<Object?>)
+        _withSnapshot(
+          PlanStep.fromJson(raw! as Map<String, Object?>),
+          settings,
+        ),
+    ];
+    // Earlier refreshes could assign the same ID to two steps. Keep the ID
+    // previously used for lookup and give later occurrences their own ID.
+    final seen = <String>{};
+    var next = _nextStepIndex(id, steps);
+    for (var i = 0; i < steps.length; i++) {
+      final step = steps[i];
+      if (!seen.add(step.id)) steps[i] = step.copyWith(id: '$id/${next++}');
+    }
     return DailyPlan(
-      id: json['id'] as String,
+      id: id,
       date: json['date'] as String,
       profileKey: json['profileKey'] as String? ?? '',
       seed: (json['seed'] as num).toInt(),
       budgetMinutes: (json['budgetMinutes'] as num).toInt(),
       settings: settings,
-      steps: [
-        for (final raw in json['steps']! as List<Object?>)
-          _withSnapshot(
-            PlanStep.fromJson(raw! as Map<String, Object?>),
-            settings,
-          ),
-      ],
+      steps: steps,
     );
   }
 

@@ -710,6 +710,7 @@
   "keysReserved": "{key} está reservada por el sistema o la app; elige otra tecla.",
   "keysConflict": "{key} ya se usa para {action}.",
   "keysConflictSave": "Cada tecla solo puede hacer una cosa: {keys} está asignada dos veces.",
+  "keysSaveFailed": "No se pudo guardar el cambio en el perfil de teclas. Inténtalo de nuevo.",
   "keysMissing": "Define las teclas que necesita este modo (ambas paletas en yámbico).",
   "keysSwapPaddles": "Invertir paletas (zurdos)",
   "keysKeyerMode": "Modo del manipulador",

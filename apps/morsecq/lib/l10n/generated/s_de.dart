@@ -2533,6 +2533,9 @@ class SDe extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Die Änderung am Tastenprofil konnte nicht gespeichert werden. Versuche es erneut.';
+
+  @override
   String get keysMissing => 'Lege die Tasten fest, die dieser Keyer-Modus braucht (beide Paddles bei Iambic).';
 
   @override

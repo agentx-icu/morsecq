@@ -710,6 +710,7 @@
   "keysReserved": "{key} 已被系統或應用程式佔用，請換一個鍵。",
   "keysConflict": "{key} 已用於「{action}」。",
   "keysConflictSave": "每個鍵只能有一種用途：{keys} 被重複綁定。",
+  "keysSaveFailed": "無法儲存鍵位配置變更。請重試。",
   "keysMissing": "請設定此電鍵模式需要的鍵（自動鍵需同時設定兩隻槳）。",
   "keysSwapPaddles": "交換雙槳（左手）",
   "keysKeyerMode": "電鍵模式",

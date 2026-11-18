@@ -8,6 +8,93 @@ import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
 void main() {
+  testWidgets('placement waits for complete playback before accepting a copy', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final t = await TestTraining.create();
+    final playback = FakeLearnPlaybackFactory();
+    await tester.pumpWidget(
+      l10nApp(
+        home: PlacementScreen(
+          controller: t.controller,
+          playback: playback,
+          seed: 5,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('placement-start')));
+    await tester.pump();
+    final submit = find.byKey(const ValueKey('placement-submit'));
+    final answer = find.byType(TextField);
+    await tester.enterText(answer, 'KM');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+    expect(tester.widget<TextField>(answer).controller!.text, 'KM');
+
+    playback.clock.advance(const Duration(minutes: 1));
+    await tester.pump();
+    expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
+  });
+
+  testWidgets('placement only verifies copies without partial replays', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final t = await TestTraining.create();
+    final c = t.controller;
+    final playback = FakeLearnPlaybackFactory();
+    final expected = PlacementAssessment(course: c.course, seed: 5);
+    final rounds = expected.tiers.first.rounds;
+    expected.recordTier(rounds, assisted: {0});
+    await tester.pumpWidget(
+      l10nApp(
+        home: PlacementScreen(controller: c, playback: playback, seed: 5),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('placement-start')));
+    await tester.pump();
+    expect(playback.sink.isOn, isTrue);
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+    await tester.tap(find.text(en.learnReplay));
+    for (final round in rounds) {
+      playback.clock.advance(const Duration(minutes: 1));
+      await tester.pump();
+      await tester.enterText(find.byType(TextField), round);
+      await tester.tap(find.byKey(const ValueKey('placement-submit')));
+      await tester.pump();
+    }
+    await tester.tap(find.text(en.placementStop));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        en.placementVerified(
+          expected.result().verifiedPrefix,
+          c.course.order.length,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(c.progress.history.single.assistance, contains(Assistance.replay));
+  });
+
   testWidgets('placement suggests a lesson and changes nothing until adopted', (
     tester,
   ) async {
@@ -16,21 +103,20 @@ void main() {
     addTearDown(tester.view.reset);
     final t = await TestTraining.create();
     final c = t.controller;
+    final playback = FakeLearnPlaybackFactory();
     // Same seed as the screen: the test knows what will be played.
     final expected = PlacementAssessment(course: c.course, seed: 5);
     await tester.pumpWidget(
       l10nApp(
-        home: PlacementScreen(
-          controller: c,
-          playback: FakeLearnPlaybackFactory(),
-          seed: 5,
-        ),
+        home: PlacementScreen(controller: c, playback: playback, seed: 5),
       ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('placement-start')));
     await tester.pump();
     for (final round in expected.tiers.first.rounds) {
+      playback.clock.advance(const Duration(minutes: 1));
+      await tester.pump();
       await tester.enterText(find.byType(TextField), round);
       await tester.tap(find.byKey(const ValueKey('placement-submit')));
       await tester.pump();
@@ -39,6 +125,8 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('placement-next-tier')));
     await tester.pump();
     for (var i = 0; i < expected.tiers[1].rounds.length; i++) {
+      playback.clock.advance(const Duration(minutes: 1));
+      await tester.pump();
       await tester.tap(find.byKey(const ValueKey('placement-submit')));
       await tester.pump();
     }
@@ -61,11 +149,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final t = await TestTraining.create();
+    final playback = FakeLearnPlaybackFactory();
     await tester.pumpWidget(
       l10nApp(
         home: PlacementScreen(
           controller: t.controller,
-          playback: FakeLearnPlaybackFactory(),
+          playback: playback,
           seed: 5,
         ),
       ),
@@ -74,6 +163,8 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('placement-start')));
     await tester.pump();
     for (var i = 0; i < 4; i++) {
+      playback.clock.advance(const Duration(minutes: 1));
+      await tester.pump();
       await tester.tap(find.byKey(const ValueKey('placement-submit')));
       await tester.pump();
     }

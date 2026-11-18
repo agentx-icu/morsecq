@@ -6,12 +6,14 @@ import 'package:morse_io/morse_io.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
+import '../../diagnostics/local_diagnostics.dart';
 import '../../i18n/l10n_extension.dart';
 import '../../keying/key_profile.dart';
 import '../../keying/key_profiles.dart';
 import '../../training/training_controller_host.dart';
 import '../common/adaptive_fab.dart';
 import '../common/app_bar_title.dart';
+import '../common/feedback.dart';
 import '../responsive.dart';
 import '../common/field_label.dart';
 import 'key_test_area.dart';
@@ -71,7 +73,17 @@ class KeySetupPage extends StatelessWidget {
                     context,
                     listen: false,
                   );
-                  await profiles.select(id);
+                  try {
+                    await profiles.select(id);
+                  } on Object catch (error, stack) {
+                    LocalDiagnostics.report(
+                      DiagnosticContext.preferencesSave,
+                      error,
+                      stack,
+                    );
+                    if (context.mounted) showSnack(context, s.keysSaveFailed);
+                    return;
+                  }
                   await syncLearnKeyerMode(host, profiles.active.keyerMode);
                 },
                 child: Column(
@@ -137,6 +149,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
   KeyerAction? _capturing;
   final FocusNode _captureFocus = FocusNode(debugLabel: 'key-capture');
   String? _error;
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -202,37 +215,48 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
     return KeyEventResult.handled;
   }
 
-  Future<void> _save() async {
+  Future<void> _save() => _apply(
+    (profiles) => profiles.save(_draft.copyWith(name: _name.text.trim())),
+  );
+
+  Future<void> _delete() =>
+      _apply((profiles) => profiles.delete(widget.profile.id), deleting: true);
+
+  Future<void> _apply(
+    Future<void> Function(KeyProfiles) write, {
+    bool deleting = false,
+  }) async {
+    if (_saving) return;
     final s = context.s;
     final profiles = context.read<KeyProfiles>();
     final host = Provider.of<TrainingControllerHost?>(context, listen: false);
-    final navigator = Navigator.of(context);
-    final profile = _draft.copyWith(name: _name.text.trim());
+    final syncMode = !deleting || profiles.active.id == widget.profile.id;
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
     try {
-      await profiles.save(profile);
+      await write(profiles);
+      if (syncMode) {
+        await syncLearnKeyerMode(host, profiles.active.keyerMode);
+      }
+      if (mounted && ModalRoute.isCurrentOf(context) == true) {
+        Navigator.of(context).pop();
+      }
     } on KeyProfileException catch (e) {
-      setState(
-        () => _error = switch (e.error) {
+      if (mounted) {
+        _error = switch (e.error) {
           KeyProfileError.conflict => s.keysConflictSave(keyLabels(e.keys)),
           KeyProfileError.reserved => s.keysReserved(keyLabels(e.keys)),
           KeyProfileError.missing => s.keysMissing,
-        },
-      );
-      return;
+        };
+      }
+    } on Object catch (error, stack) {
+      LocalDiagnostics.report(DiagnosticContext.preferencesSave, error, stack);
+      if (mounted) _error = s.keysSaveFailed;
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
-    await syncLearnKeyerMode(host, profile.keyerMode);
-    navigator.pop();
-  }
-
-  Future<void> _delete() async {
-    final profiles = context.read<KeyProfiles>();
-    final host = Provider.of<TrainingControllerHost?>(context, listen: false);
-    final navigator = Navigator.of(context);
-    final wasActive = profiles.active.id == widget.profile.id;
-    await profiles.delete(widget.profile.id);
-    // Deleting the active profile activates the standard one: Learn follows.
-    if (wasActive) await syncLearnKeyerMode(host, profiles.active.keyerMode);
-    navigator.pop();
   }
 
   @override
@@ -250,7 +274,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
             IconButton(
               tooltip: s.actionDelete,
               icon: const Icon(Icons.delete_outline),
-              onPressed: _delete,
+              onPressed: _saving ? null : _delete,
             ),
         ],
       ),
@@ -346,7 +370,7 @@ class _KeyProfileEditorPageState extends State<KeyProfileEditorPage> {
                 const SizedBox(height: 16),
                 FilledButton(
                   key: const Key('keys-save'),
-                  onPressed: _save,
+                  onPressed: _saving ? null : _save,
                   child: Text(s.actionSave),
                 ),
               ],

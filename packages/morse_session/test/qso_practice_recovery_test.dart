@@ -23,13 +23,14 @@ final class _FailingStore implements TrainerStore {
   }
 }
 
-QsoSession _finished() {
+QsoSession _finished({String? planStepId}) {
   final session = QsoSession.start(
     scenario: QsoScenario.shortExchange,
     seed: 88,
     local: const QsoStation(callsign: 'BD1XYZ', name: 'LI', qth: 'PARIS'),
     characterWpm: 20,
     effectiveWpm: 20,
+    planStepId: planStepId,
   );
   session.submit('call', '${session.remote.callsign} DE BD1XYZ K');
   session.submit('rst', 'UR RST 599 K');
@@ -104,6 +105,70 @@ void main() {
     expect(await c.finishQso(_finished(), Duration.zero), isFalse);
     expect((await docs.read(_doc))!['completedAt'], kTestNow.toIso8601String());
   });
+
+  for (final hasNewPlan in [false, true]) {
+    test(
+      'recovery completes the dated plan with new plan: $hasNewPlan',
+      () async {
+        final store = _FailingStore();
+        final docs = InMemoryTrainingDocStore();
+        final clock = TestClock();
+        const stepId = 'yesterday/0_qso';
+        final plan = DailyPlan(
+          id: 'yesterday',
+          date: DailyPlan.dateKey(clock.now),
+          profileKey: '',
+          seed: 88,
+          budgetMinutes: 10,
+          settings: const PlanSettings(
+            characterWpm: 20,
+            effectiveWpm: 20,
+            toneHz: 700,
+            groupSize: 5,
+          ),
+          steps: [
+            PlanStep(
+              id: stepId,
+              kind: PlanStepKind.qso,
+              pool: const ['shortExchange'],
+              minutes: 10,
+              charBudget: 1,
+              lesson: 30,
+              reason: PlanReason.goalExchange,
+            ),
+          ],
+        ).start(stepId);
+        await store.delegate.save(
+          TrainerProgress(currentLesson: 30, dailyPlan: plan),
+        );
+        final controller = await _controller(store, docs, clock);
+        expect(
+          await controller.finishQso(
+            _finished(planStepId: stepId),
+            Duration.zero,
+          ),
+          isFalse,
+        );
+        controller.dispose();
+
+        clock.advance(const Duration(days: 1));
+        store.fail = false;
+        final reopened = await _controller(store, docs, clock);
+        addTearDown(reopened.dispose);
+        if (hasNewPlan) await reopened.ensureTodayPlan();
+        await reopened.recoverFinishedQso();
+
+        final saved = (await store.load())!;
+        final originalPlan = hasNewPlan ? saved.previousPlan : saved.dailyPlan;
+        expect(
+          originalPlan!.stepById(stepId)!.resultRef,
+          saved.history.single.id,
+        );
+        expect(originalPlan.isComplete, isTrue);
+        expect(reopened.unfinishedEarlierPlan, isNull);
+      },
+    );
+  }
 
   test(
     'recovering after 28 days does not create fresh route or streak credit',

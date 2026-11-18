@@ -2515,6 +2515,9 @@ class SZh extends S {
   }
 
   @override
+  String get keysSaveFailed => '无法保存键位配置更改。请重试。';
+
+  @override
   String get keysMissing => '请设置此电键模式需要的键（自动键需同时设置两只桨）。';
 
   @override
@@ -6120,6 +6123,9 @@ class SZhHant extends SZh {
   String keysConflictSave(String keys) {
     return '每個鍵只能有一種用途：$keys 被重複綁定。';
   }
+
+  @override
+  String get keysSaveFailed => '無法儲存鍵位配置變更。請重試。';
 
   @override
   String get keysMissing => '請設定此電鍵模式需要的鍵（自動鍵需同時設定兩隻槳）。';
