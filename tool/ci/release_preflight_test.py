@@ -1,12 +1,15 @@
 import plistlib
 from pathlib import Path
 import struct
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import warnings
 import zipfile
 
-from release_preflight import check_android_native, check_android_manifest, check_apple, check_native_directory
+from release_preflight import (LOCALES, check_android_native, check_android_manifest,
+                               check_apple, check_native_directory, main)
 
 
 def elf(machine=183, alignment=0x4000):
@@ -59,14 +62,18 @@ class ReleasePreflightTest(unittest.TestCase):
                 self.assertEqual(len(check_android_native(path, {'arm64-v8a'}, apk=True)), 1)
 
     def test_android_merged_manifest_rejects_unexpected_access_and_debug(self):
-        xml = '''<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="icu.agentx.morsecq" android:versionCode="2"><uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-feature android:name="android.hardware.microphone" android:required="false"/><application android:debuggable="false"/></manifest>'''
+        xml = '''<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="icu.agentx.morsecq" android:versionCode="2" android:versionName="1.0.1"><uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-feature android:name="android.hardware.microphone" android:required="false"/><application android:debuggable="false"/></manifest>'''
+        with_audio_settings = xml.replace('<application',
+            '<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><application')
         self.assertEqual(check_android_manifest(xml, 36)['package'], 'icu.agentx.morsecq')
+        self.assertIn('android.permission.MODIFY_AUDIO_SETTINGS',
+                      check_android_manifest(with_audio_settings, 36)['permissions'])
         for bad in [xml.replace('RECORD_AUDIO', 'INTERNET'), xml.replace('required="false"', 'required="true"'), xml.replace('debuggable="false"', 'debuggable="true"')]:
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 check_android_manifest(bad, 36)
 
     def test_androidx_private_receiver_permission_must_be_signature_scoped(self):
-        xml = '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="icu.agentx.morsecq" android:versionCode="2"><uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="0x2"/><uses-permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/><uses-feature android:name="android.hardware.microphone" android:required="false"/><application/></manifest>'
+        xml = '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="icu.agentx.morsecq" android:versionCode="2" android:versionName="1.0.1"><uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="0x2"/><uses-permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/><uses-feature android:name="android.hardware.microphone" android:required="false"/><application/></manifest>'
         for level in ['signature', '2', '0x2', '0x00000002']:
             check_android_manifest(xml.replace('protectionLevel="0x2"', f'protectionLevel="{level}"'), 36)
         with self.assertRaises(ValueError):
@@ -188,6 +195,31 @@ class ReleasePreflightTest(unittest.TestCase):
         (app / 'PrivacyInfo.xcprivacy').write_bytes(plistlib.dumps({'NSPrivacyTracking': False, 'NSPrivacyCollectedDataTypes': [{'NSPrivacyCollectedDataType': 'bad'}], 'NSPrivacyAccessedAPITypes': []}))
         with self.assertRaisesRegex(ValueError, 'collection'):
             check_apple(app, 'ios', inspect_native=False)
+
+    def test_apple_release_preflight_refuses_an_older_built_app(self):
+        pubspec = self.root / 'apps/morsecq/pubspec.yaml'
+        pubspec.parent.mkdir(parents=True)
+        pubspec.write_text('version: 1.0.2+3\n')
+        app = self.root / 'Runner.app'
+        app.mkdir()
+        usage = {'NSMicrophoneUsageDescription': 'Decode Morse'}
+        (app / 'Info.plist').write_bytes(plistlib.dumps({
+            **usage, 'CFBundleIdentifier': 'icu.agentx.morsecq',
+            'CFBundleShortVersionString': '1.0.1', 'CFBundleVersion': '2',
+        }))
+        (app / 'PrivacyInfo.xcprivacy').write_bytes(plistlib.dumps({'NSPrivacyTracking': False}))
+        (app / 'Runner').write_bytes(b'\xcf\xfa\xed\xfe')
+        for locale in LOCALES:
+            strings = app / f'{locale}.lproj/InfoPlist.strings'
+            strings.parent.mkdir()
+            strings.write_bytes(plistlib.dumps(usage))
+        args = ['release_preflight.py', '--output', str(self.root / 'ios.json'),
+                'apple', str(app), '--platform', 'ios']
+        with patch('release_preflight.__file__', str(self.root / 'tool/ci/release_preflight.py')), \
+                patch.object(sys, 'argv', args), \
+                patch('release_preflight.run', side_effect=['arm64', 'platform IOS\n']):
+            with self.assertRaisesRegex(ValueError, 'Apple artifact version 1.0.1\\+2 differs from pubspec version 1.0.2\\+3'):
+                main()
 
 if __name__ == '__main__':
     unittest.main()

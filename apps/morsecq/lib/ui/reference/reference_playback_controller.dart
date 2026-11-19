@@ -23,10 +23,15 @@ class ReferencePlaybackController extends ChangeNotifier {
     required this.settings,
   }) : _playerFactory = playerFactory {
     settings.addListener(_onSettingsChanged);
+    _stopWatchingForeground = _foreground.listen((foreground) {
+      if (!foreground) stop();
+    });
   }
 
+  static const _foreground = BindingAppForeground();
   final ReferencePlaybackSettings settings;
   final MorsePlayerFactory _playerFactory;
+  late final VoidCallback _stopWatchingForeground;
   MorsePlayer? _player;
   StreamSubscription<PlayerEvent>? _subscription;
   bool _disposed = false;
@@ -75,7 +80,7 @@ class ReferencePlaybackController extends ChangeNotifier {
   /// Encodes [text] at the current settings and plays it, replacing anything
   /// that was playing. Empty or entirely unsupported text is a no-op.
   void play(String id, String text) {
-    if (_disposed) return;
+    if (_disposed || !_foreground.isForeground) return;
     final List<MorseElement> elements = MorseEncoder.encode(text, timing);
     if (elements.isEmpty) {
       stop();
@@ -130,6 +135,7 @@ class ReferencePlaybackController extends ChangeNotifier {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _stopWatchingForeground();
     settings.removeListener(_onSettingsChanged);
     unawaited(_subscription?.cancel());
     _subscription = null;

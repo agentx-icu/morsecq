@@ -3,6 +3,8 @@
          RECORD_AUDIO implies a required android.hardware.microphone; Listen is
          one optional tab, so mic-less devices must still see the app. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- The recorder plugin uses AudioManager to start and stop Bluetooth SCO. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-feature android:name="android.hardware.microphone" android:required="false"/>
     <!-- Only offline learning and preferences enter platform backup. -->
     <!-- Predictive back: with targetSdk 36, Android 16 routes the back gesture

@@ -10,6 +10,7 @@ import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'screen_api.dart';
 import 'tray_api.dart';
+import 'tray_host_watch.dart';
 import 'window_api.dart';
 import 'window_bounds.dart';
 
@@ -20,23 +21,8 @@ abstract final class TrayMenuKeys {
   static const String quit = 'quit';
 }
 
-/// Desktop window + system-tray behaviour for the app shell.
-///
-/// Owns the window title, the tray icon / tooltip / menu,
-/// close-to-tray, and the persistence of window bounds through the injected
-/// `KeyValueStore`. Every plugin call is gated on [DesktopShellConfig.isDesktop]
-/// so on Android / iOS / web the controller is inert state: [initialize] and
-/// the window/tray methods return immediately without touching the APIs.
-///
-/// The tray is cosmetic. Any tray failure (no StatusNotifier host on Linux,
-/// a per-platform gap such as Linux tooltips) is logged and swallowed; it
-/// never takes the app down and never blocks the first frame.
-///
-/// Language: menu labels, tooltip and title render from [strings]
-/// ([currentS] at construction, i.e. the platform locale before the app's
-/// `LocaleController` exists). `AppServices` calls [updateStrings] with the
-/// user's choice once the scope is up and again on every language change;
-/// the product name itself ([DesktopShellConfig.appName]) is never translated.
+/// Manages desktop windows, window preferences and the localized tray menu.
+/// Mobile and web leave the native adapters untouched.
 class DesktopShellController extends ChangeNotifier
     implements WindowEventHandler, TrayEventHandler {
   DesktopShellController({
@@ -74,6 +60,13 @@ class DesktopShellController extends ChangeNotifier
   Future<void> _trayQueue = Future<void>.value();
   bool _trayGapWarned = false;
   final Set<Future<void> Function()> _beforeQuit = {};
+  late final _trayHostWatch = TrayHostWatch(
+    isAvailable: () async => _trayAvailable && await _hasTrayHost(),
+    onLost: () async {
+      _trayAvailable = false;
+      await _tolerate('show window', showWindow);
+    },
+  );
 
   void addBeforeQuitListener(Future<void> Function() listener) =>
       _beforeQuit.add(listener);
@@ -81,10 +74,8 @@ class DesktopShellController extends ChangeNotifier
   void removeBeforeQuitListener(Future<void> Function() listener) =>
       _beforeQuit.remove(listener);
 
-  /// True once [initialize] ran on a desktop platform.
   bool get isActive => _active;
 
-  /// True when the tray icon was created and can be relied on.
   bool get isTrayAvailable => _trayAvailable;
 
   bool get isWindowVisible => _windowVisible;
@@ -93,15 +84,12 @@ class DesktopShellController extends ChangeNotifier
 
   bool get soundEnabled => _soundEnabled;
 
-  /// The strings the title, tooltip and menu currently render from.
   S get strings => _s;
 
   String get windowTitle => config.appName;
   String get trayTooltip => config.appName;
 
-  /// Current context-menu rows; labels follow visibility, sound state and
-  /// language. Shortcut hints are not part of the tray menu (the OS renders
-  /// accelerators itself); in-app labels come from `shortcutLabel`.
+  /// Menu rows follow visibility, sound state and language.
   List<TrayMenuEntry> get trayMenu => [
     TrayMenuEntry(
       key: TrayMenuKeys.showHide,
@@ -122,10 +110,6 @@ class DesktopShellController extends ChangeNotifier
     ),
   ];
 
-  /// Switches the language of the title, tooltip and menu. A no-op for the
-  /// locale already in use; otherwise the window title is re-set and the
-  /// tray rebuilt (queued behind pending tray updates). Safe before
-  /// [initialize] and on mobile (state only).
   void updateStrings(S strings) {
     if (strings.localeName == _s.localeName) return;
     _s = strings;
@@ -135,10 +119,6 @@ class DesktopShellController extends ChangeNotifier
     _enqueueTray(_applyTrayState);
   }
 
-  // ---------------------------------------------------------------- startup
-
-  /// Creates the window (restoring persisted bounds, clamped to today's
-  /// displays) and the tray. Idempotent; a no-op off desktop.
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
@@ -223,7 +203,17 @@ class DesktopShellController extends ChangeNotifier
     if (config.isMacOS) {
       await _tolerate('setTitle', () => _tray.setTitle(''));
     }
-    await _tolerate('setMenu', () => _tray.setMenu(trayMenu));
+    try {
+      await _tray.setMenu(trayMenu);
+    } on Object catch (error) {
+      // Linux AppIndicator uses the menu to reopen the window.
+      if (config.isLinux) _trayAvailable = false;
+      config.diagnose(
+        DiagnosticContext.desktopOperation,
+        error,
+        operation: 'setMenu',
+      );
+    }
   }
 
   /// Tray updates are several async plugin calls; callers fire them without
@@ -235,23 +225,34 @@ class DesktopShellController extends ChangeNotifier
   /// Completes when every queued tray update has been applied (tests).
   Future<void> flushTrayUpdates() => _trayQueue;
 
-  // ---------------------------------------------------------------- window
-
   Future<void> showWindow() async {
     if (!_active) return;
     if (await _window.isMinimized()) await _window.restore();
     await _window.show();
-    await _window.focus();
+    if (!_active) return;
     _setWindowVisible(true);
+    await _window.focus();
   }
 
-  /// Hides the window; the tray is the only way back, so this is refused
-  /// when the tray is unavailable.
+  /// Hides the window when the tray can reopen it.
   Future<void> hideToTray() async {
-    if (!_active || !_trayAvailable || !await _hasTrayHost()) return;
+    await _hideToTray();
+  }
+
+  Future<bool> _hideToTray() async {
+    if (!_active || _closing) return false;
+    if (_trayAvailable) {
+      if (!await _hasTrayHost()) return false;
+    } else if (config.trayHostAvailable != null) {
+      await _initTray();
+    }
+    if (!_trayAvailable || _closing || !_active) return false;
     await persistWindowState();
+    if (_closing || !_active) return false;
     await _window.hide();
+    if (!_active) return false;
     _setWindowVisible(false);
+    return true;
   }
 
   Future<void> toggleWindow() async {
@@ -265,10 +266,18 @@ class DesktopShellController extends ChangeNotifier
   }
 
   void _setWindowVisible(bool visible) {
+    if (visible) _trayHostWatch.stop();
+    if (!visible) _watchHiddenTray();
     if (_windowVisible == visible) return;
     _windowVisible = visible;
     notifyListeners();
     _enqueueTray(_applyTrayState);
+  }
+
+  void _watchHiddenTray() {
+    if (config.trayHostAvailable != null && !_closing && _active) {
+      _trayHostWatch.start();
+    }
   }
 
   /// Reads the live bounds and maximised flag and stores them.
@@ -323,8 +332,7 @@ class DesktopShellController extends ChangeNotifier
     };
   }
 
-  /// Placeholder for the sidetone owner: flips the tray checkbox and calls
-  /// [DesktopShellConfig.onToggleSound].
+  /// Persists the sound choice, then informs its owner.
   Future<void> setSoundEnabled(bool enabled) =>
       _trackPreference(_setSoundEnabled(enabled));
 
@@ -358,6 +366,7 @@ class DesktopShellController extends ChangeNotifier
   Future<void> quit() async {
     if (!_active || _closing) return;
     _closing = true;
+    _trayHostWatch.stop();
     _persistTimer?.cancel();
     await _pendingPreferences;
     await persistWindowState();
@@ -367,6 +376,7 @@ class DesktopShellController extends ChangeNotifier
       }
     } catch (e) {
       _closing = false;
+      if (!_windowVisible) _watchHiddenTray();
       config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
       return;
     }
@@ -392,10 +402,9 @@ class DesktopShellController extends ChangeNotifier
         await _tolerate('show window', showWindow);
       }
       _closing = false;
+      if (!_windowVisible) _watchHiddenTray();
     }
   }
-
-  // ---------------------------------------------------------------- events
 
   @override
   void onCloseRequested() {
@@ -406,10 +415,7 @@ class DesktopShellController extends ChangeNotifier
   /// exit path.
   Future<void> handleCloseRequested() async {
     if (!_active || _closing) return;
-    if (_closeToTray && _trayAvailable && await _hasTrayHost()) {
-      await hideToTray();
-      return;
-    }
+    if (_closeToTray && await _hideToTray()) return;
     await quit();
   }
 
@@ -443,14 +449,14 @@ class DesktopShellController extends ChangeNotifier
   @override
   void dispose() {
     _persistTimer?.cancel();
+    _trayHostWatch.stop();
     if (_active) {
+      _active = false;
       _window.setEventHandler(null);
       _tray.setEventHandler(null);
     }
     super.dispose();
   }
-
-  // --------------------------------------------------------------- helpers
 
   Future<void> _pendingPreferences = Future<void>.value();
 

@@ -218,6 +218,31 @@ void main() {
       expect(find.byIcon(Icons.volume_up), findsNothing);
     });
 
+    testWidgets('locking interrupts playback and unlock does not resume it', (
+      tester,
+    ) async {
+      final binding = tester.binding;
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      final fake = await _pump(tester);
+      await tester.tap(_card('K'));
+      await tester.pump();
+      expect(fake.sink.isOn, isTrue);
+
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      await tester.pump();
+      expect(fake.sink.isOn, isFalse);
+      expect(fake.players.single.isPlaying, isFalse);
+
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      fake.clock.advance(const Duration(seconds: 1));
+      await tester.pump();
+      expect(fake.onCount, 1);
+      await tester.tap(_card('K'));
+      expect(fake.sink.isOn, isTrue);
+    });
+
     testWidgets('list rows play from their play button', (tester) async {
       final fake = await _pump(tester, initialSection: ReferenceSection.qCodes);
       final row = find.ancestor(

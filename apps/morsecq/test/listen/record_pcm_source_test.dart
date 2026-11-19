@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_dsp/testing.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morsecq/ui/listen/listen_controller.dart';
 import 'package:morsecq/ui/listen/record_pcm_source.dart';
@@ -138,6 +140,73 @@ void main() {
     });
 
     test(
+      'an audio interruption stops capture and keeps the transcript',
+      () async {
+        final controller = ListenController(source: source);
+        addTearDown(controller.dispose);
+        await controller.start();
+        expect(controller.status, ListenStatus.listening);
+        recorder.states.add(RecordState.record);
+        final pcm = SyntheticMorse().renderText('SOS');
+        for (final chunk in SyntheticMorse.toByteChunks(pcm, 960)) {
+          recorder.pcm!.add(chunk);
+        }
+        await pumpEventQueue();
+        expect(controller.text.trim(), 'SOS');
+        recorder.states.add(RecordState.pause);
+        await pumpEventQueue();
+
+        expect(controller.status, ListenStatus.idle);
+        expect(controller.text.trim(), 'SOS');
+        expect(recorder.stopCalls, 1);
+        expect(session.restores, 1);
+        expect(recorder.states.hasListener, isFalse);
+
+        await controller.start();
+        expect(controller.status, ListenStatus.listening);
+        expect(controller.text.trim(), 'SOS');
+      },
+    );
+
+    test(
+      'iOS hardware changes end capture, but session category changes do not',
+      () async {
+        final routes = StreamController<AVAudioSessionRouteChange>.broadcast();
+        addTearDown(routes.close);
+        source = RecordPcmSource(
+          recorder: recorder,
+          audioSession: session,
+          iosRouteChanges: () => routes.stream,
+        );
+        final controller = ListenController(source: source);
+        addTearDown(controller.dispose);
+
+        for (final reason in [
+          AVAudioSessionRouteChangeReason.oldDeviceUnavailable,
+          AVAudioSessionRouteChangeReason.newDeviceAvailable,
+        ]) {
+          await controller.start();
+          recorder.states.add(RecordState.record);
+          await pumpEventQueue();
+          routes.add(
+            AVAudioSessionRouteChange(
+              reason: AVAudioSessionRouteChangeReason.categoryChange,
+            ),
+          );
+          await pumpEventQueue();
+          expect(controller.status, ListenStatus.listening);
+
+          routes.add(AVAudioSessionRouteChange(reason: reason));
+          await pumpEventQueue();
+          expect(controller.status, ListenStatus.idle, reason: reason.name);
+          expect(routes.hasListener, isFalse);
+        }
+        expect(recorder.stopCalls, 2);
+        expect(session.restores, 2);
+      },
+    );
+
+    test(
       'an explicit stop restores once and the end is not double-counted',
       () async {
         final stream = await _start(source);
@@ -165,12 +234,14 @@ void main() {
     });
   });
 
-  test('a late stop from the previous capture is ignored', () async {
+  test('late pause and stop from the previous capture are ignored', () async {
     final stream = await _start(source);
     var done = false;
     final sub = stream.listen((_) {}, onDone: () => done = true);
     addTearDown(sub.cancel);
-    recorder.states.add(RecordState.stop); // before this capture's record
+    recorder.states
+      ..add(RecordState.stop)
+      ..add(RecordState.pause); // before this capture's record
     await pumpEventQueue();
     expect(done, isFalse);
     expect(recorder.states.hasListener, isTrue);

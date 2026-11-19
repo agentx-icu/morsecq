@@ -91,6 +91,7 @@ check_size_budget() {  # <architecture> [final/staged application payload]
 package_linux() {
   local bundle="$BUILD_DIR/linux/x64/release/bundle" stage installer
   [[ -x "$bundle/morsecq" ]] || ci_die "Linux bundle not found: $bundle"
+  python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/linux.json" native "$bundle" --platform linux --architecture x86_64
 
   stage="$DIST_DIR/.stage/morsecq"
   mkdir -p "$stage"
@@ -116,12 +117,12 @@ package_linux() {
 package_windows() {
   local runner="$BUILD_DIR/windows/x64/runner/Release" stage installer
   [[ -f "$runner/morsecq.exe" ]] || ci_die "Windows runner not found: $runner"
+  python "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/windows.json" native "$runner" --platform windows --architecture x86_64
 
   stage="$DIST_DIR/.stage/morsecq"
   mkdir -p "$stage"
   cp -R "$runner/." "$stage/"
   if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
-    python "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/windows-strict.json" native "$stage" --platform windows --architecture x86_64
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(ci_windows_path "$SCRIPT_DIR/sign_windows.ps1")" -InputPath "$(ci_windows_path "$stage")"
   fi
   (cd "$DIST_DIR/.stage" && 7z a -tzip -bd -bso0 "$(ci_windows_path "$DIST_DIR")/$BASE-windows-x64.zip" morsecq)
@@ -153,9 +154,9 @@ package_macos() {
     'x86_64 arm64'|'arm64 x86_64') arch=universal2 ;;
     *) ci_die "Unexpected macOS executable architectures: $arches" ;;
   esac
-  # Every embedded framework and architecture must fit the app's declared OS.
+  # Refuse a stale or incompatible app before any signing or package writes.
   ci_require_cmd python3
-  python3 "$SCRIPT_DIR/macos_runtime.py" "$app"
+  python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/macos.json" apple "$app" --platform macos
   if [[ "${MORSECQ_DISTRIBUTION:-0}" == 1 ]]; then
     bash "$SCRIPT_DIR/sign_macos.sh" "$app"
     ditto -c -k --sequesterRsrc --keepParent "$app" "$DIST_DIR/.notarize.zip"
@@ -226,6 +227,7 @@ package_android() {
 package_ios() {
   local app="$BUILD_DIR/ios/iphoneos/Runner.app" payload
   [[ -d "$app" ]] || ci_die "iOS app not found: $app"
+  python3 "$SCRIPT_DIR/release_preflight.py" --output "$REPO_ROOT/build/evidence/ios.json" apple "$app" --platform ios
   # Unsigned: sideload tools (AltStore, Sideloadly) or a re-sign step sign it.
   payload="$DIST_DIR/.ipa/Payload"
   mkdir -p "$payload"

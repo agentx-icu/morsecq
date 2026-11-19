@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import plistlib
 import re
@@ -16,17 +17,33 @@ from macos_runtime import MACHO_MAGICS, check_bundle
 
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 ABIS = {'arm64-v8a': (2, 183), 'armeabi-v7a': (1, 40), 'x86_64': (2, 62)}
-PERMISSIONS = {'android.permission.RECORD_AUDIO', 'android.permission.VIBRATE', 'android.permission.WAKE_LOCK'}
+PERMISSIONS = {'android.permission.RECORD_AUDIO', 'android.permission.MODIFY_AUDIO_SETTINGS',
+               'android.permission.VIBRATE', 'android.permission.WAKE_LOCK'}
 LOCALES = ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'ru']
 
 
-def run(command):
-    return subprocess.run([str(x) for x in command], check=True, capture_output=True, text=True, timeout=120).stdout
+def run(command, *, env=None):
+    return subprocess.run([str(x) for x in command], check=True, capture_output=True,
+                          text=True, timeout=120, env=env).stdout
 
 
 def digest(path):
     with Path(path).open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def expected_app_version():
+    pubspec = Path(__file__).resolve().parents[2] / 'apps/morsecq/pubspec.yaml'
+    match = re.search(r'^version:[ \t]*([0-9]+\.[0-9]+\.[0-9]+\+[1-9][0-9]*)[ \t]*(?:#.*)?$',
+                      pubspec.read_text(encoding='utf-8'), re.M)
+    if not match:
+        raise ValueError('Release pubspec must specify version MAJOR.MINOR.PATCH+BUILD')
+    return match[1]
+
+
+def check_app_version(platform, actual, expected):
+    if actual != expected:
+        raise ValueError(f'{platform} artifact version {actual} differs from pubspec version {expected}')
 
 
 def elf_info(data):
@@ -89,11 +106,16 @@ def check_android_native(path, expected_abis, *, apk):
     return records
 
 
-def check_android_manifest(xml, target_sdk):
+def check_android_manifest(xml, target_sdk, *, expected_version=None):
     root = ET.fromstring(xml)
     sdk, app = root.find('uses-sdk'), root.find('application')
-    if root.get('package') != 'icu.agentx.morsecq' or not root.get(ANDROID + 'versionCode'):
-        raise ValueError('Unexpected package identity or missing version code')
+    version_name = root.get(ANDROID + 'versionName')
+    version_code = root.get(ANDROID + 'versionCode')
+    if (root.get('package') != 'icu.agentx.morsecq' or not version_name or
+            not re.fullmatch(r'[1-9][0-9]*', version_code or '')):
+        raise ValueError('Unexpected package identity or missing/invalid Android version')
+    if expected_version is not None:
+        check_app_version('Android', f'{version_name}+{version_code}', expected_version)
     if sdk is None or int(sdk.get(ANDROID + 'minSdkVersion', '0')) != 24 or int(sdk.get(ANDROID + 'targetSdkVersion', '0')) != target_sdk:
         raise ValueError('Final minimum / target SDK disagrees with declared release policy')
     if app is None or app.get(ANDROID + 'debuggable', 'false') != 'false' or app.get(ANDROID + 'testOnly', 'false') != 'false':
@@ -109,7 +131,8 @@ def check_android_manifest(xml, target_sdk):
     features = {f.get(ANDROID + 'name'): f.get(ANDROID + 'required', 'true') for f in root.findall('uses-feature')}
     if features.get('android.hardware.microphone') != 'false' or features.get('android.hardware.camera') == 'true':
         raise ValueError('Optional hardware became required by the merged manifest')
-    return {'package': root.get('package'), 'version_code': root.get(ANDROID + 'versionCode'), 'permissions': sorted(permissions), 'features': features, 'target_sdk': target_sdk}
+    return {'package': root.get('package'), 'version_name': version_name, 'version_code': version_code,
+            'permissions': sorted(permissions), 'features': features, 'target_sdk': target_sdk}
 
 
 def check_native_directory(root, platform, architecture):
@@ -205,13 +228,31 @@ def check_windows_runtime(records):
     return [paths[path] for path in required]
 
 
-def check_apple(app, platform, *, inspect_native=True):
+def check_desktop_version(root, platform, expected):
+    if platform == 'windows':
+        # Read the numeric version resource that Flutter populates in Runner.rc.
+        env = {**os.environ, 'MORSECQ_PREFLIGHT_EXE': str((root / 'morsecq.exe').resolve())}
+        command = ('$v = [Diagnostics.FileVersionInfo]::GetVersionInfo($env:MORSECQ_PREFLIGHT_EXE); '
+                   '"$($v.FileMajorPart).$($v.FileMinorPart).$($v.FileBuildPart)+$($v.FilePrivatePart)"')
+        actual = run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', command], env=env).strip()
+    else:
+        # Flutter includes the version of the bundled data in its Linux assets.
+        metadata = json.loads((root / 'data/flutter_assets/version.json').read_text(encoding='utf-8'))
+        actual = f'{metadata.get("version")}+{metadata.get("build_number")}'
+    check_app_version({'windows': 'Windows', 'linux': 'Linux'}[platform], actual, expected)
+    return actual
+
+
+def check_apple(app, platform, *, inspect_native=True, expected_version=None):
     app = Path(app).resolve()
     resources = app / 'Contents/Resources' if platform == 'macos' else app
     info_path = app / 'Contents/Info.plist' if platform == 'macos' else app / 'Info.plist'
     info = plistlib.loads(info_path.read_bytes())
     if info.get('CFBundleIdentifier') != 'icu.agentx.morsecq' or not info.get('CFBundleVersion') or not info.get('CFBundleShortVersionString'):
         raise ValueError('Unexpected Apple identity or missing build version')
+    if expected_version is not None:
+        actual = f'{info["CFBundleShortVersionString"]}+{info["CFBundleVersion"]}'
+        check_app_version('Apple', actual, expected_version)
     if not info.get('NSMicrophoneUsageDescription'):
         raise ValueError('Missing built microphone purpose string')
     if not (resources / 'PrivacyInfo.xcprivacy').is_file():
@@ -294,10 +335,11 @@ def main():
     hashes.add_argument('root', type=Path)
     args = parser.parse_args()
     if args.kind == 'android':
+        expected_version = expected_app_version()
         apk_xml = run([args.apkanalyzer, 'manifest', 'print', args.apk])
         bundle_xml = run(['java', '-jar', args.bundletool, 'dump', 'manifest', f'--bundle={args.bundle}', '--module=base'])
-        apk_manifest = check_android_manifest(apk_xml, args.target_sdk)
-        bundle_manifest = check_android_manifest(bundle_xml, args.target_sdk)
+        apk_manifest = check_android_manifest(apk_xml, args.target_sdk, expected_version=expected_version)
+        bundle_manifest = check_android_manifest(bundle_xml, args.target_sdk, expected_version=expected_version)
         if apk_manifest != bundle_manifest:
             raise ValueError('APK and bundle manifest identities / declarations disagree')
         config = run(['java', '-jar', args.bundletool, 'dump', 'config', f'--bundle={args.bundle}'])
@@ -306,11 +348,13 @@ def main():
         abis = set(ABIS)
         report = {'manifest': apk_manifest, 'apk_sha256': digest(args.apk), 'bundle_sha256': digest(args.bundle), 'apk_native': check_android_native(args.apk, abis, apk=True), 'bundle_native': check_android_native(args.bundle, abis, apk=False), 'bundle_alignment': 'PAGE_ALIGNMENT_16K'}
     elif args.kind == 'apple':
-        report = check_apple(args.app, args.platform)
+        report = check_apple(args.app, args.platform, expected_version=expected_app_version())
     elif args.kind == 'native':
         report = {'binaries': check_native_directory(args.root, args.platform, args.architecture)}
         if args.platform == 'windows':
             report['windows_runtime'] = check_windows_runtime(report['binaries'])
+        if args.root.is_dir():
+            report['version'] = check_desktop_version(args.root, args.platform, expected_app_version())
         if args.expected_zip:
             if args.platform != 'windows' or not args.root.is_dir():
                 raise ValueError('--expected-zip requires an installed Windows directory')

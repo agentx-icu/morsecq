@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -78,6 +79,37 @@ final class _RetryWindow extends FakeWindowApi {
   }
 }
 
+final class _GatedShowWindow extends FakeWindowApi {
+  Completer<void>? gate;
+
+  @override
+  Future<void> show() async {
+    await gate?.future;
+    await super.show();
+  }
+}
+
+final class _GatedHideWindow extends FakeWindowApi {
+  final hideStarted = Completer<void>();
+  final finishHide = Completer<void>();
+  final destroyStarted = Completer<void>();
+  final finishDestroy = Completer<void>();
+
+  @override
+  Future<void> hide() async {
+    hideStarted.complete();
+    await finishHide.future;
+    await super.hide();
+  }
+
+  @override
+  Future<void> destroy() async {
+    destroyStarted.complete();
+    await finishDestroy.future;
+    throw StateError('native close failed');
+  }
+}
+
 void main() {
   test('activation restores a minimized window', () async {
     final h = _harness();
@@ -96,6 +128,113 @@ void main() {
     expect(h.window.destroyed, isTrue);
     expect(h.window.calls, isNot(contains('hide')));
   });
+
+  test('closing can use a tray host that appeared after startup', () async {
+    var hostAvailable = false;
+    final h = _harness(trayHostAvailable: () async => hostAvailable);
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+    expect(h.controller.isTrayAvailable, isFalse);
+
+    hostAvailable = true;
+    await h.controller.handleCloseRequested();
+
+    expect(h.controller.isTrayAvailable, isTrue);
+    expect(h.window.visible, isFalse);
+    expect(h.window.destroyed, isFalse);
+    h.tray.simulateClick();
+    await _drain();
+    expect(h.window.visible, isTrue);
+  });
+
+  test('Linux keeps its window reachable when the tray menu fails', () async {
+    final tray = FakeTrayApi(unsupported: {'setMenu'});
+    final h = _harness(tray: tray, trayHostAvailable: () async => true);
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.handleCloseRequested();
+    expect(h.window.calls, isNot(contains('hide')));
+    expect(h.window.destroyed, isTrue);
+  });
+
+  testWidgets('losing the tray host while hidden brings back the window', (
+    tester,
+  ) async {
+    var hostAvailable = true;
+    final h = _harness(trayHostAvailable: () async => hostAvailable);
+    await h.controller.initialize();
+    addTearDown(h.controller.dispose);
+    try {
+      await h.controller.handleCloseRequested();
+      expect(h.window.visible, isFalse);
+
+      hostAvailable = false;
+      await tester.pump(const Duration(seconds: 5));
+      expect(h.window.visible, isTrue);
+      expect(h.controller.isTrayAvailable, isFalse);
+      expect(h.window.destroyed, isFalse);
+
+      hostAvailable = true;
+      await h.controller.handleCloseRequested();
+      expect(h.controller.isTrayAvailable, isTrue);
+      expect(h.window.visible, isFalse);
+      await h.controller.showWindow();
+    } finally {
+      // Cancel the hidden-window probe even if an assertion fails.
+      await h.controller.showWindow();
+    }
+  });
+
+  testWidgets('disposing during a tray recovery drops the late show result', (
+    tester,
+  ) async {
+    var hostAvailable = true;
+    final window = _GatedShowWindow();
+    final h = _harness(
+      trayHostAvailable: () async => hostAvailable,
+      window: window,
+    );
+    await h.controller.initialize();
+    await h.controller.hideToTray();
+
+    window.gate = Completer<void>();
+    hostAvailable = false;
+    await tester.pump(const Duration(seconds: 5));
+    h.controller.dispose();
+    window.gate!.complete();
+    await tester.pump();
+
+    expect(h.controller.isWindowVisible, isFalse);
+    expect(h.log, isEmpty);
+  });
+
+  test('a quit failure reveals a window hidden during quit', () async {
+    var hostAvailable = true;
+    final window = _GatedHideWindow();
+    final h = _harness(
+      trayHostAvailable: () async => hostAvailable,
+      window: window,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    final hiding = h.controller.hideToTray();
+    await window.hideStarted.future;
+    final quitting = h.controller.quit();
+    await window.destroyStarted.future;
+
+    hostAvailable = false;
+    window.finishHide.complete();
+    await hiding;
+    window.finishDestroy.complete();
+    await quitting;
+
+    expect(window.visible, isTrue);
+    expect(h.controller.isWindowVisible, isTrue);
+  });
+
   test('full-screen and minimized dimensions do not replace normal bounds', () async {
     final h = _harness();
     await h.controller.initialize();

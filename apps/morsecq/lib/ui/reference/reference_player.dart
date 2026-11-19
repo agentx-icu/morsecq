@@ -32,7 +32,10 @@ MorsePlayer createSidetoneMorsePlayer({
       LocalDiagnostics.report(DiagnosticContext.referencePrepare, e);
     }),
   );
-  return attachReferenceSink(MorsePlayer(sink: sink, clock: clock), sink);
+  return attachReferenceSink(
+    MorsePlayer(sink: sink, clock: clock, reportOutputFailures: true),
+    sink,
+  );
 }
 
 /// Records that [player] renders through [sink]; returns [player].

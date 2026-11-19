@@ -96,6 +96,14 @@ uninstall/no orphan process. Retain the old build and backups for investigation;
 halting rollout does not undo installed data migrations. Forward-fix data and
 binaries; a downgrade needs the existing B7 tests and a separate signed update path.
 
+Release preflight matches the version and build in `apps/morsecq/pubspec.yaml`
+against both Android manifests, the Apple bundle plists, the Windows executable
+version resource and Linux's bundled Flutter version metadata. The iOS export
+checks the archive and the final IPA. These checks reject an old build before
+it can be packaged with a new release version. Signed upgrade qualification
+still requires both channel-delivered builds and an in-place update that keeps
+the learner's data.
+
 ## Owner materials and where to obtain them
 
 Keep public identifiers, certificate fingerprints and redacted evidence in the release record. The entries below ask the owner to configure existing material in the indicated secure destination; do not send private keys, keystore files, passwords, tokens or unredacted console captures in chat, issues or Git. No account creation, permission expansion or submission is authorized by this checklist.

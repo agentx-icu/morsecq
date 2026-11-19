@@ -43,6 +43,15 @@ void main() {
       );
     });
 
+    test('declares the permission needed by the Bluetooth audio recorder', () {
+      expect(
+        manifest,
+        contains(
+          '<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>',
+        ),
+      );
+    });
+
     test('features implied by permissions are optional', () {
       // Each permission implies these features as REQUIRED unless declared
       // otherwise, which filters devices out of the Play listing.
