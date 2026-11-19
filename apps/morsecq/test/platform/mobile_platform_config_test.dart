@@ -20,16 +20,38 @@ void main() {
         application,
         contains('android:fullBackupContent="@xml/backup_rules"'),
       );
+      expect(
+        application,
+        contains('android:dataExtractionRules="@xml/data_extraction_rules"'),
+      );
       final modern = File(
         'android/app/src/main/res/xml/data_extraction_rules.xml',
       ).readAsStringSync();
       final legacy = File(
         'android/app/src/main/res/xml/backup_rules.xml',
       ).readAsStringSync();
-      for (final xml in [modern, legacy]) {
-        expect(xml, contains('<include domain="file" path="morsecq/guest/"/>'));
-        expect(xml, contains('<include domain="file" path="settings.json"/>'));
-        expect(xml, isNot(contains('path="."')));
+      final rules = {
+        'full-backup-content': legacy,
+        'cloud-backup': modern,
+        'device-transfer': modern,
+      };
+      for (final MapEntry(key: section, value: xml) in rules.entries) {
+        final body = RegExp(
+          '<$section\\b[^>]*>(.*?)</$section>',
+          dotAll: true,
+        ).firstMatch(xml)!.group(1)!;
+        final includes = RegExp(
+          r'<include\b[^>]*>',
+        ).allMatches(body).map((match) => match.group(0));
+        expect(
+          includes,
+          unorderedEquals([
+            '<include domain="file" path="morsecq/guest/"/>',
+            '<include domain="file" path="settings.json"/>',
+            '<include domain="file" path="settings.json.bak"/>',
+          ]),
+          reason: section,
+        );
       }
     });
 

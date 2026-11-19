@@ -160,6 +160,7 @@ jobs:
             grep -Fq 'Android Debug certificate cannot sign a store' "$log"
           done
       - name: Prepare release signing
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -170,24 +171,17 @@ jobs:
           for value in "$ANDROID_KEYSTORE_BASE64" "$ANDROID_KEYSTORE_PASSWORD" "$ANDROID_KEY_ALIAS" "$ANDROID_KEY_PASSWORD"; do
             [[ -z "$value" ]] || count=$((count + 1))
           done
-          if [[ "$count" == 4 ]]; then
-            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
-            echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
-          elif [[ "$count" == 0 ]]; then
-            if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-              echo 'Tagged Android releases require owner signing secrets.' >&2
-              exit 1
-            fi
-            echo '::warning::No Android signing secrets: artifacts use the debug key for testing; configure owner signing for distribution.'
-          else
-            echo 'All four Android signing secrets must be provided together.' >&2
+          if [[ "$count" != 4 ]]; then
+            echo 'Tagged Android releases require all four owner signing secrets.' >&2
             exit 1
           fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
+          echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
       - name: Build APK and App Bundle
         env:
-          MORSECQ_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          MORSECQ_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          MORSECQ_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          MORSECQ_ANDROID_KEYSTORE_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          MORSECQ_ANDROID_KEY_ALIAS: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEY_ALIAS || '' }}
+          MORSECQ_ANDROID_KEY_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEY_PASSWORD || '' }}
         run: |
           cd apps/morsecq
           flutter build apk --release --split-debug-info=build/symbols/android

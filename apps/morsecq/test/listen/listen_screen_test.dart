@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_dsp/testing.dart';
 import 'package:morsecq/l10n/generated/s.dart';
+import 'package:morsecq/ui/common/adaptive_fab.dart';
 import 'package:morsecq/ui/listen/listen_controller.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
 import 'package:morsecq/ui/listen/listen_widgets.dart';
 import 'package:morsecq/ui/listen/listen_preferences.dart';
+import 'package:morsecq/ui/listen/workbench/workbench_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'fake_pcm_source.dart';
@@ -63,6 +65,147 @@ void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
 }
 
 void main() {
+  testWidgets(
+    'workbench waits for a failed capture to release the microphone',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(PlatformException(code: '-1', message: 'device lost'));
+      await tester.pump();
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+      final open = find.byKey(const ValueKey('listen-open-workbench'));
+      await tester.tap(open);
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+
+      expect(source.stopCalls, 1);
+      expect(find.byType(WorkbenchScreen), findsNothing);
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(source.isStreaming, isFalse);
+      expect(find.byType(WorkbenchScreen, skipOffstage: false), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'capture retry stays disabled until failure cleanup is complete',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(StateError('device lost'));
+      await tester.pump();
+      final fab = find.byType(AdaptiveFab);
+      expect(tester.widget<AdaptiveFab>(fab).onPressed, isNull);
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(tester.widget<AdaptiveFab>(fab).onPressed, isNotNull);
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+      expect(source.startCalls, 2);
+      expect(source.isStreaming, isTrue);
+      expect(find.text(en.listenStreamFailed), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'leaving Listen cancels a pending workbench handoff after failure',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(StateError('device lost'));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('listen-open-workbench')));
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      expect(source.stopCalls, 1, reason: 'disposal joins the pending stop');
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(source.isStreaming, isFalse);
+      expect(find.byType(WorkbenchScreen), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('an older mic callback cannot queue a retry before locking', (
+    tester,
+  ) async {
+    final stop = Completer<void>();
+    final source = FakePcmSource()..stopGate = stop;
+    addTearDown(() {
+      if (!stop.isCompleted) stop.complete();
+    });
+    final binding = tester.binding;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    final toggle = tester
+        .widget<AdaptiveFab>(find.byType(AdaptiveFab))
+        .onPressed!;
+
+    source.failStream(StateError('device lost'));
+    toggle();
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    stop.complete();
+    await tester.pump();
+
+    expect(source.startCalls, 1);
+    expect(source.isStreaming, isFalse);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenStreamFailed), findsOneWidget);
+    expect(source.isStreaming, isFalse);
+  });
+
+  testWidgets('the mic callback cannot start while opening the workbench', (
+    tester,
+  ) async {
+    final source = FakePcmSource();
+    await _pump(tester, source);
+    final toggle = tester
+        .widget<AdaptiveFab>(find.byType(AdaptiveFab))
+        .onPressed!;
+    final open = tester
+        .widget<IconButton>(find.byKey(const ValueKey('listen-open-workbench')))
+        .onPressed!;
+
+    open();
+    toggle();
+    await tester.pumpAndSettle();
+
+    expect(source.permissionRequests, isEmpty);
+    expect(source.startCalls, 0);
+    expect(find.byType(WorkbenchScreen), findsOneWidget);
+  });
+
   testWidgets('manual tuning and retune update the persisted preferences', (
     tester,
   ) async {

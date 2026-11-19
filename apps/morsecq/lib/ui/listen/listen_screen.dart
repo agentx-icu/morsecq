@@ -143,8 +143,10 @@ class _ListenScreenState extends State<ListenScreen>
     }
   }
 
-  Future<void> _start() =>
-      _controller.start(explainPermission: _explainMicrophonePurpose);
+  Future<void> _start() async {
+    if (_openingWorkbench || !_controller.canStart) return;
+    await _controller.start(explainPermission: _explainMicrophonePurpose);
+  }
 
   Future<bool> _explainMicrophonePurpose() async {
     if (_micPurposeExplained) return true;
@@ -203,9 +205,7 @@ class _ListenScreenState extends State<ListenScreen>
     if (_openingWorkbench) return;
     _openingWorkbench = true;
     try {
-      if (_controller.isListening || _controller.isBusy) {
-        await _controller.stop();
-      }
+      await _controller.stopBeforePlayback();
       if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
       await Navigator.of(
         context,
@@ -218,7 +218,6 @@ class _ListenScreenState extends State<ListenScreen>
   @override
   Widget build(BuildContext context) {
     final listening = _controller.isListening;
-    final busy = _controller.isBusy;
     final S s = context.s;
     return Scaffold(
       appBar: AppBar(
@@ -290,7 +289,7 @@ class _ListenScreenState extends State<ListenScreen>
         ),
       ),
       floatingActionButton: AdaptiveFab(
-        onPressed: busy ? null : _toggle,
+        onPressed: listening || _controller.canStart ? _toggle : null,
         icon: Icon(listening ? Icons.stop : Icons.mic),
         label: listening ? s.listenStop : s.listenStart,
       ),
