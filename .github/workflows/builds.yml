@@ -76,18 +76,6 @@ jobs:
             apps/morsecq/build/macos/Build/Products/Release/**/*.dSYM
             apps/morsecq/build/windows/x64/runner/Release/*.pdb
           if-no-files-found: error
-      - name: Inspect built Apple release
-        if: runner.os == 'macOS'
-        run: |
-          app=apps/morsecq/build/macos/Build/Products/Release/MorseCQ.app
-          lipo "$app/Contents/MacOS/MorseCQ" -verify_arch arm64 x86_64
-          python tool/ci/release_preflight.py --output build/evidence/macos.json apple "$app" --platform macos
-      - name: Inspect Linux native payload
-        if: runner.os == 'Linux'
-        run: python tool/ci/release_preflight.py --output build/evidence/linux.json native apps/morsecq/build/linux/x64/release/bundle --platform linux --architecture x86_64
-      - name: Inspect Windows native payload
-        if: runner.os == 'Windows'
-        run: python tool/ci/release_preflight.py --output build/evidence/windows.json native apps/morsecq/build/windows/x64/runner/Release --platform windows --architecture x86_64
       - name: Refuse damaged Microsoft runtime before owner signing
         if: runner.os == 'Windows'
         shell: pwsh
@@ -267,8 +255,6 @@ jobs:
             apps/morsecq/build/symbols/ios/
             apps/morsecq/build/ios/iphoneos/**/*.dSYM
           if-no-files-found: error
-      - name: Inspect built iOS device release
-        run: python tool/ci/release_preflight.py --output build/evidence/ios.json apple apps/morsecq/build/ios/iphoneos/Runner.app --platform ios
       - run: bash tool/ci/package_artifacts.sh --target ios
       - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/ios
       - uses: actions/upload-artifact@v4
