@@ -33,6 +33,7 @@ class WorkbenchScreen extends StatefulWidget {
     this.profileRoot,
     this.training,
     this.iosRouteChanges,
+    this.iosInterruptions,
   });
 
   /// Injected in tests; defaults to the platform file picker.
@@ -51,6 +52,9 @@ class WorkbenchScreen extends StatefulWidget {
   /// Injected in tests; defaults to the iOS audio session route stream.
   final Stream<AVAudioSessionRouteChange>? iosRouteChanges;
 
+  /// Injected in tests; defaults to the iOS audio session interruptions.
+  final Stream<AVAudioSessionInterruptionNotification>? iosInterruptions;
+
   @override
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
@@ -66,6 +70,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   TrainingController? _training;
   late final ClipPlayer _player = widget.player ?? SoloudClipPlayer();
   StreamSubscription<AVAudioSessionRouteChange>? _routeSubscription;
+  StreamSubscription<AVAudioSessionInterruptionNotification>? _interruptionSub;
   bool _unavailable = false;
   bool _runningAction = false;
 
@@ -75,12 +80,21 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    final routes =
-        widget.iosRouteChanges ??
-        (!kIsWeb && Platform.isIOS ? AVAudioSession().routeChangeStream : null);
+    final session = !kIsWeb && Platform.isIOS ? AVAudioSession() : null;
+    final routes = widget.iosRouteChanges ?? session?.routeChangeStream;
     _routeSubscription = routes?.listen((change) {
       if (change.reason ==
           AVAudioSessionRouteChangeReason.oldDeviceUnavailable) {
+        unawaited(_c?.stopPlayback());
+      }
+    });
+    final interruptions =
+        widget.iosInterruptions ?? session?.interruptionNotificationStream;
+    _interruptionSub = interruptions?.listen((notification) {
+      // SoLoud restarts its output device when the interruption ends. Drop
+      // the clip so playback still requires a new user action.
+      if (notification.type == AVAudioSessionInterruptionType.began &&
+          notification.wasSuspended != true) {
         unawaited(_c?.stopPlayback());
       }
     });
@@ -155,6 +169,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_routeSubscription?.cancel());
+    unawaited(_interruptionSub?.cancel());
     _c?.dispose();
     unawaited(_player.dispose());
     super.dispose();

@@ -16,11 +16,15 @@ MACHO_MAGICS = {
     ("feedface", "cefaedfe", "feedfacf", "cffaedfe",
      "cafebabe", "bebafeca", "cafebabf", "bfbafeca")
 }
+MACHO_RUNTIME_PLATFORMS = {
+    "macOS": (("1", "macos"), "LC_VERSION_MIN_MACOSX"),
+    "iOS": (("2", "ios"), "LC_VERSION_MIN_IPHONEOS"),
+}
 
 
-def version(value):
+def version(value, *, platform="macOS"):
     if not isinstance(value, str) or not re.fullmatch(r"\d+(?:\.\d+){0,2}", value):
-        raise ValueError(f"Invalid macOS minimum version: {value!r}")
+        raise ValueError(f"Invalid {platform} minimum version: {value!r}")
     parts = tuple(map(int, value.split(".")))
     return parts + (0,) * (3 - len(parts))
 
@@ -29,27 +33,28 @@ def display(value):
     return ".".join(map(str, value))
 
 
-def parse_versions(output):
+def parse_versions(output, *, platform="macOS"):
     """Read every architecture's minimum, without mistaking SDK/tool versions."""
     slices = re.split(r"(?m)^.+ \(architecture [^)]+\):\s*$", output)
     if len(slices) > 1:
-        return [minimum for text in slices[1:] for minimum in parse_versions(text)]
+        return [minimum for text in slices[1:] for minimum in parse_versions(text, platform=platform)]
+    valid_platforms, legacy_command = MACHO_RUNTIME_PLATFORMS[platform]
     minima = []
     for block in re.split(r"(?m)^\s*Load command \d+\s*$", output):
         if re.search(r"(?m)^\s*cmd LC_BUILD_VERSION\s*$", block):
-            platform = re.search(r"(?m)^\s*platform (\S+)\s*$", block)
-            if platform is None or platform[1].lower() not in ("1", "macos"):
-                raise ValueError("Embedded binary has a non-macOS build platform")
+            build_platform = re.search(r"(?m)^\s*platform (\S+)\s*$", block)
+            if build_platform is None or build_platform[1].lower() not in valid_platforms:
+                raise ValueError(f"Embedded binary has a non-{platform} build platform")
             minimum = re.search(r"(?m)^\s*minos (\S+)\s*$", block)
-        elif re.search(r"(?m)^\s*cmd LC_VERSION_MIN_MACOSX\s*$", block):
+        elif re.search(rf"(?m)^\s*cmd {legacy_command}\s*$", block):
             minimum = re.search(r"(?m)^\s*version (\S+)\s*$", block)
         else:
             continue
         if minimum is None:
             raise ValueError("Embedded binary has an incomplete minimum-OS command")
-        minima.append(version(minimum[1]))
+        minima.append(version(minimum[1], platform=platform))
     if not minima:
-        raise ValueError("Embedded Mach-O has no macOS minimum-OS declaration")
+        raise ValueError(f"Embedded Mach-O has no {platform} minimum-OS declaration")
     return minima
 
 

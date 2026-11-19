@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
@@ -89,7 +90,11 @@ void main() {
 
   group('drill screen', () {
     Future<(TestTraining, ReceiveSession, FakeLearnPlaybackFactory, FakeClipPlayer)>
-    pump(WidgetTester tester, {bool sound = true}) async {
+    pump(
+      WidgetTester tester, {
+      bool sound = true,
+      Stream<AVAudioSessionInterruptionNotification>? iosInterruptions,
+    }) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -113,6 +118,7 @@ void main() {
             conditionsPlayback: ConditionsPlayback(
               player: clip,
               render: ConditionsPlayback.renderNow,
+              iosInterruptions: iosInterruptions,
             ),
           ),
         ),
@@ -166,6 +172,60 @@ void main() {
       expect(clip.isPlaying, isFalse);
       expect(clip.plays, hasLength(1));
       // An interrupted round is not "heard": replaying it is not assistance.
+    });
+
+    testWidgets('retrying audio interrupted in the foreground is unassisted', (
+      tester,
+    ) async {
+      final interruptions =
+          StreamController<AVAudioSessionInterruptionNotification>.broadcast();
+      addTearDown(interruptions.close);
+      final (_, session, _, clip) = await pump(
+        tester,
+        iosInterruptions: interruptions.stream,
+      );
+      expect(clip.isPlaying, isTrue);
+
+      final interrupted = AVAudioSessionInterruptionNotification(
+        type: AVAudioSessionInterruptionType.began,
+        options: AVAudioSessionInterruptionOptions.none,
+        wasSuspended: false,
+      );
+      interruptions.add(interrupted);
+      await tester.pumpAndSettle();
+      final stoppedByInterruption = !clip.isPlaying;
+      // The native clip's wall-clock timer still fires when its output was
+      // paused by iOS. Simulate that event if the app did not stop the clip.
+      clip.end();
+      interruptions.add(
+        AVAudioSessionInterruptionNotification(
+          type: AVAudioSessionInterruptionType.ended,
+          options: AVAudioSessionInterruptionOptions.shouldResume,
+          wasSuspended: false,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(clip.plays, hasLength(1));
+
+      final replay = find.text(en.learnReplay);
+      await tester.tap(replay);
+      await tester.pumpAndSettle();
+      expect(session.isAssisted, isFalse);
+      expect(stoppedByInterruption, isTrue);
+      expect(clip.plays, hasLength(2));
+
+      // A later interruption must not erase an already completed playback.
+      clip.end();
+      await tester.pumpAndSettle();
+      interruptions.add(interrupted);
+      await tester.pumpAndSettle();
+      await tester.tap(replay);
+      await tester.pumpAndSettle();
+      expect(session.isAssisted, isTrue);
+      expect(clip.plays, hasLength(3));
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      expect(interruptions.hasListener, isFalse);
     });
 
     testWidgets('after answering, a clean reference plays through the sink', (tester) async {

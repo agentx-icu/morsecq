@@ -72,6 +72,30 @@ class ReleasePreflightTest(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 check_android_manifest(bad, 36)
 
+    def test_android_manifest_preserves_package_uid_and_full_version_code(self):
+        manifest = '''<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+            package="icu.agentx.morsecq" android:versionName="1.0.1" android:versionCode="2" {attribute}>
+            <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/>
+            <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+            <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+            <application/>
+        </manifest>'''
+        def inspect(attribute):
+            return check_android_manifest(manifest.format(attribute=attribute), 36,
+                                          expected_version='1.0.1+2')
+
+        normal = inspect('')
+        for zero in ('0', '0x0', '0x00000000'):
+            with self.subTest(zero=zero):
+                self.assertEqual(normal, inspect(f'android:versionCodeMajor="{zero}"'))
+        for attribute, message in [
+            ('android:sharedUserId="icu.agentx.other"', 'sharedUserId'),
+            ('android:versionCodeMajor="1"', 'versionCodeMajor'),
+            ('android:versionCodeMajor="0x1"', 'versionCodeMajor'),
+        ]:
+            with self.subTest(attribute=attribute), self.assertRaisesRegex(ValueError, message):
+                inspect(attribute)
+
     def test_androidx_private_receiver_permission_must_be_signature_scoped(self):
         xml = '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="icu.agentx.morsecq" android:versionCode="2" android:versionName="1.0.1"><uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="0x2"/><uses-permission android:name="icu.agentx.morsecq.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/><uses-feature android:name="android.hardware.microphone" android:required="false"/><application/></manifest>'
         for level in ['signature', '2', '0x2', '0x00000002']:
@@ -196,16 +220,14 @@ class ReleasePreflightTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'collection'):
             check_apple(app, 'ios', inspect_native=False)
 
-    def test_apple_release_preflight_refuses_an_older_built_app(self):
-        pubspec = self.root / 'apps/morsecq/pubspec.yaml'
-        pubspec.parent.mkdir(parents=True)
-        pubspec.write_text('version: 1.0.2+3\n')
+    def ios_fixture(self):
         app = self.root / 'Runner.app'
         app.mkdir()
         usage = {'NSMicrophoneUsageDescription': 'Decode Morse'}
         (app / 'Info.plist').write_bytes(plistlib.dumps({
             **usage, 'CFBundleIdentifier': 'icu.agentx.morsecq',
             'CFBundleShortVersionString': '1.0.1', 'CFBundleVersion': '2',
+            'MinimumOSVersion': '14.0', 'UIDeviceFamily': [1, 2],
         }))
         (app / 'PrivacyInfo.xcprivacy').write_bytes(plistlib.dumps({'NSPrivacyTracking': False}))
         (app / 'Runner').write_bytes(b'\xcf\xfa\xed\xfe')
@@ -213,6 +235,79 @@ class ReleasePreflightTest(unittest.TestCase):
             strings = app / f'{locale}.lproj/InfoPlist.strings'
             strings.parent.mkdir()
             strings.write_bytes(plistlib.dumps(usage))
+        return app
+
+    def test_ios_requires_the_declared_deployment_minimum(self):
+        app = self.ios_fixture()
+        plist = app / 'Info.plist'
+        info = plistlib.loads(plist.read_bytes())
+        for minimum in [None, '16.0', '13.0', '14.bad']:
+            updated = dict(info)
+            if minimum is None:
+                updated.pop('MinimumOSVersion')
+            else:
+                updated['MinimumOSVersion'] = minimum
+            plist.write_bytes(plistlib.dumps(updated))
+            with self.subTest(minimum=minimum), self.assertRaisesRegex(ValueError, 'iOS minimum'):
+                check_apple(app, 'ios', inspect_native=False)
+
+    def test_ios_keeps_iphone_and_ipad_in_the_built_device_family(self):
+        app = self.ios_fixture()
+        plist = app / 'Info.plist'
+        info = plistlib.loads(plist.read_bytes())
+        info.pop('UIDeviceFamily')
+        for family in [None, [1], [2], [1, 1], [True, 2], '1,2']:
+            change = {} if family is None else {'UIDeviceFamily': family}
+            plist.write_bytes(plistlib.dumps({**info, **change}))
+            with self.subTest(family=family), self.assertRaisesRegex(ValueError, 'UIDeviceFamily'):
+                check_apple(app, 'ios', inspect_native=False)
+        plist.write_bytes(plistlib.dumps({**info, 'UIDeviceFamily': [2, 1]}))
+        self.assertEqual(check_apple(app, 'ios', inspect_native=False)['device_family'], [1, 2])
+
+    def test_ios_rejects_legacy_simulator_slice_in_arm64_device_binary(self):
+        app = self.ios_fixture()
+        commands = '''Runner (architecture arm64):
+Load command 2
+    cmd LC_BUILD_VERSION
+    platform 2
+    minos 14.0
+Runner (architecture x86_64):
+Load command 2
+    cmd LC_VERSION_MIN_IPHONEOS
+    version 12.0
+'''
+        with patch('release_preflight.run', side_effect=['arm64 x86_64', commands]), \
+                self.assertRaisesRegex(ValueError, 'unexpected iOS architectures'):
+            check_apple(app, 'ios')
+
+    def test_ios_checks_minimum_ios_of_every_embedded_macho(self):
+        app = self.ios_fixture()
+        framework = app / 'Frameworks/Future.framework/Future'
+        framework.parent.mkdir(parents=True)
+        framework.write_bytes(b'\xcf\xfa\xed\xfe')
+        modern = ('Load command 2\n cmd LC_BUILD_VERSION\n cmdsize 32\n'
+                  ' platform 2\n minos {minimum}\n sdk 26.5\n ntools 1\n tool 3\n version 1267.0\n')
+        legacy = ('Load command 2\n cmd LC_VERSION_MIN_IPHONEOS\n cmdsize 16\n'
+                  ' version 13.0\n sdk 26.5\n')
+        for bad, message in [(modern.format(minimum='16.0'), r'Future.+16\.0.+14\.0'),
+                             (modern.format(minimum='14.0').replace('platform 2', 'platform 7'), 'iOS'),
+                             ('Load command 2\n cmd LC_UUID\n', 'iOS')]:
+            outputs = ['arm64', bad, 'arm64', modern.format(minimum='14.0')]
+            with self.subTest(bad=bad), patch('release_preflight.run', side_effect=outputs), \
+                    self.assertRaisesRegex(ValueError, message):
+                check_apple(app, 'ios')
+        outputs = ['arm64', legacy, 'arm64', modern.format(minimum='14.0')]
+        with patch('release_preflight.run', side_effect=outputs):
+            report = check_apple(app, 'ios')
+        self.assertEqual(report['minimum_os']['app_minimum'], '14.0.0')
+        self.assertEqual([entry['architecture_minima'] for entry in report['binaries']],
+                         [['13.0.0'], ['14.0.0']])
+
+    def test_apple_release_preflight_refuses_an_older_built_app(self):
+        pubspec = self.root / 'apps/morsecq/pubspec.yaml'
+        pubspec.parent.mkdir(parents=True)
+        pubspec.write_text('version: 1.0.2+3\n')
+        app = self.ios_fixture()
         args = ['release_preflight.py', '--output', str(self.root / 'ios.json'),
                 'apple', str(app), '--platform', 'ios']
         with patch('release_preflight.__file__', str(self.root / 'tool/ci/release_preflight.py')), \

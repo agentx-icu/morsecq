@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_trainer/morse_trainer.dart';
@@ -18,13 +21,16 @@ final class ConditionsPlayback with WidgetsBindingObserver {
     ClipPlayer? player,
     ConditionsRender render = renderInIsolate,
     this.stopInBackground = false,
+    Stream<AVAudioSessionInterruptionNotification>? iosInterruptions,
   }) : _player = player ?? SoloudClipPlayer(),
-       _render = render {
+       _render = render,
+       _iosInterruptions = iosInterruptions {
     if (stopInBackground) WidgetsBinding.instance.addObserver(this);
   }
 
   final ClipPlayer _player;
   final ConditionsRender _render;
+  final Stream<AVAudioSessionInterruptionNotification>? _iosInterruptions;
 
   /// Stop on its own when the app leaves the foreground (the preset
   /// preview; a drill screen manages this itself).
@@ -39,6 +45,22 @@ final class ConditionsPlayback with WidgetsBindingObserver {
 
   /// `true` when a rendering starts, `false` when it ends or is stopped.
   Stream<bool> get playing => _player.playing;
+
+  /// Lets the drill distinguish interrupted output from a completed round.
+  Stream<void> get interruptions {
+    final notifications =
+        _iosInterruptions ??
+        (!kIsWeb && Platform.isIOS
+            ? AVAudioSession().interruptionNotificationStream
+            : const Stream<AVAudioSessionInterruptionNotification>.empty());
+    return notifications
+        .where(
+          (event) =>
+              event.type == AVAudioSessionInterruptionType.began &&
+              event.wasSuspended != true,
+        )
+        .map<void>((_) {});
+  }
 
   /// Renders off the UI isolate, then plays [text] under [scenario].
   /// Returns false when a stop or dispose dropped it before it started (no

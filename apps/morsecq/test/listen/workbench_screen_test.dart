@@ -34,6 +34,7 @@ void main() {
     WidgetTester tester, {
     Size size = const Size(390, 2200),
     Stream<AVAudioSessionRouteChange>? iosRouteChanges,
+    Stream<AVAudioSessionInterruptionNotification>? iosInterruptions,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -51,6 +52,7 @@ void main() {
           profileRoot: () async => dataDir,
           training: () async => t.controller,
           iosRouteChanges: iosRouteChanges,
+          iosInterruptions: iosInterruptions,
         ),
       ),
     );
@@ -212,6 +214,67 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     expect(routes.hasListener, isFalse);
   });
+
+  testWidgets(
+    'an iOS audio interruption stops a loop until manually replayed',
+    (tester) async {
+      final interruptions =
+          StreamController<AVAudioSessionInterruptionNotification>.broadcast();
+      addTearDown(interruptions.close);
+      final (_, _, player) = await pumpScreen(
+        tester,
+        iosInterruptions: interruptions.stream,
+      );
+      await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+      final play = find.byKey(const ValueKey('workbench-play'));
+      await waitForWorkbench(tester, play);
+      await tester.tap(find.widgetWithText(FilterChip, en.workbenchLoop));
+      await tester.tap(play);
+      await waitForWorkbench(tester, find.text(en.workbenchStop));
+      expect(player.plays.single.$2, isTrue);
+
+      interruptions.add(
+        AVAudioSessionInterruptionNotification(
+          type: AVAudioSessionInterruptionType.began,
+          options: AVAudioSessionInterruptionOptions.none,
+          wasSuspended: true,
+        ),
+      );
+      await tester.pump();
+      expect(player.isPlaying, isTrue, reason: 'stale event from suspension');
+
+      interruptions.add(
+        AVAudioSessionInterruptionNotification(
+          type: AVAudioSessionInterruptionType.began,
+          options: AVAudioSessionInterruptionOptions.none,
+          wasSuspended: false,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(player.isPlaying, isFalse);
+      expect(find.text(en.workbenchPlay), findsOneWidget);
+
+      interruptions.add(
+        AVAudioSessionInterruptionNotification(
+          type: AVAudioSessionInterruptionType.ended,
+          options: AVAudioSessionInterruptionOptions.shouldResume,
+          wasSuspended: false,
+        ),
+      );
+      await tester.pump();
+      expect(player.plays, hasLength(1));
+      expect(player.isPlaying, isFalse);
+
+      await tester.tap(play);
+      await waitForWorkbench(tester, find.text(en.workbenchStop));
+      expect(player.plays.last.$2, isTrue);
+      expect(player.plays, hasLength(2));
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      expect(interruptions.hasListener, isFalse);
+      expect(player.disposed, isTrue);
+    },
+  );
 
   testWidgets('a large pasted selection time is clamped before conversion', (
     tester,
