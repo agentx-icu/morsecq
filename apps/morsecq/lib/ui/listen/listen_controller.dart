@@ -88,6 +88,8 @@ final class ListenController extends ChangeNotifier {
   ListenStatus get status => _status;
   bool get isListening => _status == ListenStatus.listening;
   bool get isBusy => _status == ListenStatus.starting;
+  bool get canStart =>
+      !_disposed && !isBusy && !isListening && _stopping == null;
 
   /// Why capture failed; non-null exactly when [status] is
   /// [ListenStatus.failed].
@@ -118,7 +120,11 @@ final class ListenController extends ChangeNotifier {
   /// [explainPermission] runs before requesting a missing microphone grant.
   /// A cancelled or stale attempt never proceeds to the system prompt.
   Future<void> start({Future<bool> Function()? explainPermission}) async {
-    if (_disposed || isBusy || isListening) return;
+    final stopping = _stopping;
+    if (_status == ListenStatus.failed && stopping != null) {
+      await stopping;
+    }
+    if (!canStart) return;
     final int attempt = _lastStartAttempt = ++_attempt;
     _stoppedInBackground = false;
     _failure = null;
@@ -210,9 +216,23 @@ final class ListenController extends ChangeNotifier {
   /// (and a user can double-tap Stop), so a call made while a stop is in
   /// flight joins it instead of asking the platform to stop twice.
   Future<void> stop({bool fromBackground = false}) =>
-      _stopping ??= _stop(fromBackground).whenComplete(() => _stopping = null);
+      _stopping ??= _stop().whenComplete(() {
+        _stopping = null;
+        if (_disposed) return;
+        if (isListening || isBusy) {
+          if (isListening) _finishCapture();
+          _stoppedInBackground = fromBackground;
+          _setStatus(ListenStatus.idle);
+        } else if (_status == ListenStatus.failed) {
+          notifyListeners();
+        }
+      });
 
-  Future<void> _stop(bool fromBackground) async {
+  /// Releases active capture or waits for cleanup already in progress.
+  Future<void> stopBeforePlayback() =>
+      (isListening || isBusy) ? stop() : _stopping ?? Future<void>.value();
+
+  Future<void> _stop() async {
     _attempt++; // Invalidates a start still waiting on the platform.
     final sub = _pcmSub;
     _pcmSub = null;
@@ -226,12 +246,6 @@ final class ListenController extends ChangeNotifier {
     } catch (_) {
       // Already stopped or the platform tore the session down; nothing to
       // report beyond the idle state below.
-    }
-    if (_disposed) return;
-    if (_status == ListenStatus.listening || _status == ListenStatus.starting) {
-      if (isListening) _finishCapture();
-      _stoppedInBackground = fromBackground;
-      _setStatus(ListenStatus.idle);
     }
   }
 
@@ -279,7 +293,7 @@ final class ListenController extends ChangeNotifier {
       _pcmSub = null;
       unawaited(sub?.cancel());
       if (sub != null) _finishCapture();
-      unawaited(_source.stop().catchError((Object _) {}));
+      unawaited(stop());
     }
     _setStatus(ListenStatus.failed);
   }
@@ -370,11 +384,7 @@ final class ListenController extends ChangeNotifier {
   }
 
   Future<void> _shutdownSource() async {
-    try {
-      await _source.stop();
-    } catch (_) {
-      // Nothing was recording; fall through to dispose.
-    }
+    await stop();
     if (!_ownsSource) return;
     try {
       await _source.dispose();

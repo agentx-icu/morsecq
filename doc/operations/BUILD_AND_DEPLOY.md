@@ -34,8 +34,9 @@ single-instance activation socket; no Internet service is contacted.
 
 Tagged Android builds require all four owner-signing secrets. The built APK
 and AAB must have matching non-debug certificates, checked by
-`tool/ci/verify_android_signing.py`; non-tag debug-signed artifacts remain for
-local/CI testing. Pass `-PstoreRelease` to `flutter build apk --release` or
+`tool/ci/verify_android_signing.py`. Branch, PR and non-tag manual CI builds
+use the debug key even when the repository has owner signing configured.
+Pass `-PstoreRelease` to `flutter build apk --release` or
 `flutter build appbundle --release` for a store build. Both require a configured
 release keystore (env or `android/key.properties`). Gradle verifies the signed
 AAB and every output APK and rejects Android Debug certificates.
