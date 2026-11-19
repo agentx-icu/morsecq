@@ -22,7 +22,6 @@ abstract final class TrayMenuKeys {
 }
 
 /// Manages desktop windows, window preferences and the localized tray menu.
-/// Mobile and web leave the native adapters untouched.
 class DesktopShellController extends ChangeNotifier
     implements WindowEventHandler, TrayEventHandler {
   DesktopShellController({
@@ -49,6 +48,7 @@ class DesktopShellController extends ChangeNotifier
 
   bool _initialized = false;
   bool _active = false;
+  bool _trayIconSet = false;
   bool _trayAvailable = false;
   bool _windowVisible = false;
   bool _closing = false;
@@ -61,12 +61,16 @@ class DesktopShellController extends ChangeNotifier
   bool _trayGapWarned = false;
   final Set<Future<void> Function()> _beforeQuit = {};
   late final _trayHostWatch = TrayHostWatch(
-    isAvailable: () async => _trayAvailable && await _hasTrayHost(),
+    isAvailable: () async =>
+        _trayAvailable && await _hasTrayHost() && await _hasTrayIcon(),
     onLost: () async {
       _trayAvailable = false;
       await _tolerate('show window', showWindow);
     },
   );
+
+  bool get _monitorsTray =>
+      config.trayHostAvailable != null || config.trayIconAvailable != null;
 
   void addBeforeQuitListener(Future<void> Function() listener) =>
       _beforeQuit.add(listener);
@@ -140,8 +144,7 @@ class DesktopShellController extends ChangeNotifier
         .fitTo(areas, minSize);
 
     _window.setEventHandler(this);
-    // Always intercept close: even without close-to-tray we must persist the
-    // bounds and run onBeforeQuit before the runner exits.
+    // Intercept close to persist bounds and run onBeforeQuit.
     await _window.setPreventClose(true);
     await _window.waitUntilReadyToShow(
       title: windowTitle,
@@ -165,12 +168,12 @@ class DesktopShellController extends ChangeNotifier
     try {
       if (!await _hasTrayHost()) return;
       _tray.setEventHandler(this);
+      // Reset tray_manager's cached registration before retrying on Windows.
+      if (config.trayIconAvailable != null) await _destroyTray();
       await _tray.setIcon(icon, isTemplate: config.isMacOS);
-      _trayAvailable = true;
+      _trayIconSet = true;
+      _trayAvailable = await _hasTrayIcon();
     } catch (e) {
-      // A tray-less session (headless Linux, no SNI host) throws on the first
-      // call. Disable the tray entirely: close-to-tray then falls back to a
-      // real quit so the user can never lose the window.
       _trayAvailable = false;
       _tray.setEventHandler(null);
       config.diagnose(DiagnosticContext.desktopTray, e);
@@ -179,9 +182,12 @@ class DesktopShellController extends ChangeNotifier
     await _applyTrayState();
   }
 
-  Future<bool> _hasTrayHost() async {
+  Future<bool> _hasTrayHost() => _probeTray(config.trayHostAvailable);
+  Future<bool> _hasTrayIcon() => _probeTray(config.trayIconAvailable);
+
+  Future<bool> _probeTray(Future<bool> Function()? probe) async {
     try {
-      return await config.trayHostAvailable?.call() ?? true;
+      return await probe?.call() ?? true;
     } on Object catch (error) {
       config.diagnose(DiagnosticContext.desktopTrayHost, error);
       return false;
@@ -216,13 +222,10 @@ class DesktopShellController extends ChangeNotifier
     }
   }
 
-  /// Tray updates are several async plugin calls; callers fire them without
-  /// awaiting, so serialise them to keep an older state from landing last.
   void _enqueueTray(Future<void> Function() op) {
     _trayQueue = _trayQueue.then((_) => op());
   }
 
-  /// Completes when every queued tray update has been applied (tests).
   Future<void> flushTrayUpdates() => _trayQueue;
 
   Future<void> showWindow() async {
@@ -234,18 +237,15 @@ class DesktopShellController extends ChangeNotifier
     await _window.focus();
   }
 
-  /// Hides the window when the tray can reopen it.
   Future<void> hideToTray() async {
     await _hideToTray();
   }
 
   Future<bool> _hideToTray() async {
     if (!_active || _closing) return false;
-    if (_trayAvailable) {
-      if (!await _hasTrayHost()) return false;
-    } else if (config.trayHostAvailable != null) {
-      await _initTray();
-    }
+    if (!await _hasTrayHost()) return false;
+    if (_trayAvailable && !await _hasTrayIcon()) _trayAvailable = false;
+    if (!_trayAvailable && _monitorsTray) await _initTray();
     if (!_trayAvailable || _closing || !_active) return false;
     await persistWindowState();
     if (_closing || !_active) return false;
@@ -275,12 +275,11 @@ class DesktopShellController extends ChangeNotifier
   }
 
   void _watchHiddenTray() {
-    if (config.trayHostAvailable != null && !_closing && _active) {
+    if (_monitorsTray && !_closing && _active) {
       _trayHostWatch.start();
     }
   }
 
-  /// Reads the live bounds and maximised flag and stores them.
   Future<void> persistWindowState() async {
     if (!_active) return;
     try {
@@ -361,8 +360,13 @@ class DesktopShellController extends ChangeNotifier
     if (_active) _enqueueTray(_applyTrayState);
   }
 
-  /// Persists the window state, runs [DesktopShellConfig.onBeforeQuit] and
-  /// closes the window for real. Idempotent.
+  Future<void> _destroyTray() async {
+    if (config.trayIconAvailable != null && !_trayIconSet) return;
+    await _tray.destroy();
+    _trayIconSet = false;
+  }
+
+  /// Persists the window state and closes the window. Idempotent.
   Future<void> quit() async {
     if (!_active || _closing) return;
     _closing = true;
@@ -385,7 +389,7 @@ class DesktopShellController extends ChangeNotifier
     } catch (e) {
       config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
     }
-    await _tolerate('destroy tray', _tray.destroy);
+    await _tolerate('destroy tray', _destroyTray);
     try {
       await _window.destroy();
     } on Object catch (error) {
@@ -411,8 +415,6 @@ class DesktopShellController extends ChangeNotifier
     unawaited(handleCloseRequested());
   }
 
-  /// Close-to-tray hides (when the tray exists); otherwise this is the real
-  /// exit path.
   Future<void> handleCloseRequested() async {
     if (!_active || _closing) return;
     if (_closeToTray && await _hideToTray()) return;
@@ -477,8 +479,6 @@ class DesktopShellController extends ChangeNotifier
     }
   }
 
-  /// Runs one optional call, warning once about a per-platform gap (Linux
-  /// tray_manager has no tooltip; some hosts reject titles).
   Future<void> _tolerate(String label, Future<void> Function() op) async {
     try {
       await op();

@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
@@ -29,6 +32,7 @@ class WorkbenchScreen extends StatefulWidget {
     this.player,
     this.profileRoot,
     this.training,
+    this.iosRouteChanges,
   });
 
   /// Injected in tests; defaults to the platform file picker.
@@ -44,6 +48,9 @@ class WorkbenchScreen extends StatefulWidget {
   /// The shared training controller; defaults to the app's host.
   final Future<TrainingController> Function()? training;
 
+  /// Injected in tests; defaults to the iOS audio session route stream.
+  final Stream<AVAudioSessionRouteChange>? iosRouteChanges;
+
   @override
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
@@ -58,6 +65,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   WorkbenchController? _c;
   TrainingController? _training;
   late final ClipPlayer _player = widget.player ?? SoloudClipPlayer();
+  StreamSubscription<AVAudioSessionRouteChange>? _routeSubscription;
   bool _unavailable = false;
   bool _runningAction = false;
 
@@ -67,6 +75,15 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    final routes =
+        widget.iosRouteChanges ??
+        (!kIsWeb && Platform.isIOS ? AVAudioSession().routeChangeStream : null);
+    _routeSubscription = routes?.listen((change) {
+      if (change.reason ==
+          AVAudioSessionRouteChangeReason.oldDeviceUnavailable) {
+        unawaited(_c?.stopPlayback());
+      }
+    });
     unawaited(_setup());
   }
 
@@ -137,6 +154,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(_routeSubscription?.cancel());
     _c?.dispose();
     unawaited(_player.dispose());
     super.dispose();

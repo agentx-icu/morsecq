@@ -51,6 +51,7 @@ class DesktopShellConfig {
     this.soundEnabled = true,
     this.onToggleSound,
     this.trayHostAvailable,
+    this.trayIconAvailable,
     this.onBeforeQuit,
     this.persistDebounce = const Duration(milliseconds: 500),
     this.log,
@@ -78,6 +79,9 @@ class DesktopShellConfig {
 
   /// Checks that the shell has a usable tray host, not only a loaded plugin.
   final Future<bool> Function()? trayHostAvailable;
+
+  /// Checks that the native icon is registered after the plugin adds it.
+  final Future<bool> Function()? trayIconAvailable;
 
   /// Initial state of the tray's "Sound on/off" toggle.
   final bool soundEnabled;

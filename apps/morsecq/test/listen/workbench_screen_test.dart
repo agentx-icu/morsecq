@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_session/morse_session.dart';
@@ -32,6 +33,7 @@ void main() {
   Future<(TestTraining, FakePicker, FakeClipPlayer)> pumpScreen(
     WidgetTester tester, {
     Size size = const Size(390, 2200),
+    Stream<AVAudioSessionRouteChange>? iosRouteChanges,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -48,6 +50,7 @@ void main() {
           player: player,
           profileRoot: () async => dataDir,
           training: () async => t.controller,
+          iosRouteChanges: iosRouteChanges,
         ),
       ),
     );
@@ -168,6 +171,46 @@ void main() {
     await tester.tap(play);
     await waitForWorkbench(tester, find.text(en.workbenchStop));
     expect(player.plays, hasLength(1));
+  });
+
+  testWidgets('an iOS output disconnect stops the current clip', (
+    tester,
+  ) async {
+    final routes = StreamController<AVAudioSessionRouteChange>.broadcast();
+    addTearDown(routes.close);
+    final (_, _, player) = await pumpScreen(
+      tester,
+      iosRouteChanges: routes.stream,
+    );
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    final play = find.byKey(const ValueKey('workbench-play'));
+    await waitForWorkbench(tester, play);
+    await tester.tap(play);
+    await waitForWorkbench(tester, find.text(en.workbenchStop));
+
+    for (final reason in [
+      AVAudioSessionRouteChangeReason.categoryChange,
+      AVAudioSessionRouteChangeReason.newDeviceAvailable,
+    ]) {
+      routes.add(AVAudioSessionRouteChange(reason: reason));
+      await tester.pump();
+      expect(player.isPlaying, isTrue, reason: reason.name);
+    }
+
+    routes.add(
+      AVAudioSessionRouteChange(
+        reason: AVAudioSessionRouteChangeReason.oldDeviceUnavailable,
+      ),
+    );
+    await tester.pump();
+    expect(player.isPlaying, isFalse);
+    expect(play, findsOneWidget);
+    await tester.tap(play);
+    await waitForWorkbench(tester, find.text(en.workbenchStop));
+    expect(player.plays, hasLength(2));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(routes.hasListener, isFalse);
   });
 
   testWidgets('a large pasted selection time is clamped before conversion', (
