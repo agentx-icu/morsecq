@@ -13,6 +13,7 @@ import 'diagnostics/local_diagnostics.dart';
 import 'desktop/linux_tray_host.dart';
 import 'desktop/desktop_shell_controller.dart';
 import 'desktop/init_desktop_shell.dart';
+import 'desktop/windows_tray_icon.dart';
 import 'di/app_scope.dart';
 import 'di/app_settings.dart';
 import 'di/desktop_store_adapter.dart';
@@ -68,6 +69,7 @@ Future<void> main() async {
         // shell has no English literal of its own.
         appName: currentS().appName,
         trayHostAvailable: Platform.isLinux ? linuxTrayHostAvailable : null,
+        trayIconAvailable: Platform.isWindows ? windowsTrayIconAvailable : null,
         log: kDebugMode ? debugPrint : null,
       ),
     );

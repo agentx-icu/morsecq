@@ -32,6 +32,7 @@ _harness({
   void Function(bool enabled)? onToggleSound,
   S? strings,
   Future<bool> Function()? trayHostAvailable,
+  Future<bool> Function()? trayIconAvailable,
 }) {
   final store = InMemoryKeyValueStore(stored);
   final log = <String>[];
@@ -46,6 +47,7 @@ _harness({
       onBeforeQuit: onBeforeQuit,
       onToggleSound: onToggleSound,
       trayHostAvailable: trayHostAvailable,
+      trayIconAvailable: trayIconAvailable,
       persistDebounce: Duration.zero,
       log: log.add,
     ),
@@ -157,6 +159,47 @@ void main() {
     await h.controller.handleCloseRequested();
     expect(h.window.calls, isNot(contains('hide')));
     expect(h.window.destroyed, isTrue);
+  });
+
+  test('an unregistered Windows icon cannot strand a window', () async {
+    var registered = false;
+    final h = _harness(
+      platform: TargetPlatform.windows,
+      trayIconAvailable: () async => registered,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    expect(h.tray.iconAsset, TrayIconAssets.windowsIco);
+    expect(h.tray.calls, isNot(contains('destroy')));
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.hideToTray();
+    expect(h.window.visible, isTrue);
+
+    registered = true;
+    await h.controller.hideToTray();
+    expect(h.window.visible, isFalse);
+    expect(h.tray.calls, contains('destroy'));
+    await h.controller.showWindow();
+  });
+
+  testWidgets('Windows shows a hidden window after the icon is lost', (
+    tester,
+  ) async {
+    var registered = true;
+    final h = _harness(
+      platform: TargetPlatform.windows,
+      trayIconAvailable: () async => registered,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+    await h.controller.handleCloseRequested();
+    expect(h.window.visible, isFalse);
+
+    registered = false;
+    await tester.pump(const Duration(seconds: 4));
+    expect(h.window.visible, isTrue);
+    expect(h.controller.isTrayAvailable, isFalse);
   });
 
   testWidgets('losing the tray host while hidden brings back the window', (

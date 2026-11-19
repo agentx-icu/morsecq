@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:morse_io/morse_io.dart';
 import 'package:record/record.dart';
 
@@ -29,16 +30,25 @@ import '../../diagnostics/local_diagnostics.dart';
 /// (Bluetooth HFP allowed, not mixable) and leaves it there; [stop] puts the
 /// playback session `morse_io` runs the sidetone in back, so the tone keeps
 /// ignoring the silent switch, mixing with music and using A2DP.
+/// On Android, each capture uses its own recorder so ending it also shuts
+/// down the plug-in's Bluetooth SCO receiver.
 final class RecordPcmSource implements PcmSource {
   RecordPcmSource({
     AudioRecorder? recorder,
+    AudioRecorder Function()? androidRecorderFactory,
     AudioSessionApi audioSession = const PlatformAudioSessionApi(),
     Stream<AVAudioSessionRouteChange> Function()? iosRouteChanges,
-  }) : _recorder = recorder ?? AudioRecorder(),
+  }) : _recorder = recorder,
+       _androidRecorderFactory =
+           androidRecorderFactory ??
+           (recorder == null && !kIsWeb && Platform.isAndroid
+               ? AudioRecorder.new
+               : null),
        _audioSession = audioSession,
        _iosRouteChanges = iosRouteChanges ?? _platformRouteChanges;
 
-  final AudioRecorder _recorder;
+  AudioRecorder? _recorder;
+  final AudioRecorder Function()? _androidRecorderFactory;
   final AudioSessionApi _audioSession;
   final Stream<AVAudioSessionRouteChange> Function() _iosRouteChanges;
   _CaptureSession? _session;
@@ -55,9 +65,12 @@ final class RecordPcmSource implements PcmSource {
   Future<void> _tail = Future<void>.value();
 
   static Stream<AVAudioSessionRouteChange> _platformRouteChanges() =>
-      Platform.isIOS
+      !kIsWeb && Platform.isIOS
       ? AVAudioSession().routeChangeStream
       : const Stream.empty();
+
+  AudioRecorder get _currentRecorder =>
+      _recorder ??= (_androidRecorderFactory ?? AudioRecorder.new)();
 
   Future<T> _serial<T>(Future<T> Function() op) {
     final Future<T> result = _tail.then((_) => op());
@@ -67,24 +80,26 @@ final class RecordPcmSource implements PcmSource {
 
   @override
   Future<bool> hasPermission({bool request = true}) =>
-      _recorder.hasPermission(request: request);
+      _serial(() => _currentRecorder.hasPermission(request: request));
 
   @override
   Future<Stream<Uint8List>> start({
     required int sampleRate,
     required int channels,
   }) => _serial(() async {
+    if (_capturing && _androidRecorderFactory != null) await _stopCapture();
     _endSession();
+    final recorder = _currentRecorder;
     _capturing = true;
     final int capture = ++_captures;
     final session = _session = _CaptureSession()
       ..onSelfClose = (interrupted) =>
-          unawaited(_endedByPlatform(capture, interrupted: interrupted));
+          _endedByPlatform(capture, interrupted: interrupted);
     try {
       // Subscribe before starting so the session sees its own `record`.
-      session.watchStates(_recorder.onStateChanged());
+      session.watchStates(recorder.onStateChanged());
       session.watchRouteChanges(_iosRouteChanges());
-      final pcm = await _recorder.startStream(
+      final pcm = await recorder.startStream(
         RecordConfig(
           encoder: AudioEncoder.pcm16bits,
           sampleRate: sampleRate,
@@ -114,15 +129,15 @@ final class RecordPcmSource implements PcmSource {
   /// Linux (`pactl list sources`). Any failure of the query itself (no
   /// `pactl`, audio session error, an older plugin) means "cannot tell".
   @override
-  Future<bool?> hasInputDevice() async {
+  Future<bool?> hasInputDevice() => _serial(() async {
     try {
-      final devices = await _recorder.listInputDevices();
+      final devices = await _currentRecorder.listInputDevices();
       return devices.isNotEmpty;
     } catch (error) {
       LocalDiagnostics.report(DiagnosticContext.inputDeviceList, error);
       return null;
     }
-  }
+  });
 
   /// Ends the current session first, so the plugin's own `stop` state for
   /// this explicit stop is not mistaken for an unexpected one.
@@ -132,19 +147,34 @@ final class RecordPcmSource implements PcmSource {
   Future<void> _stopCapture() async {
     _endSession();
     try {
-      await _recorder.stop();
+      await _recorder?.stop();
     } finally {
-      if (_capturing) {
-        _capturing = false;
-        await _audioSession.configureForPlayback();
-      }
+      await _releaseCapture();
     }
+  }
+
+  Future<void> _releaseCapture() async {
+    if (!_capturing) return;
+    _capturing = false;
+    try {
+      // record_android keeps its SCO receiver attached after stop(). The
+      // receiver is installed when the wrapper is first created.
+      if (_androidRecorderFactory != null) await _disposeRecorder();
+    } finally {
+      await _audioSession.configureForPlayback();
+    }
+  }
+
+  Future<void> _disposeRecorder() async {
+    final recorder = _recorder;
+    _recorder = null;
+    await recorder?.dispose();
   }
 
   @override
   Future<void> dispose() => _serial(() async {
     _endSession();
-    await _recorder.dispose();
+    await _disposeRecorder();
   });
 
   /// Restore the playback session before a quick restart can reuse it.
@@ -153,19 +183,19 @@ final class RecordPcmSource implements PcmSource {
   Future<void> _endedByPlatform(int capture, {required bool interrupted}) =>
       _serial(() async {
         if (capture != _captures || !_capturing) return;
-        if (interrupted) {
-          try {
+        try {
+          if (interrupted) {
             await _stopCapture();
-          } on Object catch (error, stack) {
-            LocalDiagnostics.report(
-              DiagnosticContext.captureFailure,
-              error,
-              stack,
-            );
+          } else {
+            _endSession();
+            await _releaseCapture();
           }
-        } else {
-          _capturing = false;
-          await _audioSession.configureForPlayback();
+        } on Object catch (error, stack) {
+          LocalDiagnostics.report(
+            DiagnosticContext.captureFailure,
+            error,
+            stack,
+          );
         }
       });
 
@@ -181,9 +211,8 @@ final class RecordPcmSource implements PcmSource {
 /// One capture: the merged stream handed to the caller plus the two plugin
 /// subscriptions feeding it.
 final class _CaptureSession {
-  /// The listener cancelling (e.g. `cancelOnError`) ends the session too.
   late final StreamController<Uint8List> _out = StreamController<Uint8List>(
-    onCancel: close,
+    onCancel: _detachListener,
   );
   StreamSubscription<Uint8List>? _pcmSub;
   StreamSubscription<RecordState>? _stateSub;
@@ -192,10 +221,17 @@ final class _CaptureSession {
   bool _closed = false;
 
   /// Called once when the capture ends by itself rather than through its
-  /// owner (who clears it before closing).
-  void Function(bool interrupted)? onSelfClose;
+  /// owner (who clears it before closing). EOF follows the route cleanup.
+  Future<void> Function(bool interrupted)? onSelfClose;
 
   Stream<Uint8List> get stream => _out.stream;
+
+  void _detachListener() {
+    // The owner calls stop after cancelling PCM delivery. Only the plug-in
+    // can signal that native capture has already stopped.
+    onSelfClose = null;
+    close();
+  }
 
   void watchStates(Stream<RecordState> states) {
     _stateSub = states.listen(
@@ -244,20 +280,24 @@ final class _CaptureSession {
     }
   }
 
-  /// Idempotent. Nothing here is awaited: cancelling only stops delivery,
-  /// and `close()` on a stream nobody listens to never completes.
+  /// Detach the plug-in streams immediately so native stop can release them.
+  /// Keep output EOF out of the cleanup queue because an unlistened stream
+  /// can take indefinitely to close.
   void close({bool interrupted = false}) {
     if (_closed) return;
     _closed = true;
     final onSelf = onSelfClose;
     onSelfClose = null;
-    onSelf?.call(interrupted);
     unawaited(_pcmSub?.cancel());
     unawaited(_stateSub?.cancel());
     unawaited(_routeSub?.cancel());
     _pcmSub = null;
     _stateSub = null;
     _routeSub = null;
-    unawaited(_out.close());
+    if (onSelf == null) {
+      unawaited(_out.close());
+    } else {
+      unawaited(onSelf(interrupted).whenComplete(_out.close));
+    }
   }
 }

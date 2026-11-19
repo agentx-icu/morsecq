@@ -145,6 +145,9 @@ try {
   Invoke-Msi 'repair' @('/i', "`"$msi`"", 'REINSTALL=ALL', 'REINSTALLMODE=vomus', "INSTALL_ROOT=`"$installRoot`"")
   Assert-InstalledPayload 'repaired'
   Test-InstalledWindow 'repaired'
+  & (Join-Path $PSScriptRoot 'test_windows_tray_restart.ps1') -Exe $exe `
+      -SettingsPath (Join-Path $dataDirectories[0] 'settings.json') `
+      -EvidencePath (Join-Path $evidence 'tray-restart.json')
   Invoke-Msi 'uninstall' @('/x', "`"$msi`"")
   $installed = $false
   if (Test-Path -LiteralPath $installRoot) {

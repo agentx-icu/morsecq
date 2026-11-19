@@ -19,6 +19,9 @@ final class _FakeRecorder implements AudioRecorder {
   StreamController<Uint8List>? pcm;
   Object? startError;
   Object? listError;
+  Object? stopError;
+  Completer<void>? stopGate;
+  Completer<void>? disposeGate;
   List<InputDevice> devices = const <InputDevice>[];
   int stopCalls = 0;
   bool disposed = false;
@@ -47,6 +50,8 @@ final class _FakeRecorder implements AudioRecorder {
   @override
   Future<String?> stop() async {
     stopCalls++;
+    await stopGate?.future;
+    if (stopError case final error?) throw error;
     await pcm?.close();
     pcm = null;
     return null;
@@ -55,6 +60,7 @@ final class _FakeRecorder implements AudioRecorder {
   @override
   Future<void> dispose() async {
     disposed = true;
+    await disposeGate?.future;
     await states.close();
   }
 
@@ -64,9 +70,13 @@ final class _FakeRecorder implements AudioRecorder {
 
 final class _CountingSession implements AudioSessionApi {
   int restores = 0;
+  Completer<void>? restoreGate;
 
   @override
-  Future<void> configureForPlayback() async => restores++;
+  Future<void> configureForPlayback() async {
+    restores++;
+    await restoreGate?.future;
+  }
 }
 
 Future<Stream<Uint8List>> _start(RecordPcmSource source) =>
@@ -169,6 +179,55 @@ void main() {
     );
 
     test(
+      'an interruption keeps capture active until the playback route is ready',
+      () async {
+        final controller = ListenController(source: source);
+        addTearDown(controller.dispose);
+        final stop = recorder.stopGate = Completer<void>();
+        final restore = session.restoreGate = Completer<void>();
+        addTearDown(() {
+          if (!stop.isCompleted) stop.complete();
+          if (!restore.isCompleted) restore.complete();
+        });
+
+        await controller.start();
+        recorder.states
+          ..add(RecordState.record)
+          ..add(RecordState.pause);
+        await pumpEventQueue();
+
+        expect(recorder.stopCalls, 1);
+        expect(session.restores, 0);
+        expect(controller.status, ListenStatus.listening);
+        stop.complete();
+        await pumpEventQueue();
+
+        expect(session.restores, 1);
+        expect(controller.status, ListenStatus.listening);
+        restore.complete();
+        await pumpEventQueue();
+
+        expect(controller.status, ListenStatus.idle);
+      },
+    );
+
+    test('a failed interruption stop still restores playback', () async {
+      final controller = ListenController(source: source);
+      addTearDown(controller.dispose);
+      recorder.stopError = StateError('native stop failed');
+
+      await controller.start();
+      recorder.states
+        ..add(RecordState.record)
+        ..add(RecordState.pause);
+      await pumpEventQueue();
+
+      expect(recorder.stopCalls, 1);
+      expect(session.restores, 1);
+      expect(controller.status, ListenStatus.idle);
+    });
+
+    test(
       'iOS hardware changes end capture, but session category changes do not',
       () async {
         final routes = StreamController<AVAudioSessionRouteChange>.broadcast();
@@ -232,6 +291,84 @@ void main() {
       await source.stop();
       expect(session.restores, 1);
     });
+  });
+
+  test(
+    'Android releases the recorder before constructing the next one',
+    () async {
+      final recorders = <_FakeRecorder>[];
+      source = RecordPcmSource(
+        androidRecorderFactory: () {
+          final recorder = _FakeRecorder();
+          recorders.add(recorder);
+          return recorder;
+        },
+      );
+      addTearDown(source.dispose);
+      final firstSub = (await _start(source)).listen((_) {});
+      addTearDown(firstSub.cancel);
+      final first = recorders.single;
+      final nativeStop = first.stopGate = Completer<void>();
+      final release = first.disposeGate = Completer<void>();
+      addTearDown(() {
+        if (!nativeStop.isCompleted) nativeStop.complete();
+        if (!release.isCompleted) release.complete();
+      });
+
+      // Listen cancels PCM delivery immediately before asking for stop.
+      unawaited(firstSub.cancel());
+      final stopping = source.stop();
+      // Permission and start both run against the newly allocated wrapper.
+      final permission = source.hasPermission();
+      final restart = _start(source);
+      await pumpEventQueue();
+      expect(first.stopCalls, 1);
+      expect(first.disposed, isFalse);
+      expect(recorders, hasLength(1));
+
+      nativeStop.complete();
+      await pumpEventQueue();
+      expect(first.disposed, isTrue);
+      expect(recorders, hasLength(1));
+      release.complete();
+      await stopping;
+      expect(await permission, isTrue);
+      final secondSub = (await restart).listen((_) {});
+      addTearDown(secondSub.cancel);
+
+      expect(recorders, hasLength(2));
+      expect(recorders.last.disposed, isFalse);
+      expect(recorders.last.pcm, isNotNull);
+    },
+  );
+
+  test('Android releases the recorder when capture stops natively', () async {
+    final recorders = <_FakeRecorder>[];
+    source = RecordPcmSource(
+      androidRecorderFactory: () {
+        final recorder = _FakeRecorder();
+        recorders.add(recorder);
+        return recorder;
+      },
+    );
+    addTearDown(source.dispose);
+    var done = false;
+    final sub = (await _start(
+      source,
+    )).listen((_) {}, onDone: () => done = true);
+    addTearDown(sub.cancel);
+    final first = recorders.single;
+    first.states
+      ..add(RecordState.record)
+      ..add(RecordState.stop);
+    await pumpEventQueue();
+
+    expect(first.stopCalls, 0);
+    expect(first.disposed, isTrue);
+    expect(done, isTrue);
+    final nextSub = (await _start(source)).listen((_) {});
+    addTearDown(nextSub.cancel);
+    expect(recorders, hasLength(2));
   });
 
   test('late pause and stop from the previous capture are ignored', () async {
