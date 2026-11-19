@@ -13,13 +13,14 @@ import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
 
-from macos_runtime import MACHO_MAGICS, check_bundle
+from macos_runtime import MACHO_MAGICS, check_bundle, display, parse_versions, version
 
 ANDROID = '{http://schemas.android.com/apk/res/android}'
 ABIS = {'arm64-v8a': (2, 183), 'armeabi-v7a': (1, 40), 'x86_64': (2, 62)}
 PERMISSIONS = {'android.permission.RECORD_AUDIO', 'android.permission.MODIFY_AUDIO_SETTINGS',
                'android.permission.VIBRATE', 'android.permission.WAKE_LOCK'}
 LOCALES = ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'ru']
+IOS_MINIMUM = (14, 0, 0)
 
 
 def run(command, *, env=None):
@@ -114,6 +115,10 @@ def check_android_manifest(xml, target_sdk, *, expected_version=None):
     if (root.get('package') != 'icu.agentx.morsecq' or not version_name or
             not re.fullmatch(r'[1-9][0-9]*', version_code or '')):
         raise ValueError('Unexpected package identity or missing/invalid Android version')
+    if ANDROID + 'sharedUserId' in root.attrib:
+        raise ValueError('Android sharedUserId would change the installed app identity')
+    if not re.fullmatch(r'(?:0[xX])?0+', root.get(ANDROID + 'versionCodeMajor', '0')):
+        raise ValueError('Android versionCodeMajor must be zero so the full code matches pubspec')
     if expected_version is not None:
         check_app_version('Android', f'{version_name}+{version_code}', expected_version)
     if sdk is None or int(sdk.get(ANDROID + 'minSdkVersion', '0')) != 24 or int(sdk.get(ANDROID + 'targetSdkVersion', '0')) != target_sdk:
@@ -267,6 +272,17 @@ def check_apple(app, platform, *, inspect_native=True, expected_version=None):
                 raise ValueError(f'{path}: malformed required-reason declaration')
         manifests.append({'path': str(path.relative_to(app)), 'sha256': digest(path), 'required_reason_apis': manifest.get('NSPrivacyAccessedAPITypes', [])})
     report = {'bundle_id': info['CFBundleIdentifier'], 'version': info['CFBundleShortVersionString'], 'build': info['CFBundleVersion'], 'build_sdk': info.get('DTSDKName'), 'privacy_manifests': manifests}
+    if platform == 'ios':
+        app_minimum = version(info.get('MinimumOSVersion'), platform='iOS')
+        if app_minimum != IOS_MINIMUM:
+            raise ValueError(f'App iOS minimum is {display(app_minimum)}, expected {display(IOS_MINIMUM)}')
+        report['minimum_os'] = {'app_minimum': display(app_minimum)}
+        device_family = info.get('UIDeviceFamily')
+        if (not isinstance(device_family, list) or
+                any(type(family) is not int for family in device_family) or
+                sorted(device_family) != [1, 2]):
+            raise ValueError('iOS UIDeviceFamily must include both iPhone and iPad')
+        report['device_family'] = sorted(device_family)
     if not inspect_native:
         return report
     if platform == 'macos':
@@ -294,10 +310,20 @@ def check_apple(app, platform, *, inspect_native=True, expected_version=None):
         architectures = set(run(['lipo', '-archs', path]).split())
         if not expected <= architectures:
             raise ValueError(f'{path}: missing expected Mach-O architectures {expected}')
-        commands = run(['otool', '-arch', 'all', '-l', path])
-        if platform == 'ios' and not (re.search(r'platform (?:2|IOS)\s', commands, re.I) or 'LC_VERSION_MIN_IPHONEOS' in commands):
-            raise ValueError(f'{path}: not an iOS device binary')
-        binaries.append({'path': str(path.relative_to(app)), 'architectures': sorted(architectures), 'sha256': digest(path)})
+        if platform == 'ios' and architectures != expected:
+            raise ValueError(f'{path}: unexpected iOS architectures {sorted(architectures - expected)}')
+        binary = {'path': str(path.relative_to(app)), 'architectures': sorted(architectures), 'sha256': digest(path)}
+        if platform == 'ios':
+            commands = run(['otool', '-arch', 'all', '-l', path])
+            try:
+                minima = parse_versions(commands, platform='iOS')
+            except ValueError as error:
+                raise ValueError(f'{binary["path"]}: {error}') from error
+            required = max(minima)
+            if required > IOS_MINIMUM:
+                raise ValueError(f'{binary["path"]} requires iOS {display(required)}, app declares {display(IOS_MINIMUM)}')
+            binary['architecture_minima'] = [display(minimum) for minimum in minima]
+        binaries.append(binary)
     if not binaries:
         raise ValueError('No Mach-O payload found')
     report['binaries'] = binaries

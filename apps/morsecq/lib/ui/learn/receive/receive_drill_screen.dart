@@ -76,6 +76,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       ? null
       : widget.conditionsPlayback ?? ConditionsPlayback();
   StreamSubscription<bool>? _conditionsSub;
+  StreamSubscription<void>? _conditionsInterruptionSub;
   int _conditionsRun = 0;
 
   /// Set right before we stop the conditions audio ourselves, so that stop
@@ -88,6 +89,9 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _conditionsInterruptionSub = _conditions?.interruptions.listen((_) {
+      if (_phase == _Phase.listen && _playing) _stopConditions();
+    });
     _wake.setActive(true);
     unawaited(_setup());
   }
@@ -325,6 +329,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_conditionsSub?.cancel());
+    unawaited(_conditionsInterruptionSub?.cancel());
     unawaited(_conditions?.dispose());
     unawaited(_playback?.dispose());
     _answer.dispose();
