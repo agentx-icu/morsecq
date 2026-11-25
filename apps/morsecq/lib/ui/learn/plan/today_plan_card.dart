@@ -196,10 +196,6 @@ class _TodayPlanCardState extends State<TodayPlanCard>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      s.firstLessonNextTitle,
-                      style: theme.textTheme.labelMedium,
-                    ),
-                    Text(
                       PlanLabels.title(s, next),
                       style: theme.textTheme.titleSmall,
                     ),

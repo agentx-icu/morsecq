@@ -7,9 +7,10 @@ The compact daily plan on Learn home now shows the next required practice and it
 ## Executed checks
 
 - Before implementation, the two new behavior regressions failed for the intended reasons: no visible next-practice preview, and an introduction-only plan claiming “No weak symbols today”. The eight existing plan-card tests passed.
-- `flutter test --no-pub test/learn/today_plan_card_test.dart test/learn/daily_plan_flow_test.dart test/learn/first_lesson_endings_test.dart test/i18n/arb_consistency_test.dart --reporter expanded` (from `apps/morsecq`): **43 passed**. This includes 320 px width, 2× German text, next-step rationale, no-result completion, recorded weak-symbol results, midnight rollover, existing first-lesson progression and all-ten-locale ARB consistency.
+- `flutter test --no-pub test/learn/today_plan_card_test.dart test/learn/learn_home_layout_test.dart test/learn/daily_plan_flow_test.dart test/learn/first_lesson_endings_test.dart test/i18n/arb_consistency_test.dart --reporter expanded` (from `apps/morsecq`): **50 passed**. This includes 320 px width, 2× German text, next-step rationale, no-result completion, recorded weak-symbol results, midnight rollover, existing first-lesson progression and all-ten-locale ARB consistency.
 - `flutter analyze --no-pub apps/morsecq`: zero issues.
 - `dart run tool/check_complexity.dart` and `dart run tool/ui_literal_guard.dart`: passed.
+- The first full widget sweep exposed two 320×640/1.8× regressions: an extra preview heading pushed Continue below the fold. Removing that redundant heading retained the actual next-practice title and rationale. All seven existing home-layout tests then passed without weakening their visibility assertions.
 - Localization regenerated with `flutter gen-l10n`; all ten canonical locales contain the evidence distinction.
 
 ## Device and participant boundaries

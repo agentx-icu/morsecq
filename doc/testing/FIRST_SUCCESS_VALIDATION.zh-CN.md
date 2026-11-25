@@ -7,9 +7,10 @@
 ## 已执行检查
 
 - 实现前，两项新增行为回归按预期失败：没有可见的下一步预览，以及仅完成入门的计划显示“没有薄弱字符”。原八项计划卡片用例通过。
-- 在 `apps/morsecq` 执行 `flutter test --no-pub test/learn/today_plan_card_test.dart test/learn/daily_plan_flow_test.dart test/learn/first_lesson_endings_test.dart test/i18n/arb_consistency_test.dart --reporter expanded`：**43 项通过**。包含 320 px 宽、德语两倍文字、下一步依据、无成绩时的小结、真实薄弱字符结果、午夜换日、既有第一课推进及十语言 ARB 一致性。
+- 在 `apps/morsecq` 执行 `flutter test --no-pub test/learn/today_plan_card_test.dart test/learn/learn_home_layout_test.dart test/learn/daily_plan_flow_test.dart test/learn/first_lesson_endings_test.dart test/i18n/arb_consistency_test.dart --reporter expanded`：**50 项通过**。包含 320 px 宽、德语两倍文字、下一步依据、无成绩时的小结、真实薄弱字符结果、午夜换日、既有第一课推进及十语言 ARB 一致性。
 - `flutter analyze --no-pub apps/morsecq`：零问题。
 - `dart run tool/check_complexity.dart` 与 `dart run tool/ui_literal_guard.dart`：通过。
+- 首轮完整 widget 扫描发现两项 320×640/1.8 倍文字回归：新增预览标题把“继续”推到首屏以下。移除这行冗余标题，保留下一个练习及依据后，既有七项首页布局检查通过，没有放宽可见性断言。
 - 已执行 `flutter gen-l10n`，十种规范语言均补充练习与课程证据的区分文案。
 
 ## 设备与参与者边界
