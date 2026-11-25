@@ -1,3 +1,5 @@
+[English](./ADVANCED_LEARNING.md)
+
 # 进阶学习
 
 MorseCQ 的进阶学习参考 [CW Academy Intermediate Curriculum v2.1](https://cwops.org/wp-content/uploads/2025/06/Practice-Instructions-Intermediate-ver.2.1.htm) 的整词听辨、通联信息提取、短故事脑内听抄、清晰发报与竞赛交换方向。应用内练习文本为原创离线内容，不附带课程原始录音，也不代表 CW Academy 认证或背书。
@@ -10,7 +12,7 @@ MorseCQ 的进阶学习参考 [CW Academy Intermediate Curriculum v2.1](https://
 
 ## 整词与整句听懂
 
-「学习 → 脑内听抄」提供整词、短句、QSO 信息、POTA 信息和短故事。听完才开放作答；重播、显示答案以及包含未学字符的体验均标记为辅助练习。QSO 练习提取呼号、姓名、地点与信号报告；POTA 提取双方呼号、公园编号和信号报告；故事回答人物、地点、时间和行为问题。
+「学习 → 整词整句听懂」提供整词、短句、QSO 信息、POTA 信息和短故事。听完才开放作答；重播、显示答案以及包含未学字符的体验均标记为辅助练习。QSO 练习提取呼号、姓名、地点与信号报告；POTA 提取双方呼号、公园编号和信号报告；故事回答人物、地点、时间和行为问题。
 
 理解成绩按问题统计，保存在独立记录中，不转成逐字符抄报准确率，不更新科赫课程或字符间隔复习。错题重练保存原题问题快照，避免以后题库或已学字符变化导致重练内容改变。
 
@@ -30,4 +32,4 @@ MorseCQ 的进阶学习参考 [CW Academy Intermediate Curriculum v2.1](https://
 
 ## 保存与验证
 
-错题、听懂记录和目标与 `TrainerProgress` 一同原子写入当前本地学习档案。旧档案缺少新字段时使用安全默认值；清除学习数据时这些内容随档案删除。练习提交 ID、真实文件重开、跨日重练、辅助标记、计划完成与手机大字号布局均有自动测试。
+错题、听懂记录和目标与 `TrainerProgress` 一同原子写入当前本地学习档案。旧档案缺少新字段时使用安全默认值；清除学习数据时这些内容随档案删除。练习提交 ID、真实文件重开、跨日重练、辅助标记、计划完成与手机大字号布局均有自动测试。原生 `integration_test/advanced_learning_test.dart` 另在设备上用记录时间线的测试播放检查重开恢复，并单独检查真实设备音频要么完整播放、要么阻止作答（见[测试金字塔](../testing/TEST_PYRAMID.zh-CN.md)）。

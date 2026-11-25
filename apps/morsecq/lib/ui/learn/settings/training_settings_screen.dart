@@ -4,15 +4,16 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
 import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
+import '../progress_save_snack.dart';
 import 'settings_slider_tile.dart';
 import '../../common/wrapping_choice_chip.dart';
 
@@ -23,7 +24,10 @@ class TrainingSettingsScreen extends StatefulWidget {
     super.key,
     required this.controller,
     required this.playback,
+    this.hapticAvailability,
   });
+
+  final Future<bool> Function()? hapticAvailability;
 
   static const String routeName = '/settings/training';
 
@@ -51,6 +55,8 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
   LearnPlayback? _sample;
   StreamSubscription<PlayerEvent>? _sampleSub;
   bool _samplePlaying = false;
+  late final Future<bool> _hapticsAvailable =
+      (widget.hapticAvailability ?? hapticsAvailable)();
 
   /// Bumped when the feedback outputs change; a sample bundle created for an
   /// older generation is thrown away instead of played.
@@ -61,6 +67,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
 
   /// Daily goal while its slider is dragged; written on release.
   int? _goalDraft;
+  int _draftRevision = 0;
 
   TrainerSettings get _t => _draft.trainer;
 
@@ -69,6 +76,7 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
 
   /// Updates the draft; persists when [persist] (slider release, toggles).
   void _apply(TrainingSettings next, {bool persist = true}) {
+    final revision = ++_draftRevision;
     final outputsChanged =
         next.soundEnabled != _draft.soundEnabled ||
         next.flashEnabled != _draft.flashEnabled ||
@@ -81,7 +89,25 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     }
     _sample?.sidetone?.frequencyHz = next.trainer.toneHz;
     if (persist) {
-      unawaited(widget.controller.updateSettings(next));
+      unawaited(_saveSettings(next, revision));
+    }
+  }
+
+  Future<void> _saveSettings(TrainingSettings next, int revision) async {
+    try {
+      await widget.controller.updateSettings(next);
+    } on Object {
+      if (!mounted) return;
+      // The controller rolls back failed writes. Restore this draft and its
+      // sample outputs too, unless the user has already made a newer edit.
+      if (revision == _draftRevision) {
+        _apply(widget.controller.settings, persist: false);
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(context.s.learnSettingsSaveFailed)),
+        );
     }
   }
 
@@ -273,11 +299,15 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
             max: 500,
             divisions: 19,
             label: s.learnCharsCount(goal),
-            // Shown live while dragging, written once on release.
             onChanged: (v) => setState(() => _goalDraft = v.round()),
-            onChangeEnd: (v) {
+            onChangeEnd: (v) async {
               setState(() => _goalDraft = null);
-              unawaited(widget.controller.setDailyGoal(v.round()));
+              try {
+                await widget.controller.setDailyGoal(v.round());
+              } on Object {
+                if (!context.mounted) return;
+                showProgressSaveFailed(context, widget.controller);
+              }
             },
           ),
         ),
@@ -297,16 +327,27 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         SwitchListTile(
           title: Text(s.learnFlash),
+          subtitle: Text(s.learnFlashNotice),
           secondary: const Icon(Icons.flashlight_on_outlined),
           value: _draft.flashEnabled,
           onChanged: (v) => _apply(_draft.copyWith(flashEnabled: v)),
         ),
         if (isTouchPlatform)
-          SwitchListTile(
-            title: Text(s.learnHaptic),
-            secondary: const Icon(Icons.vibration),
-            value: _draft.hapticEnabled,
-            onChanged: (v) => _apply(_draft.copyWith(hapticEnabled: v)),
+          FutureBuilder<bool>(
+            future: _hapticsAvailable,
+            builder: (context, snapshot) => SwitchListTile(
+              title: Text(s.learnHaptic),
+              subtitle: snapshot.data == false
+                  ? Text(s.learnHapticUnavailable)
+                  : null,
+              secondary: const Icon(Icons.vibration),
+              value: _draft.hapticEnabled,
+              // A restored enabled preference must always be removable,
+              // even when this device cannot provide vibration.
+              onChanged: _draft.hapticEnabled || snapshot.data == true
+                  ? (v) => _apply(_draft.copyWith(hapticEnabled: v))
+                  : null,
+            ),
           ),
         const Divider(),
         ListTile(

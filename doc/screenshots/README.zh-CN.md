@@ -19,6 +19,6 @@
 | listen | [PNG](macos/zh/listen.png) | [PNG](ios/zh/listen.png) | [PNG](ipad/zh/listen.png) | [PNG](android/zh/listen.png) | [PNG](linux/zh/listen.png) | [PNG](windows/zh/listen.png) |
 | me | [PNG](macos/zh/me.png) | [PNG](ios/zh/me.png) | [PNG](ipad/zh/me.png) | [PNG](android/zh/me.png) | [PNG](linux/zh/me.png) | [PNG](windows/zh/me.png) |
 
-桌面：1280×800；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 iPhone（iPhone 17 Pro Max 模拟器）、iPad（iPad Pro 13 英寸 M5 模拟器）和 Android（Pixel 7 API 36 模拟器）捕获，以及 macOS/Linux/Windows E2E 产物，都从 `e493213`（v1.0.1）重新生成。桌面截图来源：[E2E 38097487038](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)；最新 CI：[PR #41](https://github.com/agentx-icu/morsecq/pull/41)。
+桌面：Linux 和 Windows 为 1280×800，macOS 为 1280×645（macOS 会把窗口限制在 runner 的可见屏幕内，截图工具接受这个较矮的窗口）；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 iPhone（iPhone 17 Pro Max 模拟器）、iPad（iPad Pro 13 英寸 M5 模拟器）和 Android（Pixel 7 API 36 模拟器）捕获，以及 macOS/Linux/Windows E2E 产物，都从 `e493213` 重新生成，即 v1.0.1 升版本号之前的代码（其 pubspec 仍为 1.0.0+1）。桌面截图来源：[E2E 38097487038](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)；最新 CI：[PR #41](https://github.com/agentx-icu/morsecq/pull/41)。
 
 [截图流程](../../tool/screenshots/README.zh-CN.md) · [产品设计](../designs/product-2026-10-08/README.zh-CN.md)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/receive_session.dart';
 import 'first_lesson_steps.dart';
 
 /// One K/M answer, feedback and pace choice. Pace stays fixed once an

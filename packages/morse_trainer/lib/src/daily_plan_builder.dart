@@ -149,7 +149,7 @@ abstract final class DailyPlanBuilder {
     final fresh = _steps(
       inputs,
       plan.id,
-      plan.steps.length,
+      plan.nextStepIndex,
     ).where((s) => !keptKinds.contains(s.kind));
     // Started steps keep their own frozen speeds; the plan's current speeds
     // and budget follow the inputs for everything new.

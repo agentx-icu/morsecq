@@ -1,23 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:morse_session/morse_session.dart';
 import 'package:path/path.dart' as p;
+import 'package:morse_trainer/morse_trainer.dart';
 
 import 'atomic_json_file.dart';
 
-/// Named JSON documents beside the training progress: simulator drafts,
-/// materials, rhythm details. Each lives under the learning profile's
-/// `training/` directory alongside the rest of the local learning files.
-abstract interface class TrainingDocStore {
-  Future<Map<String, Object?>?> read(String name);
-
-  Future<void> write(String name, Map<String, Object?> json);
-
-  Future<void> delete(String name);
-
-  /// Every stored document name (for cache trimming).
-  Future<List<String>> names();
-}
+export 'package:morse_session/morse_session.dart'
+    show InMemoryTrainingDocStore, TrainingDocStore;
 
 /// `<dataDirectory>/training/docs/<name>.json`, written atomically with a
 /// `.bak` fallback ([AtomicJsonFile]).
@@ -41,13 +31,30 @@ final class FileTrainingDocStore implements TrainingDocStore {
     return AtomicJsonFile(File(p.join(directory.path, '$name.json')));
   }
 
+  static void _checkVersion(String name, Map<String, Object?> json) {
+    if (const {
+      'materials',
+      'audio_materials',
+      'telegraph_recall',
+    }.contains(name)) {
+      UnsupportedDataVersion.check(json['v'], supported: 1, document: name);
+    }
+  }
+
   @override
-  Future<Map<String, Object?>?> read(String name) => _file(name).read();
+  Future<Map<String, Object?>?> read(String name) =>
+      _file(name).readDecoded((json) {
+        _checkVersion(name, json);
+        return json;
+      });
 
   @override
   Future<void> write(String name, Map<String, Object?> json) async {
     await directory.create(recursive: true);
-    await _file(name).write(json);
+    _checkVersion(name, json);
+    await _file(
+      name,
+    ).write(json, validate: (existing) => _checkVersion(name, existing));
   }
 
   @override
@@ -69,28 +76,4 @@ final class FileTrainingDocStore implements TrainingDocStore {
     // Include it so parked results can be discovered and recovered.
     return out.toList()..sort();
   }
-}
-
-/// Keeps documents as JSON strings so tests exercise (de)serialisation.
-final class InMemoryTrainingDocStore implements TrainingDocStore {
-  final Map<String, String> docs = <String, String>{};
-
-  @override
-  Future<Map<String, Object?>?> read(String name) async {
-    final raw = docs[name];
-    return raw == null ? null : jsonDecode(raw) as Map<String, Object?>;
-  }
-
-  @override
-  Future<void> write(String name, Map<String, Object?> json) async {
-    docs[name] = jsonEncode(json);
-  }
-
-  @override
-  Future<void> delete(String name) async {
-    docs.remove(name);
-  }
-
-  @override
-  Future<List<String>> names() async => docs.keys.toList()..sort();
 }

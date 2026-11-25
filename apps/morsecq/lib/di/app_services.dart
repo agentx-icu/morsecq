@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:ui' show AppExitResponse;
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../desktop/desktop_shell_controller.dart';
+import '../diagnostics/local_diagnostics.dart';
 import '../i18n/locale_controller.dart';
 import '../i18n/strings_resolver.dart';
 import '../lifecycle/background_task_api.dart';
@@ -18,8 +21,9 @@ final class AppServices with WidgetsBindingObserver {
   final DesktopShellController? desktopShell;
   final StringsResolver strings;
   final BackgroundTaskApi _background;
+  static const _activation = MethodChannel('morsecq/desktop_activation');
   bool _started = false;
-  Future<void>? _flushing;
+  bool _flushing = false;
   bool _flushAgain = false;
   void start() {
     if (_started) return;
@@ -28,6 +32,11 @@ final class AppServices with WidgetsBindingObserver {
     strings.addListener(_onStringsChanged);
     desktopShell?.addBeforeQuitListener(flush);
     _onStringsChanged();
+    if (desktopShell != null) {
+      _activation.setMethodCallHandler((call) async {
+        if (call.method == 'showWindow') await desktopShell!.showWindow();
+      });
+    }
   }
 
   void _onStringsChanged() => desktopShell?.updateStrings(strings.s);
@@ -42,31 +51,47 @@ final class AppServices with WidgetsBindingObserver {
 
   // A request arriving during a save may follow newer writes that the running
   // barrier does not cover, so it schedules one more barrier.
-  Future<void> _flushInBackground() {
-    if (_flushing != null) {
+  Future<void> _flushInBackground() async {
+    if (_flushing) {
       _flushAgain = true;
-      return _flushing!;
+      return;
     }
-    return _flushing = _save().whenComplete(() => _flushing = null);
-  }
-
-  Future<void> _save() async {
-    final token = await _background.begin();
+    _flushing = true;
+    int? token;
     try {
+      token = await _background.begin();
       do {
         _flushAgain = false;
         try {
           await flush();
         } on Object catch (error) {
-          debugPrint('Learning persistence failed: $error');
+          LocalDiagnostics.report(DiagnosticContext.learningSave, error);
         }
       } while (_flushAgain);
     } finally {
+      // The save barrier has drained. A new lifecycle event needs its own
+      // grace period even if the platform is still acknowledging this end.
+      _flushing = false;
       if (token != null) await _background.end(token);
     }
   }
 
+  @override
+  Future<AppExitResponse> didRequestAppExit() async {
+    try {
+      await Future.wait([
+        flush(),
+        if (desktopShell != null) desktopShell!.persistWindowState(),
+      ]).timeout(const Duration(seconds: 5));
+      return AppExitResponse.exit;
+    } on Object catch (error) {
+      LocalDiagnostics.report(DiagnosticContext.applicationExitSave, error);
+      return AppExitResponse.cancel;
+    }
+  }
+
   void dispose() {
+    if (desktopShell != null) _activation.setMethodCallHandler(null);
     WidgetsBinding.instance.removeObserver(this);
     desktopShell?.removeBeforeQuitListener(flush);
     strings.removeListener(_onStringsChanged);

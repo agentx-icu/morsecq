@@ -4,7 +4,8 @@
 
 Training pedagogy for MorseCQ as **pure Dart** (no Flutter imports): the Koch
 course, Farnsworth settings, drill generators, alignment-based scoring, spaced
-repetition, send-practice diagnostics and learner progress. It depends on
+repetition, send-practice diagnostics, learner progress, daily plans, simulated
+QSOs and advanced learning (mistake notebook, comprehension and goal routes). It depends on
 `morse_core` for types only (`MorseTiming`, `MorseAlphabet.kochOrder`); audio,
 haptics and persistence belong to `morse_io` and the app.
 
@@ -22,7 +23,7 @@ this convention, so `<BT>` in `MorseAlphabet.kochOrder` just works.
 
 | Concern | Types | File |
 | --- | --- | --- |
-| Koch course | `KochCourse` (lesson char sets, unlock rule `passes`, `nextLesson`) | `src/koch_course.dart` |
+| Koch course | `KochCourse` (lesson char sets, unlock rule `passes` / `evaluate` → `LessonVerdict`, `nextLesson`), `LessonChallengeDrill` (challenge covering the lesson's new symbols) | `src/koch_course.dart`, `src/lesson_challenge_drill.dart` |
 | Settings | `TrainerSettings` (char/Farnsworth wpm, tone, session length, `toTiming()`, JSON) | `src/trainer_settings.dart` |
 | Drills | `Drill`, `DrillGenerator` | `src/drill.dart` |
 | | `RandomGroupsDrill` (weighted groups of 5) | `src/random_groups_drill.dart` |
@@ -34,7 +35,13 @@ this convention, so `<BT>` in `MorseAlphabet.kochOrder` just works.
 | | `ContestExchangeDrill` (`call 599 nnn`, optionally cut numbers `5NN TT7`) | `src/contest_drill.dart` |
 | Scoring | `SessionScore` (Needleman-Wunsch alignment, per-char stats), `ConfusionMatrix`, `CharStats`, `SequenceAligner` | `src/session_score.dart`, `src/confusion_matrix.dart`, `src/char_stats.dart`, `src/alignment.dart` |
 | Weighting / SRS | `CharWeights` (`w = max(floor, 1 + k(1 - acc))` x recency boost), `SrsScheduler` (Leitner boxes 0..4, `dueChars(now)`) | `src/char_weights.dart`, `src/srs_scheduler.dart` |
-| Send practice | `SendAttempt`, `SendDiagnostics`, `SendIssue`, `SendIssueKind`, `SendThresholds` | `src/send_practice.dart` |
+| Send practice | `SendAttempt`, `SendDiagnostics`, `SendIssue`, `SendIssueKind`, `SendThresholds`; `SendTimeline`, `SymbolRhythm` (per-symbol rhythm details) | `src/send_practice.dart`, `src/send_timeline.dart` |
+| Credit and evidence | `ExerciseCredit`, `ExerciseSource`, `Assistance` (what an exercise may update), `RecentSymbolEvidence`, `LearnerStage`, `CharMastery`, `SpeedAdvice` | `src/exercise.dart`, `src/recent_practice.dart`, `src/learner_stage.dart`, `src/speed_recommendation.dart` |
+| Placement | `PlacementAssessment`, `PlacementResult` | `src/placement_assessment.dart` |
+| Daily plan and goals | `DailyPlan`, `PlanStep`, `PlanInputs`; `LearningGoal`, `LearningRoute`, `RouteMilestone`, `GoalEvidence` | `src/daily_plan.dart`, `src/daily_plan_builder.dart`, `src/learning_goal.dart`, `src/goal_plan_builder.dart` |
+| Comprehension and mistakes | `ListeningExercise`, `ListeningQuestion`, `ListeningAttempt`, `ListeningScore`; `MistakeNotebook`, `MistakeEntry`, `MistakeAttempt`; `ListeningProgress` on `TrainerProgress` | `src/listening_*.dart`, `src/mistake_*.dart`, `src/advanced_progress.dart` |
+| Simulated QSOs | `QsoSession`, `QsoScenario`, `QsoStage`, `QsoEvaluation`, `QsoReadiness`, `QsoProtocolAttempt` | `src/qso/`, `src/qso_protocol.dart` |
+| Channel, materials, telegraph code | `RadioScenario`, `RadioPreset`; `TrainingMaterial`, `MaterialDrill`, `MaterialAnalysis`; `TelegraphDigitsDrill`, `TelegraphRecallCard` | `src/radio_conditions.dart`, `src/material/`, `src/telegraph_practice.dart` |
 | Progress | `TrainerProgress`, `SessionSummary`, `TrainerStore`, `InMemoryTrainerStore` | `src/trainer_progress.dart`, `src/session_summary.dart`, `src/trainer_store.dart` |
 | Text | `MorseText` (tokeniser shared by everything above) | `src/morse_text.dart` |
 
@@ -73,12 +80,19 @@ final score = SessionScore.evaluate(
 );
 progress = progress
     .recordSession(score, now: clock.now())      // stats, streak, SRS, confusion
-    .advanceIfPassed(course, score);            // >= 90 % over >= 50 chars
+    .advanceIfPassed(course, score);            // see the unlock rule below
 await store.save(progress);
 
 // Optional: bias the next drill towards SRS-due symbols.
 final due = progress.srs.dueOrNew(chars, clock.now());
 ```
+
+The unlock rule needs at least 50 symbols at 90 % strict accuracy and, for
+each symbol the lesson introduces, at least ten attempts copied at 90 %; use a
+`LessonChallengeDrill` so the session covers them. Passing the last lesson
+sets `courseCompleted`. In the app, `recordExercise(score, summary, credit:)`
+records practice once per summary ID, and only an `ExerciseCredit` that allows
+unlocking reaches `advanceIfPassed`; assisted and free practice never do.
 
 Send practice: feed the decoder's marks/gaps and dit estimate into
 `SendAttempt(...).evaluate()` and show `SendDiagnostics.issues` (each has a
@@ -91,7 +105,7 @@ exercise the same serialisation a real store would.
 ## Development
 
 ```bash
-dart pub get                       # at the workspace root
+dart pub get --enforce-lockfile    # at the workspace root
 dart analyze packages/morse_trainer
 dart test packages/morse_trainer
 ```

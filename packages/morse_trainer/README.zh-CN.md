@@ -3,7 +3,7 @@
 # morse_trainer
 
 MorseCQ 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程、Farnsworth 设置、练习生成器、
-基于序列对齐的评分、间隔重复、发报练习诊断以及学习进度。它只依赖 `morse_core` 的类型
+基于序列对齐的评分、间隔重复、发报练习诊断、学习进度、每日计划、模拟通联以及进阶学习（跨次错题本、听懂训练与目标路线）。它只依赖 `morse_core` 的类型
 （`MorseTiming`、`MorseAlphabet.kochOrder`）；音频、触觉反馈与持久化属于 `morse_io` 和 App。
 
 给定 `Random` 种子和注入的时钟（`DateTime now` 参数），一切都是确定性的，因此 App 及其测试可以
@@ -19,7 +19,7 @@ MorseCQ 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程�
 
 | 关注点 | 类型 | 文件 |
 | --- | --- | --- |
-| Koch 课程 | `KochCourse`（各课字符集、解锁规则 `passes`、`nextLesson`） | `src/koch_course.dart` |
+| Koch 课程 | `KochCourse`（各课字符集、解锁规则 `passes` / `evaluate` → `LessonVerdict`、`nextLesson`）、`LessonChallengeDrill`（覆盖本课新字符的挑战） | `src/koch_course.dart`、`src/lesson_challenge_drill.dart` |
 | 设置 | `TrainerSettings`（字符/Farnsworth wpm、音调、会话长度、`toTiming()`、JSON） | `src/trainer_settings.dart` |
 | 练习 | `Drill`、`DrillGenerator` | `src/drill.dart` |
 | | `RandomGroupsDrill`（加权的 5 字符组） | `src/random_groups_drill.dart` |
@@ -31,7 +31,13 @@ MorseCQ 的训练教学法，**纯 Dart**（不引入 Flutter）：Koch 课程�
 | | `ContestExchangeDrill`（`呼号 599 序号`，可用缩略数字 `5NN TT7`） | `src/contest_drill.dart` |
 | 评分 | `SessionScore`（Needleman-Wunsch 对齐、逐字符统计）、`ConfusionMatrix`、`CharStats`、`SequenceAligner` | `src/session_score.dart`、`src/confusion_matrix.dart`、`src/char_stats.dart`、`src/alignment.dart` |
 | 权重 / SRS | `CharWeights`（`w = max(floor, 1 + k(1 - acc))` x 近期加成）、`SrsScheduler`（Leitner 盒 0..4，`dueChars(now)`） | `src/char_weights.dart`、`src/srs_scheduler.dart` |
-| 发报练习 | `SendAttempt`、`SendDiagnostics`、`SendIssue`、`SendIssueKind`、`SendThresholds` | `src/send_practice.dart` |
+| 发报练习 | `SendAttempt`、`SendDiagnostics`、`SendIssue`、`SendIssueKind`、`SendThresholds`；`SendTimeline`、`SymbolRhythm`（逐字符节奏详情） | `src/send_practice.dart`、`src/send_timeline.dart` |
+| 记分与证据 | `ExerciseCredit`、`ExerciseSource`、`Assistance`（一次练习可以更新什么）、`RecentSymbolEvidence`、`LearnerStage`、`CharMastery`、`SpeedAdvice` | `src/exercise.dart`、`src/recent_practice.dart`、`src/learner_stage.dart`、`src/speed_recommendation.dart` |
+| 水平测评 | `PlacementAssessment`、`PlacementResult` | `src/placement_assessment.dart` |
+| 每日计划与目标 | `DailyPlan`、`PlanStep`、`PlanInputs`；`LearningGoal`、`LearningRoute`、`RouteMilestone`、`GoalEvidence` | `src/daily_plan.dart`、`src/daily_plan_builder.dart`、`src/learning_goal.dart`、`src/goal_plan_builder.dart` |
+| 听懂与错题 | `ListeningExercise`、`ListeningQuestion`、`ListeningAttempt`、`ListeningScore`；`MistakeNotebook`、`MistakeEntry`、`MistakeAttempt`；`TrainerProgress` 上的 `ListeningProgress` | `src/listening_*.dart`、`src/mistake_*.dart`、`src/advanced_progress.dart` |
+| 模拟通联 | `QsoSession`、`QsoScenario`、`QsoStage`、`QsoEvaluation`、`QsoReadiness`、`QsoProtocolAttempt` | `src/qso/`、`src/qso_protocol.dart` |
+| 信道、素材、中文电码 | `RadioScenario`、`RadioPreset`；`TrainingMaterial`、`MaterialDrill`、`MaterialAnalysis`；`TelegraphDigitsDrill`、`TelegraphRecallCard` | `src/radio_conditions.dart`、`src/material/`、`src/telegraph_practice.dart` |
 | 进度 | `TrainerProgress`、`SessionSummary`、`TrainerStore`、`InMemoryTrainerStore` | `src/trainer_progress.dart`、`src/session_summary.dart`、`src/trainer_store.dart` |
 | 文本 | `MorseText`（上述所有组件共用的分词器） | `src/morse_text.dart` |
 
@@ -70,12 +76,17 @@ final score = SessionScore.evaluate(
 );
 progress = progress
     .recordSession(score, now: clock.now())      // stats, streak, SRS, confusion
-    .advanceIfPassed(course, score);            // >= 90 % over >= 50 chars
+    .advanceIfPassed(course, score);            // see the unlock rule below
 await store.save(progress);
 
 // Optional: bias the next drill towards SRS-due symbols.
 final due = progress.srs.dueOrNew(chars, clock.now());
 ```
+
+解锁规则要求至少 50 个符号、严格准确率 90 %，并且本课新引入的每个符号至少尝试十次、准确率 90 %；
+用 `LessonChallengeDrill` 保证练习覆盖这些符号。通过最后一课才设置 `courseCompleted`。App 中
+`recordExercise(score, summary, credit:)` 按 summary ID 只记录一次练习，只有允许解锁的
+`ExerciseCredit` 才会调用 `advanceIfPassed`；辅助练习和自由练习永远不会。
 
 发报练习：把译码器的 mark/间隔以及点长估计喂给 `SendAttempt(...).evaluate()`，然后展示
 `SendDiagnostics.issues`（每一项都有 `kind`、`severity` 和 `describe()` 字符串）以及 `measuredWpm`。
@@ -86,7 +97,7 @@ final due = progress.srs.dueOrNew(chars, clock.now());
 ## 开发
 
 ```bash
-dart pub get                       # at the workspace root
+dart pub get --enforce-lockfile    # at the workspace root
 dart analyze packages/morse_trainer
 dart test packages/morse_trainer
 ```

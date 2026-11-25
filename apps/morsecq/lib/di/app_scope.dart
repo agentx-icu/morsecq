@@ -12,6 +12,7 @@ import '../ui/reference/reference_playback_settings.dart';
 import 'app_preferences.dart';
 import 'app_services.dart';
 import 'app_settings.dart';
+import 'privacy_consent.dart';
 
 class AppScope extends StatefulWidget {
   const AppScope({
@@ -19,12 +20,14 @@ class AppScope extends StatefulWidget {
     required this.child,
     this.learningStore,
     this.localeStore,
+    this.consentStore,
     this.desktopShell,
     this.backgroundTasks,
   });
   final Widget child;
   final LocalLearningStore? learningStore;
   final KeyValueStore? localeStore;
+  final KeyValueStore? consentStore;
   final DesktopShellController? desktopShell;
   final BackgroundTaskApi? backgroundTasks;
   @override
@@ -36,6 +39,7 @@ class _AppScopeState extends State<AppScope> {
   late final _preferences = AppPreferences(_store);
   late final _locale = LocaleController(_store);
   late final _keys = KeyProfiles(_store);
+  late final _consent = PrivacyConsent(store: widget.consentStore);
   late final _learning = widget.learningStore ?? LocalLearningStore();
   late final _training = TrainingControllerHost(_learning);
   late final _services = AppServices(
@@ -48,6 +52,7 @@ class _AppScopeState extends State<AppScope> {
     _preferences.flush(),
     _locale.flush(),
     _keys.flush(),
+    _consent.flush(),
     _training.flush(),
   ]);
   @override
@@ -65,6 +70,7 @@ class _AppScopeState extends State<AppScope> {
     _preferences.dispose();
     _locale.dispose();
     _keys.dispose();
+    _consent.dispose();
     super.dispose();
   }
 
@@ -81,6 +87,7 @@ class _AppScopeState extends State<AppScope> {
       ChangeNotifierProvider<ListenPreferences>.value(
         value: _preferences.listen,
       ),
+      ChangeNotifierProvider<PrivacyConsent>.value(value: _consent),
       ChangeNotifierProvider<DesktopShellController?>.value(
         value: widget.desktopShell,
       ),

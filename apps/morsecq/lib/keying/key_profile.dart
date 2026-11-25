@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
-import '../training/training_settings.dart';
 
 /// Why a key profile was refused (F12).
 enum KeyProfileError {

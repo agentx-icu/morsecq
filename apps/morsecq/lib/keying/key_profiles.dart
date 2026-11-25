@@ -26,13 +26,13 @@ final class KeyProfiles extends ChangeNotifier {
   final List<KeyProfile> _saved = [];
   String _selected = KeyProfile.defaults.id;
   Future<void> _pending = Future<void>.value();
+  bool _disposed = false;
 
   /// Saved profiles, oldest first (the built-in default is not listed).
   List<KeyProfile> get saved => List.unmodifiable(_saved);
 
   KeyProfile get active =>
-      _saved.where((p) => p.id == _selected).firstOrNull ??
-      KeyProfile.defaults;
+      _saved.where((p) => p.id == _selected).firstOrNull ?? KeyProfile.defaults;
 
   void _load() {
     final raw = _store.getString(storageKey);
@@ -61,13 +61,23 @@ final class KeyProfiles extends ChangeNotifier {
     }
   }
 
-  Future<void> _persist() {
-    final doc = jsonEncode({
-      'v': KeyProfile.version,
-      'selected': _selected,
-      'profiles': [for (final p in _saved) p.toJson()],
+  Future<void> _mutate(String? Function(List<KeyProfile>, String) change) {
+    final op = _pending.then((_) async {
+      final saved = List<KeyProfile>.of(_saved);
+      final selected = change(saved, _selected);
+      if (selected == null) return;
+      final doc = jsonEncode({
+        'v': KeyProfile.version,
+        'selected': selected,
+        'profiles': [for (final p in saved) p.toJson()],
+      });
+      await _store.setString(storageKey, doc);
+      _saved
+        ..clear()
+        ..addAll(saved);
+      _selected = selected;
+      if (!_disposed) notifyListeners();
     });
-    final op = _pending.then((_) => _store.setString(storageKey, doc));
     _pending = op.catchError((Object _) {});
     return op;
   }
@@ -76,32 +86,27 @@ final class KeyProfiles extends ChangeNotifier {
   /// makes it active. Throws [KeyProfileException] when it is invalid.
   Future<void> save(KeyProfile profile) async {
     profile.validate();
-    final i = _saved.indexWhere((p) => p.id == profile.id);
-    if (i >= 0) {
-      _saved[i] = profile;
-    } else {
-      _saved.add(profile);
-    }
-    _selected = profile.id;
-    notifyListeners();
-    await _persist();
+    await _mutate((saved, _) {
+      final index = saved.indexWhere((p) => p.id == profile.id);
+      if (index >= 0) {
+        saved[index] = profile;
+      } else {
+        saved.add(profile);
+      }
+      return profile.id;
+    });
   }
 
-  Future<void> select(String id) {
-    if (id != KeyProfile.defaults.id && !_saved.any((p) => p.id == id)) {
-      return Future<void>.value();
-    }
-    _selected = id;
-    notifyListeners();
-    return _persist();
-  }
+  Future<void> select(String id) => _mutate(
+    (saved, _) => id == KeyProfile.defaults.id || saved.any((p) => p.id == id)
+        ? id
+        : null,
+  );
 
-  Future<void> delete(String id) {
-    _saved.removeWhere((p) => p.id == id);
-    if (_selected == id) _selected = KeyProfile.defaults.id;
-    notifyListeners();
-    return _persist();
-  }
+  Future<void> delete(String id) => _mutate((saved, selected) {
+    saved.removeWhere((p) => p.id == id);
+    return selected == id ? KeyProfile.defaults.id : selected;
+  });
 
   /// Back to Space / left Ctrl / right Ctrl; saved profiles are kept.
   Future<void> useDefaults() => select(KeyProfile.defaults.id);
@@ -112,5 +117,11 @@ final class KeyProfiles extends ChangeNotifier {
       pending = _pending;
       await pending;
     } while (!identical(pending, _pending));
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

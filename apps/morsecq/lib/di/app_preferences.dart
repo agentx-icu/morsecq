@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../i18n/key_value_store.dart';
+import '../diagnostics/local_diagnostics.dart';
 import '../ui/listen/listen_preferences.dart';
 import '../ui/listen/listen_settings.dart';
 import '../ui/reference/reference_playback_settings.dart';
@@ -113,7 +114,11 @@ final class AppPreferences {
         if (identical(_dirty[key]?.version, write.version)) {
           _saveErrors[key] = error;
         }
-        debugPrint('[AppPreferences] save failed for $key: $error\n$stack');
+        LocalDiagnostics.report(
+          DiagnosticContext.preferencesSave,
+          error,
+          stack,
+        );
       }
     });
   }

@@ -3,10 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/advanced_learning.dart';
-import 'package:morsecq/training/qso_practice.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/qso/qso_screen.dart';
 import 'package:morsecq/ui/learn/qso/qso_setup_screen.dart';
 
@@ -168,6 +166,54 @@ void main() {
       expect(draft.session.toJson()['typedReplies'], 1);
     },
   );
+
+  testWidgets('an empty resumed typed field does not credit typed assistance', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    await t.controller.saveQsoDraft(session, typedReply: true);
+    final draft = (await t.controller.loadQsoDraft())!;
+    tester.view.physicalSize = const Size(430, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      l10nApp(
+        home: QsoScreen(
+          controller: t.controller,
+          playback: playback,
+          session: draft.session,
+          resumed: draft,
+          screenWake: _NoWake(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('qso-typed-mode')));
+    await tester.pump();
+    await _key(
+      tester,
+      playback.clock,
+      '${session.remote.callsign} DE BD1XYZ K',
+    );
+    await tester.tap(find.byKey(const ValueKey('qso-send')));
+    await tester.pump();
+    expect(draft.session.stage, QsoStage.exchange);
+    expect(draft.session.typedReplies, 0);
+  });
+
+  test('legacy typed drafts only credit assistance for pending text', () {
+    final session = _session();
+    QsoDraft read(String pendingText) => QsoPractice.decodeDraft({
+      'session': session.toJson(),
+      'pendingText': pendingText,
+      'typedReply': true,
+    });
+
+    expect(read('CQ').pendingWasTyped, isTrue);
+    expect(read('').pendingWasTyped, isFalse);
+  });
 
   testWidgets(
     'goal setup uses frozen speed and binds only its selected scenario',

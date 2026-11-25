@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
 import '../conditions/conditions_playback.dart';
 import '../conditions/conditions_widgets.dart';
@@ -77,6 +76,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       ? null
       : widget.conditionsPlayback ?? ConditionsPlayback();
   StreamSubscription<bool>? _conditionsSub;
+  StreamSubscription<void>? _conditionsInterruptionSub;
+  int _conditionsRun = 0;
 
   /// Set right before we stop the conditions audio ourselves, so that stop
   /// does not count as having heard the round.
@@ -88,6 +89,9 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _conditionsInterruptionSub = _conditions?.interruptions.listen((_) {
+      if (_phase == _Phase.listen && _playing) _stopConditions();
+    });
     _wake.setActive(true);
     unawaited(_setup());
   }
@@ -203,6 +207,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     final conditions = _conditions;
     if (conditions != null) {
       if (_conditionsBlocked) return;
+      final run = ++_conditionsRun;
       setState(() {
         _playing = true;
         _conditionsFailed = false;
@@ -210,11 +215,13 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       conditions
           .play(_session.currentDrill.text, _session.currentConditions!)
           .then((started) {
-            // Dropped by a stop during rendering: no event will reset it.
-            if (!started && mounted) setState(() => _playing = false);
+            // Rendering or loading was cancelled before a clip started.
+            if (!started && mounted && run == _conditionsRun) {
+              setState(() => _playing = false);
+            }
           })
           .catchError((Object _) {
-            if (mounted) {
+            if (mounted && run == _conditionsRun) {
               setState(() {
                 _playing = false;
                 _conditionsFailed = true;
@@ -322,6 +329,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_conditionsSub?.cancel());
+    unawaited(_conditionsInterruptionSub?.cancel());
     unawaited(_conditions?.dispose());
     unawaited(_playback?.dispose());
     _answer.dispose();

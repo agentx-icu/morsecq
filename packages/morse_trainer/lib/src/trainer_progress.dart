@@ -1,3 +1,4 @@
+import 'unsupported_data_version.dart';
 import 'char_stats.dart';
 import 'confusion_matrix.dart';
 import 'daily_plan.dart';
@@ -321,10 +322,17 @@ final class TrainerProgress {
     final ids = <String>[...committedIds, id];
     // Evict the oldest ordinary ids. Ids of results that can be parked
     // across launches (prefix `qso_`, one per finished QSO) are never
-    // evicted, so a parked result can never be credited twice.
+    // evicted, so a parked result can never be credited twice. Always keep
+    // the id just committed, even if protected ids alone fill the budget.
     var excess = ids.length - maxCommittedIds;
     if (excess > 0) {
-      ids.removeWhere((x) => excess-- > 0 && !x.startsWith(protectedIdPrefix));
+      ids.removeWhere((x) {
+        if (excess <= 0 || x == id || x.startsWith(protectedIdPrefix)) {
+          return false;
+        }
+        excess--;
+        return true;
+      });
     }
     return ids;
   }
@@ -417,6 +425,11 @@ final class TrainerProgress {
   /// validate them and fall back to a backup (the app's `FileTrainerStore`
   /// does).
   factory TrainerProgress.fromJson(Map<String, Object?> json) {
+    UnsupportedDataVersion.check(
+      json['version'],
+      supported: 1,
+      document: 'Training progress',
+    );
     final lastDay = json['lastPracticeDay'] as String?;
     final rawHistory = json['history'] as List<Object?>? ?? const <Object?>[];
     final rawSrs = json['srs'] as Map<String, Object?>?;

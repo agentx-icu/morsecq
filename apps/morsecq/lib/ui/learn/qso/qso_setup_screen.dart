@@ -4,14 +4,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/qso_practice.dart';
-import '../../../training/receive_session.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_plan.dart';
-import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
 import '../learn_playback.dart';
@@ -52,15 +49,33 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   late QsoScenario _scenario = widget.initialScenario;
   QsoDraft? _draft;
   bool _loaded = false;
+  bool _opening = false;
+  int _previewGeneration = 0;
   LearnPlayback? _playback;
   TrainingSettings? _playbackSettings;
   Future<LearnPlayback>? _creating;
 
   TrainingController get _c => widget.controller;
 
+  bool get _canOpen => mounted && (ModalRoute.of(context)?.isCurrent ?? true);
+
+  Future<void> _navigate(Future<void> Function() open) async {
+    if (_opening || !_canOpen) return;
+    setState(() => _opening = true);
+    _previewGeneration++;
+    try {
+      _playback?.player.stop();
+      await open();
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
+
   /// Plays one untaught symbol from the readiness card. The playback is
   /// created on the first tap and rebuilt when the settings changed.
   Future<void> _hear(String char) async {
+    if (_opening || !_canOpen) return;
+    final generation = _previewGeneration;
     final settings = _c.settings;
     var p = _playback;
     if (p != null && _playbackSettings != settings) {
@@ -68,6 +83,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
       _creating = null;
       p.player.stop();
       await p.dispose();
+      if (generation != _previewGeneration || !_canOpen) return;
       p = null;
     }
     if (p == null) {
@@ -88,8 +104,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
         await p.dispose();
         return;
       }
-      if (!mounted) return;
     }
+    if (generation != _previewGeneration || !_canOpen) return;
     p.player.stop();
     p.player.play(MorseEncoder.encode(char, _c.trainerSettings.toTiming()));
   }
@@ -97,8 +113,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
   /// Opens the suggested drill and re-reads readiness on return.
   VoidCallback? _drill(ReceiveDrillKind kind) =>
       _c.availableReceiveKinds.contains(kind)
-      ? () async {
-          _playback?.player.stop();
+      ? () => _navigate(() async {
           await Navigator.of(context).push(
             MaterialPageRoute<Object?>(
               builder: (_) => ReceiveDrillScreen(
@@ -108,14 +123,12 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
               ),
             ),
           );
-          if (mounted) setState(() {});
-        }
+        })
       : null;
 
-  Future<void> _practiseSymbols() async {
+  Future<void> _practiseSymbols() => _navigate(() async {
     final session = _c.startQsoSymbolSession(_c.qsoReadiness.unmastered);
     if (session == null) return;
-    _playback?.player.stop();
     await Navigator.of(context).push(
       MaterialPageRoute<Object?>(
         builder: (_) => ReceiveDrillScreen(
@@ -125,18 +138,15 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
         ),
       ),
     );
-    if (mounted) setState(() {});
-  }
+  });
 
-  Future<void> _protocol() async {
-    _playback?.player.stop();
+  Future<void> _protocol() => _navigate(() async {
     await Navigator.of(context).push(
       MaterialPageRoute<Object?>(
         builder: (_) => QsoProtocolScreen(controller: _c),
       ),
     );
-    if (mounted) setState(() {});
-  }
+  });
 
   @override
   void initState() {
@@ -184,8 +194,12 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
               QsoStation.isValidWord(_qth.text),
       };
 
+  Future<void> _resume() => _navigate(() async {
+    final draft = _draft;
+    if (draft != null) await _open(draft.session, resumed: draft);
+  });
+
   Future<void> _open(QsoSession session, {QsoDraft? resumed}) async {
-    _playback?.player.stop();
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => QsoScreen(
@@ -199,7 +213,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     if (mounted) await _load();
   }
 
-  Future<void> _start({QsoScenario? scenario}) async {
+  Future<void> _start({QsoScenario? scenario}) => _navigate(() async {
     final station = QsoStation(
       callsign: _call.text,
       name: _name.text,
@@ -229,11 +243,12 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
           );
     try {
       await _c.saveQsoStation(station);
+      if (!_canOpen) return;
       await _c.discardQsoDraft();
     } on Object {
       // The QSO still runs; the station is asked again next time.
     }
-    if (!mounted) return;
+    if (!_canOpen) return;
     await _open(
       QsoSession.start(
         scenario: chosen,
@@ -244,7 +259,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
         planStepId: bound ? step.id : null,
       ),
     );
-  }
+  });
 
   @override
   void dispose() {
@@ -287,7 +302,8 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                               unawaited(_practiseSymbols()),
                           onPractiseProtocol: () => unawaited(_protocol()),
                           onPractiseExchange:
-                              QsoStation.isValidCallsign(_call.text)
+                              !_opening &&
+                                  QsoStation.isValidCallsign(_call.text)
                               ? () => unawaited(
                                   _start(scenario: QsoScenario.shortExchange),
                                 )
@@ -298,8 +314,7 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                       if (_draft != null) ...<Widget>[
                         FilledButton.tonalIcon(
                           key: const ValueKey('qso-resume'),
-                          onPressed: () =>
-                              _open(_draft!.session, resumed: _draft),
+                          onPressed: _opening ? null : _resume,
                           icon: const Icon(Icons.restore),
                           label: Text(s.learnQsoResume),
                         ),
@@ -434,7 +449,9 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
                       const SizedBox(height: 16),
                       FilledButton.icon(
                         key: const ValueKey('qso-start'),
-                        onPressed: _valid ? () => unawaited(_start()) : null,
+                        onPressed: !_opening && _valid
+                            ? () => unawaited(_start())
+                            : null,
                         icon: const Icon(Icons.cell_tower),
                         label: Text(s.learnQsoStart),
                         style: FilledButton.styleFrom(

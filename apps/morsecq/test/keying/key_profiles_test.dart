@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/keying/key_profile.dart';
 import 'package:morsecq/keying/key_profiles.dart';
 import 'package:morsecq/keying/profile_keyer.dart';
 import 'package:morse_io/testing.dart';
-import 'package:morsecq/training/training_settings.dart';
 
 KeyProfile _vail() => KeyProfile(
   id: 'vail',
@@ -17,6 +17,26 @@ KeyProfile _vail() => KeyProfile(
   dit: {LogicalKeyboardKey.bracketLeft},
   dah: {LogicalKeyboardKey.bracketRight},
 );
+
+final class _FailingProfileStore implements KeyValueStore {
+  final saved = InMemoryKeyValueStore();
+  bool failNext = false;
+
+  @override
+  String? getString(String key) => saved.getString(key);
+
+  @override
+  Future<void> setString(String key, String value) async {
+    if (failNext) {
+      failNext = false;
+      throw StateError('profile storage unavailable');
+    }
+    await saved.setString(key, value);
+  }
+
+  @override
+  Future<void> remove(String key) => saved.remove(key);
+}
 
 void main() {
   group('profile', () {
@@ -67,6 +87,26 @@ void main() {
   });
 
   group('store', () {
+    test('a failed delete is not included in the next queued save', () async {
+      final kv = _FailingProfileStore();
+      final profiles = KeyProfiles(kv);
+      addTearDown(profiles.dispose);
+      await profiles.save(_vail());
+      kv.failNext = true;
+
+      final deletion = expectLater(profiles.delete('vail'), throwsStateError);
+      final other = _vail().copyWith(id: 'other');
+      final save = profiles.save(other);
+      await deletion;
+      await save;
+
+      final reopened = KeyProfiles(kv);
+      addTearDown(reopened.dispose);
+      expect(profiles.saved, [_vail(), other]);
+      expect(reopened.saved, profiles.saved);
+      expect(reopened.active, other);
+    });
+
     test('save selects, persists and reloads; delete falls back', () async {
       final kv = InMemoryKeyValueStore();
       final a = KeyProfiles(kv);

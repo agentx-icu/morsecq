@@ -42,40 +42,28 @@ printf 'test fixture' > build/ios/ipa/morsecq.ipa
         return subprocess.run(["bash", str(self.root / "tool/build_ios_store.sh"), *args],
                               env=self.env, capture_output=True, text=True)
 
-    def test_store_export_and_actual_product_name_are_verified(self):
-        result = self.store()
+    def test_store_wrapper_retains_version_gate_before_reviewed_export_helper(self):
+        self.command("python3", 'echo "python3 $*" >> "$TEST_LOG"\n')
+        self.env.update({"GITHUB_REF_TYPE": "tag", "GITHUB_REF_NAME": "v0.2.0"})
+        result = self.store("--unsigned-archive")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("must match app version", result.stderr)
+        self.assertFalse(self.log.exists())
+        self.env.update({"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "master"})
+        result = self.store("--unsigned-archive")
         self.assertEqual(result.returncode, 0, result.stderr)
-        log = self.log.read_text()
-        self.assertIn("flutter build ipa --release --export-method app-store", log)
-        self.assertIn("codesign --verify --deep --strict --verbose=2", log)
-        self.assertIn("MorseCQ.xcarchive/Products/Applications/MorseCQ.app", log)
+        self.assertIn("ios_store_export.py --unsigned-archive", self.log.read_text())
 
-    def test_store_rejects_unsigned_mode_and_export_overrides_before_build(self):
-        for args in (("--no-codesign",), ("--export-method=ad-hoc",),
-                     ("--export-method", "development"),
-                     ("--export-options-plist", "ad-hoc.plist"),
-                     ("--export-options-plist=ad-hoc.plist",),
-                     ("--debug",), ("--profile",)):
-            with self.subTest(args=args):
-                result = self.store(*args)
-                self.assertNotEqual(result.returncode, 0)
+    def test_store_rejects_unreviewed_export_overrides_before_build(self):
+        wrapper = REPO / "tool/build_ios_store.sh"
+        for argument in ("--no-codesign", "--export-method=ad-hoc",
+                         "--export-options-plist=ad-hoc.plist", "--debug", "--profile"):
+            with self.subTest(argument=argument):
+                result = subprocess.run(["bash", str(wrapper), argument], env=self.env,
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("unrecognized arguments", result.stderr)
                 self.assertFalse(self.log.exists())
-
-    def test_missing_export_does_not_reuse_stale_ipa(self):
-        old = self.root / "apps/morsecq/build/ios/ipa/stale.ipa"
-        old.parent.mkdir(parents=True)
-        old.write_bytes(b"old build")
-        self.command("flutter", "exit 0\n")
-        result = self.store()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("expected exactly one non-empty App Store IPA", result.stderr)
-        self.assertFalse(old.exists())
-
-    def test_codesign_failure_fails_store_build(self):
-        self.command("codesign", "exit 1\n")
-        result = self.store()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertNotIn("signed App Store IPA:", result.stdout)
 
     def test_general_ios_release_requires_explicit_unsigned_opt_in(self):
         script = str(self.root / "build_all.sh")
@@ -92,9 +80,10 @@ printf 'test fixture' > build/ios/ipa/morsecq.ipa
 
     def signing_step(self, ref_type, values=()):
         text = (REPO / ".github/workflows/builds.yml").read_text()
-        block = text.split("      - name: Prepare release signing\n", 1)[1]
-        block = block.split("        run: |\n", 1)[1].split("      - name:", 1)[0]
-        script = "\n".join(line[10:] for line in block.splitlines())
+        name = "Prepare release signing" if ref_type == "tag" else "Allow explicitly debug-signed test artifacts"
+        block = text.split(f"      - name: {name}\n", 1)[1]
+        block = block.split("        run: ", 1)[1].split("      - name:", 1)[0]
+        script = "\n".join(line[10:] for line in block[2:].splitlines()) if block.startswith("|\n") else block.strip()
         names = ("ANDROID_KEYSTORE_BASE64", "ANDROID_KEYSTORE_PASSWORD",
                  "ANDROID_KEY_ALIAS", "ANDROID_KEY_PASSWORD")
         env = {**self.env, **dict.fromkeys(names, ""),
@@ -124,10 +113,12 @@ printf 'test fixture' > build/ios/ipa/morsecq.ipa
         self.assertIn("MORSECQ_ANDROID_KEYSTORE=", env)
         self.assertNotIn("MORSECQ_ALLOW_DEBUG_SIGNING", env)
 
-    def test_gradle_signing_gate_runs_as_release_task_not_configuration(self):
+    def test_non_store_signing_gate_runs_as_release_task(self):
         text = (REPO / "apps/morsecq/android/app/build.gradle.kts").read_text()
         config = text.split("    buildTypes {", 1)[1].split("val verifyMorsecqReleaseSigning", 1)[0]
-        self.assertNotIn("throw GradleException", config)
+        # Preserve the newer store-only fail-closed configuration guard.
+        self.assertIn("storeRelease -> throw GradleException", config)
+        self.assertNotIn("Android release signing is not configured", config)
         self.assertIn('morsecqAllowDebugSigning -> signingConfigs.getByName("debug")', config)
         self.assertIn("else -> null", config)
         task = text.split('tasks.register("verifyMorsecqReleaseSigning")', 1)[1]

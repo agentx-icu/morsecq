@@ -13,8 +13,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/receive_session_start.dart';
 import 'package:morsecq/ui/appearance/appearance_page.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';
@@ -375,7 +375,7 @@ void main() {
             prepare: scene.prepare,
             shown: scene.shown,
             // Paper's serif headings, on iOS typography.
-            style: UiStyle.paper,
+            style: UiStyle.classic,
           );
           expect(problems, isEmpty, reason: problems.join('\n'));
         },

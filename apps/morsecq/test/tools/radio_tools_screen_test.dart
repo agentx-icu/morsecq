@@ -112,6 +112,15 @@ void main() {
   });
 
   group('BandTool', () {
+    testWidgets('an unrepresentable wavelength still shows band status', (
+      tester,
+    ) async {
+      await _pumpIn(tester, const BandTool());
+      await _enter(tester, BandTool.frequencyKey, '1e-308');
+      expect(find.text(en.toolsBandsOutOfBand), findsOneWidget);
+      expect(find.text(en.toolsBandsWavelength), findsNothing);
+    });
+
     testWidgets('band membership follows the region', (tester) async {
       await _pumpIn(tester, const BandTool());
       await _enter(tester, BandTool.frequencyKey, '7.25');

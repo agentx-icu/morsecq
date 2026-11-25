@@ -1,8 +1,28 @@
 #include "flutter_window.h"
 
+#include <shellapi.h>
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+
+namespace {
+
+bool IsTrayIconAvailable(HWND window) {
+  if (!window) return false;
+
+  // tray_manager 0.5.3 uses this window, ID and callback. Reasserting only
+  // the existing callback checks registration without depending on whether
+  // Explorer draws the icon in the overflow area or on the taskbar.
+  NOTIFYICONDATAW icon{};
+  icon.cbSize = sizeof(icon);
+  icon.hWnd = window;
+  icon.uID = 1;
+  icon.uFlags = NIF_MESSAGE;
+  icon.uCallbackMessage = WM_USER + 1;
+  return Shell_NotifyIconW(NIM_MODIFY, &icon) != FALSE;
+}
+
+}  // namespace
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -27,6 +47,21 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
+  tray_icon_channel_ =
+      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+          flutter_controller_->engine()->messenger(),
+          "morsecq/windows_tray_icon",
+          &flutter::StandardMethodCodec::GetInstance());
+  tray_icon_channel_->SetMethodCallHandler(
+      [this](const auto& call, auto result) {
+        if (call.method_name() == "isAvailable") {
+          result->Success(
+              flutter::EncodableValue(IsTrayIconAvailable(GetHandle())));
+        } else {
+          result->NotImplemented();
+        }
+      });
+
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
   });
@@ -40,6 +75,10 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  if (tray_icon_channel_) {
+    tray_icon_channel_->SetMethodCallHandler(nullptr);
+    tray_icon_channel_.reset();
+  }
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
@@ -63,7 +102,9 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
 
   switch (message) {
     case WM_FONTCHANGE:
-      flutter_controller_->engine()->ReloadSystemFonts();
+      if (flutter_controller_) {
+        flutter_controller_->engine()->ReloadSystemFonts();
+      }
       break;
   }
 

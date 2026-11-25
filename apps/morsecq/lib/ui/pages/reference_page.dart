@@ -8,7 +8,10 @@ import '../reference/reference.dart';
 /// from the handbook's app bar so both share one playback settings object,
 /// which lives here for the lifetime of the shell.
 class ReferencePage extends StatefulWidget {
-  const ReferencePage({super.key});
+  const ReferencePage({super.key, this.searchFocusNode});
+
+  /// Owned by the shell when its active-page search command is installed.
+  final FocusNode? searchFocusNode;
 
   /// Destination label, resolved in the current locale.
   static String title(S s) => s.navReference;
@@ -45,7 +48,10 @@ class _ReferencePageState extends State<ReferencePage> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ReferencePlaybackSettings>.value(
       value: _settings,
-      child: ReferenceScreen(settings: _settings),
+      child: ReferenceScreen(
+        settings: _settings,
+        searchFocusNode: widget.searchFocusNode,
+      ),
     );
   }
 }

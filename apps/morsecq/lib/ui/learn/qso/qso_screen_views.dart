@@ -5,7 +5,7 @@ extension _QsoScreenView on _QsoScreenState {
   Widget _running(BuildContext context, S s, LearnPlayback? playback) {
     final theme = Theme.of(context);
     final decoded = _pendingText;
-    final canKey = playback != null && !_remotePlaying;
+    final canKey = playback != null && !_remotePlaying && !_backgrounded;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -29,10 +29,11 @@ extension _QsoScreenView on _QsoScreenState {
           revealed: _revealed,
           onReveal: _reveal,
           // Hearing a transmission again is a repeat, like AGN.
-          onPlay: _remotePlaying
+          onPlay: _remotePlaying || _backgrounded || playback == null
               ? null
               : (text) {
-                  _session.repeats++;
+                  // A call deferred by backgrounding was never heard.
+                  if (!_initialRemotePending) _session.repeats++;
                   _playRemote(text);
                   unawaited(_saveDraft());
                 },
@@ -64,7 +65,11 @@ extension _QsoScreenView on _QsoScreenState {
           ),
         const SizedBox(height: 8),
         Text(
-          _remotePlaying ? s.learnQsoRemoteSending : s.learnQsoYourTurn,
+          _remotePlaying
+              ? s.learnQsoRemoteSending
+              : _initialRemotePending
+              ? s.learnQsoListen
+              : s.learnQsoYourTurn,
           style: theme.textTheme.labelLarge,
         ),
         const SizedBox(height: 8),

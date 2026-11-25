@@ -4,7 +4,7 @@
 
 MorseCQ 是无需账号的离线莫尔斯电码学习软件，打开应用即可开始学习。电码聊天请使用 [DitMesh](https://github.com/agentx-icu/ditmesh)。
 
-先从听辨点划与 K/M 开始，再练习引导识别、引导发报和独立抄报。科赫课程按逐字符证据通过挑战升级，练习总结明确区分辅助练习和课程掌握。提供水平测评、间隔复习、带准备度提示的模拟通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和五种视觉样式。
+先从听辨点划与 K/M 开始，再练习引导识别、引导发报和独立抄报。科赫课程按逐字符证据通过挑战升级，练习总结明确区分辅助练习和课程掌握。提供水平测评、间隔复习、带准备度提示的模拟通联、学习素材、统计、参考手册、翻译器、中文电报码、麦克风解码、录音抄报工作台和业余无线电工具。手机、平板和桌面支持触摸与实体键盘操作，提供十种界面语言和四种视觉样式。
 
 通过 **学习 / 参考 / 我的** 导航。启动实时音频解码时申请麦克风权限；文件选择与分享用于学习素材。
 
@@ -35,6 +35,10 @@ bash tool/ci/package_artifacts.sh --target macos
 
 支持 Android 7.0+、iOS 14+、macOS 13+、Linux 和 Windows。平台工具及打包命令见[构建指南](doc/operations/BUILD_AND_DEPLOY.zh-CN.md)。
 
+商店提交与可信直接分发有各自的所有者门禁。[商店准备度](doc/release/STORE_READINESS.zh-CN.md)记录当前渠道、产物检查和账号/设备待办。CI 默认生成开发制品，绿色构建不代表商店批准。
+
+[F-Droid 提交材料](doc/release/F_DROID.zh-CN.md)已准备；满足收录政策并完成其余构建检查后，再申请官方收录。
+
 ## 学习数据
 
 学习进度、素材和录音保存在设备上。在「我的 → 清除学习数据」中确认后可删除这些内容，语言和外观设置会保留。卸载应用可能删除本地数据。
@@ -45,7 +49,10 @@ bash tool/ci/package_artifacts.sh --target macos
 - `packages/morse_trainer`：课程、测评、间隔复习、评分与模拟通联。
 - `packages/morse_dsp`：音频解码与 WAV 读取。
 - `packages/radio_tools`：网格、距离、波段、CW 速度与 RST 工具。
+- `packages/morse_session`：训练控制器核心、收发练习会话、记分判定与文档编解码（纯 Dart，仅 MorseCQ 使用）。
 - `packages/morse_io`：音频、键控与触觉反馈。
 - `apps/morsecq`：应用、本地持久化与桌面窗口服务。
+- `tool`：分析、复杂度、导入、本地化与共享包门禁；CI 打包及截图采集。
+- `doc`：架构、测试、构建与发布指南；`site`：公开的产品、隐私、条款与支持页面。
 
-[学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)
+[文档索引](doc/README.zh-CN.md) · [学习架构](doc/architecture/OFFLINE_LEARNING.zh-CN.md) · [测试](doc/testing/TEST_PYRAMID.zh-CN.md) · [验证记录](doc/VALIDATION.zh-CN.md) · [隐私](site/zh-CN/privacy.md) · [支持](site/zh-CN/support.md) · [许可证](LICENSE)

@@ -1,9 +1,8 @@
 import 'dart:math';
 
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 
 /// A fixed "now" for tests: 2026-09-30 10:00 local.
 final DateTime kTestNow = DateTime(2026, 9, 30, 10);

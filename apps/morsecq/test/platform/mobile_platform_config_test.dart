@@ -14,42 +14,44 @@ void main() {
       dotAll: true,
     ).firstMatch(manifest)!.group(0)!;
 
-    test('platform backup and device transfer are disabled', () {
-      // The files dir holds the Tox private key and chat history; only the
-      // encrypted in-app export may move an identity.
-      expect(application, contains('android:allowBackup="false"'));
-      expect(application, contains('android:fullBackupContent="false"'));
-      final rules = RegExp(
-        r'android:dataExtractionRules="@xml/([a-z_]+)"',
-      ).firstMatch(application);
-      expect(rules, isNotNull);
-      final xml = File(
-        'android/app/src/main/res/xml/${rules!.group(1)}.xml',
+    test('only local learning and preferences enter backup or transfer', () {
+      expect(application, contains('android:allowBackup="true"'));
+      expect(
+        application,
+        contains('android:fullBackupContent="@xml/backup_rules"'),
+      );
+      expect(
+        application,
+        contains('android:dataExtractionRules="@xml/data_extraction_rules"'),
+      );
+      final modern = File(
+        'android/app/src/main/res/xml/data_extraction_rules.xml',
       ).readAsStringSync();
-      for (final section in ['cloud-backup', 'device-transfer']) {
+      final legacy = File(
+        'android/app/src/main/res/xml/backup_rules.xml',
+      ).readAsStringSync();
+      final rules = {
+        'full-backup-content': legacy,
+        'cloud-backup': modern,
+        'device-transfer': modern,
+      };
+      for (final MapEntry(key: section, value: xml) in rules.entries) {
         final body = RegExp(
-          '<$section>(.*?)</$section>',
+          '<$section\\b[^>]*>(.*?)</$section>',
           dotAll: true,
-        ).firstMatch(xml);
-        expect(body, isNotNull, reason: section);
-        for (final domain in [
-          'root',
-          'file',
-          'database',
-          'sharedpref',
-          'external',
-          // Device-protected storage (direct boot) too.
-          'device_root',
-          'device_file',
-          'device_database',
-          'device_sharedpref',
-        ]) {
-          expect(
-            body!.group(1),
-            contains('<exclude domain="$domain"/>'),
-            reason: '$section/$domain',
-          );
-        }
+        ).firstMatch(xml)!.group(1)!;
+        final includes = RegExp(
+          r'<include\b[^>]*>',
+        ).allMatches(body).map((match) => match.group(0));
+        expect(
+          includes,
+          unorderedEquals([
+            '<include domain="file" path="morsecq/guest/"/>',
+            '<include domain="file" path="settings.json"/>',
+            '<include domain="file" path="settings.json.bak"/>',
+          ]),
+          reason: section,
+        );
       }
     });
 
@@ -60,6 +62,15 @@ void main() {
       expect(
         application,
         contains('android:enableOnBackInvokedCallback="true"'),
+      );
+    });
+
+    test('declares the permission needed by the Bluetooth audio recorder', () {
+      expect(
+        manifest,
+        contains(
+          '<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>',
+        ),
       );
     });
 

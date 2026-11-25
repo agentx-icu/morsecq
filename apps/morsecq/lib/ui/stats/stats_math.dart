@@ -217,9 +217,13 @@ int longestDailyRun(Iterable<DateTime> days) {
 }
 
 /// The Monday on or before [day] (ISO week start), at local midnight.
-DateTime weekStartOf(DateTime day) {
+DateTime weekStartOf(DateTime day, {int firstDayOfWeek = DateTime.monday}) {
   final d = dayOf(day);
-  return d.subtract(Duration(days: d.weekday - DateTime.monday));
+  return DateTime(
+    d.year,
+    d.month,
+    d.day - (d.weekday - firstDayOfWeek + 7) % 7,
+  );
 }
 
 /// Narrow weekday label for [weekday] (1 = Monday) in [locale] (intl's

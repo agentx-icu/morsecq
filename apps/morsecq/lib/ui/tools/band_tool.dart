@@ -110,16 +110,16 @@ class _BandToolState extends State<BandTool> {
       return const <Widget>[];
     }
     final band = _band;
+    final wavelength = AmateurBands.wavelengthM(f);
+    final status = Text(
+      band == null ? s.toolsBandsOutOfBand : s.toolsBandsInBand(band.name),
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+    if (!wavelength.isFinite) return [status];
     return <Widget>[
-      Text(
-        band == null ? s.toolsBandsOutOfBand : s.toolsBandsInBand(band.name),
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
+      status,
       const SizedBox(height: 4),
-      ResultRow(
-        label: s.toolsBandsWavelength,
-        value: formatMetres(AmateurBands.wavelengthM(f)),
-      ),
+      ResultRow(label: s.toolsBandsWavelength, value: formatMetres(wavelength)),
       ResultRow(
         label: s.toolsBandsDipole,
         value: formatMetres(AmateurBands.halfWaveDipoleM(f)),
@@ -177,8 +177,7 @@ class _BandRow extends StatelessWidget {
 }
 
 /// Metres with sensible precision: `20.34 m`, `2.04 m`, `0.65 m`, `2209 m`.
-String formatMetres(double m) =>
-    m >= 100 ? '${m.round()} m' : '${m.toStringAsFixed(2)} m';
+String formatMetres(double m) => '${m.toStringAsFixed(m >= 100 ? 0 : 2)} m';
 
 /// MHz without trailing zeros past the kHz digit: `7.0`, `5.3515`, `0.1357`.
 String formatMhz(double mhz) {

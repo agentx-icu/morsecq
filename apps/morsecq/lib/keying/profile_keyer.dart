@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 
 import '../i18n/l10n_extension.dart';
-import '../training/training_settings.dart';
 import 'key_profile.dart';
 
 /// The keyer of one Learn keying surface under a [KeyProfile] (F12): the
@@ -52,17 +52,20 @@ final class ProfileKeyer {
     };
   }
 
-  /// [sink] with only its [sidetone] member gated by [enabled] (the whole
-  /// sink when it is the sidetone itself or no member is given).
+  /// Gates only the sound in a composite, preserving flash and haptics.
+  /// Without an explicit [sidetone], device tone members are recognised by
+  /// type. A bare sink keeps the audio-only fallback used by the key test.
   static MorseSink gateSidetone(
     MorseSink sink,
     MorseSink? sidetone,
     bool Function() enabled,
   ) {
-    if (sidetone != null && sink is CompositeSink) {
+    if (sink is CompositeSink) {
       return CompositeSink([
         for (final s in sink.sinks)
-          identical(s, sidetone) ? GatedSink(s, enabled) : s,
+          identical(s, sidetone) || (sidetone == null && s is SidetoneSink)
+              ? GatedSink(s, enabled)
+              : s,
       ]);
     }
     return GatedSink(sink, enabled);

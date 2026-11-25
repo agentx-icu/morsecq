@@ -4,7 +4,7 @@
 
 MorseCQ is an account-free offline Morse code trainer. Open the app and start learning. For Morse chat, use [DitMesh](https://github.com/agentx-icu/ditmesh).
 
-Start by hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lessons advance through challenges using per-character evidence. Practice summaries distinguish assisted exercises from course mastery. Assessment, spaced review, simulated QSOs with readiness hints, learning materials, statistics, reference, translation, Chinese telegraph codes, microphone decoding, recorded-audio workbench and amateur-radio tools support continued practice. Touch and physical keyboards work across phone, tablet and desktop, with ten interface languages and five visual styles.
+Start by hearing dit/dah and K/M, then practise guided recognition and sending before independent copying. Koch lessons advance through challenges using per-character evidence. Practice summaries distinguish assisted exercises from course mastery. Assessment, spaced review, simulated QSOs with readiness hints, learning materials, statistics, reference, translation, Chinese telegraph codes, microphone decoding, recorded-audio workbench and amateur-radio tools support continued practice. Touch and physical keyboards work across phone, tablet and desktop, with ten interface languages and four visual styles.
 
 Use **Learn / Reference / Me** to navigate. Microphone access is requested when you start live audio decoding; file selection and sharing let you work with your learning materials.
 
@@ -35,6 +35,10 @@ bash tool/ci/package_artifacts.sh --target macos
 
 Supports Android 7.0+, iOS 14+, macOS 13+, Linux and Windows. See the [build guide](doc/operations/BUILD_AND_DEPLOY.md) for platform tools and packaging commands.
 
+Store submissions and trusted direct downloads have separate owner gates. Current channels, artifact checks and remaining account/device work are in [store readiness](doc/release/STORE_READINESS.md). Default CI packages are development artifacts; a green build is not store approval.
+
+[F-Droid submission materials](doc/release/F_DROID.md) are prepared; official inclusion is deferred until the policy criteria and remaining build checks are satisfied.
+
 ## Your learning data
 
 Progress, learning materials and recordings stay on your device. Use Me → Clear learning data to remove them after confirmation; language and appearance settings are preserved. Uninstalling the app may delete local data.
@@ -45,7 +49,10 @@ Progress, learning materials and recordings stay on your device. Use Me → Clea
 - `packages/morse_trainer`: lessons, assessment, spaced review, scoring and simulated QSO models.
 - `packages/morse_dsp`: audio decoding and WAV reading.
 - `packages/radio_tools`: locator, distance, bands, CW speed and RST utilities.
+- `packages/morse_session`: training controller core, receive/send sessions, credit and verdicts, document codecs (pure Dart, MorseCQ only).
 - `packages/morse_io`: audio, keying and haptics.
 - `apps/morsecq`: application, local persistence and desktop shell.
+- `tool`: analysis, complexity, import, localization and shared-package gates; CI packaging and screenshot capture.
+- `doc`: architecture, testing, build and release guides; `site`: the public product, privacy, terms and support pages.
 
-[Learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)
+[Documentation](doc/README.md) · [Learning architecture](doc/architecture/OFFLINE_LEARNING.md) · [Testing](doc/testing/TEST_PYRAMID.md) · [Validation](doc/VALIDATION.md) · [Privacy](site/privacy.md) · [Support](site/support.md) · [License](LICENSE)

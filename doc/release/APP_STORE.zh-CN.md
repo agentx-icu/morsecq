@@ -10,7 +10,7 @@ MorseCQ 在两个平台的商店标识都是 `icu.agentx.morsecq`。商店权限
 
 1. Apple Developer 团队需要 `icu.agentx.morsecq` App ID、iOS Distribution 证书和 App Store 描述文件；同一 Team ID 在 App Store Connect 中还需要有可上传构建的 App Manager 或 Developer 角色。
 2. 在 Mac 上用该账号登录 Xcode，打开 `apps/morsecq/ios/Runner.xcworkspace`，在 Runner target 选择 Team，并核对 Bundle ID 与签名配置。
-3. 运行 `bash tool/build_ios_store.sh`。这是明确的商店签名路径：固定 `--export-method app-store`、拒绝 `--no-codesign` 和其他导出方式、验证归档签名，并在 `apps/morsecq/build/ios/ipa/` 生成一个 IPA。
+3. 运行 `bash tool/build_ios_store.sh --export-options <ExportOptions.plist>`，并提供真实的 `MORSECQ_APPLE_TEAM_ID` 和 `MORSECQ_IOS_CERT_SHA1`（也可用 `--team-id`、`--certificate-sha1`）。当前受限 Python helper 只进行本地 App Store 导出，不上传、不自动更新账号；它拒绝任意 Flutter/Xcode 参数，核验最终 IPA 的签名、身份、描述文件及体积，在 `build/ios/store-readiness/` 的新证据目录中保存产物。
 4. 用 Xcode Organizer 或 Apple Transporter 上传该 IPA，再在 App Store Connect 完成 TestFlight 处理和商店资料。GitHub 工作流的 `ios-unsigned.ipa` 仅用于侧载/测试，不能上传 TestFlight。
 
 ### Android / Google Play
@@ -23,9 +23,11 @@ MorseCQ 在两个平台的商店标识都是 `icu.agentx.morsecq`。商店权限
 
 iPhone 支持竖屏和两个横屏方向；iPad 支持全部四个方向且未设置 `UIRequiresFullScreen`，因此 Split View、Slide Over 和 Stage Manager 都适用，最窄到 320 pt。学习素材导出通过 `sharePositionOrigin` 把分享弹出框锚定到被点击的控件（`test/platform/share_origin_guard_test.dart` 会让没有锚点的分享调用失败）。
 
+先看[渠道矩阵与所有者门禁](STORE_READINESS.zh-CN.md)，再选择 App Store、Developer ID、Play 或桌面商店。iOS 脚本检查实际导出 IPA 的身份/profile 并生成产物报告，不上传。
+
 ## Android：SDK 级别与 16 KB 页
 
-`compileSdk` 36、`minSdk` 24 和 `targetSdk` 36 在 `apps/morsecq/android/app/build.gradle.kts` 中显式固定（不从 Flutter Gradle 插件继承；`test/platform/mobile_platform_config_test.dart` 检查它们）。Google Play 自 2026-08-31 起要求新应用和更新使用 API 36；三个级别要一起提高并同步更新这一行。
+`compileSdk` 36、`minSdk` 24 和 `targetSdk` 36 在 `apps/morsecq/android/app/build.gradle.kts` 中显式固定（不从 Flutter Gradle 插件继承；`test/platform/mobile_platform_config_test.dart` 检查它们）。Google Play 自 2026-08-31 起要求新应用和更新使用 API 36；target/compile 与支持的最低系统分别审核，并更新有日期的政策记录。
 
 MorseCQ 不自带原生库，所以 Google Play 的 16 KB 页要求（面向 Android 15+ 应用的 64 位库）只涉及工具链产出的库：`libflutter.so`、`libapp.so` 以及用 Flutter 的 NDK（Flutter 3.41.9 为 28.2，默认对齐；不要把 `ndkVersion` 固定到 r28 以下）编译的插件代码。上传 Play 前检查最终 APK：`zipalign -c -P 16 -v 4 app-release.apk`，并对每个 `lib/arm64-v8a/*.so` 和 `lib/x86_64/*.so` 运行 `llvm-readelf -lW`（每个 `LOAD` 的 `Align` 至少为 `0x4000`）。
 
@@ -34,3 +36,37 @@ MorseCQ 不自带原生库，所以 Google Play 的 16 KB 页要求（面向 And
 唯一有效的发布标签是 `v` 加 pubspec 版本的 `X.Y.Z` 部分（例如 `1.0.1+2` 发布为 `v1.0.1`）；`v0.2.0` 等旧标签会在打包前被拒绝。
 
 详见[构建指南](../operations/BUILD_AND_DEPLOY.zh-CN.md)和[验证记录](../VALIDATION.zh-CN.md)。
+
+### 隐私同意与应用内政策（Android 正式版）
+
+Android 正式版在首次启动时请用户阅读并同意隐私政策与使用条款。应用将已同意的版本存入 Android 不参与备份的目录，键为 `privacy.consent`。新安装即使恢复了系统备份中的应用偏好，也会请求同意。政策有实质性变更时会再次请求同意。在“我 → 隐私与权限”可查看隐私政策、使用条款、个人信息收集清单、第三方共享清单、权限说明和技术支持说明。“收听”页在申请麦克风权限前说明用途。拒绝后，其余功能仍可使用。
+
+## 提交答案与兼容平台（2026-10-22）
+
+以下为根据当前源码准备的草稿，供所有者在商店后台逐项核对填写，不代表商店已接受提交。
+
+| 问题 | 当前产品答案 |
+| --- | --- |
+| App Store 隐私 / Play 数据安全 | 开发者不收集、分享或跟踪数据；无广告与分析 SDK。学习、录音与脱敏诊断留在设备上。主动导出和系统备份是用户/系统控制的路径。 |
+| 麦克风 | 可选的本机实时电码解码。应用不上传麦克风音频。 |
+| 账号 / 购买 / 用户内容服务 | 均无，因此不涉及账号删除或服务器内容管理流程。 |
+| 年龄分级内容项 | 无暴力、色情、赌博、酒精/药物、广告、不受限的应用内浏览或用户间通信。按当前问卷填写，不能由本表推定商店最终年龄标签。 |
+| Apple silicon Mac 上的 iOS 兼容版 | 不提供；发布单独测试的原生 macOS 应用。所有者需在 App Store Connect 取消兼容版可用性。 |
+| Vision Pro 上的 iOS 兼容版 / 原生 visionOS | 插件、输入与媒体验证完成前不提供。所有者需在 App Store Connect 取消兼容版可用性。 |
+
+Apple 的[隐私定义](https://developer.apple.com/app-store/app-privacy-details/)将仅在设备上处理的数据排除在收集之外。
+[Mac 兼容版](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-macs-with-apple-silicon/)与
+[Vision Pro 兼容版](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/manage-availability-of-iphone-and-ipad-apps-on-apple-vision-pro/)可用性需要单独设置。
+API 36 截止日期已于 2026-10-22 对照 [Play 当前要求](https://support.google.com/googleplay/android-developer/answer/11926878)核对。
+后台实际状态与签名分发验证仍需所有者执行。
+
+最终 APK/AAB 现由 `tool/ci/release_preflight.py` 检查全部 native 模块、可选硬件、合并权限及 bundle 投递对齐。tag 签名检查需真实 upload 指纹，Play 使用另一个 app-signing 分发密钥；16 KB 实际运行与后台验证仍待完成。
+
+## 发布预算
+
+初始工程限制，发布时按架构检查：Android APK/AAB 各 ≤100 MiB；iOS IPA ≤150 MiB；macOS 应用与 PKG 各 ≤100 MiB；Windows MSI ≤150 MiB、安装后应用 ≤250 MiB；Linux DEB/RPM 各 ≤100 MiB、安装后目录 ≤250 MiB。
+发布设备矩阵上的冷启动至可用 Learn ≤5 秒、热重开 ≤2 秒是目标，尚未测量。
+本机 macOS 27.0.1 arm64 上 universal release 构建为 57.1 MB；其余包体与启动延迟待测。
+`tool/ci/release_size_budget.py` 现按构建架构对最终打包文件和应用 payload 执行上述既有体积限制，报告精确字节及制品 SHA-256；MiB 为 1,048,576 字节。Payload 口径是各普通文件路径的逻辑字节，加相对 symlink 目标文本字节，不跟随链接重复遍历，不包含磁盘块分配或系统 installer 缓存。Mac ZIP、Linux tar 和 iOS 应用 payload 仅记录大小，不虚构额外上限。详见[当前证据与阻塞分类](STORE_READINESS.zh-CN.md#发布体积预算)和[跨平台审计](../testing/CROSS_PLATFORM_AUDIT.zh-CN.md)。冷/热启动至可用 Learn 仍需发布设备矩阵，CI 可见窗口不能替代该测量。
+
+应用自身诊断排除传入堆栈文本和 release 控制台异常原文；[构建指南](../operations/BUILD_AND_DEPLOY.zh-CN.md)说明本地保留、旧日志替换与尚未完成的原生诊断验证。

@@ -1,155 +1,76 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:morse_session/morse_session.dart';
 import 'package:path/path.dart' as p;
 
-/// A JSON document on disk that is written atomically and read defensively.
-///
-/// * [write] serialises to `<path>.tmp`, moves the previous document to
-///   `<path>.bak` and renames the temp file into place, so a crash mid-write
-///   never leaves a half-written primary file.
-/// * [read] parses the primary file and falls back to `.bak` when it is
-///   missing or unreadable. Corrupt primaries are set aside as `<path>.corrupt`.
-///   [readDecoded] also validates the typed document before accepting it.
-///   No usable document yields null so the caller can start fresh.
+/// [DocumentFs] over `dart:io`.
+final class IoDocumentFs implements DocumentFs {
+  const IoDocumentFs();
+
+  @override
+  Future<bool> exists(String path) => File(path).exists();
+
+  @override
+  Future<String?> readText(String path) async {
+    final file = File(path);
+    if (!await file.exists()) {
+      return null;
+    }
+    return file.readAsString();
+  }
+
+  @override
+  Future<void> writeText(String path, String text) async {
+    final file = File(path);
+    await file.parent.create(recursive: true);
+    await file.writeAsString(text, flush: true);
+  }
+
+  @override
+  Future<void> rename(String from, String to) => File(from).rename(to);
+
+  @override
+  Future<void> delete(String path) => File(path).delete();
+
+  @override
+  String canonical(String path) => p.normalize(File(path).absolute.path);
+
+  @override
+  bool isIoFailure(Object error) => error is FileSystemException;
+}
+
+/// A JSON document on disk that is written atomically and read defensively:
+/// [AtomicDocument] (package `morse_session`) over [IoDocumentFs]. See that
+/// class for the temp / `.bak` / `.corrupt` protocol.
 ///
 /// Every store in `lib/training/` is a thin typed wrapper over this class so
 /// the crash-safety story is written (and tested) once.
 final class AtomicJsonFile {
-  AtomicJsonFile(this.file);
+  AtomicJsonFile(this.file)
+    : _doc = AtomicDocument(const IoDocumentFs(), file.path);
 
   final File file;
+  final AtomicDocument _doc;
 
-  // File objects and typed stores can be recreated while earlier operations
-  // are still running. Serialize by path, rather than by store instance.
-  static final Map<String, Future<void>> _operations = {};
-
-  File get tempFile => File('${file.path}.tmp');
-  File get backupFile => File('${file.path}.bak');
-  File get corruptFile => File('${file.path}.corrupt');
+  File get tempFile => File(_doc.tempPath);
+  File get backupFile => File(_doc.backupPath);
+  File get corruptFile => File(_doc.corruptPath);
 
   /// The decoded document, or null when nothing readable exists.
-  Future<Map<String, Object?>?> read() => readDecoded((json) => json);
+  Future<Map<String, Object?>?> read() => _doc.read();
 
   /// Applies the typed codec before accepting a document, so an invalid
   /// document structure receives the same backup recovery as invalid JSON.
   Future<T?> readDecoded<T>(T Function(Map<String, Object?> json) decode) =>
-      _serialize(() => _readDecoded(decode));
-
-  Future<T?> _readDecoded<T>(
-    T Function(Map<String, Object?> json) decode,
-  ) async {
-    final primary = await _tryRead(file, decode);
-    if (primary != null) {
-      return primary;
-    }
-    if (!await file.exists()) {
-      // Nothing was ever written, or the last write died between the
-      // "move to .bak" and "rename tmp" steps. The backup is then the latest
-      // good document, so fall through and try it.
-      return _tryRead(backupFile, decode);
-    }
-    // The primary exists but is unreadable: keep it for inspection and use
-    // the backup.
-    await _setAside();
-    return _tryRead(backupFile, decode);
-  }
+      _doc.readDecoded(decode);
 
   /// Persists [json]: temp file -> rotate valid previous into `.bak` -> rename.
   /// [validate] checks the previous document's schema before rotating it.
   Future<void> write(
     Map<String, Object?> json, {
     void Function(Map<String, Object?> json)? validate,
-  }) {
-    // Take the snapshot at invocation, before callers can update their map.
-    final encoded = const JsonEncoder.withIndent('  ').convert(json);
-    return _serialize(() => _write(encoded, validate));
-  }
-
-  Future<void> _write(
-    String encoded,
-    void Function(Map<String, Object?> json)? validate,
-  ) async {
-    await file.parent.create(recursive: true);
-    final tmp = tempFile;
-    await tmp.writeAsString(encoded, flush: true);
-    if (await file.exists()) {
-      final previous = await _tryRead(file, (json) {
-        validate?.call(json);
-        return json;
-      });
-      if (previous == null) {
-        // Never rotate a corrupt primary over the last usable backup.
-        await _setAside();
-      } else {
-        await file.rename(backupFile.path);
-      }
-    }
-    await tmp.rename(file.path);
-  }
+  }) => _doc.write(json, validate: validate);
 
   /// Removes the document and its companions.
-  Future<void> delete() => _serialize(_delete);
-
-  Future<void> _delete() async {
-    for (final f in <File>[file, tempFile, backupFile, corruptFile]) {
-      if (await f.exists()) {
-        await f.delete();
-      }
-    }
-  }
-
-  Future<T?> _tryRead<T>(
-    File f,
-    T Function(Map<String, Object?> json) decode,
-  ) async {
-    if (!await f.exists()) {
-      return null;
-    }
-    try {
-      final decoded = jsonDecode(await f.readAsString());
-      if (decoded is! Map<String, Object?>) return null;
-      try {
-        return decode(decoded);
-      } on Object {
-        return null;
-      }
-    } on FormatException {
-      return null;
-    } on FileSystemException {
-      return null;
-    }
-  }
-
-  Future<T> _serialize<T>(Future<T> Function() operation) {
-    final path = p.normalize(file.absolute.path);
-    final previous = _operations[path] ?? Future<void>.value();
-    final result = previous.then((_) => operation());
-    late final Future<void> settled;
-    void release() {
-      if (identical(_operations[path], settled)) _operations.remove(path);
-    }
-
-    // Keep the queue usable after a failed operation; the original result
-    // still delivers the error to its caller.
-    settled = result.then<void>(
-      (_) => release(),
-      onError: (Object error) {
-        release();
-      },
-    );
-    _operations[path] = settled;
-    return result;
-  }
-
-  Future<void> _setAside() async {
-    try {
-      if (await corruptFile.exists()) {
-        await corruptFile.delete();
-      }
-      await file.rename(corruptFile.path);
-    } on FileSystemException {
-      // Best effort: a read-only volume must not stop the fallback read.
-    }
-  }
+  Future<void> delete() => _doc.delete();
 }

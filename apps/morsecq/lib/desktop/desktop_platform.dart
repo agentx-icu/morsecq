@@ -22,8 +22,8 @@ bool isDesktopTarget(TargetPlatform platform) =>
 /// AppIndicator host; Windows needs a multi-resolution `.ico` because the
 /// tray loads it with `LoadImage(IMAGE_ICON)`, which rejects plain PNGs.
 abstract final class TrayIconAssets {
-  static const String macTemplate = 'assets/tray/tray_template_32.png';
-  static const String linuxPng = 'assets/tray/tray_icon_32.png';
+  static const String macTemplate = 'assets/tray/tray_template_36.png';
+  static const String linuxPng = 'assets/tray/tray_icon_64.png';
   static const String windowsIco = 'assets/tray/tray_icon.ico';
 
   /// The icon [platform] should load, or null when it has no tray.
@@ -47,9 +47,11 @@ class DesktopShellConfig {
     this.platform,
     this.minimumSize = const Size(360, 640),
     this.defaultSize = const Size(1100, 760),
-    this.closeToTray = true,
+    this.closeToTray = false,
     this.soundEnabled = true,
     this.onToggleSound,
+    this.trayHostAvailable,
+    this.trayIconAvailable,
     this.onBeforeQuit,
     this.persistDebounce = const Duration(milliseconds: 500),
     this.log,
@@ -75,6 +77,12 @@ class DesktopShellConfig {
   /// Initial value of the close-to-tray setting when nothing is persisted.
   final bool closeToTray;
 
+  /// Checks that the shell has a usable tray host, not only a loaded plugin.
+  final Future<bool> Function()? trayHostAvailable;
+
+  /// Checks that the native icon is registered after the plugin adds it.
+  final Future<bool> Function()? trayIconAvailable;
+
   /// Initial state of the tray's "Sound on/off" toggle.
   final bool soundEnabled;
 
@@ -89,12 +97,12 @@ class DesktopShellConfig {
   /// How long to wait after the last move/resize before persisting bounds.
   final Duration persistDebounce;
 
-  /// Diagnostic sink (defaults to [debugPrint]); the shell is cosmetic and
-  /// never throws to its caller.
+  /// Opt-in developer diagnostic sink. Null disables console output.
   final void Function(String message)? log;
 
-  /// [log] or [debugPrint].
-  void Function(String message) get logger => log ?? debugPrint;
+  void Function(String message) get logger => log ?? _discard;
+
+  static void _discard(String message) {}
 
   TargetPlatform get effectivePlatform => platform ?? defaultTargetPlatform;
 

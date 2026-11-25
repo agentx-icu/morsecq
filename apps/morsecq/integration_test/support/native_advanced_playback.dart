@@ -1,5 +1,5 @@
 import 'package:morse_io/morse_io.dart';
-import 'package:morsecq/training/training_settings.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/ui/learn/learn_playback.dart';
 
 /// A recorded real-time timeline for native UI/file tests. Hosted runners may

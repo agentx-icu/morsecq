@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../../training/file_trainer_store.dart';
-import '../../training/qso_practice.dart';
 import '../../training/training_controller_host.dart';
 import '../../training/training_doc_store.dart';
 import '../../training/training_controller.dart';
@@ -72,6 +72,7 @@ class _LearnScopeState extends State<LearnScope> {
   _ScopeState _state = _ScopeState.loading;
   TrainingController? _controller;
   int _generation = 0;
+  Object? _loadError;
 
   @override
   void initState() {
@@ -86,12 +87,14 @@ class _LearnScopeState extends State<LearnScope> {
     // A controller obtained from a factory is owned by whoever backs the
     // factory (e.g. the app-wide TrainingControllerHost shares one instance
     // with the settings route); only self-created controllers are disposed.
+    Object? loadError;
     try {
       _watchReloads();
       controller = await (factory == null
           ? TrainingControllerHost.fromContext(context)
           : factory(context));
-    } on Object {
+    } on Object catch (error) {
+      loadError = error;
       // A local storage or factory failure has a retryable placeholder.
       controller = null;
     }
@@ -100,6 +103,7 @@ class _LearnScopeState extends State<LearnScope> {
     }
     setState(() {
       _controller = controller;
+      _loadError = loadError;
       _state = controller == null
           ? _ScopeState.storageError
           : _ScopeState.ready;
@@ -146,7 +150,7 @@ class _LearnScopeState extends State<LearnScope> {
         return _Placeholder(
           title: widget.title ?? context.s.navLearn,
           description: widget.description,
-          message: learningUnavailableText(context),
+          message: learningUnavailableText(context, _loadError),
           busy: false,
           onRetry: learningRetryable(context) ? () => unawaited(_load()) : null,
         );

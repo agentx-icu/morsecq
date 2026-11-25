@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
 import '../drill_session_guard.dart';
@@ -64,6 +64,7 @@ class _ListeningComprehensionScreenState
   bool _playing = false;
   bool _heard = false;
   bool _started = false;
+  bool _playedMark = false;
   bool _replayed = false;
   bool _revealed = false;
   bool _backgrounded = false;
@@ -160,6 +161,7 @@ class _ListeningComprehensionScreenState
     _playing = false;
     _heard = false;
     _started = false;
+    _playedMark = false;
     _replayed = false;
     _revealed = false;
     _saving = false;
@@ -169,6 +171,7 @@ class _ListeningComprehensionScreenState
 
   void _onPlayerEvent(PlayerEvent event) {
     if (!mounted) return;
+    if (event is PlayerElementStarted && event.element.on) _playedMark = true;
     if (event is PlayerStopped && event.error != null) {
       _failPlayback();
       return;
@@ -201,7 +204,7 @@ class _ListeningComprehensionScreenState
       return;
     }
     setState(() {
-      if (_started) _replayed = true;
+      if (_playedMark) _replayed = true;
       _started = true;
       _playing = true;
     });

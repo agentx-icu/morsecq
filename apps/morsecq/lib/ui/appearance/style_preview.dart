@@ -42,26 +42,29 @@ class _PreviewBody extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(tokens.panelRadius),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: EdgeInsets.all(miniature ? 8 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    s.learnLessonOf(4, 42),
-                    maxLines: 2,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontSize: 16 * scale,
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: miniature ? 28 : 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      s.learnLessonOf(4, 42),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontSize: 16 * scale,
+                      ),
                     ),
                   ),
-                ),
-                if (tokens.style == UiStyle.cartoon)
-                  RadioMascot(size: miniature ? 28 : 48),
-              ],
+                  if (tokens.style == UiStyle.cartoon)
+                    RadioMascot(size: miniature ? 28 : 48),
+                ],
+              ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -76,7 +79,7 @@ class _PreviewBody extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: char == 'U'
                             ? tokens.newest
-                            : theme.colorScheme.surfaceContainerLow,
+                            : tokens.receiveSurface,
                         borderRadius: BorderRadius.circular(tokens.chipRadius),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant,

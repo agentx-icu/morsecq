@@ -21,6 +21,9 @@ final class FakePcmSource implements PcmSource {
   /// When set, [hasPermission] throws it (the permission query failed).
   Object? permissionError;
 
+  Object? permissionProbeError;
+  final permissionRequests = <bool>[];
+
   /// When set, [start] throws it.
   Object? startError;
 
@@ -33,6 +36,7 @@ final class FakePcmSource implements PcmSource {
   Completer<void>? permissionGate;
   Completer<void>? startGate;
   Completer<void>? inputDeviceGate;
+  Completer<void>? stopGate;
 
   StreamController<Uint8List>? _controller;
   int startCalls = 0;
@@ -44,9 +48,10 @@ final class FakePcmSource implements PcmSource {
   bool get isStreaming => _controller != null;
 
   @override
-  Future<bool> hasPermission() async {
+  Future<bool> hasPermission({bool request = true}) async {
+    permissionRequests.add(request);
     await _pass(permissionGate, () => permissionGate = null);
-    final error = permissionError;
+    final error = (!request ? permissionProbeError : null) ?? permissionError;
     if (error != null) throw error;
     return permissionGranted;
   }
@@ -77,6 +82,10 @@ final class FakePcmSource implements PcmSource {
   @override
   Future<void> stop() async {
     stopCalls++;
+    if (stopGate case final gate?) {
+      stopGate = null;
+      await gate.future;
+    }
     // The controller is synchronous, so close() is immediate; its future is
     // the root-zone `_nullFuture` once the listener cancelled, which never
     // resumes under FakeAsync, so it must not be awaited.

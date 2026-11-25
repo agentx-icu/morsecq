@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_io/testing.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/comprehension/listening_comprehension_screen.dart';
 import 'package:morsecq/ui/learn/learn_playback.dart';
 
@@ -154,6 +154,26 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('retry after partial output is assisted', (tester) async {
+    final api = _SoloudOutput()..failFadeAt = 2;
+    final playback = _SidetonePlayback(api);
+    final training = await _open(tester, playback);
+    await _complete(tester, playback);
+    expect(find.text(en.comprehensionAudioFailed), findsOneWidget);
+    await tester.runAsync(() async => Future<void>.delayed(Duration.zero));
+    await tester.ensureVisible(find.text(en.actionRetry));
+    await tester.tap(find.text(en.actionRetry));
+    await tester.pumpAndSettle();
+    await _complete(tester, playback);
+    await tester.enterText(find.byType(TextField), 'WRONG');
+    await tester.tap(find.byKey(const ValueKey('comprehension-submit')));
+    await tester.pumpAndSettle();
+    expect(
+      training.controller.progress.listeningAttempts.single.assisted,
+      isTrue,
+    );
+  });
 
   testWidgets(
     'failed replay revokes prior completion until a full audible retry',

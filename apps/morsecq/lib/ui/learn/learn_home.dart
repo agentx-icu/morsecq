@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../i18n/l10n_extension.dart';
-import '../../training/qso_practice.dart';
 import '../../training/training_controller.dart';
 import '../common/app_bar_title.dart';
 import '../stats/stats_screen.dart';
 import '../appearance/appearance_page.dart';
 import '../appearance/style_tokens.dart';
-import '../appearance/ui_style.dart';
 import 'learn_glossary.dart';
 import 'learn_home_widgets.dart';
 import 'learn_platform.dart';
@@ -187,9 +186,7 @@ class LearnHome extends StatelessWidget {
                   child: Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 1100),
-                      child:
-                          StyleTokens.of(context)?.style != null &&
-                              StyleTokens.of(context)!.style != UiStyle.classic
+                      child: StyleTokens.of(context) != null
                           ? _styledLayout(context, twoColumns)
                           : twoColumns
                           ? _twoColumn(context)

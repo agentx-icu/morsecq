@@ -4,7 +4,11 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:morse_dsp/morse_dsp.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:path/path.dart' as p;
+
+import '../../../training/kept_recordings.dart';
+import '../../../training/training_controller.dart';
 
 /// A file the learner picked. Pickers give a file path when there is one;
 /// content providers without a path (Android documents, iCloud) give a
@@ -64,20 +68,27 @@ final class FileByteSource implements ByteSource {
 
   static Future<FileByteSource> open(File file) async {
     final raf = await file.open();
-    return FileByteSource._(raf, await raf.length());
+    try {
+      return FileByteSource._(raf, await raf.length());
+    } on Object {
+      await raf.close();
+      rethrow;
+    }
   }
 
   final RandomAccessFile _file;
   Future<void> _tail = Future<void>.value();
-  bool _closed = false;
+  Future<void>? _closing;
 
   @override
   final int length;
 
   @override
   Future<Uint8List> read(int offset, int count) {
+    if (_closing != null) {
+      return Future.error(StateError('recording closed'));
+    }
     final done = _tail.then((_) async {
-      if (_closed) throw StateError('recording closed');
       final n = count.clamp(0, length - offset.clamp(0, length));
       await _file.setPosition(offset);
       return _file.read(n);
@@ -86,12 +97,7 @@ final class FileByteSource implements ByteSource {
     return done;
   }
 
-  Future<void> close() async {
-    await _tail;
-    if (_closed) return;
-    _closed = true;
-    await _file.close();
-  }
+  Future<void> close() => _closing ??= _tail.then((_) => _file.close());
 }
 
 /// Managed recordings stored in the local learning profile under
@@ -121,6 +127,18 @@ final class RecordingLibrary {
       throw ArgumentError.value(relativePath, 'relativePath', 'outside');
     }
     return File(resolved);
+  }
+
+  /// Every managed recording on disk.
+  Future<Set<String>> recordings() async {
+    final dir = Directory(p.join(root, 'media', 'recordings'));
+    if (!await dir.exists()) return <String>{};
+    final out = <String>{};
+    await for (final entity in dir.list()) {
+      final rel = 'media/recordings/${p.basename(entity.path)}';
+      if (entity is File && _safe.hasMatch(rel)) out.add(rel);
+    }
+    return out;
   }
 
   /// Deletes recordings no entry refers to (left behind when an entry was
@@ -153,7 +171,8 @@ final class RecordingLibrary {
     }
     final target = fileFor(relativePath);
     await target.parent.create(recursive: true);
-    final staged = File('${target.path}.importing');
+    final staging = await target.parent.createTemp('.importing-');
+    final staged = File(p.join(staging.path, 'recording.wav'));
     try {
       final path = picked.path;
       if (path != null) {
@@ -173,13 +192,16 @@ final class RecordingLibrary {
       } finally {
         await probe.close();
       }
-    } on Object {
-      if (await staged.exists()) await staged.delete();
-      rethrow;
+      await beforeReplace?.call();
+      await staged.rename(target.path);
+      return await open(relativePath);
+    } finally {
+      try {
+        await staging.delete(recursive: true);
+      } on FileSystemException {
+        // Cleanup must not mask the import result.
+      }
     }
-    await beforeReplace?.call();
-    await staged.rename(target.path);
-    return open(relativePath);
   }
 
   /// Streams into [target], refusing to write past the size limit.
@@ -245,4 +267,23 @@ final class RecordingLibrary {
 Future<void> closeReader(WavPcmReader? reader) async {
   final source = reader?.source;
   if (source is FileByteSource) await source.close();
+}
+
+/// Drops recordings left behind by entries deleted while their recording
+/// was open. Call only when nothing is importing or saving.
+///
+/// Recordings kept across a restored learning backup are the learner's and
+/// stay. When that list cannot be read, every recording present now is
+/// kept (and the list rewritten), rather than deleting what it protected.
+Future<void> sweepUnreferencedRecordings(
+  TrainingController training,
+  RecordingLibrary library,
+) async {
+  final kept = await KeptRecordings(
+    library.root,
+  ).loadOrRebuild(library.recordings);
+  await library.pruneUnreferenced({
+    for (final m in await training.loadAudioMaterials()) m.file,
+    ...kept,
+  });
 }

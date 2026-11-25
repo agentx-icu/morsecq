@@ -9,13 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/i18n/key_value_store.dart';
 import 'package:morsecq/i18n/locale_controller.dart';
 import 'package:morsecq/l10n/generated/s.dart';
 import 'package:morsecq/main.dart';
 import 'package:morsecq/training/local_learning_store.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/common/app_bar_title.dart';
 import 'package:morsecq/ui/common/field_label.dart' show kMinShrunkFontSize;
@@ -197,7 +197,7 @@ Future<Set<String>> sweepScreen(
   TrainingSettings settings = kShortSettings,
   Finder Function(WidgetTester tester)? shown,
   ScreenPrepare? refresh,
-  UiStyle style = UiStyle.modern,
+  UiStyle style = UiStyle.white,
 }) async {
   final t = await TestTraining.create(
     progress: TrainerProgress(currentLesson: 8, dailyGoalChars: 30),

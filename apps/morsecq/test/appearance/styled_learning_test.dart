@@ -45,7 +45,7 @@ void main() {
       hasLength(1),
     );
   });
-  for (final style in UiStyle.values.where((s) => s != UiStyle.classic)) {
+  for (final style in UiStyle.values) {
     testWidgets('$style keeps the full course readable with large phone text', (
       tester,
     ) async {

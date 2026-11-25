@@ -9,11 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/l10n/generated/s.dart';
-import 'package:morsecq/training/material_store.dart';
-import 'package:morsecq/training/receive_session.dart';
 import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
 import 'package:morsecq/ui/learn/materials/material_editor_screen.dart';
 import 'package:morsecq/ui/learn/materials/materials_screen.dart';
@@ -49,12 +47,16 @@ void main() {
     final c = await app.launch(tester, key: 'learn');
     expect(c.currentLesson, 4);
     // Short sessions keep the run quick; the straight key makes a single
-    // touch gesture one mark whatever the profile's keyer default.
+    // touch gesture one mark whatever the profile's keyer default. 12 WPM
+    // (a 100 ms dit) keeps the keyed K decodable despite timer jitter on a
+    // busy CI device.
     await tester.runAsync(
       () => c.updateSettings(
         c.settings.copyWith(
           trainer: c.settings.trainer.copyWith(
             sessionLengthChars: TrainingSettings.minSessionChars,
+            characterWpm: 12,
+            farnsworthWpm: 12,
           ),
           keyerMode: KeyerMode.straight,
         ),
@@ -211,6 +213,13 @@ Future<void> _sendPractice(
     'finish sending',
   );
   await waitForWidget(tester, find.byType(SendResultView), 'send result');
+  // The keyed dah-dit-dah decodes as K, element by element.
+  final result = tester
+      .widget<SendResultView>(find.byType(SendResultView))
+      .diagnostics;
+  expect(result.attempt.decoded.trim(), 'K');
+  expect(result.dahCount, 2);
+  expect(result.ditCount, 1);
   await waitFor(
     tester,
     () => c.progress.history.length == before + 1,

@@ -43,6 +43,16 @@ TrainerProgress buildProgress({
 }
 
 void main() {
+  for (final now in [DateTime(2026, 5, 20), DateTime(2026, 12, 2)]) {
+    test('calendar preserves midnight and Monday across DST at $now', () {
+      final snapshot = StatsSnapshot.from(TrainerProgress(), now: now);
+      expect(snapshot.calendar.first.day.weekday, DateTime.monday);
+      expect(snapshot.calendar.first.day.hour, 0);
+      expect(snapshot.calendar.last.day.weekday, DateTime.sunday);
+      expect(snapshot.calendar.every((entry) => entry.day.hour == 0), isTrue);
+    });
+  }
+
   group('StatsSnapshot.from', () {
     test('fresh progress is empty with sane defaults', () {
       final s = StatsSnapshot.from(TrainerProgress(), now: kNow);
@@ -110,6 +120,23 @@ void main() {
       );
       expect(s.trend.length, 5);
       expect(s.trend.last.summary.at, kNow);
+    });
+
+    test('activity-only sessions do not displace copying trend points', () {
+      final copying = buildProgress(days: 3, withSendToday: true).history;
+      final activity = SessionSummary(
+        at: kNow,
+        totalChars: 3,
+        correctChars: 3,
+        source: ExerciseSource.qso,
+      );
+      final snapshot = StatsSnapshot.from(
+        TrainerProgress(history: [...copying, activity, activity]),
+        now: kNow,
+        trendWindow: 2,
+      );
+      expect(snapshot.trend.map((point) => point.summary), copying.skip(2));
+      expect(snapshot.trendHasBothKinds, isTrue);
     });
 
     test('single-kind history draws one series', () {

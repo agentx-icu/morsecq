@@ -147,9 +147,9 @@ final class WavPcmReader {
           throw const WavFormatException(WavError.truncated, 'fmt chunk');
         }
         final ByteData fmt = ByteData.sublistView(
-          await source.read(body, size),
+          await source.read(body, math.min(size, 40)),
         );
-        int format = fmt.getUint16(0, Endian.little);
+        final int format = fmt.getUint16(0, Endian.little);
         channels = fmt.getUint16(2, Endian.little);
         rate = fmt.getUint32(4, Endian.little);
         final int blockAlign = fmt.getUint16(12, Endian.little);
@@ -158,9 +158,23 @@ final class WavPcmReader {
           if (size < 40) {
             throw const WavFormatException(WavError.truncated, 'extensible');
           }
-          format = fmt.getUint16(24, Endian.little);
-        }
-        if (format != 1) {
+          final int extensionSize = fmt.getUint16(16, Endian.little);
+          if (extensionSize < 22 || extensionSize > size - 18) {
+            throw const WavFormatException(WavError.truncated, 'extensible');
+          }
+          // PCM subformat GUID: 00000001-0000-0010-8000-00AA00389B71.
+          final bool pcm =
+              fmt.getUint32(24, Endian.little) == 1 &&
+              fmt.getUint32(28, Endian.little) == 0x00100000 &&
+              fmt.getUint32(32, Endian.big) == 0x800000AA &&
+              fmt.getUint32(36, Endian.big) == 0x00389B71;
+          if (!pcm) {
+            throw const WavFormatException(
+              WavError.unsupportedFormat,
+              'non-PCM subformat',
+            );
+          }
+        } else if (format != 1) {
           throw WavFormatException(
             WavError.unsupportedFormat,
             'format $format',

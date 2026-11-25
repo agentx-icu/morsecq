@@ -33,51 +33,69 @@ class ReferenceEntryTile extends StatelessWidget {
     final String? meaning = entry.meaning(Localizations.localeOf(context));
     final int? position = entry.position;
 
-    return ListTile(
-      selected: playing,
-      leading: SizedBox(
-        width: showPosition ? 88 : 56,
-        child: Row(
-          children: <Widget>[
-            if (showPosition && position != null)
-              SizedBox(
-                width: 32,
+    return GestureDetector(
+      onSecondaryTap: entry.hasMnemonic
+          ? () => showReferenceMnemonic(context, entry)
+          : null,
+      child: ListTile(
+        selected: playing,
+        leading: SizedBox(
+          width: showPosition ? 88 : 56,
+          child: Row(
+            children: <Widget>[
+              if (showPosition && position != null)
+                SizedBox(
+                  width: 32,
+                  child: Text(
+                    '$position',
+                    textAlign: TextAlign.right,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              if (showPosition) const SizedBox(width: 8),
+              Expanded(
                 child: Text(
-                  '$position',
-                  textAlign: TextAlign.right,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  entry.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontFamily: 'monospace',
+                    fontFamilyFallback: const <String>['Menlo', 'Consolas'],
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            if (showPosition) const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                entry.label,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontFamily: 'monospace',
-                  fontFamilyFallback: const <String>['Menlo', 'Consolas'],
-                  fontWeight: FontWeight.bold,
-                ),
+            ],
+          ),
+        ),
+        title: MorsePatternText(entry.pattern, activeMark: active),
+        subtitle: meaning == null || meaning.isEmpty ? null : Text(meaning),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (entry.hasMnemonic)
+              IconButton(
+                tooltip: s.referenceMnemonicTitle,
+                icon: const Icon(Icons.info_outline),
+                onPressed: () => showReferenceMnemonic(context, entry),
               ),
+            IconButton(
+              tooltip: playing ? s.referenceStop : s.referencePlay,
+              icon: Icon(
+                playing
+                    ? Icons.stop_circle_outlined
+                    : Icons.play_circle_outline,
+              ),
+              onPressed: () => controller.toggle(entry.id, entry.playText),
             ),
           ],
         ),
+        onTap: () => controller.toggle(entry.id, entry.playText),
+        onLongPress: entry.hasMnemonic
+            ? () => showReferenceMnemonic(context, entry)
+            : null,
       ),
-      title: MorsePatternText(entry.pattern, activeMark: active),
-      subtitle: meaning == null || meaning.isEmpty ? null : Text(meaning),
-      trailing: IconButton(
-        tooltip: playing ? s.referenceStop : s.referencePlay,
-        icon: Icon(
-          playing ? Icons.stop_circle_outlined : Icons.play_circle_outline,
-        ),
-        onPressed: () => controller.toggle(entry.id, entry.playText),
-      ),
-      onTap: () => controller.toggle(entry.id, entry.playText),
-      onLongPress: entry.hasMnemonic
-          ? () => showReferenceMnemonic(context, entry)
-          : null,
     );
   }
 }

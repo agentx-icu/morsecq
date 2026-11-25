@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_dsp/morse_dsp.dart';
-import 'package:morsecq/training/audio_material_store.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morsecq/ui/listen/workbench/recording_files.dart';
 import 'package:morsecq/ui/listen/workbench/workbench_controller.dart';
 import 'package:path/path.dart' as p;
@@ -99,6 +100,30 @@ void main() {
     expect(c.name, 'a.wav');
   });
 
+  test('a second import cannot overwrite the first staged recording', () async {
+    final started = Completer<void>();
+    final finish = Completer<void>();
+    final importing = c.importRecording(
+      PickedRecording(
+        name: 'first.wav',
+        read: () async* {
+          started.complete();
+          await finish.future;
+          yield cwWav('SOS');
+        },
+      ),
+    );
+    await started.future;
+    final acceptedSecond = await c.importRecording(
+      PickedRecording(name: 'second.wav', bytes: cwWav('E')),
+    );
+    finish.complete();
+    expect(acceptedSecond, isFalse);
+    expect(await importing, isTrue);
+    expect(c.name, 'first.wav');
+    await waveform();
+  });
+
   test('decodes a selection; changing it invalidates the result', () async {
     await c.importRecording(
       PickedRecording(name: 'a.wav', bytes: cwWav('SOS TEST')),
@@ -122,6 +147,19 @@ void main() {
     expect(c.decoding, isFalse);
   });
 
+  test('a recording read failure clears the decode progress', () async {
+    await c.importRecording(
+      PickedRecording(name: 'a.wav', bytes: cwWav('SOS TEST')),
+    );
+    await waveform();
+    await closeReader(c.reader);
+    await expectLater(c.decode(), completes);
+    expect(c.decoding, isFalse);
+    expect(c.progress, isNull);
+    expect(c.failure, WorkbenchFailure.io);
+    expect(c.result, isNull);
+  });
+
   test('plays the selection as a mono WAV clip, optionally looping', () async {
     await c.importRecording(
       PickedRecording(name: 'a.wav', bytes: cwWav('E', channels: 2)),
@@ -136,6 +174,25 @@ void main() {
     await c.togglePlay();
     expect(player.isPlaying, isFalse);
   });
+
+  test(
+    'reopening a saved selection restores its exact sample frames',
+    () async {
+      await c.importRecording(
+        PickedRecording(name: 'a.wav', bytes: cwWav('E', sampleRate: 48000)),
+      );
+      c.setSelection(1, c.end - 1);
+      final start = c.start;
+      final end = c.end;
+      final selection = (c.positionOf(start), c.positionOf(end));
+      const saved = 'media/recordings/saved.wav';
+      await c.library.keepWorkingAs(saved);
+
+      expect(await c.openSaved(saved, 'Saved', selection: selection), isTrue);
+      expect((c.start, c.end), (start, end));
+      await waveform();
+    },
+  );
 
   test('audio materials round trip; missing media and bad entries', () async {
     final t = await TestTraining.create();

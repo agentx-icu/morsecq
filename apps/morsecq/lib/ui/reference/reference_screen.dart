@@ -33,11 +33,13 @@ class ReferenceScreen extends StatefulWidget {
     super.key,
     this.playerFactory,
     this.settings,
+    this.searchFocusNode,
     this.initialSection = ReferenceSection.alphabet,
   });
 
   final MorsePlayerFactory? playerFactory;
   final ReferencePlaybackSettings? settings;
+  final FocusNode? searchFocusNode;
   final ReferenceSection initialSection;
 
   /// Key of the search field, for tests and driving harnesses.
@@ -50,11 +52,17 @@ class ReferenceScreen extends StatefulWidget {
   State<ReferenceScreen> createState() => _ReferenceScreenState();
 }
 
-class _ReferenceScreenState extends State<ReferenceScreen> {
+class _ReferenceScreenState extends State<ReferenceScreen>
+    with SingleTickerProviderStateMixin {
   late final ReferencePlaybackSettings _settings;
   late final ReferencePlaybackController _controller;
   final TextEditingController _search = TextEditingController();
-  late ReferenceSection _selected = widget.initialSection;
+  late final TabController _sections = TabController(
+    length: ReferenceSection.values.length,
+    initialIndex: widget.initialSection.index,
+    vsync: this,
+  );
+  ReferenceSection get _selected => ReferenceSection.values[_sections.index];
   String _query = '';
 
   bool get _ownsSettings => widget.settings == null;
@@ -74,6 +82,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
 
   @override
   void dispose() {
+    _sections.dispose();
     _controller.dispose();
     if (_ownsSettings) _settings.dispose();
     _search.dispose();
@@ -166,6 +175,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
         return TextField(
           key: ReferenceScreen.searchFieldKey,
           controller: _search,
+          focusNode: widget.searchFocusNode,
           onChanged: _onQueryChanged,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
@@ -231,41 +241,36 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   Widget _buildCompact(BuildContext context) {
     const List<ReferenceSection> sections = ReferenceSection.values;
     final S s = context.s;
-    return DefaultTabController(
-      length: sections.length,
-      initialIndex: widget.initialSection.index,
-      child: Scaffold(
-        appBar: _appBar(context),
-        body: SafeArea(
-          // The search field and tabs scroll away with the content, so a
-          // short landscape window or large text still leaves room for it.
-          child: NestedScrollView(
-            headerSliverBuilder: (context, _) => <Widget>[
-              SliverToBoxAdapter(child: _searchField(context)),
-              if (_query.isEmpty)
-                SliverToBoxAdapter(
-                  child: TabBar(
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    tabs: <Widget>[
-                      for (final ReferenceSection section in sections)
-                        Tab(
-                          text: section.label(s),
-                          height: _tabHeight(context),
-                        ),
-                    ],
-                  ),
+    return Scaffold(
+      appBar: _appBar(context),
+      body: SafeArea(
+        // The search field and tabs scroll away with the content, so a
+        // short landscape window or large text still leaves room for it.
+        child: NestedScrollView(
+          headerSliverBuilder: (context, _) => <Widget>[
+            SliverToBoxAdapter(child: _searchField(context)),
+            if (_query.isEmpty)
+              SliverToBoxAdapter(
+                child: TabBar(
+                  controller: _sections,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: <Widget>[
+                    for (final ReferenceSection section in sections)
+                      Tab(text: section.label(s), height: _tabHeight(context)),
+                  ],
                 ),
-            ],
-            body: _query.isEmpty
-                ? TabBarView(
-                    children: <Widget>[
-                      for (final ReferenceSection section in sections)
-                        ReferenceSectionView(section: section),
-                    ],
-                  )
-                : ReferenceSearchResults(query: _query),
-          ),
+              ),
+          ],
+          body: _query.isEmpty
+              ? TabBarView(
+                  controller: _sections,
+                  children: <Widget>[
+                    for (final ReferenceSection section in sections)
+                      ReferenceSectionView(section: section),
+                  ],
+                )
+              : ReferenceSearchResults(query: _query),
         ),
       ),
     );
@@ -282,7 +287,7 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
               child: ReferenceSectionRail(
                 selected: _selected,
                 onSelected: (ReferenceSection s) => setState(() {
-                  _selected = s;
+                  _sections.index = s.index;
                   if (_query.isNotEmpty) _clearQuery();
                 }),
               ),

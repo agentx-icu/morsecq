@@ -4,11 +4,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/material_practice.dart';
-import '../../../training/material_store.dart';
 import '../../../training/training_controller.dart';
 import '../../common/adaptive_fab.dart';
 import '../../common/app_bar_title.dart';
@@ -56,9 +55,12 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     if (mounted) setState(() => _all = all);
   }
 
-  void _snack(String text) => ScaffoldMessenger.maybeOf(
-    context,
-  )?.showSnackBar(SnackBar(content: Text(text)));
+  void _snack(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(
+      context,
+    )?.showSnackBar(SnackBar(content: Text(text)));
+  }
 
   List<TrainingMaterial> get _visible {
     final q = _search.text.trim().toLowerCase();
@@ -181,7 +183,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
         ],
       ),
     );
-    if (policy == null) return;
+    if (policy == null || !mounted) return;
     try {
       await _c.updateMaterials(
         (current) => MaterialLibraryCodec.merge(
@@ -271,9 +273,16 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     );
   }
 
-  Future<void> _toggleFavorite(TrainingMaterial m) async {
-    await _c.upsertMaterial(m.copyWith(favorite: !m.favorite));
-    await _reload();
+  Future<void> _toggleFavorite(TrainingMaterial m) =>
+      _saveChange(() => _c.upsertMaterial(m.copyWith(favorite: !m.favorite)));
+
+  Future<void> _saveChange(Future<void> Function() save) async {
+    try {
+      await save();
+      await _reload();
+    } on Object {
+      if (mounted) _snack(context.s.materialsSaveFailed);
+    }
   }
 
   Future<void> _delete(TrainingMaterial m) async {
@@ -295,9 +304,8 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
         ],
       ),
     );
-    if (ok != true) return;
-    await _c.deleteMaterial(m.id);
-    await _reload();
+    if (ok != true || !mounted) return;
+    await _saveChange(() => _c.deleteMaterial(m.id));
   }
 
   @override

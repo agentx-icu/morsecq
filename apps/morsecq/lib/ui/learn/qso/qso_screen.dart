@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/qso_practice.dart';
-import '../../../training/send_session.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
@@ -59,9 +58,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     text: widget.resumed?.typedReply == true ? widget.resumed!.pendingText : '',
   );
   late bool _typing = widget.resumed?.typedReply ?? false;
-  late bool _pendingWasTyped =
-      (widget.resumed?.pendingWasTyped ?? false) ||
-      (widget.resumed?.typedReply ?? false);
+  late bool _pendingWasTyped = widget.resumed?.pendingWasTyped ?? false;
   late final Duration _activeBefore = widget.resumed?.active ?? Duration.zero;
 
   /// A keyed but unsent reply restored from the draft, and its id.
@@ -90,8 +87,12 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   late SendSession _keying;
   StreamSubscription<void>? _keyingSub;
   bool _remotePlaying = false;
+  bool _backgrounded = false;
+  late bool _initialRemotePending =
+      widget.resumed == null && _session.learnerTurns == 0;
   bool _recorded = false;
   bool _disposed = false;
+  Timer? _draftCheckpoint;
   QsoHint? _hint;
   List<QsoIssue> _issues = const <QsoIssue>[];
 
@@ -110,7 +111,12 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _newKeying();
-    _active.start();
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    if (lifecycle != null) {
+      _backgrounded = isDrillBackground(lifecycle);
+      _wake.onLifecycle(lifecycle);
+    }
+    if (!_backgrounded) _active.start();
     _wake.setActive(true);
     unawaited(_setup());
   }
@@ -147,16 +153,22 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       final keyed = _keying.isKeyDown || _keying.markCount != marks;
       marks = _keying.markCount;
       if (keyed && !_active.isRunning && !_session.isDone) _active.start();
-      if (!_disposed) setState(() {});
+      if (!_disposed) {
+        setState(() {});
+        _scheduleDraft();
+      }
     });
   }
 
   void _playRemote(String? text) {
     final playback = _playback;
-    if (text == null || playback == null || _disposed) return;
+    if (text == null || playback == null || _disposed || _backgrounded) return;
     _panel.currentState?.releaseHeld();
     _active.start();
-    setState(() => _remotePlaying = true);
+    setState(() {
+      _initialRemotePending = false;
+      _remotePlaying = true;
+    });
     playback.player.play(MorseEncoder.encode(text, _remoteTiming));
   }
 
@@ -171,7 +183,11 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _wake.onLifecycle(state);
-    if (isDrillBackground(state)) {
+    final backgrounded = isDrillBackground(state);
+    if (_backgrounded != backgrounded) {
+      setState(() => _backgrounded = backgrounded);
+    }
+    if (_backgrounded) {
       _pause();
       _active.stop();
       unawaited(_saveDraft());
@@ -180,7 +196,22 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     }
   }
 
+  void _scheduleDraft() {
+    if (_disposed || _recorded || _session.isDone) return;
+    // Coalesce from the first dirty edit, so continuous typing/keying cannot
+    // postpone the latest snapshot indefinitely. The controller owns IO order.
+    _draftCheckpoint ??= Timer(const Duration(milliseconds: 400), () {
+      _draftCheckpoint = null;
+      if (!_disposed && !_recorded && !_session.isDone) {
+        unawaited(_saveDraft());
+      }
+    });
+  }
+
   Future<void> _saveDraft() async {
+    _draftCheckpoint?.cancel();
+    _draftCheckpoint = null;
+    if (_disposed || _recorded) return;
     // Let the decoder commit a pending character / word gap first, so a
     // restored reply keeps its word boundaries.
     final playback = _playback;
@@ -220,7 +251,11 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   Future<void> _send() async {
     // An enabled button callback may survive until the next frame. Check
     // current state before clearing input or creating a new reply id.
-    if (_disposed || _session.isDone || _remotePlaying || _playback == null) {
+    if (_disposed ||
+        _backgrounded ||
+        _session.isDone ||
+        _remotePlaying ||
+        _playback == null) {
       return;
     }
     if (_typing
@@ -260,6 +295,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     });
     _keying.restart();
     _panel.currentState?.releaseHeld();
+    _scheduleDraft();
   }
 
   void _toggleTyping() {
@@ -295,6 +331,8 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   Future<void> _finish() async {
     if (_recorded) return;
+    _draftCheckpoint?.cancel();
+    _draftCheckpoint = null;
     _recorded = true;
     _active.stop();
     _wake.setActive(false);
@@ -311,9 +349,10 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _disposed = true;
+    _draftCheckpoint?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     if (!_session.isDone && !_recorded) unawaited(_saveDraft());
+    _disposed = true;
     _wake.dispose();
     unawaited(_playerSub?.cancel());
     unawaited(_keyingSub?.cancel());
@@ -375,5 +414,6 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     _pendingWasTyped = _typedText.text.trim().isNotEmpty;
     _active.start();
     setState(() {});
+    _scheduleDraft();
   }
 }

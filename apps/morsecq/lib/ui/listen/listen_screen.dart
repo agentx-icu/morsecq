@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../i18n/l10n_extension.dart';
 import '../common/adaptive_fab.dart';
 import '../common/app_bar_title.dart';
+import '../common/feedback.dart';
 import 'listen_controller.dart';
 import 'listen_preferences.dart';
 import 'listen_settings.dart';
@@ -63,6 +64,9 @@ class _ListenScreenState extends State<ListenScreen>
   int _shownTextLength = 0;
   ListenPreferences? _preferences;
   bool _keepingAwake = false;
+  bool _micPurposeExplained = false;
+  bool _openingWorkbench = false;
+  DialogRoute<bool>? _micPurposeDialog;
 
   @override
   void initState() {
@@ -72,10 +76,9 @@ class _ListenScreenState extends State<ListenScreen>
     } on ProviderNotFoundException {
       // Isolated screens/tests use the decoder defaults.
     }
-    final source = widget.source;
     _controller = ListenController(
-      source: source ?? RecordPcmSource(),
-      ownsSource: source == null,
+      source: widget.source ?? RecordPcmSource(),
+      ownsSource: widget.source == null,
       sampleRate: widget.sampleRate,
       settings: _preferences?.settings ?? const ListenSettings(),
     );
@@ -108,6 +111,10 @@ class _ListenScreenState extends State<ListenScreen>
 
   void _onControllerChanged() {
     if (!mounted) return;
+    final dialog = _micPurposeDialog;
+    if (!_controller.isBusy && dialog != null && dialog.isActive) {
+      dialog.navigator?.removeRoute(dialog);
+    }
     _preferences?.update(_controller.settings);
     final bool awake = _controller.isListening;
     if (awake != _keepingAwake) {
@@ -132,8 +139,42 @@ class _ListenScreenState extends State<ListenScreen>
     if (_controller.isListening) {
       await _controller.stop();
     } else {
-      await _controller.start();
+      await _start();
     }
+  }
+
+  Future<void> _start() async {
+    if (_openingWorkbench || !_controller.canStart) return;
+    await _controller.start(explainPermission: _explainMicrophonePurpose);
+  }
+
+  Future<bool> _explainMicrophonePurpose() async {
+    if (_micPurposeExplained) return true;
+    final S s = context.s;
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final dialog = DialogRoute<bool>(
+      context: context,
+      themes: InheritedTheme.capture(from: context, to: navigator.context),
+      builder: (ctx) => ScrollingAlertDialog(
+        title: Text(s.listenMicPurposeTitle),
+        content: Text(s.listenMicPurposeBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(ctx.s.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(ctx.s.listenMicPurposeContinue),
+          ),
+        ],
+      ),
+    );
+    _micPurposeDialog = dialog;
+    final proceed = await navigator.push(dialog);
+    if (identical(_micPurposeDialog, dialog)) _micPurposeDialog = null;
+    if (proceed == true) _micPurposeExplained = true;
+    return proceed == true;
   }
 
   Future<void> _copy() async {
@@ -161,17 +202,22 @@ class _ListenScreenState extends State<ListenScreen>
   /// The microphone stops before the workbench plays anything (it would
   /// otherwise decode the playback); the learner restarts it by hand.
   Future<void> _openWorkbench() async {
-    if (_controller.isListening || _controller.isBusy) await _controller.stop();
-    if (!mounted) return;
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()));
+    if (_openingWorkbench) return;
+    _openingWorkbench = true;
+    try {
+      await _controller.stopBeforePlayback();
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      await Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => const WorkbenchScreen()));
+    } finally {
+      _openingWorkbench = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final listening = _controller.isListening;
-    final busy = _controller.isBusy;
     final S s = context.s;
     return Scaffold(
       appBar: AppBar(
@@ -218,7 +264,7 @@ class _ListenScreenState extends State<ListenScreen>
                 final children = <Widget>[
                   ListenStatusBanner(
                     controller: _controller,
-                    onRetry: () => unawaited(_controller.start()),
+                    onRetry: () => unawaited(_start()),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
@@ -243,7 +289,7 @@ class _ListenScreenState extends State<ListenScreen>
         ),
       ),
       floatingActionButton: AdaptiveFab(
-        onPressed: busy ? null : _toggle,
+        onPressed: listening || _controller.canStart ? _toggle : null,
         icon: Icon(listening ? Icons.stop : Icons.mic),
         label: listening ? s.listenStop : s.listenStart,
       ),

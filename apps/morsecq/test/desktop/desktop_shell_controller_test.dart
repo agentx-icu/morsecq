@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -30,6 +31,8 @@ _harness({
   Future<void> Function()? onBeforeQuit,
   void Function(bool enabled)? onToggleSound,
   S? strings,
+  Future<bool> Function()? trayHostAvailable,
+  Future<bool> Function()? trayIconAvailable,
 }) {
   final store = InMemoryKeyValueStore(stored);
   final log = <String>[];
@@ -43,6 +46,8 @@ _harness({
       closeToTray: closeToTray,
       onBeforeQuit: onBeforeQuit,
       onToggleSound: onToggleSound,
+      trayHostAvailable: trayHostAvailable,
+      trayIconAvailable: trayIconAvailable,
       persistDebounce: Duration.zero,
       log: log.add,
     ),
@@ -63,7 +68,240 @@ _harness({
 
 Future<void> _drain() => Future<void>.delayed(Duration.zero);
 
+final class _RetryWindow extends FakeWindowApi {
+  bool failNextDestroy = true;
+
+  @override
+  Future<void> destroy() async {
+    if (failNextDestroy) {
+      failNextDestroy = false;
+      throw StateError('native close failed');
+    }
+    await super.destroy();
+  }
+}
+
+final class _GatedShowWindow extends FakeWindowApi {
+  Completer<void>? gate;
+
+  @override
+  Future<void> show() async {
+    await gate?.future;
+    await super.show();
+  }
+}
+
+final class _GatedHideWindow extends FakeWindowApi {
+  final hideStarted = Completer<void>();
+  final finishHide = Completer<void>();
+  final destroyStarted = Completer<void>();
+  final finishDestroy = Completer<void>();
+
+  @override
+  Future<void> hide() async {
+    hideStarted.complete();
+    await finishHide.future;
+    await super.hide();
+  }
+
+  @override
+  Future<void> destroy() async {
+    destroyStarted.complete();
+    await finishDestroy.future;
+    throw StateError('native close failed');
+  }
+}
+
 void main() {
+  test('activation restores a minimized window', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    h.window.minimized = true;
+    await h.controller.showWindow();
+    expect(h.window.minimized, isFalse);
+    expect(h.window.focused, isTrue);
+  });
+
+  test('missing tray host makes close exit instead of hiding', () async {
+    final h = _harness(trayHostAvailable: () async => false);
+    await h.controller.initialize();
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.handleCloseRequested();
+    expect(h.window.destroyed, isTrue);
+    expect(h.window.calls, isNot(contains('hide')));
+  });
+
+  test('closing can use a tray host that appeared after startup', () async {
+    var hostAvailable = false;
+    final h = _harness(trayHostAvailable: () async => hostAvailable);
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+    expect(h.controller.isTrayAvailable, isFalse);
+
+    hostAvailable = true;
+    await h.controller.handleCloseRequested();
+
+    expect(h.controller.isTrayAvailable, isTrue);
+    expect(h.window.visible, isFalse);
+    expect(h.window.destroyed, isFalse);
+    h.tray.simulateClick();
+    await _drain();
+    expect(h.window.visible, isTrue);
+  });
+
+  test('Linux keeps its window reachable when the tray menu fails', () async {
+    final tray = FakeTrayApi(unsupported: {'setMenu'});
+    final h = _harness(tray: tray, trayHostAvailable: () async => true);
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.handleCloseRequested();
+    expect(h.window.calls, isNot(contains('hide')));
+    expect(h.window.destroyed, isTrue);
+  });
+
+  test('an unregistered Windows icon cannot strand a window', () async {
+    var registered = false;
+    final h = _harness(
+      platform: TargetPlatform.windows,
+      trayIconAvailable: () async => registered,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    expect(h.tray.iconAsset, TrayIconAssets.windowsIco);
+    expect(h.tray.calls, isNot(contains('destroy')));
+    expect(h.controller.isTrayAvailable, isFalse);
+    await h.controller.hideToTray();
+    expect(h.window.visible, isTrue);
+
+    registered = true;
+    await h.controller.hideToTray();
+    expect(h.window.visible, isFalse);
+    expect(h.tray.calls, contains('destroy'));
+    await h.controller.showWindow();
+  });
+
+  testWidgets('Windows shows a hidden window after the icon is lost', (
+    tester,
+  ) async {
+    var registered = true;
+    final h = _harness(
+      platform: TargetPlatform.windows,
+      trayIconAvailable: () async => registered,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+    await h.controller.handleCloseRequested();
+    expect(h.window.visible, isFalse);
+
+    registered = false;
+    await tester.pump(const Duration(seconds: 4));
+    expect(h.window.visible, isTrue);
+    expect(h.controller.isTrayAvailable, isFalse);
+  });
+
+  testWidgets('losing the tray host while hidden brings back the window', (
+    tester,
+  ) async {
+    var hostAvailable = true;
+    final h = _harness(trayHostAvailable: () async => hostAvailable);
+    await h.controller.initialize();
+    addTearDown(h.controller.dispose);
+    try {
+      await h.controller.handleCloseRequested();
+      expect(h.window.visible, isFalse);
+
+      hostAvailable = false;
+      await tester.pump(const Duration(seconds: 5));
+      expect(h.window.visible, isTrue);
+      expect(h.controller.isTrayAvailable, isFalse);
+      expect(h.window.destroyed, isFalse);
+
+      hostAvailable = true;
+      await h.controller.handleCloseRequested();
+      expect(h.controller.isTrayAvailable, isTrue);
+      expect(h.window.visible, isFalse);
+      await h.controller.showWindow();
+    } finally {
+      // Cancel the hidden-window probe even if an assertion fails.
+      await h.controller.showWindow();
+    }
+  });
+
+  testWidgets('disposing during a tray recovery drops the late show result', (
+    tester,
+  ) async {
+    var hostAvailable = true;
+    final window = _GatedShowWindow();
+    final h = _harness(
+      trayHostAvailable: () async => hostAvailable,
+      window: window,
+    );
+    await h.controller.initialize();
+    await h.controller.hideToTray();
+
+    window.gate = Completer<void>();
+    hostAvailable = false;
+    await tester.pump(const Duration(seconds: 5));
+    h.controller.dispose();
+    window.gate!.complete();
+    await tester.pump();
+
+    expect(h.controller.isWindowVisible, isFalse);
+    expect(h.log, isEmpty);
+  });
+
+  test('a quit failure reveals a window hidden during quit', () async {
+    var hostAvailable = true;
+    final window = _GatedHideWindow();
+    final h = _harness(
+      trayHostAvailable: () async => hostAvailable,
+      window: window,
+    );
+    addTearDown(h.controller.dispose);
+    await h.controller.initialize();
+
+    final hiding = h.controller.hideToTray();
+    await window.hideStarted.future;
+    final quitting = h.controller.quit();
+    await window.destroyStarted.future;
+
+    hostAvailable = false;
+    window.finishHide.complete();
+    await hiding;
+    window.finishDestroy.complete();
+    await quitting;
+
+    expect(window.visible, isTrue);
+    expect(h.controller.isWindowVisible, isTrue);
+  });
+
+  test('full-screen and minimized dimensions do not replace normal bounds', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    final normal = h.window.bounds;
+    h.window.fullScreen = true;
+    h.window.bounds = const Rect.fromLTWH(0, 0, 1920, 1080);
+    await h.controller.persistWindowState();
+    expect(WindowBounds.decode(h.store.values[DesktopShellController.boundsKey])?.rect, normal);
+    h.window.fullScreen = false;
+    h.window.minimized = true;
+    h.window.bounds = const Rect.fromLTWH(-32000, -32000, 160, 20);
+    await h.controller.persistWindowState();
+    expect(WindowBounds.decode(h.store.values[DesktopShellController.boundsKey])?.rect, normal);
+  });
+
+  test('tray sound is absent without an audio owner', () async {
+    final h = _harness();
+    await h.controller.initialize();
+    expect(
+      h.controller.trayMenu.map((e) => e.key),
+      isNot(contains(TrayMenuKeys.sound)),
+    );
+  });
+
   test('tray sound choice survives controller recreation', () async {
     final h = _harness();
     await h.controller.initialize();
@@ -141,10 +379,26 @@ void main() {
   });
 
   group('bounds persistence', () {
+    test('maximized persistence retains the last normal rectangle', () async {
+      final h = _harness();
+      await h.controller.initialize();
+      h.window.bounds = const Rect.fromLTWH(50, 60, 800, 700);
+      await h.controller.persistWindowState();
+      h.window.bounds = const Rect.fromLTWH(0, 0, 1920, 1040);
+      h.window.maximized = true;
+      await h.controller.persistWindowState();
+      final saved = WindowBounds.decode(
+        h.store.values[DesktopShellController.boundsKey],
+      );
+      expect(saved?.rect, const Rect.fromLTWH(50, 60, 800, 700));
+      expect(saved?.maximized, isTrue);
+    });
+
     test('persists bounds and maximised flag on close', () async {
       final h = _harness(closeToTray: false);
       await h.controller.initialize();
       h.window.bounds = const Rect.fromLTWH(50, 60, 800, 700);
+      await h.controller.persistWindowState();
       h.window.maximized = true;
 
       await h.controller.handleCloseRequested();
@@ -292,11 +546,31 @@ void main() {
       expect(h.window.destroyed, isTrue);
       expect(h.log.single, contains('onBeforeQuit failed'));
     });
+
+    test('native quit failure restores the tray and allows another quit', () async {
+      final h = _harness(window: _RetryWindow());
+      addTearDown(h.controller.dispose);
+      await h.controller.initialize();
+      await h.controller.hideToTray();
+
+      await h.controller.quit();
+      expect(h.window.destroyed, isFalse);
+      expect(h.controller.isTrayAvailable, isTrue);
+      expect(h.tray.calls.where((call) => call == 'setIcon'), hasLength(2));
+      expect(h.log.single, contains('destroy window failed'));
+
+      h.tray.simulateClick();
+      await _drain();
+      expect(h.controller.isWindowVisible, isTrue);
+
+      await h.controller.quit();
+      expect(h.window.destroyed, isTrue);
+    });
   });
 
   group('tray', () {
     test('uses the platform icon and initial tooltip / menu', () async {
-      final h = _harness();
+      final h = _harness(onToggleSound: (_) {});
       await h.controller.initialize();
 
       expect(h.tray.iconAsset, TrayIconAssets.linuxPng);

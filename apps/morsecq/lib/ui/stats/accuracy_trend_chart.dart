@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
 import '../../i18n/l10n_extension.dart';
+import '../../i18n/system_date_time.dart';
 import 'stats_math.dart';
+import 'stats_details_picker.dart';
 import 'stats_model.dart';
 import 'stats_palette.dart';
 import 'stats_widgets.dart';
@@ -49,6 +50,7 @@ final class TrendGeometry {
 /// Line chart of per-session accuracy over the trend window, one series per
 /// drill direction when both send and receive sessions are present. Tap a
 /// point to inspect that session.
+/// A standard selector exposes the same details to keyboard/assistive input.
 class AccuracyTrendChart extends StatefulWidget {
   const AccuracyTrendChart({super.key, required this.snapshot});
 
@@ -144,6 +146,21 @@ class _AccuracyTrendChartState extends State<AccuracyTrendChart> {
             ),
           ),
           const SizedBox(height: 8),
+          StatsDetailsPicker(
+            key: ObjectKey(widget.snapshot),
+            label: s.statsTrendTitle,
+            options: [
+              for (final point in points)
+                '${s.statsTooltipSession(point.index, points.length)} / '
+                    '${formatSystemDateTime(context, point.summary.at)} / '
+                    '${s.statsTooltipCopied(point.summary.correctChars, point.summary.totalChars)}',
+            ],
+            selectedLabels: [
+              for (final point in points) '${point.index} / ${points.length}',
+            ],
+            selected: selected,
+            onSelected: (index) => setState(() => _selected = index),
+          ),
           if (selected != null && selected < points.length)
             _TrendTooltip(
               point: points[selected],
@@ -211,7 +228,6 @@ class _TrendTooltip extends StatelessWidget {
       if (split || point.isSend) kind,
       if (summary.elapsed != null) formatPracticeDuration(s, summary.elapsed!),
     ];
-    final locale = Localizations.localeOf(context).toString();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -234,7 +250,7 @@ class _TrendTooltip extends StatelessWidget {
             ),
           ),
           Text(
-            _formatDate(summary.at, locale),
+            formatSystemDateTime(context, summary.at),
             style: theme.textTheme.bodySmall?.copyWith(
               color: scheme.onSurfaceVariant,
             ),
@@ -243,9 +259,6 @@ class _TrendTooltip extends StatelessWidget {
       ),
     );
   }
-
-  static String _formatDate(DateTime at, String locale) =>
-      DateFormat.yMd(locale).add_Hm().format(at.toLocal());
 }
 
 /// Draws grid, axes, series polylines, markers and the selection crosshair.

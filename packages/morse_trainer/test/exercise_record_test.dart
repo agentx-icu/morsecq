@@ -209,11 +209,21 @@ void main() {
       credit: credit,
       now: now,
     );
-    for (var i = 0; i < TrainerProgress.maxCommittedIds + 5; i++) {
+    for (var i = 0; i < TrainerProgress.maxCommittedIds; i++) {
       p = p.recordExercise(score, r('ex$i'), credit: credit, now: now);
     }
+    expect(p.committedIds, hasLength(TrainerProgress.maxCommittedIds));
     expect(p.hasCommitted('qso_callCq_1'), isTrue);
     expect(p.hasCommitted('ex0'), isFalse);
+    expect(p.hasCommitted('ex1'), isTrue);
+
+    final protected = List.generate(
+      TrainerProgress.maxCommittedIds,
+      (i) => 'qso_callCq_$i',
+    );
+    p = TrainerProgress(committedIds: [...protected, 'old']);
+    p = p.recordExercise(score, r('new'), credit: credit, now: now);
+    expect(p.committedIds, [...protected, 'new']);
   });
 
   group('SessionSummary exercise metadata', () {

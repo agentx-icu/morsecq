@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_dsp/testing.dart';
 import 'package:morsecq/l10n/generated/s.dart';
+import 'package:morsecq/ui/common/adaptive_fab.dart';
 import 'package:morsecq/ui/listen/listen_controller.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
 import 'package:morsecq/ui/listen/listen_widgets.dart';
 import 'package:morsecq/ui/listen/listen_preferences.dart';
+import 'package:morsecq/ui/listen/workbench/workbench_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'fake_pcm_source.dart';
@@ -20,11 +24,15 @@ Future<void> _pump(
   FakePcmSource source, {
   ListenPreferences? preferences,
   Locale locale = const Locale('en'),
+  Size size = const Size(390, 844),
+  double textScale = 1,
 }) async {
-  tester.view.physicalSize = const Size(390, 844);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
   await tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: S.localizationsDelegates,
@@ -57,6 +65,147 @@ void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
 }
 
 void main() {
+  testWidgets(
+    'workbench waits for a failed capture to release the microphone',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(PlatformException(code: '-1', message: 'device lost'));
+      await tester.pump();
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+      final open = find.byKey(const ValueKey('listen-open-workbench'));
+      await tester.tap(open);
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+
+      expect(source.stopCalls, 1);
+      expect(find.byType(WorkbenchScreen), findsNothing);
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(source.isStreaming, isFalse);
+      expect(find.byType(WorkbenchScreen, skipOffstage: false), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'capture retry stays disabled until failure cleanup is complete',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(StateError('device lost'));
+      await tester.pump();
+      final fab = find.byType(AdaptiveFab);
+      expect(tester.widget<AdaptiveFab>(fab).onPressed, isNull);
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(tester.widget<AdaptiveFab>(fab).onPressed, isNotNull);
+      expect(find.text(en.listenStreamFailed), findsOneWidget);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+      expect(source.startCalls, 2);
+      expect(source.isStreaming, isTrue);
+      expect(find.text(en.listenStreamFailed), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'leaving Listen cancels a pending workbench handoff after failure',
+    (tester) async {
+      final stop = Completer<void>();
+      final source = FakePcmSource()..stopGate = stop;
+      addTearDown(() {
+        if (!stop.isCompleted) stop.complete();
+      });
+      await _pump(tester, source);
+      await tester.tap(find.text(en.listenStart));
+      await tester.pumpAndSettle();
+
+      source.failStream(StateError('device lost'));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('listen-open-workbench')));
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      expect(source.stopCalls, 1, reason: 'disposal joins the pending stop');
+      stop.complete();
+      await tester.pumpAndSettle();
+      expect(source.isStreaming, isFalse);
+      expect(find.byType(WorkbenchScreen), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('an older mic callback cannot queue a retry before locking', (
+    tester,
+  ) async {
+    final stop = Completer<void>();
+    final source = FakePcmSource()..stopGate = stop;
+    addTearDown(() {
+      if (!stop.isCompleted) stop.complete();
+    });
+    final binding = tester.binding;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    final toggle = tester
+        .widget<AdaptiveFab>(find.byType(AdaptiveFab))
+        .onPressed!;
+
+    source.failStream(StateError('device lost'));
+    toggle();
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    stop.complete();
+    await tester.pump();
+
+    expect(source.startCalls, 1);
+    expect(source.isStreaming, isFalse);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenStreamFailed), findsOneWidget);
+    expect(source.isStreaming, isFalse);
+  });
+
+  testWidgets('the mic callback cannot start while opening the workbench', (
+    tester,
+  ) async {
+    final source = FakePcmSource();
+    await _pump(tester, source);
+    final toggle = tester
+        .widget<AdaptiveFab>(find.byType(AdaptiveFab))
+        .onPressed!;
+    final open = tester
+        .widget<IconButton>(find.byKey(const ValueKey('listen-open-workbench')))
+        .onPressed!;
+
+    open();
+    toggle();
+    await tester.pumpAndSettle();
+
+    expect(source.permissionRequests, isEmpty);
+    expect(source.startCalls, 0);
+    expect(find.byType(WorkbenchScreen), findsOneWidget);
+  });
+
   testWidgets('manual tuning and retune update the persisted preferences', (
     tester,
   ) async {
@@ -152,8 +301,14 @@ void main() {
     await _pump(tester, source);
     await tester.tap(find.text(en.listenStart));
     await tester.pumpAndSettle();
+    // The purpose is explained before the permission prompt.
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false]);
+    await tester.tap(find.text(en.listenMicPurposeContinue));
+    await tester.pumpAndSettle();
     expect(find.text(en.listenPermissionDenied), findsOneWidget);
     expect(source.startCalls, 0);
+    expect(source.permissionRequests, [false, true]);
     expect(find.text(en.listenStart), findsOneWidget);
 
     source.permissionGranted = true;
@@ -161,6 +316,146 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(en.listenPermissionDenied), findsNothing);
     expect(source.isStreaming, isTrue);
+  });
+
+  testWidgets('cancelling the microphone purpose dialog keeps the mic off', (
+    tester,
+  ) async {
+    final source = FakePcmSource(permissionGranted: false);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+
+    await tester.tap(find.text(en.actionCancel));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsNothing);
+    expect(source.isStreaming, isFalse);
+    expect(source.startCalls, 0);
+    expect(source.permissionRequests, [false]);
+    expect(find.text(en.listenStart), findsOneWidget);
+  });
+
+  testWidgets('microphone choices remain tappable in a short window', (
+    tester,
+  ) async {
+    final source = FakePcmSource(permissionGranted: false);
+    await _pump(tester, source, size: const Size(568, 320), textScale: 3.1);
+    final listen = find.byType(FloatingActionButton);
+    final dialog = find.byType(AlertDialog);
+    Future<void> tapDialogAction(String label) async {
+      final action = find.descendant(of: dialog, matching: find.text(label));
+      final scrollable = find.descendant(
+        of: dialog,
+        matching: find.byType(Scrollable),
+      );
+      await tester.scrollUntilVisible(action, 100, scrollable: scrollable);
+      await tester.pumpAndSettle();
+      expect(action.hitTestable(), findsOneWidget);
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+    }
+
+    expect(listen.hitTestable(), findsOneWidget);
+    await tester.tap(listen);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false]);
+    await tapDialogAction(en.actionCancel);
+    expect(dialog, findsNothing);
+    expect(source.startCalls, 0);
+
+    await tester.tap(listen);
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false, false]);
+    await tapDialogAction(en.listenMicPurposeContinue);
+    expect(dialog, findsNothing);
+    expect(source.permissionRequests, [false, false, true]);
+    expect(source.startCalls, 0);
+    expect(find.text(en.listenPermissionDenied), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('repeated starts share one microphone purpose prompt', (
+    tester,
+  ) async {
+    final probe = Completer<void>();
+    final source = FakePcmSource(permissionGranted: false)
+      ..permissionGate = probe;
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.tap(find.text(en.listenStart));
+    probe.complete();
+    await tester.pumpAndSettle();
+
+    expect(source.permissionRequests, [false]);
+    expect(
+      find.text(en.listenMicPurposeTitle, skipOffstage: false),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('backgrounding cancels a pending microphone permission check', (
+    tester,
+  ) async {
+    final probe = Completer<void>();
+    final source = FakePcmSource()..permissionGate = probe;
+    final binding = tester.binding;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    probe.complete();
+    await tester.pumpAndSettle();
+
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    expect(source.permissionRequests, [false]);
+    expect(source.startCalls, 0);
+    expect(find.text(en.listenStoppedInBackground), findsOneWidget);
+  });
+
+  testWidgets('backgrounding dismisses the microphone purpose dialog', (
+    tester,
+  ) async {
+    final source = FakePcmSource(permissionGranted: false);
+    final binding = tester.binding;
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    await tester.pumpAndSettle();
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+
+    expect(find.text(en.listenMicPurposeTitle), findsNothing);
+    expect(source.permissionRequests, [false]);
+    expect(source.startCalls, 0);
+  });
+
+  testWidgets('retry after a failed probe explains the permission first', (
+    tester,
+  ) async {
+    final source = FakePcmSource(permissionGranted: false)
+      ..permissionProbeError = StateError(_rawDetail);
+    await _pump(tester, source);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+
+    expect(find.text(en.listenStartFailed), findsOneWidget);
+    expect(source.permissionRequests, [false]);
+    source.permissionProbeError = null;
+    await tester.tap(find.text(en.listenPermissionRetry));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenMicPurposeTitle), findsOneWidget);
+    expect(source.permissionRequests, [false, false]);
   });
 
   for (final (Locale locale, S s) in <(Locale, S)>[

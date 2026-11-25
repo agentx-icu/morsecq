@@ -5,12 +5,14 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main, master]
+    types: [opened, reopened, labeled, unlabeled, synchronize, ready_for_review, converted_to_draft]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Isolate irrelevant label events so they cannot cancel valid PR checks.
+  group: ${{ github.workflow }}-${{ github.ref }}${{ contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) && !contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name) && format('-ignored-{0}', github.run_id) || '' }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
 defaults:
   run:
     shell: bash
@@ -18,8 +20,13 @@ env:
   FLUTTER_VERSION: '3.41.9'
 jobs:
   validate:
+    if: >-
+      !contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)
     uses: ./.github/workflows/analyze.yml
   desktop:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     strategy:
       fail-fast: false
@@ -29,12 +36,17 @@ jobs:
             platform: linux
           - os: windows-2022
             platform: windows
-          - os: macos-15
+          # The universal desktop binary can be built on Intel runners.
+          # Keep the Apple Silicon runner for tagged distribution builds.
+          - os: ${{ startsWith(github.ref, 'refs/tags/v') && 'macos-15' || 'macos-15-intel' }}
             platform: macos
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -62,26 +74,75 @@ jobs:
         run: |
           flutter config --enable-${{ matrix.platform }}-desktop
           cd apps/morsecq
-          if [[ "${{ matrix.platform }}" == macos ]]; then
-            # Flutter 3.41.9's release defaults produce arm64 + x86_64 on the
-            # macOS runner; package_artifacts.sh verifies the universal2 result.
-            flutter build macos --release
-          else
-            flutter build ${{ matrix.platform }} --release
-          fi
-      - name: Package
-        run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
+          flutter build ${{ matrix.platform }} --release --split-debug-info=build/symbols/${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: symbols-${{ matrix.platform }}
+          path: |
+            apps/morsecq/build/symbols/
+            apps/morsecq/build/macos/Build/Products/Release/**/*.dSYM
+            apps/morsecq/build/windows/x64/runner/Release/*.pdb
+          if-no-files-found: error
+      - name: Refuse damaged Microsoft runtime before owner signing
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tool/ci/test_windows_runtime_signing.ps1 -RuntimePath apps/morsecq/build/windows/x64/runner/Release/msvcp140.dll
+      - name: Package
+        run: bash tool/ci/package_artifacts.sh --target ${{ matrix.platform }}
+      - name: Hash final packaged artifacts
+        run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/${{ matrix.platform }}
+      - name: Test installed Linux DEB
+        if: runner.os == 'Linux'
+        timeout-minutes: 15
+        run: python3 tool/ci/linux_installed_smoke.py --app morsecq --architecture x86_64 --package-dir dist/linux --evidence-dir build/evidence/linux-installed
+      - name: Verify final Windows ZIP payload
+        if: runner.os == 'Windows'
+        run: python tool/ci/release_preflight.py --output build/evidence/windows-final.json native dist/windows/morsecq-*-windows-x64.zip --platform windows --architecture x86_64
+      - name: Verify Windows installer metadata
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $msi = (Get-ChildItem dist/windows/*.msi | Select-Object -First 1).FullName
+          $installer = New-Object -ComObject WindowsInstaller.Installer
+          $database = $installer.OpenDatabase($msi, 0)
+          $template = $database.SummaryInformation(0).Property(7)
+          if ($template -notmatch '^x64;') { throw "Unexpected MSI Template Summary: $template" }
+          $template | Out-File build/evidence/windows-msi-template.txt
+      - name: Test installed Windows MSI
+        if: runner.os == 'Windows'
+        shell: pwsh
+        timeout-minutes: 12
+        run: |
+          $msis = @(Get-ChildItem dist/windows/*.msi)
+          $zips = @(Get-ChildItem dist/windows/*.zip)
+          if ($msis.Count -ne 1 -or $zips.Count -ne 1) { throw 'Expected exactly one final MSI and ZIP' }
+          & ./tool/ci/test_windows_installer.ps1 -MsiPath $msis[0].FullName -PayloadZipPath $zips[0].FullName -EvidenceDirectory build/evidence/windows-installed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: evidence-${{ matrix.platform }}
+          path: build/evidence/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-${{ matrix.platform }}
           path: dist/${{ matrix.platform }}/*
           if-no-files-found: error
   android:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -92,7 +153,30 @@ jobs:
           channel: stable
           cache: true
       - run: dart pub get --enforce-lockfile
+      - name: Reject a configured debug certificate for store APKs and AABs
+        working-directory: apps/morsecq
+        run: |
+          keytool -genkeypair -keystore "$RUNNER_TEMP/store-debug.p12" \
+            -alias fixture -keyalg RSA -keysize 2048 -validity 30 \
+            -dname 'CN=Android Debug,O=Android,C=US' -storepass fixture-password -noprompt
+          for artifact in apk appbundle; do
+            log="$RUNNER_TEMP/store-debug-$artifact.log"
+            if MORSECQ_ANDROID_KEYSTORE="$RUNNER_TEMP/store-debug.p12" \
+              MORSECQ_ANDROID_KEYSTORE_PASSWORD=fixture-password MORSECQ_ANDROID_KEY_ALIAS=fixture \
+              MORSECQ_ANDROID_KEY_PASSWORD=fixture-password \
+              flutter build "$artifact" --release -PstoreRelease --target-platform=android-arm64 \
+              > "$log" 2>&1; then
+              echo "The store $artifact build accepted an Android Debug certificate." >&2
+              exit 1
+            fi
+            cat "$log"
+            grep -Fq 'Android Debug certificate cannot sign a store' "$log"
+          done
+      - name: Allow explicitly debug-signed test artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo 'MORSECQ_ALLOW_DEBUG_SIGNING=1' >> "$GITHUB_ENV"
       - name: Prepare release signing
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -103,43 +187,70 @@ jobs:
           for value in "$ANDROID_KEYSTORE_BASE64" "$ANDROID_KEYSTORE_PASSWORD" "$ANDROID_KEY_ALIAS" "$ANDROID_KEY_PASSWORD"; do
             [[ -z "$value" ]] || count=$((count + 1))
           done
-          if [[ "$count" == 4 ]]; then
-            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
-            echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
-          elif [[ "$count" != 0 ]]; then
-            echo 'All four Android signing secrets must be provided together.' >&2
+          if [[ "$count" != 4 ]]; then
+            echo 'Tagged Android releases require all four owner signing secrets.' >&2
             exit 1
-          elif [[ "$GITHUB_REF_TYPE" == tag ]]; then
-            echo 'Release tags require Android signing secrets; refusing to build a debug-signed store artifact.' >&2
-            exit 1
-          else
-            # PR/branch builds may produce installable test artifacts, but the
-            # opt-in is explicit so a missing keystore can never silently leak
-            # into a distributable release build.
-            echo 'MORSECQ_ALLOW_DEBUG_SIGNING=1' >> "$GITHUB_ENV"
-            echo '::warning::No Android signing secrets: this non-tag CI artifact is explicitly debug-signed for testing only.'
           fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/morsecq-release.jks"
+          echo "MORSECQ_ANDROID_KEYSTORE=$RUNNER_TEMP/morsecq-release.jks" >> "$GITHUB_ENV"
       - name: Build APK and App Bundle
         env:
-          MORSECQ_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          MORSECQ_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          MORSECQ_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          MORSECQ_ANDROID_KEYSTORE_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          MORSECQ_ANDROID_KEY_ALIAS: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEY_ALIAS || '' }}
+          MORSECQ_ANDROID_KEY_PASSWORD: ${{ startsWith(github.ref, 'refs/tags/v') && secrets.ANDROID_KEY_PASSWORD || '' }}
         run: |
           cd apps/morsecq
-          flutter build apk --release
-          flutter build appbundle --release
-      - run: bash tool/ci/package_artifacts.sh --target android
+          flutter build apk --release --split-debug-info=build/symbols/android
+          flutter build appbundle --release --split-debug-info=build/symbols/android
+      - name: Inspect final APK and App Bundle
+        run: |
+          curl -fL --retry 3 https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar -o "$RUNNER_TEMP/bundletool.jar"
+          echo 'a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29  '"$RUNNER_TEMP/bundletool.jar" | sha256sum --check
+          python3 tool/ci/release_preflight.py --output build/evidence/android.json android \
+            apps/morsecq/build/app/outputs/flutter-apk/app-release.apk \
+            apps/morsecq/build/app/outputs/bundle/release/app-release.aab \
+            --bundletool "$RUNNER_TEMP/bundletool.jar" \
+            --apkanalyzer "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" --target-sdk 36
+      - name: Verify every signed App Bundle entry
+        run: java tool/ci/VerifyAndroidBundle.java apps/morsecq/build/app/outputs/bundle/release/app-release.aab - development > build/evidence/android-bundle-signing.json
+      - name: Verify tagged Android signing identity
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          EXPECTED_UPLOAD_CERT_SHA256: ${{ vars.ANDROID_UPLOAD_CERT_SHA256 }}
+        run: python3 tool/ci/verify_android_signing.py apps/morsecq/build/app/outputs/flutter-apk/app-release.apk apps/morsecq/build/app/outputs/bundle/release/app-release.aab --expected-sha256 "$EXPECTED_UPLOAD_CERT_SHA256"
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: symbols-android
+          path: apps/morsecq/build/symbols/android/
+          if-no-files-found: error
+      - run: bash tool/ci/package_artifacts.sh --target android
+      - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/android
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: evidence-android
+          path: build/evidence/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-android
           path: dist/android/*
           if-no-files-found: error
   ios:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     runs-on: macos-26
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -152,12 +263,39 @@ jobs:
       - name: Build unsigned application
         run: |
           cd apps/morsecq
-          flutter build ios --release --no-codesign
-      - run: bash tool/ci/package_artifacts.sh --target ios
+          flutter build ios --release --no-codesign --split-debug-info=build/symbols/ios
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: symbols-ios
+          path: |
+            apps/morsecq/build/symbols/ios/
+            apps/morsecq/build/ios/iphoneos/**/*.dSYM
+          if-no-files-found: error
+      - run: bash tool/ci/package_artifacts.sh --target ios
+      - run: python tool/ci/release_preflight.py --output build/evidence/artifacts.json hashes dist/ios
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
+          name: evidence-ios
+          path: build/evidence/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-ios
           path: dist/ios/*
+          if-no-files-found: error
+      - name: Validate controlled unsigned iOS archive
+        run: python3 tool/ci/ios_store_export.py --unsigned-archive --output build/ios/store-readiness/ci-archive
+      - name: Preserve unsigned archive modes and symlinks
+        run: tar -czf build/ios/store-readiness/ci-archive.tar.gz -C build/ios/store-readiness ci-archive
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-archive
+          path: build/ios/store-readiness/ci-archive.tar.gz
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '7' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           if-no-files-found: error
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -168,6 +306,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*

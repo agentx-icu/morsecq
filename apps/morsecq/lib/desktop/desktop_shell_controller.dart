@@ -4,10 +4,13 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 import '../i18n/current_strings.dart';
+import '../diagnostics/local_diagnostics.dart';
+import 'desktop_diagnostics.dart';
 import '../l10n/generated/s.dart';
 import 'desktop_platform.dart';
 import 'screen_api.dart';
 import 'tray_api.dart';
+import 'tray_host_watch.dart';
 import 'window_api.dart';
 import 'window_bounds.dart';
 
@@ -18,23 +21,7 @@ abstract final class TrayMenuKeys {
   static const String quit = 'quit';
 }
 
-/// Desktop window + system-tray behaviour for the app shell.
-///
-/// Owns the window title, the tray icon / tooltip / menu,
-/// close-to-tray, and the persistence of window bounds through the injected
-/// `KeyValueStore`. Every plugin call is gated on [DesktopShellConfig.isDesktop]
-/// so on Android / iOS / web the controller is inert state: [initialize] and
-/// the window/tray methods return immediately without touching the APIs.
-///
-/// The tray is cosmetic. Any tray failure (no StatusNotifier host on Linux,
-/// a per-platform gap such as Linux tooltips) is logged and swallowed; it
-/// never takes the app down and never blocks the first frame.
-///
-/// Language: menu labels, tooltip and title render from [strings]
-/// ([currentS] at construction, i.e. the platform locale before the app's
-/// `LocaleController` exists). `AppServices` calls [updateStrings] with the
-/// user's choice once the scope is up and again on every language change;
-/// the product name itself ([DesktopShellConfig.appName]) is never translated.
+/// Manages desktop windows, window preferences and the localized tray menu.
 class DesktopShellController extends ChangeNotifier
     implements WindowEventHandler, TrayEventHandler {
   DesktopShellController({
@@ -61,9 +48,11 @@ class DesktopShellController extends ChangeNotifier
 
   bool _initialized = false;
   bool _active = false;
+  bool _trayIconSet = false;
   bool _trayAvailable = false;
   bool _windowVisible = false;
   bool _closing = false;
+  Rect? _normalBounds;
   bool _closeToTray;
   bool _soundEnabled;
   S _s;
@@ -71,6 +60,17 @@ class DesktopShellController extends ChangeNotifier
   Future<void> _trayQueue = Future<void>.value();
   bool _trayGapWarned = false;
   final Set<Future<void> Function()> _beforeQuit = {};
+  late final _trayHostWatch = TrayHostWatch(
+    isAvailable: () async =>
+        _trayAvailable && await _hasTrayHost() && await _hasTrayIcon(),
+    onLost: () async {
+      _trayAvailable = false;
+      await _tolerate('show window', showWindow);
+    },
+  );
+
+  bool get _monitorsTray =>
+      config.trayHostAvailable != null || config.trayIconAvailable != null;
 
   void addBeforeQuitListener(Future<void> Function() listener) =>
       _beforeQuit.add(listener);
@@ -78,10 +78,8 @@ class DesktopShellController extends ChangeNotifier
   void removeBeforeQuitListener(Future<void> Function() listener) =>
       _beforeQuit.remove(listener);
 
-  /// True once [initialize] ran on a desktop platform.
   bool get isActive => _active;
 
-  /// True when the tray icon was created and can be relied on.
   bool get isTrayAvailable => _trayAvailable;
 
   bool get isWindowVisible => _windowVisible;
@@ -90,16 +88,12 @@ class DesktopShellController extends ChangeNotifier
 
   bool get soundEnabled => _soundEnabled;
 
-
-  /// The strings the title, tooltip and menu currently render from.
   S get strings => _s;
 
   String get windowTitle => config.appName;
   String get trayTooltip => config.appName;
 
-  /// Current context-menu rows; labels follow visibility, sound state and
-  /// language. Shortcut hints are not part of the tray menu (the OS renders
-  /// accelerators itself); in-app labels come from `shortcutLabel`.
+  /// Menu rows follow visibility, sound state and language.
   List<TrayMenuEntry> get trayMenu => [
     TrayMenuEntry(
       key: TrayMenuKeys.showHide,
@@ -107,11 +101,12 @@ class DesktopShellController extends ChangeNotifier
           ? _s.desktopTrayHide(config.appName)
           : _s.desktopTrayShow(config.appName),
     ),
-    TrayMenuEntry(
-      key: TrayMenuKeys.sound,
-      label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
-      checked: _soundEnabled,
-    ),
+    if (config.onToggleSound != null)
+      TrayMenuEntry(
+        key: TrayMenuKeys.sound,
+        label: _soundEnabled ? _s.desktopTraySoundOn : _s.desktopTraySoundOff,
+        checked: _soundEnabled,
+      ),
     const TrayMenuEntry.separator(),
     TrayMenuEntry(
       key: TrayMenuKeys.quit,
@@ -119,10 +114,6 @@ class DesktopShellController extends ChangeNotifier
     ),
   ];
 
-  /// Switches the language of the title, tooltip and menu. A no-op for the
-  /// locale already in use; otherwise the window title is re-set and the
-  /// tray rebuilt (queued behind pending tray updates). Safe before
-  /// [initialize] and on mobile (state only).
   void updateStrings(S strings) {
     if (strings.localeName == _s.localeName) return;
     _s = strings;
@@ -132,10 +123,6 @@ class DesktopShellController extends ChangeNotifier
     _enqueueTray(_applyTrayState);
   }
 
-  // ---------------------------------------------------------------- startup
-
-  /// Creates the window (restoring persisted bounds, clamped to today's
-  /// displays) and the tray. Idempotent; a no-op off desktop.
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
@@ -157,14 +144,14 @@ class DesktopShellController extends ChangeNotifier
         .fitTo(areas, minSize);
 
     _window.setEventHandler(this);
-    // Always intercept close: even without close-to-tray we must persist the
-    // bounds and run onBeforeQuit before the runner exits.
+    // Intercept close to persist bounds and run onBeforeQuit.
     await _window.setPreventClose(true);
     await _window.waitUntilReadyToShow(
       title: windowTitle,
       minimumSize: minSize,
       size: target.rect.size,
     );
+    _normalBounds = target.rect;
     await _window.setBounds(target.rect);
     await _window.show();
     await _window.focus();
@@ -179,28 +166,39 @@ class DesktopShellController extends ChangeNotifier
     final icon = TrayIconAssets.forPlatform(config.effectivePlatform);
     if (icon == null) return;
     try {
+      if (!await _hasTrayHost()) return;
       _tray.setEventHandler(this);
+      // Reset tray_manager's cached registration before retrying on Windows.
+      if (config.trayIconAvailable != null) await _destroyTray();
       await _tray.setIcon(icon, isTemplate: config.isMacOS);
-      _trayAvailable = true;
+      _trayIconSet = true;
+      _trayAvailable = await _hasTrayIcon();
     } catch (e) {
-      // A tray-less session (headless Linux, no SNI host) throws on the first
-      // call. Disable the tray entirely: close-to-tray then falls back to a
-      // real quit so the user can never lose the window.
       _trayAvailable = false;
       _tray.setEventHandler(null);
-      config.logger(
-        '[DesktopShell] tray unavailable, continuing without it: $e',
-      );
+      config.diagnose(DiagnosticContext.desktopTray, e);
       return;
     }
     await _applyTrayState();
+  }
+
+  Future<bool> _hasTrayHost() => _probeTray(config.trayHostAvailable);
+  Future<bool> _hasTrayIcon() => _probeTray(config.trayIconAvailable);
+
+  Future<bool> _probeTray(Future<bool> Function()? probe) async {
+    try {
+      return await probe?.call() ?? true;
+    } on Object catch (error) {
+      config.diagnose(DiagnosticContext.desktopTrayHost, error);
+      return false;
+    }
   }
 
   Future<List<Rect>> _workAreas() async {
     try {
       return await _screen.workAreas();
     } catch (e) {
-      config.logger('[DesktopShell] display lookup failed: $e');
+      config.diagnose(DiagnosticContext.desktopDisplay, e);
       return const [];
     }
   }
@@ -209,39 +207,52 @@ class DesktopShellController extends ChangeNotifier
     if (!_trayAvailable) return;
     await _tolerate('setToolTip', () => _tray.setToolTip(trayTooltip));
     if (config.isMacOS) {
-      await _tolerate(
-        'setTitle',
-        () => _tray.setTitle(''),
+      await _tolerate('setTitle', () => _tray.setTitle(''));
+    }
+    try {
+      await _tray.setMenu(trayMenu);
+    } on Object catch (error) {
+      // Linux AppIndicator uses the menu to reopen the window.
+      if (config.isLinux) _trayAvailable = false;
+      config.diagnose(
+        DiagnosticContext.desktopOperation,
+        error,
+        operation: 'setMenu',
       );
     }
-    await _tolerate('setMenu', () => _tray.setMenu(trayMenu));
   }
 
-  /// Tray updates are several async plugin calls; callers fire them without
-  /// awaiting, so serialise them to keep an older state from landing last.
   void _enqueueTray(Future<void> Function() op) {
     _trayQueue = _trayQueue.then((_) => op());
   }
 
-  /// Completes when every queued tray update has been applied (tests).
   Future<void> flushTrayUpdates() => _trayQueue;
-
-  // ---------------------------------------------------------------- window
 
   Future<void> showWindow() async {
     if (!_active) return;
+    if (await _window.isMinimized()) await _window.restore();
     await _window.show();
-    await _window.focus();
+    if (!_active) return;
     _setWindowVisible(true);
+    await _window.focus();
   }
 
-  /// Hides the window; the tray is the only way back, so this is refused
-  /// when the tray is unavailable.
   Future<void> hideToTray() async {
-    if (!_active || !_trayAvailable) return;
+    await _hideToTray();
+  }
+
+  Future<bool> _hideToTray() async {
+    if (!_active || _closing) return false;
+    if (!await _hasTrayHost()) return false;
+    if (_trayAvailable && !await _hasTrayIcon()) _trayAvailable = false;
+    if (!_trayAvailable && _monitorsTray) await _initTray();
+    if (!_trayAvailable || _closing || !_active) return false;
     await persistWindowState();
+    if (_closing || !_active) return false;
     await _window.hide();
+    if (!_active) return false;
     _setWindowVisible(false);
+    return true;
   }
 
   Future<void> toggleWindow() async {
@@ -255,24 +266,39 @@ class DesktopShellController extends ChangeNotifier
   }
 
   void _setWindowVisible(bool visible) {
+    if (visible) _trayHostWatch.stop();
+    if (!visible) _watchHiddenTray();
     if (_windowVisible == visible) return;
     _windowVisible = visible;
     notifyListeners();
     _enqueueTray(_applyTrayState);
   }
 
-  /// Reads the live bounds and maximised flag and stores them.
+  void _watchHiddenTray() {
+    if (_monitorsTray && !_closing && _active) {
+      _trayHostWatch.start();
+    }
+  }
+
   Future<void> persistWindowState() async {
     if (!_active) return;
     try {
       final rect = await _window.getBounds();
       final maximized = await _window.isMaximized();
+      if (!maximized &&
+          !await _window.isFullScreen() &&
+          !await _window.isMinimized()) {
+        _normalBounds = rect;
+      }
       await config.store.set(
         boundsKey,
-        WindowBounds(rect: rect, maximized: maximized).encode(),
+        WindowBounds(
+          rect: _normalBounds ?? rect,
+          maximized: maximized,
+        ).encode(),
       );
     } catch (e) {
-      config.logger('[DesktopShell] could not persist window state: $e');
+      config.diagnose(DiagnosticContext.desktopWindowSave, e);
     }
   }
 
@@ -292,7 +318,7 @@ class DesktopShellController extends ChangeNotifier
         _closeToTray = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist closeToTray: $e');
+      config.diagnose(DiagnosticContext.desktopCloseSave, e);
     }
   }
 
@@ -305,8 +331,7 @@ class DesktopShellController extends ChangeNotifier
     };
   }
 
-  /// Placeholder for the sidetone owner: flips the tray checkbox and calls
-  /// [DesktopShellConfig.onToggleSound].
+  /// Persists the sound choice, then informs its owner.
   Future<void> setSoundEnabled(bool enabled) =>
       _trackPreference(_setSoundEnabled(enabled));
 
@@ -324,22 +349,28 @@ class DesktopShellController extends ChangeNotifier
         _soundEnabled = previous;
         notifyListeners();
       }
-      config.logger('[DesktopShell] could not persist sound: $e');
+      config.diagnose(DiagnosticContext.desktopSoundSave, e);
       return;
     }
     try {
       await config.onToggleSound?.call(enabled);
     } catch (e) {
-      config.logger('[DesktopShell] onToggleSound failed: $e');
+      config.diagnose(DiagnosticContext.desktopSoundChange, e);
     }
     if (_active) _enqueueTray(_applyTrayState);
   }
 
-  /// Persists the window state, runs [DesktopShellConfig.onBeforeQuit] and
-  /// closes the window for real. Idempotent.
+  Future<void> _destroyTray() async {
+    if (config.trayIconAvailable != null && !_trayIconSet) return;
+    await _tray.destroy();
+    _trayIconSet = false;
+  }
+
+  /// Persists the window state and closes the window. Idempotent.
   Future<void> quit() async {
     if (!_active || _closing) return;
     _closing = true;
+    _trayHostWatch.stop();
     _persistTimer?.cancel();
     await _pendingPreferences;
     await persistWindowState();
@@ -349,33 +380,44 @@ class DesktopShellController extends ChangeNotifier
       }
     } catch (e) {
       _closing = false;
-      config.logger('[DesktopShell] could not save session before quit: $e');
+      if (!_windowVisible) _watchHiddenTray();
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
       return;
     }
     try {
       await config.onBeforeQuit?.call();
     } catch (e) {
-      config.logger('[DesktopShell] onBeforeQuit failed: $e');
+      config.diagnose(DiagnosticContext.desktopBeforeQuit, e);
     }
-    await _tolerate('destroy tray', _tray.destroy);
-    await _window.destroy();
+    await _tolerate('destroy tray', _destroyTray);
+    try {
+      await _window.destroy();
+    } on Object catch (error) {
+      config.diagnose(
+        DiagnosticContext.desktopOperation,
+        error,
+        operation: 'destroy window',
+      );
+      if (_trayAvailable) {
+        _trayAvailable = false;
+        await _initTray();
+      }
+      if (!_trayAvailable && !_windowVisible) {
+        await _tolerate('show window', showWindow);
+      }
+      _closing = false;
+      if (!_windowVisible) _watchHiddenTray();
+    }
   }
-
-  // ---------------------------------------------------------------- events
 
   @override
   void onCloseRequested() {
     unawaited(handleCloseRequested());
   }
 
-  /// Close-to-tray hides (when the tray exists); otherwise this is the real
-  /// exit path.
   Future<void> handleCloseRequested() async {
     if (!_active || _closing) return;
-    if (_closeToTray && _trayAvailable) {
-      await hideToTray();
-      return;
-    }
+    if (_closeToTray && await _hideToTray()) return;
     await quit();
   }
 
@@ -409,14 +451,14 @@ class DesktopShellController extends ChangeNotifier
   @override
   void dispose() {
     _persistTimer?.cancel();
+    _trayHostWatch.stop();
     if (_active) {
+      _active = false;
       _window.setEventHandler(null);
       _tray.setEventHandler(null);
     }
     super.dispose();
   }
-
-  // --------------------------------------------------------------- helpers
 
   Future<void> _pendingPreferences = Future<void>.value();
 
@@ -432,20 +474,18 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await config.store.get(key);
     } catch (e) {
-      config.logger('[DesktopShell] could not read $key: $e');
+      config.diagnose(DiagnosticContext.desktopRead, e);
       return null;
     }
   }
 
-  /// Runs one optional call, warning once about a per-platform gap (Linux
-  /// tray_manager has no tooltip; some hosts reject titles).
   Future<void> _tolerate(String label, Future<void> Function() op) async {
     try {
       await op();
     } catch (e) {
       if (_trayGapWarned) return;
       _trayGapWarned = true;
-      config.logger('[DesktopShell] $label unavailable on this platform: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
     }
   }
 
@@ -453,7 +493,7 @@ class DesktopShellController extends ChangeNotifier
     try {
       return await op();
     } catch (e) {
-      config.logger('[DesktopShell] $label failed: $e');
+      config.diagnose(DiagnosticContext.desktopOperation, e, operation: label);
       return null;
     }
   }

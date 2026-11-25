@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,6 +28,17 @@ List<String> _captureDebugPrint() {
 }
 
 void main() {
+  test('missing Linux capture command has an actionable failure', () async {
+    _captureDebugPrint();
+    final source = FakePcmSource(
+      startError: const ProcessException('parecord', [], 'not found', 2),
+    );
+    final controller = ListenController(source: source);
+    addTearDown(controller.dispose);
+    await controller.start();
+    expect(controller.failure?.kind.name, 'missingCaptureTool');
+  });
+
   test('start/stop lifecycle and decoded text', () async {
     final source = FakePcmSource();
     final controller = ListenController(source: source);
@@ -52,6 +64,48 @@ void main() {
     expect(source.isStreaming, isFalse);
     expect(controller.text.trim(), 'SOS');
   });
+
+  for (final endCapture in ['stop', 'end', 'error']) {
+    test('$endCapture finishes the current capture before restart', () async {
+      if (endCapture == 'error') _captureDebugPrint();
+      final source = FakePcmSource();
+      final controller = ListenController(
+        source: source,
+        settings: const ListenSettings(autoTune: false),
+      );
+      addTearDown(controller.dispose);
+      await controller.start();
+      final first = SyntheticMorse(
+        tail: Duration.zero,
+        rampMs: 0,
+      ).renderText('E');
+      for (final chunk in SyntheticMorse.toByteChunks(first, 960)) {
+        source.push(chunk);
+      }
+      expect(controller.meter.value.toneOn, isTrue);
+
+      switch (endCapture) {
+        case 'stop':
+          await controller.stop();
+        case 'end':
+          await source.endStream();
+        case 'error':
+          source.failStream(StateError('capture ended'));
+      }
+      expect(controller.text.trim(), 'E');
+      expect(controller.meter.value.toneOn, isFalse);
+
+      await controller.start();
+      final next = SyntheticMorse(
+        leadIn: const Duration(milliseconds: 30),
+        rampMs: 0,
+      ).renderText('E');
+      for (final chunk in SyntheticMorse.toByteChunks(next, 960)) {
+        source.push(chunk);
+      }
+      expect(controller.text.trim(), 'E E');
+    });
+  }
 
   test('permission denied does not start the stream', () async {
     final source = FakePcmSource(permissionGranted: false);

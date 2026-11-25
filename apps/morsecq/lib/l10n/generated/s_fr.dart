@@ -1539,16 +1539,13 @@ class SFr extends S {
   String get appearanceSaveFailed => 'Impossible d’enregistrer l’apparence. Réessayez.';
 
   @override
-  String get appearanceClassic => 'Laiton classique';
+  String get appearanceClassic => 'Manuel en laiton';
 
   @override
-  String get appearanceModern => 'Calme moderne';
+  String get appearanceWhite => 'Blanc minimaliste';
 
   @override
   String get appearanceRadio => 'Radio de nuit';
-
-  @override
-  String get appearancePaper => 'Manuel papier';
 
   @override
   String get appearanceCartoon => 'Dessin pétillant';
@@ -2537,6 +2534,9 @@ class SFr extends S {
   }
 
   @override
+  String get keysSaveFailed => 'Impossible d’enregistrer la modification du profil de touches. Réessayez.';
+
+  @override
   String get keysMissing => 'Définissez les touches requises par ce mode (les deux palettes en iambique).';
 
   @override
@@ -2676,10 +2676,7 @@ class SFr extends S {
   String get aboutTermsOfUse => 'Conditions d’utilisation';
 
   @override
-  String get aboutSupport => 'Assistance et contact';
-
-  @override
-  String get aboutLinkFailed => 'Le lien n’a pas pu s’ouvrir ; il a été copié.';
+  String get aboutSupport => 'Assistance technique';
 
   @override
   String get offlineClearData => 'Effacer les données d’apprentissage';
@@ -3551,4 +3548,91 @@ class SFr extends S {
 
   @override
   String get comprehensionListen => 'Écouter';
+
+  @override
+  String get desktopCloseToTray => 'Rester dans la zone de notification à la fermeture';
+
+  @override
+  String get desktopCloseToTrayDescription => 'Désactivé : fermer la fenêtre quitte l’application. Nécessite une zone de notification disponible.';
+
+  @override
+  String get learnFlashNotice => 'Petit voyant clignotant. À éviter en cas de photosensibilité ; Réduire les animations le garde fixe.';
+
+  @override
+  String get learnHapticUnavailable => 'La vibration n’est pas disponible sur cet appareil.';
+
+  @override
+  String get listenMissingCaptureTool => 'Installez pulseaudio-utils pour utiliser le microphone sous Linux.';
+
+  @override
+  String get diagnosticsCopy => 'Copier le diagnostic local';
+
+  @override
+  String get learnNewerData => 'Ces données proviennent d’une version plus récente de MorseCQ. Mettez l’application à jour. Vos fichiers sont conservés.';
+
+  @override
+  String get diagnosticsCopied => 'Diagnostic local copié';
+
+  @override
+  String get learnSettingsSaveFailed => 'Impossible d’enregistrer les paramètres d’entraînement. Réessayez.';
+
+  @override
+  String get accountSectionPrivacy => 'Confidentialité et autorisations';
+
+  @override
+  String get accountPersonalInfoList => 'Données personnelles collectées';
+
+  @override
+  String get accountThirdPartyShareList => 'Partage avec des tiers';
+
+  @override
+  String get accountPermissionList => 'Autorisations';
+
+  @override
+  String get technicalSupportText => 'Microphone\nSi l’écoute ne démarre pas, vérifiez dans les réglages système que MorseCQ a accès au microphone et que celui-ci est disponible. Rapprochez la source sonore si le décodage est irrégulier.\n\nSignaler un problème\nNotez l’appareil, le système d’exploitation, la version de l’application si vous la connaissez et les étapes pour reproduire le problème. Dans « Moi → À propos », touchez « Copier le diagnostic local » si vous souhaitez joindre ces informations.';
+
+  @override
+  String get privacyConsentTitle => 'Bienvenue dans MorseCQ';
+
+  @override
+  String get privacyConsentSummary => 'MorseCQ fonctionne hors ligne et sans compte. L’application ne collecte ni ne transmet de données personnelles. Lisez la politique de confidentialité et les conditions d’utilisation avant de continuer.';
+
+  @override
+  String get privacyConsentAccept => 'Accepter et continuer';
+
+  @override
+  String get privacyConsentDecline => 'Refuser et quitter';
+
+  @override
+  String get privacyConsentSaving => 'Enregistrement…';
+
+  @override
+  String get privacyConsentSaveFailed => 'Impossible d’enregistrer votre choix. Réessayez.';
+
+  @override
+  String get privacyConsentStorageFailed => 'Impossible d’ouvrir le stockage local. Réessayez.';
+
+  @override
+  String get listenMicPurposeTitle => 'Accès au microphone';
+
+  @override
+  String get listenMicPurposeBody => 'MorseCQ utilise le microphone uniquement pour décoder le morse sur l’écran « Écoute ». Le son est traité sur votre appareil et n’est pas envoyé ailleurs.';
+
+  @override
+  String get listenMicPurposeContinue => 'Continuer';
+
+  @override
+  String get privacyPolicyText => 'MorseCQ est une application d’entraînement au morse qui fonctionne hors ligne et sans compte. Elle ne collecte, ne transmet ni ne partage de données personnelles.\n\nMicrophone\nMorseCQ demande l’accès au microphone (RECORD_AUDIO) uniquement lorsque vous lancez le décodage en direct sur l’écran « Écoute ». Le son est traité sur votre appareil et n’est pas envoyé ailleurs. Les autres fonctions restent accessibles sans cette autorisation.\n\nDonnées locales\nVotre progression, vos supports d’apprentissage, vos enregistrements importés et les réglages de l’application sont conservés sur votre appareil. Vous pouvez supprimer vos données d’apprentissage et les enregistrements gérés par MorseCQ dans « Moi → Effacer les données d’apprentissage ». Les réglages de l’application sont conservés. Selon les réglages système, Android ou iOS peut sauvegarder les données d’apprentissage et les réglages.\n\nComposants tiers et partage\nMorseCQ utilise Flutter et des extensions pour le son, la sélection de fichiers, le partage et le stockage local. Le système d’exploitation traite les fichiers que vous choisissez d’ouvrir ou de partager. MorseCQ ne vend ni ne communique de données personnelles à des tiers. L’application ne contient aucun SDK publicitaire ou d’analyse.\n\nJournaux de diagnostic\nMorseCQ conserve sur votre appareil des journaux d’erreurs expurgés. Ils contiennent les types d’erreurs et leur emplacement dans le code. Les messages d’exception et le contenu d’apprentissage en sont exclus. Vous pouvez les copier vous-même dans « Moi → À propos » avec « Copier le diagnostic local ».\n\nEnfants\nMorseCQ ne cible pas spécifiquement les enfants et ne collecte sciemment les données personnelles de personne.\n\nModifications\nEn cas de modification importante, un nouveau consentement sera demandé dans les versions de production pour Android.\n\nDate d’effet : 13 novembre 2026';
+
+  @override
+  String get termsOfUseText => 'Ces conditions s’appliquent à l’utilisation de MorseCQ.\n\nObjet\nMorseCQ permet d’apprendre le morse hors ligne. L’application ne fournit ni messagerie, ni compte, ni service dans le cloud.\n\nVos données\nLes données d’apprentissage sont stockées sur votre appareil. Gardez une copie des fichiers que vous souhaitez conserver. Effacer vos données d’apprentissage ou désinstaller l’application peut supprimer des données locales.\n\nLicence\nMorseCQ est un logiciel libre sous licence GPL-3.0. Le code source est disponible dans « Moi → À propos ».\n\nGarantie\nL’application est fournie en l’état, sans garantie.\n\nAide\nPour toute question, ouvrez « Moi → Confidentialité et autorisations → Assistance technique ».';
+
+  @override
+  String get personalInfoListText => 'MorseCQ ne collecte aucune donnée personnelle. L’application conserve votre progression, vos réglages, vos supports importés et vos enregistrements sur votre appareil. Vous pouvez supprimer vos données d’apprentissage et les enregistrements gérés par MorseCQ dans « Moi → Effacer les données d’apprentissage ». Les réglages de l’application sont conservés.';
+
+  @override
+  String get thirdPartyShareText => 'MorseCQ ne partage aucune donnée personnelle avec des tiers. L’application utilise Flutter et des extensions pour le son, la sélection de fichiers, le partage. Le système d’exploitation traite les fichiers que vous choisissez. L’application ne contient aucun SDK publicitaire ou d’analyse.';
+
+  @override
+  String get permissionListText => 'Microphone (RECORD_AUDIO)\nUtilisé pour décoder le morse en direct sur l’écran « Écoute ». Le son est traité sur votre appareil et n’est pas envoyé ailleurs. MorseCQ ne demande aucune autre autorisation sensible.';
 }

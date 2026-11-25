@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import '../../diagnostics/local_diagnostics.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 
@@ -86,6 +88,8 @@ final class ListenController extends ChangeNotifier {
   ListenStatus get status => _status;
   bool get isListening => _status == ListenStatus.listening;
   bool get isBusy => _status == ListenStatus.starting;
+  bool get canStart =>
+      !_disposed && !isBusy && !isListening && _stopping == null;
 
   /// Why capture failed; non-null exactly when [status] is
   /// [ListenStatus.failed].
@@ -113,15 +117,33 @@ final class ListenController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   // Capture
 
-  Future<void> start() async {
-    if (_disposed || isBusy || isListening) return;
+  /// [explainPermission] runs before requesting a missing microphone grant.
+  /// A cancelled or stale attempt never proceeds to the system prompt.
+  Future<void> start({Future<bool> Function()? explainPermission}) async {
+    final stopping = _stopping;
+    if (_status == ListenStatus.failed && stopping != null) {
+      await stopping;
+    }
+    if (!canStart) return;
     final int attempt = _lastStartAttempt = ++_attempt;
     _stoppedInBackground = false;
     _failure = null;
     _setStatus(ListenStatus.starting);
-    final bool granted;
+    bool granted = false;
     try {
-      granted = await _source.hasPermission();
+      if (explainPermission != null) {
+        granted = await _source.hasPermission(request: false);
+        if (_isStale(attempt)) return;
+        if (!granted) {
+          final proceed = await explainPermission();
+          if (_isStale(attempt)) return;
+          if (!proceed) {
+            _setStatus(ListenStatus.idle);
+            return;
+          }
+        }
+      }
+      if (!granted) granted = await _source.hasPermission();
     } catch (error, stack) {
       if (_isStale(attempt)) return;
       // Nothing was started, so there is nothing to stop.
@@ -143,7 +165,13 @@ final class ListenController extends ChangeNotifier {
       final bool? hasDevice = await _hasInputDevice();
       if (_isStale(attempt)) return;
       _fail(
-        hasDevice == false
+        error is ProcessException &&
+                const [
+                  'parecord',
+                  'pactl',
+                ].contains(error.executable.split('/').last)
+            ? ListenFailureKind.missingCaptureTool
+            : hasDevice == false
             ? ListenFailureKind.noInputDevice
             : ListenFailureKind.startFailed,
         error,
@@ -177,7 +205,7 @@ final class ListenController extends ChangeNotifier {
     try {
       return await _source.hasInputDevice();
     } catch (error) {
-      debugPrint('[ListenController] hasInputDevice threw: $error');
+      LocalDiagnostics.report(DiagnosticContext.inputDeviceProbe, error);
       return null;
     }
   }
@@ -188,9 +216,23 @@ final class ListenController extends ChangeNotifier {
   /// (and a user can double-tap Stop), so a call made while a stop is in
   /// flight joins it instead of asking the platform to stop twice.
   Future<void> stop({bool fromBackground = false}) =>
-      _stopping ??= _stop(fromBackground).whenComplete(() => _stopping = null);
+      _stopping ??= _stop().whenComplete(() {
+        _stopping = null;
+        if (_disposed) return;
+        if (isListening || isBusy) {
+          if (isListening) _finishCapture();
+          _stoppedInBackground = fromBackground;
+          _setStatus(ListenStatus.idle);
+        } else if (_status == ListenStatus.failed) {
+          notifyListeners();
+        }
+      });
 
-  Future<void> _stop(bool fromBackground) async {
+  /// Releases active capture or waits for cleanup already in progress.
+  Future<void> stopBeforePlayback() =>
+      (isListening || isBusy) ? stop() : _stopping ?? Future<void>.value();
+
+  Future<void> _stop() async {
     _attempt++; // Invalidates a start still waiting on the platform.
     final sub = _pcmSub;
     _pcmSub = null;
@@ -204,12 +246,6 @@ final class ListenController extends ChangeNotifier {
     } catch (_) {
       // Already stopped or the platform tore the session down; nothing to
       // report beyond the idle state below.
-    }
-    if (_disposed) return;
-    if (_status == ListenStatus.listening || _status == ListenStatus.starting) {
-      _decoder.commitPending();
-      _stoppedInBackground = fromBackground;
-      _setStatus(ListenStatus.idle);
     }
   }
 
@@ -233,7 +269,7 @@ final class ListenController extends ChangeNotifier {
   void _onStreamDone() {
     if (_disposed || _pcmSub == null) return;
     _pcmSub = null;
-    _decoder.commitPending();
+    _finishCapture();
     _setStatus(ListenStatus.idle);
   }
 
@@ -249,19 +285,27 @@ final class ListenController extends ChangeNotifier {
     if (_disposed) return;
     final String? detail = error?.toString();
     if (detail != null) {
-      debugPrint(
-        '[ListenController] ${kind.name}: $detail'
-        '${stack == null ? '' : '\n$stack'}',
-      );
+      LocalDiagnostics.report(DiagnosticContext.captureFailure, error!, stack);
     }
     _failure = ListenFailure(kind, detail: detail);
     if (release) {
       final sub = _pcmSub;
       _pcmSub = null;
       unawaited(sub?.cancel());
-      unawaited(_source.stop().catchError((Object _) {}));
+      if (sub != null) _finishCapture();
+      unawaited(stop());
     }
     _setStatus(ListenStatus.failed);
+  }
+
+  void _finishCapture() {
+    _decoder.endOfInput();
+    _decoder.commitPending();
+    _replaceDecoder();
+    if (_history.isNotEmpty && !_history.endsWith(' ')) _history += ' ';
+    _shownHz = frequencyHz;
+    _shownLocked = false;
+    meter.value = const ListenMeter();
   }
 
   // ---------------------------------------------------------------------------
@@ -293,15 +337,19 @@ final class ListenController extends ChangeNotifier {
     _settings = next;
     if (rebuild) {
       _decoder.commitPending();
-      _history = text;
-      _eventSub?.cancel().ignore();
-      _decoder.dispose();
-      _decoder = _buildDecoder();
+      _replaceDecoder();
     } else {
       _decoder.autoTune = next.autoTune;
       if (!next.autoTune) _decoder.manualFrequencyHz = next.manualHz;
     }
     notifyListeners();
+  }
+
+  void _replaceDecoder() {
+    _history = text;
+    _eventSub?.cancel().ignore();
+    _decoder.dispose();
+    _decoder = _buildDecoder();
   }
 
   AudioMorseDecoder _buildDecoder() {
@@ -336,11 +384,7 @@ final class ListenController extends ChangeNotifier {
   }
 
   Future<void> _shutdownSource() async {
-    try {
-      await _source.stop();
-    } catch (_) {
-      // Nothing was recording; fall through to dispose.
-    }
+    await stop();
     if (!_ownsSource) return;
     try {
       await _source.dispose();

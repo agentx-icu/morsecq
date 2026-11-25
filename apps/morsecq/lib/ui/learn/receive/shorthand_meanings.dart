@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart' show Locale;
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
-import '../../../training/receive_session.dart';
 import '../../reference/reference_catalog.dart';
 
 /// Drill kinds whose words are CW shorthand with a meaning worth showing

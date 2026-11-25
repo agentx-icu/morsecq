@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
 
 import '../../../i18n/l10n_extension.dart';
-import '../../../training/audio_material_store.dart';
 import '../../../training/local_learning_store.dart';
 import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
@@ -29,6 +32,8 @@ class WorkbenchScreen extends StatefulWidget {
     this.player,
     this.profileRoot,
     this.training,
+    this.iosRouteChanges,
+    this.iosInterruptions,
   });
 
   /// Injected in tests; defaults to the platform file picker.
@@ -44,6 +49,12 @@ class WorkbenchScreen extends StatefulWidget {
   /// The shared training controller; defaults to the app's host.
   final Future<TrainingController> Function()? training;
 
+  /// Injected in tests; defaults to the iOS audio session route stream.
+  final Stream<AVAudioSessionRouteChange>? iosRouteChanges;
+
+  /// Injected in tests; defaults to the iOS audio session interruptions.
+  final Stream<AVAudioSessionInterruptionNotification>? iosInterruptions;
+
   @override
   State<WorkbenchScreen> createState() => _WorkbenchScreenState();
 }
@@ -58,12 +69,35 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   WorkbenchController? _c;
   TrainingController? _training;
   late final ClipPlayer _player = widget.player ?? SoloudClipPlayer();
+  StreamSubscription<AVAudioSessionRouteChange>? _routeSubscription;
+  StreamSubscription<AVAudioSessionInterruptionNotification>? _interruptionSub;
   bool _unavailable = false;
+  bool _runningAction = false;
+
+  bool get _mediaBusy => _runningAction || (_c?.busy ?? false);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    final session = !kIsWeb && Platform.isIOS ? AVAudioSession() : null;
+    final routes = widget.iosRouteChanges ?? session?.routeChangeStream;
+    _routeSubscription = routes?.listen((change) {
+      if (change.reason ==
+          AVAudioSessionRouteChangeReason.oldDeviceUnavailable) {
+        unawaited(_c?.stopPlayback());
+      }
+    });
+    final interruptions =
+        widget.iosInterruptions ?? session?.interruptionNotificationStream;
+    _interruptionSub = interruptions?.listen((notification) {
+      // SoLoud restarts its output device when the interruption ends. Drop
+      // the clip so playback still requires a new user action.
+      if (notification.type == AVAudioSessionInterruptionType.began &&
+          notification.wasSuspended != true) {
+        unawaited(_c?.stopPlayback());
+      }
+    });
     unawaited(_setup());
   }
 
@@ -100,17 +134,16 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       }
       return;
     }
-    if (mounted) setState(() => _training = training);
     try {
-      // Nothing is importing or saving yet: drop recordings left behind by
-      // entries deleted while their recording was open.
-      final referenced = {
-        for (final m in await training.loadAudioMaterials()) m.file,
-      };
-      await _c?.library.pruneUnreferenced(referenced);
+      // Saving and library actions are unavailable until sweeping finishes.
+      final library = _c?.library;
+      if (mounted && library != null) {
+        await sweepUnreferencedRecordings(training, library);
+      }
     } on Object {
       // Housekeeping only.
     }
+    if (mounted) setState(() => _training = training);
   }
 
   Future<TrainingController> _hostController() {
@@ -135,12 +168,26 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(_routeSubscription?.cancel());
+    unawaited(_interruptionSub?.cancel());
     _c?.dispose();
     unawaited(_player.dispose());
     super.dispose();
   }
 
-  Future<void> _import() async {
+  Future<void> _runAction(Future<void> Function() action) async {
+    if (_mediaBusy) return;
+    setState(() => _runningAction = true);
+    try {
+      await action();
+    } on Object {
+      if (mounted) _showFailure(null);
+    } finally {
+      if (mounted) setState(() => _runningAction = false);
+    }
+  }
+
+  Future<void> _import() => _runAction(() async {
     final c = _c;
     if (c == null) return;
     final picker =
@@ -150,26 +197,33 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     if (picked == null || !mounted) return;
     final ok = await c.importRecording(picked);
     if (!ok && mounted) _showFailure(c);
+  });
+
+  void _showFailure(WorkbenchController? c) {
+    if (mounted) _showMessage(failureText(context.s, c));
   }
 
-  void _showFailure(WorkbenchController c) {
+  void _showMessage(String text) {
     ScaffoldMessenger.maybeOf(
       context,
-    )?.showSnackBar(SnackBar(content: Text(failureText(context.s, c))));
+    )?.showSnackBar(SnackBar(content: Text(text)));
   }
 
-  Future<void> _save() async {
+  Future<void> _save() => _runAction(() async {
     final c = _c;
     final training = _training;
     final info = c?.info;
     if (c == null || training == null || info == null) return;
     final s = context.s;
-    final entry = await showSaveSelectionDialog(context, c.name ?? '');
+    final originalName = c.name ?? '';
+    final start = c.positionOf(c.start);
+    final end = c.positionOf(c.end);
+    var file = c.file;
+    final entry = await showSaveSelectionDialog(context, originalName);
     if (entry == null || !mounted) return;
     final id = training.newAudioMaterialId();
     var ok = true;
     try {
-      var file = c.file;
       if (file == RecordingLibrary.workingFile) {
         file = 'media/recordings/$id.wav';
         await c.library.keepWorkingAs(file);
@@ -180,9 +234,9 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
           title: entry.$1,
           note: entry.$2,
           file: file,
-          originalName: c.name ?? '',
-          start: c.positionOf(c.start),
-          end: c.positionOf(c.end),
+          originalName: originalName,
+          start: start,
+          end: end,
           sampleRate: info.sampleRate,
           channels: info.channels,
           createdAt: training.now(),
@@ -192,12 +246,10 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       ok = false;
     }
     if (!mounted) return;
-    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      SnackBar(content: Text(ok ? s.workbenchSaved : s.workbenchSaveFailed)),
-    );
-  }
+    _showMessage(ok ? s.workbenchSaved : s.workbenchSaveFailed);
+  });
 
-  Future<void> _library() async {
+  Future<void> _library() => _runAction(() async {
     final c = _c;
     final training = _training;
     if (c == null || training == null) return;
@@ -206,8 +258,14 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       controller: c,
       training: training,
       picker: widget.picker,
-      onFailure: () => _showFailure(c),
+      onFailure: _showFailure,
     );
+  });
+
+  Future<void> _play(WorkbenchController c) async {
+    if (!await c.togglePlay() && mounted) {
+      _showMessage(context.s.comprehensionAudioFailed);
+    }
   }
 
   @override
@@ -220,13 +278,13 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
         actions: <Widget>[
           IconButton(
             tooltip: s.workbenchLibrary,
-            onPressed: _training == null ? null : _library,
+            onPressed: _training == null || _mediaBusy ? null : _library,
             icon: const Icon(Icons.library_music_outlined),
           ),
           IconButton(
             key: const ValueKey('workbench-import'),
             tooltip: s.workbenchImport,
-            onPressed: c == null || c.busy ? null : _import,
+            onPressed: c == null || _mediaBusy ? null : _import,
             icon: const Icon(Icons.file_open_outlined),
           ),
         ],
@@ -301,7 +359,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
         else
           FilledButton.icon(
             key: const ValueKey('workbench-import-empty'),
-            onPressed: _import,
+            onPressed: _mediaBusy ? null : _import,
             icon: const Icon(Icons.file_open_outlined),
             label: Text(s.workbenchImport),
             style: FilledButton.styleFrom(
@@ -333,7 +391,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
         ),
         Text(s.workbenchBackupNote, style: theme.textTheme.bodySmall),
         const SizedBox(height: 12),
-        WorkbenchWaveform(controller: c),
+        WorkbenchWaveform(key: ValueKey(c.recordingKey), controller: c),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -342,9 +400,19 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
           children: <Widget>[
             FilledButton.tonalIcon(
               key: const ValueKey('workbench-play'),
-              onPressed: () => unawaited(c.togglePlay()),
-              icon: Icon(c.playing ? Icons.stop : Icons.play_arrow),
-              label: Text(c.playing ? s.workbenchStop : s.workbenchPlay),
+              onPressed: c.busy ? null : () => _play(c),
+              icon: Icon(
+                c.playing || c.preparingPlayback
+                    ? Icons.stop
+                    : Icons.play_arrow,
+              ),
+              label: Text(
+                c.preparingPlayback
+                    ? s.workbenchCancel
+                    : c.playing
+                    ? s.workbenchStop
+                    : s.workbenchPlay,
+              ),
             ),
             FilterChip(
               label: Text(s.workbenchLoop),
@@ -353,7 +421,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
             ),
             OutlinedButton.icon(
               key: const ValueKey('workbench-save'),
-              onPressed: _training == null ? null : _save,
+              onPressed: _training == null || _mediaBusy ? null : _save,
               icon: const Icon(Icons.bookmark_add_outlined),
               label: Text(s.workbenchSave),
             ),
@@ -369,10 +437,10 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
 }
 
 /// Localised reason an import or open failed.
-String failureText(S s, WorkbenchController c) => switch (c.failure) {
+String failureText(S s, WorkbenchController? c) => switch (c?.failure) {
   WorkbenchFailure.missingFile => s.workbenchErrorMissing,
   WorkbenchFailure.io || null => s.workbenchErrorIo,
-  WorkbenchFailure.format => switch (c.wavError) {
+  WorkbenchFailure.format => switch (c?.wavError) {
     WavError.notRiff || WavError.notWave => s.workbenchErrorNotWav,
     WavError.unsupportedFormat ||
     WavError.unsupportedBitDepth => s.workbenchErrorFormat,

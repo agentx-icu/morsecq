@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
-import 'package:morsecq/training/training_settings.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
 
 import 'helpers/fake_playback.dart';
@@ -13,6 +13,7 @@ import 'helpers/test_controller.dart';
 Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
   WidgetTester tester, {
   TrainingSettings? settings,
+  bool hapticAvailable = true,
   // Tall enough that every tile is on screen without scrolling.
   Size size = const Size(390, 1600),
 }) async {
@@ -28,6 +29,7 @@ Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
       home: TrainingSettingsScreen(
         controller: t.controller,
         playback: playback,
+        hapticAvailability: () async => hapticAvailable,
       ),
     ),
   );
@@ -35,12 +37,53 @@ Future<(TestTraining, FakeLearnPlaybackFactory)> _pump(
   return (t, playback);
 }
 
-Finder _switchFor(String title) => find.ancestor(
-  of: find.text(title),
-  matching: find.byType(SwitchListTile),
-);
+Finder _switchFor(String title) =>
+    find.ancestor(of: find.text(title), matching: find.byType(SwitchListTile));
 
 void main() {
+  testWidgets('vibrator-less phone cannot enable haptics', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    final (t, _) = await _pump(tester, hapticAvailable: false);
+    final tile = tester.widget<SwitchListTile>(_switchFor(en.learnHaptic));
+    expect(tile.onChanged, isNull);
+    expect(find.text(en.learnHapticUnavailable), findsOneWidget);
+    expect(t.controller.settings.hapticEnabled, isFalse);
+    debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('flash setting explains bounded flashing before enabling', (
+    tester,
+  ) async {
+    await _pump(tester);
+    expect(find.textContaining('photosensitive'), findsOneWidget);
+  });
+
+  testWidgets(
+    'restored haptics can be turned off when hardware is unavailable',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final (t, playback) = await _pump(
+        tester,
+        settings: const TrainingSettings(hapticEnabled: true),
+        hapticAvailable: false,
+      );
+      final toggle = _switchFor(en.learnHaptic);
+      expect(tester.widget<SwitchListTile>(toggle).onChanged, isNotNull);
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      expect(t.controller.settings.hapticEnabled, isFalse);
+      expect((await t.settingsStore.load())!.hapticEnabled, isFalse);
+      expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
+      expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
+      await tester.tap(find.byTooltip(en.learnPlaySample));
+      await tester.pump();
+      expect(playback.created.single.hapticEnabled, isFalse);
+      debugDefaultTargetPlatformOverride = null;
+    },
+  );
+
   testWidgets('shows the current values', (tester) async {
     await _pump(tester);
     expect(find.text(en.learnWpmValue('20')), findsOneWidget);
@@ -144,6 +187,10 @@ void main() {
     await tester.tap(_switchFor(en.learnHaptic));
     await tester.pumpAndSettle();
     expect(t.controller.settings.hapticEnabled, isTrue);
+    await tester.tap(_switchFor(en.learnHaptic));
+    await tester.pumpAndSettle();
+    expect(t.controller.settings.hapticEnabled, isFalse);
+    expect((await t.settingsStore.load())!.hapticEnabled, isFalse);
     debugDefaultTargetPlatformOverride = null;
   });
 

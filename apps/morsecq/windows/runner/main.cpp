@@ -38,6 +38,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
     ::DispatchMessage(&msg);
   }
 
+  // window_manager posts WM_QUIT, so the HWND/controller can still be alive.
+  // OnDestroy clears flutter_controller_ before its native view destructor can
+  // re-enter the HWND callback, and COM remains available to plugin cleanup.
+  window.Destroy();
   ::CoUninitialize();
   return EXIT_SUCCESS;
 }

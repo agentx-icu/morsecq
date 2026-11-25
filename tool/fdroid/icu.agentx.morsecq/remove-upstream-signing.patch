@@ -1,0 +1,10 @@
+--- a/apps/morsecq/android/app/build.gradle.kts
++++ b/apps/morsecq/android/app/build.gradle.kts
+@@ -83,7 +83,4 @@
+     buildTypes {
+         release {
+-            signingConfig = signingConfigs.getByName(
+-                if (morsecqReleaseSigning != null) "release" else "debug",
+-            )
+         }
+     }

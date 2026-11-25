@@ -59,7 +59,7 @@ class _TrainingSettingsEntryState extends State<TrainingSettingsEntry> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          learningUnavailableText(context),
+                          learningUnavailableText(context, snapshot.error),
                           textAlign: TextAlign.center,
                         ),
                         if (learningRetryable(context)) ...[

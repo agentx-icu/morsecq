@@ -122,6 +122,22 @@ void main() {
       );
     });
 
+    test('rejects extensible subformats that merely begin like PCM', () async {
+      await expectLater(
+        _open(wavBytes(ramp, extensible: true, format: 0x00010001)),
+        _rejects(WavError.unsupportedFormat),
+      );
+      final wrongGuid = wavBytes(ramp, extensible: true);
+      wrongGuid[59] = 0;
+      await expectLater(_open(wrongGuid), _rejects(WavError.unsupportedFormat));
+    });
+
+    test('rejects a truncated declared extensible header', () async {
+      final bytes = wavBytes(ramp, extensible: true);
+      ByteData.sublistView(bytes).setUint16(36, 23, Endian.little);
+      await expectLater(_open(bytes), _rejects(WavError.truncated));
+    });
+
     test('missing chunks', () async {
       final noData = Uint8List.fromList(wavBytes(ramp).sublist(0, 36));
       ByteData.sublistView(noData).setUint32(4, 28, Endian.little);

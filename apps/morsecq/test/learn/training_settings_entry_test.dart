@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/training/training_controller_host.dart';
-import 'package:morsecq/training/training_settings.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq/ui/learn/learn_glossary.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_entry.dart';
 import 'package:morsecq/ui/learn/settings/training_settings_screen.dart';
@@ -18,6 +17,26 @@ import 'helpers/l10n.dart';
 
 void main() {
   group('TrainingSettingsEntry', () {
+    testWidgets('future learning data explains update recovery from Me', (
+      tester,
+    ) async {
+      final host = TrainingControllerHost(
+        LocalLearningStore(),
+        factory: () async =>
+            throw const UnsupportedDataVersion('Training settings', 2),
+      );
+      addTearDown(host.dispose);
+      await tester.pumpWidget(
+        Provider<TrainingControllerHost>.value(
+          value: host,
+          child: l10nApp(home: const TrainingSettingsEntry()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(en.learnNewerData), findsOneWidget);
+      expect(find.byType(TrainingSettingsScreen), findsNothing);
+    });
+
     late Completer<TrainingController> opening;
     late int opens;
     late TrainingControllerHost host;

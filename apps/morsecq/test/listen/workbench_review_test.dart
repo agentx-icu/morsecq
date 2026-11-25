@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/l10n/generated/s.dart';
-import 'package:morsecq/training/audio_material_store.dart';
 import 'package:morsecq/training/training_controller.dart';
-import 'package:morsecq/training/training_settings_store.dart';
 import 'package:morsecq/ui/listen/listen_screen.dart';
 import 'package:morsecq/ui/listen/workbench/recording_files.dart';
 import 'package:morsecq/ui/listen/workbench/workbench_controller.dart';
@@ -17,6 +17,7 @@ import '../learn/helpers/l10n.dart';
 import '../learn/helpers/test_controller.dart';
 import 'fake_pcm_source.dart';
 import 'workbench_support.dart';
+import 'workbench_wait.dart';
 
 /// Progress that can never be written (save-failure path).
 final class _FailingStore implements TrainerStore {
@@ -39,15 +40,6 @@ void main() {
   });
   tearDown(() => root.delete(recursive: true));
 
-  Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 250; i++) {
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 2)),
-      );
-      await tester.pump(const Duration(milliseconds: 16));
-    }
-  }
-
   Future<FakeClipPlayer> pumpScreen(
     WidgetTester tester,
     TrainingController training,
@@ -68,11 +60,17 @@ void main() {
         ),
       ),
     );
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-import-empty')),
+    );
     await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-decode')),
+    );
     await tester.tap(find.byKey(const ValueKey('workbench-decode')));
-    await settle(tester);
+    await waitForWorkbench(tester, find.text(en.workbenchDecoderHidden));
     return player;
   }
 
@@ -93,7 +91,11 @@ void main() {
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbenchCondition(
+      tester,
+      () => t.controller.progress.history.isNotEmpty,
+      description: 'record the copy attempt',
+    );
     final record = t.controller.progress.history.single;
     expect(record.assistance, contains(Assistance.decoder));
   });
@@ -109,13 +111,20 @@ void main() {
     await tester.pump();
     // A fresh result for the unchanged selection and tuning.
     await tester.tap(find.byKey(const ValueKey('workbench-decode')));
-    await settle(tester);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-decode')),
+    );
     await tester.enterText(
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbenchCondition(
+      tester,
+      () => t.controller.progress.history.isNotEmpty,
+      description: 'record the copy attempt',
+    );
     final record = t.controller.progress.history.single;
     expect(record.assistance, contains(Assistance.decoder));
   });
@@ -147,7 +156,7 @@ void main() {
       'SOS TEST',
     );
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
-    await settle(tester);
+    await waitForWorkbench(tester, find.text(en.learnProgressSaveFailed));
     expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
     expect(find.text(en.learnProgressSaveFailed), findsOneWidget);
     expect(find.text(en.actionRetry), findsOneWidget);
@@ -252,13 +261,14 @@ void main() {
     });
   });
 
-  testWidgets('opening the workbench stops the microphone first', (
+  testWidgets('repeated workbench requests share a pending microphone stop', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final source = FakePcmSource();
+    final stop = Completer<void>();
+    final source = FakePcmSource()..stopGate = stop;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: S.localizationsDelegates,
@@ -270,10 +280,21 @@ void main() {
     await tester.tap(find.text(en.listenStart));
     await tester.pumpAndSettle();
     expect(source.isStreaming, isTrue);
-    await tester.tap(find.byKey(const ValueKey('listen-open-workbench')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    final open = find.byKey(const ValueKey('listen-open-workbench'));
+    await tester.tap(open);
+    await tester.tap(open);
+    expect(source.stopCalls, 1);
+    expect(find.byType(WorkbenchScreen), findsNothing);
+    stop.complete();
+    await waitForWorkbenchCondition(
+      tester,
+      () =>
+          !source.isStreaming &&
+          find.byType(WorkbenchScreen).evaluate().isNotEmpty,
+      description: 'stop the microphone and open the workbench',
+    );
+    await tester.pumpAndSettle();
     expect(source.isStreaming, isFalse);
-    expect(find.byType(WorkbenchScreen), findsOneWidget);
+    expect(find.byType(WorkbenchScreen, skipOffstage: false), findsOneWidget);
   });
 }

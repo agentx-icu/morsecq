@@ -181,7 +181,7 @@ void main() {
       await c.markFirstLessonDone();
       await c.writeDoc('clear-note', {'value': 'gone'});
       await element.read<AppSettings>().applyAppearance(
-        style: UiStyle.paper,
+        style: UiStyle.classic,
         themeMode: ThemeMode.dark,
       );
       await element.read<LocaleController>().setLocale(const Locale('en'));
@@ -232,7 +232,7 @@ void main() {
     expect(await tester.runAsync(() => again.readDoc('late-note')), isNull);
     final next = tester.element(find.byType(AppShell));
     final appearance = next.read<AppSettings>();
-    expect(appearance.style, UiStyle.paper);
+    expect(appearance.style, UiStyle.classic);
     expect(appearance.themeMode, ThemeMode.dark);
     expect(next.read<LocaleController>().locale, const Locale('en'));
     expect(next.read<AppPreferences>().reference.wpm, 27);

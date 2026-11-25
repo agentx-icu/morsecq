@@ -3,15 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
+import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 import '../../../keying/key_profiles.dart';
 import '../../../keying/profile_keyer.dart';
-import '../../../training/send_detail_store.dart';
-import '../../../training/send_session.dart';
+import '../../../training/send_session_key_target.dart';
 import '../../../training/training_controller.dart';
-import '../../../training/training_settings.dart';
 import '../../common/app_bar_title.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
@@ -181,7 +180,7 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
     _keyer = ProfileKeyer.build(
       profile: KeyProfiles.of(context, listen: false),
       mode: _mode,
-      target: _session,
+      target: SendSessionKeyTarget(_session),
       sink: playback.sink,
       sidetone: playback.sidetone,
       clock: playback.clock,
