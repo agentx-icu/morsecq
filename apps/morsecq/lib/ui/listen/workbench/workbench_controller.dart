@@ -201,8 +201,8 @@ class WorkbenchController extends ChangeNotifier {
     if (stillUsed) return;
     final file = material.file;
     await KeptRecordings(library.root).release(file);
-    // An open recording remains usable. The next workbench sweeps it
-    // unless it is saved as another selection before then.
+    // An open recording remains usable. Keep its WAV rather than relying on
+    // an incomplete material index to decide which files can be removed.
     if (file != _file && file != RecordingLibrary.workingFile) {
       await library.delete(file);
     }
