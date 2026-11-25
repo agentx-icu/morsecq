@@ -3635,4 +3635,10 @@ class SFr extends S {
 
   @override
   String get permissionListText => 'Microphone (RECORD_AUDIO)\nUtilisé pour décoder le morse en direct sur l’écran « Écoute ». Le son est traité sur votre appareil et n’est pas envoyé ailleurs. MorseCQ ne demande aucune autre autorisation sensible.';
+
+  @override
+  String get learnPlanPracticeOnly => 'Vous avez terminé la pratique du jour. Aucun résultat de réception n’a été enregistré pour ce programme.';
+
+  @override
+  String get learnPlanCourseEvidence => 'La pratique et la maîtrise du cours sont enregistrées séparément. Terminer un programme ne suffit pas à réussir une leçon.';
 }

@@ -3634,4 +3634,10 @@ class SDe extends S {
 
   @override
   String get permissionListText => 'Mikrofon (RECORD_AUDIO)\nFür die Live-Dekodierung von Morsezeichen auf der Seite „Mithören“. Die Audiodaten werden auf deinem Gerät verarbeitet und nicht hochgeladen. MorseCQ fordert keine weiteren sensiblen Berechtigungen an.';
+
+  @override
+  String get learnPlanPracticeOnly => 'Du hast die heutige Übung abgeschlossen. Für diesen Plan wurden keine Empfangsergebnisse erfasst.';
+
+  @override
+  String get learnPlanCourseEvidence => 'Übung und Kursbeherrschung werden getrennt erfasst. Ein abgeschlossener Plan bedeutet noch keine bestandene Lektion.';
 }

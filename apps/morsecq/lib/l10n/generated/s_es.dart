@@ -3634,4 +3634,10 @@ class SEs extends S {
 
   @override
   String get permissionListText => 'Micrófono (RECORD_AUDIO)\nSe usa para descodificar código morse en directo en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube. MorseCQ no solicita otros permisos sensibles.';
+
+  @override
+  String get learnPlanPracticeOnly => 'Completaste la práctica de hoy. Este plan no tiene resultados de recepción registrados.';
+
+  @override
+  String get learnPlanCourseEvidence => 'La práctica y el dominio del curso se registran por separado. Completar un plan no equivale a superar una lección.';
 }

@@ -1092,5 +1092,7 @@
   "termsOfUseText": "使用 MorseCQ 即表示你同意以下条款。\n\n用途\nMorseCQ 是一款离线的摩斯电码学习工具，不提供消息、账号或云服务。\n\n你的数据\n学习数据保存在本设备上。请自行保留所需的副本；清除学习数据或卸载应用可能删除本地记录。\n\n许可\nMorseCQ 是采用 GPL-3.0 许可的免费软件，源码见“我 → 关于”。\n\n无担保\n本应用按“现状”提供，不作任何担保。\n\n帮助\n如有疑问，请见“我 → 隐私与权限 → 技术支持”。",
   "personalInfoListText": "MorseCQ 不收集个人信息。它仅在本设备上保存你的学习进度、偏好、导入的学习素材和录音。“我 → 清除学习数据”会删除本地学习数据和 MorseCQ 管理的录音，应用偏好会保留。",
   "thirdPartyShareText": "MorseCQ 不与第三方共享个人信息。它使用 Flutter 框架以及用于音频、文件选择、分享的常规插件。你主动选择的文件由操作系统处理。应用不含广告或统计分析 SDK。",
-  "permissionListText": "麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。"
+  "permissionListText": "麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。",
+  "learnPlanPracticeOnly": "你完成了今天的练习。本计划没有记录抄收成绩。",
+  "learnPlanCourseEvidence": "练习与课程掌握分别记录。完成计划本身不代表通过课程挑战。"
 }

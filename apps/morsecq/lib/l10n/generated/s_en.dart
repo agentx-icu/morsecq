@@ -3633,4 +3633,10 @@ class SEn extends S {
 
   @override
   String get permissionListText => 'Microphone (RECORD_AUDIO)\nUsed only for live Morse decoding on the Listen screen. Audio is processed on your device and is not uploaded. MorseCQ requests no other sensitive permissions.';
+
+  @override
+  String get learnPlanPracticeOnly => 'You completed today’s practice. No copying results were recorded for this plan.';
+
+  @override
+  String get learnPlanCourseEvidence => 'Practice and course mastery are recorded separately. Finishing a plan does not by itself pass a lesson.';
 }

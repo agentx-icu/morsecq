@@ -6367,6 +6367,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Microphone (RECORD_AUDIO)\nUsed only for live Morse decoding on the Listen screen. Audio is processed on your device and is not uploaded. MorseCQ requests no other sensitive permissions.'**
   String get permissionListText;
+
+  /// Completed daily-plan summary when no per-symbol copying results exist; does not claim measured mastery.
+  ///
+  /// In en, this message translates to:
+  /// **'You completed today’s practice. No copying results were recorded for this plan.'**
+  String get learnPlanPracticeOnly;
+
+  /// Completed daily-plan summary explains that finishing practice steps is separate from passing a course lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice and course mastery are recorded separately. Finishing a plan does not by itself pass a lesson.'**
+  String get learnPlanCourseEvidence;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

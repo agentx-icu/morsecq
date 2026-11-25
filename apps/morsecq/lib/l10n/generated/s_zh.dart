@@ -3612,6 +3612,12 @@ class SZh extends S {
 
   @override
   String get permissionListText => '麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。';
+
+  @override
+  String get learnPlanPracticeOnly => '你完成了今天的练习。本计划没有记录抄收成绩。';
+
+  @override
+  String get learnPlanCourseEvidence => '练习与课程掌握分别记录。完成计划本身不代表通过课程挑战。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7222,4 +7228,10 @@ class SZhHant extends SZh {
 
   @override
   String get permissionListText => '麥克風（RECORD_AUDIO）\n僅在「收聽」頁進行即時電碼解碼時使用。音訊在本機處理，不會上傳。MorseCQ 不申請其他敏感權限。';
+
+  @override
+  String get learnPlanPracticeOnly => '你完成了今天的練習。本計畫沒有記錄抄收成績。';
+
+  @override
+  String get learnPlanCourseEvidence => '練習與課程掌握分別記錄。完成計畫本身不代表通過課程挑戰。';
 }

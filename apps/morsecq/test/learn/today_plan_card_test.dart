@@ -61,21 +61,30 @@ Future<TestTraining> _pump(
   WidgetTester tester,
   TrainerProgress progress, {
   TestClock? clock,
+  bool compact = false,
+  Size size = const Size(430, 1800),
+  double textScale = 1,
+  Locale? locale,
 }) async {
-  tester.view.physicalSize = const Size(430, 1800);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final t = await TestTraining.create(progress: progress, clock: clock);
   addTearDown(t.controller.dispose);
   await tester.pumpWidget(
     l10nApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: AnimatedBuilder(
-            animation: t.controller,
-            builder: (_, _) => TodayPlanCard(
-              controller: t.controller,
-              playback: FakeLearnPlaybackFactory(),
+      locale: locale,
+      home: MediaQuery(
+        data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: AnimatedBuilder(
+              animation: t.controller,
+              builder: (_, _) => TodayPlanCard(
+                controller: t.controller,
+                playback: FakeLearnPlaybackFactory(),
+                compact: compact,
+              ),
             ),
           ),
         ),
@@ -87,6 +96,71 @@ Future<TestTraining> _pump(
 }
 
 void main() {
+  testWidgets('next practice wraps on a narrow screen with large German text', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      TrainerProgress(
+        currentLesson: 3,
+        dailyPlan: _plan([_step('a', PlanStepKind.review)]),
+      ),
+      compact: true,
+      size: const Size(320, 900),
+      textScale: 2,
+      locale: const Locale('de'),
+    );
+    expect(find.byKey(const ValueKey('plan-next-practice')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('compact plan explains the next practice before details open', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      TrainerProgress(
+        currentLesson: 3,
+        dailyPlan: _plan([_step('a', PlanStepKind.review)]),
+      ),
+      compact: true,
+    );
+    final preview = find.byKey(const ValueKey('plan-next-practice'));
+    expect(preview, findsOneWidget);
+    expect(
+      find.descendant(of: preview, matching: find.text(en.learnPlanStepReview)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: preview,
+        matching: find.text(en.learnPlanReasonDueReview('K M R S')),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('plan-start')), findsOneWidget);
+  });
+
+  testWidgets('a finished introduction does not claim measured mastery', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      TrainerProgress(
+        currentLesson: 1,
+        dailyPlan: _plan([
+          _step('intro', PlanStepKind.intro, state: PlanStepState.done),
+        ]),
+      ),
+      compact: true,
+    );
+    expect(find.text(en.learnPlanComplete), findsOneWidget);
+    expect(find.text(en.learnPlanAllGood), findsNothing);
+    expect(find.text(en.learnPlanPracticeOnly), findsOneWidget);
+    expect(find.text(en.learnPlanCourseEvidence), findsOneWidget);
+    expect(find.byKey(const ValueKey('plan-next-practice')), findsNothing);
+  });
+
   testWidgets('a finished plan names the symbols that need work', (
     tester,
   ) async {
@@ -138,6 +212,9 @@ void main() {
             accuracy: 1,
           ),
         ]),
+        history: [
+          _attempt('a', const {'K': CharStats(attempts: 10, correct: 10)}),
+        ],
       ),
     );
     expect(find.text(en.learnPlanAllGood), findsOneWidget);
