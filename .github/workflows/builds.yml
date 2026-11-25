@@ -5,12 +5,14 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main, master]
+    types: [opened, reopened, labeled, unlabeled, synchronize, ready_for_review, converted_to_draft]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Isolate irrelevant label events so they cannot cancel valid PR checks.
+  group: ${{ github.workflow }}-${{ github.ref }}${{ contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) && !contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name) && format('-ignored-{0}', github.run_id) || '' }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
 defaults:
   run:
     shell: bash
@@ -18,8 +20,13 @@ env:
   FLUTTER_VERSION: '3.41.9'
 jobs:
   validate:
+    if: >-
+      !contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)
     uses: ./.github/workflows/analyze.yml
   desktop:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     strategy:
       fail-fast: false
@@ -70,6 +77,7 @@ jobs:
           flutter build ${{ matrix.platform }} --release --split-debug-info=build/symbols/${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: symbols-${{ matrix.platform }}
           path: |
             apps/morsecq/build/symbols/
@@ -113,15 +121,20 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: evidence-${{ matrix.platform }}
           path: build/evidence/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-${{ matrix.platform }}
           path: dist/${{ matrix.platform }}/*
           if-no-files-found: error
   android:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -159,6 +172,9 @@ jobs:
             cat "$log"
             grep -Fq 'Android Debug certificate cannot sign a store' "$log"
           done
+      - name: Allow explicitly debug-signed test artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo 'MORSECQ_ALLOW_DEBUG_SIGNING=1' >> "$GITHUB_ENV"
       - name: Prepare release signing
         if: startsWith(github.ref, 'refs/tags/v')
         env:
@@ -204,6 +220,7 @@ jobs:
         run: python3 tool/ci/verify_android_signing.py apps/morsecq/build/app/outputs/flutter-apk/app-release.apk apps/morsecq/build/app/outputs/bundle/release/app-release.aab --expected-sha256 "$EXPECTED_UPLOAD_CERT_SHA256"
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: symbols-android
           path: apps/morsecq/build/symbols/android/
           if-no-files-found: error
@@ -212,15 +229,20 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: evidence-android
           path: build/evidence/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-android
           path: dist/android/*
           if-no-files-found: error
   ios:
+    if: >-
+      (!contains(fromJSON('["labeled", "unlabeled"]'), github.event.action) || contains(fromJSON('["ci:build", "ci:full"]'), github.event.label.name)) &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || (!github.event.pull_request.draft && (contains(github.event.pull_request.labels.*.name, 'ci:build') || contains(github.event.pull_request.labels.*.name, 'ci:full'))))
     needs: validate
     runs-on: macos-26
     timeout-minutes: 60
@@ -244,6 +266,7 @@ jobs:
           flutter build ios --release --no-codesign --split-debug-info=build/symbols/ios
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: symbols-ios
           path: |
             apps/morsecq/build/symbols/ios/
@@ -254,11 +277,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: evidence-ios
           path: build/evidence/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           name: release-ios
           path: dist/ios/*
           if-no-files-found: error
@@ -270,7 +295,7 @@ jobs:
         with:
           name: ios-unsigned-archive
           path: build/ios/store-readiness/ci-archive.tar.gz
-          retention-days: 7
+          retention-days: ${{ startsWith(github.ref, 'refs/tags/v') && '7' || github.event_name == 'workflow_dispatch' && '14' || '3' }}
           if-no-files-found: error
   release:
     if: startsWith(github.ref, 'refs/tags/v')

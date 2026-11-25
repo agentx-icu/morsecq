@@ -18,7 +18,7 @@ class StrictPackagerTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.ci = self.root / 'tool/ci'
         self.ci.mkdir(parents=True)
-        for name in ['common.sh', 'package_artifacts.sh', 'release_preflight.py', 'macos_runtime.py', 'release_size_budget.py']:
+        for name in ['common.sh', 'check_version_tag.sh', 'package_artifacts.sh', 'release_preflight.py', 'macos_runtime.py', 'release_size_budget.py']:
             shutil.copy(CI / name, self.ci / name)
         app = self.root / 'apps/morsecq'
         app.mkdir(parents=True)

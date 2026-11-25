@@ -19,9 +19,11 @@ plugins {
 //     password may contain any character);
 //  2. android/key.properties (storeFile, storePassword, keyAlias, keyPassword;
 //     gitignored), the usual Flutter setup for a local release build.
-// Neither: signed with the debug key — installable for testing, not for a
-// store, and not upgradable to/from a properly signed build.
+// Without owner signing, release tasks require MORSECQ_ALLOW_DEBUG_SIGNING=1
+// for an explicitly non-distributable test artifact. Store/tag builds never
+// accept this opt-in in place of owner signing.
 val morsecqSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val morsecqAllowDebugSigning = System.getenv("MORSECQ_ALLOW_DEBUG_SIGNING") == "1"
 val morsecqReleaseSigning: Map<String, String>? = run {
     val env = mapOf(
         "storeFile" to "MORSECQ_ANDROID_KEYSTORE",
@@ -97,9 +99,36 @@ android {
                     "Store release requires the MORSECQ_ANDROID signing keys " +
                         "(env or android/key.properties); refusing to sign with the debug key"
                 )
-                else -> signingConfigs.getByName("debug")
+                morsecqAllowDebugSigning -> signingConfigs.getByName("debug")
+                else -> null
             }
         }
+    }
+}
+
+// Defer the non-store release gate until a release task executes so ordinary
+// debug configuration does not require distribution credentials.
+val verifyMorsecqReleaseSigning = tasks.register("verifyMorsecqReleaseSigning") {
+    doLast {
+        val taggedBuild = System.getenv("GITHUB_REF_TYPE") == "tag"
+        if (morsecqReleaseSigning == null && (!morsecqAllowDebugSigning || taggedBuild)) {
+            throw GradleException(
+                "Android release signing is not configured. Provide MORSECQ_ANDROID_KEYSTORE, " +
+                    "MORSECQ_ANDROID_KEYSTORE_PASSWORD, MORSECQ_ANDROID_KEY_ALIAS and " +
+                    "MORSECQ_ANDROID_KEY_PASSWORD (or android/key.properties). " +
+                    "For non-tag, non-distributable test artifacts only, set " +
+                    "MORSECQ_ALLOW_DEBUG_SIGNING=1.",
+            )
+        }
+        if (morsecqReleaseSigning == null) {
+            logger.warn("MorseCQ release explicitly uses DEBUG signing: testing only, never upload to a store.")
+        }
+    }
+}
+tasks.configureEach {
+    if (name == "preReleaseBuild" || name == "assembleRelease" ||
+        name == "bundleRelease" || name == "packageRelease") {
+        dependsOn(verifyMorsecqReleaseSigning)
     }
 }
 
