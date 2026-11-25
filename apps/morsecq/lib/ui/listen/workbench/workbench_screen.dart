@@ -134,15 +134,8 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
       }
       return;
     }
-    try {
-      // Saving and library actions are unavailable until sweeping finishes.
-      final library = _c?.library;
-      if (mounted && library != null) {
-        await sweepUnreferencedRecordings(training, library);
-      }
-    } on Object {
-      // Housekeeping only.
-    }
+    // A recovered or partially readable index can omit existing recordings.
+    // Leave their WAV files available to recover when opening the workbench.
     if (mounted) setState(() => _training = training);
   }
 
