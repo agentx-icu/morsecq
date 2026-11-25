@@ -1663,7 +1663,7 @@ class SKo extends S {
   }
 
   @override
-  String get learnPlanAllGood => '오늘은 약한 문자가 없습니다.';
+  String get learnPlanAllGood => '이 계획에 기록된 수신 결과에는 취약한 문자가 없습니다.';
 
   @override
   String get learnPlanTomorrow => '내일 새 계획이 만들어집니다. 자유 연습은 언제든 가능합니다.';
@@ -3612,4 +3612,10 @@ class SKo extends S {
 
   @override
   String get permissionListText => '마이크(RECORD_AUDIO)\n‘듣기’ 화면에서 실시간으로 모스 부호를 해독하는 데 사용합니다. 오디오는 기기에서 처리되며 업로드되지 않습니다. MorseCQ는 다른 민감한 권한을 요청하지 않습니다.';
+
+  @override
+  String get learnPlanPracticeOnly => '오늘 연습을 마쳤습니다. 이 계획에는 문자별 수신 결과가 기록되지 않았습니다.';
+
+  @override
+  String get learnPlanCourseEvidence => '연습과 과정 숙련도는 별도로 기록됩니다. 계획 완료만으로 수업을 통과하지는 않습니다.';
 }

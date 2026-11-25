@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.agentx_icu.morsecq</id>
+  <name>MorseCQ</name>
+  <summary>Account-free offline Morse code trainer</summary>
+  <developer id="io.github.agentx_icu"><name>AgentX</name></developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <url type="homepage">https://github.com/agentx-icu/morsecq</url>
+  <url type="bugtracker">https://github.com/agentx-icu/morsecq/issues</url>
+  <description>
+    <p>Learn and practise Morse code offline with guided lessons, sending,
+    listening, simulated QSOs and amateur-radio tools.</p>
+  </description>
+  <launchable type="desktop-id">io.github.agentx_icu.morsecq.desktop</launchable>
+  <releases>
+    <release version="{{VERSION}}" date="{{RELEASE_DATE}}" />
+  </releases>
+</component>

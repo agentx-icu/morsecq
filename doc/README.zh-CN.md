@@ -31,3 +31,5 @@
 - [网站](../site/README.zh-CN.md)：产品、隐私、条款与支持页面
 
 - [跨平台审计](testing/CROSS_PLATFORM_AUDIT.zh-CN.md)：2026-10-22 修复、证据与真机缺口
+
+- [首次学习界面验证](testing/FIRST_SUCCESS_VALIDATION.zh-CN.md) · [新手试用](testing/BEGINNER_TRIAL.zh-CN.md)

@@ -2864,10 +2864,10 @@ abstract class S {
   /// **'Needs work: {symbols}'**
   String learnPlanNeedsWork(String symbols);
 
-  /// Daily plan card: no weak symbols after today's plan
+  /// Daily plan card: no weak symbols among the copying results recorded for this plan; does not claim mastery of untested symbols
   ///
   /// In en, this message translates to:
-  /// **'No weak symbols today.'**
+  /// **'No weak symbols in this plan’s recorded copying.'**
   String get learnPlanAllGood;
 
   /// Daily plan card: after completing the plan
@@ -6367,6 +6367,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Microphone (RECORD_AUDIO)\nUsed only for live Morse decoding on the Listen screen. Audio is processed on your device and is not uploaded. MorseCQ requests no other sensitive permissions.'**
   String get permissionListText;
+
+  /// Completed daily-plan summary when no per-symbol copying results exist; does not claim measured mastery.
+  ///
+  /// In en, this message translates to:
+  /// **'You completed today’s practice. No per-character copying results were recorded for this plan.'**
+  String get learnPlanPracticeOnly;
+
+  /// Completed daily-plan summary explains that finishing practice steps is separate from passing a course lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice and course mastery are recorded separately. Finishing a plan does not by itself pass a lesson.'**
+  String get learnPlanCourseEvidence;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

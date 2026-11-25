@@ -1718,7 +1718,7 @@ class SRu extends S {
   }
 
   @override
-  String get learnPlanAllGood => 'Сегодня слабых знаков нет.';
+  String get learnPlanAllGood => 'В записанных результатах приёма этого плана нет слабых символов.';
 
   @override
   String get learnPlanTomorrow => 'Завтра будет новый план. Свободная практика доступна всегда.';
@@ -3681,4 +3681,10 @@ class SRu extends S {
 
   @override
   String get permissionListText => 'Микрофон (RECORD_AUDIO)\nИспользуется для декодирования азбуки Морзе в реальном времени на экране «Прослушивание». Звук обрабатывается на вашем устройстве и никуда не отправляется. MorseCQ не запрашивает других конфиденциальных разрешений.';
+
+  @override
+  String get learnPlanPracticeOnly => 'Сегодняшняя практика завершена. Для этого плана нет записанных результатов приёма по отдельным символам.';
+
+  @override
+  String get learnPlanCourseEvidence => 'Практика и освоение курса учитываются отдельно. Завершение плана само по себе не означает прохождения урока.';
 }
