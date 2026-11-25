@@ -1663,7 +1663,7 @@ class SZh extends S {
   }
 
   @override
-  String get learnPlanAllGood => '今天没有薄弱字符。';
+  String get learnPlanAllGood => '本计划已记录的抄收结果中没有薄弱字符。';
 
   @override
   String get learnPlanTomorrow => '明天会生成新计划。自由练习随时可用。';
@@ -3614,7 +3614,7 @@ class SZh extends S {
   String get permissionListText => '麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。';
 
   @override
-  String get learnPlanPracticeOnly => '你完成了今天的练习。本计划没有记录抄收成绩。';
+  String get learnPlanPracticeOnly => '你完成了今天的练习。本计划没有记录逐字符抄收成绩。';
 
   @override
   String get learnPlanCourseEvidence => '练习与课程掌握分别记录。完成计划本身不代表通过课程挑战。';
@@ -5279,7 +5279,7 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get learnPlanAllGood => '今天沒有薄弱字元。';
+  String get learnPlanAllGood => '本計畫已記錄的抄收結果中沒有薄弱字元。';
 
   @override
   String get learnPlanTomorrow => '明天會產生新計畫。自由練習隨時可用。';
@@ -7230,7 +7230,7 @@ class SZhHant extends SZh {
   String get permissionListText => '麥克風（RECORD_AUDIO）\n僅在「收聽」頁進行即時電碼解碼時使用。音訊在本機處理，不會上傳。MorseCQ 不申請其他敏感權限。';
 
   @override
-  String get learnPlanPracticeOnly => '你完成了今天的練習。本計畫沒有記錄抄收成績。';
+  String get learnPlanPracticeOnly => '你完成了今天的練習。本計畫沒有記錄逐字元抄收成績。';
 
   @override
   String get learnPlanCourseEvidence => '練習與課程掌握分別記錄。完成計畫本身不代表通過課程挑戰。';

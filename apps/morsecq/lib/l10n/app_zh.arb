@@ -472,7 +472,7 @@
   "learnPlanUpdate": "更新步骤",
   "learnPlanComplete": "今日计划已完成",
   "learnPlanNeedsWork": "需要加强：{symbols}",
-  "learnPlanAllGood": "今天没有薄弱字符。",
+  "learnPlanAllGood": "本计划已记录的抄收结果中没有薄弱字符。",
   "learnPlanTomorrow": "明天会生成新计划。自由练习随时可用。",
   "learnPlanEarlier": "之前的计划停在第 {done}/{total} 步，不再计入今天。",
   "learnSpeedAdviceRaise": "可以把有效速度提高到 {wpm} WPM",
@@ -1093,6 +1093,6 @@
   "personalInfoListText": "MorseCQ 不收集个人信息。它仅在本设备上保存你的学习进度、偏好、导入的学习素材和录音。“我 → 清除学习数据”会删除本地学习数据和 MorseCQ 管理的录音，应用偏好会保留。",
   "thirdPartyShareText": "MorseCQ 不与第三方共享个人信息。它使用 Flutter 框架以及用于音频、文件选择、分享的常规插件。你主动选择的文件由操作系统处理。应用不含广告或统计分析 SDK。",
   "permissionListText": "麦克风（RECORD_AUDIO）\n仅在“收听”页进行实时电码解码时使用。音频在本机处理，不会上传。MorseCQ 不申请其他敏感权限。",
-  "learnPlanPracticeOnly": "你完成了今天的练习。本计划没有记录抄收成绩。",
+  "learnPlanPracticeOnly": "你完成了今天的练习。本计划没有记录逐字符抄收成绩。",
   "learnPlanCourseEvidence": "练习与课程掌握分别记录。完成计划本身不代表通过课程挑战。"
 }

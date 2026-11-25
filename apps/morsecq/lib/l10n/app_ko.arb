@@ -459,7 +459,7 @@
   "learnPlanUpdate": "단계 갱신",
   "learnPlanComplete": "오늘 계획 완료",
   "learnPlanNeedsWork": "더 연습할 문자: {symbols}",
-  "learnPlanAllGood": "오늘은 약한 문자가 없습니다.",
+  "learnPlanAllGood": "이 계획에 기록된 수신 결과에는 취약한 문자가 없습니다.",
   "learnPlanTomorrow": "내일 새 계획이 만들어집니다. 자유 연습은 언제든 가능합니다.",
   "learnPlanEarlier": "이전 계획은 {total}단계 중 {done}단계에서 멈췄으며 오늘에는 반영되지 않습니다.",
   "learnSpeedAdviceRaise": "유효 속도 {wpm} WPM으로 올릴 준비가 되었습니다",
@@ -1080,6 +1080,6 @@
   "personalInfoListText": "MorseCQ는 개인정보를 수집하지 않습니다. 학습 진도, 앱 설정, 가져온 학습 자료와 녹음은 기기에 저장됩니다. ‘내 정보 → 학습 데이터 지우기’에서 학습 데이터와 MorseCQ가 관리하는 녹음을 삭제할 수 있습니다. 앱 설정은 유지됩니다.",
   "thirdPartyShareText": "MorseCQ는 개인정보를 제3자에게 제공하지 않습니다. Flutter와 오디오, 파일 선택, 공유용 플러그인을 사용합니다. 사용자가 선택한 파일은 운영체제에서 처리합니다. 광고 또는 분석용 SDK는 포함되어 있지 않습니다.",
   "permissionListText": "마이크(RECORD_AUDIO)\n‘듣기’ 화면에서 실시간으로 모스 부호를 해독하는 데 사용합니다. 오디오는 기기에서 처리되며 업로드되지 않습니다. MorseCQ는 다른 민감한 권한을 요청하지 않습니다.",
-  "learnPlanPracticeOnly": "오늘 연습을 마쳤습니다. 이 계획에는 수신 결과가 기록되지 않았습니다.",
+  "learnPlanPracticeOnly": "오늘 연습을 마쳤습니다. 이 계획에는 문자별 수신 결과가 기록되지 않았습니다.",
   "learnPlanCourseEvidence": "연습과 과정 숙련도는 별도로 기록됩니다. 계획 완료만으로 수업을 통과하지는 않습니다."
 }

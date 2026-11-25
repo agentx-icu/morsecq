@@ -1663,7 +1663,7 @@ class SJa extends S {
   }
 
   @override
-  String get learnPlanAllGood => '今日は苦手な文字はありません。';
+  String get learnPlanAllGood => 'このプランに記録された受信成績には苦手な文字がありません。';
 
   @override
   String get learnPlanTomorrow => '明日は新しいプランです。自由練習はいつでもできます。';
@@ -3614,7 +3614,7 @@ class SJa extends S {
   String get permissionListText => 'マイク（RECORD_AUDIO）\n「受信する」画面でモールス信号をリアルタイムに解読するために使用します。音声は端末内で処理され、アップロードされません。ほかの機密性の高い権限は要求しません。';
 
   @override
-  String get learnPlanPracticeOnly => '今日の練習を終えました。このプランには受信成績が記録されていません。';
+  String get learnPlanPracticeOnly => '今日の練習を終えました。このプランには文字別の受信成績が記録されていません。';
 
   @override
   String get learnPlanCourseEvidence => '練習とコースの習得は別々に記録されます。プランの完了だけではレッスン合格にはなりません。';

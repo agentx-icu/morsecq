@@ -11,6 +11,7 @@ The compact daily plan on Learn home now shows the next required practice and it
 - `flutter analyze --no-pub apps/morsecq`: zero issues.
 - `dart run tool/check_complexity.dart` and `dart run tool/ui_literal_guard.dart`: passed.
 - The first full widget sweep exposed two 320×640/1.8× regressions: an extra preview heading pushed Continue below the fold. Removing that redundant heading retained the actual next-practice title and rationale. All seven existing home-layout tests then passed without weakening their visibility assertions.
+- Full hermetic app sweep after the layout correction: **1,306 passed, 753 skipped, zero failures** (`/tmp/morsecq-first-success-all-widget-final.log`). The 753 font-dependent layout cases require `MORSECQ_MATRIX_FONT` and remain the separate Layout job; this run does not claim those cases. A final ten-locale wording clarification scopes the no-weak-symbol message to recorded copying and distinguishes missing per-character results; its plan-card/ARB checks passed 20 tests.
 - Localization regenerated with `flutter gen-l10n`; all ten canonical locales contain the evidence distinction.
 
 ## Device and participant boundaries

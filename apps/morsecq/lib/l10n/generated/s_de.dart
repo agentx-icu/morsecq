@@ -1680,7 +1680,7 @@ class SDe extends S {
   }
 
   @override
-  String get learnPlanAllGood => 'Heute keine schwachen Zeichen.';
+  String get learnPlanAllGood => 'Die erfassten Empfangsergebnisse dieses Plans zeigen keine schwachen Zeichen.';
 
   @override
   String get learnPlanTomorrow => 'Morgen gibt es einen neuen Plan. Freies Üben ist jederzeit möglich.';
@@ -3636,7 +3636,7 @@ class SDe extends S {
   String get permissionListText => 'Mikrofon (RECORD_AUDIO)\nFür die Live-Dekodierung von Morsezeichen auf der Seite „Mithören“. Die Audiodaten werden auf deinem Gerät verarbeitet und nicht hochgeladen. MorseCQ fordert keine weiteren sensiblen Berechtigungen an.';
 
   @override
-  String get learnPlanPracticeOnly => 'Du hast die heutige Übung abgeschlossen. Für diesen Plan wurden keine Empfangsergebnisse erfasst.';
+  String get learnPlanPracticeOnly => 'Du hast die heutige Übung abgeschlossen. Für diesen Plan wurden keine Empfangsergebnisse zu einzelnen Zeichen erfasst.';
 
   @override
   String get learnPlanCourseEvidence => 'Übung und Kursbeherrschung werden getrennt erfasst. Ein abgeschlossener Plan bedeutet noch keine bestandene Lektion.';
