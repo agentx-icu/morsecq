@@ -172,6 +172,9 @@ jobs:
             cat "$log"
             grep -Fq 'Android Debug certificate cannot sign a store' "$log"
           done
+      - name: Allow explicitly debug-signed test artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo 'MORSECQ_ALLOW_DEBUG_SIGNING=1' >> "$GITHUB_ENV"
       - name: Prepare release signing
         if: startsWith(github.ref, 'refs/tags/v')
         env:
