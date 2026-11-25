@@ -31,3 +31,5 @@ Start with the [maintenance guide](HANDOVER.md). Every page below also has a Sim
 - [Website](../site/README.md): product, privacy, terms and support pages
 
 - [Cross-platform audit](testing/CROSS_PLATFORM_AUDIT.md): 2026-10-22 fixes, evidence and device gaps
+
+- [First-success UI validation](testing/FIRST_SUCCESS_VALIDATION.md) · [Beginner trial](testing/BEGINNER_TRIAL.md)

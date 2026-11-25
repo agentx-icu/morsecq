@@ -1681,7 +1681,7 @@ class SPt extends S {
   }
 
   @override
-  String get learnPlanAllGood => 'Nenhum símbolo fraco hoje.';
+  String get learnPlanAllGood => 'Não há símbolos fracos nos resultados de receção registados neste plano.';
 
   @override
   String get learnPlanTomorrow => 'Amanhã chega um plano novo. A prática livre está sempre aberta.';
@@ -3635,4 +3635,10 @@ class SPt extends S {
 
   @override
   String get permissionListText => 'Microfone (RECORD_AUDIO)\nUsado para decodificar código Morse ao vivo na tela “Escutar”. O áudio é processado no seu dispositivo e não é enviado. O MorseCQ não solicita outras permissões sensíveis.';
+
+  @override
+  String get learnPlanPracticeOnly => 'Concluiu a prática de hoje. Não foram registados resultados de receção por carácter para este plano.';
+
+  @override
+  String get learnPlanCourseEvidence => 'A prática e o domínio do curso são registados separadamente. Concluir um plano não significa, por si só, passar uma lição.';
 }

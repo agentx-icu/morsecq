@@ -459,7 +459,7 @@
   "learnPlanUpdate": "Actualizar pasos",
   "learnPlanComplete": "Plan de hoy completado",
   "learnPlanNeedsWork": "A reforzar: {symbols}",
-  "learnPlanAllGood": "Hoy no hay símbolos flojos.",
+  "learnPlanAllGood": "No hay símbolos débiles en los resultados de recepción registrados en este plan.",
   "learnPlanTomorrow": "Mañana llega un plan nuevo. La práctica libre siempre está disponible.",
   "learnPlanEarlier": "El plan anterior quedó en {done} de {total} pasos; ya no cuenta para hoy.",
   "learnSpeedAdviceRaise": "Listo para {wpm} PPM de velocidad efectiva",
@@ -1079,5 +1079,7 @@
   "termsOfUseText": "Estas condiciones se aplican al uso de MorseCQ.\n\nFinalidad\nMorseCQ es una herramienta para aprender código morse sin conexión. La aplicación no ofrece servicios de mensajería, cuentas ni servicios en la nube.\n\nTus datos\nLos datos de aprendizaje se guardan en tu dispositivo. Conserva una copia de los archivos que quieras mantener. Borrar los datos de aprendizaje o desinstalar la aplicación puede eliminar datos locales.\n\nLicencia\nMorseCQ es software libre bajo la licencia GPL-3.0. El código fuente está en «Yo → Acerca de».\n\nGarantía\nLa aplicación se proporciona tal cual, sin garantía.\n\nAyuda\nSi tienes preguntas, ve a «Yo → Privacidad y permisos → Soporte técnico».",
   "personalInfoListText": "MorseCQ no recopila datos personales. Guarda en tu dispositivo el progreso, los ajustes, los materiales importados y las grabaciones. En «Yo → Borrar los datos de aprendizaje» puedes eliminar tus datos de aprendizaje y las grabaciones que gestiona MorseCQ. Los ajustes de la aplicación se conservan.",
   "thirdPartyShareText": "MorseCQ no comparte datos personales con terceros. Usa Flutter y complementos de audio, selección de archivos, uso compartido. El sistema operativo gestiona los archivos que eliges. La aplicación no incluye SDK de publicidad ni de análisis.",
-  "permissionListText": "Micrófono (RECORD_AUDIO)\nSe usa para descodificar código morse en directo en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube. MorseCQ no solicita otros permisos sensibles."
+  "permissionListText": "Micrófono (RECORD_AUDIO)\nSe usa para descodificar código morse en directo en la pantalla «Escuchar». El audio se procesa en tu dispositivo y no se sube. MorseCQ no solicita otros permisos sensibles.",
+  "learnPlanPracticeOnly": "Completaste la práctica de hoy. Este plan no tiene resultados de recepción por carácter registrados.",
+  "learnPlanCourseEvidence": "La práctica y el dominio del curso se registran por separado. Completar un plan no equivale a superar una lección."
 }

@@ -459,7 +459,7 @@
   "learnPlanUpdate": "Schritte aktualisieren",
   "learnPlanComplete": "Plan für heute erledigt",
   "learnPlanNeedsWork": "Noch üben: {symbols}",
-  "learnPlanAllGood": "Heute keine schwachen Zeichen.",
+  "learnPlanAllGood": "Die erfassten Empfangsergebnisse dieses Plans zeigen keine schwachen Zeichen.",
   "learnPlanTomorrow": "Morgen gibt es einen neuen Plan. Freies Üben ist jederzeit möglich.",
   "learnPlanEarlier": "Der frühere Plan endete bei {done} von {total} Schritten und zählt heute nicht mehr.",
   "learnSpeedAdviceRaise": "Bereit für {wpm} WpM effektives Tempo",
@@ -1079,5 +1079,7 @@
   "termsOfUseText": "Diese Bedingungen gelten bei der Nutzung von MorseCQ.\n\nZweck\nMorseCQ dient zum Offline-Lernen von Morsezeichen. Die App bietet keinen Nachrichten-, Konto- oder Cloud-Dienst.\n\nDeine Daten\nLerndaten werden auf deinem Gerät gespeichert. Bewahre eigene Kopien wichtiger Dateien auf. Wenn du deine Lerndaten löschst oder die App deinstallierst, können lokale Daten verloren gehen.\n\nLizenz\nMorseCQ ist freie Software unter der GPL-3.0. Den Quellcode findest du unter „Ich → Über“.\n\nGewährleistung\nDie App wird ohne Gewährleistung bereitgestellt.\n\nHilfe\nBei Fragen findest du „Technischer Support“ unter „Ich → Datenschutz und Berechtigungen“.",
   "personalInfoListText": "MorseCQ erhebt keine personenbezogenen Daten. Die App speichert Lernfortschritt, App-Einstellungen, importierte Lernmaterialien und Aufnahmen lokal. Unter „Ich → Lerndaten löschen“ kannst du Lerndaten und die von MorseCQ verwalteten Aufnahmen löschen. Die App-Einstellungen bleiben erhalten.",
   "thirdPartyShareText": "MorseCQ gibt keine personenbezogenen Daten an Dritte weiter. Die App nutzt Flutter und Plugins für Audio, Dateiauswahl, Teilen. Das Betriebssystem verarbeitet die von dir ausgewählten Dateien. Die App enthält keine Werbe- oder Analyse-SDKs.",
-  "permissionListText": "Mikrofon (RECORD_AUDIO)\nFür die Live-Dekodierung von Morsezeichen auf der Seite „Mithören“. Die Audiodaten werden auf deinem Gerät verarbeitet und nicht hochgeladen. MorseCQ fordert keine weiteren sensiblen Berechtigungen an."
+  "permissionListText": "Mikrofon (RECORD_AUDIO)\nFür die Live-Dekodierung von Morsezeichen auf der Seite „Mithören“. Die Audiodaten werden auf deinem Gerät verarbeitet und nicht hochgeladen. MorseCQ fordert keine weiteren sensiblen Berechtigungen an.",
+  "learnPlanPracticeOnly": "Du hast die heutige Übung abgeschlossen. Für diesen Plan wurden keine Empfangsergebnisse zu einzelnen Zeichen erfasst.",
+  "learnPlanCourseEvidence": "Übung und Kursbeherrschung werden getrennt erfasst. Ein abgeschlossener Plan bedeutet noch keine bestandene Lektion."
 }

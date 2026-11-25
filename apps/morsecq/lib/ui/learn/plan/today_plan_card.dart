@@ -190,6 +190,26 @@ class _TodayPlanCardState extends State<TodayPlanCard>
             ),
             const SizedBox(height: 12),
             if (widget.compact) ...[
+              if (next != null) ...[
+                Column(
+                  key: const ValueKey('plan-next-practice'),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      PlanLabels.title(s, next),
+                      style: theme.textTheme.titleSmall,
+                    ),
+                    Text(
+                      PlanLabels.reason(
+                        s,
+                        DailyPlanBuilder.effectiveStep(next, _c.currentLesson),
+                      ),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
               _action(s, next, started),
               ExpansionTile(
                 key: const ValueKey('plan-details'),
@@ -410,6 +430,12 @@ class _CompleteSummary extends StatelessWidget {
     final s = context.s;
     final theme = Theme.of(context);
     final weak = controller.planWeakSymbols();
+    final stepIds = controller.todayPlan!.steps.map((step) => step.id).toSet();
+    final hasCopyingResults = controller.progress.history.any(
+      (result) =>
+          stepIds.contains(result.planStepId) &&
+          (result.perChar?.values.any((stats) => stats.attempts > 0) ?? false),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -427,10 +453,14 @@ class _CompleteSummary extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          weak.isEmpty
+          !hasCopyingResults
+              ? s.learnPlanPracticeOnly
+              : weak.isEmpty
               ? s.learnPlanAllGood
               : s.learnPlanNeedsWork(weak.join(' ')),
         ),
+        const SizedBox(height: 4),
+        Text(s.learnPlanCourseEvidence, style: theme.textTheme.bodySmall),
         const SizedBox(height: 4),
         Text(s.learnPlanTomorrow, style: theme.textTheme.bodySmall),
       ],

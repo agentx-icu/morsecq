@@ -1,0 +1,1 @@
+participant_code,session_day,observed_at,app_version,source_commit,package_sha256,platform,os_version,device,audio_output,task,outcome,elapsed_seconds,web_correct,web_total,web_replayed_questions,help_requested,evidence_kind,observation,next_action
