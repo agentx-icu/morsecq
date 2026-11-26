@@ -2,27 +2,84 @@
 
 # Build and release
 
-Use Flutter 3.41.9 / Dart 3.11.5 to build MorseCQ.
+Use Flutter 3.41.9 and Dart 3.11.5 to build MorseCQ. Run `flutter doctor -v` after installing the target toolchain. Resolve the pinned Pub workspace from the repository root with `dart pub get --enforce-lockfile`.
 
-Run `dart pub get --enforce-lockfile` at the root, then `./build_all.sh --platform <target> --mode release` for Android and desktop targets. Targets are android, ios, macos, linux and windows. Desktop applications build on their host OS; iOS requires a Mac with Xcode. For a signed iOS TestFlight/App Store IPA use `bash tool/build_ios_store.sh`; `build_all.sh --platform ios --mode release` fails closed unless you explicitly add `--allow-unsigned-ios` for CI/sideload testing. Android needs Java 17 and Android SDK; Linux needs GTK, ALSA and Ayatana appindicator development packages; Windows needs Visual Studio C++ and WiX v3 for the MSI.
+## Build a local development package
 
-`.github/workflows/builds.yml` runs Linux analysis and regression checks once on PRs and main/master changes. Full platform builds require a current `ci:build`/`ci:full` PR label, manual dispatch or a version tag. Analyzer, complexity, import/localization guards, screenshot-import boundaries and all package/application tests gate these builds. All five platforms must pass before a tagged draft Release can be created. Assets are APK/AAB, IPA, macOS PKG/ZIP, Linux DEB/RPM/tar.gz, Windows MSI/ZIP and SHA256SUMS. Published Release assets are never overwritten.
+Run both commands from the repository root. Replace `macos` in both commands for Android, Linux or Windows, using the appropriate host. Packaging requires Python 3.11+.
+
+```sh
+./build_all.sh --platform macos --mode release
+bash tool/ci/package_artifacts.sh --target macos
+```
+
+| Target | Required host tools | Development assets in `dist/<target>/` |
+| --- | --- | --- |
+| `android` | JDK 17 and Android SDK | APK, AAB |
+| `ios` | macOS with Xcode and CocoaPods | Unsigned IPA |
+| `macos` | macOS with Xcode and CocoaPods | PKG, ZIP |
+| `linux` | x86_64 Linux with Clang, CMake, Ninja, pkg-config, GTK 3, ALSA and Ayatana AppIndicator development packages. RPM packaging also requires `rpmbuild`. | DEB, RPM, tar.gz |
+| `windows` | x64 Windows with Visual Studio C++ desktop tools. For packaging, install CMake with CPack, WiX v3 for MSI and 7-Zip for ZIP. Run the scripts in Bash with `python` (3.11+), `cmake`, `cpack` and `7z` on `PATH`. | MSI, ZIP |
+
+The macOS packager requires a universal2 executable containing both `arm64` and
+`x86_64`. For an Android development build without a release keystore, use
+`MORSECQ_ALLOW_DEBUG_SIGNING=1 ./build_all.sh --platform android --mode release`
+as the build command.
+
+For an unsigned iOS release build with `build_all.sh`, use `--allow-unsigned-ios`. Use
+`flutter run` for the simulator and the signed export procedure below for
+TestFlight or App Store distribution.
+
+```sh
+./build_all.sh --platform ios --mode release --allow-unsigned-ios
+bash tool/ci/package_artifacts.sh --target ios
+```
+
+## Build CI and published artifacts
+
+`.github/workflows/builds.yml` runs Linux analysis and regression checks once on PRs and main/master changes. Full platform builds require a current `ci:build`/`ci:full` PR label, manual dispatch or a version tag. Analyzer, complexity, import/localization guards, screenshot-import boundaries and all package/application tests gate these builds. All five platforms must pass before a tagged draft Release can be created. Assets are APK/AAB, IPA, macOS PKG/ZIP, Linux DEB/RPM/tar.gz, Windows MSI/ZIP and SHA256SUMS. Published installers are immutable.
 
 Apple CI caches the Flutter SDK but disables Pub-cache reuse. Before building or running macOS UI tests it removes only flutter_soloud's generated CMake output; the iOS build refreshes its corresponding output. Cached compiler paths cannot cross Xcode runner images. For a local Xcode change, run `bash tool/ci/clean_apple_plugin_cache.sh macos` or `ios` before rebuilding.
 
-After a local build, run `bash tool/ci/package_artifacts.sh --target <target>`; packages appear in `dist/<target>/`. macOS release packaging requires a universal2 executable (arm64 + x86_64). Linux/Windows ARM application targets remain outside required builds.
+After publication, the [release manifest workflow](../../.github/workflows/release-manifest.yml)
+writes `release-manifest.json` with asset URLs, sizes, SHA-256 values and signing
+status. It runs when a GitHub Release is published or edited and supports a manual
+refresh. See [distribution packaging](../release/DISTRIBUTION_PACKAGING.md) for the
+final signing, checksum and metadata steps for third-party package managers.
 
-macOS packaging checks every embedded Mach-O architecture against the application's `LSMinimumSystemVersion` before creating either archive. Run `python3 tool/ci/macos_runtime.py <application.app>` to inspect a built bundle; a dependency requiring a newer OS fails packaging.
+## Platform signing and package checks
 
-Configure Android signing with repository Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`, or local `apps/morsecq/android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`). Tagged `vX.Y.Z` builds fail if those four secrets are absent or partial; they never silently use the debug key. Branch/PR test artifacts opt in explicitly with `MORSECQ_ALLOW_DEBUG_SIGNING=1`. The Play Console release owner should enable Play App Signing and grant the release operator upload/release-track access. For iOS, the Apple Developer team needs the `icu.agentx.morsecq` App ID, an iOS Distribution certificate, an App Store provisioning profile, and an App Store Connect app with upload permission. Open `apps/morsecq/ios/Runner.xcworkspace` in Xcode, select that Team, then run `bash tool/build_ios_store.sh`; supply the reviewed helper options and verified owner identity described in [the store guide](../release/APP_STORE.md). The helper exports locally without upload/account updates, verifies the final IPA identity/profile and writes evidence under `build/ios/store-readiness/`. Upload it with Xcode Organizer or Transporter for TestFlight/App Store review. The GitHub iOS job intentionally publishes only an unsigned sideload artifact. For macOS distribution, configure Developer ID signing and notarization.
+macOS release packages require a universal2 executable. The packager checks each
+embedded Mach-O minimum OS against the application's `LSMinimumSystemVersion`.
+Run `python3 tool/ci/macos_runtime.py` with the path to the built app to inspect it.
+Trusted distribution uses Developer ID signing and notarization.
 
-Device checks cover microphone decoding, haptics, keying and local persistence. E2E CI runs the application and captures screenshots on macOS, Windows and Linux.
+Tagged Android builds require the four Actions secrets `ANDROID_KEYSTORE_BASE64`,
+`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`.
+For local owner signing, set `MORSECQ_ANDROID_KEYSTORE`,
+`MORSECQ_ANDROID_KEYSTORE_PASSWORD`, `MORSECQ_ANDROID_KEY_ALIAS` and
+`MORSECQ_ANDROID_KEY_PASSWORD`, or configure `storeFile`, `storePassword`,
+`keyAlias` and `keyPassword` in `apps/morsecq/android/key.properties`. Branch and
+PR test builds opt in to debug signing. The Google Play release owner needs Play
+App Signing and upload/release-track access.
+
+A signed iOS export requires the `icu.agentx.morsecq` App ID, an Apple Developer
+team, an iOS Distribution certificate, an App Store provisioning profile and
+App Store Connect upload permission. Open `apps/morsecq/ios/Runner.xcworkspace` in
+Xcode, select the team and follow the [store build guide](../release/APP_STORE.md)
+to run `bash tool/build_ios_store.sh` with the reviewed options and signing identity.
+The helper exports locally, verifies the final IPA identity and profile, and
+writes evidence under `build/ios/store-readiness/`. The release owner uploads to
+TestFlight or the App Store with Xcode Organizer or Transporter. The GitHub iOS
+package is for unsigned sideload validation.
+
+Device checks cover microphone decoding, haptics, keying and local persistence. Opt-in E2E CI runs on macOS, Windows, Linux, an iPhone simulator and an Android emulator. The three desktop jobs also capture screenshots. See the [test guide](../testing/TEST_PYRAMID.md).
 
 Tags must match the numeric `X.Y.Z` part of the app pubspec: for example `1.0.1+2` uses tag `v1.0.1`; a stale tag such as `v0.2.0` is rejected before builds/package steps. Run `bash tool/ci/check_version_tag.sh vX.Y.Z` to preflight locally. Packaging and the release workflow repeat this check. Before creating a draft release, `bash tool/ci/verify_release_assets.sh <dist-dir> vX.Y.Z` requires all ten platform assets, exactly one macOS architecture pair, and writes a portable SHA256SUMS manifest. Missing, empty, unexpected or symlinked assets fail the gate.
 
 ## Platform scope
 
-Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled objective_c native framework’s verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana appindicator. The installed DEB gate also requires the EGL/GL/GLES dispatch loaders before its test harness. Windows CI uses Windows Server 2022.
+Required packages target Android API 24+ (arm64-v8a, armeabi-v7a and x86_64), iOS 14+ (arm64), macOS 13+ universal2, Linux x86_64 and Windows x64. The macOS Runner and Podfile minimum match the bundled `objective_c` native framework's verified 13.0 floor. Linux execution is verified on Ubuntu 24.04 with GTK 3, ALSA and Ayatana AppIndicator. The installed DEB gate also requires the EGL/GL/GLES dispatch loaders before its test harness. Windows CI uses Windows Server 2022.
 
 ## Compatibility release checks (2026-10-22)
 
@@ -51,8 +108,7 @@ code coordinates / AOT PCs captured inside the recorder in
 stack text, function names, absolute paths, exception messages, learning content
 and recordings are excluded. This is the recorder's capture-point stack, not the
 original exception stack. Unrecognized frames are omitted. Legacy raw logs are
-replaced before recording and excluded from copying. Nothing is uploaded;
-Me → Copy local diagnostics is the explicit export path.
+replaced before recording and excluded from copying. Logs stay on the device. Use **Me → About → Copy local diagnostics** to export them manually.
 Custom error `runtimeType` and `toString` getters are never evaluated for these
 records. Links at the logs directory/current/previous paths are refused by
 initialization, recording and copying. Writes stage in a private temporary

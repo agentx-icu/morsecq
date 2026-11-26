@@ -2,27 +2,77 @@
 
 # 构建与发布
 
-使用 Flutter 3.41.9 / Dart 3.11.5 构建 MorseCQ。
+使用 Flutter 3.41.9 和 Dart 3.11.5 构建 MorseCQ。安装目标工具链后，用 `flutter doctor -v` 检查环境。从仓库根目录运行 `dart pub get --enforce-lockfile`，按锁文件解析 Pub 工作区依赖。
 
-在根目录执行 `dart pub get --enforce-lockfile`，然后对 Android 和桌面目标使用 `./build_all.sh --platform <目标> --mode release`。目标为 android、ios、macos、linux、windows。每个桌面平台在对应主机构建；iOS 在安装 Xcode 的 Mac 上构建。要生成签名的 iOS TestFlight/App Store IPA，请运行 `bash tool/build_ios_store.sh`；`build_all.sh --platform ios --mode release` 默认失败，只有为 CI/侧载测试显式添加 `--allow-unsigned-ios` 才会生成无签名构建。Android 需要 Java 17 与 Android SDK；Linux 需要 GTK、ALSA 与 Ayatana appindicator 开发包；Windows 需要 Visual Studio C++ 和 WiX v3 安装包工具。
+## 在本机构建开发包
 
-`.github/workflows/builds.yml` 在 PR 和 main/master 更新时只运行一次 Linux 分析与回归检查。完整平台构建需要当前 `ci:build`/`ci:full` PR 标签、手动执行或版本标签。分析、复杂度、分层、本地化、截图导入保护及所有包/应用测试是这些构建的前置门禁。所有五个平台均必须成功，标签才可生成草稿 Release。流水线输出 APK/AAB、IPA、macOS PKG/ZIP、Linux DEB/RPM/tar.gz、Windows MSI/ZIP 和 SHA256SUMS。不会改写已经发布的 Release 资产。
+在仓库根目录执行以下两个命令。切换到 Android、Linux 或 Windows 时，请在对应主机上把两条命令中的 `macos` 一并替换。打包需要 Python 3.11 或更高版本。
+
+```sh
+./build_all.sh --platform macos --mode release
+bash tool/ci/package_artifacts.sh --target macos
+```
+
+| 目标 | 主机工具 | `dist/<目标>/` 中的开发制品 |
+| --- | --- | --- |
+| `android` | JDK 17 和 Android SDK | APK、AAB |
+| `ios` | 安装了 Xcode 和 CocoaPods 的 macOS | 未签名 IPA |
+| `macos` | 安装了 Xcode 和 CocoaPods 的 macOS | PKG、ZIP |
+| `linux` | 安装了 Clang、CMake、Ninja、pkg-config、GTK 3、ALSA 和 Ayatana AppIndicator 开发包的 x86_64 Linux。打 RPM 还需 `rpmbuild`。 | DEB、RPM、tar.gz |
+| `windows` | 安装了 Visual Studio C++ 桌面开发工具的 x64 Windows。打包需安装带 CPack 的 CMake、生成 MSI 的 WiX v3 和生成 ZIP 的 7-Zip。在 Bash 中运行脚本，并确认 `PATH` 中可找到 `python`（3.11+）、`cmake`、`cpack` 和 `7z`。 | MSI、ZIP |
+
+macOS 打包要求同时包含 `arm64` 和 `x86_64` 的 universal2 可执行文件。
+Android 本地测试如未配置发布密钥，可将构建命令改为
+`MORSECQ_ALLOW_DEBUG_SIGNING=1 ./build_all.sh --platform android --mode release`。
+
+使用 `build_all.sh` 生成未签名的 iOS 发布构建时，需传入 `--allow-unsigned-ios`。可用 `flutter run` 在模拟器运行应用。
+TestFlight 或 App Store 签名导出使用下文的商店流程。
+
+```sh
+./build_all.sh --platform ios --mode release --allow-unsigned-ios
+bash tool/ci/package_artifacts.sh --target ios
+```
+
+## 构建流水线与发布产物
+
+`.github/workflows/builds.yml` 在 PR 和 main/master 更新时只运行一次 Linux 分析与回归检查。完整平台构建需要当前 `ci:build`/`ci:full` PR 标签、手动执行或版本标签。分析、复杂度、分层、本地化、截图导入保护及所有包/应用测试是这些构建的前置门禁。所有五个平台均必须成功，标签才可生成草稿 Release。流水线输出 APK/AAB、IPA、macOS PKG/ZIP、Linux DEB/RPM/tar.gz、Windows MSI/ZIP 和 SHA256SUMS。已发布的安装包保持原样。
 
 Apple CI 保留 Flutter SDK 缓存，关闭 Pub 缓存复用；macOS 构建及界面测试前仅清理 flutter_soloud 的 CMake 生成文件，iOS 构建清理对应平台的生成文件，避免在不同 Xcode 主机镜像间复用绝对编译器路径。本地切换 Xcode 后，可在重新构建前执行 `bash tool/ci/clean_apple_plugin_cache.sh macos` 或 `ios`。
 
-本地构建后运行 `bash tool/ci/package_artifacts.sh --target <目标>`，资产位于 `dist/<目标>/`。macOS 发布打包要求 universal2 可执行文件（arm64 + x86_64）。Linux/Windows ARM 暂不作为必需应用构建目标。
+发布后，[发布清单工作流](../../.github/workflows/release-manifest.yml)生成
+`release-manifest.json`，列出产物下载地址、大小、SHA-256 和签名状态。GitHub
+Release 发布或编辑时会运行，也可手动刷新。第三方分发所需的最终签名、校验和与元数据
+准备流程见[分发打包指南](../release/DISTRIBUTION_PACKAGING.zh-CN.md)。
 
-macOS 创建任一归档前，会核对所有内嵌 Mach-O 架构与应用的 `LSMinimumSystemVersion`。可运行 `python3 tool/ci/macos_runtime.py <应用.app>` 检查已构建应用；任何依赖要求更高系统版本都会阻断打包。
+## 平台签名与包验证
 
-Android 签名使用仓库 Actions secrets `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`ANDROID_KEY_PASSWORD`，或本地 `apps/morsecq/android/key.properties`（`storeFile`、`storePassword`、`keyAlias`、`keyPassword`）。`vX.Y.Z` 标签构建缺少或部分缺少 secret 会失败，不会静默使用 debug key；PR/分支测试构建必须显式设置 `MORSECQ_ALLOW_DEBUG_SIGNING=1`。Google Play 发布负责人应启用 Play App Signing 并获得上传/发布轨道权限。iOS 需要 `icu.agentx.morsecq` App ID、iOS Distribution 证书、App Store 描述文件，以及有上传权限的 App Store Connect 应用。用 Xcode 打开 `apps/morsecq/ios/Runner.xcworkspace` 选择 Team，然后运行 `bash tool/build_ios_store.sh`；按[商店指南](../release/APP_STORE.zh-CN.md)提供受限 helper 参数和真实所有者身份；helper 只本地导出、不上传或更新账号，核验最终 IPA 身份和描述文件，在 `build/ios/store-readiness/` 保存证据，再通过 Xcode Organizer 或 Transporter 上传 TestFlight/App Store。GitHub iOS 工作流只发布无签名侧载产物。macOS 分发配置 Developer ID 签名及公证。
+macOS 发布包要求 universal2 可执行文件。打包前会核对所有内嵌 Mach-O 的最低系统
+版本与应用的 `LSMinimumSystemVersion`。用 `python3 tool/ci/macos_runtime.py`
+加应用包路径检查已构建的应用。正式分发时配置 Developer ID 签名及公证。
 
-设备检查覆盖麦克风解码、触觉、实体键和本地持久化。E2E CI 在 macOS、Windows 和 Linux 运行应用并捕获截图。
+Android 标签构建要求四个 Actions 密钥 `ANDROID_KEYSTORE_BASE64`、
+`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS` 和 `ANDROID_KEY_PASSWORD`。
+本地构建可设置 `MORSECQ_ANDROID_KEYSTORE`、`MORSECQ_ANDROID_KEYSTORE_PASSWORD`、
+`MORSECQ_ANDROID_KEY_ALIAS` 和 `MORSECQ_ANDROID_KEY_PASSWORD`，或配置
+`apps/morsecq/android/key.properties` 中的 `storeFile`、`storePassword`、
+`keyAlias` 和 `keyPassword`。分支和 PR 测试包显式启用调试签名。Google Play
+发布负责人需要启用 Play App Signing 并获得上传及发布轨道权限。
+
+iOS 签名导出需要 `icu.agentx.morsecq` App ID、Apple Developer Team、iOS
+Distribution 证书、App Store 描述文件和 App Store Connect 上传权限。用 Xcode
+打开 `apps/morsecq/ios/Runner.xcworkspace` 选择 Team，再按[商店构建指南](../release/APP_STORE.zh-CN.md)
+执行 `bash tool/build_ios_store.sh`，并提供该指南要求的参数和签名身份。脚本在本地
+导出并核验 IPA 身份和描述文件，将证据写入 `build/ios/store-readiness/`。上传
+TestFlight 或 App Store 由发布负责人通过 Xcode Organizer 或 Transporter 完成。
+GitHub 的 iOS 构建产物用于未签名侧载验证。
+
+设备检查覆盖麦克风解码、触觉反馈、实体键和本地持久化。按需启用的 E2E CI 在 macOS、Windows、Linux、iPhone 模拟器及 Android 模拟器上运行，三个桌面任务还会捕获截图。见[测试指南](../testing/TEST_PYRAMID.zh-CN.md)。
 
 发布标签匹配 pubspec 的数字 `X.Y.Z` 部分：例如 `1.0.1+2` 对应 `v1.0.1`，`v0.2.0` 等旧标签会在构建/打包前被拒绝。可先运行 `bash tool/ci/check_version_tag.sh vX.Y.Z`；工作流和打包流程会重复检查。生成草稿 Release 前，`bash tool/ci/verify_release_assets.sh <产物目录> vX.Y.Z` 要求全部十个原生产物、且 macOS 只有一组架构的 PKG/ZIP，并生成可跨主机验证的 SHA256SUMS。缺失、空文件、额外文件或符号链接均会阻断发布。
 
 ## 平台范围
 
-必需安装包面向 Android API 24+（arm64-v8a、armeabi-v7a、x86_64）、iOS 14+（arm64）、macOS 13+ universal2、Linux x86_64 和 Windows x64。macOS Runner 和 Podfile 的最低版本与实际随包 objective_c 原生框架已验证的 13.0 要求一致。Linux 在 Ubuntu 24.04 与 GTK 3、ALSA、Ayatana appindicator 上验证运行；Windows CI 使用 Windows Server 2022。
+必需安装包面向 Android API 24+（arm64-v8a、armeabi-v7a、x86_64）、iOS 14+（arm64）、macOS 13+ universal2、Linux x86_64 和 Windows x64。macOS Runner 和 Podfile 的最低版本与随包 `objective_c` 原生框架已验证的 13.0 要求一致。Linux 在带有 GTK 3、ALSA 和 Ayatana AppIndicator 的 Ubuntu 24.04 上验证运行，DEB 安装检查会先核对 EGL/GL/GLES 加载器，再引入测试工具。Windows CI 使用 Windows Server 2022。
 
 ## 跨平台发布检查（2026-10-22）
 
@@ -37,7 +87,7 @@ CI 以独立 `symbols-*` artifact 保存 Dart split-debug-info 及可用 dSYM/PD
 应用自身的 Dart 诊断仅保存 UTC 时间、白名单错误类别、固定事件名，以及记录器内部捕获的代码坐标 / AOT PC，
 位置为 `<support>/logs/errors.log`，最多两份、每份 256 KiB。忽略调用方传入的堆栈文本、函数名、绝对路径、
 异常消息、学习内容与录音。这是记录器捕获点的代码栈，并非原始异常堆栈；无法识别的帧直接丢弃。
-旧版原始日志在继续记录前替换，复制时也不导出。不上传；“我的 → 复制本地诊断信息”是主动导出入口。
+旧版原始日志在继续记录前替换，复制时也不导出。日志保存在本机，可用 **我 → 关于 → 复制本地诊断信息** 手动导出。
 记录时不求值自定义错误的 `runtimeType` 或 `toString`。初始化、记录与复制均拒绝 logs 目录、当前/轮转文件处的链接。
 写入先在私有临时目录暂存，再以 rename 替换目录项，不通过既有日志项截断或追加；路径变化或不安全时停用诊断，
 不修改链接目标。此清理不迁移任何学习文件。

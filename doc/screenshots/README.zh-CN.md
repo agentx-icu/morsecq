@@ -1,8 +1,18 @@
 [English](./README.md)
 
-# 离线产品截图
+# MorseCQ 产品截图
 
-真实无账号 Flutter 应用的十二个场景，每个平台均有英文与简体中文。六个平台共 144 张截图，包含第一课、完成后的抄报总结和引导发报。
+学习页显示今天的下一项练习和当前的 Koch 课程。选择 **从这里开始** 可以体验第一课的五个步骤。完成引导抄报练习后，总结页会显示正确率，并提供独立课程挑战的入口。
+
+[第一课](linux/zh/first_lesson.png) · [抄报练习](linux/zh/receive_drill.png) · [练习总结](linux/zh/receive_summary.png) · [引导发报](linux/zh/guided_send.png)
+
+**手机布局（430 × 932）**。两张截图使用示例离线学习记录，展示浅色主题下的真实学习页和参考页。[学习页](compact/zh/learn_home.png) · [参考页](compact/zh/reference.png) · [界面渲染记录](https://github.com/agentx-icu/morsecq/actions/runs/45852365551)
+
+## 各平台截图
+
+Linux 和 Windows 图库由改版后的应用 `fe0d85a` 在对应平台运行截图流程生成，每个平台均有中文和英文的十二个场景。Linux 和 Windows 截图为 1280 × 800。[原生截图记录](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
+
+macOS、iPhone、iPad 和 Android 图库展示较早版本 `e493213` 的界面。iPhone 模拟器截图为 1320 × 2868，iPad 为 2064 × 2752，Android 为 823 × 1829。早期 macOS 截图为 1280 × 645。[早期桌面截图记录](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)
 
 | 场景 | macos | ios | ipad | android | linux | windows |
 |---|---|---|---|---|---|---|
@@ -19,6 +29,4 @@
 | listen | [PNG](macos/zh/listen.png) | [PNG](ios/zh/listen.png) | [PNG](ipad/zh/listen.png) | [PNG](android/zh/listen.png) | [PNG](linux/zh/listen.png) | [PNG](windows/zh/listen.png) |
 | me | [PNG](macos/zh/me.png) | [PNG](ios/zh/me.png) | [PNG](ipad/zh/me.png) | [PNG](android/zh/me.png) | [PNG](linux/zh/me.png) | [PNG](windows/zh/me.png) |
 
-桌面：Linux 和 Windows 为 1280×800，macOS 为 1280×645（macOS 会把窗口限制在 runner 的可见屏幕内，截图工具接受这个较矮的窗口）；iPhone：1320×2868；iPad：2064×2752；Android：823×1829。Android 尺寸记录模拟器实际输出，不是 App Store 营销图片规格。本地 iPhone（iPhone 17 Pro Max 模拟器）、iPad（iPad Pro 13 英寸 M5 模拟器）和 Android（Pixel 7 API 36 模拟器）捕获，以及 macOS/Linux/Windows E2E 产物，都从 `e493213` 重新生成，即 v1.0.1 升版本号之前的代码（其 pubspec 仍为 1.0.0+1）。桌面截图来源：[E2E 38097487038](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)；最新 CI：[PR #41](https://github.com/agentx-icu/morsecq/pull/41)。
-
-[截图流程](../../tool/screenshots/README.zh-CN.md) · [产品设计](../designs/product-2026-10-08/README.zh-CN.md)
+[截图流程](../../tool/screenshots/README.zh-CN.md) · [产品概念设计](../designs/product-2026-10-08/README.zh-CN.md)

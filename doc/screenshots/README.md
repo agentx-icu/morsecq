@@ -1,8 +1,18 @@
 [简体中文](./README.zh-CN.md)
 
-# Offline product screenshots
+# MorseCQ screenshots
 
-Twelve scenes per platform, captured from the real account-free Flutter app in English and Simplified Chinese. Six galleries contain 144 frames, including the first lesson, completed receive summary and guided sending.
+The Learn tab shows the next daily-plan exercise and the current Koch lesson. Open **Start here** to try the five steps of the first lesson. After guided receive practice, the summary shows your score and offers an independent lesson challenge.
+
+[First lesson](linux/en/first_lesson.png) · [Receive drill](linux/en/receive_drill.png) · [Session summary](linux/en/receive_summary.png) · [Guided sending](linux/en/guided_send.png)
+
+**Phone layout (430 × 932).** These frames render the real Learn and Reference widgets with seeded offline progress in the light theme. [Learn](compact/en/learn_home.png) · [Reference](compact/en/reference.png) · [Visual matrix run](https://github.com/agentx-icu/morsecq/actions/runs/45852365551)
+
+## Platform captures
+
+The Linux and Windows galleries use the two-language screenshot walk for the redesigned app at `fe0d85a`. Each platform includes twelve scenes. Linux and Windows frames measure 1280 × 800. [Native capture run](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
+
+The macOS, iPhone, iPad and Android galleries show the earlier interface at `e493213`. The iPhone simulator frames measure 1320 × 2868, iPad 2064 × 2752 and Android 823 × 1829. The earlier macOS frames measure 1280 × 645. [Earlier desktop capture](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)
 
 | Scene | macos | ios | ipad | android | linux | windows |
 |---|---|---|---|---|---|---|
@@ -18,7 +28,5 @@ Twelve scenes per platform, captured from the real account-free Flutter app in E
 | translator | [PNG](macos/en/translator.png) | [PNG](ios/en/translator.png) | [PNG](ipad/en/translator.png) | [PNG](android/en/translator.png) | [PNG](linux/en/translator.png) | [PNG](windows/en/translator.png) |
 | listen | [PNG](macos/en/listen.png) | [PNG](ios/en/listen.png) | [PNG](ipad/en/listen.png) | [PNG](android/en/listen.png) | [PNG](linux/en/listen.png) | [PNG](windows/en/listen.png) |
 | me | [PNG](macos/en/me.png) | [PNG](ios/en/me.png) | [PNG](ipad/en/me.png) | [PNG](android/en/me.png) | [PNG](linux/en/me.png) | [PNG](windows/en/me.png) |
-
-Desktop: Linux and Windows 1280×800, macOS 1280×645 (macOS keeps the window inside the runner's visible screen, so the capture harness accepts the shorter window); iPhone:1320×2868; iPad:2064×2752; Android:823×1829. Android dimensions document the emulator capture, not App Store marketing sizes. Local iPhone (iPhone 17 Pro Max simulator), iPad (iPad Pro 13-inch M5 simulator) and Android (Pixel 7 API 36 emulator) captures and the macOS/Linux/Windows E2E artifacts are regenerated from `e493213`, the v1.0.1 code before its version bump (its pubspec still reads 1.0.0+1). Desktop capture source: [E2E 38097487038](https://github.com/agentx-icu/morsecq/actions/runs/38097487038); latest CI: [PR #41](https://github.com/agentx-icu/morsecq/pull/41).
 
 [Capture pipeline](../../tool/screenshots/README.md) · [Product concept](../designs/product-2026-10-08/README.md)

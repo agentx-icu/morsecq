@@ -6,4 +6,16 @@ title: 支持
 
 # 支持
 
-使用问题或错误报告请提交 [GitHub issue](https://github.com/agentx-icu/morsecq/issues)，说明应用版本、平台和复现步骤。学习文件或录音只在你主动选择时分享。电码聊天请使用 [DitMesh](https://github.com/agentx-icu/ditmesh)。
+## 麦克风
+
+打开 **参考 → 收听 → 开始**，使用麦克风解码莫尔斯电码。如果无法开始，请检查系统设置中的麦克风权限并确认设备可用。如果解码不稳定，请将声源靠近麦克风。
+
+## 从应用中获取支持
+
+在 v1.0.1 中，打开 **我 → 关于 → 技术支持与联系** 可访问本页。在提供离线帮助的版本中，打开 **我 → 隐私与权限 → 技术支持**。
+
+## 报告问题
+
+请提供设备型号、操作系统、应用版本（如已知）和复现步骤。如果当前版本提供 **我 → 关于 → 复制本地诊断信息**，可选择附上复制的内容。学习文件或录音仅在你主动选择时分享。请提交 [GitHub issue](https://github.com/agentx-icu/morsecq/issues)。
+
+电码聊天请使用 [DitMesh](https://github.com/agentx-icu/ditmesh)。

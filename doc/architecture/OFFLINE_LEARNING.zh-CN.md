@@ -2,12 +2,15 @@
 
 # 本地学习架构
 
-应用直接打开学习，所有平台只有学习 / 参考 / 我的三个导航目标。AppScope 创建本机偏好、语言、实体键配置、音频与参考设置，以及共享 TrainingControllerHost。启动不创建账号或聊天传输服务。
+应用外壳提供学习、参考和我三个入口。Android 正式版在进入外壳前读取本机设置和 Android 不备份目录中独立的 `privacy.json`。如果当前政策版本没有已保存的同意记录，应用会显示同意页面。其他构建启动后直接进入学习。`AppScope` 提供本机偏好、语言、实体键配置、音频与参考设置，以及共享的 `TrainingControllerHost`。
 
 ```mermaid
 flowchart LR
   Main[应用启动] --> Settings[本机偏好]
-  Main --> Shell[学习 / 参考 / 我的]
+  Main --> Android{Android 正式版？}
+  Android -->|是| Consent[读取同意记录并按需提示]
+  Consent -->|已同意| Shell[学习 / 参考 / 我]
+  Android -->|否| Shell
   Shell --> Host[共享学习控制器]
   Host --> Local[本机 JSON 与录音]
   Lifecycle[进入后台 / 桌面退出] --> Flush[等待本地写入]
@@ -30,6 +33,8 @@ flowchart LR
 学习阶段、逐字符掌握、每日计划重点和模拟通联准备度使用近期独立练习证据。辅助识别、显示答案和自由练习不解锁课程。科赫挑战要求至少抄写 50 个字符，总体准确率达到 90%，每个新引入字符至少尝试十次且准确率达到 90%。到达第 42 课不等于完成课程，必须通过该课挑战才设置 `courseCompleted`。练习总结明确区分这些状态并提供下一步。
 
 `FileTrainerStore` 原子保存这两个进度字段；值格式错误时退回前一次有效保存。原生首日测试与截图流程都注入无需账号的 `LocalLearningStore`。真实写入和重开验证见[持久化审计](../testing/PERSISTENCE_AUDIT.zh-CN.md)与[测试说明](../testing/TEST_PYRAMID.zh-CN.md)；错题、听懂记录与目标见[进阶学习](ADVANCED_LEARNING.zh-CN.md)。
+
+精简的今日计划显示下一项必做练习及其安排原因。只有计划记录了逐字符抄报成绩，完成总结才会反馈薄弱字符。
 
 ## 备份存储层
 
