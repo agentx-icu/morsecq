@@ -10,9 +10,9 @@
 
 ## 各平台截图
 
-Linux 和 Windows 图库由改版后的应用 `fe0d85a` 在对应平台运行截图流程生成，每个平台均有中文和英文的十二个场景。Linux 和 Windows 截图为 1280 × 800。[原生截图记录](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
+Linux、Windows 和 macOS 图库由改版后的应用 `fe0d85a` 在对应平台运行截图流程生成，每个平台均有中文和英文的十二个场景。Linux 和 Windows 截图为 1280 × 800，macOS 为 1280 × 645。[原生截图记录](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
 
-macOS、iPhone、iPad 和 Android 图库展示较早版本 `e493213` 的界面。iPhone 模拟器截图为 1320 × 2868，iPad 为 2064 × 2752，Android 为 823 × 1829。早期 macOS 截图为 1280 × 645。[早期桌面截图记录](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)
+iPhone、iPad 和 Android 图库展示较早版本 `e493213` 的界面。iPhone 模拟器截图为 1320 × 2868，iPad 为 2064 × 2752，Android 为 823 × 1829。
 
 | 场景 | macos | ios | ipad | android | linux | windows |
 |---|---|---|---|---|---|---|

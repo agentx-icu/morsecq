@@ -10,9 +10,9 @@ The Learn tab shows the next daily-plan exercise and the current Koch lesson. Op
 
 ## Platform captures
 
-The Linux and Windows galleries use the two-language screenshot walk for the redesigned app at `fe0d85a`. Each platform includes twelve scenes. Linux and Windows frames measure 1280 × 800. [Native capture run](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
+The Linux, Windows and macOS galleries use the two-language screenshot walk for the redesigned app at `fe0d85a`. Each platform includes twelve scenes. Linux and Windows frames measure 1280 × 800, and macOS frames measure 1280 × 645. [Native capture run](https://github.com/agentx-icu/morsecq/actions/runs/45852365519)
 
-The macOS, iPhone, iPad and Android galleries show the earlier interface at `e493213`. The iPhone simulator frames measure 1320 × 2868, iPad 2064 × 2752 and Android 823 × 1829. The earlier macOS frames measure 1280 × 645. [Earlier desktop capture](https://github.com/agentx-icu/morsecq/actions/runs/38097487038)
+The iPhone, iPad and Android galleries show the earlier interface at `e493213`. The iPhone simulator frames measure 1320 × 2868, iPad 2064 × 2752 and Android 823 × 1829.
 
 | Scene | macos | ios | ipad | android | linux | windows |
 |---|---|---|---|---|---|---|
