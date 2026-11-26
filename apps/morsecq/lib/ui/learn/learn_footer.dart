@@ -8,10 +8,15 @@ class LearnFooter extends StatelessWidget {
   final Widget child;
 
   /// The scaffold's bottom bar sits behind the keyboard. On a very short
-  /// screen, an oversized bottom bar can also crowd out the exercise.
-  static bool belongsInBody(BuildContext context) =>
-      MediaQuery.viewInsetsOf(context).bottom > 0 ||
-      MediaQuery.sizeOf(context).height < 400;
+  /// screen, or when enlarged instructions fill a compact window, scroll the
+  /// actions with the exercise.
+  static bool belongsInBody(BuildContext context) {
+    final height = MediaQuery.sizeOf(context).height;
+    final enlargedText = MediaQuery.textScalerOf(context).scale(16) > 32;
+    return MediaQuery.viewInsetsOf(context).bottom > 0 ||
+        height < 400 ||
+        (height <= 640 && enlargedText);
+  }
 
   @override
   Widget build(BuildContext context) {
