@@ -14,8 +14,8 @@ import 'package:morsecq/ui/learn/onboarding/first_lesson_trial_view.dart';
 import 'package:morsecq/ui/learn/receive/answer_keypad.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/receive/receive_summary_view.dart';
+import 'package:morsecq/ui/learn/send/send_practice_body.dart';
 import 'package:morsecq/ui/learn/send/send_practice_screen.dart';
-import 'package:morsecq/ui/learn/send/send_live_view.dart';
 import 'package:morse_io/morse_io.dart';
 
 import 'scene_walk.dart';
@@ -95,8 +95,10 @@ Future<void> keyGuidedK(WidgetTester tester) async {
   expect(key, findsOneWidget);
   await tester.ensureVisible(key);
   await tester.pump();
-  final live = tester.widget<SendLiveView>(find.byType(SendLiveView));
-  final dit = live.session.nominalTiming.dit;
+  final practice = tester.widget<SendPracticeBody>(
+    find.byType(SendPracticeBody),
+  );
+  final dit = practice.session.nominalTiming.dit;
   final binding = tester.binding;
   final policy = binding is LiveTestWidgetsFlutterBinding
       ? binding.framePolicy
@@ -120,7 +122,7 @@ Future<void> keyGuidedK(WidgetTester tester) async {
     }
   }
   await settle(tester, extra: const Duration(milliseconds: 300));
-  expect(live.session.decodedText.trim(), 'K');
+  expect(practice.session.decodedText.trim(), 'K');
   final s = S.of(tester.element(find.byType(SendPracticeScreen)));
   await tapText(tester, s.learnDone);
   await waitForNative(
