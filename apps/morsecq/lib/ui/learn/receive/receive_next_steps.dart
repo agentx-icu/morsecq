@@ -20,6 +20,7 @@ class ReceiveNextSteps extends StatelessWidget {
     required this.playback,
     required this.session,
     required this.outcome,
+    this.showCompletionActions = true,
   });
 
   final TrainingController controller;
@@ -30,6 +31,7 @@ class ReceiveNextSteps extends StatelessWidget {
   final LearnPlayback? playback;
   final ReceiveSession session;
   final ReceiveOutcome outcome;
+  final bool showCompletionActions;
 
   static const int maxContrastPairs = 3;
 
@@ -110,7 +112,7 @@ class ReceiveNextSteps extends StatelessWidget {
             const SizedBox(height: 12),
           ],
         ],
-        if (guided) ...[
+        if (guided && showCompletionActions) ...[
           FilledButton.icon(
             key: const ValueKey('guided-next'),
             onPressed: () =>
@@ -171,7 +173,7 @@ class ReceiveNextSteps extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        if (guided || unlocked)
+        if (showCompletionActions && (guided || unlocked))
           OutlinedButton(
             key: const ValueKey('receive-done'),
             onPressed: () => Navigator.of(context).pop(outcome),
@@ -180,7 +182,7 @@ class ReceiveNextSteps extends StatelessWidget {
             ),
             child: Text(s.learnDone),
           )
-        else
+        else if (showCompletionActions)
           FilledButton(
             key: const ValueKey('receive-done'),
             onPressed: () => Navigator.of(context).pop(outcome),

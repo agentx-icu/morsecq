@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -107,6 +108,47 @@ final _library = [
 const _all = ['Calls', 'Words', 'Names'];
 
 void main() {
+  testWidgets('replace identifies both records and rejects a stale preview', (
+    tester,
+  ) async {
+    final existing = _material('a', 'Local calls', 'CQ CQ');
+    final incoming = _material('a', 'Imported words', 'RADIO CW');
+    final gateway = FakeMaterialFileGateway(
+      pickResult: PickedFile(
+        'materials.json',
+        Uint8List.fromList(
+          utf8.encode(MaterialLibraryCodec.encode([incoming])),
+        ),
+      ),
+    );
+    final (training, _) = await _pump(
+      tester,
+      materials: [existing],
+      gateway: gateway,
+    );
+    await tester.tap(find.byTooltip(en.materialsImport));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('${en.materialsLocalVersion} · Local calls'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('${en.materialsIncomingVersion} · Imported words'),
+      findsOneWidget,
+    );
+    await training.controller.upsertMaterial(
+      _material('a', 'New local version', 'QRV QRV'),
+    );
+    await tester.tap(find.text(en.materialsReplaceConflicts));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SimpleDialog), findsNothing);
+    expect(
+      (await training.controller.loadMaterials()).single.title,
+      'New local version',
+    );
+  });
+
   testWidgets('search matches titles, tags and text; newest first', (
     tester,
   ) async {

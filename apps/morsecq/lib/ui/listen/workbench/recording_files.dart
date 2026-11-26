@@ -164,6 +164,7 @@ final class RecordingLibrary {
     PickedRecording picked, {
     String relativePath = workingFile,
     Future<void> Function()? beforeReplace,
+    void Function(WavInfo)? validateInfo,
   }) async {
     final declared = picked.size ?? picked.bytes?.length;
     if (declared != null && declared > WavPcmReader.maxBytes) {
@@ -188,7 +189,8 @@ final class RecordingLibrary {
       }
       final probe = await FileByteSource.open(staged);
       try {
-        await WavPcmReader.parse(probe);
+        final info = await WavPcmReader.parse(probe);
+        validateInfo?.call(info);
       } finally {
         await probe.close();
       }

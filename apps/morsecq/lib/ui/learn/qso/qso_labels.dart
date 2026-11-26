@@ -40,21 +40,20 @@ abstract final class QsoLabels {
     QsoIssue.wrongRemoteRst => s.qsoAdvancedIssueWrongRemoteRst,
   };
 
-  static String task(S s, QsoSession session) {
-    if (session.scenario.isAdvanced) {
-      if (session.stage == QsoStage.exchange) {
-        return session.scenario == QsoScenario.contestExchange
+  static String task(S s, QsoScenario scenario, QsoStage stage) {
+    if (scenario.isAdvanced) {
+      if (stage == QsoStage.exchange) {
+        return scenario == QsoScenario.contestExchange
             ? s.qsoAdvancedContestStage
             : s.qsoAdvancedPotaStage;
       }
-      if (session.stage == QsoStage.confirmInfo) {
+      if (stage == QsoStage.confirmInfo) {
         return s.qsoAdvancedCorrectionStage;
       }
     }
-    if (session.scenario == QsoScenario.shortExchange &&
-        session.stage == QsoStage.exchange) {
+    if (scenario == QsoScenario.shortExchange && stage == QsoStage.exchange) {
       return s.learnQsoSignalReport;
     }
-    return stage(s, session.stage);
+    return QsoLabels.stage(s, stage);
   }
 }

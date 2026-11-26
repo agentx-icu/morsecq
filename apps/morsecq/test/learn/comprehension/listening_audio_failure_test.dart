@@ -167,6 +167,7 @@ void main() {
     await tester.pumpAndSettle();
     await _complete(tester, playback);
     await tester.enterText(find.byType(TextField), 'WRONG');
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('comprehension-submit')));
     await tester.pumpAndSettle();
     expect(
@@ -195,6 +196,7 @@ void main() {
       await tester.pumpAndSettle();
       await _complete(tester, playback);
       await tester.enterText(find.byType(TextField), 'WRONG');
+      await tester.pump();
       await tester.tap(find.byKey(const ValueKey('comprehension-submit')));
       await tester.pumpAndSettle();
       expect(

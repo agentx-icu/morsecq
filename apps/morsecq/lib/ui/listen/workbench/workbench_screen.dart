@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:morse_dsp/morse_dsp.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +14,11 @@ import '../../../training/training_controller.dart';
 import '../../../training/training_controller_host.dart';
 import '../../common/app_bar_title.dart';
 import '../../learn/learning_unavailable.dart';
+import '../../responsive.dart';
 import 'recording_files.dart';
 import 'workbench_controller.dart';
 import 'workbench_decode_panel.dart';
+import 'workbench_errors.dart';
 import 'workbench_library_sheet.dart';
 import 'workbench_waveform.dart';
 
@@ -193,7 +194,7 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
   });
 
   void _showFailure(WorkbenchController? c) {
-    if (mounted) _showMessage(failureText(context.s, c));
+    if (mounted) _showMessage(workbenchFailureText(context.s, c));
   }
 
   void _showMessage(String text) {
@@ -208,11 +209,14 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     final info = c?.info;
     if (c == null || training == null || info == null) return;
     final s = context.s;
-    final originalName = c.name ?? '';
+    final originalName = c.originalName ?? '';
     final start = c.positionOf(c.start);
     final end = c.positionOf(c.end);
     var file = c.file;
-    final entry = await showSaveSelectionDialog(context, originalName);
+    final entry = await showSaveSelectionDialog(
+      context,
+      c.name ?? originalName,
+    );
     if (entry == null || !mounted) return;
     final id = training.newAudioMaterialId();
     var ok = true;
@@ -308,12 +312,14 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
               )
             : c == null
             ? const Center(child: CircularProgressIndicator())
+            : c.info != null
+            ? _loaded(c)
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 820),
-                    child: c.info == null ? _empty(context, c) : _loaded(c),
+                    child: _empty(context, c),
                   ),
                 ),
               ),
@@ -370,80 +376,80 @@ class _WorkbenchScreenState extends State<WorkbenchScreen>
     final rate = (info.sampleRate / 1000).toStringAsFixed(
       info.sampleRate % 1000 == 0 ? 0 : 1,
     );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(c.name ?? '', style: theme.textTheme.titleMedium),
-        Text(
-          s.workbenchInfo(
-            rate,
-            info.channels == 1 ? s.workbenchMono : s.workbenchStereo,
-            formatClock(info.duration),
+    return AdaptivePanelBody(
+      breakpoint: 900,
+      independentScroll: true,
+      leading: [
+        Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text(c.name ?? '', style: theme.textTheme.titleMedium),
+                Text(
+                  s.workbenchInfo(
+                    rate,
+                    info.channels == 1 ? s.workbenchMono : s.workbenchStereo,
+                    formatClock(info.duration),
+                  ),
+                  key: const ValueKey('workbench-info'),
+                ),
+                Text(s.workbenchBackupNote, style: theme.textTheme.bodySmall),
+                const SizedBox(height: 12),
+                WorkbenchWaveform(key: ValueKey(c.recordingKey), controller: c),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: <Widget>[
+                    FilledButton.tonalIcon(
+                      key: const ValueKey('workbench-play'),
+                      onPressed: c.busy ? null : () => _play(c),
+                      icon: Icon(
+                        c.playing || c.preparingPlayback
+                            ? Icons.stop
+                            : Icons.play_arrow,
+                      ),
+                      label: Text(
+                        c.preparingPlayback
+                            ? s.workbenchCancel
+                            : c.playing
+                            ? s.workbenchStop
+                            : s.workbenchPlay,
+                      ),
+                    ),
+                    FilterChip(
+                      label: Text(s.workbenchLoop),
+                      selected: c.loop,
+                      onSelected: c.setLoop,
+                    ),
+                    OutlinedButton.icon(
+                      key: const ValueKey('workbench-save'),
+                      onPressed: _training == null || _mediaBusy ? null : _save,
+                      icon: const Icon(Icons.bookmark_add_outlined),
+                      label: Text(s.workbenchSave),
+                    ),
+                  ],
+                ),
+                if (c.positionOf(c.end - c.start) > WorkbenchController.maxPlay)
+                  Text(s.workbenchPlayLimit, style: theme.textTheme.bodySmall),
+              ],
+            ),
           ),
-          key: const ValueKey('workbench-info'),
         ),
-        Text(s.workbenchBackupNote, style: theme.textTheme.bodySmall),
-        const SizedBox(height: 12),
-        WorkbenchWaveform(key: ValueKey(c.recordingKey), controller: c),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: <Widget>[
-            FilledButton.tonalIcon(
-              key: const ValueKey('workbench-play'),
-              onPressed: c.busy ? null : () => _play(c),
-              icon: Icon(
-                c.playing || c.preparingPlayback
-                    ? Icons.stop
-                    : Icons.play_arrow,
-              ),
-              label: Text(
-                c.preparingPlayback
-                    ? s.workbenchCancel
-                    : c.playing
-                    ? s.workbenchStop
-                    : s.workbenchPlay,
-              ),
-            ),
-            FilterChip(
-              label: Text(s.workbenchLoop),
-              selected: c.loop,
-              onSelected: c.setLoop,
-            ),
-            OutlinedButton.icon(
-              key: const ValueKey('workbench-save'),
-              onPressed: _training == null || _mediaBusy ? null : _save,
-              icon: const Icon(Icons.bookmark_add_outlined),
-              label: Text(s.workbenchSave),
-            ),
-          ],
+      ],
+      trailing: [
+        Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: WorkbenchDecodePanel(controller: c, training: _training),
+          ),
         ),
-        if (c.positionOf(c.end - c.start) > WorkbenchController.maxPlay)
-          Text(s.workbenchPlayLimit, style: theme.textTheme.bodySmall),
-        const Divider(height: 32),
-        WorkbenchDecodePanel(controller: c, training: _training),
       ],
     );
   }
 }
-
-/// Localised reason an import or open failed.
-String failureText(S s, WorkbenchController? c) => switch (c?.failure) {
-  WorkbenchFailure.missingFile => s.workbenchErrorMissing,
-  WorkbenchFailure.io || null => s.workbenchErrorIo,
-  WorkbenchFailure.format => switch (c?.wavError) {
-    WavError.notRiff || WavError.notWave => s.workbenchErrorNotWav,
-    WavError.unsupportedFormat ||
-    WavError.unsupportedBitDepth => s.workbenchErrorFormat,
-    WavError.unsupportedChannels => s.workbenchErrorChannels,
-    WavError.unsupportedRate => s.workbenchErrorRate,
-    WavError.tooLarge => s.workbenchErrorTooLarge,
-    WavError.tooLong => s.workbenchErrorTooLong,
-    WavError.missingFmt ||
-    WavError.missingData ||
-    WavError.truncated ||
-    null => s.workbenchErrorDamaged,
-  },
-};

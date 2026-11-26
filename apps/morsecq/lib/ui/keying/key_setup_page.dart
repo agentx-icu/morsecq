@@ -22,7 +22,9 @@ import 'key_test_area.dart';
 /// in use, and an editor for each. Profiles are keyboard-binding presets
 /// for the keyboard and for keyboard-emulating USB adapters.
 class KeySetupPage extends StatelessWidget {
-  const KeySetupPage({super.key});
+  const KeySetupPage({super.key, this.testSink});
+
+  final MorseSink? testSink;
 
   static Future<void> open(BuildContext context) => Navigator.of(
     context,
@@ -32,6 +34,7 @@ class KeySetupPage extends StatelessWidget {
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => KeyProfileEditorPage(
+            testSink: testSink,
             profile:
                 profile ??
                 KeyProfile.defaults.copyWith(
@@ -109,6 +112,36 @@ class KeySetupPage extends StatelessWidget {
                         ),
                       ),
                   ],
+                ),
+              ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: FilledButton.tonalIcon(
+                    key: const ValueKey('keys-test-active'),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => Scaffold(
+                          appBar: AppBar(
+                            title: AppBarTitle(s.keysTestActiveProfile),
+                          ),
+                          body: ReadableBody(
+                            child: SafeArea(
+                              child: ListView(
+                                padding: const EdgeInsets.all(16),
+                                children: [
+                                  KeyTestArea(profile: active, sink: testSink),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.keyboard_outlined),
+                    label: Text(s.keysTestActiveProfile),
+                  ),
                 ),
               ),
               Padding(

@@ -32,8 +32,26 @@ class _BandToolState extends State<BandTool> {
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
+    final results = _results(s);
     return ToolPage(
       title: s.toolsBandsTitle,
+      secondary: [
+        if (results.isNotEmpty) ToolSection(children: results),
+        ToolSection(
+          title: s.toolsBandsTable,
+          children: <Widget>[
+            for (final band in AmateurBands.plan(_region))
+              _BandRow(band: band, selected: band == _band),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                s.toolsBandsDisclaimer,
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+          ],
+        ),
+      ],
       children: <Widget>[
         ToolSection(
           children: <Widget>[
@@ -68,22 +86,6 @@ class _BandToolState extends State<BandTool> {
                 hintText: '7.030',
                 errorText: _invalid ? s.toolsBandsInvalidFrequency : null,
                 border: const OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ..._results(s),
-          ],
-        ),
-        ToolSection(
-          title: s.toolsBandsTable,
-          children: <Widget>[
-            for (final band in AmateurBands.plan(_region))
-              _BandRow(band: band, selected: band == _band),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                s.toolsBandsDisclaimer,
-                style: theme.textTheme.bodySmall,
               ),
             ),
           ],

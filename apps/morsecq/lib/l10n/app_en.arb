@@ -233,7 +233,7 @@
       }
     }
   },
-  "statsCharsCopied": "{count, plural, =1{1 char copied} other{{count} chars copied}}",
+  "statsCharsCopied": "{count, plural, one{1 symbol practised} other{{count} symbols practised}}",
   "@statsCharsCopied": {
     "description": "Statistics overview, 'Practice' tile: total characters copied across all sessions",
     "placeholders": {
@@ -1421,7 +1421,7 @@
   "@statsEmptyBody": {
     "description": "Statistics: empty state explanation of what the page will show"
   },
-  "statsEmptyCallToAction": "Head to Learn and press \"Continue lesson\" to start.",
+  "statsEmptyCallToAction": "Go to Learn",
   "@statsEmptyCallToAction": {
     "description": "Statistics: empty state call to action; the quoted button name must match learnContinueLesson"
   },
@@ -1441,7 +1441,7 @@
   "@statsNoData": {
     "description": "Statistics: placeholder shown for a value that has no data yet"
   },
-  "statsTilePractice": "Practice",
+  "statsTilePractice": "Retained practice time",
   "@statsTilePractice": {
     "description": "Statistics overview: label of the practice totals tile"
   },
@@ -1649,7 +1649,7 @@
   "@listenPending": {
     "description": "Listen screen: label of the character currently being received"
   },
-  "listenSpeed": "Speed",
+  "listenSpeed": "Estimated speed",
   "@listenSpeed": {
     "description": "Listen screen: label of the estimated sending speed"
   },
@@ -1998,7 +1998,7 @@
       }
     }
   },
-  "statsAccuracyDetail": "last 7 days / {allTime} all time",
+  "statsAccuracyDetail": "Past 7 days / retained records {allTime}",
   "@statsAccuracyDetail": {
     "description": "Accuracy tile detail line; allTime is the all-time accuracy already formatted via statsPercent (or statsNoData)",
     "placeholders": {
@@ -2550,7 +2550,7 @@
   "@learnQsoRemoteHidden": {
     "description": "QSO log: placeholder while the remote text is hidden"
   },
-  "learnQsoShowText": "Show text",
+  "learnQsoShowText": "Show text (assisted)",
   "@learnQsoShowText": {
     "description": "QSO log: reveal a remote transmission (counts as a hint)"
   },
@@ -2695,7 +2695,7 @@
       }
     }
   },
-  "learnQsoSummaryRepeats": "Repeats: {count}",
+  "learnQsoSummaryRepeats": "Remote transmissions heard again: {count}",
   "@learnQsoSummaryRepeats": {
     "description": "QSO summary: number of repeat requests",
     "placeholders": {
@@ -2704,7 +2704,7 @@
       }
     }
   },
-  "learnQsoSummaryHints": "Hints: {count}",
+  "learnQsoSummaryHints": "Hints or transcripts shown: {count}",
   "@learnQsoSummaryHints": {
     "description": "QSO summary: hints and revealed texts",
     "placeholders": {
@@ -2832,7 +2832,7 @@
   "@workbenchFormats": {
     "description": "Recording workbench: supported formats and limits"
   },
-  "workbenchBackupNote": "Recordings stay on this device. Keep copies before clearing learning data or uninstalling. Saved selections retain their titles, notes and positions.",
+  "workbenchBackupNote": "Keep the WAV file you originally selected so you can import it again. Clearing learning data deletes the in-app recording copies and saved selections. Uninstalling may also remove them.",
   "@workbenchBackupNote": {
     "description": "Reminder to preserve device-local audio recordings before clearing or uninstalling"
   },
@@ -3002,7 +3002,7 @@
   "@workbenchDecoderHidden": {
     "description": "Recording workbench: decoder output hidden in copy mode"
   },
-  "workbenchShowDecoder": "Show decoder text",
+  "workbenchShowDecoder": "Show decoder text (assisted)",
   "@workbenchShowDecoder": {
     "description": "Recording workbench: reveal decoder output (assisted)"
   },
@@ -3173,7 +3173,7 @@
       }
     }
   },
-  "materialsProblemNothingTrainable": "Nothing here can be practised in Morse.",
+  "materialsProblemNothingTrainable": "Enter at least one Morse letter, number, or prosign. To practise Chinese characters, open Learn → More practice → Chinese telegraph code.",
   "@materialsProblemNothingTrainable": {
     "description": "Material problem: nothing can be keyed"
   },
@@ -3243,15 +3243,15 @@
   "@materialsSaveDialogTitle": {
     "description": "Native save dialog title for material export"
   },
-  "materialsImportFailed": "Import failed. Your library is unchanged.",
+  "materialsImportFailed": "Import failed. Your library is unchanged. Open Import TXT or JSON and choose the file again.",
   "@materialsImportFailed": {
     "description": "My materials: import failed, library unchanged"
   },
-  "materialsImportNotUtf8": "Only UTF-8 text files can be imported.",
+  "materialsImportNotUtf8": "Only UTF-8 text can be imported. Save the TXT or MorseCQ material JSON as UTF-8 and choose it again.",
   "@materialsImportNotUtf8": {
     "description": "My materials: file is not UTF-8 text"
   },
-  "materialsImportInvalid": "Not a valid MorseCQ material file. Nothing was imported.",
+  "materialsImportInvalid": "This is not valid MorseCQ material JSON. Nothing was imported. Choose a JSON file exported from MorseCQ to try again.",
   "@materialsImportInvalid": {
     "description": "My materials: JSON library invalid, nothing imported"
   },
@@ -3280,7 +3280,7 @@
   "@materialsDuplicateSkip": {
     "description": "Import duplicate policy"
   },
-  "materialsExportJson": "Export as JSON",
+  "materialsExportJson": "Export the displayed materials as JSON",
   "@materialsExportJson": {
     "description": "My materials: export the (filtered) library as JSON"
   },
@@ -3293,7 +3293,7 @@
       }
     }
   },
-  "materialsExportFailed": "Export failed.",
+  "materialsExportFailed": "Export failed. Select the same export action again to retry.",
   "@materialsExportFailed": {
     "description": "My materials: export failed"
   },
@@ -3390,6 +3390,10 @@
   "placementCheckLevel": "Check my current level",
   "@placementCheckLevel": {
     "description": "Placement offer: start the assessment"
+  },
+  "placementKeepCurrent": "Keep current lesson",
+  "@placementKeepCurrent": {
+    "description": "Leave the level check without applying the suggested starting lesson."
   },
   "placementFromZero": "Skip the intro: lesson 1 challenge",
   "@placementFromZero": {
@@ -3846,7 +3850,7 @@
   "@offlineClearData": {
     "description": "Offline build Me: clear the local learning data"
   },
-  "offlineClearDataBody": "Deletes your progress, plans and materials on this device.",
+  "offlineClearDataBody": "Delete local learning data and recordings and selections stored by MorseCQ.",
   "@offlineClearDataBody": {
     "description": "Offline build Me: what clearing removes"
   },
@@ -3952,7 +3956,7 @@
   "@learnGuidedPractice": {
     "description": "Lesson card: secondary button starting a short guided session"
   },
-  "learnChallengeHint": "The lesson challenge: {count} symbols at 90%, with each new symbol copied at least {min} times. Passing unlocks the next character.",
+  "learnChallengeHint": "Copy at least {count} symbols with {accuracy} overall accuracy. Each new symbol needs at least {min} attempts and {accuracy} accuracy. Passing unlocks the next character.",
   "@learnChallengeHint": {
     "description": "Lesson card: what the Continue lesson button starts and what passing requires",
     "placeholders": {
@@ -3961,6 +3965,9 @@
       },
       "min": {
         "type": "int"
+      },
+      "accuracy": {
+        "type": "String"
       }
     }
   },
@@ -4077,7 +4084,7 @@
   "@learnVerdictPractice": {
     "description": "Receive summary headline: free practice (not a course challenge)"
   },
-  "learnVerdictPracticeHint": "Free practice updates your statistics and reviews but never advances the course. The lesson challenge from the Learn home does.",
+  "learnVerdictPracticeHint": "Free practice updates statistics and review. Pass the current lesson’s independent challenge to advance.",
   "@learnVerdictPracticeHint": {
     "description": "Receive summary explanation: free practice never advances the course"
   },
@@ -4317,7 +4324,7 @@
       }
     }
   },
-  "firstLessonTooFast": "Too fast? Use the beginner pace (longer pauses between characters)",
+  "firstLessonTooFast": "Use beginner spacing in future multi-character drills",
   "@firstLessonTooFast": {
     "description": "First lesson: switch to the beginner pace (longer pauses)"
   },
@@ -4456,7 +4463,7 @@
   "@learnQsoHowTitle": {
     "description": "QSO setup: short protocol explainer title"
   },
-  "learnQsoHowBody": "Call (CQ = anyone, DE = from), answer with callsigns, exchange a report (RST), name and QTH (location), then 73 (best regards) and <SK> (end). K means over to you.",
+  "learnQsoHowBody": "CQ calls any station, DE means from, and K means over to you. A short QSO confirms callsigns, exchanges signal reports (RST), then closes with 73 (best regards) and <SK> (end). A full QSO also exchanges operator names and QTH (location).",
   "@learnQsoHowBody": {
     "description": "QSO setup: short protocol explainer body"
   },
@@ -4705,7 +4712,7 @@
   "goalsFirstQso": "First QSO",
   "goalsConversation": "Conversation and head copy",
   "goalsContest": "Contest exchanges",
-  "goalsExplanation": "Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.",
+  "goalsExplanation": "Inspired by CW Academy. Each milestone needs two independent attempts with at least 90% accuracy at or above the stated effective speed. Evidence is valid for 28 days.",
   "goalsBeginner": "Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.",
   "goalsComplete": "All milestones currently met",
   "goalsPractice": "Practise the next skill",
@@ -4745,8 +4752,8 @@
   "qsoAdvancedRepeatTitle": "Repeat one field",
   "qsoAdvancedRepeatHint": "Ask only for information you missed; the exchange stays at this stage.",
   "qsoAdvancedTypedMode": "Type a reply (assisted)",
-  "qsoAdvancedKeyedMode": "Key a reply",
-  "qsoAdvancedTypedReply": "Your transmission",
+  "qsoAdvancedKeyedMode": "Switch to keying",
+  "qsoAdvancedTypedReply": "Your typed reply",
   "qsoAdvancedContestStage": "Send RST and your serial",
   "qsoAdvancedPotaStage": "Send RST and your park",
   "qsoAdvancedCorrectionStage": "Confirm corrected information",
@@ -5241,5 +5248,368 @@
   },
   "@learnPlanCourseEvidence": {
     "description": "Completed daily-plan summary explains that finishing practice steps is separate from passing a course lesson."
-  }
+  },
+  "learnRoundHeard": "Signal finished",
+  "@learnRoundHeard": {
+    "description": "Completed signal in receive practice"
+  },
+  "learnReplayTurnsToPractice": "Replay as assisted practice",
+  "@learnReplayTurnsToPractice": {
+    "description": "Button warning that replay makes a lesson challenge assisted"
+  },
+  "learnFinishListeningBeforeCheck": "You can enter your answer while listening. Check it after the signal finishes.",
+  "@learnFinishListeningBeforeCheck": {
+    "description": "Shows while the signal is still playing"
+  },
+  "learnSkipRound": "Skip round (counts as missed)",
+  "@learnSkipRound": {
+    "description": "Explicitly score a round with no answer"
+  },
+  "offlineClearScope": "This cannot be undone. This device’s course progress, practice records, plans, materials, app-managed recordings and saved selections will be deleted.",
+  "@offlineClearScope": {
+    "description": "Permanent deletion scope in the clear learning data confirmation"
+  },
+  "offlineClearKeeps": "App preferences and original files stored outside MorseCQ are kept.",
+  "@offlineClearKeeps": {
+    "description": "Files retained when clearing learning data"
+  },
+  "offlineClearPartial": "Some learning data or recordings may already have been deleted. Retry to clear what remains.",
+  "@offlineClearPartial": {
+    "description": "Explains that an interrupted deletion can be partially applied"
+  },
+  "offlineClearRetry": "Retry clearing",
+  "@offlineClearRetry": {
+    "description": "Retry deletion in the same destructive confirmation"
+  },
+  "materialsIncomingVersion": "Incoming version",
+  "@materialsIncomingVersion": {
+    "description": "Label in material import confirmation"
+  },
+  "materialsLocalVersion": "On this device",
+  "@materialsLocalVersion": {
+    "description": "Label for exact material that already exists on device"
+  },
+  "materialsPreviousImportVersion": "Earlier entry in this file",
+  "@materialsPreviousImportVersion": {
+    "description": "Label for earlier same-id entry in the incoming file"
+  },
+  "materialsReplaceConflicts": "Replace conflicts",
+  "@materialsReplaceConflicts": {
+    "description": "Button to replace the shown conflicting entries only"
+  },
+  "materialsChangedReview": "Materials changed. Open the import again to review the conflicts.",
+  "@materialsChangedReview": {
+    "description": "Import conflict collection changed while the preview was open"
+  },
+  "learnChallengeOverall": "Overall accuracy",
+  "@learnChallengeOverall": {
+    "description": "Label for overall challenge accuracy"
+  },
+  "learnChallengeReached": "Met",
+  "@learnChallengeReached": {
+    "description": "A threshold is met"
+  },
+  "learnChallengeNotReached": "Below target",
+  "@learnChallengeNotReached": {
+    "description": "A threshold is not met"
+  },
+  "learnChallengeSamples": "Attempts",
+  "@learnChallengeSamples": {
+    "description": "Per-character count compared to required count"
+  },
+  "learnRoundDifferences": "What to review",
+  "@learnRoundDifferences": {
+    "description": "Title above the alignment's incorrect characters"
+  },
+  "learnRoundExtra": "Extra: {symbol}",
+  "@learnRoundExtra": {
+    "description": "An answer symbol not in the signal",
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "learnRoundCorrect": "Correct: {symbol}",
+  "@learnRoundCorrect": {
+    "description": "A correctly copied symbol in alignment semantics",
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "learnRoundReplaySymbol": "Hear {symbol}",
+  "@learnRoundReplaySymbol": {
+    "description": "Action to hear one symbol after scoring",
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "learnGuidedReplayNote": "Replay as needed. This practice does not advance the course.",
+  "@learnGuidedReplayNote": {
+    "description": "Explains replay in short guided practice"
+  },
+  "keysTestWaiting": "Waiting for input",
+  "@keysTestWaiting": {
+    "description": "Textual test status before any signal"
+  },
+  "keysTestOn": "Signal active",
+  "@keysTestOn": {
+    "description": "Textual test status while the signal is on"
+  },
+  "keysTestReleased": "Keys released",
+  "@keysTestReleased": {
+    "description": "Textual test status after manually releasing keys"
+  },
+  "listenWaitingPermission": "Waiting for microphone permission",
+  "@listenWaitingPermission": {
+    "description": "Listening status before the system grants audio permission"
+  },
+  "listenMicNext": "Continue to request system permission. You can also open a WAV in the recording workbench without the microphone.",
+  "@listenMicNext": {
+    "description": "Explain when permission is requested and the file alternative"
+  },
+  "workbenchEstimateBasis": "Comparison source: estimated decoding",
+  "@workbenchEstimateBasis": {
+    "description": "Comparison basis before checking, with no verified reference text"
+  },
+  "workbenchReferenceBasis": "Comparison source: your reference",
+  "@workbenchReferenceBasis": {
+    "description": "Comparison basis before checking against provided text"
+  },
+  "workbenchEstimateMatch": "Estimated decoding match: {accuracy}",
+  "@workbenchEstimateMatch": {
+    "description": "Matching percentage compared against machine estimate",
+    "placeholders": {
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchReferenceMatch": "Reference match: {accuracy}",
+  "@workbenchReferenceMatch": {
+    "description": "Matching percentage compared with the user's reference",
+    "placeholders": {
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "appearanceActive": "In use: {style} · {mode}",
+  "@appearanceActive": {
+    "description": "Shows which style and mode are currently applied",
+    "placeholders": {
+      "style": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "appearancePending": "Preview · not applied",
+  "@appearancePending": {
+    "description": "Label for unsaved appearance choices"
+  },
+  "appearanceRetryApply": "Retry applying",
+  "@appearanceRetryApply": {
+    "description": "Retry applying saved style preferences"
+  },
+  "workbenchRelinkFormat": "Choose the original WAV file to relink this selection.",
+  "@workbenchRelinkFormat": {
+    "description": "Instruction to replace a missing recording with its source WAV"
+  },
+  "firstLessonSignalReceived": "I sensed the signal. Continue",
+  "@firstLessonSignalReceived": {
+    "description": "Continue after sensing an alternative signal"
+  },
+  "firstLessonNoSoundDesktop": "Raise the volume or check mute and Do Not Disturb. You can use the screen flash instead.",
+  "@firstLessonNoSoundDesktop": {
+    "description": "No sound tips where vibration is unavailable"
+  },
+  "learnQsoFirstTryAccepted": "Passed on the first try",
+  "@learnQsoFirstTryAccepted": {
+    "description": "Stage result when the first answer was accepted"
+  },
+  "learnQsoFirstTryRejected": "First answer needed correction",
+  "@learnQsoFirstTryRejected": {
+    "description": "Stage result when the first answer required correction"
+  },
+  "learnQsoStagePractice": "Practise this reply",
+  "@learnQsoStagePractice": {
+    "description": "Action to practise only a selected QSO reply"
+  },
+  "learnQsoPracticeNoRecord": "This check does not change the completed result.",
+  "@learnQsoPracticeNoRecord": {
+    "description": "Targeted QSO practice is not counted as a new course run"
+  },
+  "learnQsoRemoteStation": "Remote station",
+  "@learnQsoRemoteStation": {
+    "description": "Anonymous caption before the learner confirms or reveals the remote station call sign."
+  },
+  "listenToneIdle": "Auto-tune · idle",
+  "@listenToneIdle": {
+    "description": "Automatic tone tuning is available but the microphone has not started."
+  },
+  "keysTestActiveProfile": "Test selected profile",
+  "@keysTestActiveProfile": {
+    "description": "Action and title for trying the selected key profile without editing it."
+  },
+  "learnDecodedAccuracy": "Decoding accuracy",
+  "@learnDecodedAccuracy": {
+    "description": "Labels the percentage based on the decoded text alone."
+  },
+  "learnPlanCopyCounts": "{count} characters total · up to {group} per round",
+  "@learnPlanCopyCounts": {
+    "description": "Total symbols in this frozen plan step and the maximum symbols per group.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "group": {
+        "type": "int"
+      }
+    }
+  },
+  "learnPlanReplayNote": "Replaying a completed signal marks the attempt as assisted.",
+  "@learnPlanReplayNote": {
+    "description": "Explain that replaying after a completed playback counts as assistance."
+  },
+  "learnPlanNoUnlock": "This step does not advance the course.",
+  "@learnPlanNoUnlock": {
+    "description": "Shown for a plan exercise that cannot advance the course."
+  },
+  "learnChallengeHintLast": "Copy at least {count} symbols with {accuracy} overall accuracy. Each new symbol needs at least {min} attempts and {accuracy} accuracy. Passing completes the course.",
+  "@learnChallengeHintLast": {
+    "description": "Requirements for passing the final Koch lesson, where there is no next character.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      },
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "learnReferenceSelection": "Selected character: {char}",
+  "@learnReferenceSelection": {
+    "description": "Title of the detail panel for the selected Morse character.",
+    "placeholders": {
+      "char": {
+        "type": "String"
+      }
+    }
+  },
+  "comprehensionFieldUnanswered": "Unanswered",
+  "@comprehensionFieldUnanswered": {
+    "description": "Question-feedback label when the user left this answer blank."
+  },
+  "comprehensionSendingCallsign": "Sending station callsign (after DE)",
+  "@comprehensionSendingCallsign": {
+    "description": "Prompt for the sender’s callsign in a single-station radio message. DE precedes that callsign."
+  },
+  "comprehensionYourAnswer": "Your answer: {answer}",
+  "@comprehensionYourAnswer": {
+    "description": "Shows the value the learner entered before a listening exercise was scored.",
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "comprehensionExpectedAnswer": "Correct answer: {answer}",
+  "@comprehensionExpectedAnswer": {
+    "description": "Labels the correct value for a wrong or unanswered listening question.",
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "firstLessonSlowReplay": "Replay this signal more slowly",
+  "@firstLessonSlowReplay": {
+    "description": "Action to replay only the current single-character practice signal using a slower character speed."
+  },
+  "learnQsoTextRevealed": "Text revealed · this stage counts as assisted",
+  "@learnQsoTextRevealed": {
+    "description": "Visible status on a QSO transcript after the learner has revealed its text. This radio contact stage counts as assisted."
+  },
+  "learnBeginGuided": "Start guided practice: {level}",
+  "@learnBeginGuided": {
+    "description": "Action on a free-practice result that starts a different, guided exercise at the recommended level.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "goalsSamples": "At least {count} per attempt",
+  "@goalsSamples": {
+    "description": "Minimum number of samples within a single attempt that can count toward this learning milestone.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workbenchYourCopy": "Your copy",
+  "@workbenchYourCopy": {
+    "description": "Persistent label of the learner’s own transcription, separate from the optional reference answer."
+  },
+  "workbenchNewCopy": "Start a new copy attempt",
+  "@workbenchNewCopy": {
+    "description": "Action to start a separate transcription attempt from the completed comparison result."
+  },
+  "workbenchDeleteTitle": "Delete saved selection?",
+  "@workbenchDeleteTitle": {
+    "description": "Confirmation heading before a saved selection and its notes are permanently deleted."
+  },
+  "workbenchDeleteSelection": "“{title}”, its notes, and its saved time range will be removed. Your original WAV file stays where you kept it.",
+  "@workbenchDeleteSelection": {
+    "description": "Confirmation explaining the named saved selection is removed and the original WAV stays outside the app.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchDeleteWithCopy": "“{title}”, its notes, and its saved time range will be removed, along with the app’s WAV copy. Your original WAV file stays where you kept it.",
+  "@workbenchDeleteWithCopy": {
+    "description": "Confirmation explaining both the named selection and the now-unreferenced app WAV copy are removed, with the external original kept.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "workbenchRelinkMismatch": "This WAV is too short for at least one saved selection or has a different sample rate or channel count. Select the WAV file you originally imported.",
+  "@workbenchRelinkMismatch": {
+    "description": "Error after selecting a WAV whose duration or format properties cannot restore the saved selection. Ask for the originally imported file."
+  },
+  "workbenchRelinkShared": "This WAV is shared by {count} saved selections. Relinking restores all of them.",
+  "@workbenchRelinkShared": {"description": "Recording library: physical file is shared among count saved selections", "placeholders": {"count": {"type": "int"}}},
+  "learnQsoReplayAssisted": "Replay (assisted)",
+  "@learnQsoReplayAssisted": {"description": "QSO transcript: replay an already heard transmission; counts as assistance"},
+  "learnQsoStageAssisted": "This stage is assisted",
+  "@learnQsoStageAssisted": {"description": "QSO active stage: assistance such as replay was used"},
+  "learnQsoYourTypedTurn": "Edit your typed reply, then Send (assisted practice).",
+  "@learnQsoYourTypedTurn": {"description": "QSO learner instruction when replying as assisted typed text rather than keying"},
+  "statsReceiveAccuracy": "Copy accuracy",
+  "@statsReceiveAccuracy": {"description": "Statistics overview: accuracy for retained receive copying practice"},
+  "listenWaitingToReceive": "Waiting to start",
+  "@listenWaitingToReceive": {"description": "Live CW decoder: inactive bottom status before the user starts or while permission is pending"},
+  "workbenchAlignedEstimate": "Decoder estimate",
+  "@workbenchAlignedEstimate": {"description": "Recording result: label of aligned estimate characters, not the user’s answer"},
+  "workbenchAlignedReference": "Reference answer",
+  "@workbenchAlignedReference": {"description": "Recording result: label of the supplied reference answer"},
+  "workbenchAlignmentLegend": "Highlighted cells differ. A dot marks a missing character in that row.",
+  "@workbenchAlignmentLegend": {"description": "Recording comparison: differences and placeholder dots in the two aligned rows"},
+  "materialsImportUpdated": "Edited {stamp}",
+  "@materialsImportUpdated": {"description": "Conflict preview: timestamp when this version was last edited", "placeholders": {"stamp": {"type": "String"}}}
 }

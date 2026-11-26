@@ -6,14 +6,20 @@ extension _QsoScreenView on _QsoScreenState {
     final theme = Theme.of(context);
     final decoded = _pendingText;
     final canKey = playback != null && !_remotePlaying && !_backgrounded;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(QsoLabels.task(s, _session), style: theme.textTheme.titleMedium),
+    return AdaptivePanelBody(
+      breakpoint: 900,
+      independentScroll: true,
+      leading: [
+        Text(
+          QsoLabels.task(s, _session.scenario, _session.stage),
+          style: theme.textTheme.titleMedium,
+        ),
         Text(
           s.learnQsoSpeed(_session.effectiveWpm.round()),
           style: theme.textTheme.bodySmall,
         ),
+        if (_session.usedAssistanceAt(_session.stage))
+          Text(s.learnQsoStageAssisted, style: theme.textTheme.labelMedium),
         const SizedBox(height: 8),
         if (_session.scenario.isAdvanced &&
             _session.stage == QsoStage.confirmInfo)
@@ -28,16 +34,12 @@ extension _QsoScreenView on _QsoScreenState {
           session: _session,
           revealed: _revealed,
           onReveal: _reveal,
-          // Hearing a transmission again is a repeat, like AGN.
           onPlay: _remotePlaying || _backgrounded || playback == null
               ? null
-              : (text) {
-                  // A call deferred by backgrounding was never heard.
-                  if (!_initialRemotePending) _session.repeats++;
-                  _playRemote(text);
-                  unawaited(_saveDraft());
-                },
+              : (index) => _playRemoteTurn(index, requested: true),
         ),
+      ],
+      trailing: [
         if (_issues.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8),
@@ -69,6 +71,8 @@ extension _QsoScreenView on _QsoScreenState {
               ? s.learnQsoRemoteSending
               : _initialRemotePending
               ? s.learnQsoListen
+              : _typing
+              ? s.learnQsoYourTypedTurn
               : s.learnQsoYourTurn,
           style: theme.textTheme.labelLarge,
         ),
@@ -165,40 +169,46 @@ extension _QsoScreenView on _QsoScreenState {
           ),
         ],
         const SizedBox(height: 12),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: _pendingText.trim().isNotEmpty || _keying.hasInput
-                    ? _clear
-                    : null,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-                child: Text(s.learnQsoClear),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                key: const ValueKey('qso-send'),
-                onPressed:
-                    canKey &&
-                        (_typing
-                            ? _typedText.text.trim().isNotEmpty
-                            : (_keying.hasInput || _carry.isNotEmpty))
-                    ? _send
-                    : null,
-                icon: const Icon(Icons.send),
-                label: Text(s.learnQsoSend),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
+    );
+  }
+
+  Widget _runningActions(S s, LearnPlayback? playback) {
+    final canKey = playback != null && !_remotePlaying && !_backgrounded;
+    return LearnFooter(
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _pendingText.trim().isNotEmpty || _keying.hasInput
+                  ? _clear
+                  : null,
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+              child: Text(s.learnQsoClear),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: FilledButton.icon(
+              key: const ValueKey('qso-send'),
+              onPressed:
+                  canKey &&
+                      (_typing
+                          ? _typedText.text.trim().isNotEmpty
+                          : (_keying.hasInput || _carry.isNotEmpty))
+                  ? _send
+                  : null,
+              icon: const Icon(Icons.send),
+              label: Text(s.learnQsoSend),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

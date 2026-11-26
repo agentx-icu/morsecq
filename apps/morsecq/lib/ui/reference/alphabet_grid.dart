@@ -16,9 +16,17 @@ import 'reference_playback_controller.dart';
 /// Cards are at least 48 px on each side (they are ~100 px), so the grid is
 /// comfortable with a thumb as well as a mouse.
 class AlphabetGrid extends StatelessWidget {
-  const AlphabetGrid({super.key, required this.entries, this.hint});
+  const AlphabetGrid({
+    super.key,
+    required this.entries,
+    this.hint,
+    this.selected,
+    this.onSelected,
+  });
 
   final List<ReferenceEntry> entries;
+  final ReferenceEntry? selected;
+  final ValueChanged<ReferenceEntry>? onSelected;
 
   /// Optional line shown above the grid.
   final String? hint;
@@ -65,8 +73,14 @@ class AlphabetGrid extends StatelessWidget {
                   ),
                 ),
                 itemCount: entries.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    AlphabetCard(entry: entries[index]),
+                itemBuilder: (BuildContext context, int index) {
+                  final entry = entries[index];
+                  return AlphabetCard(
+                    entry: entry,
+                    selected: selected == entry,
+                    onSelected: onSelected,
+                  );
+                },
               ),
             ),
           ],
@@ -119,9 +133,16 @@ Size _measureCardContent(BuildContext context, List<ReferenceEntry> entries) {
 
 /// One character card of the [AlphabetGrid].
 class AlphabetCard extends StatelessWidget {
-  const AlphabetCard({super.key, required this.entry});
+  const AlphabetCard({
+    super.key,
+    required this.entry,
+    this.selected = false,
+    this.onSelected,
+  });
 
   final ReferenceEntry entry;
+  final bool selected;
+  final ValueChanged<ReferenceEntry>? onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -137,15 +158,19 @@ class AlphabetCard extends StatelessWidget {
 
     return Semantics(
       button: true,
+      selected: selected,
       label:
           '${entry.label}, ${ReferenceMnemonics.spokenRhythm(entry.pattern, language: language)}',
       hint: context.s.referenceAlphabetHint,
       child: Card(
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
-        color: playing ? scheme.primaryContainer : null,
+        color: playing || selected ? scheme.primaryContainer : null,
         child: InkWell(
-          onTap: () => controller.toggle(entry.id, entry.playText),
+          onTap: () {
+            onSelected?.call(entry);
+            controller.toggle(entry.id, entry.playText);
+          },
           onLongPress: () => showReferenceMnemonic(context, entry),
           onSecondaryTap: () => showReferenceMnemonic(context, entry),
           child: Padding(
@@ -160,7 +185,9 @@ class AlphabetCard extends StatelessWidget {
                       entry.label,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: playing ? scheme.onPrimaryContainer : null,
+                        color: playing || selected
+                            ? scheme.onPrimaryContainer
+                            : null,
                       ),
                     ),
                     if (playing)
@@ -182,7 +209,7 @@ class AlphabetCard extends StatelessWidget {
                   maxLines: 1,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium,
-                  color: playing ? scheme.onPrimaryContainer : null,
+                  color: playing || selected ? scheme.onPrimaryContainer : null,
                 ),
               ],
             ),

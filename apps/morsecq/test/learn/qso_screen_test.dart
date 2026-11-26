@@ -7,6 +7,7 @@ import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/ui/learn/qso/qso_screen.dart';
 import 'package:morsecq/ui/learn/qso/qso_setup_screen.dart';
+import 'package:morsecq/ui/learn/qso/qso_summary_view.dart';
 
 import 'helpers/fake_playback.dart';
 import 'helpers/l10n.dart';
@@ -84,6 +85,122 @@ final class _NoWake implements ScreenWakeApi {
 }
 
 void main() {
+  testWidgets('stopped first playback may finish without assistance', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    await _pumpScreen(tester, t, session, playback);
+    await tester.tap(find.byTooltip(en.learnQsoPause));
+    await tester.pumpAndSettle();
+    final listen = find.widgetWithText(TextButton, en.learnQsoListen);
+    await tester.tap(listen);
+    await _finishPlayback(tester, playback.clock);
+    expect(session.repeats, 0);
+    expect(session.usedAssistanceAt(QsoStage.callConfirm), isFalse);
+  });
+
+  testWidgets(
+    'relistening to a completed transmission marks only its current stage',
+    (tester) async {
+      final t = await _training();
+      final playback = FakeLearnPlaybackFactory();
+      final session = _session(scenario: QsoScenario.shortExchange);
+      await _pumpScreen(tester, t, session, playback);
+      await _finishPlayback(tester, playback.clock);
+      final play = find.widgetWithIcon(TextButton, Icons.volume_up_outlined);
+      await tester.tap(play);
+      await _finishPlayback(tester, playback.clock);
+      expect(session.repeats, 1);
+      expect(session.usedAssistanceAt(QsoStage.callConfirm), isTrue);
+      expect(session.usedAssistanceAt(QsoStage.exchange), isFalse);
+      final restored = QsoSession.fromJson(session.toJson());
+      expect(restored.usedAssistanceAt(QsoStage.callConfirm), isTrue);
+      expect(restored.hints, 0);
+    },
+  );
+
+  testWidgets('the compact failing QSO keeps the send action in view', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    session.submit('call', '${session.remote.callsign} DE BD1XYZ K');
+    session.submit('report', 'R UR RST 599');
+    await _pumpScreen(tester, t, session, playback);
+    await _finishPlayback(tester, playback.clock);
+    tester.view.physicalSize = const Size(402, 640);
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const ValueKey('qso-send')).hitTestable(),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('wide QSO puts the running reply aside from transmissions', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    await _pumpScreen(tester, t, session, playback);
+    await _finishPlayback(tester, playback.clock);
+    tester.view.physicalSize = const Size(1280, 800);
+    await tester.pumpAndSettle();
+    final brief = find.text(en.learnQsoStageCallConfirm);
+    final reply = find.byKey(const ValueKey('qso-typed-mode'));
+    expect(tester.getTopLeft(brief).dx, closeTo(24, 2));
+    expect(tester.getTopLeft(reply).dx, greaterThan(600));
+    expect(
+      find.byKey(const ValueKey('qso-send')).hitTestable(),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('hidden QSO cannot reveal the callsign outside assisted reveal', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    await _pumpScreen(tester, t, session, playback);
+    await _finishPlayback(tester, playback.clock);
+    expect(find.textContaining(session.remote.callsign), findsNothing);
+    expect(session.hints, 0);
+    await tester.tap(find.text(en.learnQsoShowText));
+    await tester.pumpAndSettle();
+    expect(find.textContaining(session.remote.callsign), findsWidgets);
+    expect(session.hints, 1);
+  });
+
+  testWidgets('short QSO summary labels the report without name or QTH', (
+    tester,
+  ) async {
+    final session = _session(scenario: QsoScenario.shortExchange);
+    session
+      ..submit('call', '${session.remote.callsign} DE BD1XYZ K')
+      ..submit('report', 'UR RST 599 K')
+      ..submit('end', 'TU 73 <SK>');
+    expect(session.isDone, isTrue);
+    await tester.pumpWidget(
+      l10nApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: QsoSummaryView(
+              session: session,
+              sendingWpm: null,
+              onDone: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text(en.learnQsoSignalReport), findsOneWidget);
+    expect(find.text(en.learnQsoStageExchange), findsNothing);
+  });
+
   testWidgets(
     'typed submission survives reload and stays assisted protocol practice',
     (tester) async {
@@ -567,6 +684,91 @@ void main() {
     await tester.tap(find.text(en.learnQsoHint));
     await tester.pump();
     expect(find.byKey(const ValueKey('qso-hint')), findsOneWidget);
+  });
+
+  testWidgets('adding a missing ending resubmits the rejected keyed reply', (
+    tester,
+  ) async {
+    final t = await _training();
+    final playback = FakeLearnPlaybackFactory();
+    final session = _session(scenario: QsoScenario.shortExchange);
+    session.submit(
+      'accepted-opening',
+      '${session.remote.callsign} DE BD1XYZ K',
+    );
+    await _pumpScreen(tester, t, session, playback);
+    await _key(tester, playback.clock, 'R UR RST 599');
+    final send = find.byKey(const ValueKey('qso-send'));
+    await tester.tap(send);
+    await tester.pump();
+    expect(session.stage, QsoStage.exchange);
+    expect(
+      tester
+          .widget<Text>(find.byKey(const ValueKey('qso-decoded')))
+          .data
+          ?.trim(),
+      'R UR RST 599',
+    );
+
+    await _key(tester, playback.clock, 'K');
+    await tester.tap(send);
+    await tester.pump();
+    expect(session.stage, QsoStage.closing);
+  });
+
+  testWidgets('a rejected stage can be practised without changing the result', (
+    tester,
+  ) async {
+    final session = _session(scenario: QsoScenario.shortExchange);
+    final remote = session.remote.callsign;
+    session.submit('first', '$remote DE BD1XYZ K');
+    session.submit('missing', 'R UR RST 599', typed: true);
+    session.submit('fixed', 'R UR RST 599 K', typed: true);
+    session.submit('closing', 'TU 73 <SK>');
+    expect(session.isDone, isTrue);
+    final before = session.toJson();
+    await tester.pumpWidget(
+      l10nApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: QsoSummaryView(
+              session: session,
+              sendingWpm: null,
+              onDone: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final exchange = find.byKey(const ValueKey('qso-summary-stage-exchange'));
+    final review = find.descendant(
+      of: exchange,
+      matching: find.widgetWithText(TextButton, en.learnQsoStagePractice),
+    );
+    expect(
+      find.descendant(
+        of: exchange,
+        matching: find.text(en.learnQsoFirstTryRejected),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: exchange,
+        matching: find.text(en.learnVerdictAssisted),
+      ),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(review);
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    expect(find.text(en.learnQsoPracticeNoRecord), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'R UR RST 599 K');
+    await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
+    await tester.pumpAndSettle();
+    expect(find.text(en.learnQsoProtocolPass), findsOneWidget);
+    expect(session.toJson(), before);
   });
 
   testWidgets('the last transmission finishes, credits activity only', (

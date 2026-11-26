@@ -106,6 +106,22 @@ Future<void> _createMaterial(TrainingController controller) =>
     );
 
 void main() {
+  testWidgets('desktop editing keeps the preview beside the original text', (
+    tester,
+  ) async {
+    await _pump(tester);
+    tester.view.physicalSize = const Size(1200, 900);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('material-new')));
+    await tester.pumpAndSettle();
+    final original = tester.getRect(
+      find.byKey(const ValueKey('material-text')),
+    );
+    final preview = tester.getRect(find.text(en.materialsPreview));
+    expect(preview.left, greaterThan(original.right));
+    expect(preview.top, lessThan(original.top));
+  });
+
   testWidgets('the editor previews unsupported characters before saving', (
     tester,
   ) async {

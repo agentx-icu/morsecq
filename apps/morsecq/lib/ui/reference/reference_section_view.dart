@@ -10,9 +10,16 @@ import 'reference_entry_tile.dart';
 /// a grid for the alphabet, a numbered list for the Koch order, a plain list
 /// for everything else.
 class ReferenceSectionView extends StatelessWidget {
-  const ReferenceSectionView({super.key, required this.section});
+  const ReferenceSectionView({
+    super.key,
+    required this.section,
+    this.selectedCharacter,
+    this.onCharacterSelected,
+  });
 
   final ReferenceSection section;
+  final ReferenceEntry? selectedCharacter;
+  final ValueChanged<ReferenceEntry>? onCharacterSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +28,8 @@ class ReferenceSectionView extends StatelessWidget {
       ReferenceSection.alphabet => AlphabetGrid(
         entries: entries,
         hint: context.s.referenceAlphabetHint,
+        selected: selectedCharacter,
+        onSelected: onCharacterSelected,
       ),
       ReferenceSection.koch => KochOrderView(entries: entries),
       _ => ListView.separated(

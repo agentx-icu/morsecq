@@ -12,7 +12,11 @@ import '../../../training/training_controller.dart';
 import 'recording_files.dart';
 
 /// Why an import or open failed; the UI localises each.
-enum WorkbenchFailure { format, missingFile, io }
+enum WorkbenchFailure { format, missingFile, mismatch, io }
+
+final class _RecordingMismatch implements Exception {
+  const _RecordingMismatch();
+}
 
 /// State of the recorded-audio workbench (functional spec §11): one open
 /// recording, its waveform, a selection, tuning, decoding and playback.
@@ -40,6 +44,7 @@ class WorkbenchController extends ChangeNotifier {
 
   WavPcmReader? _reader;
   String? _name;
+  String? _originalName;
   String _file = RecordingLibrary.workingFile;
   int _workingRevision = 0;
   WaveformEnvelope? _waveform;
@@ -62,6 +67,7 @@ class WorkbenchController extends ChangeNotifier {
   WavPcmReader? get reader => _reader;
   WavInfo? get info => _reader?.info;
   String? get name => _name;
+  String? get originalName => _originalName;
 
   /// Managed media path of the open recording (relative to the profile).
   String get file => _file;
@@ -145,6 +151,7 @@ class WorkbenchController extends ChangeNotifier {
     String file,
     String name, {
     (Duration, Duration)? selection,
+    String? originalName,
   }) => _guard(() async {
     if (!await library.exists(file)) {
       throw const FileSystemException('missing');
@@ -167,7 +174,7 @@ class WorkbenchController extends ChangeNotifier {
       await closeReader(reader);
       return;
     }
-    _install(reader, name, file);
+    _install(reader, name, file, originalName: originalName);
     if (selection != null) {
       // The stored time is rounded down to whole microseconds. Round back
       // to the nearest frame to recover the original selection boundary.
@@ -181,17 +188,35 @@ class WorkbenchController extends ChangeNotifier {
     }
   });
 
-  Future<bool> relinkRecording(PickedRecording picked, String file) =>
-      _guard(() async {
-        final reader = await library.importTo(
-          picked,
-          relativePath: file,
-          beforeReplace: () async {
-            if (_disposed) throw StateError('workbench closed');
-          },
-        );
-        await closeReader(reader);
-      });
+  Future<bool> relinkRecording(
+    PickedRecording picked,
+    AudioMaterial material, {
+    required TrainingController training,
+  }) => _guard(() async {
+    final selections = [
+      material,
+      for (final saved in await training.loadAudioMaterials())
+        if (saved.file == material.file && saved.id != material.id) saved,
+    ];
+    final reader = await library.importTo(
+      picked,
+      relativePath: material.file,
+      validateInfo: (info) {
+        if (selections.any(
+          (saved) =>
+              info.duration < saved.end ||
+              (saved.sampleRate > 0 && info.sampleRate != saved.sampleRate) ||
+              (saved.channels > 0 && info.channels != saved.channels),
+        )) {
+          throw const _RecordingMismatch();
+        }
+      },
+      beforeReplace: () async {
+        if (_disposed) throw StateError('workbench closed');
+      },
+    );
+    await closeReader(reader);
+  });
 
   Future<bool> deleteSaved(
     TrainingController training,
@@ -221,6 +246,9 @@ class WorkbenchController extends ChangeNotifier {
       _failure = WorkbenchFailure.format;
       _wavError = e.error;
       return false;
+    } on _RecordingMismatch {
+      _failure = WorkbenchFailure.mismatch;
+      return false;
     } on FileSystemException {
       _failure = WorkbenchFailure.missingFile;
       return false;
@@ -233,9 +261,15 @@ class WorkbenchController extends ChangeNotifier {
     }
   }
 
-  void _install(WavPcmReader reader, String name, String file) {
+  void _install(
+    WavPcmReader reader,
+    String name,
+    String file, {
+    String? originalName,
+  }) {
     _reader = reader;
     _name = name;
+    _originalName = file == RecordingLibrary.workingFile ? name : originalName;
     _file = file;
     _start = 0;
     _end = reader.info.frameCount;

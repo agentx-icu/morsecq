@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_session/morse_session.dart';
@@ -12,6 +15,61 @@ import 'helpers/l10n.dart';
 import 'helpers/test_controller.dart';
 
 void main() {
+  testWidgets('equal-titled conflicts expose both versions before replacing', (
+    tester,
+  ) async {
+    final t = await TestTraining.create();
+    addTearDown(t.controller.dispose);
+    TrainingMaterial material(String text, int day) => MaterialImport.create(
+      id: 'exchange',
+      title: 'Exchange',
+      kind: MaterialKind.text,
+      text: text,
+      analysis: MaterialImport.analyze(text, MaterialKind.text),
+      now: DateTime(2026, 11, day, 9),
+    );
+    final live = material('CQ DE BD1XYZ', 18);
+    final incoming = material('CQ DE W1AW', 20);
+    await t.controller.upsertMaterial(live);
+    final files = FakeMaterialFileGateway()
+      ..pickResult = PickedFile(
+        'materials.json',
+        Uint8List.fromList(
+          utf8.encode(MaterialLibraryCodec.encode([incoming])),
+        ),
+      );
+    await tester.pumpWidget(
+      Provider<MaterialFileGateway>.value(
+        value: files,
+        child: l10nApp(
+          home: MaterialsScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(en.materialsImport));
+    await tester.pumpAndSettle();
+    expect(find.text(live.originalText), findsOneWidget);
+    expect(find.text(incoming.originalText), findsOneWidget);
+    final imported = find.ancestor(
+      of: find.text(incoming.originalText),
+      matching: find.byType(ExpansionTile),
+    );
+    await tester.tap(imported);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: imported, matching: find.byType(SelectableText)),
+      findsOneWidget,
+    );
+    expect(
+      (await t.controller.loadMaterials()).single.originalText,
+      live.originalText,
+    );
+  });
+
   testWidgets('an oversized library export reports failure without a file', (
     tester,
   ) async {

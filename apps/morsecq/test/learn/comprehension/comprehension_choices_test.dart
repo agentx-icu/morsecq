@@ -59,6 +59,7 @@ Future<void> _listenAndAnswer(
   playback.clock.advance(const Duration(minutes: 5));
   await tester.pumpAndSettle();
   await tester.enterText(find.byType(TextField).first, 'WRONG');
+  await tester.pump();
   await tester.ensureVisible(
     find.byKey(const ValueKey('comprehension-submit')),
   );

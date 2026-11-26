@@ -9,6 +9,7 @@ import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
 import '../../responsive.dart';
+import '../learn_platform.dart';
 import 'material_labels.dart';
 
 /// Create or edit a material (functional spec §9.1–9.2). The preview shows
@@ -137,70 +138,73 @@ class _MaterialEditorScreenState extends State<MaterialEditorScreen> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  TextField(
-                    controller: _title,
-                    decoration: InputDecoration(
-                      label: FieldLabel(s.materialsTitleField),
-                      border: const OutlineInputBorder(),
-                    ),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  SegmentedButton<MaterialKind>(
-                    segments: <ButtonSegment<MaterialKind>>[
-                      for (final k in MaterialKind.values)
-                        ButtonSegment(
-                          value: k,
-                          label: Text(MaterialLabels.kind(s, k)),
-                        ),
-                    ],
-                    selected: <MaterialKind>{_kind},
-                    showSelectedIcon: false,
-                    onSelectionChanged: (v) {
-                      setState(() => _kind = v.first);
-                      _reanalyze();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _tags,
-                    decoration: InputDecoration(
-                      label: FieldLabel(s.materialsTagsField),
-                      helperText: s.materialsTagsHelper,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    key: const ValueKey('material-text'),
-                    controller: _text,
-                    minLines: 5,
-                    maxLines: 14,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      label: FieldLabel(
-                        _kind == MaterialKind.text
-                            ? s.materialsTextField
-                            : s.materialsListField,
+        child: AdaptivePanelBody(
+          breakpoint: kLearnTwoColumnMinWidth,
+          leading: [
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    TextField(
+                      controller: _title,
+                      decoration: InputDecoration(
+                        label: FieldLabel(s.materialsTitleField),
+                        border: const OutlineInputBorder(),
                       ),
-                      border: const OutlineInputBorder(),
+                      onChanged: (_) => setState(() {}),
                     ),
-                    onChanged: (_) => _reanalyze(),
-                  ),
-                  const SizedBox(height: 12),
-                  MaterialPreview(analysis: a, kind: _kind),
-                ],
+                    const SizedBox(height: 12),
+                    SegmentedButton<MaterialKind>(
+                      segments: <ButtonSegment<MaterialKind>>[
+                        for (final k in MaterialKind.values)
+                          ButtonSegment(
+                            value: k,
+                            label: Text(MaterialLabels.kind(s, k)),
+                          ),
+                      ],
+                      selected: <MaterialKind>{_kind},
+                      showSelectedIcon: false,
+                      onSelectionChanged: (v) {
+                        setState(() => _kind = v.first);
+                        _reanalyze();
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _tags,
+                      decoration: InputDecoration(
+                        label: FieldLabel(s.materialsTagsField),
+                        helperText: s.materialsTagsHelper,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      key: const ValueKey('material-text'),
+                      controller: _text,
+                      minLines: 5,
+                      maxLines: 14,
+                      autocorrect: false,
+                      decoration: InputDecoration(
+                        label: FieldLabel(
+                          _kind == MaterialKind.text
+                              ? s.materialsTextField
+                              : s.materialsListField,
+                        ),
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => _reanalyze(),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
+          trailing: [MaterialPreview(analysis: a, kind: _kind)],
         ),
       ),
     );

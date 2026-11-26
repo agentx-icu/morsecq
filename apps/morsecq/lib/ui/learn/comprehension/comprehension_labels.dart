@@ -25,11 +25,18 @@ String comprehensionModeHelp(BuildContext context, ListeningMode mode) {
   };
 }
 
-String comprehensionFieldLabel(BuildContext context, ListeningField field) {
+String comprehensionFieldLabel(
+  BuildContext context,
+  ListeningField field,
+  ListeningMode mode,
+) {
   final s = context.s;
   return switch (field) {
     ListeningField.answer => s.comprehensionAnswer,
-    ListeningField.callsign => s.comprehensionCallsign,
+    ListeningField.callsign =>
+      mode == ListeningMode.qso
+          ? s.comprehensionSendingCallsign
+          : s.comprehensionCallsign,
     ListeningField.otherCallsign => s.comprehensionOtherCallsign,
     ListeningField.name => s.comprehensionName,
     ListeningField.qth => s.comprehensionQth,

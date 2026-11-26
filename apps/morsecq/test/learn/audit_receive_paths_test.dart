@@ -111,6 +111,140 @@ final class _FailOnceStore implements TrainerStore {
 }
 
 void main() {
+  testWidgets(
+    'plan focus identifies the frozen exercise and remaining rounds',
+    (tester) async {
+      final date = DailyPlan.dateKey(kTestNow);
+      final plan = DailyPlan(
+        id: 'guest/$date',
+        date: date,
+        profileKey: '',
+        seed: 19,
+        budgetMinutes: 10,
+        settings: const PlanSettings(
+          characterWpm: 20,
+          effectiveWpm: 8,
+          toneHz: 700,
+          groupSize: 5,
+        ),
+        steps: [
+          PlanStep(
+            id: 'guest/$date/0',
+            kind: PlanStepKind.focus,
+            pool: ['S', 'U'],
+            minutes: 2,
+            charBudget: 40,
+            lesson: 4,
+            reason: PlanReason.confusions,
+            groupSize: 5,
+          ),
+        ],
+      );
+      final t = await TestTraining.create(
+        progress: TrainerProgress(currentLesson: 4, dailyPlan: plan),
+      );
+      addTearDown(t.controller.dispose);
+      final session = await t.controller.startPlanReceiveStep(
+        plan.steps.single,
+      );
+      await tester.pumpWidget(
+        l10nApp(
+          home: ReceiveDrillScreen(
+            controller: t.controller,
+            playback: FakeLearnPlaybackFactory(),
+            session: session,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text(en.learnPlanStepFocus), findsOneWidget);
+      expect(
+        find.textContaining(en.learnPlanReasonConfusions('S U')),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(en.learnPlanCopyCounts(40, 5)),
+        findsOneWidget,
+      );
+      expect(find.text(en.firstLessonTrialRound(1, 8)), findsOneWidget);
+      expect(find.textContaining(en.learnPlanReplayNote), findsOneWidget);
+      expect(find.textContaining(en.learnPlanNoUnlock), findsOneWidget);
+    },
+  );
+
+  testWidgets('telegraph digits show the selected codebook at phone width', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 780);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final t = await TestTraining.create();
+    addTearDown(t.controller.dispose);
+    final session = t.controller.startTelegraphDigitsSession(
+      TelegraphCodebook.taiwan,
+    );
+    await tester.pumpWidget(
+      l10nApp(
+        home: ReceiveDrillScreen(
+          controller: t.controller,
+          playback: FakeLearnPlaybackFactory(),
+          session: session,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text(en.telegraphCodebookTaiwan).hitTestable(), findsOneWidget);
+    expect(find.text(en.telegraphDigitsHint).hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('an unsaved receive result keeps a retry in the summary', (
+    tester,
+  ) async {
+    final store = _FailOnceStore();
+    final controller = TrainingController(
+      progressStore: store,
+      settingsStore: InMemoryTrainingSettingsStore(kShortSettings),
+      now: () => kTestNow,
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+    final session = controller.startReceiveSession(ReceiveDrillKind.groups);
+    final playback = FakeLearnPlaybackFactory();
+    await tester.pumpWidget(
+      l10nApp(
+        home: ReceiveDrillScreen(
+          controller: controller,
+          playback: playback,
+          session: session,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    playback.clock.advance(const Duration(minutes: 1));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), session.currentDrill.text);
+    await tester.pump();
+    final submit = find.widgetWithText(FilledButton, en.learnSubmit);
+    await tester.ensureVisible(submit);
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+    final finish = find.widgetWithText(FilledButton, en.learnFinish);
+    await tester.ensureVisible(finish);
+    await tester.tap(finish);
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 12));
+    expect(find.text(en.learnProgressSaveFailed), findsOneWidget);
+    expect(find.text(en.learnVerdictPractice), findsNothing);
+    final retry = find.byKey(const ValueKey('receive-save-retry'));
+    await tester.ensureVisible(retry);
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(find.text(en.learnProgressSaveFailed), findsNothing);
+    expect(find.text(en.learnVerdictPractice), findsOneWidget);
+    expect(store.inner.saveCount, 1);
+    expect((await store.load())!.history, hasLength(1));
+  });
+
   testWidgets('placement retries the chosen lesson if saving fails', (
     tester,
   ) async {
@@ -257,6 +391,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(en.comprehensionAudioFailed), findsNothing);
       await tester.enterText(find.byType(TextField), session.currentDrill.text);
+      await tester.pump();
       await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, en.learnFinish));
@@ -438,6 +573,7 @@ void main() {
           find.byType(TextField),
           session.currentDrill.text,
         );
+        await tester.pump();
         await tester.tap(find.text(en.learnSubmit));
         await tester.pumpAndSettle();
         await tester.ensureVisible(

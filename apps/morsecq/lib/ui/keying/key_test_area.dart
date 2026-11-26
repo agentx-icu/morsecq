@@ -14,12 +14,7 @@ import '../../keying/profile_keyer.dart';
 /// it, and the decoded text. Testing only: nothing is sent, saved or
 /// credited.
 class KeyTestArea extends StatefulWidget {
-  const KeyTestArea({
-    super.key,
-    required this.profile,
-    this.sink,
-    this.clock,
-  });
+  const KeyTestArea({super.key, required this.profile, this.sink, this.clock});
 
   final KeyProfile profile;
 
@@ -43,7 +38,11 @@ class _KeyTestAreaState extends State<KeyTestArea> {
   late final _Lamp _lamp = _Lamp(
     GatedSink(_sink, () => widget.profile.appSidetone),
     () {
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {
+          if (_lamp.isOn) _released = false;
+        });
+      }
     },
   );
   final MorseDecoder _decoder = MorseDecoder();
@@ -51,6 +50,7 @@ class _KeyTestAreaState extends State<KeyTestArea> {
   ProfileKeyer? _keyer;
   Timer? _tick;
   int _generation = 0;
+  bool _released = false;
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _KeyTestAreaState extends State<KeyTestArea> {
   void _release() {
     _build();
     _lamp.off();
-    setState(() {});
+    setState(() => _released = true);
   }
 
   @override
@@ -126,7 +126,10 @@ class _KeyTestAreaState extends State<KeyTestArea> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(s.keysTestTitle, style: theme.textTheme.titleSmall),
+                  child: Text(
+                    s.keysTestTitle,
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
                 TextButton(
                   key: KeyTestArea.releaseKey,
@@ -134,6 +137,18 @@ class _KeyTestAreaState extends State<KeyTestArea> {
                   child: Text(s.keysTestRelease),
                 ),
               ],
+            ),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                _lamp.isOn
+                    ? s.keysTestOn
+                    : _released
+                    ? s.keysTestReleased
+                    : s.keysTestWaiting,
+                key: const ValueKey('key-test-status'),
+                style: theme.textTheme.labelLarge,
+              ),
             ),
             Text(s.keysTestNote, style: theme.textTheme.bodySmall),
             const SizedBox(height: 8),

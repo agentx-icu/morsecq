@@ -85,6 +85,7 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
                   '${skillLabel(s, next.skill)} · ${s.learnWpmValue(next.wpm.toString())}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
+                Text(s.goalsSamples(LearningRoute.minimumSamples(next.skill))),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   key: const ValueKey('goal-next-practice'),
@@ -109,7 +110,9 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
                         : Icons.radio_button_unchecked,
                   ),
                   title: Text(skillLabel(s, milestone.skill)),
-                  subtitle: Text(s.learnWpmValue(milestone.wpm.toString())),
+                  subtitle: Text(
+                    '${s.learnWpmValue(milestone.wpm.toString())} · ${s.goalsSamples(LearningRoute.minimumSamples(milestone.skill))}',
+                  ),
                   trailing: Text('${milestone.attempts.clamp(0, 2)} / 2'),
                   onTap: () =>
                       openGoalPractice(context, c, widget.playback, milestone),

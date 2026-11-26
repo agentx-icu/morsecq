@@ -24,6 +24,7 @@ class _AppearancePageState extends State<AppearancePage> {
   UiStyle? _style;
   ThemeMode? _mode;
   bool _saving = false;
+  bool _failed = false;
 
   @override
   void didChangeDependencies() {
@@ -40,8 +41,12 @@ class _AppearancePageState extends State<AppearancePage> {
   };
 
   Future<void> _apply() async {
+    if (_saving) return;
     final settings = context.read<AppSettings>();
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _failed = false;
+    });
     try {
       await settings.applyAppearance(style: _style!, themeMode: _mode!);
       if (!mounted) return;
@@ -50,9 +55,7 @@ class _AppearancePageState extends State<AppearancePage> {
       ).showSnackBar(SnackBar(content: Text(context.s.appearanceApplied)));
     } on Object {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.s.appearanceSaveFailed)));
+      setState(() => _failed = true);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -84,7 +87,12 @@ class _AppearancePageState extends State<AppearancePage> {
                 child: InkWell(
                   key: ValueKey('style-${style.name}'),
                   borderRadius: BorderRadius.circular(12),
-                  onTap: _saving ? null : () => setState(() => _style = style),
+                  onTap: _saving
+                      ? null
+                      : () => setState(() {
+                          _style = style;
+                          _failed = false;
+                        }),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
@@ -125,10 +133,26 @@ class _AppearancePageState extends State<AppearancePage> {
     );
   }
 
-  Widget _preview() => Column(
+  String _modeLabel(ThemeMode mode) => switch (mode) {
+    ThemeMode.system => context.s.languageSystemDefault,
+    ThemeMode.light => context.s.appearanceLight,
+    ThemeMode.dark => context.s.appearanceDark,
+  };
+
+  String _activeLabel(AppSettings settings) => context.s.appearanceActive(
+    styleLabel(context.s, settings.style),
+    _modeLabel(settings.themeMode),
+  );
+
+  Widget _preview(AppSettings settings, bool changed) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       _heading(context.s.appearancePreview),
+      if (changed) ...[
+        if (!_failed) Text(_activeLabel(settings)),
+        Text(context.s.appearancePending),
+      ],
+      const SizedBox(height: 8),
       StylePreview(
         key: const ValueKey('appearance-preview'),
         style: _style!,
@@ -159,13 +183,14 @@ class _AppearancePageState extends State<AppearancePage> {
           for (final mode in ThemeMode.values)
             wrappingChoiceChip(
               key: ValueKey('mode-${mode.name}'),
-              label: switch (mode) {
-                ThemeMode.system => context.s.languageSystemDefault,
-                ThemeMode.light => context.s.appearanceLight,
-                ThemeMode.dark => context.s.appearanceDark,
-              },
+              label: _modeLabel(mode),
               selected: mode == _mode,
-              onSelected: _saving ? null : (_) => setState(() => _mode = mode),
+              onSelected: _saving
+                  ? null
+                  : (_) => setState(() {
+                      _mode = mode;
+                      _failed = false;
+                    }),
               materialTapTargetSize: MaterialTapTargetSize.padded,
             ),
         ],
@@ -195,14 +220,17 @@ class _AppearancePageState extends State<AppearancePage> {
                         children: [
                           Expanded(child: _choices(inner.maxWidth - 320)),
                           const SizedBox(width: 24),
-                          SizedBox(width: 296, child: _preview()),
+                          SizedBox(
+                            width: 296,
+                            child: _preview(settings, changed),
+                          ),
                         ],
                       );
                     }
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _preview(),
+                        _preview(settings, changed),
                         const SizedBox(height: 24),
                         _choices(inner.maxWidth),
                       ],
@@ -221,12 +249,43 @@ class _AppearancePageState extends State<AppearancePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (_failed)
+                Semantics(
+                  liveRegion: true,
+                  child: SizedBox(
+                    width: 640,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        children: [
+                          Text(
+                            context.s.appearanceSaveFailed,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                          ),
+                          Text(
+                            _activeLabel(settings),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               SizedBox(
                 width: 640,
                 child: FilledButton(
                   key: const ValueKey('appearance-apply'),
                   onPressed: _saving || !changed ? null : _apply,
-                  child: Text(context.s.appearanceApply),
+                  child: Text(
+                    _failed
+                        ? context.s.appearanceRetryApply
+                        : context.s.appearanceApply,
+                  ),
                 ),
               ),
               TextButton(
@@ -235,6 +294,7 @@ class _AppearancePageState extends State<AppearancePage> {
                     : () => setState(() {
                         _style = kDefaultUiStyle;
                         _mode = ThemeMode.system;
+                        _failed = false;
                       }),
                 child: Text(context.s.appearanceRestore),
               ),

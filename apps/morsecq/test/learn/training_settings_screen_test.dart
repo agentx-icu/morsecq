@@ -41,6 +41,18 @@ Finder _switchFor(String title) =>
     find.ancestor(of: find.text(title), matching: find.byType(SwitchListTile));
 
 void main() {
+  testWidgets('wide settings place feedback next to the timing controls', (
+    tester,
+  ) async {
+    await _pump(tester, size: const Size(1160, 720));
+    expect(_switchFor(en.learnSound).hitTestable(), findsOneWidget);
+    final rhythm = tester.getRect(find.text(en.learnCharacterSpeed));
+    final feedback = tester.getRect(_switchFor(en.learnSound));
+    expect(feedback.left, greaterThan(rhythm.right));
+    expect(feedback.top, lessThan(rhythm.bottom));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('vibrator-less phone cannot enable haptics', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     addTearDown(() => debugDefaultTargetPlatformOverride = null);

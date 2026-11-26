@@ -162,6 +162,37 @@ Future<(TrainingController, _StationWriteGate)> _gatedSetup(
 }
 
 void main() {
+  testWidgets('wide setup puts readiness alongside the visible start action', (
+    tester,
+  ) async {
+    await _pump(tester);
+    tester.view.physicalSize = const Size(1280, 800);
+    await tester.pumpAndSettle();
+    final scenario = find.byType(RadioListTile<QsoScenario>).first;
+    final readiness = find.byKey(const ValueKey('qso-readiness-panel'));
+    final start = find.byKey(const ValueKey('qso-start'));
+    expect(tester.getTopLeft(scenario).dx, lessThan(60));
+    expect(
+      tester.getTopLeft(readiness).dx,
+      greaterThan(tester.getTopRight(scenario).dx),
+    );
+    expect(start.hitTestable(), findsOneWidget);
+  });
+
+  testWidgets(
+    'the QSO procedure can be consulted without losing a setup draft',
+    (tester) async {
+      await _pump(tester);
+      final field = find.widgetWithText(TextField, en.learnQsoYourCall);
+      await tester.enterText(field, 'T0EST');
+      await _tap(tester, find.byTooltip(en.learnQsoHowTitle));
+      expect(find.text(en.learnQsoHowBody), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(TextField, 'T0EST'), findsOneWidget);
+    },
+  );
+
   testWidgets('starting a QSO admits only one navigation while saving', (
     tester,
   ) async {

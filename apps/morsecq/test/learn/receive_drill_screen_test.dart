@@ -67,7 +67,59 @@ void main() {
     final marks = session.currentTimeline.where((e) => e.on).length;
     expect(playback.sink.events.where((e) => e.on).length, marks);
     expect(playback.sink.isOn, isFalse);
-    expect(find.text(en.learnReady), findsOneWidget);
+    expect(find.text(en.learnRoundHeard), findsOneWidget);
+  });
+
+  testWidgets('checking requires completed audio and a nonempty answer', (
+    tester,
+  ) async {
+    final (_, session, playback) = await _pump(tester);
+    final answer = find.byType(TextField);
+    final submit = find.widgetWithText(FilledButton, en.learnSubmit);
+    await tester.enterText(answer, session.currentDrill.text);
+    await tester.pump();
+    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+    tester.widget<TextField>(answer).onSubmitted!('');
+    await tester.pump();
+    expect(session.roundCount, 0);
+
+    playback.clock.advance(
+      MorseEncoder.totalDuration(session.currentTimeline) +
+          const Duration(milliseconds: 1),
+    );
+    await tester.pump();
+    await tester.enterText(answer, '   ');
+    await tester.pump();
+    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+    tester.widget<TextField>(answer).onSubmitted!('');
+    await tester.pump();
+    expect(session.roundCount, 0);
+
+    await tester.enterText(answer, session.currentDrill.text);
+    await tester.pump();
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+    expect(session.roundCount, 1);
+  });
+
+  testWidgets('skip is an explicit missed answer after playback', (
+    tester,
+  ) async {
+    final (_, session, playback) = await _pump(tester);
+    final missed = session.currentDrill.text[0];
+    final skip = find.widgetWithText(TextButton, en.learnSkipRound);
+    expect(skip, findsNothing);
+
+    playback.clock.advance(
+      MorseEncoder.totalDuration(session.currentTimeline) +
+          const Duration(milliseconds: 1),
+    );
+    await tester.pump();
+    await tester.tap(skip);
+    await tester.pumpAndSettle();
+
+    expect(session.roundCount, 1);
+    expect(find.textContaining(en.learnConfusedMissed(missed)), findsWidgets);
   });
 
   testWidgets('replay plays the same round again', (tester) async {
@@ -76,7 +128,7 @@ void main() {
     playback.clock.advance(total + const Duration(milliseconds: 1));
     await tester.pump();
     final before = playback.sink.events.length;
-    await tester.tap(find.text(en.learnReplay));
+    await tester.tap(find.text(en.learnReplayTurnsToPractice));
     await tester.pump();
     playback.clock.advance(total + const Duration(milliseconds: 1));
     expect(playback.sink.events.length, before * 2);
@@ -85,10 +137,12 @@ void main() {
   testWidgets(
     'typed answer -> score -> finish -> summary -> progress recorded',
     (tester) async {
-      final (t, session, _) = await _pump(tester);
+      final (t, session, playback) = await _pump(tester);
       final target = session.currentDrill.text;
 
+      playback.clock.advance(const Duration(minutes: 1));
       await tester.enterText(find.byType(TextField), target);
+      await tester.pump();
       await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
       await tester.pumpAndSettle();
 
@@ -155,10 +209,12 @@ void main() {
   });
 
   testWidgets('wrong copy shows misses and the confusion pair', (tester) async {
-    final (t, session, _) = await _pump(tester);
+    final (t, session, playback) = await _pump(tester);
     final target = session.currentDrill.text;
     final wrong = target.split('').map((c) => c == 'K' ? 'M' : 'K').join();
+    playback.clock.advance(const Duration(minutes: 1));
     await tester.enterText(find.byType(TextField), wrong);
+    await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
     await tester.pumpAndSettle();
     expect(find.text(en.learnRoundPerfect), findsNothing);

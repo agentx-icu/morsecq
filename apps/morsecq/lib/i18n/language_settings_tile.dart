@@ -57,8 +57,15 @@ class _LanguageDialog extends StatefulWidget {
 }
 
 class _LanguageDialogState extends State<_LanguageDialog> {
+  final _scroll = ScrollController();
   bool _saving = false;
   bool _failed = false;
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   Future<void> _select(String? tag) async {
     if (_saving) return;
@@ -96,10 +103,26 @@ class _LanguageDialogState extends State<_LanguageDialog> {
       builder: (context, _) {
         final current = controller.locale;
         final theme = Theme.of(context);
+        final language =
+            current?.languageCode ??
+            Localizations.localeOf(context).languageCode;
+        final available = LocaleController.supportedLocales;
+        final options = [
+          if (current != null)
+            ...available.where((locale) => locale == current),
+          ...available.where(
+            (locale) => locale.languageCode == language && locale != current,
+          ),
+          ...available.where((locale) => locale.languageCode != language),
+        ];
         // Only the option list scrolls: with every shipped language it is
         // taller than a phone screen, and the save error and Close button
         // must stay in view whichever row was tapped.
         return AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 18,
+          ),
           title: Text(s.languageTitle),
           contentPadding: const EdgeInsets.only(top: 8, bottom: 8),
           content: Column(
@@ -120,27 +143,32 @@ class _LanguageDialogState extends State<_LanguageDialog> {
                   ),
                 ),
               Flexible(
-                child: SingleChildScrollView(
-                  child: RadioGroup<String>(
-                    groupValue: current == null
-                        ? _systemTag
-                        : LocaleController.localeName(current),
-                    onChanged: _select,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        RadioListTile<String>(
-                          value: _systemTag,
-                          enabled: !_saving,
-                          title: Text(localeDisplayName(s, null)),
-                        ),
-                        for (final locale in LocaleController.supportedLocales)
+                child: Scrollbar(
+                  controller: _scroll,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _scroll,
+                    child: RadioGroup<String>(
+                      groupValue: current == null
+                          ? _systemTag
+                          : LocaleController.localeName(current),
+                      onChanged: _select,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           RadioListTile<String>(
-                            value: LocaleController.localeName(locale),
+                            value: _systemTag,
                             enabled: !_saving,
-                            title: Text(localeDisplayName(s, locale)),
+                            title: Text(localeDisplayName(s, null)),
                           ),
-                      ],
+                          for (final locale in options)
+                            RadioListTile<String>(
+                              value: LocaleController.localeName(locale),
+                              enabled: !_saving,
+                              title: Text(localeDisplayName(s, locale)),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

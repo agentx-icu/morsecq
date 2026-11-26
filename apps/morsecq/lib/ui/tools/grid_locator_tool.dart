@@ -12,6 +12,7 @@ class GridLocatorTool extends StatefulWidget {
 
   static const Key latitudeKey = Key('grid-latitude');
   static const Key longitudeKey = Key('grid-longitude');
+  static const Key precisionKey = Key('grid-precision');
   static const Key mineKey = Key('grid-mine');
   static const Key theirsKey = Key('grid-theirs');
 
@@ -24,6 +25,7 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
   final TextEditingController _lon = TextEditingController();
   final TextEditingController _mine = TextEditingController();
   final TextEditingController _theirs = TextEditingController();
+  int _length = 8;
 
   @override
   void dispose() {
@@ -39,13 +41,11 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final locator = _locatorResult(s);
     return ToolPage(
       title: s.toolsGridTitle,
-      children: <Widget>[
-        ToolSection(
-          title: s.toolsGridFromCoordinates,
-          children: <Widget>[..._coordinateFields(s), ..._locatorResult(s)],
-        ),
+      secondary: [
+        if (locator.isNotEmpty) ToolSection(children: locator),
         ToolSection(
           title: s.toolsGridDistanceSection,
           children: <Widget>[
@@ -62,6 +62,27 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
           ],
         ),
       ],
+      children: <Widget>[
+        ToolSection(
+          title: s.toolsGridFromCoordinates,
+          children: <Widget>[
+            ..._coordinateFields(s),
+            SegmentedButton<int>(
+              key: GridLocatorTool.precisionKey,
+              segments: [
+                for (final length in [6, 8])
+                  ButtonSegment(
+                    value: length,
+                    label: Text(s.learnCharsCount(length)),
+                  ),
+              ],
+              selected: {_length},
+              onSelectionChanged: (values) =>
+                  setState(() => _length = values.single),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -72,47 +93,51 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
     );
     // Side by side when both labels fit, stacked on a narrow phone or with
     // large text. One Flex either way keeps focus across a rotation.
-    final narrow =
-        MediaQuery.sizeOf(context).width <
-        MediaQuery.textScalerOf(context).scale(360);
     return <Widget>[
-      Flex(
-        direction: narrow ? Axis.vertical : Axis.horizontal,
-        crossAxisAlignment: narrow
-            ? CrossAxisAlignment.stretch
-            : CrossAxisAlignment.start,
-        children: <Widget>[
-          Flexible(
-            flex: narrow ? 0 : 1,
-            fit: FlexFit.tight,
-            child: TextField(
-              key: GridLocatorTool.latitudeKey,
-              controller: _lat,
-              keyboardType: keyboard,
-              textInputAction: TextInputAction.next,
-              onChanged: _changed,
-              decoration: InputDecoration(
-                label: FieldLabel(s.toolsGridLatitude),
-                border: const OutlineInputBorder(),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final narrow =
+              constraints.maxWidth <
+              MediaQuery.textScalerOf(context).scale(330);
+          return Flex(
+            direction: narrow ? Axis.vertical : Axis.horizontal,
+            crossAxisAlignment: narrow
+                ? CrossAxisAlignment.stretch
+                : CrossAxisAlignment.start,
+            children: <Widget>[
+              Flexible(
+                flex: narrow ? 0 : 1,
+                fit: FlexFit.tight,
+                child: TextField(
+                  key: GridLocatorTool.latitudeKey,
+                  controller: _lat,
+                  keyboardType: keyboard,
+                  textInputAction: TextInputAction.next,
+                  onChanged: _changed,
+                  decoration: InputDecoration(
+                    label: FieldLabel(s.toolsGridLatitude),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(width: narrow ? 0 : 12, height: narrow ? 12 : 0),
-          Flexible(
-            flex: narrow ? 0 : 1,
-            fit: FlexFit.tight,
-            child: TextField(
-              key: GridLocatorTool.longitudeKey,
-              controller: _lon,
-              keyboardType: keyboard,
-              onChanged: _changed,
-              decoration: InputDecoration(
-                label: FieldLabel(s.toolsGridLongitude),
-                border: const OutlineInputBorder(),
+              SizedBox(width: narrow ? 0 : 12, height: narrow ? 12 : 0),
+              Flexible(
+                flex: narrow ? 0 : 1,
+                fit: FlexFit.tight,
+                child: TextField(
+                  key: GridLocatorTool.longitudeKey,
+                  controller: _lon,
+                  keyboardType: keyboard,
+                  onChanged: _changed,
+                  decoration: InputDecoration(
+                    label: FieldLabel(s.toolsGridLongitude),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
       Padding(
         padding: const EdgeInsets.only(top: 6, bottom: 8),
@@ -137,7 +162,7 @@ class _GridLocatorToolState extends State<GridLocatorTool> {
     return <Widget>[
       ResultRow(
         label: s.toolsGridLocator,
-        value: Maidenhead.fromPoint(point, length: 8),
+        value: Maidenhead.fromPoint(point, length: _length),
         emphasize: true,
       ),
     ];

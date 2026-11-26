@@ -94,19 +94,85 @@ void main() {
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
     await waitForWorkbenchCondition(
       tester,
       () => t.controller.progress.history.isNotEmpty,
       description: 'record the copy attempt',
     );
-    expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
+    expect(
+      find.text(en.workbenchEstimateMatch(en.learnAccuracyPercent(100))),
+      findsOneWidget,
+    );
     expect(find.text(en.workbenchAgainstDecoder), findsOneWidget);
     final record = t.controller.progress.history.single;
     expect(record.source, ExerciseSource.recording);
     expect(record.isKnownUnassisted, isTrue);
     expect(t.controller.progress.srs.cards, isEmpty);
     expect(t.controller.progress.charStats, isEmpty);
+  });
+
+  testWidgets('a wide workbench shows decoding beside the selected waveform', (
+    tester,
+  ) async {
+    await pumpScreen(tester, size: const Size(1200, 900));
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    final decode = find.byKey(const ValueKey('workbench-decode'));
+    await waitForWorkbench(tester, decode);
+    final waveform = find.byType(WorkbenchWaveform);
+    expect(
+      tester.getRect(decode).left,
+      greaterThan(tester.getRect(waveform).right),
+    );
+  });
+
+  testWidgets('wide result scrolling keeps waveform and playback visible', (
+    tester,
+  ) async {
+    await pumpScreen(tester, size: const Size(1050, 600));
+    await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
+    final decode = find.byKey(const ValueKey('workbench-decode'));
+    await waitForWorkbench(tester, decode);
+    final play = find.byKey(const ValueKey('workbench-play'));
+    final waveform = find.byType(WorkbenchWaveform);
+    final baseline = tester.getTopLeft(waveform);
+    await waitForWorkbench(tester, decode, enabled: true);
+    await tester.tap(decode);
+    await waitForWorkbench(
+      tester,
+      find.byKey(const ValueKey('workbench-answer')),
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('workbench-answer')),
+      'SOS',
+    );
+    tester.testTextInput.hide();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    final submit = find.byKey(const ValueKey('workbench-submit'));
+    await tester.ensureVisible(submit);
+    await tester.pumpAndSettle();
+    expect(submit.hitTestable(), findsOneWidget);
+    await tester.tap(submit);
+    final summary = find.textContaining(en.workbenchEstimateMatch('').trim());
+    await waitForWorkbench(tester, summary);
+    await tester.ensureVisible(summary);
+    await tester.pumpAndSettle();
+    expect(summary.hitTestable(), findsOneWidget);
+    expect(tester.getTopLeft(waveform), baseline);
+    expect(play.hitTestable(), findsOneWidget);
+    final answer = find.byKey(const ValueKey('workbench-answer'));
+    expect(tester.widget<TextField>(answer).readOnly, isTrue);
+    final retry = find.byKey(const ValueKey('workbench-start-new-copy'));
+    await tester.ensureVisible(retry);
+    await tester.pumpAndSettle();
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(answer).readOnly, isFalse);
+    expect(tester.widget<TextField>(answer).controller!.text, isEmpty);
+    expect(find.text(en.learnVerdictAssisted), findsOneWidget);
+    expect(summary, findsNothing);
   });
 
   testWidgets('a rejected file reports why and keeps the screen usable', (
@@ -388,6 +454,36 @@ void main() {
       2,
     );
     expect(tester.widget<TextField>(end).controller!.text, seconds);
+  });
+
+  testWidgets('deletion asks about the saved selection and can be cancelled', (
+    tester,
+  ) async {
+    final (t, _, _) = await pumpScreen(tester);
+    await t.controller.upsertAudioMaterial(
+      AudioMaterial(
+        id: 'rec_1',
+        title: 'Net notes',
+        file: 'media/recordings/rec_1.wav',
+        originalName: 'net.wav',
+        start: Duration.zero,
+        end: const Duration(seconds: 2),
+        sampleRate: 8000,
+        channels: 1,
+        createdAt: DateTime.utc(2026, 10, 3),
+      ),
+    );
+    await tester.tap(find.byTooltip(en.workbenchLibrary));
+    await waitForWorkbench(tester, find.text('Net notes'));
+    await tester.tap(find.widgetWithText(TextButton, en.workbenchDelete));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.textContaining('Net notes').last.hitTestable(), findsOneWidget);
+    await tester.tap(find.text(en.actionCancel));
+    await tester.pumpAndSettle();
+    expect(find.text('Net notes'), findsOneWidget);
+    expect((await t.controller.loadAudioMaterials()).single.note, isEmpty);
   });
 
   testWidgets('a saved selection with missing media offers relink', (

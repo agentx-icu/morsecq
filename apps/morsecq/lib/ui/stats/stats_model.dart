@@ -59,8 +59,9 @@ final class StatsSnapshot {
     required this.now,
     required this.learnedChars,
     required this.accuracyLast7Days,
+    required this.accuracyInHistory,
     required this.bestStreak,
-    required this.totalPracticeTime,
+    required this.practiceTimeInHistory,
     required this.trend,
     required this.calendar,
   });
@@ -74,6 +75,10 @@ final class StatsSnapshot {
     ExerciseSource.conditions => false,
     _ => true,
   };
+
+  static bool _isSending(SessionSummary session) =>
+      session.source == ExerciseSource.send ||
+      (session.source == null && session.drillKind == kSendDrillKind);
 
   factory StatsSnapshot.from(
     TrainerProgress progress, {
@@ -93,14 +98,21 @@ final class StatsSnapshot {
     final since = DateTime(clock.year, clock.month, clock.day - 6);
     var recentTotal = 0;
     var recentCorrect = 0;
+    var retainedTotal = 0;
+    var retainedCorrect = 0;
     var elapsed = Duration.zero;
     for (final s in progress.history) {
       elapsed += s.elapsed ?? Duration.zero;
-      // QSO, placement and recording records carry activity, not copying
-      // accuracy: they never enter accuracy figures.
-      if (!s.at.isBefore(since) && countsAsCopying(s)) {
-        recentTotal += s.totalChars;
-        recentCorrect += s.correctChars;
+      if (countsAsCopying(s) &&
+          !_isSending(s) &&
+          s.completed &&
+          s.assistance?.isNotEmpty != true) {
+        retainedTotal += s.totalChars;
+        retainedCorrect += s.correctChars;
+        if (!s.at.isBefore(since)) {
+          recentTotal += s.totalChars;
+          recentCorrect += s.correctChars;
+        }
       }
     }
 
@@ -111,10 +123,7 @@ final class StatsSnapshot {
         TrendPoint(
           index: i + 1,
           summary: window[i],
-          isSend:
-              window[i].source == ExerciseSource.send ||
-              (window[i].source == null &&
-                  window[i].drillKind == kSendDrillKind),
+          isSend: _isSending(window[i]),
         ),
     ];
 
@@ -124,6 +133,9 @@ final class StatsSnapshot {
       now: clock,
       learnedChars: learned,
       accuracyLast7Days: recentTotal == 0 ? null : recentCorrect / recentTotal,
+      accuracyInHistory: retainedTotal == 0
+          ? null
+          : retainedCorrect / retainedTotal,
       bestStreak: math.max(
         progress.streakDays,
         longestDailyRun([
@@ -131,7 +143,7 @@ final class StatsSnapshot {
           ...progress.listeningAttempts.map((a) => a.at),
         ]),
       ),
-      totalPracticeTime: elapsed,
+      practiceTimeInHistory: elapsed,
       trend: trend,
       calendar: _buildCalendar(progress, clock, calendarWeeks, firstDayOfWeek),
     );
@@ -153,16 +165,19 @@ final class StatsSnapshot {
   /// Symbols known at the current lesson, in Koch order.
   final List<String> learnedChars;
 
-  /// Correct / attempted over sessions in the last 7 calendar days, or null
-  /// when there were none.
+  /// Correct / attempted over eligible copying records in the last 7 calendar
+  /// days, or null when none are present in the retained history.
   final double? accuracyLast7Days;
+
+  /// The same measure over all retained history.
+  final double? accuracyInHistory;
 
   /// Longest run of consecutive practice days seen in history (or the stored
   /// streak, whichever is larger).
   final int bestStreak;
 
-  /// Sum of recorded session durations.
-  final Duration totalPracticeTime;
+  /// Sum of durations in the retained session history.
+  final Duration practiceTimeInHistory;
 
   /// Oldest first, at most [kTrendWindow] points.
   final List<TrendPoint> trend;
@@ -176,9 +191,6 @@ final class StatsSnapshot {
   int get currentLesson => course.clampLesson(progress.currentLesson);
 
   int get lessonCount => course.lessonCount;
-
-  double? get accuracyAllTime =>
-      progress.charStats.isEmpty ? null : progress.overallAccuracy;
 
   int get totalChars => progress.totalCharsPracticed;
 

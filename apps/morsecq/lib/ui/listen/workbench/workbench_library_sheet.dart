@@ -9,6 +9,7 @@ import '../../common/feedback.dart';
 import '../../common/field_label.dart';
 import 'recording_files.dart';
 import 'workbench_controller.dart';
+import 'workbench_errors.dart';
 import 'workbench_waveform.dart';
 
 /// Asks for a title and note; returns null when cancelled.
@@ -125,6 +126,7 @@ class _LibrarySheet extends StatefulWidget {
 class _LibrarySheetState extends State<_LibrarySheet> {
   List<(AudioMaterial, bool)>? _items;
   bool _busy = false;
+  (String, String)? _relinkFailure;
 
   @override
   void initState() {
@@ -157,6 +159,7 @@ class _LibrarySheetState extends State<_LibrarySheet> {
       m.file,
       m.title,
       selection: (m.start, m.end),
+      originalName: m.originalName,
     );
     if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
     Navigator.of(context).pop();
@@ -173,14 +176,56 @@ class _LibrarySheetState extends State<_LibrarySheet> {
         ModalRoute.of(context)?.isCurrent != true) {
       return;
     }
-    if (await widget.controller.relinkRecording(picked, m.file)) {
-      if (mounted) await _reload();
+    if (await widget.controller.relinkRecording(
+      picked,
+      m,
+      training: widget.training,
+    )) {
+      if (mounted) {
+        setState(() => _relinkFailure = null);
+        await _reload();
+      }
     } else if (mounted) {
-      widget.onFailure(widget.controller);
+      setState(() {
+        _relinkFailure = (
+          m.id,
+          workbenchFailureText(context.s, widget.controller),
+        );
+      });
     }
   });
 
   Future<void> _delete(AudioMaterial m) => _run(() async {
+    final s = context.s;
+    final removesCopy =
+        m.file != widget.controller.file &&
+        m.file != RecordingLibrary.workingFile &&
+        _items?.any((item) => item.$1.id == m.id && item.$2) == true &&
+        _items?.any((item) => item.$1.id != m.id && item.$1.file == m.file) ==
+            false;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(s.workbenchDeleteTitle),
+        content: Text(
+          removesCopy
+              ? s.workbenchDeleteWithCopy(m.title)
+              : s.workbenchDeleteSelection(m.title),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(false),
+            child: Text(s.actionCancel),
+          ),
+          FilledButton(
+            key: const ValueKey('workbench-delete-confirm'),
+            onPressed: () => Navigator.of(dialog).pop(true),
+            child: Text(s.workbenchDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
     final ok = await widget.controller.deleteSaved(widget.training, m);
     if (mounted) {
       if (!ok) widget.onFailure(widget.controller);
@@ -192,6 +237,10 @@ class _LibrarySheetState extends State<_LibrarySheet> {
   Widget build(BuildContext context) {
     final s = context.s;
     final items = _items;
+    final references = <String, int>{};
+    for (final (m, _) in items ?? <(AudioMaterial, bool)>[]) {
+      references.update(m.file, (count) => count + 1, ifAbsent: () => 1);
+    }
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -224,29 +273,67 @@ class _LibrarySheetState extends State<_LibrarySheet> {
                         key: ValueKey('workbench-item-${m.id}'),
                         minTileHeight: 56,
                         title: Text(m.title),
-                        subtitle: Text(
-                          present
-                              ? '${formatClock(m.start)} – ${formatClock(m.end)}'
-                                    '${m.note.isEmpty ? '' : '\n${m.note}'}'
-                              : s.workbenchMissing,
-                        ),
-                        onTap: present && !_busy ? () => _open(m) : null,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            if (!present)
-                              IconButton(
-                                tooltip: s.workbenchRelink,
-                                onPressed: _busy ? null : () => _relink(m),
-                                icon: const Icon(Icons.link),
-                              ),
-                            IconButton(
-                              tooltip: s.workbenchDelete,
-                              onPressed: _busy ? null : () => _delete(m),
-                              icon: const Icon(Icons.delete_outline),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${formatClock(m.start)} – ${formatClock(m.end)}'
+                              '${m.note.isEmpty ? '' : '\n${m.note}'}',
                             ),
+                            if (!present) ...[
+                              if (m.originalName.isNotEmpty)
+                                Text(m.originalName),
+                              Text(s.workbenchMissing),
+                              Text(s.workbenchRelinkFormat),
+                              if ((references[m.file] ?? 0) > 1)
+                                Text(
+                                  s.workbenchRelinkShared(references[m.file]!),
+                                ),
+                              Wrap(
+                                spacing: 8,
+                                children: [
+                                  Tooltip(
+                                    message: s.workbenchRelink,
+                                    excludeFromSemantics: true,
+                                    child: FilledButton.tonalIcon(
+                                      onPressed: _busy
+                                          ? null
+                                          : () => _relink(m),
+                                      icon: const Icon(Icons.link),
+                                      label: Text(s.workbenchRelink),
+                                    ),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: _busy ? null : () => _delete(m),
+                                    icon: const Icon(Icons.delete_outline),
+                                    label: Text(s.workbenchDelete),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            if (_relinkFailure case (
+                              final id,
+                              final message,
+                            ) when id == m.id)
+                              Semantics(
+                                liveRegion: true,
+                                child: Text(
+                                  message,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
+                        onTap: present && !_busy ? () => _open(m) : null,
+                        trailing: present
+                            ? IconButton(
+                                tooltip: s.workbenchDelete,
+                                onPressed: _busy ? null : () => _delete(m),
+                                icon: const Icon(Icons.delete_outline),
+                              )
+                            : null,
                       ),
                   ],
                 ),

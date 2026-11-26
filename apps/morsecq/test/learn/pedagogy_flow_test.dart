@@ -144,20 +144,23 @@ void main() {
       expect(verdictOf(outcome, session), ReceiveVerdict.unlocked);
     });
 
-    test('a challenge that always misses the new symbol does not pass', () async {
-      final t = await TestTraining.create();
-      final c = t.controller;
-      final session = c.startLessonSession();
-      final outcome = await _answerAll(
-        c,
-        session,
-        answer: (target) => target.replaceAll('M', 'K'),
-      );
-      expect(outcome.challenge, isTrue);
-      expect(outcome.passed, isFalse);
-      expect(c.currentLesson, 1);
-      expect(verdictOf(outcome, session).isFailedChallenge, isTrue);
-    });
+    test(
+      'a challenge that always misses the new symbol does not pass',
+      () async {
+        final t = await TestTraining.create();
+        final c = t.controller;
+        final session = c.startLessonSession();
+        final outcome = await _answerAll(
+          c,
+          session,
+          answer: (target) => target.replaceAll('M', 'K'),
+        );
+        expect(outcome.challenge, isTrue);
+        expect(outcome.passed, isFalse);
+        expect(c.currentLesson, 1);
+        expect(verdictOf(outcome, session).isFailedChallenge, isTrue);
+      },
+    );
 
     test('a replayed challenge is practice with help', () async {
       final t = await TestTraining.create();
@@ -230,7 +233,10 @@ void main() {
       expect(c.learnerStage, LearnerStage.recognition);
       t.clock.advance(const Duration(days: 1));
       final next = await c.ensureTodayPlan();
-      expect(next.steps.map((s) => s.kind), isNot(contains(PlanStepKind.intro)));
+      expect(
+        next.steps.map((s) => s.kind),
+        isNot(contains(PlanStepKind.intro)),
+      );
       expect(next.steps.first.kind, PlanStepKind.recognition);
     });
 
@@ -332,7 +338,9 @@ void main() {
       expect(find.text(en.firstLessonTrialsTitle), findsOneWidget);
       for (var i = 0; i < 6; i++) {
         final target = trials.currentDrill.text;
-        await tester.ensureVisible(find.byKey(ValueKey<String>('trial-$target')));
+        await tester.ensureVisible(
+          find.byKey(ValueKey<String>('trial-$target')),
+        );
         await tester.tap(find.byKey(ValueKey<String>('trial-$target')));
         await tester.pumpAndSettle();
         expect(find.text(en.firstLessonTrialCorrect(target)), findsOneWidget);
@@ -355,19 +363,22 @@ void main() {
       _setPhone(tester);
       final t = await TestTraining.create(settings: kShortSettings);
       addTearDown(t.controller.dispose);
+      final playback = FakeLearnPlaybackFactory();
       final session = t.controller.startReceiveSession(ReceiveDrillKind.groups);
       await tester.pumpWidget(
         l10nApp(
           home: ReceiveDrillScreen(
             controller: t.controller,
-            playback: FakeLearnPlaybackFactory(),
+            playback: playback,
             session: session,
           ),
         ),
       );
       await tester.pumpAndSettle();
       expect(find.text(en.learnPracticeTitle), findsOneWidget);
+      playback.clock.advance(const Duration(minutes: 1));
       await tester.enterText(find.byType(TextField), session.currentDrill.text);
+      await tester.pump();
       await tester.tap(find.text(en.learnSubmit));
       await tester.pumpAndSettle();
       await tester.tap(find.text(en.learnFinish));
@@ -377,6 +388,11 @@ void main() {
       expect(find.byKey(const ValueKey('take-challenge')), findsOneWidget);
       expect(find.byKey(const ValueKey('receive-done')), findsOneWidget);
       expect(t.controller.currentLesson, 1);
+      final challenge = find.byKey(const ValueKey('take-challenge'));
+      await tester.ensureVisible(challenge);
+      await tester.tap(challenge);
+      await tester.pumpAndSettle();
+      expect(find.text(en.learnChallengeTitle(1)), findsOneWidget);
     });
 
     testWidgets('a challenge screen is titled as one', (tester) async {
@@ -432,7 +448,9 @@ void main() {
       addTearDown(t.controller.dispose);
       final playback = FakeLearnPlaybackFactory();
       await tester.pumpWidget(
-        l10nApp(home: LearnHome(controller: t.controller, playback: playback)),
+        l10nApp(
+          home: LearnHome(controller: t.controller, playback: playback),
+        ),
       );
       await tester.pumpAndSettle();
       expect(playback.created, isEmpty, reason: 'lazy: no audio on open');
@@ -510,7 +528,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('qso-readiness-symbols')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('qso-readiness-symbols')),
+        findsOneWidget,
+      );
       expect(find.text(en.learnQsoNotReadyTitle), findsOneWidget);
       expect(find.byKey(const ValueKey('qso-missing-?')), findsOneWidget);
       expect(find.byKey(const ValueKey('qso-explore-label')), findsOneWidget);
@@ -519,35 +540,38 @@ void main() {
   });
 
   group("A2': session scoring", () {
-    test('a symbol missed in one round stays missed in the session score', () async {
-      final t = await TestTraining.create();
-      final c = t.controller;
-      // Joined and re-aligned these ten rounds would read as a perfect copy.
-      final session = ReceiveSession(
-        kind: ReceiveDrillKind.groups,
-        generator: _ScriptedDrill(const <String>['KKKKM', 'MKKKK']),
-        chars: const <String>['K', 'M'],
-        timing: const MorseTiming(wpm: 20),
-        charBudget: 50,
-        lesson: 1,
-        countsTowardLesson: true,
-        source: ExerciseSource.course,
-        random: Random(1),
-        now: () => kTestNow,
-      );
-      var i = 0;
-      while (!session.isComplete) {
-        session.submit((i++).isEven ? 'KKKKMM' : 'KKKK');
-      }
-      final score = session.finish();
-      expect(score.totalChars, 50);
-      expect(score.charStats['M'], const CharStats(attempts: 10, correct: 5));
-      expect(score.strictAccuracy, lessThan(0.9));
-      final outcome = await c.recordReceiveSession(session);
-      expect(outcome.passed, isFalse);
-      expect(c.currentLesson, 1);
-      expect(verdictOf(outcome, session), ReceiveVerdict.belowAccuracy);
-    });
+    test(
+      'a symbol missed in one round stays missed in the session score',
+      () async {
+        final t = await TestTraining.create();
+        final c = t.controller;
+        // Joined and re-aligned these ten rounds would read as a perfect copy.
+        final session = ReceiveSession(
+          kind: ReceiveDrillKind.groups,
+          generator: _ScriptedDrill(const <String>['KKKKM', 'MKKKK']),
+          chars: const <String>['K', 'M'],
+          timing: const MorseTiming(wpm: 20),
+          charBudget: 50,
+          lesson: 1,
+          countsTowardLesson: true,
+          source: ExerciseSource.course,
+          random: Random(1),
+          now: () => kTestNow,
+        );
+        var i = 0;
+        while (!session.isComplete) {
+          session.submit((i++).isEven ? 'KKKKMM' : 'KKKK');
+        }
+        final score = session.finish();
+        expect(score.totalChars, 50);
+        expect(score.charStats['M'], const CharStats(attempts: 10, correct: 5));
+        expect(score.strictAccuracy, lessThan(0.9));
+        final outcome = await c.recordReceiveSession(session);
+        expect(outcome.passed, isFalse);
+        expect(c.currentLesson, 1);
+        expect(verdictOf(outcome, session), ReceiveVerdict.belowAccuracy);
+      },
+    );
   });
 
   group('first lesson on a phone', () {
@@ -575,7 +599,9 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('first-lesson-play')));
         await tester.pump();
         expect(playback.sink.isOn, isTrue);
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
         tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
         tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
         await tester.pump();
@@ -585,18 +611,28 @@ void main() {
         await tester.pump();
         expect(playback.sink.events.length, before);
         tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
         await tester.pump();
         // Straight to the trials: one answer makes leaving ask first.
         await tester.tap(find.byKey(const ValueKey('first-lesson-heard')));
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const ValueKey('first-lesson-continue-worked')));
+        await tester.tap(
+          find.byKey(const ValueKey('first-lesson-continue-worked')),
+        );
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const ValueKey('first-lesson-continue-trials')));
+        await tester.tap(
+          find.byKey(const ValueKey('first-lesson-continue-trials')),
+        );
         await tester.pumpAndSettle();
         final target = trials.currentDrill.text;
-        await tester.ensureVisible(find.byKey(ValueKey<String>('trial-$target')));
+        await tester.ensureVisible(
+          find.byKey(ValueKey<String>('trial-$target')),
+        );
         await tester.tap(find.byKey(ValueKey<String>('trial-$target')));
         await tester.pumpAndSettle();
         expect(guard().guard, isTrue);
@@ -612,15 +648,24 @@ void main() {
       _setPhone(tester);
       final t = await TestTraining.create(
         progress: TrainerProgress(currentLesson: 3),
-        settings: const TrainingSettings(soundEnabled: false, flashEnabled: true),
+        settings: const TrainingSettings(
+          soundEnabled: false,
+          flashEnabled: true,
+        ),
       );
       addTearDown(t.controller.dispose);
       final playback = _FlashOnlyFactory();
       await tester.pumpWidget(
-        l10nApp(home: LearnHome(controller: t.controller, playback: playback)),
+        l10nApp(
+          home: LearnHome(controller: t.controller, playback: playback),
+        ),
       );
       await tester.pumpAndSettle();
-      expect(find.byType(FlashOverlay), findsNothing, reason: 'nothing built yet');
+      expect(
+        find.byType(FlashOverlay),
+        findsNothing,
+        reason: 'nothing built yet',
+      );
       await tester.tap(find.byKey(const ValueKey('hear-newest')));
       await tester.pumpAndSettle();
       expect(playback.created, hasLength(1));

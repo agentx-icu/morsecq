@@ -34,6 +34,9 @@ class ReceiveSummaryView extends StatelessWidget {
     final s = context.s;
     final score = outcome.score;
     final weak = score.weakChars();
+    String displayedAccuracy(double ratio) => outcome.challenge
+        ? formatChallengeAccuracy(s, ratio, course.passAccuracy)
+        : formatAccuracy(s, ratio);
     final confusions = session.confusionPairs();
     final verdict = verdictOf(outcome, session);
     final (headline, icon) = _headline(s, verdict);
@@ -56,7 +59,7 @@ class ReceiveSummaryView extends StatelessWidget {
         // The strict figure is what the Koch unlock rule uses, so the number
         // shown always agrees with the verdict colour.
         Text(
-          formatAccuracy(s, score.strictAccuracy),
+          displayedAccuracy(score.strictAccuracy),
           style: theme.textTheme.displayMedium?.copyWith(
             color: accent,
             fontWeight: FontWeight.bold,
@@ -71,21 +74,23 @@ class ReceiveSummaryView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(icon, color: accent),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                headline,
-                key: const ValueKey('receive-verdict'),
-                style: theme.textTheme.titleSmall,
+        if (outcome.saved || verdict.isFailedChallenge)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(icon, color: accent),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  headline,
+                  key: const ValueKey('receive-verdict'),
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
-            ),
-          ],
-        ),
-        if (explanation != null) ...<Widget>[
+            ],
+          ),
+        if ((outcome.saved || verdict.isFailedChallenge) &&
+            explanation != null) ...<Widget>[
           const SizedBox(height: 6),
           Text(
             explanation,
@@ -94,6 +99,11 @@ class ReceiveSummaryView extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
+        ],
+        if ((outcome.challenge ? outcome.attemptedLesson : null)
+            case final lesson?) ...[
+          const SizedBox(height: 16),
+          _ChallengeEvidence(course: course, score: score, lesson: lesson),
         ],
         if (weak.isNotEmpty) ...<Widget>[
           const SizedBox(height: 20),
@@ -106,7 +116,7 @@ class ReceiveSummaryView extends StatelessWidget {
                 for (final c in weak.take(10))
                   Chip(
                     label: Text(
-                      '$c ${formatAccuracy(s, score.perCharAccuracy[c] ?? 0)}',
+                      '$c ${displayedAccuracy(score.charStats[c]?.accuracy ?? 0)}',
                     ),
                   ),
               ],
@@ -214,6 +224,79 @@ class ReceiveSummaryView extends StatelessWidget {
       ReceiveVerdict.newSymbolsBelowPass => s.learnVerdictNewSymbolWeakHint,
       _ => null,
     };
+  }
+}
+
+class _ChallengeEvidence extends StatelessWidget {
+  const _ChallengeEvidence({
+    required this.course,
+    required this.score,
+    required this.lesson,
+  });
+
+  final KochCourse course;
+  final SessionScore score;
+  final int lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = context.s;
+    final colors = Theme.of(context).colorScheme;
+    if (!course.isValidLesson(lesson)) return const SizedBox.shrink();
+    final minimum = course.requiredNewCharAttempts(lesson);
+    String accuracyEvidence(int correct, int attempts, double accuracy) =>
+        '$correct / $attempts · '
+        '${formatChallengeAccuracy(s, accuracy, course.passAccuracy)} / '
+        '≥ ${formatAccuracy(s, course.passAccuracy)}';
+    Widget evidence(String label, String measurement, bool passed) => ListTile(
+      leading: Icon(
+        passed ? Icons.check_circle_outline : Icons.info_outline,
+        color: passed ? colors.primary : colors.error,
+      ),
+      title: Text(label),
+      subtitle: Text(
+        '$measurement · ${passed ? s.learnChallengeReached : s.learnChallengeNotReached}',
+      ),
+    );
+    return Card(
+      key: const ValueKey('receive-challenge-evidence'),
+      margin: EdgeInsets.zero,
+      child: Column(
+        children: [
+          ListTile(title: Text(challengeRule(s, course, lesson))),
+          evidence(
+            s.learnCharsCount(score.totalChars),
+            '${score.totalChars} / ${course.minCharsPerSession}',
+            score.totalChars >= course.minCharsPerSession,
+          ),
+          evidence(
+            s.learnChallengeOverall,
+            accuracyEvidence(
+              score.correctChars,
+              score.totalChars + score.insertions,
+              score.strictAccuracy,
+            ),
+            score.strictAccuracy >= course.passAccuracy,
+          ),
+          for (final symbol in course.newCharsForLesson(lesson)) ...[
+            evidence(
+              '$symbol · ${s.learnChallengeSamples}',
+              '${score.charStats[symbol]?.attempts ?? 0} / ≥ $minimum',
+              (score.charStats[symbol]?.attempts ?? 0) >= minimum,
+            ),
+            evidence(
+              '$symbol · ${s.statsTileAccuracy}',
+              accuracyEvidence(
+                score.charStats[symbol]?.correct ?? 0,
+                score.charStats[symbol]?.attempts ?? 0,
+                score.charStats[symbol]?.accuracy ?? 0,
+              ),
+              (score.charStats[symbol]?.accuracy ?? 0) >= course.passAccuracy,
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 

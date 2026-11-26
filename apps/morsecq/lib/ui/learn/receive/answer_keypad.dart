@@ -21,7 +21,7 @@ class AnswerKeypad extends StatelessWidget {
   final List<String> chars;
   final ValueChanged<String> onChar;
   final VoidCallback onBackspace;
-  final VoidCallback onSpace;
+  final VoidCallback? onSpace;
   final bool enabled;
 
   static const double keySize = 48;
@@ -55,14 +55,15 @@ class AnswerKeypad extends StatelessWidget {
           spacing: keyGap,
           runSpacing: keyGap,
           children: <Widget>[
-            _Key(
-              label: s.learnSpace,
-              semanticsLabel: s.learnSpace,
-              enabled: enabled,
-              onTap: onSpace,
-              minWidth: keySize * 3,
-              background: scheme.surfaceContainerHigh,
-            ),
+            if (onSpace case final space?)
+              _Key(
+                label: s.learnSpace,
+                semanticsLabel: s.learnSpace,
+                enabled: enabled,
+                onTap: space,
+                minWidth: keySize * 3,
+                background: scheme.surfaceContainerHigh,
+              ),
             _Key(
               label: '⌫',
               semanticsLabel: s.learnBackspace,

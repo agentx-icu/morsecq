@@ -60,11 +60,11 @@ void main() {
       expect(s.currentLesson, 1);
       expect(s.lessonCount, 42);
       expect(s.learnedChars, <String>['K', 'M']);
-      expect(s.accuracyAllTime, isNull);
+      expect(s.accuracyInHistory, isNull);
       expect(s.accuracyLast7Days, isNull);
       expect(s.currentStreak, 0);
       expect(s.bestStreak, 0);
-      expect(s.totalPracticeTime, Duration.zero);
+      expect(s.practiceTimeInHistory, Duration.zero);
       expect(s.trend, isEmpty);
       expect(s.calendar.length, 7 * StatsSnapshot.kCalendarWeeks);
       expect(s.activeDays, 0);
@@ -76,7 +76,7 @@ void main() {
       expect(s.isEmpty, isFalse);
       expect(s.sessionCount, 3);
       expect(s.totalChars, 36);
-      expect(s.totalPracticeTime, const Duration(minutes: 6));
+      expect(s.practiceTimeInHistory, const Duration(minutes: 6));
       expect(s.currentStreak, 3);
       expect(s.bestStreak, 3);
       expect(s.charsToday, 12);
@@ -84,7 +84,7 @@ void main() {
       expect(s.dailyGoalMet, isFalse);
       expect(s.learnedChars, <String>['K', 'M', 'R', 'S']);
       // 2 misses over 36 chars lifetime.
-      expect(s.accuracyAllTime, closeTo(34 / 36, 1e-9));
+      expect(s.accuracyInHistory, closeTo(34 / 36, 1e-9));
       expect(s.accuracyLast7Days, closeTo(34 / 36, 1e-9));
     });
 
@@ -94,7 +94,7 @@ void main() {
         now: kNow,
       );
       expect(s.accuracyLast7Days, isNull);
-      expect(s.accuracyAllTime, isNotNull);
+      expect(s.accuracyInHistory, isNotNull);
       expect(s.currentStreak, 0);
       expect(s.bestStreak, 2);
     });
@@ -217,7 +217,7 @@ void main() {
       final a = StatsSnapshot.from(progress, now: kNow);
       final b = StatsSnapshot.from(copy, now: kNow);
       expect(b.totalChars, a.totalChars);
-      expect(b.accuracyAllTime, a.accuracyAllTime);
+      expect(b.accuracyInHistory, a.accuracyInHistory);
       expect(b.trend.length, a.trend.length);
       expect(b.confusedTargets, a.confusedTargets);
       expect(b.bestStreak, a.bestStreak);
@@ -246,5 +246,29 @@ void main() {
     );
     expect(snap.accuracyLast7Days, 0.5);
     expect(snap.trend, hasLength(1));
+  });
+
+  test('recent receive accuracy ignores sending and assisted copying', () {
+    final progress = buildProgress(days: 2);
+    final mixed = progress.copyWith(
+      history: [
+        ...progress.history,
+        SessionSummary(
+          at: kNow,
+          totalChars: 20,
+          correctChars: 0,
+          source: ExerciseSource.send,
+        ),
+        SessionSummary(
+          at: kNow,
+          totalChars: 20,
+          correctChars: 0,
+          source: ExerciseSource.focus,
+          assistance: const {Assistance.replay},
+        ),
+      ],
+    );
+    final stats = StatsSnapshot.from(mixed, now: kNow);
+    expect(stats.accuracyLast7Days, 23 / 24);
   });
 }

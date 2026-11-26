@@ -157,7 +157,12 @@ class _ListenScreenState extends State<ListenScreen>
       themes: InheritedTheme.capture(from: context, to: navigator.context),
       builder: (ctx) => ScrollingAlertDialog(
         title: Text(s.listenMicPurposeTitle),
-        content: Text(s.listenMicPurposeBody),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12,
+          children: [Text(s.listenMicPurposeBody), Text(s.listenMicNext)],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -242,50 +247,87 @@ class _ListenScreenState extends State<ListenScreen>
         ],
       ),
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // A short window (a phone in landscape, or large text)
-                // scrolls the whole page with a fixed-height transcript.
-                // How much the text scale grows body text (also for
-                // nonlinear scalers, which barely grow large sizes).
-                final factor = MediaQuery.textScalerOf(context).scale(14) / 14;
-                final short = constraints.maxHeight < _kShortHeight * factor;
-                final decoded = ListenDecodedText(
-                  key: _transcriptKey,
-                  text: _controller.text,
-                  isListening: listening,
-                  scrollController: _scroll,
-                  onCopy: _copy,
-                  textKey: ListenScreen.decodedTextKey,
-                );
-                final children = <Widget>[
-                  ListenStatusBanner(
-                    controller: _controller,
-                    onRetry: () => unawaited(_start()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                    child: ListenLevelMeter(meter: _controller.meter),
-                  ),
-                  ListenFrequencyPanel(controller: _controller),
-                  if (short)
-                    SizedBox(height: _kShortHeight / 2 * factor, child: decoded)
-                  else
-                    Expanded(child: decoded),
-                  ListenStatsRow(controller: _controller),
-                  const SizedBox(height: 72),
-                ];
-                final column = Column(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final factor = MediaQuery.textScalerOf(context).scale(14) / 14;
+            final short = constraints.maxHeight < _kShortHeight * factor;
+            final wide = constraints.maxWidth >= 900 && !short;
+            final decoded = ListenDecodedText(
+              key: _transcriptKey,
+              text: _controller.text,
+              isListening: listening,
+              scrollController: _scroll,
+              onCopy: _copy,
+              textKey: ListenScreen.decodedTextKey,
+              margin: wide
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            );
+            final status = ListenStatusBanner(
+              controller: _controller,
+              onRetry: () => unawaited(_start()),
+            );
+            final level = Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: ListenLevelMeter(meter: _controller.meter),
+            );
+            final tuning = ListenFrequencyPanel(controller: _controller);
+            final stats = ListenStatsRow(controller: _controller);
+            if (wide) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 76),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: children,
-                );
-                return short ? SingleChildScrollView(child: column) : column;
-              },
-            ),
-          ),
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          status,
+                          level,
+                          const SizedBox(height: 12),
+                          Expanded(child: decoded),
+                          stats,
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      flex: 2,
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          Card(
+                            margin: EdgeInsets.zero,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: tuning,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            final column = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                status,
+                level,
+                tuning,
+                if (short)
+                  SizedBox(height: _kShortHeight / 2 * factor, child: decoded)
+                else
+                  Expanded(child: decoded),
+                stats,
+                const SizedBox(height: 72),
+              ],
+            );
+            return short ? SingleChildScrollView(child: column) : column;
+          },
         ),
       ),
       floatingActionButton: AdaptiveFab(

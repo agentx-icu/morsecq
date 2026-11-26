@@ -448,6 +448,7 @@ void main() {
         expect(t.controller.progress.history.length, attempt + 1);
         expect(t.controller.progress.history.last.source, ExerciseSource.send);
         expect(t.controller.progress.history.last.strictAccuracy, 1);
+        expect(find.text(en.learnDecodedAccuracy), findsOneWidget);
         if (attempt < 2) {
           await tester.tap(find.text(en.learnTryAnother));
           await tester.pumpAndSettle();

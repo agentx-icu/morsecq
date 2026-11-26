@@ -116,3 +116,69 @@ Widget appBarTextAction(Widget action) => MediaQuery.withClampedTextScaling(
   maxScaleFactor: kAppBarTitleMaxTextScale,
   child: action,
 );
+
+/// Scrollable detail with related controls beside the primary content when
+/// the available body can fit both panels. Compact layouts keep source order.
+class AdaptivePanelBody extends StatelessWidget {
+  const AdaptivePanelBody({
+    super.key,
+    required this.breakpoint,
+    required this.leading,
+    required this.trailing,
+    this.showTrailingWhenCompact = true,
+    this.independentScroll = false,
+  });
+
+  final double breakpoint;
+  final List<Widget> leading;
+  final List<Widget> trailing;
+  final bool showTrailingWhenCompact;
+  final bool independentScroll;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget stack(List<Widget> children) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 12,
+      children: children,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= breakpoint;
+        if (wide && independentScroll) {
+          Widget panel(List<Widget> children) => ListView(
+            primary: false,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: [stack(children)],
+          );
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              spacing: 16,
+              children: [
+                Expanded(flex: 3, child: panel(leading)),
+                Expanded(flex: 2, child: panel(trailing)),
+              ],
+            ),
+          );
+        }
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(wide ? 24 : 16, 16, wide ? 24 : 16, 24),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: wide
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16,
+                  children: [
+                    Expanded(flex: 3, child: stack(leading)),
+                    Expanded(flex: 2, child: stack(trailing)),
+                  ],
+                )
+              : stack([...leading, if (showTrailingWhenCompact) ...trailing]),
+        );
+      },
+    );
+  }
+}

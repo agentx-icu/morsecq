@@ -84,7 +84,7 @@ final class LearningRoute {
               !e.at.isBefore(now.subtract(evidenceWindow)) &&
               e.accuracy >= .9 &&
               e.effectiveWpm.isFinite &&
-              e.samples >= _minimumSamples(e.skill),
+              e.samples >= minimumSamples(e.skill),
         )
         .toList();
     final limit = switch (goal) {
@@ -109,7 +109,7 @@ final class LearningRoute {
     return LearningRoute._(goal, milestones);
   }
 
-  static int _minimumSamples(RouteSkill skill) => switch (skill) {
+  static int minimumSamples(RouteSkill skill) => switch (skill) {
     RouteSkill.copying => 50,
     RouteSkill.sending => 5,
     RouteSkill.information || RouteSkill.qso || RouteSkill.contest => 3,

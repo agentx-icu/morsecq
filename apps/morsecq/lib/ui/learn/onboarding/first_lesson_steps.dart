@@ -188,7 +188,12 @@ class NoSoundCard extends StatelessWidget {
           children: <Widget>[
             Text(s.firstLessonNoSoundTitle, style: theme.textTheme.titleMedium),
             const SizedBox(height: 4),
-            Text(s.firstLessonNoSoundBody, style: theme.textTheme.bodyMedium),
+            Text(
+              showHaptic
+                  ? s.firstLessonNoSoundBody
+                  : s.firstLessonNoSoundDesktop,
+              style: theme.textTheme.bodyMedium,
+            ),
             SwitchListTile(
               key: const ValueKey('no-sound-flash'),
               contentPadding: EdgeInsets.zero,
@@ -220,8 +225,7 @@ class FirstLessonNextPanel extends StatelessWidget {
     required this.correct,
     required this.total,
     required this.lesson,
-    required this.challengeChars,
-    required this.nextChar,
+    required this.challengeRequirements,
     required this.onGuided,
     required this.onChallenge,
     required this.onSend,
@@ -232,14 +236,9 @@ class FirstLessonNextPanel extends StatelessWidget {
   final int correct;
   final int total;
 
-  /// The lesson the challenge button starts (the learner's current one:
-  /// the first lesson can be replayed later) and its symbol budget.
+  /// The first lesson can be replayed while a later course lesson is active.
   final int lesson;
-  final int challengeChars;
-
-  /// The symbol that challenge unlocks; null on the last lesson, where
-  /// passing completes the course instead.
-  final String? nextChar;
+  final String challengeRequirements;
   final VoidCallback onGuided;
   final VoidCallback onChallenge;
   final VoidCallback onSend;
@@ -289,13 +288,11 @@ class FirstLessonNextPanel extends StatelessWidget {
           key: const ValueKey('next-challenge'),
           onPressed: onChallenge,
           icon: const Icon(Icons.school_outlined),
-          label: Text(
-            nextChar == null
-                ? s.firstLessonNextChallengeLast(lesson, challengeChars)
-                : s.firstLessonNextChallenge(lesson, challengeChars, nextChar!),
-          ),
+          label: Text(s.learnChallengeTitle(lesson)),
           style: big,
         ),
+        const SizedBox(height: 4),
+        Text(challengeRequirements, style: theme.textTheme.bodySmall),
         const SizedBox(height: 10),
         OutlinedButton.icon(
           key: const ValueKey('next-send'),
