@@ -48,76 +48,91 @@ class _GoalRouteScreenState extends State<GoalRouteScreen> {
           final route = c.learningRoute;
           final s = context.s;
           final next = route.next;
-          return ListView(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            children: [
-              DropdownButtonFormField<LearningGoal>(
-                key: const ValueKey('goal-selector'),
-                initialValue: c.progress.learningGoal,
-                isExpanded: true,
-                // Items and the selected label size to their wrapped text
-                // (long languages, large text) instead of one dense line.
-                isDense: false,
-                itemHeight: null,
-                decoration: InputDecoration(label: FieldLabel(s.goalsTitle)),
-                items: [
-                  for (final goal in LearningGoal.values)
-                    DropdownMenuItem(
-                      value: goal,
-                      child: Text(goalLabel(s, goal)),
-                    ),
-                ],
-                onChanged: _saving ? null : _select,
-              ),
-              const SizedBox(height: 16),
-              Text(s.goalsExplanation),
-              const SizedBox(height: 12),
-              if (!c.isCourseComplete) Text(s.goalsBeginner),
-              const SizedBox(height: 12),
-              LinearProgressIndicator(
-                value: route.passedCount / route.milestones.length,
-              ),
-              const SizedBox(height: 8),
-              Text('${route.passedCount} / ${route.milestones.length}'),
-              const SizedBox(height: 12),
-              if (next != null) ...[
-                Text(
-                  '${skillLabel(s, next.skill)} · ${s.learnWpmValue(next.wpm.toString())}',
-                  style: Theme.of(context).textTheme.titleMedium,
+            // This short list has rows of very different heights when text
+            // wraps. Lay them out together so resizing keeps a stable extent.
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DropdownButtonFormField<LearningGoal>(
+                  key: const ValueKey('goal-selector'),
+                  initialValue: c.progress.learningGoal,
+                  isExpanded: true,
+                  // Items and the selected label size to their wrapped text
+                  // (long languages, large text) instead of one dense line.
+                  isDense: false,
+                  itemHeight: null,
+                  decoration: InputDecoration(label: FieldLabel(s.goalsTitle)),
+                  items: [
+                    for (final goal in LearningGoal.values)
+                      DropdownMenuItem(
+                        value: goal,
+                        child: Text(goalLabel(s, goal)),
+                      ),
+                  ],
+                  onChanged: _saving ? null : _select,
                 ),
-                Text(s.goalsSamples(LearningRoute.minimumSamples(next.skill))),
+                const SizedBox(height: 16),
+                Text(s.goalsExplanation),
+                const SizedBox(height: 12),
+                if (!c.isCourseComplete) Text(s.goalsBeginner),
+                const SizedBox(height: 12),
+                LinearProgressIndicator(
+                  value: route.passedCount / route.milestones.length,
+                ),
                 const SizedBox(height: 8),
-                FilledButton.icon(
-                  key: const ValueKey('goal-next-practice'),
-                  onPressed: _saving
-                      ? null
-                      : () =>
-                            openGoalPractice(context, c, widget.playback, next),
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(s.goalsPractice),
-                ),
-              ] else
-                Text(s.goalsComplete),
-              const SizedBox(height: 16),
-              for (final milestone in route.milestones)
-                ListTile(
-                  key: ValueKey(
-                    'goal-milestone-${milestone.wpm}-${milestone.skill.name}',
+                Text('${route.passedCount} / ${route.milestones.length}'),
+                const SizedBox(height: 12),
+                if (next != null) ...[
+                  Text(
+                    '${skillLabel(s, next.skill)} · ${s.learnWpmValue(next.wpm.toString())}',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  leading: Icon(
-                    milestone.passed
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
+                  Text(
+                    s.goalsSamples(LearningRoute.minimumSamples(next.skill)),
                   ),
-                  title: Text(skillLabel(s, milestone.skill)),
-                  subtitle: Text(
-                    '${s.learnWpmValue(milestone.wpm.toString())} · ${s.goalsSamples(LearningRoute.minimumSamples(milestone.skill))}',
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    key: const ValueKey('goal-next-practice'),
+                    onPressed: _saving
+                        ? null
+                        : () => openGoalPractice(
+                            context,
+                            c,
+                            widget.playback,
+                            next,
+                          ),
+                    icon: const Icon(Icons.play_arrow),
+                    label: Text(s.goalsPractice),
                   ),
-                  trailing: Text('${milestone.attempts.clamp(0, 2)} / 2'),
-                  onTap: () =>
-                      openGoalPractice(context, c, widget.playback, milestone),
-                ),
-            ],
+                ] else
+                  Text(s.goalsComplete),
+                const SizedBox(height: 16),
+                for (final milestone in route.milestones)
+                  ListTile(
+                    key: ValueKey(
+                      'goal-milestone-${milestone.wpm}-${milestone.skill.name}',
+                    ),
+                    leading: Icon(
+                      milestone.passed
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                    ),
+                    title: Text(skillLabel(s, milestone.skill)),
+                    subtitle: Text(
+                      '${s.learnWpmValue(milestone.wpm.toString())} · ${s.goalsSamples(LearningRoute.minimumSamples(milestone.skill))}',
+                    ),
+                    trailing: Text('${milestone.attempts.clamp(0, 2)} / 2'),
+                    onTap: () => openGoalPractice(
+                      context,
+                      c,
+                      widget.playback,
+                      milestone,
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),

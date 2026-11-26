@@ -286,6 +286,42 @@ void main() {
     );
   }
 
+  testWidgets('the four-digit recall can be checked above the keyboard', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final t = await TestTraining.create();
+    addTearDown(t.controller.dispose);
+    await tester.pumpWidget(
+      l10nApp(
+        home: TelegraphRecallScreen(
+          controller: t.controller,
+          codebook: TelegraphCodebook.mainland,
+          random: Random(1),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final character = tester
+        .widget<Text>(find.byKey(const Key('telegraph-prompt')))
+        .data!;
+    await tester.enterText(
+      find.byKey(const Key('telegraph-code-field')),
+      ChineseTelegraphCode.codeOf(character)!,
+    );
+    tester.view.viewInsets = const FakeViewPadding(bottom: 310);
+    await tester.pumpAndSettle();
+    final check = find.byKey(const Key('telegraph-check'));
+    await tester.ensureVisible(check);
+    await tester.pumpAndSettle();
+    expect(tester.getRect(check).bottom, lessThanOrEqualTo(330));
+    await tester.tap(check);
+    await tester.pumpAndSettle();
+    expect(find.text(en.telegraphCorrect), findsOneWidget);
+  });
+
   testWidgets(
     'audit repeated recall save retries cannot credit the same round twice',
     (tester) async {

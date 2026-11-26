@@ -130,6 +130,8 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final inlineFooter = LearnFooter.belongsInBody(context);
+    final footer = _done ? null : _recallFooter(context);
     // Leaving mid-deck loses the cards answered so far and whatever is typed
     // or revealed on the current card (the session is only recorded once the
     // deck is done): ask first, like the drills.
@@ -167,6 +169,7 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
                   ),
                 ),
               ),
+              if (inlineFooter && footer != null) footer,
             ],
             trailing: [
               Card(
@@ -199,7 +202,7 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: _done ? null : _recallFooter(context),
+        bottomNavigationBar: inlineFooter ? null : footer,
       ),
     );
   }

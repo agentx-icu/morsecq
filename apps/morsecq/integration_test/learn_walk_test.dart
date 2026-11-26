@@ -274,7 +274,7 @@ Future<void> _qso(WidgetTester tester, S s, TrainingController c) async {
     }
     await waitForWidget(
       tester,
-      yourTurn,
+      find.text(s.learnQsoYourTypedTurn),
       'learner turn $turn',
       timeout: const Duration(seconds: 60),
     );
