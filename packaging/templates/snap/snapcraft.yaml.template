@@ -11,6 +11,7 @@ description: |
   recordings stay on the device.
 license: GPL-3.0-only
 icon: morsecq.png
+# Snapcraft copies the themed tray icon under snap/gui/icons to meta/gui/icons.
 grade: devel
 confinement: strict
 platforms:
@@ -53,7 +54,8 @@ parts:
       Name=MorseCQ
       Comment=Account-free offline Morse code trainer
       Exec=morsecq
-      Icon=morsecq
+      Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/morsecq.png
+      StartupWMClass=icu.agentx.morsecq
       Terminal=false
       Type=Application
       Categories=Education;AudioVideo;

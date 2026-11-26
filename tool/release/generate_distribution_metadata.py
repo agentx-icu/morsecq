@@ -24,6 +24,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_ROOT = REPO_ROOT / "packaging" / "templates"
 ICON_SOURCE = REPO_ROOT / "apps/morsecq/linux/icons/hicolor/256x256/apps/morsecq.png"
+TRAY_ICON_SOURCE = REPO_ROOT / "apps/morsecq/assets/tray/tray_icon_64.png"
 VERSION_RE = re.compile(r"\A\d+\.\d+\.\d+\Z")
 SHA256_RE = re.compile(r"\A[0-9a-fA-F]{64}\Z")
 
@@ -150,9 +151,15 @@ def write_rendered(output_dir: Path, values: dict[str, str]) -> list[Path]:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
         written.append(destination)
-    for directory in ("flathub", "snap"):
-        destination = output_dir / directory / "morsecq.png"
-        shutil.copy2(ICON_SOURCE, destination)
+    for source, path in (
+        (ICON_SOURCE, "flathub/morsecq.png"),
+        (ICON_SOURCE, "snap/morsecq.png"),
+        (TRAY_ICON_SOURCE, "flathub/morsecq-tray.png"),
+        (TRAY_ICON_SOURCE, "snap/snap/gui/icons/hicolor/64x64/status/snap.morsecq.tray.png"),
+    ):
+        destination = output_dir / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
         written.append(destination)
     return written
 

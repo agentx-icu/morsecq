@@ -14,6 +14,7 @@ finish-args:
   - --socket=fallback-x11
   - --socket=pulseaudio
   - --device=dri
+  - --talk-name=org.kde.StatusNotifierWatcher
 modules:
   - name: morsecq
     buildsystem: simple
@@ -31,6 +32,8 @@ modules:
         path: io.github.agentx_icu.morsecq.metainfo.xml
       - type: file
         path: morsecq.png
+      - type: file
+        path: morsecq-tray.png
     build-commands:
       - test -x bundle/morsecq
       - install -d /app/libexec/morsecq
@@ -39,3 +42,4 @@ modules:
       - install -Dm644 io.github.agentx_icu.morsecq.desktop /app/share/applications/io.github.agentx_icu.morsecq.desktop
       - install -Dm644 io.github.agentx_icu.morsecq.metainfo.xml /app/share/metainfo/io.github.agentx_icu.morsecq.metainfo.xml
       - install -Dm644 morsecq.png /app/share/icons/hicolor/256x256/apps/io.github.agentx_icu.morsecq.png
+      - install -Dm644 morsecq-tray.png /app/share/icons/hicolor/64x64/apps/io.github.agentx_icu.morsecq-tray.png

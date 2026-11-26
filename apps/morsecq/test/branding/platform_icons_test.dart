@@ -1,7 +1,7 @@
 // Guards the generated icon assets (tool/gen_app_icons.dart,
 // tool/gen_tray_icons.dart) and every place that references them: a missing
-// density, an alpha channel in the App Store icon, an opaque notification
-// small icon or a tray path outside the declared assets only shows up on a
+// density, an alpha channel in the App Store icon or a tray path outside
+// the declared assets only shows up on a
 // device or in store review otherwise.
 //
 // Runs with the package root (apps/morsecq) as the working directory.
@@ -19,14 +19,53 @@ img.Image _png(String path) {
   return image!;
 }
 
-List<int> _icoSizes(String path) {
+List<img.Image> _icoFrames(String path) {
   final Uint8List bytes = File(path).readAsBytesSync();
   final img.IcoDecoder decoder = img.IcoDecoder();
   final img.DecodeInfo? info = decoder.startDecode(bytes);
   expect(info, isNotNull, reason: '$path is not an .ico');
-  return [
-    for (int i = 0; i < info!.numFrames; i++) decoder.decodeFrame(i)!.width,
-  ];
+  return [for (int i = 0; i < info!.numFrames; i++) decoder.decodeFrame(i)!];
+}
+
+List<int> _icoSizes(String path) =>
+    _icoFrames(path).map((f) => f.width).toList();
+
+List<int> _strokes(img.Image image, int y, {bool template = false}) {
+  final widths = <int>[];
+  var run = 0;
+  for (var x = 0; x < image.width; x++) {
+    final pixel = image.getPixel(x, y);
+    if (pixel.a >= 128 && (template || pixel.r >= 160)) {
+      run++;
+    } else if (run > 0) {
+      widths.add(run);
+      run = 0;
+    }
+  }
+  if (run > 0) widths.add(run);
+  return widths;
+}
+
+void _expectLegibleCq(img.Image image, String path) {
+  final rows = [for (var y = 0; y < image.height; y++) _strokes(image, y)];
+  final c = rows.firstWhere((row) => row.isNotEmpty);
+  final q = rows.lastWhere((row) => row.isNotEmpty);
+  expect(c, hasLength(4), reason: '$path ${image.width}px C');
+  expect(q, hasLength(4), reason: '$path ${image.width}px Q');
+  expect(c, [c[0], c[1], c[0], c[1]], reason: '$path C must read -.-.');
+  expect(q, [c[0], c[0], c[1], c[0]], reason: '$path Q must read --.-');
+  expect(
+    c[0],
+    greaterThan(c[1]),
+    reason: '$path needs distinct dots and dashes',
+  );
+  expect(
+    rows
+        .where((row) => row.isNotEmpty)
+        .every((row) => listEquals(row, c) || listEquals(row, q)),
+    isTrue,
+    reason: '$path strokes must align',
+  );
 }
 
 /// Asset entries under `flutter: assets:` in pubspec.yaml.
@@ -86,6 +125,31 @@ void main() {
       expect(byPlatform[TargetPlatform.iOS], isNull);
     });
 
+    test('Linux chooses the icon installed by its sandbox package', () {
+      const linux = TargetPlatform.linux;
+      expect(
+        TrayIconAssets.forPlatform(
+          linux,
+          environment: const {'FLATPAK_ID': 'io.github.agentx_icu.morsecq'},
+        ),
+        'io.github.agentx_icu.morsecq-tray',
+      );
+      expect(
+        TrayIconAssets.forPlatform(
+          linux,
+          environment: const {
+            'SNAP': '/snap/morsecq/42',
+            'SNAP_NAME': 'morsecq',
+          },
+        ),
+        'snap.morsecq.tray',
+      );
+      expect(
+        TrayIconAssets.forPlatform(linux, environment: const {}),
+        TrayIconAssets.linuxPng,
+      );
+    });
+
     test('exist on disk and are bundled (declared in pubspec.yaml)', () {
       // tray_manager resolves Linux / Windows icons as files under
       // data/flutter_assets/ and macOS ones through rootBundle, so an
@@ -116,6 +180,25 @@ void main() {
         _icoSizes(TrayIconAssets.windowsIco),
         containsAll(<int>[16, 20, 24, 32, 40, 48]),
       );
+    });
+
+    test('tray dot and dash remain visually distinct at native sizes', () {
+      final tray = _icoFrames(
+        TrayIconAssets.windowsIco,
+      ).firstWhere((f) => f.width == 16);
+      for (final (image, template) in [
+        (tray, false),
+        (_png(TrayIconAssets.linuxPng), false),
+        (_png(TrayIconAssets.macTemplate), true),
+      ]) {
+        final runs = _strokes(image, image.height ~/ 2, template: template);
+        expect(runs, hasLength(2), reason: '${image.width}px tray');
+        expect(
+          runs.last,
+          greaterThanOrEqualTo(runs.first * 2),
+          reason: '${image.width}px tray',
+        );
+      }
     });
   });
 
@@ -205,6 +288,21 @@ void main() {
       File('windows/runner/Runner.rc').readAsStringSync(),
       contains(r'"resources\\app_icon.ico"'),
     );
+  });
+
+  test('small app frame pixels retain both Morse letters', () {
+    const windows = 'windows/runner/resources/app_icon.ico';
+    for (final frame in _icoFrames(windows).where((f) => f.width <= 24)) {
+      _expectLegibleCq(frame, windows);
+    }
+    for (final path in [
+      'macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png',
+      'ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png',
+      'linux/icons/hicolor/16x16/apps/morsecq.png',
+      'linux/icons/hicolor/24x24/apps/morsecq.png',
+    ]) {
+      _expectLegibleCq(_png(path), path);
+    }
   });
 
   test('Linux desktop entry Icon= resolves to the shipped hicolor theme', () {

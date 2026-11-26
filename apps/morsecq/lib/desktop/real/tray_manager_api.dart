@@ -8,10 +8,9 @@ import '../tray_api.dart';
 /// [TrayApi] on `tray_manager` (0.5.x, the method-channel lineage that
 /// declares linux / macos / windows plugin classes).
 ///
-/// `tray_manager.setIcon` takes a Flutter asset path: on Windows / Linux it
-/// resolves `data/flutter_assets/<path>` next to the executable, on macOS it
-/// loads the asset through `rootBundle` and ships it base64. So the generated
-/// `assets/tray/*` files are used as-is, no temp files.
+/// `tray_manager.setIcon` resolves Flutter assets on Windows and unsandboxed
+/// Linux, loads them through `rootBundle` on macOS, and forwards the packaged
+/// theme name to the status notifier host on Flatpak and Snap.
 class TrayManagerApi implements TrayApi {
   _ListenerAdapter? _listener;
 

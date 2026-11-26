@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import '../lifecycle/application_support_directory.dart';
 import '../ui/learn/learn_scope.dart';
 import 'backup/learning_replacement.dart';
 import 'training_controller.dart';
@@ -10,8 +10,11 @@ class LocalLearningStore {
   LocalLearningStore({Future<String> Function()? root})
     : _root = root ?? _defaultRoot;
   final Future<String> Function() _root;
-  static Future<String> _defaultRoot() async =>
-      p.join((await getApplicationSupportDirectory()).path, 'morsecq', 'guest');
+  static Future<String> _defaultRoot() async => p.join(
+    (await getMorseCqApplicationSupportDirectory()).path,
+    'morsecq',
+    'guest',
+  );
   Future<String> directory() async {
     final dir = await _root();
     await Directory(dir).create(recursive: true);

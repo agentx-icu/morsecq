@@ -3,6 +3,7 @@ Name=MorseCQ
 Comment=Account-free offline Morse code trainer
 Exec=morsecq
 Icon=io.github.agentx_icu.morsecq
+StartupWMClass=io.github.agentx_icu.morsecq
 Terminal=false
 Type=Application
 Categories=Education;AudioVideo;

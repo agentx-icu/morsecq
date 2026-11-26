@@ -48,7 +48,8 @@ abstract interface class TrayEventHandler {
 /// a tray-less session throws on the first call). The controller treats the
 /// tray as cosmetic and tolerates that.
 abstract interface class TrayApi {
-  /// [assetPath] is a Flutter asset (see `TrayIconAssets`). [isTemplate]
+  /// [assetPath] is a Flutter asset or a Linux sandbox theme name (see
+  /// `TrayIconAssets`). [isTemplate]
   /// marks a macOS template image.
   Future<void> setIcon(String assetPath, {bool isTemplate = false});
 

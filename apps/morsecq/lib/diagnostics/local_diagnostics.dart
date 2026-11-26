@@ -4,7 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+
+import '../lifecycle/application_support_directory.dart';
 
 /// Code-owned event names, never a path, plugin message or learning content.
 enum DiagnosticContext {
@@ -61,7 +62,7 @@ final class LocalDiagnostics {
   static Future<void> initialize() async {
     if (_current != null) return;
     try {
-      final root = await getApplicationSupportDirectory();
+      final root = await getMorseCqApplicationSupportDirectory();
       final log = LocalDiagnostics(File('${root.path}/logs/errors.log'));
       log._prepareFiles();
       _current = log;
@@ -230,7 +231,7 @@ final class LocalDiagnostics {
     try {
       final current = _current;
       if (current != null) return await current.readEvidence();
-      final root = await getApplicationSupportDirectory();
+      final root = await getMorseCqApplicationSupportDirectory();
       return await LocalDiagnostics(
         File('${root.path}/logs/errors.log'),
       ).readEvidence();

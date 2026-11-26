@@ -70,7 +70,7 @@ img.Image _glyph(int size, {required bool template}) {
   if (template) {
     final mask = img.Image(width: size, height: size);
     img.fill(mask, color: _black);
-    _drawGlyph(mask, size, _white);
+    _drawGlyph(mask, size);
     for (final pixel in mask) {
       image.setPixelRgba(pixel.x, pixel.y, 0, 0, 0, pixel.r);
     }
@@ -78,7 +78,7 @@ img.Image _glyph(int size, {required bool template}) {
   }
   final opaque = img.Image(width: size, height: size);
   img.fill(opaque, color: _tile);
-  _drawGlyph(opaque, size, _white);
+  _drawGlyph(opaque, size);
   final shape = img.Image(width: size, height: size);
   img.fill(shape, color: _black);
   img.fillRect(
@@ -97,31 +97,47 @@ img.Image _glyph(int size, {required bool template}) {
   return image;
 }
 
-/// Draws the dot and the dash in [color] onto [image].
-void _drawGlyph(img.Image image, int size, img.Color color) {
-  final centerY = size ~/ 2;
-  // Stroke weight: 2 px at 16, 3 px at 22, 4 px at 32.
-  final stroke = (size / 8).round().clamp(2, 6);
-  final half = stroke ~/ 2;
-  final inset = (size * 0.16).round();
-
-  // Dot: a filled circle at the left.
-  final dotRadius = (stroke * 0.75).round().clamp(1, size);
-  final dotX = inset + dotRadius;
-  img.fillCircle(image, x: dotX, y: centerY, radius: dotRadius, color: color);
-
-  // Dash: a rounded bar filling the rest of the width.
-  final dashX1 = dotX + dotRadius + (size * 0.12).round();
-  final dashX2 = size - 1 - inset;
-  if (dashX2 > dashX1) {
-    img.fillRect(
+/// Draws a dot, one-unit gap and a three-unit dash. The two marks are aligned
+/// on the pixel grid before supersampling to keep them distinct at 16 px.
+void _drawGlyph(img.Image image, int size) {
+  const samples = 4;
+  final unit = (size * 0.15).round();
+  final left = ((size - 5 * unit) ~/ 2) * samples;
+  final top = ((size - unit) ~/ 2) * samples;
+  final width = unit * samples;
+  final coverage = img.Image(width: size * samples, height: size * samples);
+  img.fill(coverage, color: _black);
+  img.fillRect(
+    coverage,
+    x1: left,
+    y1: top,
+    x2: left + width - 1,
+    y2: top + width - 1,
+    radius: width ~/ 2,
+    color: _white,
+  );
+  img.fillRect(
+    coverage,
+    x1: left + 2 * width,
+    y1: top,
+    x2: left + 5 * width - 1,
+    y2: top + width - 1,
+    radius: width ~/ 2,
+    color: _white,
+  );
+  final mask = img.copyResize(
+    coverage,
+    width: size,
+    height: size,
+    interpolation: img.Interpolation.average,
+  );
+  for (final pixel in mask) {
+    if (pixel.r == 0) continue;
+    img.drawPixel(
       image,
-      x1: dashX1,
-      y1: centerY - half,
-      x2: dashX2,
-      y2: centerY - half + stroke - 1,
-      color: color,
-      radius: half,
+      pixel.x,
+      pixel.y,
+      img.ColorRgba8(255, 255, 255, pixel.r.toInt()),
     );
   }
 }

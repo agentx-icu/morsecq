@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'desktop/desktop_platform.dart';
@@ -22,6 +21,7 @@ import 'i18n/current_strings.dart';
 import 'i18n/key_value_store.dart';
 import 'i18n/l10n_extension.dart';
 import 'i18n/locale_controller.dart';
+import 'lifecycle/application_support_directory.dart';
 import 'lifecycle/background_task_api.dart';
 import 'ui/settings/settings_routes.dart';
 import 'ui/learn/settings/training_settings_entry.dart';
@@ -38,7 +38,7 @@ Future<void> main() async {
   DesktopInstance? instance;
   if (isDesktopTarget(defaultTargetPlatform)) {
     instance = await DesktopInstance.acquire(
-      await getApplicationSupportDirectory(),
+      await getMorseCqApplicationSupportDirectory(),
     );
     if (instance == null) exit(0);
   }
@@ -98,7 +98,7 @@ Future<KeyValueStore> _openSettingsStore() async {
 }
 
 Future<KeyValueStore> _openPersistentSettingsStore() async {
-  final dir = await getApplicationSupportDirectory();
+  final dir = await getMorseCqApplicationSupportDirectory();
   return JsonFileKeyValueStore.open(File(p.join(dir.path, 'settings.json')));
 }
 

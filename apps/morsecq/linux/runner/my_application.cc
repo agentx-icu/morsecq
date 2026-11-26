@@ -14,13 +14,20 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
-// Sets the window / taskbar icon. Installed packages ship the themed
-// "morsecq" icon (hicolor, matching Icon= in icu.agentx.morsecq.desktop); a
-// bare bundle falls back to data/morsecq.png next to the executable. Without
-// either, X11 window managers that read _NET_WM_ICON show a generic icon.
+static constexpr char kFlatpakApplicationId[] = "io.github.agentx_icu.morsecq";
+
+static bool running_in_flatpak() {
+  // Match the desktop file exported for this particular Flatpak.
+  return g_strcmp0(g_getenv("FLATPAK_ID"), kFlatpakApplicationId) == 0;
+}
+
+// Sets the window / taskbar icon from the installed desktop entry's Icon.
+// A bare bundle uses data/morsecq.png next to the executable as the
+// _NET_WM_ICON fallback for X11 window managers.
 static void set_window_icon(GtkWindow* window) {
-  if (gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), "morsecq")) {
-    gtk_window_set_icon_name(window, "morsecq");
+  const gchar* icon = running_in_flatpak() ? kFlatpakApplicationId : "morsecq";
+  if (gtk_icon_theme_has_icon(gtk_icon_theme_get_default(), icon)) {
+    gtk_window_set_icon_name(window, icon);
     return;
   }
   g_autofree gchar* exe = g_file_read_link("/proc/self/exe", nullptr);
@@ -158,9 +165,10 @@ MyApplication* my_application_new() {
   // like GTK and desktop environments map this running application to its
   // corresponding .desktop file. This ensures better integration by allowing
   // the application to be recognized beyond its binary name.
-  g_set_prgname(APPLICATION_ID);
+  const gchar* id = running_in_flatpak() ? kFlatpakApplicationId : APPLICATION_ID;
+  g_set_prgname(id);
 
   return MY_APPLICATION(g_object_new(my_application_get_type(),
-                                     "application-id", APPLICATION_ID, "flags",
+                                     "application-id", id, "flags",
                                      G_APPLICATION_NON_UNIQUE, nullptr));
 }

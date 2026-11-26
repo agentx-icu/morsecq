@@ -78,6 +78,27 @@ class DistributionMetadataTest(unittest.TestCase):
             path = self.root / "out" / script
             self.assertTrue(os.access(path, os.X_OK), path)
 
+    def test_sandbox_packages_stage_host_resolvable_tray_icons(self) -> None:
+        result = self.run_generator(checksums=self.checksums)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        output = self.root / "out"
+        flatpak_id = "io.github.agentx_icu.morsecq"
+        flatpak = (output / f"flathub/{flatpak_id}.yml").read_text()
+        snap = (output / "snap/snapcraft.yaml").read_text()
+        tray_icon = (
+            SCRIPT.parents[2] / "apps/morsecq/assets/tray/tray_icon_64.png"
+        ).read_bytes()
+        for path in (
+            "flathub/morsecq-tray.png",
+            "snap/snap/gui/icons/hicolor/64x64/status/snap.morsecq.tray.png",
+        ):
+            self.assertEqual((output / path).read_bytes(), tray_icon, path)
+        self.assertIn("--talk-name=org.kde.StatusNotifierWatcher", flatpak)
+        self.assertIn("64x64/apps/" + flatpak_id + "-tray.png", flatpak)
+        desktop = (output / f"flathub/{flatpak_id}.desktop").read_text()
+        self.assertIn(f"StartupWMClass={flatpak_id}\n", desktop)
+        self.assertIn("Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/morsecq.png", snap)
+
     def test_checksum_manifest_is_required_for_production(self) -> None:
         result = self.run_generator()
         self.assertNotEqual(result.returncode, 0)
