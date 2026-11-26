@@ -86,6 +86,8 @@ class ListenFrequencyPanel extends StatelessWidget {
     final auto = controller.settings.autoTune;
     final String badge = !auto
         ? s.listenToneManual
+        : !controller.isListening
+        ? s.listenToneIdle
         : controller.isToneLocked
         ? s.listenToneLocked
         : s.listenToneSearching;
@@ -163,6 +165,7 @@ class ListenDecodedText extends StatelessWidget {
     required this.scrollController,
     required this.onCopy,
     this.textKey,
+    this.margin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
   });
 
   final String text;
@@ -170,6 +173,7 @@ class ListenDecodedText extends StatelessWidget {
   final ScrollController scrollController;
   final VoidCallback? onCopy;
   final Key? textKey;
+  final EdgeInsetsGeometry margin;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +185,7 @@ class ListenDecodedText extends StatelessWidget {
       height: 1.4,
     );
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: margin,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -243,6 +247,15 @@ class ListenStatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final S s = context.s;
+    if (!controller.isListening) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: Text(
+          s.listenWaitingToReceive,
+          style: theme.textTheme.labelMedium,
+        ),
+      );
+    }
     final pending = controller.pendingPattern;
     final wpm = controller.wpm;
     // Two label/value groups that sit on one line when they fit and wrap
@@ -320,6 +333,7 @@ class ListenStatusBanner extends StatelessWidget {
         controller.failure?.kind ?? ListenFailureKind.startFailed,
       ),
       ListenStatus.starting => s.listenStarting,
+      ListenStatus.waitingPermission => s.listenWaitingPermission,
       ListenStatus.idle when controller.stoppedInBackground =>
         s.listenStoppedInBackground,
       _ => null,

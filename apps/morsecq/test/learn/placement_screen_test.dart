@@ -133,6 +133,13 @@ void main() {
     await tester.pumpAndSettle();
     final lesson = c.course.lessonFor(c.course.order[10])!;
     expect(find.text(en.placementSuggestion(lesson)), findsOneWidget);
+    final adopt = find.byKey(const ValueKey('placement-adopt'));
+    final keep = find.byKey(const ValueKey('placement-keep-current'));
+    expect(keep, findsOneWidget);
+    expect(
+      tester.getTopLeft(keep).dy,
+      greaterThan(tester.getBottomLeft(adopt).dy),
+    );
     expect(c.currentLesson, 1, reason: 'nothing applied yet');
     // Placement is activity only: no SRS, no stats.
     expect(c.progress.history.single.source, ExerciseSource.placement);

@@ -115,6 +115,33 @@ final class QsoSession {
        _turns = turns,
        _processed = processed;
 
+  final Set<QsoStage> _hintStages = <QsoStage>{};
+  final Set<QsoStage> _repeatStages = <QsoStage>{};
+  final Set<int> _heardRemoteTurns = <int>{};
+
+  bool usedAssistanceAt(QsoStage stage) =>
+      _hintStages.contains(stage) ||
+      _repeatStages.contains(stage) ||
+      _turns.any((turn) => turn.stage == stage && turn.assistance);
+
+  bool hasHeardRemoteTurn(int index) => _heardRemoteTurns.contains(index);
+
+  void markRemoteTurnHeard(int index) {
+    if (index >= 0 && index < _turns.length && _turns[index].fromRemote) {
+      _heardRemoteTurns.add(index);
+    }
+  }
+
+  void recordRemoteRepeat() {
+    repeats++;
+    _repeatStages.add(_stage);
+  }
+
+  void markRevealed(QsoStage stage) {
+    _hintStages.add(stage);
+    hints++;
+  }
+
   factory QsoSession.start({
     required QsoScenario scenario,
     required int seed,
@@ -254,12 +281,13 @@ final class QsoSession {
         text: text.trim().toUpperCase(),
         stage: _stage,
         accepted: eval.accepted,
+        assistance: typed,
         issues: eval.issues,
       ),
     );
     switch (eval.intent) {
       case QsoIntent.repeat:
-        repeats++;
+        recordRemoteRepeat();
         final field = eval.repeatField;
         final value = field == null ? null : _heardValue(field);
         final again = field == null
@@ -277,7 +305,7 @@ final class QsoSession {
       case QsoIntent.slowDown:
         // QRS requests another hearing as well as a slower pace. This
         // remains assistance even when the minimum speed is already set.
-        repeats++;
+        recordRemoteRepeat();
         final lowered = max(minEffectiveWpm, _effectiveWpm - 1);
         final changed = lowered < _effectiveWpm;
         _effectiveWpm = lowered;
@@ -320,7 +348,7 @@ final class QsoSession {
   /// Hint for the current stage; level 2 after repeated errors. Counted as
   /// assistance.
   QsoHint hint() {
-    hints++;
+    markRevealed(_stage);
     final level = consecutiveErrors >= hintAfterErrors ? 2 : 1;
     final l = local.callsign;
     final r = remote.callsign;
@@ -391,6 +419,9 @@ final class QsoSession {
     'processed': _processed.toList(),
     'repeats': repeats,
     'hints': hints,
+    'hintStages': _hintStages.map((stage) => stage.name).toList(),
+    'repeatStages': _repeatStages.map((stage) => stage.name).toList(),
+    'heardRemoteTurns': _heardRemoteTurns.toList(),
     'consecutiveErrors': consecutiveErrors,
     'firstTryStages': firstTryStages,
     'typedReplies': typedReplies,
@@ -422,6 +453,21 @@ final class QsoSession {
       typedReplies: (json['typedReplies'] as num?)?.toInt() ?? 0,
     );
     session._stageHadError = json['stageHadError'] as bool? ?? false;
+    if (json['hintStages'] case final List<Object?> names) {
+      session._hintStages.addAll(
+        QsoStage.values.where((stage) => names.contains(stage.name)),
+      );
+    }
+    if (json['repeatStages'] case final List<Object?> names) {
+      session._repeatStages.addAll(
+        QsoStage.values.where((stage) => names.contains(stage.name)),
+      );
+    }
+    if (json['heardRemoteTurns'] case final List<Object?> turns) {
+      for (final index in turns.whereType<int>()) {
+        session.markRemoteTurnHeard(index);
+      }
+    }
     return session;
   }
 }

@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 
 import '../../../i18n/l10n_extension.dart';
 
 /// Whole-percent accuracy (`0.923` -> `92%`) in the current locale.
 String formatAccuracy(S s, double accuracy) =>
     s.learnAccuracyPercent((accuracy * 100).round());
+
+/// Keep a result on the correct side of the displayed challenge threshold.
+String formatChallengeAccuracy(S s, double accuracy, double threshold) {
+  final rounded = (accuracy * 100).round();
+  final limit = (threshold * 100).round();
+  if (accuracy >= threshold || rounded != limit) {
+    return formatAccuracy(s, accuracy);
+  }
+  if ((accuracy * 10000).round() >= (threshold * 10000).round()) {
+    return '< ${formatAccuracy(s, threshold)}';
+  }
+  final percent = NumberFormat.percentPattern(s.localeName)
+    ..minimumFractionDigits = 1
+    ..maximumFractionDigits = 2;
+  return percent.format(accuracy);
+}
+
+String challengeRule(S s, KochCourse course, int lesson) {
+  final describe = course.isLastLesson(lesson)
+      ? s.learnChallengeHintLast
+      : s.learnChallengeHint;
+  return describe(
+    course.minCharsPerSession,
+    course.requiredNewCharAttempts(lesson),
+    formatAccuracy(s, course.passAccuracy),
+  );
+}
 
 /// One confusion pair: "K heard as M", or "K missed" when nothing was
 /// answered for the target.
@@ -21,11 +50,13 @@ class PlaybackStatusRow extends StatelessWidget {
     required this.playing,
     required this.onReplay,
     required this.replayLabel,
+    this.heard = false,
   });
 
   final bool playing;
   final VoidCallback? onReplay;
   final String replayLabel;
+  final bool heard;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +72,21 @@ class PlaybackStatusRow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Icon(
-              playing ? Icons.volume_up : Icons.volume_off_outlined,
+              playing
+                  ? Icons.volume_up
+                  : heard
+                  ? Icons.check_circle_outline
+                  : Icons.hearing,
               color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
-                playing ? s.learnListen : s.learnReady,
+                playing
+                    ? s.learnListen
+                    : heard
+                    ? s.learnRoundHeard
+                    : s.learnReady,
                 style: theme.textTheme.titleMedium,
               ),
             ),

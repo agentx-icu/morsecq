@@ -81,6 +81,18 @@ void main() {
   });
 
   group('GridLocatorTool', () {
+    testWidgets('coordinates retain eight characters and can switch to six', (
+      tester,
+    ) async {
+      await _pumpIn(tester, const GridLocatorTool(), size: kDesktop);
+      await _enter(tester, GridLocatorTool.latitudeKey, '31.2304');
+      await _enter(tester, GridLocatorTool.longitudeKey, '121.4737');
+      expect(find.textContaining(RegExp(r'^PM01rf[0-9]{2}$')), findsOneWidget);
+      await tester.tap(find.text(en.learnCharsCount(6)));
+      await tester.pumpAndSettle();
+      expect(find.text('PM01rf'), findsOneWidget);
+    });
+
     testWidgets('coordinates give a locator; bad ones an error', (
       tester,
     ) async {
@@ -112,6 +124,17 @@ void main() {
   });
 
   group('BandTool', () {
+    testWidgets('desktop places calculated antenna lengths beside frequency', (
+      tester,
+    ) async {
+      await _pumpIn(tester, const BandTool(), size: kDesktop);
+      await _enter(tester, BandTool.frequencyKey, '7.030');
+      final frequency = tester.getRect(find.byKey(BandTool.frequencyKey));
+      final dipole = tester.getRect(find.text('20.26 m'));
+      expect(dipole.left, greaterThan(frequency.right));
+      expect(find.text('10.13 m'), findsOneWidget);
+    });
+
     testWidgets('an unrepresentable wavelength still shows band status', (
       tester,
     ) async {

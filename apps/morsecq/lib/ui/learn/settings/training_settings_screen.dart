@@ -10,12 +10,15 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../responsive.dart';
 import '../learn_glossary.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
 import 'settings_slider_tile.dart';
 import '../../common/wrapping_choice_chip.dart';
+
+part 'training_speed_presets.dart';
 
 /// Training preferences. Reachable from the Learn home gear and pushable
 /// from the Me page via [routeName] / [route].
@@ -205,178 +208,189 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
     final s = context.s;
     final flash = _sample?.flash;
     final goal = _goalDraft ?? widget.controller.dailyGoal;
-    final body = ListView(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      children: <Widget>[
-        _PresetRow(trainer: _t, onPick: (t) => _applyTrainer(t)),
-        SettingsSliderTile(
-          title: s.learnCharacterSpeed,
-          value: _wpm(s, _t.characterWpm),
-          slider: Slider(
-            value: _t.characterWpm.clamp(
-              TrainingSettings.minCharacterWpm,
-              TrainingSettings.maxCharacterWpm,
-            ),
-            min: TrainingSettings.minCharacterWpm,
-            max: TrainingSettings.maxCharacterWpm,
-            divisions:
-                (TrainingSettings.maxCharacterWpm -
-                        TrainingSettings.minCharacterWpm)
-                    .round(),
-            label: _wpm(s, _t.characterWpm),
-            onChanged: (v) =>
-                _setCharacterWpm(v.roundToDouble(), persist: false),
-            onChangeEnd: (v) => _setCharacterWpm(v.roundToDouble()),
+    final timing = <Widget>[
+      _PresetRow(trainer: _t, onPick: (t) => _applyTrainer(t)),
+      SettingsSliderTile(
+        title: s.learnCharacterSpeed,
+        value: _wpm(s, _t.characterWpm),
+        slider: Slider(
+          value: _t.characterWpm.clamp(
+            TrainingSettings.minCharacterWpm,
+            TrainingSettings.maxCharacterWpm,
+          ),
+          min: TrainingSettings.minCharacterWpm,
+          max: TrainingSettings.maxCharacterWpm,
+          divisions:
+              (TrainingSettings.maxCharacterWpm -
+                      TrainingSettings.minCharacterWpm)
+                  .round(),
+          label: _wpm(s, _t.characterWpm),
+          onChanged: (v) => _setCharacterWpm(v.roundToDouble(), persist: false),
+          onChangeEnd: (v) => _setCharacterWpm(v.roundToDouble()),
+        ),
+      ),
+      SwitchListTile(
+        title: Text(s.learnFarnsworth),
+        subtitle: Text(s.learnFarnsworthHelp),
+        value: _t.farnsworthWpm != null,
+        onChanged: _setFarnsworth,
+      ),
+      if (_t.farnsworthWpm != null) _buildFarnsworthSlider(s),
+      const Divider(),
+      SettingsSliderTile(
+        title: s.learnTone,
+        value: _hz(s, _t.toneHz),
+        trailing: IconButton.filledTonal(
+          tooltip: s.learnPlaySample,
+          onPressed: _samplePlaying || _creatingSample ? null : _playSample,
+          icon: Icon(_samplePlaying ? Icons.volume_up : Icons.play_arrow),
+        ),
+        slider: Slider(
+          value: _t.toneHz.clamp(
+            TrainingSettings.minToneHz,
+            TrainingSettings.maxToneHz,
+          ),
+          min: TrainingSettings.minToneHz,
+          max: TrainingSettings.maxToneHz,
+          divisions:
+              ((TrainingSettings.maxToneHz - TrainingSettings.minToneHz) / 10)
+                  .round(),
+          label: _hz(s, _t.toneHz),
+          onChanged: (v) => _applyTrainer(
+            _t.copyWith(toneHz: v.roundToDouble()),
+            persist: false,
+          ),
+          onChangeEnd: (v) =>
+              _applyTrainer(_t.copyWith(toneHz: v.roundToDouble())),
+        ),
+      ),
+    ];
+    final practice = <Widget>[
+      SettingsSliderTile(
+        title: s.learnSessionLength,
+        value: s.learnCharsCount(_t.sessionLengthChars),
+        slider: Slider(
+          value: _t.sessionLengthChars
+              .clamp(
+                TrainingSettings.minSessionChars,
+                TrainingSettings.maxSessionChars,
+              )
+              .toDouble(),
+          min: TrainingSettings.minSessionChars.toDouble(),
+          max: TrainingSettings.maxSessionChars.toDouble(),
+          divisions:
+              (TrainingSettings.maxSessionChars -
+                  TrainingSettings.minSessionChars) ~/
+              10,
+          label: s.learnCharsCount(_t.sessionLengthChars),
+          onChanged: (v) => _applyTrainer(
+            _t.copyWith(sessionLengthChars: v.round()),
+            persist: false,
+          ),
+          onChangeEnd: (v) =>
+              _applyTrainer(_t.copyWith(sessionLengthChars: v.round())),
+        ),
+      ),
+      SettingsSliderTile(
+        title: s.learnDailyGoal,
+        value: s.learnCharsCount(goal),
+        slider: Slider(
+          value: goal.clamp(25, 500).toDouble(),
+          min: 25,
+          max: 500,
+          divisions: 19,
+          label: s.learnCharsCount(goal),
+          onChanged: (v) => setState(() => _goalDraft = v.round()),
+          onChangeEnd: (v) async {
+            setState(() => _goalDraft = null);
+            try {
+              await widget.controller.setDailyGoal(v.round());
+            } on Object {
+              if (!context.mounted) return;
+              showProgressSaveFailed(context, widget.controller);
+            }
+          },
+        ),
+      ),
+    ];
+    final feedback = <Widget>[
+      ListTile(
+        title: Text(
+          s.learnFeedback,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        dense: true,
+      ),
+      SwitchListTile(
+        title: Text(s.learnSound),
+        secondary: const Icon(Icons.volume_up_outlined),
+        value: _draft.soundEnabled,
+        onChanged: (v) => _apply(_draft.copyWith(soundEnabled: v)),
+      ),
+      SwitchListTile(
+        title: Text(s.learnFlash),
+        subtitle: Text(s.learnFlashNotice),
+        secondary: const Icon(Icons.flashlight_on_outlined),
+        value: _draft.flashEnabled,
+        onChanged: (v) => _apply(_draft.copyWith(flashEnabled: v)),
+      ),
+      if (isTouchPlatform)
+        FutureBuilder<bool>(
+          future: _hapticsAvailable,
+          builder: (context, snapshot) => SwitchListTile(
+            title: Text(s.learnHaptic),
+            subtitle: snapshot.data == false
+                ? Text(s.learnHapticUnavailable)
+                : null,
+            secondary: const Icon(Icons.vibration),
+            value: _draft.hapticEnabled,
+            // A restored enabled preference must always be removable,
+            // even when this device cannot provide vibration.
+            onChanged: _draft.hapticEnabled || snapshot.data == true
+                ? (v) => _apply(_draft.copyWith(hapticEnabled: v))
+                : null,
           ),
         ),
-        SwitchListTile(
-          title: Text(s.learnFarnsworth),
-          subtitle: Text(s.learnFarnsworthHelp),
-          value: _t.farnsworthWpm != null,
-          onChanged: _setFarnsworth,
-        ),
-        if (_t.farnsworthWpm != null) _buildFarnsworthSlider(s),
-        const Divider(),
-        SettingsSliderTile(
-          title: s.learnTone,
-          value: _hz(s, _t.toneHz),
-          trailing: IconButton.filledTonal(
-            tooltip: s.learnPlaySample,
-            onPressed: _samplePlaying || _creatingSample ? null : _playSample,
-            icon: Icon(_samplePlaying ? Icons.volume_up : Icons.play_arrow),
-          ),
-          slider: Slider(
-            value: _t.toneHz.clamp(
-              TrainingSettings.minToneHz,
-              TrainingSettings.maxToneHz,
-            ),
-            min: TrainingSettings.minToneHz,
-            max: TrainingSettings.maxToneHz,
-            divisions:
-                ((TrainingSettings.maxToneHz - TrainingSettings.minToneHz) / 10)
-                    .round(),
-            label: _hz(s, _t.toneHz),
-            onChanged: (v) => _applyTrainer(
-              _t.copyWith(toneHz: v.roundToDouble()),
-              persist: false,
-            ),
-            onChangeEnd: (v) =>
-                _applyTrainer(_t.copyWith(toneHz: v.roundToDouble())),
+    ];
+    final keyer = <Widget>[
+      ListTile(
+        title: Text(s.learnKeyer),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: SegmentedButton<KeyerMode>(
+            segments: <ButtonSegment<KeyerMode>>[
+              ButtonSegment(
+                value: KeyerMode.straight,
+                label: Text(s.learnKeyerStraight),
+              ),
+              ButtonSegment(
+                value: KeyerMode.iambicA,
+                label: Text(s.learnKeyerIambicA),
+              ),
+              ButtonSegment(
+                value: KeyerMode.iambicB,
+                label: Text(s.learnKeyerIambicB),
+              ),
+            ],
+            selected: <KeyerMode>{_draft.keyerMode},
+            onSelectionChanged: (s) =>
+                _apply(_draft.copyWith(keyerMode: s.first)),
+            showSelectedIcon: false,
           ),
         ),
-        const Divider(),
-        SettingsSliderTile(
-          title: s.learnSessionLength,
-          value: s.learnCharsCount(_t.sessionLengthChars),
-          slider: Slider(
-            value: _t.sessionLengthChars
-                .clamp(
-                  TrainingSettings.minSessionChars,
-                  TrainingSettings.maxSessionChars,
-                )
-                .toDouble(),
-            min: TrainingSettings.minSessionChars.toDouble(),
-            max: TrainingSettings.maxSessionChars.toDouble(),
-            divisions:
-                (TrainingSettings.maxSessionChars -
-                    TrainingSettings.minSessionChars) ~/
-                10,
-            label: s.learnCharsCount(_t.sessionLengthChars),
-            onChanged: (v) => _applyTrainer(
-              _t.copyWith(sessionLengthChars: v.round()),
-              persist: false,
-            ),
-            onChangeEnd: (v) =>
-                _applyTrainer(_t.copyWith(sessionLengthChars: v.round())),
-          ),
-        ),
-        SettingsSliderTile(
-          title: s.learnDailyGoal,
-          value: s.learnCharsCount(goal),
-          slider: Slider(
-            value: goal.clamp(25, 500).toDouble(),
-            min: 25,
-            max: 500,
-            divisions: 19,
-            label: s.learnCharsCount(goal),
-            onChanged: (v) => setState(() => _goalDraft = v.round()),
-            onChangeEnd: (v) async {
-              setState(() => _goalDraft = null);
-              try {
-                await widget.controller.setDailyGoal(v.round());
-              } on Object {
-                if (!context.mounted) return;
-                showProgressSaveFailed(context, widget.controller);
-              }
-            },
-          ),
-        ),
-        const Divider(),
-        ListTile(
-          title: Text(
-            s.learnFeedback,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-          dense: true,
-        ),
-        SwitchListTile(
-          title: Text(s.learnSound),
-          secondary: const Icon(Icons.volume_up_outlined),
-          value: _draft.soundEnabled,
-          onChanged: (v) => _apply(_draft.copyWith(soundEnabled: v)),
-        ),
-        SwitchListTile(
-          title: Text(s.learnFlash),
-          subtitle: Text(s.learnFlashNotice),
-          secondary: const Icon(Icons.flashlight_on_outlined),
-          value: _draft.flashEnabled,
-          onChanged: (v) => _apply(_draft.copyWith(flashEnabled: v)),
-        ),
-        if (isTouchPlatform)
-          FutureBuilder<bool>(
-            future: _hapticsAvailable,
-            builder: (context, snapshot) => SwitchListTile(
-              title: Text(s.learnHaptic),
-              subtitle: snapshot.data == false
-                  ? Text(s.learnHapticUnavailable)
-                  : null,
-              secondary: const Icon(Icons.vibration),
-              value: _draft.hapticEnabled,
-              // A restored enabled preference must always be removable,
-              // even when this device cannot provide vibration.
-              onChanged: _draft.hapticEnabled || snapshot.data == true
-                  ? (v) => _apply(_draft.copyWith(hapticEnabled: v))
-                  : null,
-            ),
-          ),
-        const Divider(),
-        ListTile(
-          title: Text(s.learnKeyer),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: SegmentedButton<KeyerMode>(
-              segments: <ButtonSegment<KeyerMode>>[
-                ButtonSegment(
-                  value: KeyerMode.straight,
-                  label: Text(s.learnKeyerStraight),
-                ),
-                ButtonSegment(
-                  value: KeyerMode.iambicA,
-                  label: Text(s.learnKeyerIambicA),
-                ),
-                ButtonSegment(
-                  value: KeyerMode.iambicB,
-                  label: Text(s.learnKeyerIambicB),
-                ),
-              ],
-              selected: <KeyerMode>{_draft.keyerMode},
-              onSelectionChanged: (s) =>
-                  _apply(_draft.copyWith(keyerMode: s.first)),
-              showSelectedIcon: false,
-            ),
-          ),
-        ),
-      ],
+      ),
+    ];
+    Widget panel(List<Widget> controls) => Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: controls,
+      ),
+    );
+    final body = AdaptivePanelBody(
+      breakpoint: kLearnTwoColumnMinWidth,
+      leading: [panel(timing), panel(practice)],
+      trailing: [panel(feedback), panel(keyer)],
     );
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(s.learnSettingsTitle)),
@@ -384,14 +398,8 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         // Side notches in landscape; the home indicator at the end.
         child: AnimatedBuilder(
           animation: widget.controller,
-          builder: (context, _) => Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: flash == null
-                  ? body
-                  : FlashOverlay(isOn: flash, child: body),
-            ),
-          ),
+          builder: (context, _) =>
+              flash == null ? body : FlashOverlay(isOn: flash, child: body),
         ),
       ),
     );
@@ -417,83 +425,6 @@ class _TrainingSettingsScreenState extends State<TrainingSettingsScreen> {
         ),
         onChangeEnd: (v) =>
             _applyTrainer(_t.copyWith(farnsworthWpm: v.roundToDouble())),
-      ),
-    );
-  }
-}
-
-/// Plain presets over the two speed sliders: the beginner pace stretches
-/// the pauses (20 / 6), the standard one is the Koch default (20 / 8).
-/// The glossary explains character vs effective speed.
-class _PresetRow extends StatelessWidget {
-  const _PresetRow({required this.trainer, required this.onPick});
-
-  final TrainerSettings trainer;
-  final ValueChanged<TrainerSettings> onPick;
-
-  static const double presetCharacterWpm = 20;
-  static const double beginnerEffectiveWpm = 6;
-  static const double standardEffectiveWpm = 8;
-
-  bool _matches(double effective) =>
-      trainer.characterWpm == presetCharacterWpm &&
-      trainer.farnsworthWpm == effective;
-
-  @override
-  Widget build(BuildContext context) {
-    final s = context.s;
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  s.learnSpeedPresets,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-              const LearnGlossaryButton(),
-            ],
-          ),
-          Wrap(
-            spacing: 8,
-            children: <Widget>[
-              wrappingChoiceChip(
-                key: const ValueKey('preset-beginner'),
-                label: s.learnPresetBeginner,
-                selected: _matches(beginnerEffectiveWpm),
-                onSelected: (_) => onPick(
-                  trainer.copyWith(
-                    characterWpm: presetCharacterWpm,
-                    farnsworthWpm: beginnerEffectiveWpm,
-                  ),
-                ),
-              ),
-              wrappingChoiceChip(
-                key: const ValueKey('preset-standard'),
-                label: s.learnPresetStandard,
-                selected: _matches(standardEffectiveWpm),
-                onSelected: (_) => onPick(
-                  trainer.copyWith(
-                    characterWpm: presetCharacterWpm,
-                    farnsworthWpm: standardEffectiveWpm,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            s.learnPresetHelp,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
       ),
     );
   }

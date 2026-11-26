@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:morse_session/morse_session.dart';
 
 import '../../../i18n/l10n_extension.dart';
+import '../../responsive.dart';
+import '../learn_footer.dart';
 import '../learn_platform.dart';
 import 'keyer_legend.dart';
 import 'send_first_use_hint.dart';
@@ -60,35 +62,16 @@ class SendPracticeBody extends StatelessWidget {
       onSelectionChanged: (modes) => onMode(modes.first),
       showSelectedIcon: false,
     );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ?guide,
-        if (showHint)
-          SendFirstUseHint(
+    final hint = showHint
+        ? SendFirstUseHint(
             mode: effectiveMode ?? mode,
             onDismiss: onDismissHint,
-          ),
-        if (guide == null)
-          selector
-        else
-          ExpansionTile(title: Text(s.learnKeyer), children: [selector]),
-        const SizedBox(height: 16),
-        SendLiveView(session: session, hideTarget: hideTarget),
-        const SizedBox(height: 20),
-        // The guide unlocks the key only after the model; on a phone the
-        // key then appears below the fold, so bring it into view.
-        if (guide != null && canKey)
-          RevealOnAppear(child: _controls(context))
-        else
-          _controls(context),
-      ],
-    );
-  }
-
-  Widget _controls(BuildContext context) {
-    final s = context.s;
-    return Column(
+          )
+        : null;
+    final modePicker = guide == null
+        ? selector
+        : ExpansionTile(title: Text(s.learnKeyer), children: [selector]);
+    final input = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (canKey) keying,
@@ -96,34 +79,79 @@ class SendPracticeBody extends StatelessWidget {
           const SizedBox(height: 8),
           KeyerLegend(mode: effectiveMode ?? mode),
         ],
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: onRestart,
-                icon: const Icon(Icons.refresh),
-                label: Text(s.learnRestart),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
+      ],
+    );
+    return Column(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 900;
+              return AdaptivePanelBody(
+                breakpoint: 900,
+                leading: [
+                  ?guide,
+                  if (!wide) ?hint,
+                  if (wide) _readoutCard(SendReadout.target),
+                  modePicker,
+                  if (!wide) _readoutCard(SendReadout.all),
+                  if (!wide && guide != null && canKey)
+                    RevealOnAppear(child: input)
+                  else
+                    input,
+                ],
+                trailing: [
+                  if (wide) _readoutCard(SendReadout.feedback),
+                  if (wide) ?hint,
+                ],
+              );
+            },
+          ),
+        ),
+        LearnFooter(child: _actions(context)),
+      ],
+    );
+  }
+
+  Widget _readoutCard(SendReadout readout) => Card(
+    margin: EdgeInsets.zero,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: SendLiveView(
+        session: session,
+        hideTarget: hideTarget,
+        readout: readout,
+      ),
+    ),
+  );
+
+  Widget _actions(BuildContext context) {
+    final s = context.s;
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onRestart,
+            icon: const Icon(Icons.refresh),
+            label: Text(s.learnRestart),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: StreamBuilder<void>(
+            stream: session.changes,
+            builder: (context, _) => FilledButton.icon(
+              onPressed: canKey && session.hasInput ? onFinish : null,
+              icon: const Icon(Icons.check),
+              label: Text(s.learnDone),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StreamBuilder<void>(
-                stream: session.changes,
-                builder: (context, _) => FilledButton.icon(
-                  onPressed: canKey && session.hasInput ? onFinish : null,
-                  icon: const Icon(Icons.check),
-                  label: Text(s.learnDone),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

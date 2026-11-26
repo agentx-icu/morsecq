@@ -182,17 +182,15 @@ class LearnHome extends StatelessWidget {
                 final twoColumns =
                     constraints.maxWidth >= kLearnTwoColumnMinWidth;
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1100),
-                      child: StyleTokens.of(context) != null
-                          ? _styledLayout(context, twoColumns)
-                          : twoColumns
-                          ? _twoColumn(context)
-                          : _oneColumn(context),
-                    ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: twoColumns ? 24 : 16,
+                    vertical: 16,
                   ),
+                  child: StyleTokens.of(context) != null
+                      ? _styledLayout(context, twoColumns)
+                      : twoColumns
+                      ? _twoColumn(context)
+                      : _oneColumn(context),
                 );
               },
             );
@@ -202,7 +200,7 @@ class LearnHome extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, {bool showOverview = true}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +235,7 @@ class LearnHome extends StatelessWidget {
               PlacementScreen(controller: controller, playback: playback),
             ),
           )
-        else
+        else if (showOverview)
           TodayPlanCard(
             controller: controller,
             playback: playback,
@@ -370,29 +368,61 @@ class LearnHome extends StatelessWidget {
   );
 
   Widget _styledLayout(BuildContext context, bool twoColumns) {
+    final firstUse = PlacementOfferCard.shows(controller);
+    final widePath = twoColumns && !firstUse;
     final lesson = _lessonCard(context);
+    final goal = DailyGoalCard(controller: controller);
     final actions = _actions(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _header(context),
-        if (twoColumns)
+        _header(context, showOverview: !widePath),
+        if (widePath)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               Expanded(
                 flex: 3,
                 child: Column(
-                  children: [lesson, const SizedBox(height: 12), actions],
+                  children: [
+                    TodayPlanCard(
+                      controller: controller,
+                      playback: playback,
+                      compact: true,
+                    ),
+                    const SizedBox(height: 12),
+                    lesson,
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
               Expanded(
                 flex: 2,
                 child: Column(
                   children: [
-                    DailyGoalCard(controller: controller),
+                    goal,
+                    const SizedBox(height: 12),
+                    actions,
                     ..._planCards(),
+                  ],
+                ),
+              ),
+            ],
+          )
+        else if (twoColumns)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
+            children: [
+              Expanded(flex: 3, child: lesson),
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    goal,
+                    ..._planCards(),
+                    const SizedBox(height: 12),
+                    actions,
                   ],
                 ),
               ),
@@ -401,7 +431,7 @@ class LearnHome extends StatelessWidget {
         else ...[
           lesson,
           const SizedBox(height: 8),
-          DailyGoalCard(controller: controller),
+          goal,
           ..._planCards(),
           const SizedBox(height: 12),
           actions,

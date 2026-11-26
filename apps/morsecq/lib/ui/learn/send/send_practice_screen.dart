@@ -12,7 +12,9 @@ import '../../../keying/profile_keyer.dart';
 import '../../../training/send_session_key_target.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../responsive.dart';
 import '../drill_session_guard.dart';
+import '../learn_footer.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
@@ -23,6 +25,8 @@ import 'send_practice_body.dart';
 import 'send_result_view.dart';
 import 'send_targeted_practice.dart';
 import 'send_timeline_view.dart';
+
+part 'send_result_views.dart';
 
 /// Send practice: a target to key, an on-screen straight key or paddles (also
 /// driven by Space / left Ctrl / right Ctrl when focused), live decode, and
@@ -341,17 +345,8 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
   Widget build(BuildContext context) {
     final s = context.s;
     final body = SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: _result == null
-                ? _buildPractice(context)
-                : _buildResult(context),
-          ),
-        ),
-      ),
+      bottom: false,
+      child: _result == null ? _buildPractice(context) : _buildResult(context),
     );
     return DrillLeaveGuard(
       guard: _hasInput && _result == null && !_recording,
@@ -434,61 +429,4 @@ class _SendPracticeScreenState extends State<SendPracticeScreen>
         s: s,
         semanticDit: _session.nominalTiming.dit,
       );
-
-  Widget _buildResult(BuildContext context) {
-    final s = context.s;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (_guide != null)
-          SendGuideResult(stage: _guide!, diagnostics: _result!),
-        SendResultView(diagnostics: _result!, showIssues: _guide == null),
-        if (_timeline != null) ...<Widget>[
-          const SizedBox(height: 16),
-          SendTimelineView(
-            timeline: _timeline!,
-            onPlayMine: (i) => _playback?.player.play(
-              i == null ? _timeline!.myElements : _timeline!.myElementsFor(i),
-            ),
-            onPlayStandard: (i) => _playback?.player.play(
-              i == null
-                  ? _timeline!.standardElements
-                  : _timeline!.standardElementsFor(i),
-            ),
-            onPractice: _practisePart,
-          ),
-        ],
-        const SizedBox(height: 24),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(_result),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
-                ),
-                child: Text(s.learnDone),
-              ),
-            ),
-            const SizedBox(width: 12),
-            if (widget.maxAttempts == null || _attempts < widget.maxAttempts!)
-              Expanded(
-                child: FilledButton(
-                  onPressed: _another,
-                  autofocus: true,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                  ),
-                  child: Text(
-                    _guide != null && _result!.score.strictAccuracy != 1
-                        ? s.sendGuideRetry
-                        : s.learnTryAnother,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
 }

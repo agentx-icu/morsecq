@@ -11,7 +11,7 @@
 - `flutter analyze --no-pub apps/morsecq`：零问题。
 - `dart run tool/check_complexity.dart` 与 `dart run tool/ui_literal_guard.dart`：通过。
 - 首轮完整 widget 扫描发现两项 320×640/1.8 倍文字回归：新增预览标题把“继续”推到首屏以下。移除这行冗余标题，保留下一个练习及依据后，既有七项首页布局检查通过，没有放宽可见性断言。
-- 布局修正后的完整 hermetic 应用扫描：**1,306 项通过、753 项跳过、零失败**，日志位于 `/tmp/morsecq-first-success-all-widget-final.log`。753 项字体相关布局用例需要 `MORSECQ_MATRIX_FONT`，仍由独立 Layout 任务验证，本轮不冒称通过。最后将十语言“没有薄弱字符”的范围明确为已记录的抄收结果，并说明缺少逐字符结果，其计划卡片与 ARB 检查共 20 项通过。
+- 布局修正后的完整 hermetic 应用扫描：**1,306 项通过、753 项跳过、零失败**。复现步骤见[测试金字塔](TEST_PYRAMID.zh-CN.md)。753 项字体相关布局用例需要 `MORSECQ_MATRIX_FONT`，仍由独立 Layout 任务验证，本轮不冒称通过。最后将十语言“没有薄弱字符”的范围明确为已记录的抄收结果，并说明缺少逐字符结果，其计划卡片与 ARB 检查共 20 项通过。
 - 已执行 `flutter gen-l10n`，十种规范语言均补充练习与课程证据的区分文案。
 
 ## 设备与参与者边界

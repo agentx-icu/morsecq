@@ -176,7 +176,7 @@ class SZh extends S {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '抄收 $count 个字符',
+      other: '累计练习 $count 个字符',
     );
     return '$_temp0';
   }
@@ -1064,7 +1064,7 @@ class SZh extends S {
   String get statsEmptyBody => '完成第一次听抄或发报练习后，这里会显示你的正确率趋势、各字符掌握程度和练习日历。';
 
   @override
-  String get statsEmptyCallToAction => '前往「学习」并点按「继续课程」开始。';
+  String get statsEmptyCallToAction => '前往学习';
 
   @override
   String get statsOverviewTitle => '总览';
@@ -1079,7 +1079,7 @@ class SZh extends S {
   String get statsNoData => '--';
 
   @override
-  String get statsTilePractice => '练习量';
+  String get statsTilePractice => '留存记录时长';
 
   @override
   String get statsTileStreak => '连续天数';
@@ -1235,7 +1235,7 @@ class SZh extends S {
   String get listenPending => '接收中';
 
   @override
-  String get listenSpeed => '速度';
+  String get listenSpeed => '估算速度';
 
   @override
   String get listenSpeedUnknown => '-- WPM';
@@ -1434,7 +1434,7 @@ class SZh extends S {
 
   @override
   String statsAccuracyDetail(String allTime) {
-    return '最近 7 天 / 全部 $allTime';
+    return '最近 7 天 / 留存记录 $allTime';
   }
 
   @override
@@ -1781,7 +1781,7 @@ class SZh extends S {
   String get learnQsoRemoteHidden => '请凭听觉抄收——文本已隐藏。';
 
   @override
-  String get learnQsoShowText => '显示文本';
+  String get learnQsoShowText => '显示文本（辅助）';
 
   @override
   String get learnQsoListen => '收听';
@@ -1885,12 +1885,12 @@ class SZh extends S {
 
   @override
   String learnQsoSummaryRepeats(int count) {
-    return '重复次数：$count';
+    return '重听对方报文次数：$count';
   }
 
   @override
   String learnQsoSummaryHints(int count) {
-    return '提示次数：$count';
+    return '查看文本或提示次数：$count';
   }
 
   @override
@@ -1970,7 +1970,7 @@ class SZh extends S {
   String get workbenchFormats => 'WAV，16 位 PCM，单声道或立体声，8/16/44.1/48 kHz；最大 50 MB、20 分钟。';
 
   @override
-  String get workbenchBackupNote => '录音保存在本机。清除学习数据或卸载前请保留副本。已保存的选段保留标题、笔记和位置。';
+  String get workbenchBackupNote => '请保留导入时选择的 WAV 原文件，以便重新导入。清除学习数据会删除应用内的录音副本及已保存片段。卸载应用也可能删除它们。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2082,7 +2082,7 @@ class SZh extends S {
   String get workbenchDecoderHidden => '抄收时解码文本会隐藏。';
 
   @override
-  String get workbenchShowDecoder => '显示解码文本';
+  String get workbenchShowDecoder => '显示解码文本（辅助）';
 
   @override
   String get workbenchReference => '参考答案（可选）';
@@ -2197,7 +2197,7 @@ class SZh extends S {
   }
 
   @override
-  String get materialsProblemNothingTrainable => '这里没有可以用莫尔斯码练习的内容。';
+  String get materialsProblemNothingTrainable => '请至少输入一个能以莫尔斯码表示的字母、数字或规程符号。要练习汉字，请打开学习 → 更多练习 → 中文电码。';
 
   @override
   String get materialsSearch => '搜索素材';
@@ -2246,13 +2246,13 @@ class SZh extends S {
   String get materialsSaveDialogTitle => '保存素材';
 
   @override
-  String get materialsImportFailed => '导入失败，素材库未改变。';
+  String get materialsImportFailed => '导入失败，素材库未改变。请通过「导入 TXT 或 JSON」重新选择文件。';
 
   @override
-  String get materialsImportNotUtf8 => '只能导入 UTF-8 文本文件。';
+  String get materialsImportNotUtf8 => '文本必须使用 UTF-8 编码。请把 TXT 或 MorseCQ 素材 JSON 保存为 UTF-8 后再导入。';
 
   @override
-  String get materialsImportInvalid => '不是有效的 MorseCQ 素材文件，未导入任何内容。';
+  String get materialsImportInvalid => '这不是有效的 MorseCQ 素材 JSON，未导入任何内容。可以重新选择由 MorseCQ 导出的 JSON。';
 
   @override
   String materialsImported(int count) {
@@ -2272,7 +2272,7 @@ class SZh extends S {
   String get materialsDuplicateSkip => '跳过';
 
   @override
-  String get materialsExportJson => '导出为 JSON';
+  String get materialsExportJson => '将当前列表导出为 JSON';
 
   @override
   String materialsExported(int count) {
@@ -2280,7 +2280,7 @@ class SZh extends S {
   }
 
   @override
-  String get materialsExportFailed => '导出失败。';
+  String get materialsExportFailed => '导出失败。请再次选择原来的导出操作重试。';
 
   @override
   String get materialsExportWav => '导出音频（WAV）';
@@ -2341,6 +2341,9 @@ class SZh extends S {
 
   @override
   String get placementCheckLevel => '测试我现在的水平';
+
+  @override
+  String get placementKeepCurrent => '保持当前课次';
 
   @override
   String get placementFromZero => '跳过引导：直接第 1 课挑战';
@@ -2660,7 +2663,7 @@ class SZh extends S {
   String get offlineClearData => '清除学习数据';
 
   @override
-  String get offlineClearDataBody => '删除此设备上的学习进度、计划和材料。';
+  String get offlineClearDataBody => '删除本机学习数据和应用内的录音与片段。';
 
   @override
   String get offlineCleared => '学习数据已清除。';
@@ -2728,8 +2731,8 @@ class SZh extends S {
   String get learnGuidedPractice => '简短练习（10 个字符）';
 
   @override
-  String learnChallengeHint(int count, int min) {
-    return '本课挑战：$count 个字符、正确率 90%，且每个新字符至少抄收 $min 次。通过即可解锁下一个字符。';
+  String learnChallengeHint(int count, int min, String accuracy) {
+    return '本课至少抄收 $count 个字符，总体正确率须达到 $accuracy。每个新字符须至少抄收 $min 次，且各自正确率须达到 $accuracy。通过后解锁下一字符。';
   }
 
   @override
@@ -2809,7 +2812,7 @@ class SZh extends S {
   String get learnVerdictPractice => '练习已记录';
 
   @override
-  String get learnVerdictPracticeHint => '自由练习会更新统计和复习，但不会推进课程。课程只通过学习主页的本课挑战推进。';
+  String get learnVerdictPracticeHint => '自由练习会更新统计和复习。通过本课的独立挑战后即可推进课程。';
 
   @override
   String get learnVerdictCourseComplete => '最后一课挑战通过：整个字符课程已完成。';
@@ -2955,7 +2958,7 @@ class SZh extends S {
   }
 
   @override
-  String get firstLessonTooFast => '太快了？改用入门节奏（字符之间停顿更长）';
+  String get firstLessonTooFast => '后续多字符练习使用入门节奏（只延长间隔）';
 
   @override
   String get firstLessonNextTitle => '接下来';
@@ -3050,7 +3053,7 @@ class SZh extends S {
   String get learnQsoHowTitle => 'QSO 是怎么进行的';
 
   @override
-  String get learnQsoHowBody => '呼叫（CQ = 任意电台，DE = 来自），用呼号应答，交换信号报告（RST）、姓名和 QTH（地点），最后 73（致意）和 <SK>（结束）。K 表示请讲。';
+  String get learnQsoHowBody => 'CQ 呼叫任意电台，DE 表示「来自」，K 表示「请讲」。短通联确认呼号、交换信号报告（RST），最后用 73（致意）和 <SK>（结束）告别。完整通联还会交换操作员姓名与 QTH（地点）。';
 
   @override
   String get learnQsoExploreLabel => '包含未学字符';
@@ -3228,7 +3231,7 @@ class SZh extends S {
   String get goalsContest => '竞赛交换';
 
   @override
-  String get goalsExplanation => '参考 CW Academy。每个里程碑需要在标示有效速度下，近期至少两次独立练习达到 90% 准确率；证据有效期为 28 天。';
+  String get goalsExplanation => '参考 CW Academy。每个里程碑需要两次独立练习，正确率至少 90%，有效速度至少达到标示速度。证据有效期为 28 天。';
 
   @override
   String get goalsBeginner => '先完成字符课程；通过后，每日计划会加入对应目标的听懂训练和模拟通联。';
@@ -3348,10 +3351,10 @@ class SZh extends S {
   String get qsoAdvancedTypedMode => '文字作答（辅助）';
 
   @override
-  String get qsoAdvancedKeyedMode => '拍发回复';
+  String get qsoAdvancedKeyedMode => '切换到电键';
 
   @override
-  String get qsoAdvancedTypedReply => '你的发报内容';
+  String get qsoAdvancedTypedReply => '你的文字回复';
 
   @override
   String get qsoAdvancedContestStage => '发送 RST 和你的序号';
@@ -3618,6 +3621,262 @@ class SZh extends S {
 
   @override
   String get learnPlanCourseEvidence => '练习与课程掌握分别记录。完成计划本身不代表通过课程挑战。';
+
+  @override
+  String get learnRoundHeard => '本轮信号已播完';
+
+  @override
+  String get learnReplayTurnsToPractice => '重播，转为辅助练习';
+
+  @override
+  String get learnFinishListeningBeforeCheck => '可以边听边作答。信号播完后再核对。';
+
+  @override
+  String get learnSkipRound => '跳过本轮（计为漏答）';
+
+  @override
+  String get offlineClearScope => '此操作不可撤销。将删除本机课程进度、练习记录、计划和材料，以及由 MorseCQ 保存的录音与片段。';
+
+  @override
+  String get offlineClearKeeps => '应用偏好和存放在 MorseCQ 以外的原始文件会保留。';
+
+  @override
+  String get offlineClearPartial => '部分学习数据或录音可能已删除。重试可清除剩余内容。';
+
+  @override
+  String get offlineClearRetry => '重试清除';
+
+  @override
+  String get materialsIncomingVersion => '导入项';
+
+  @override
+  String get materialsLocalVersion => '本机原条目';
+
+  @override
+  String get materialsPreviousImportVersion => '文件内较早的条目';
+
+  @override
+  String get materialsReplaceConflicts => '替换冲突项';
+
+  @override
+  String get materialsChangedReview => '本机材料已变更。请重新导入并核对冲突项。';
+
+  @override
+  String get learnChallengeOverall => '总体正确率';
+
+  @override
+  String get learnChallengeReached => '已达标';
+
+  @override
+  String get learnChallengeNotReached => '未达标';
+
+  @override
+  String get learnChallengeSamples => '抄收次数';
+
+  @override
+  String get learnRoundDifferences => '本轮错因';
+
+  @override
+  String learnRoundExtra(String symbol) {
+    return '多录：$symbol';
+  }
+
+  @override
+  String learnRoundCorrect(String symbol) {
+    return '正确：$symbol';
+  }
+
+  @override
+  String learnRoundReplaySymbol(String symbol) {
+    return '试听 $symbol';
+  }
+
+  @override
+  String get learnGuidedReplayNote => '需要时可重播；本次带练不推进课程。';
+
+  @override
+  String get keysTestWaiting => '等待输入';
+
+  @override
+  String get keysTestOn => '信号持续';
+
+  @override
+  String get keysTestReleased => '按键已释放';
+
+  @override
+  String get listenWaitingPermission => '等待麦克风授权';
+
+  @override
+  String get listenMicNext => '点继续后才会请求系统权限。也可以在录音工作台打开 WAV，无需麦克风。';
+
+  @override
+  String get workbenchEstimateBasis => '比对基准：估算译码';
+
+  @override
+  String get workbenchReferenceBasis => '比对基准：你填写的参考答案';
+
+  @override
+  String workbenchEstimateMatch(String accuracy) {
+    return '与估算译码匹配 $accuracy';
+  }
+
+  @override
+  String workbenchReferenceMatch(String accuracy) {
+    return '与参考答案匹配 $accuracy';
+  }
+
+  @override
+  String appearanceActive(String style, String mode) {
+    return '正在使用：$style · $mode';
+  }
+
+  @override
+  String get appearancePending => '预览 · 待应用';
+
+  @override
+  String get appearanceRetryApply => '重试应用';
+
+  @override
+  String get workbenchRelinkFormat => '选择原始 WAV 文件以重新链接该片段。';
+
+  @override
+  String get firstLessonSignalReceived => '已感知信号，继续';
+
+  @override
+  String get firstLessonNoSoundDesktop => '请调高音量，检查静音或勿扰模式。也可以用屏幕闪烁感知信号。';
+
+  @override
+  String get learnQsoFirstTryAccepted => '首次通过';
+
+  @override
+  String get learnQsoFirstTryRejected => '首次回复需要修正';
+
+  @override
+  String get learnQsoStagePractice => '复练此阶段';
+
+  @override
+  String get learnQsoPracticeNoRecord => '这次核对不会改动已完成的通联结果。';
+
+  @override
+  String get learnQsoRemoteStation => '对方电台';
+
+  @override
+  String get listenToneIdle => '自动调谐 · 未开始';
+
+  @override
+  String get keysTestActiveProfile => '测试所选方案';
+
+  @override
+  String get learnDecodedAccuracy => '译码正确率';
+
+  @override
+  String learnPlanCopyCounts(int count, int group) {
+    return '共 $count 个字符 · 每轮最多 $group 个';
+  }
+
+  @override
+  String get learnPlanReplayNote => '完整听过后重播，本次练习会标为辅助。';
+
+  @override
+  String get learnPlanNoUnlock => '本步不推进课程。';
+
+  @override
+  String learnChallengeHintLast(int count, int min, String accuracy) {
+    return '本课至少抄收 $count 个字符，总体正确率须达到 $accuracy。每个新字符须至少抄收 $min 次，且各自正确率须达到 $accuracy。通过后完成课程。';
+  }
+
+  @override
+  String learnReferenceSelection(String char) {
+    return '已选字符：$char';
+  }
+
+  @override
+  String get comprehensionFieldUnanswered => '未作答';
+
+  @override
+  String get comprehensionSendingCallsign => '发信电台呼号（DE 后）';
+
+  @override
+  String comprehensionYourAnswer(String answer) {
+    return '你的答案：$answer';
+  }
+
+  @override
+  String comprehensionExpectedAnswer(String answer) {
+    return '正确答案：$answer';
+  }
+
+  @override
+  String get firstLessonSlowReplay => '慢速重放本题';
+
+  @override
+  String get learnQsoTextRevealed => '已查看文本 · 本阶段计为辅助';
+
+  @override
+  String learnBeginGuided(String level) {
+    return '开始带练：$level';
+  }
+
+  @override
+  String goalsSamples(int count) {
+    return '每次至少 $count 个样本';
+  }
+
+  @override
+  String get workbenchYourCopy => '你的抄收';
+
+  @override
+  String get workbenchNewCopy => '开始新一次抄收';
+
+  @override
+  String get workbenchDeleteTitle => '删除已保存片段？';
+
+  @override
+  String workbenchDeleteSelection(String title) {
+    return '将删除「$title」的标题、笔记和选段范围。外部原 WAV 会保留。';
+  }
+
+  @override
+  String workbenchDeleteWithCopy(String title) {
+    return '将删除「$title」的标题、笔记和选段范围，以及应用内的 WAV 副本。外部原 WAV 会保留。';
+  }
+
+  @override
+  String get workbenchRelinkMismatch => '这个 WAV 无法覆盖所有关联片段的时长，或采样率、声道数不符。请选择当初导入的 WAV 文件。';
+
+  @override
+  String workbenchRelinkShared(int count) {
+    return '此 WAV 由 $count 个片段共用。重新关联后会一起恢复。';
+  }
+
+  @override
+  String get learnQsoReplayAssisted => '重听（辅助）';
+
+  @override
+  String get learnQsoStageAssisted => '本阶段已使用辅助';
+
+  @override
+  String get learnQsoYourTypedTurn => '编辑文字回复，然后点「发送」（辅助练习）。';
+
+  @override
+  String get statsReceiveAccuracy => '听抄正确率';
+
+  @override
+  String get listenWaitingToReceive => '等待开始';
+
+  @override
+  String get workbenchAlignedEstimate => '估算译码';
+
+  @override
+  String get workbenchAlignedReference => '参考答案';
+
+  @override
+  String get workbenchAlignmentLegend => '高亮表示字符有差异。「·」表示这一行缺少该字符。';
+
+  @override
+  String materialsImportUpdated(String stamp) {
+    return '修改于 $stamp';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -3792,7 +4051,7 @@ class SZhHant extends SZh {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '抄收 $count 個字元',
+      other: '累計練習 $count 個字元',
     );
     return '$_temp0';
   }
@@ -4680,7 +4939,7 @@ class SZhHant extends SZh {
   String get statsEmptyBody => '完成第一次聽抄或發報練習後，這裡會顯示你的正確率趨勢、各字元掌握程度和練習日曆。';
 
   @override
-  String get statsEmptyCallToAction => '前往「學習」並點按「繼續課程」開始。';
+  String get statsEmptyCallToAction => '前往學習';
 
   @override
   String get statsOverviewTitle => '總覽';
@@ -4695,7 +4954,7 @@ class SZhHant extends SZh {
   String get statsNoData => '--';
 
   @override
-  String get statsTilePractice => '練習量';
+  String get statsTilePractice => '留存紀錄時長';
 
   @override
   String get statsTileStreak => '連續天數';
@@ -4851,7 +5110,7 @@ class SZhHant extends SZh {
   String get listenPending => '接收中';
 
   @override
-  String get listenSpeed => '速度';
+  String get listenSpeed => '估算速度';
 
   @override
   String get listenSpeedUnknown => '-- WPM';
@@ -5050,7 +5309,7 @@ class SZhHant extends SZh {
 
   @override
   String statsAccuracyDetail(String allTime) {
-    return '最近 7 天 / 全部 $allTime';
+    return '最近 7 天 / 留存紀錄 $allTime';
   }
 
   @override
@@ -5397,7 +5656,7 @@ class SZhHant extends SZh {
   String get learnQsoRemoteHidden => '請憑聽覺抄收——文字已隱藏。';
 
   @override
-  String get learnQsoShowText => '顯示文字';
+  String get learnQsoShowText => '顯示文字（輔助）';
 
   @override
   String get learnQsoListen => '收聽';
@@ -5501,12 +5760,12 @@ class SZhHant extends SZh {
 
   @override
   String learnQsoSummaryRepeats(int count) {
-    return '重複次數：$count';
+    return '重聽對方報文次數：$count';
   }
 
   @override
   String learnQsoSummaryHints(int count) {
-    return '提示次數：$count';
+    return '查看文字或提示次數：$count';
   }
 
   @override
@@ -5586,7 +5845,7 @@ class SZhHant extends SZh {
   String get workbenchFormats => 'WAV，16 位元 PCM，單聲道或立體聲，8/16/44.1/48 kHz；最大 50 MB、20 分鐘。';
 
   @override
-  String get workbenchBackupNote => '錄音保存在本機。清除學習資料或解除安裝前請保留副本。已儲存的選段保留標題、筆記和位置。';
+  String get workbenchBackupNote => '請保留匯入時選取的 WAV 原始檔案，以便再次匯入。清除學習資料會刪除應用程式內的錄音副本及已儲存片段。解除安裝也可能刪除這些資料。';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -5698,7 +5957,7 @@ class SZhHant extends SZh {
   String get workbenchDecoderHidden => '抄收時解碼文字會隱藏。';
 
   @override
-  String get workbenchShowDecoder => '顯示解碼文字';
+  String get workbenchShowDecoder => '顯示解碼文字（輔助）';
 
   @override
   String get workbenchReference => '參考答案（選填）';
@@ -5813,7 +6072,7 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get materialsProblemNothingTrainable => '這裡沒有可以用摩斯碼練習的內容。';
+  String get materialsProblemNothingTrainable => '請至少輸入一個能以摩斯碼表示的字母、數字或規程符號。若要練習漢字，請開啟學習 → 更多練習 → 中文電碼。';
 
   @override
   String get materialsSearch => '搜尋素材';
@@ -5862,13 +6121,13 @@ class SZhHant extends SZh {
   String get materialsSaveDialogTitle => '儲存素材';
 
   @override
-  String get materialsImportFailed => '匯入失敗，素材庫未變更。';
+  String get materialsImportFailed => '匯入失敗，素材庫未變更。請透過「匯入 TXT 或 JSON」重新選取檔案。';
 
   @override
-  String get materialsImportNotUtf8 => '只能匯入 UTF-8 文字檔。';
+  String get materialsImportNotUtf8 => '文字必須使用 UTF-8 編碼。請將 TXT 或 MorseCQ 素材 JSON 儲存為 UTF-8 再匯入。';
 
   @override
-  String get materialsImportInvalid => '不是有效的 MorseCQ 素材檔，未匯入任何內容。';
+  String get materialsImportInvalid => '這不是有效的 MorseCQ 素材 JSON，未匯入任何內容。可以重新選取由 MorseCQ 匯出的 JSON。';
 
   @override
   String materialsImported(int count) {
@@ -5888,7 +6147,7 @@ class SZhHant extends SZh {
   String get materialsDuplicateSkip => '略過';
 
   @override
-  String get materialsExportJson => '匯出為 JSON';
+  String get materialsExportJson => '將目前清單匯出為 JSON';
 
   @override
   String materialsExported(int count) {
@@ -5896,7 +6155,7 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get materialsExportFailed => '匯出失敗。';
+  String get materialsExportFailed => '匯出失敗。請再次選取原本的匯出操作重試。';
 
   @override
   String get materialsExportWav => '匯出音訊（WAV）';
@@ -5957,6 +6216,9 @@ class SZhHant extends SZh {
 
   @override
   String get placementCheckLevel => '測試我現在的程度';
+
+  @override
+  String get placementKeepCurrent => '保留目前課次';
 
   @override
   String get placementFromZero => '跳過引導：直接第 1 課挑戰';
@@ -6276,7 +6538,7 @@ class SZhHant extends SZh {
   String get offlineClearData => '清除學習資料';
 
   @override
-  String get offlineClearDataBody => '刪除此裝置上的學習進度、計畫和材料。';
+  String get offlineClearDataBody => '刪除本機學習資料和應用程式內的錄音與片段。';
 
   @override
   String get offlineCleared => '學習資料已清除。';
@@ -6344,8 +6606,8 @@ class SZhHant extends SZh {
   String get learnGuidedPractice => '簡短練習（10 個字元）';
 
   @override
-  String learnChallengeHint(int count, int min) {
-    return '本課挑戰：$count 個字元、正確率 90%，且每個新字元至少抄收 $min 次。通過即可解鎖下一個字元。';
+  String learnChallengeHint(int count, int min, String accuracy) {
+    return '本課至少抄收 $count 個字元，整體正確率須達 $accuracy。每個新字元須至少抄收 $min 次，且各自正確率須達 $accuracy。通過後解鎖下一字元。';
   }
 
   @override
@@ -6425,7 +6687,7 @@ class SZhHant extends SZh {
   String get learnVerdictPractice => '練習已記錄';
 
   @override
-  String get learnVerdictPracticeHint => '自由練習會更新統計和複習，但不會推進課程。課程只透過學習主頁的本課挑戰推進。';
+  String get learnVerdictPracticeHint => '自由練習會更新統計和複習。通過本課的獨立挑戰後即可推進課程。';
 
   @override
   String get learnVerdictCourseComplete => '最後一課挑戰通過：整個字元課程已完成。';
@@ -6571,7 +6833,7 @@ class SZhHant extends SZh {
   }
 
   @override
-  String get firstLessonTooFast => '太快了？改用入門節奏（字元之間停頓更長）';
+  String get firstLessonTooFast => '後續多字元練習使用入門節奏（只延長間隔）';
 
   @override
   String get firstLessonNextTitle => '接下來';
@@ -6666,7 +6928,7 @@ class SZhHant extends SZh {
   String get learnQsoHowTitle => 'QSO 是怎麼進行的';
 
   @override
-  String get learnQsoHowBody => '呼叫（CQ = 任意電台，DE = 來自），用呼號應答，交換信號報告（RST）、姓名和 QTH（地點），最後 73（致意）和 <SK>（結束）。K 表示請講。';
+  String get learnQsoHowBody => 'CQ 呼叫任意電台，DE 表示「來自」，K 表示「請講」。短通聯確認呼號、交換信號報告（RST），最後用 73（致意）與 <SK>（結束）告別。完整通聯還會交換操作員姓名與 QTH（地點）。';
 
   @override
   String get learnQsoExploreLabel => '包含未學字元';
@@ -6844,7 +7106,7 @@ class SZhHant extends SZh {
   String get goalsContest => '競賽交換';
 
   @override
-  String get goalsExplanation => '參考 CW Academy。每個里程碑需要在標示有效速度下，近期至少兩次獨立練習達到 90% 準確率；證據有效期為 28 天。';
+  String get goalsExplanation => '參考 CW Academy。每個里程碑需要兩次獨立練習，正確率至少 90%，有效速度至少達到標示速度。證據有效期為 28 天。';
 
   @override
   String get goalsBeginner => '先完成字元課程；通過後，每日計畫會加入對應目標的聽懂訓練和模擬通聯。';
@@ -6964,10 +7226,10 @@ class SZhHant extends SZh {
   String get qsoAdvancedTypedMode => '文字作答（輔助）';
 
   @override
-  String get qsoAdvancedKeyedMode => '拍發回覆';
+  String get qsoAdvancedKeyedMode => '切換到電鍵';
 
   @override
-  String get qsoAdvancedTypedReply => '你的發報內容';
+  String get qsoAdvancedTypedReply => '你的文字回覆';
 
   @override
   String get qsoAdvancedContestStage => '傳送 RST 和你的序號';
@@ -7234,4 +7496,260 @@ class SZhHant extends SZh {
 
   @override
   String get learnPlanCourseEvidence => '練習與課程掌握分別記錄。完成計畫本身不代表通過課程挑戰。';
+
+  @override
+  String get learnRoundHeard => '本輪訊號已播完';
+
+  @override
+  String get learnReplayTurnsToPractice => '重播，轉為輔助練習';
+
+  @override
+  String get learnFinishListeningBeforeCheck => '可以邊聽邊作答。訊號播完後再核對。';
+
+  @override
+  String get learnSkipRound => '略過本輪（計為漏答）';
+
+  @override
+  String get offlineClearScope => '此操作無法復原。將刪除此裝置的課程進度、練習紀錄、計畫和材料，以及由 MorseCQ 儲存的錄音和片段。';
+
+  @override
+  String get offlineClearKeeps => '應用程式偏好和存放在 MorseCQ 以外的原始檔案會保留。';
+
+  @override
+  String get offlineClearPartial => '部分學習資料或錄音可能已刪除。重試可清除剩餘內容。';
+
+  @override
+  String get offlineClearRetry => '重試清除';
+
+  @override
+  String get materialsIncomingVersion => '匯入項目';
+
+  @override
+  String get materialsLocalVersion => '這部裝置的原有項目';
+
+  @override
+  String get materialsPreviousImportVersion => '檔案中較早的項目';
+
+  @override
+  String get materialsReplaceConflicts => '取代衝突項目';
+
+  @override
+  String get materialsChangedReview => '這部裝置的材料已變更。請重新匯入並核對衝突項目。';
+
+  @override
+  String get learnChallengeOverall => '整體正確率';
+
+  @override
+  String get learnChallengeReached => '已達標';
+
+  @override
+  String get learnChallengeNotReached => '未達標';
+
+  @override
+  String get learnChallengeSamples => '抄收次數';
+
+  @override
+  String get learnRoundDifferences => '本輪錯因';
+
+  @override
+  String learnRoundExtra(String symbol) {
+    return '多錄：$symbol';
+  }
+
+  @override
+  String learnRoundCorrect(String symbol) {
+    return '正確：$symbol';
+  }
+
+  @override
+  String learnRoundReplaySymbol(String symbol) {
+    return '試聽 $symbol';
+  }
+
+  @override
+  String get learnGuidedReplayNote => '需要時可重播；本次帶練不推進課程。';
+
+  @override
+  String get keysTestWaiting => '等待輸入';
+
+  @override
+  String get keysTestOn => '訊號持續';
+
+  @override
+  String get keysTestReleased => '按鍵已釋放';
+
+  @override
+  String get listenWaitingPermission => '等待麥克風授權';
+
+  @override
+  String get listenMicNext => '點繼續後才會請求系統權限。也可在錄音工作台開啟 WAV，無需麥克風。';
+
+  @override
+  String get workbenchEstimateBasis => '比對基準：估算譯碼';
+
+  @override
+  String get workbenchReferenceBasis => '比對基準：你填寫的參考答案';
+
+  @override
+  String workbenchEstimateMatch(String accuracy) {
+    return '與估算譯碼相符 $accuracy';
+  }
+
+  @override
+  String workbenchReferenceMatch(String accuracy) {
+    return '與參考答案相符 $accuracy';
+  }
+
+  @override
+  String appearanceActive(String style, String mode) {
+    return '正在使用：$style · $mode';
+  }
+
+  @override
+  String get appearancePending => '預覽 · 待套用';
+
+  @override
+  String get appearanceRetryApply => '重試套用';
+
+  @override
+  String get workbenchRelinkFormat => '選擇原始 WAV 檔案以重新連結該片段。';
+
+  @override
+  String get firstLessonSignalReceived => '已感知訊號，繼續';
+
+  @override
+  String get firstLessonNoSoundDesktop => '請調高音量，檢查靜音或勿擾模式。也可用螢幕閃爍感知訊號。';
+
+  @override
+  String get learnQsoFirstTryAccepted => '首次通過';
+
+  @override
+  String get learnQsoFirstTryRejected => '首次回覆需要修正';
+
+  @override
+  String get learnQsoStagePractice => '複練此階段';
+
+  @override
+  String get learnQsoPracticeNoRecord => '這次核對不會改動已完成的通聯結果。';
+
+  @override
+  String get learnQsoRemoteStation => '對方電台';
+
+  @override
+  String get listenToneIdle => '自動調諧 · 尚未開始';
+
+  @override
+  String get keysTestActiveProfile => '測試所選方案';
+
+  @override
+  String get learnDecodedAccuracy => '解碼正確率';
+
+  @override
+  String learnPlanCopyCounts(int count, int group) {
+    return '共 $count 個字元 · 每輪最多 $group 個';
+  }
+
+  @override
+  String get learnPlanReplayNote => '完整聽過後重播，將本次練習標示為輔助。';
+
+  @override
+  String get learnPlanNoUnlock => '本步不推進課程。';
+
+  @override
+  String learnChallengeHintLast(int count, int min, String accuracy) {
+    return '本課至少抄收 $count 個字元，整體正確率必須達到 $accuracy。每個新字元至少抄收 $min 次，且個別正確率須達到 $accuracy。通過後完成課程。';
+  }
+
+  @override
+  String learnReferenceSelection(String char) {
+    return '已選字元：$char';
+  }
+
+  @override
+  String get comprehensionFieldUnanswered => '未作答';
+
+  @override
+  String get comprehensionSendingCallsign => '發信電台呼號（DE 後）';
+
+  @override
+  String comprehensionYourAnswer(String answer) {
+    return '你的答案：$answer';
+  }
+
+  @override
+  String comprehensionExpectedAnswer(String answer) {
+    return '正確答案：$answer';
+  }
+
+  @override
+  String get firstLessonSlowReplay => '慢速重播本題';
+
+  @override
+  String get learnQsoTextRevealed => '已查看文字 · 本階段計為輔助';
+
+  @override
+  String learnBeginGuided(String level) {
+    return '開始帶練：$level';
+  }
+
+  @override
+  String goalsSamples(int count) {
+    return '每次至少 $count 個樣本';
+  }
+
+  @override
+  String get workbenchYourCopy => '你的抄收';
+
+  @override
+  String get workbenchNewCopy => '開始新一次抄收';
+
+  @override
+  String get workbenchDeleteTitle => '刪除已儲存片段？';
+
+  @override
+  String workbenchDeleteSelection(String title) {
+    return '將刪除「$title」的標題、筆記和選段範圍。外部原 WAV 會保留。';
+  }
+
+  @override
+  String workbenchDeleteWithCopy(String title) {
+    return '將刪除「$title」的標題、筆記和選段範圍，以及應用程式內的 WAV 副本。外部原 WAV 會保留。';
+  }
+
+  @override
+  String get workbenchRelinkMismatch => '這個 WAV 無法涵蓋所有關聯片段的長度，或取樣率、聲道數不符。請選擇最初匯入的 WAV 檔。';
+
+  @override
+  String workbenchRelinkShared(int count) {
+    return '此 WAV 由 $count 個片段共用。重新連結後會一起恢復。';
+  }
+
+  @override
+  String get learnQsoReplayAssisted => '重聽（輔助）';
+
+  @override
+  String get learnQsoStageAssisted => '本階段已使用輔助';
+
+  @override
+  String get learnQsoYourTypedTurn => '編輯文字回覆，再點「傳送」（輔助練習）。';
+
+  @override
+  String get statsReceiveAccuracy => '聽抄正確率';
+
+  @override
+  String get listenWaitingToReceive => '等待開始';
+
+  @override
+  String get workbenchAlignedEstimate => '估算譯碼';
+
+  @override
+  String get workbenchAlignedReference => '參考答案';
+
+  @override
+  String get workbenchAlignmentLegend => '醒目標示表示字元有差異。「·」表示這一列缺少該字元。';
+
+  @override
+  String materialsImportUpdated(String stamp) {
+    return '修改於 $stamp';
+  }
 }

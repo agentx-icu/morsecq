@@ -26,18 +26,82 @@ class OfflineMePage extends StatelessWidget {
     final S s = context.s;
     final TrainingControllerHost controller = context
         .read<TrainingControllerHost>();
-    final bool ok = await confirm(
-      context,
-      title: s.offlineClearData,
-      body: s.offlineClearDataBody,
-      confirmLabel: s.guestClearConfirm,
+    var clearing = false;
+    var failed = false;
+    final cleared = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final colors = Theme.of(context).colorScheme;
+          return PopScope(
+            canPop: !clearing,
+            child: ScrollingAlertDialog(
+              title: Text(failed ? s.offlineClearFailed : s.offlineClearData),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (failed) ...[
+                    Text(
+                      s.offlineClearPartial,
+                      style: TextStyle(color: colors.error),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Text(s.offlineClearScope),
+                  const SizedBox(height: 12),
+                  Text(s.offlineClearKeeps),
+                  if (clearing) ...[
+                    const SizedBox(height: 16),
+                    const LinearProgressIndicator(),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: clearing
+                      ? null
+                      : () => Navigator.of(dialogContext).pop(),
+                  child: Text(s.actionCancel),
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.error,
+                    foregroundColor: colors.onError,
+                  ),
+                  onPressed: clearing
+                      ? null
+                      : () async {
+                          if (clearing) return;
+                          setDialogState(() => clearing = true);
+                          try {
+                            await controller.clear();
+                          } on Object {
+                            if (dialogContext.mounted) {
+                              setDialogState(() {
+                                failed = true;
+                                clearing = false;
+                              });
+                            }
+                            return;
+                          }
+                          if (dialogContext.mounted) {
+                            Navigator.of(dialogContext).pop(true);
+                          }
+                        },
+                  child: Text(
+                    failed ? s.offlineClearRetry : s.guestClearConfirm,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
-    if (!ok || !context.mounted) return;
-    try {
-      await controller.clear();
-      if (context.mounted) showSnack(context, s.offlineCleared);
-    } on Object {
-      if (context.mounted) showSnack(context, s.offlineClearFailed);
+    if (cleared == true && context.mounted) {
+      showSnack(context, s.offlineCleared);
     }
   }
 

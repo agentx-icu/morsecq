@@ -2,12 +2,15 @@
 
 # Offline learning architecture
 
-The Flutter shell opens Learn directly and exposes Learn / Reference / Me on every platform. AppScope creates device-local preferences, language, key profiles, audio/reference settings and one TrainingControllerHost. No account or transport is initialized.
+The Flutter shell exposes Learn, Reference and Me. Release builds on Android open the device settings and a separate `privacy.json` in Android's no-backup directory before entering the shell. If the current policy version has no saved acceptance, the app opens the consent screen. On other builds, startup opens Learn directly. `AppScope` provides device-local preferences, language, key profiles, audio and reference settings, and one `TrainingControllerHost`.
 
 ```mermaid
 flowchart LR
   Main[Application startup] --> Settings[Device preferences]
-  Main --> Shell[Learn / Reference / Me]
+  Main --> Android{Android release?}
+  Android -->|Yes| Consent[Load consent and prompt if needed]
+  Consent -->|Accepted| Shell[Learn / Reference / Me]
+  Android -->|No| Shell
   Shell --> Host[Shared learning controller]
   Host --> Local[Device-local JSON and recordings]
   Lifecycle[Background / desktop quit] --> Flush[Await local writes]
@@ -27,7 +30,7 @@ Lifecycle transitions flush learning and preferences. Desktop quit awaits the sa
 
 A fresh local profile opens the first lesson: hear dit/dah, hear K/M, watch a worked example and complete six assisted recognition trials. It records `firstLessonDoneAt`, then offers graded guided recognition and model-led sending. Recognition pace and guided-send stages persist in current learning files.
 
-Learner stage, per-symbol mastery, daily-plan focus and QSO readiness use recent independent evidence. Assisted trials, revealed answers and free practice cannot unlock lessons. A Koch challenge requires at least 50 copied characters at 90% overall accuracy, plus ten attempts at 90% for each newly introduced symbol. Reaching lesson 42 does not complete the course: passing its challenge sets `courseCompleted`. Practice summaries preserve this distinction and suggest the next useful action.
+Learner stage, per-symbol mastery, daily-plan focus and QSO readiness use recent independent evidence. Assisted trials, revealed answers and free practice cannot unlock lessons. A Koch challenge requires at least 50 copied characters at 90% overall accuracy, plus ten attempts at 90% for each newly introduced symbol. Reaching lesson 42 does not complete the course: passing its challenge sets `courseCompleted`. Practice summaries preserve this distinction and suggest the next useful action. The compact daily plan shows the next required practice and why it was chosen. Its completion summary reports weak-symbol evidence only for plans with recorded per-symbol copying results.
 
 `FileTrainerStore` saves both progress fields atomically and falls back to the previous valid save if they are malformed. The same account-free `LocalLearningStore` is injected into the native first-day test and the screenshot harness. Real write/reopen coverage is in the [persistence audit](../testing/PERSISTENCE_AUDIT.md) and the [test pyramid](../testing/TEST_PYRAMID.md); mistakes, comprehension records and goals are described in [advanced learning](ADVANCED_LEARNING.md).
 

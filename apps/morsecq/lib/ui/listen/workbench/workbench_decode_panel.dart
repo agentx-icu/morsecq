@@ -57,6 +57,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
   void _expose() => _exposed.add(_exposureKey);
   SessionScore? _score;
   bool _againstDecoder = false;
+  bool _scoredAssisted = false;
   SegmentDecodeResult? _scoredFor;
   String? _attemptId;
 
@@ -89,12 +90,15 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
 
   Future<void> _submit() async {
     final result = _c.result;
-    if (result == null || _score != null) return;
+    final answer = _answer.text;
+    if (result == null || _score != null || !MorseSupport.hasSymbols(answer)) {
+      return;
+    }
     final ref = _reference.text.trim();
     final target = ref.isNotEmpty ? ref : result.text;
     final score = SessionScore.evaluate(
       target,
-      _answer.text,
+      answer,
       at: widget.training?.now(),
       drillKind: 'recording',
     );
@@ -104,6 +108,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
     setState(() {
       _score = score;
       _againstDecoder = ref.isEmpty;
+      _scoredAssisted = assisted;
       if (_againstDecoder) _expose();
     });
     final training = widget.training;
@@ -117,7 +122,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         id: id,
         source: ExerciseSource.recording,
         assistance: <Assistance>{if (assisted) Assistance.decoder},
-        answered: MorseSupport.hasSymbols(_answer.text),
+        answered: true,
         sourceRef: 'recording:${_c.file}#${_c.start}-${_c.end}',
       );
       saved = outcome.saved;
@@ -250,6 +255,11 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
+        if (score == null ? _decoderAssisted : _scoredAssisted)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Chip(label: Text(s.learnVerdictAssisted)),
+          ),
         if (!_decoderShown)
           // Wrap: on a 320 px phone with large text the button goes below.
           Wrap(
@@ -265,6 +275,8 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
           ),
         TextField(
           controller: _reference,
+          enabled: score == null,
+          onChanged: (_) => setState(() {}),
           minLines: 1,
           maxLines: 3,
           decoration: InputDecoration(
@@ -277,9 +289,11 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         TextField(
           key: const ValueKey('workbench-answer'),
           controller: _answer,
+          readOnly: score != null,
           textCapitalization: TextCapitalization.characters,
           autocorrect: false,
           decoration: InputDecoration(
+            label: FieldLabel(s.workbenchYourCopy),
             hintText: s.learnAnswerHint,
             border: const OutlineInputBorder(),
           ),
@@ -287,6 +301,7 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
         const SizedBox(height: 8),
         AnswerKeypad(
           chars: keys,
+          enabled: score == null,
           onChar: (c) => _answer.text = '${_answer.text}$c',
           onBackspace: () {
             final t = _answer.text;
@@ -295,22 +310,68 @@ class _WorkbenchDecodePanelState extends State<WorkbenchDecodePanel> {
           onSpace: () => _answer.text = '${_answer.text} ',
         ),
         const SizedBox(height: 8),
-        FilledButton(
-          key: const ValueKey('workbench-submit'),
-          onPressed: score == null ? () => unawaited(_submit()) : null,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        if (score == null)
+          Text(
+            _reference.text.trim().isEmpty
+                ? s.workbenchEstimateBasis
+                : s.workbenchReferenceBasis,
+            style: theme.textTheme.labelLarge,
+          ),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _answer,
+          builder: (context, answer, child) => FilledButton(
+            key: const ValueKey('workbench-submit'),
+            onPressed: score == null && MorseSupport.hasSymbols(answer.text)
+                ? () => unawaited(_submit())
+                : null,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+            child: child,
+          ),
           child: Text(s.learnSubmit),
         ),
         if (score != null) ...<Widget>[
           const SizedBox(height: 12),
           Text(
-            s.learnAccuracyPercent((score.strictAccuracy * 100).round()),
+            _againstDecoder
+                ? s.workbenchEstimateMatch(
+                    s.learnAccuracyPercent(
+                      (score.strictAccuracy * 100).round(),
+                    ),
+                  )
+                : s.workbenchReferenceMatch(
+                    s.learnAccuracyPercent(
+                      (score.strictAccuracy * 100).round(),
+                    ),
+                  ),
             style: theme.textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 8),
+          Text(
+            _againstDecoder
+                ? s.workbenchAlignedEstimate
+                : s.workbenchAlignedReference,
+          ),
           AlignedSymbols(alignment: score.alignment, showTarget: true),
+          const SizedBox(height: 8),
+          Text(s.workbenchYourCopy),
+          AlignedSymbols(alignment: score.alignment, showTarget: false),
+          if (!score.isPerfect)
+            Text(s.workbenchAlignmentLegend, style: theme.textTheme.bodySmall),
           if (_againstDecoder)
             Text(s.workbenchAgainstDecoder, style: theme.textTheme.bodySmall),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            key: const ValueKey('workbench-start-new-copy'),
+            onPressed: () => setState(() {
+              _score = null;
+              _attemptId = null;
+              _answer.clear();
+            }),
+            child: Text(s.workbenchNewCopy),
+          ),
         ],
       ],
     );

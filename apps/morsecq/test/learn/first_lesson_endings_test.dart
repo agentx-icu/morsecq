@@ -25,11 +25,11 @@ final class _NotPopped {
   const _NotPopped();
 }
 
-Future<_Lesson> _open(WidgetTester tester) async {
+Future<_Lesson> _open(WidgetTester tester, {TestTraining? training}) async {
   tester.view.physicalSize = const Size(390, 1400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final t = await TestTraining.create();
+  final t = training ?? await TestTraining.create();
   addTearDown(t.controller.dispose);
   final lesson = _Lesson(
     t,
@@ -98,6 +98,85 @@ Future<void> _toNext(WidgetTester tester, _Lesson l, {int wrong = 0}) async {
 }
 
 void main() {
+  testWidgets('the first lesson explains the separate character thresholds', (
+    tester,
+  ) async {
+    final lesson = await _open(tester);
+    await _toNext(tester, lesson);
+    final course = lesson.t.controller.course;
+    expect(
+      find.text(
+        en.learnChallengeHint(
+          course.minCharsPerSession,
+          course.requiredNewCharAttempts(1),
+          '90%',
+        ),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('revisiting the lesson still starts ten K/M single symbols', (
+    tester,
+  ) async {
+    final t = await TestTraining.create(
+      progress: TrainerProgress(currentLesson: 4),
+    );
+    final first = t.controller.startGuidedSession();
+    while (!first.isComplete) {
+      first.submit(first.currentDrill.text);
+    }
+    await t.controller.recordReceiveSession(first);
+    final lesson = await _open(tester, training: t);
+    await _toNext(tester, lesson);
+    await _tapKey(tester, 'next-guided');
+    final session = tester
+        .widget<ReceiveDrillScreen>(find.byType(ReceiveDrillScreen))
+        .session;
+    expect(session.charBudget, 10);
+    expect(session.chars, unorderedEquals(['K', 'M']));
+    expect(session.currentDrill.charCount, 1);
+    expect(session.countsTowardLesson, isFalse);
+  });
+
+  testWidgets('audio and confirmation stay available with larger text', (
+    tester,
+  ) async {
+    await _open(tester);
+    tester.view.physicalSize = const Size(390, 640);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('first-lesson-signal')), findsOneWidget);
+    await _tapKey(tester, 'first-lesson-not-heard');
+
+    expect(
+      find.byKey(const ValueKey('first-lesson-play')).hitTestable(),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('first-lesson-heard')).hitTestable(),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('returning to audio check preserves the selected flash option', (
+    tester,
+  ) async {
+    final lesson = await _open(tester);
+    await _tapKey(tester, 'first-lesson-not-heard');
+    await tester.tap(find.text(en.firstLessonUseFlash));
+    await tester.pumpAndSettle();
+    await _tapKey(tester, 'first-lesson-heard');
+    expect(lesson.t.controller.settings.flashEnabled, isTrue);
+    final previous = find.byKey(const ValueKey('first-lesson-previous'));
+    expect(previous, findsOneWidget);
+    await _tapKey(tester, 'first-lesson-previous');
+    expect(find.text(en.firstLessonNoSoundTitle), findsOneWidget);
+    expect(lesson.t.controller.settings.flashEnabled, isTrue);
+  });
+
   testWidgets('dit and dah tiles each sound one element', (tester) async {
     final l = await _open(tester);
     await _tapKey(tester, 'first-lesson-heard');
@@ -151,6 +230,30 @@ void main() {
     await _finishSound(tester, l);
     expect(_toneCount(l), greaterThan(tones));
     expect(l.trials.assistance, contains(Assistance.replay));
+  });
+
+  testWidgets('slow replay lengthens the current signal only', (tester) async {
+    final lesson = await _open(tester);
+    await _toTrials(tester);
+    await _finishSound(tester, lesson);
+    final settings = lesson.t.controller.trainerSettings;
+    Duration firstTone() {
+      final events = lesson.playback.sink.events;
+      final start = events.indexWhere((event) => event.on);
+      final stop = events.skip(start + 1).firstWhere((event) => !event.on);
+      return stop.at - events[start].at;
+    }
+
+    lesson.playback.sink.clear();
+    await _tapKey(tester, 'trial-replay');
+    await _finishSound(tester, lesson);
+    final original = firstTone();
+    lesson.playback.sink.clear();
+    await _tapKey(tester, 'trial-slow-replay');
+    await _finishSound(tester, lesson);
+    expect(firstTone(), greaterThan(original));
+    expect(lesson.t.controller.trainerSettings, settings);
+    expect(lesson.trials.assistance, contains(Assistance.replay));
   });
 
   testWidgets('the beginner pace switches on and back off before answering', (

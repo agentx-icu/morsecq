@@ -305,7 +305,7 @@ abstract class S {
   /// Statistics overview, 'Practice' tile: total characters copied across all sessions
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 char copied} other{{count} chars copied}}'**
+  /// **'{count, plural, one{1 symbol practised} other{{count} symbols practised}}'**
   String statsCharsCopied(int count);
 
   /// Statistics: number of practice sessions (overview 'Practice' tile, statistics summary card)
@@ -1841,7 +1841,7 @@ abstract class S {
   /// Statistics: empty state call to action; the quoted button name must match learnContinueLesson
   ///
   /// In en, this message translates to:
-  /// **'Head to Learn and press \"Continue lesson\" to start.'**
+  /// **'Go to Learn'**
   String get statsEmptyCallToAction;
 
   /// Statistics: title of the overview tiles section
@@ -1871,7 +1871,7 @@ abstract class S {
   /// Statistics overview: label of the practice totals tile
   ///
   /// In en, this message translates to:
-  /// **'Practice'**
+  /// **'Retained practice time'**
   String get statsTilePractice;
 
   /// Statistics overview / summary card: label of the streak tile
@@ -2183,7 +2183,7 @@ abstract class S {
   /// Listen screen: label of the estimated sending speed
   ///
   /// In en, this message translates to:
-  /// **'Speed'**
+  /// **'Estimated speed'**
   String get listenSpeed;
 
   /// Listen screen: shown instead of a speed before one can be estimated; same form as learnWpmUnknown
@@ -2495,7 +2495,7 @@ abstract class S {
   /// Accuracy tile detail line; allTime is the all-time accuracy already formatted via statsPercent (or statsNoData)
   ///
   /// In en, this message translates to:
-  /// **'last 7 days / {allTime} all time'**
+  /// **'Past 7 days / retained records {allTime}'**
   String statsAccuracyDetail(String allTime);
 
   /// Practice duration of one hour or more
@@ -3071,7 +3071,7 @@ abstract class S {
   /// QSO log: reveal a remote transmission (counts as a hint)
   ///
   /// In en, this message translates to:
-  /// **'Show text'**
+  /// **'Show text (assisted)'**
   String get learnQsoShowText;
 
   /// QSO log: play a remote transmission again
@@ -3269,13 +3269,13 @@ abstract class S {
   /// QSO summary: number of repeat requests
   ///
   /// In en, this message translates to:
-  /// **'Repeats: {count}'**
+  /// **'Remote transmissions heard again: {count}'**
   String learnQsoSummaryRepeats(int count);
 
   /// QSO summary: hints and revealed texts
   ///
   /// In en, this message translates to:
-  /// **'Hints: {count}'**
+  /// **'Hints or transcripts shown: {count}'**
   String learnQsoSummaryHints(int count);
 
   /// QSO summary: average measured sending speed
@@ -3413,7 +3413,7 @@ abstract class S {
   /// Reminder to preserve device-local audio recordings before clearing or uninstalling
   ///
   /// In en, this message translates to:
-  /// **'Recordings stay on this device. Keep copies before clearing learning data or uninstalling. Saved selections retain their titles, notes and positions.'**
+  /// **'Keep the WAV file you originally selected so you can import it again. Clearing learning data deletes the in-app recording copies and saved selections. Uninstalling may also remove them.'**
   String get workbenchBackupNote;
 
   /// Recording workbench: recording format line
@@ -3617,7 +3617,7 @@ abstract class S {
   /// Recording workbench: reveal decoder output (assisted)
   ///
   /// In en, this message translates to:
-  /// **'Show decoder text'**
+  /// **'Show decoder text (assisted)'**
   String get workbenchShowDecoder;
 
   /// Recording workbench: optional answer text field
@@ -3827,7 +3827,7 @@ abstract class S {
   /// Material problem: nothing can be keyed
   ///
   /// In en, this message translates to:
-  /// **'Nothing here can be practised in Morse.'**
+  /// **'Enter at least one Morse letter, number, or prosign. To practise Chinese characters, open Learn → More practice → Chinese telegraph code.'**
   String get materialsProblemNothingTrainable;
 
   /// My materials: search field
@@ -3917,19 +3917,19 @@ abstract class S {
   /// My materials: import failed, library unchanged
   ///
   /// In en, this message translates to:
-  /// **'Import failed. Your library is unchanged.'**
+  /// **'Import failed. Your library is unchanged. Open Import TXT or JSON and choose the file again.'**
   String get materialsImportFailed;
 
   /// My materials: file is not UTF-8 text
   ///
   /// In en, this message translates to:
-  /// **'Only UTF-8 text files can be imported.'**
+  /// **'Only UTF-8 text can be imported. Save the TXT or MorseCQ material JSON as UTF-8 and choose it again.'**
   String get materialsImportNotUtf8;
 
   /// My materials: JSON library invalid, nothing imported
   ///
   /// In en, this message translates to:
-  /// **'Not a valid MorseCQ material file. Nothing was imported.'**
+  /// **'This is not valid MorseCQ material JSON. Nothing was imported. Choose a JSON file exported from MorseCQ to try again.'**
   String get materialsImportInvalid;
 
   /// My materials: import done
@@ -3965,7 +3965,7 @@ abstract class S {
   /// My materials: export the (filtered) library as JSON
   ///
   /// In en, this message translates to:
-  /// **'Export as JSON'**
+  /// **'Export the displayed materials as JSON'**
   String get materialsExportJson;
 
   /// My materials: export done
@@ -3977,7 +3977,7 @@ abstract class S {
   /// My materials: export failed
   ///
   /// In en, this message translates to:
-  /// **'Export failed.'**
+  /// **'Export failed. Select the same export action again to retry.'**
   String get materialsExportFailed;
 
   /// My materials: export audio
@@ -4075,6 +4075,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Check my current level'**
   String get placementCheckLevel;
+
+  /// Leave the level check without applying the suggested starting lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep current lesson'**
+  String get placementKeepCurrent;
 
   /// Placement: start the course at lesson one
   ///
@@ -4613,7 +4619,7 @@ abstract class S {
   /// Offline build Me: what clearing removes
   ///
   /// In en, this message translates to:
-  /// **'Deletes your progress, plans and materials on this device.'**
+  /// **'Delete local learning data and recordings and selections stored by MorseCQ.'**
   String get offlineClearDataBody;
 
   /// Offline build Me: snack after clearing
@@ -4733,8 +4739,8 @@ abstract class S {
   /// Lesson card: what the Continue lesson button starts and what passing requires
   ///
   /// In en, this message translates to:
-  /// **'The lesson challenge: {count} symbols at 90%, with each new symbol copied at least {min} times. Passing unlocks the next character.'**
-  String learnChallengeHint(int count, int min);
+  /// **'Copy at least {count} symbols with {accuracy} overall accuracy. Each new symbol needs at least {min} attempts and {accuracy} accuracy. Passing unlocks the next character.'**
+  String learnChallengeHint(int count, int min, String accuracy);
 
   /// Lesson card: on the last lesson before its challenge is passed
   ///
@@ -4865,7 +4871,7 @@ abstract class S {
   /// Receive summary explanation: free practice never advances the course
   ///
   /// In en, this message translates to:
-  /// **'Free practice updates your statistics and reviews but never advances the course. The lesson challenge from the Learn home does.'**
+  /// **'Free practice updates statistics and review. Pass the current lesson’s independent challenge to advance.'**
   String get learnVerdictPracticeHint;
 
   /// Receive summary headline: the last lesson challenge was passed
@@ -5105,7 +5111,7 @@ abstract class S {
   /// First lesson: switch to the beginner pace (longer pauses)
   ///
   /// In en, this message translates to:
-  /// **'Too fast? Use the beginner pace (longer pauses between characters)'**
+  /// **'Use beginner spacing in future multi-character drills'**
   String get firstLessonTooFast;
 
   /// First lesson step 5 title
@@ -5279,7 +5285,7 @@ abstract class S {
   /// QSO setup: short protocol explainer body
   ///
   /// In en, this message translates to:
-  /// **'Call (CQ = anyone, DE = from), answer with callsigns, exchange a report (RST), name and QTH (location), then 73 (best regards) and <SK> (end). K means over to you.'**
+  /// **'CQ calls any station, DE means from, and K means over to you. A short QSO confirms callsigns, exchanges signal reports (RST), then closes with 73 (best regards) and <SK> (end). A full QSO also exchanges operator names and QTH (location).'**
   String get learnQsoHowBody;
 
   /// QSO drill / simulator label when untaught symbols are included
@@ -5615,7 +5621,7 @@ abstract class S {
   /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.
   ///
   /// In en, this message translates to:
-  /// **'Inspired by CW Academy. Each milestone needs two recent independent attempts with at least 90% accuracy at the indicated effective speed. Evidence expires after 28 days.'**
+  /// **'Inspired by CW Academy. Each milestone needs two independent attempts with at least 90% accuracy at or above the stated effective speed. Evidence is valid for 28 days.'**
   String get goalsExplanation;
 
   /// Learning goal route screen and goal-aware daily plan. UI label or instruction: Start with the character course. Goal-based listening and QSO steps join the daily plan after you pass the course.
@@ -5855,13 +5861,13 @@ abstract class S {
   /// Offline contest and park-to-park POTA simulator. UI label or instruction: Key a reply
   ///
   /// In en, this message translates to:
-  /// **'Key a reply'**
+  /// **'Switch to keying'**
   String get qsoAdvancedKeyedMode;
 
   /// Offline contest and park-to-park POTA simulator. UI label or instruction: Your transmission
   ///
   /// In en, this message translates to:
-  /// **'Your transmission'**
+  /// **'Your typed reply'**
   String get qsoAdvancedTypedReply;
 
   /// Offline contest and park-to-park POTA simulator. UI label or instruction: Send RST and your serial
@@ -6379,6 +6385,450 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Practice and course mastery are recorded separately. Finishing a plan does not by itself pass a lesson.'**
   String get learnPlanCourseEvidence;
+
+  /// Completed signal in receive practice
+  ///
+  /// In en, this message translates to:
+  /// **'Signal finished'**
+  String get learnRoundHeard;
+
+  /// Button warning that replay makes a lesson challenge assisted
+  ///
+  /// In en, this message translates to:
+  /// **'Replay as assisted practice'**
+  String get learnReplayTurnsToPractice;
+
+  /// Shows while the signal is still playing
+  ///
+  /// In en, this message translates to:
+  /// **'You can enter your answer while listening. Check it after the signal finishes.'**
+  String get learnFinishListeningBeforeCheck;
+
+  /// Explicitly score a round with no answer
+  ///
+  /// In en, this message translates to:
+  /// **'Skip round (counts as missed)'**
+  String get learnSkipRound;
+
+  /// Permanent deletion scope in the clear learning data confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. This device’s course progress, practice records, plans, materials, app-managed recordings and saved selections will be deleted.'**
+  String get offlineClearScope;
+
+  /// Files retained when clearing learning data
+  ///
+  /// In en, this message translates to:
+  /// **'App preferences and original files stored outside MorseCQ are kept.'**
+  String get offlineClearKeeps;
+
+  /// Explains that an interrupted deletion can be partially applied
+  ///
+  /// In en, this message translates to:
+  /// **'Some learning data or recordings may already have been deleted. Retry to clear what remains.'**
+  String get offlineClearPartial;
+
+  /// Retry deletion in the same destructive confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Retry clearing'**
+  String get offlineClearRetry;
+
+  /// Label in material import confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming version'**
+  String get materialsIncomingVersion;
+
+  /// Label for exact material that already exists on device
+  ///
+  /// In en, this message translates to:
+  /// **'On this device'**
+  String get materialsLocalVersion;
+
+  /// Label for earlier same-id entry in the incoming file
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier entry in this file'**
+  String get materialsPreviousImportVersion;
+
+  /// Button to replace the shown conflicting entries only
+  ///
+  /// In en, this message translates to:
+  /// **'Replace conflicts'**
+  String get materialsReplaceConflicts;
+
+  /// Import conflict collection changed while the preview was open
+  ///
+  /// In en, this message translates to:
+  /// **'Materials changed. Open the import again to review the conflicts.'**
+  String get materialsChangedReview;
+
+  /// Label for overall challenge accuracy
+  ///
+  /// In en, this message translates to:
+  /// **'Overall accuracy'**
+  String get learnChallengeOverall;
+
+  /// A threshold is met
+  ///
+  /// In en, this message translates to:
+  /// **'Met'**
+  String get learnChallengeReached;
+
+  /// A threshold is not met
+  ///
+  /// In en, this message translates to:
+  /// **'Below target'**
+  String get learnChallengeNotReached;
+
+  /// Per-character count compared to required count
+  ///
+  /// In en, this message translates to:
+  /// **'Attempts'**
+  String get learnChallengeSamples;
+
+  /// Title above the alignment's incorrect characters
+  ///
+  /// In en, this message translates to:
+  /// **'What to review'**
+  String get learnRoundDifferences;
+
+  /// An answer symbol not in the signal
+  ///
+  /// In en, this message translates to:
+  /// **'Extra: {symbol}'**
+  String learnRoundExtra(String symbol);
+
+  /// A correctly copied symbol in alignment semantics
+  ///
+  /// In en, this message translates to:
+  /// **'Correct: {symbol}'**
+  String learnRoundCorrect(String symbol);
+
+  /// Action to hear one symbol after scoring
+  ///
+  /// In en, this message translates to:
+  /// **'Hear {symbol}'**
+  String learnRoundReplaySymbol(String symbol);
+
+  /// Explains replay in short guided practice
+  ///
+  /// In en, this message translates to:
+  /// **'Replay as needed. This practice does not advance the course.'**
+  String get learnGuidedReplayNote;
+
+  /// Textual test status before any signal
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for input'**
+  String get keysTestWaiting;
+
+  /// Textual test status while the signal is on
+  ///
+  /// In en, this message translates to:
+  /// **'Signal active'**
+  String get keysTestOn;
+
+  /// Textual test status after manually releasing keys
+  ///
+  /// In en, this message translates to:
+  /// **'Keys released'**
+  String get keysTestReleased;
+
+  /// Listening status before the system grants audio permission
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for microphone permission'**
+  String get listenWaitingPermission;
+
+  /// Explain when permission is requested and the file alternative
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to request system permission. You can also open a WAV in the recording workbench without the microphone.'**
+  String get listenMicNext;
+
+  /// Comparison basis before checking, with no verified reference text
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison source: estimated decoding'**
+  String get workbenchEstimateBasis;
+
+  /// Comparison basis before checking against provided text
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison source: your reference'**
+  String get workbenchReferenceBasis;
+
+  /// Matching percentage compared against machine estimate
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated decoding match: {accuracy}'**
+  String workbenchEstimateMatch(String accuracy);
+
+  /// Matching percentage compared with the user's reference
+  ///
+  /// In en, this message translates to:
+  /// **'Reference match: {accuracy}'**
+  String workbenchReferenceMatch(String accuracy);
+
+  /// Shows which style and mode are currently applied
+  ///
+  /// In en, this message translates to:
+  /// **'In use: {style} · {mode}'**
+  String appearanceActive(String style, String mode);
+
+  /// Label for unsaved appearance choices
+  ///
+  /// In en, this message translates to:
+  /// **'Preview · not applied'**
+  String get appearancePending;
+
+  /// Retry applying saved style preferences
+  ///
+  /// In en, this message translates to:
+  /// **'Retry applying'**
+  String get appearanceRetryApply;
+
+  /// Instruction to replace a missing recording with its source WAV
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the original WAV file to relink this selection.'**
+  String get workbenchRelinkFormat;
+
+  /// Continue after sensing an alternative signal
+  ///
+  /// In en, this message translates to:
+  /// **'I sensed the signal. Continue'**
+  String get firstLessonSignalReceived;
+
+  /// No sound tips where vibration is unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Raise the volume or check mute and Do Not Disturb. You can use the screen flash instead.'**
+  String get firstLessonNoSoundDesktop;
+
+  /// Stage result when the first answer was accepted
+  ///
+  /// In en, this message translates to:
+  /// **'Passed on the first try'**
+  String get learnQsoFirstTryAccepted;
+
+  /// Stage result when the first answer required correction
+  ///
+  /// In en, this message translates to:
+  /// **'First answer needed correction'**
+  String get learnQsoFirstTryRejected;
+
+  /// Action to practise only a selected QSO reply
+  ///
+  /// In en, this message translates to:
+  /// **'Practise this reply'**
+  String get learnQsoStagePractice;
+
+  /// Targeted QSO practice is not counted as a new course run
+  ///
+  /// In en, this message translates to:
+  /// **'This check does not change the completed result.'**
+  String get learnQsoPracticeNoRecord;
+
+  /// Anonymous caption before the learner confirms or reveals the remote station call sign.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote station'**
+  String get learnQsoRemoteStation;
+
+  /// Automatic tone tuning is available but the microphone has not started.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-tune · idle'**
+  String get listenToneIdle;
+
+  /// Action and title for trying the selected key profile without editing it.
+  ///
+  /// In en, this message translates to:
+  /// **'Test selected profile'**
+  String get keysTestActiveProfile;
+
+  /// Labels the percentage based on the decoded text alone.
+  ///
+  /// In en, this message translates to:
+  /// **'Decoding accuracy'**
+  String get learnDecodedAccuracy;
+
+  /// Total symbols in this frozen plan step and the maximum symbols per group.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} characters total · up to {group} per round'**
+  String learnPlanCopyCounts(int count, int group);
+
+  /// Explain that replaying after a completed playback counts as assistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaying a completed signal marks the attempt as assisted.'**
+  String get learnPlanReplayNote;
+
+  /// Shown for a plan exercise that cannot advance the course.
+  ///
+  /// In en, this message translates to:
+  /// **'This step does not advance the course.'**
+  String get learnPlanNoUnlock;
+
+  /// Requirements for passing the final Koch lesson, where there is no next character.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy at least {count} symbols with {accuracy} overall accuracy. Each new symbol needs at least {min} attempts and {accuracy} accuracy. Passing completes the course.'**
+  String learnChallengeHintLast(int count, int min, String accuracy);
+
+  /// Title of the detail panel for the selected Morse character.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected character: {char}'**
+  String learnReferenceSelection(String char);
+
+  /// Question-feedback label when the user left this answer blank.
+  ///
+  /// In en, this message translates to:
+  /// **'Unanswered'**
+  String get comprehensionFieldUnanswered;
+
+  /// Prompt for the sender’s callsign in a single-station radio message. DE precedes that callsign.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending station callsign (after DE)'**
+  String get comprehensionSendingCallsign;
+
+  /// Shows the value the learner entered before a listening exercise was scored.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer: {answer}'**
+  String comprehensionYourAnswer(String answer);
+
+  /// Labels the correct value for a wrong or unanswered listening question.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct answer: {answer}'**
+  String comprehensionExpectedAnswer(String answer);
+
+  /// Action to replay only the current single-character practice signal using a slower character speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay this signal more slowly'**
+  String get firstLessonSlowReplay;
+
+  /// Visible status on a QSO transcript after the learner has revealed its text. This radio contact stage counts as assisted.
+  ///
+  /// In en, this message translates to:
+  /// **'Text revealed · this stage counts as assisted'**
+  String get learnQsoTextRevealed;
+
+  /// Action on a free-practice result that starts a different, guided exercise at the recommended level.
+  ///
+  /// In en, this message translates to:
+  /// **'Start guided practice: {level}'**
+  String learnBeginGuided(String level);
+
+  /// Minimum number of samples within a single attempt that can count toward this learning milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {count} per attempt'**
+  String goalsSamples(int count);
+
+  /// Persistent label of the learner’s own transcription, separate from the optional reference answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your copy'**
+  String get workbenchYourCopy;
+
+  /// Action to start a separate transcription attempt from the completed comparison result.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new copy attempt'**
+  String get workbenchNewCopy;
+
+  /// Confirmation heading before a saved selection and its notes are permanently deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete saved selection?'**
+  String get workbenchDeleteTitle;
+
+  /// Confirmation explaining the named saved selection is removed and the original WAV stays outside the app.
+  ///
+  /// In en, this message translates to:
+  /// **'“{title}”, its notes, and its saved time range will be removed. Your original WAV file stays where you kept it.'**
+  String workbenchDeleteSelection(String title);
+
+  /// Confirmation explaining both the named selection and the now-unreferenced app WAV copy are removed, with the external original kept.
+  ///
+  /// In en, this message translates to:
+  /// **'“{title}”, its notes, and its saved time range will be removed, along with the app’s WAV copy. Your original WAV file stays where you kept it.'**
+  String workbenchDeleteWithCopy(String title);
+
+  /// Error after selecting a WAV whose duration or format properties cannot restore the saved selection. Ask for the originally imported file.
+  ///
+  /// In en, this message translates to:
+  /// **'This WAV is too short for at least one saved selection or has a different sample rate or channel count. Select the WAV file you originally imported.'**
+  String get workbenchRelinkMismatch;
+
+  /// Recording library: physical file is shared among count saved selections
+  ///
+  /// In en, this message translates to:
+  /// **'This WAV is shared by {count} saved selections. Relinking restores all of them.'**
+  String workbenchRelinkShared(int count);
+
+  /// QSO transcript: replay an already heard transmission; counts as assistance
+  ///
+  /// In en, this message translates to:
+  /// **'Replay (assisted)'**
+  String get learnQsoReplayAssisted;
+
+  /// QSO active stage: assistance such as replay was used
+  ///
+  /// In en, this message translates to:
+  /// **'This stage is assisted'**
+  String get learnQsoStageAssisted;
+
+  /// QSO learner instruction when replying as assisted typed text rather than keying
+  ///
+  /// In en, this message translates to:
+  /// **'Edit your typed reply, then Send (assisted practice).'**
+  String get learnQsoYourTypedTurn;
+
+  /// Statistics overview: accuracy for retained receive copying practice
+  ///
+  /// In en, this message translates to:
+  /// **'Copy accuracy'**
+  String get statsReceiveAccuracy;
+
+  /// Live CW decoder: inactive bottom status before the user starts or while permission is pending
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to start'**
+  String get listenWaitingToReceive;
+
+  /// Recording result: label of aligned estimate characters, not the user’s answer
+  ///
+  /// In en, this message translates to:
+  /// **'Decoder estimate'**
+  String get workbenchAlignedEstimate;
+
+  /// Recording result: label of the supplied reference answer
+  ///
+  /// In en, this message translates to:
+  /// **'Reference answer'**
+  String get workbenchAlignedReference;
+
+  /// Recording comparison: differences and placeholder dots in the two aligned rows
+  ///
+  /// In en, this message translates to:
+  /// **'Highlighted cells differ. A dot marks a missing character in that row.'**
+  String get workbenchAlignmentLegend;
+
+  /// Conflict preview: timestamp when this version was last edited
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {stamp}'**
+  String materialsImportUpdated(String stamp);
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

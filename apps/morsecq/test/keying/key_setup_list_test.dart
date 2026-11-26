@@ -62,6 +62,22 @@ void _size(WidgetTester tester) {
 }
 
 void main() {
+  testWidgets('the built-in profile can be tested without creating a profile', (
+    tester,
+  ) async {
+    _size(tester);
+    final scope = await _Scope.create();
+    await tester.pumpWidget(
+      scope.wrap(KeySetupPage(testSink: RecordingSink(clock: FakeClock()))),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(en.keysTestActiveProfile));
+    await tester.pumpAndSettle();
+    expect(find.text(en.keysTestNote), findsOneWidget);
+    expect(scope.profiles.saved, isEmpty);
+    expect(scope.profiles.active.id, KeyProfile.defaults.id);
+  });
+
   testWidgets('choosing a profile makes it active and Learn follows it', (
     tester,
   ) async {

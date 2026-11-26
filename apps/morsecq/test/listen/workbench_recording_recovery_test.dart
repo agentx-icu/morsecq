@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,92 @@ import 'workbench_wait.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('restoring a shorter selection protects its longer sibling', (
+    tester,
+  ) async {
+    final root = Directory.systemTemp.createTempSync('workbench_shared_');
+    final t = await TestTraining.create();
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      t.controller.dispose();
+      await root.delete(recursive: true);
+    });
+    const path = 'media/recordings/shared.wav';
+    AudioMaterial clip(String id, int seconds, {required bool legacy}) =>
+        AudioMaterial(
+          id: id,
+          title: id,
+          file: path,
+          originalName: 'shared.wav',
+          start: Duration.zero,
+          end: Duration(seconds: seconds),
+          sampleRate: legacy ? 0 : 8000,
+          channels: legacy ? 0 : 1,
+          createdAt: t.controller.now(),
+        );
+    await t.controller.upsertAudioMaterial(
+      clip('Short clip', 2, legacy: false),
+    );
+    await t.controller.upsertAudioMaterial(clip('Long clip', 4, legacy: true));
+    PickedRecording recording(int seconds) => PickedRecording(
+      name: 'shared.wav',
+      bytes: wavOf(Int16List(8000 * seconds), sampleRate: 8000),
+    );
+    final picker = FakePicker(recording(3));
+    await tester.pumpWidget(
+      l10nApp(
+        home: WorkbenchScreen(
+          picker: picker,
+          player: FakeClipPlayer(),
+          profileRoot: () async => root.path,
+          training: () async => t.controller,
+        ),
+      ),
+    );
+    final library = find.widgetWithIcon(
+      IconButton,
+      Icons.library_music_outlined,
+    );
+    await waitForWorkbenchCondition(
+      tester,
+      () =>
+          library.evaluate().isNotEmpty &&
+          tester.widget<IconButton>(library).onPressed != null,
+      description: 'load the recording library',
+    );
+    await tester.tap(library);
+    final shortRow = find.byKey(const ValueKey('workbench-item-Short clip'));
+    final relinkShort = find.descendant(
+      of: shortRow,
+      matching: find.text(en.workbenchRelink),
+    );
+    await waitForWorkbench(tester, relinkShort);
+    await tester.ensureVisible(relinkShort);
+    await tester.tap(relinkShort);
+    await waitForWorkbenchCondition(
+      tester,
+      () =>
+          find.text(en.workbenchRelinkMismatch).evaluate().isNotEmpty ||
+          relinkShort.evaluate().isEmpty,
+      description: 'complete shared recording validation',
+    );
+    expect(
+      await tester.runAsync(RecordingLibrary(root.path).fileFor(path).exists),
+      isFalse,
+    );
+    expect(find.text(en.workbenchRelinkMismatch), findsOneWidget);
+    expect(find.text(en.workbenchRelink), findsNWidgets(2));
+
+    picker.next = recording(5);
+    await tester.tap(relinkShort);
+    await waitForWorkbench(tester, relinkShort, absent: true);
+    expect(find.text(en.workbenchRelink), findsNothing);
+    expect(
+      await tester.runAsync(RecordingLibrary(root.path).fileFor(path).exists),
+      isTrue,
+    );
+  });
+
   for (final mode in ['recovered-index', 'damaged-entry']) {
     testWidgets('opening the workbench preserves a WAV omitted by $mode', (
       tester,

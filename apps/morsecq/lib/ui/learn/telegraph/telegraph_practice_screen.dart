@@ -6,6 +6,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../responsive.dart';
 import '../../telegraph/telegraph_labels.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
@@ -83,71 +84,77 @@ class _TelegraphPracticeScreenState extends State<TelegraphPracticeScreen> {
     return Scaffold(
       appBar: AppBar(title: AppBarTitle(s.telegraphTitle)),
       body: SafeArea(
-        top: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(s.telegraphIntro),
-                const SizedBox(height: 8),
-                Text(
-                  [
-                    for (final c in sample)
-                      '$c ${ChineseTelegraphCode.codeOf(c, codebook: _book)}',
-                  ].join('   '),
-                  style: theme.textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-                TelegraphCodebookPicker(
-                  value: _book,
-                  onChanged: (b) => setState(() => _book = b),
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    key: const Key('telegraph-digits'),
-                    leading: const Icon(Icons.hearing),
-                    title: Text(s.telegraphDigitsTitle),
-                    subtitle: Text(
+        child: AdaptivePanelBody(
+          breakpoint: 900,
+          leading: [
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(s.telegraphIntro),
+                    const SizedBox(height: 8),
+                    Text(
                       [
-                        s.telegraphDigitsHint,
-                        if (attempts > 0)
-                          s.telegraphDigitsResults(
-                            attempts,
-                            (digitAcc * 100).round(),
-                          ),
-                      ].join('\n'),
+                        for (final c in sample)
+                          '$c ${ChineseTelegraphCode.codeOf(c, codebook: _book)}',
+                      ].join('   '),
+                      style: theme.textTheme.titleMedium,
                     ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _copyDigits,
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    key: const Key('telegraph-recall'),
-                    leading: const Icon(Icons.translate),
-                    title: Text(s.telegraphRecallTitle),
-                    subtitle: Text(
-                      [
-                        s.telegraphRecallHint,
-                        if (answered > 0)
-                          s.telegraphRecallResults(
-                            answered,
-                            (_recall.accuracy(_book) * 100).round(),
-                          ),
-                      ].join('\n'),
+                    const SizedBox(height: 12),
+                    TelegraphCodebookPicker(
+                      value: _book,
+                      onChanged: (b) => setState(() => _book = b),
                     ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _recallCodes,
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(s.telegraphSeparateNote, style: theme.textTheme.bodySmall),
-              ],
+              ),
             ),
-          ),
+          ],
+          trailing: [
+            Card(
+              child: ListTile(
+                key: const Key('telegraph-digits'),
+                leading: const Icon(Icons.hearing),
+                title: Text(s.telegraphDigitsTitle),
+                subtitle: Text(
+                  [
+                    s.telegraphDigitsHint,
+                    if (attempts > 0)
+                      s.telegraphDigitsResults(
+                        attempts,
+                        (digitAcc * 100).round(),
+                      ),
+                  ].join('\n'),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _copyDigits,
+              ),
+            ),
+            Card(
+              child: ListTile(
+                key: const Key('telegraph-recall'),
+                leading: const Icon(Icons.translate),
+                title: Text(s.telegraphRecallTitle),
+                subtitle: Text(
+                  [
+                    s.telegraphRecallHint,
+                    if (answered > 0)
+                      s.telegraphRecallResults(
+                        answered,
+                        (_recall.accuracy(_book) * 100).round(),
+                      ),
+                  ].join('\n'),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _recallCodes,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(s.telegraphSeparateNote, style: theme.textTheme.bodySmall),
+          ],
         ),
       ),
     );

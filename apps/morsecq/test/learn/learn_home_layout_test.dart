@@ -4,6 +4,7 @@ import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/learn/learn_home.dart';
 import 'package:morsecq/ui/learn/learn_home_widgets.dart';
+import 'package:morsecq/ui/learn/plan/today_plan_card.dart';
 import 'package:morsecq/ui/theme.dart';
 
 import 'helpers/fake_playback.dart';
@@ -41,6 +42,79 @@ Future<TestTraining> _pumpLearnHome(
 }
 
 void main() {
+  testWidgets('wide first lesson labels both introduced symbols as new', (
+    tester,
+  ) async {
+    await _pumpLearnHome(
+      tester,
+      size: const Size(1280, 880),
+      scale: 1,
+      lesson: 1,
+    );
+    expect(find.text(en.learnNewestCharIs('K / M')), findsOneWidget);
+  });
+
+  for (final style in [UiStyle.classic, null]) {
+    testWidgets('wide learning home uses 24 dp outer gutters ($style)', (
+      tester,
+    ) async {
+      const size = Size(1440, 900);
+      await _pumpLearnHome(
+        tester,
+        size: size,
+        scale: 1.8,
+        lesson: 4,
+        style: style,
+      );
+
+      final plan = tester.getRect(find.byType(TodayPlanCard));
+      expect(plan.left, 24);
+      final rightEdge = style == null
+          ? plan.right
+          : tester.getRect(find.byType(DailyGoalCard)).right;
+      expect(size.width - rightEdge, 24);
+      expect(
+        find.byKey(const ValueKey('plan-start')).hitTestable(),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('resizing keeps phone gutters until the 900 dp breakpoint', (
+    tester,
+  ) async {
+    const size = Size(390, 640);
+    await _pumpLearnHome(tester, size: size, scale: 1.8, lesson: 4);
+    final plan = find.byType(TodayPlanCard);
+    final course = find.byType(LessonCard);
+    final goal = find.byType(DailyGoalCard);
+    final primary = find.byKey(const ValueKey('plan-start'));
+
+    for (final width in [390.0, 899.0, 900.0, 1024.0, 390.0]) {
+      tester.view.physicalSize = Size(width, size.height);
+      await tester.pumpAndSettle();
+
+      final wide = width >= 900;
+      final inset = wide ? 24 : 16;
+      final planBounds = tester.getRect(plan);
+      expect(planBounds.left, inset);
+      if (!wide) expect(width - planBounds.right, inset);
+      expect(primary.hitTestable(), findsOneWidget);
+      final courseBounds = tester.getRect(course);
+      final goalBounds = tester.getRect(goal);
+      if (wide) {
+        expect(planBounds.top, goalBounds.top);
+        expect(courseBounds.top, greaterThan(planBounds.bottom));
+        expect(width - goalBounds.right, closeTo(inset, 0.01));
+        expect(goalBounds.left, greaterThan(courseBounds.right));
+      } else {
+        expect(goalBounds.top, greaterThan(courseBounds.bottom));
+      }
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   for (final size in [
     const Size(320, 640),
     const Size(390, 844),

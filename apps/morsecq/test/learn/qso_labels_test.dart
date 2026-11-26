@@ -26,7 +26,7 @@ List<(QsoStage, String)> _walk(QsoScenario scenario) {
     effectiveWpm: 20,
   );
   final seen = <(QsoStage, String)>[
-    (session.stage, QsoLabels.task(en, session)),
+    (session.stage, QsoLabels.task(en, session.scenario, session.stage)),
   ];
   var id = 0;
   for (var i = 0; i < 40 && !session.isDone; i++) {
@@ -34,7 +34,10 @@ List<(QsoStage, String)> _walk(QsoScenario scenario) {
       session.submit('e${id++}', 'ZZZ');
     }
     if (session.submit('a${id++}', session.hint().example).advanced) {
-      seen.add((session.stage, QsoLabels.task(en, session)));
+      seen.add((
+        session.stage,
+        QsoLabels.task(en, session.scenario, session.stage),
+      ));
     }
   }
   expect(session.isDone, isTrue, reason: '$scenario finished');

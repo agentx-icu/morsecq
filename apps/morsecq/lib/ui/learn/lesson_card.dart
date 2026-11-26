@@ -14,6 +14,7 @@ import '../appearance/style_tokens.dart';
 import '../appearance/ui_style.dart';
 import 'learn_playback.dart';
 import 'lesson_card_extras.dart';
+import 'receive/receive_widgets.dart';
 
 /// Koch position: lesson n / total, the symbol set with honest states
 /// (new, practising, mastered, weak, due), the newest symbol playable and
@@ -188,16 +189,18 @@ class _LessonCardState extends State<LessonCard> {
         ? learned.sublist(learned.length - 10).reversed.toList()
         : learned;
     final newest = controller.newestChar;
+    final introduced = controller.course.newCharsForLesson(
+      controller.currentLesson,
+    );
     final states = <String, CharChipState>{
       for (final c in learned)
-        c: chipStateOf(controller, c, isNewest: c == newest),
+        c: chipStateOf(controller, c, isNewest: introduced.contains(c)),
     };
     // Mastery is independent of how a chip is coloured (the newest and due
     // states win the colour, not the count).
     final mastered = learned
         .where((c) => controller.masteryOf(c) == CharMastery.mastered)
         .length;
-    final t = controller.trainerSettings;
     final showGuided = widget.onGuided != null;
     final flash = _player?.flash;
     final card = Card(
@@ -295,7 +298,7 @@ class _LessonCardState extends State<LessonCard> {
                   ? s.learnCourseComplete
                   : controller.allCharsUnlocked
                   ? s.learnAllUnlockedNotPassed
-                  : s.learnNewestCharIs(newest),
+                  : s.learnNewestCharIs(introduced.join(' / ')),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),
@@ -318,12 +321,7 @@ class _LessonCardState extends State<LessonCard> {
             Text(s.learnRecentEvidenceHint, style: theme.textTheme.bodySmall),
             const SizedBox(height: 4),
             Text(
-              s.learnChallengeHint(
-                t.sessionLengthChars,
-                controller.course.requiredNewCharAttempts(
-                  controller.currentLesson,
-                ),
-              ),
+              challengeRule(s, controller.course, controller.currentLesson),
               style: theme.textTheme.labelSmall?.copyWith(
                 color: scheme.onSurfaceVariant,
               ),

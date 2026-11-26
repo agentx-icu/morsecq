@@ -18,6 +18,7 @@ void main() {
   ) async {
     final training = await TestTraining.create();
     addTearDown(training.controller.dispose);
+    final playback = FakeLearnPlaybackFactory();
     final session = ReceiveSession(
       kind: ReceiveDrillKind.words,
       generator: WordDrill(words: const <String>['THE'], wordCount: 1),
@@ -31,7 +32,7 @@ void main() {
       l10nApp(
         home: ReceiveDrillScreen(
           controller: training.controller,
-          playback: FakeLearnPlaybackFactory(),
+          playback: playback,
           session: session,
         ),
       ),
@@ -40,7 +41,13 @@ void main() {
     expect(find.byKey(const ValueKey('round-meanings')), findsNothing);
     expect(find.textContaining('specific person or thing'), findsNothing);
 
+    playback.clock.advance(
+      MorseEncoder.totalDuration(session.currentTimeline) +
+          const Duration(milliseconds: 1),
+    );
+    await tester.pump();
     await tester.enterText(find.byType(TextField), 'THE');
+    await tester.pump();
     await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
     await tester.pumpAndSettle();
 

@@ -259,22 +259,24 @@ class _PlacementScreenState extends State<PlacementScreen>
           ],
         ),
         body: _flash(
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 640),
-                  child: switch (_phase) {
-                    _Phase.intro => _intro(context),
-                    _Phase.round => _roundView(context),
-                    _Phase.tierResult => _tierResult(context),
-                    _Phase.result => _result(context),
-                  },
+          _phase == _Phase.result
+              ? _result(context)
+              : SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 640),
+                        child: switch (_phase) {
+                          _Phase.intro => _intro(context),
+                          _Phase.round => _roundView(context),
+                          _Phase.tierResult => _tierResult(context),
+                          _Phase.result => const SizedBox.shrink(),
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -401,30 +403,53 @@ class _PlacementScreenState extends State<PlacementScreen>
     final theme = Theme.of(context);
     final r = _assessment.result();
     final course = widget.controller.course;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          s.placementSuggestion(r.suggestedLesson),
-          style: theme.textTheme.headlineSmall,
-        ),
-        const SizedBox(height: 8),
-        Text(s.placementVerified(r.verifiedPrefix, course.order.length)),
-        const SizedBox(height: 8),
-        Text(s.placementLimits, style: theme.textTheme.bodySmall),
-        const SizedBox(height: 24),
-        FilledButton(
-          key: const ValueKey('placement-adopt'),
-          onPressed: _adopting
-              ? null
-              : () => unawaited(_adopt(r.suggestedLesson)),
-          child: Text(s.placementAdopt(r.suggestedLesson)),
-        ),
-        TextButton(
-          onPressed: _adopting ? null : () => unawaited(_adopt(1)),
-          child: Text(s.placementFromZero),
-        ),
-      ],
+    return SafeArea(
+      child: AdaptivePanelBody(
+        breakpoint: 900,
+        leading: [
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    s.placementSuggestion(r.suggestedLesson),
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    s.placementVerified(r.verifiedPrefix, course.order.length),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(s.placementLimits, style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ),
+          ),
+        ],
+        trailing: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FilledButton(
+                key: const ValueKey('placement-adopt'),
+                onPressed: _adopting
+                    ? null
+                    : () => unawaited(_adopt(r.suggestedLesson)),
+                child: Text(s.placementAdopt(r.suggestedLesson)),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                key: const ValueKey('placement-keep-current'),
+                onPressed: _adopting ? null : () => Navigator.of(context).pop(),
+                child: Text(s.placementKeepCurrent),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

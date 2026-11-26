@@ -14,7 +14,7 @@ export 'listen_failure.dart';
 
 /// [failed] covers every reason capture is unavailable, permission included;
 /// [ListenController.failure] says which.
-enum ListenStatus { idle, starting, listening, failed }
+enum ListenStatus { idle, waitingPermission, starting, listening, failed }
 
 /// Per-chunk meter state, kept out of the main notifier so only the meter
 /// repaints at audio-chunk rate.
@@ -87,7 +87,9 @@ final class ListenController extends ChangeNotifier {
 
   ListenStatus get status => _status;
   bool get isListening => _status == ListenStatus.listening;
-  bool get isBusy => _status == ListenStatus.starting;
+  bool get isBusy =>
+      _status == ListenStatus.waitingPermission ||
+      _status == ListenStatus.starting;
   bool get canStart =>
       !_disposed && !isBusy && !isListening && _stopping == null;
 
@@ -128,7 +130,7 @@ final class ListenController extends ChangeNotifier {
     final int attempt = _lastStartAttempt = ++_attempt;
     _stoppedInBackground = false;
     _failure = null;
-    _setStatus(ListenStatus.starting);
+    _setStatus(ListenStatus.waitingPermission);
     bool granted = false;
     try {
       if (explainPermission != null) {
@@ -155,6 +157,7 @@ final class ListenController extends ChangeNotifier {
       _fail(ListenFailureKind.permissionDenied, null, null, release: false);
       return;
     }
+    _setStatus(ListenStatus.starting);
     final Stream<Uint8List> stream;
     try {
       stream = await _source.start(sampleRate: sampleRate, channels: 1);

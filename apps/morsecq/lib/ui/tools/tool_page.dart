@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import '../common/app_bar_title.dart';
+import '../responsive.dart';
 
-/// Scaffold shared by every radio tool: one scrolling column, capped at a
-/// readable width on desktop and full width (with safe areas) on phones.
+/// Radio-tool scaffold with a readable list or two related panels at wide widths.
 class ToolPage extends StatelessWidget {
-  const ToolPage({super.key, required this.title, required this.children});
+  const ToolPage({
+    super.key,
+    required this.title,
+    required this.children,
+    this.secondary = const [],
+  });
 
   final String title;
   final List<Widget> children;
+  final List<Widget> secondary;
 
   static const double maxContentWidth = 640;
 
@@ -15,19 +21,25 @@ class ToolPage extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: AppBarTitle(title)),
     body: SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: maxContentWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: children,
+      child: secondary.isEmpty
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: maxContentWidth),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: children,
+                  ),
+                ),
+              ),
+            )
+          : AdaptivePanelBody(
+              breakpoint: 900,
+              leading: children,
+              trailing: secondary,
             ),
-          ),
-        ),
-      ),
     ),
   );
 }

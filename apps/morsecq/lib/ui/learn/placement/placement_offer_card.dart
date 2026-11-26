@@ -34,14 +34,17 @@ class PlacementOfferCard extends StatelessWidget {
     if (!shows(controller)) return const SizedBox.shrink();
     final s = context.s;
     final theme = Theme.of(context);
-    return Card(
+    final startCard = Card(
       key: const ValueKey('placement-offer'),
+      color: theme.colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(s.learnStartHereTitle, style: theme.textTheme.titleMedium),
+            const Icon(Icons.flag_outlined, size: 28),
+            const SizedBox(height: 8),
+            Text(s.learnStartHereTitle, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 4),
             Text(s.learnStartHereBody, style: theme.textTheme.bodySmall),
             const SizedBox(height: 12),
@@ -78,6 +81,50 @@ class PlacementOfferCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 852) return startCard;
+        final steps = [
+          s.firstLessonHearTitle,
+          s.firstLessonSoundsTitle,
+          s.firstLessonWorkedTitle,
+          s.firstLessonTrialsTitle,
+          s.firstLessonNextTitle,
+        ];
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [
+            Expanded(flex: 3, child: startCard),
+            Expanded(
+              flex: 2,
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        s.firstLessonTitle,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      for (final (index, title) in steps.indexed)
+                        ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: Text('${index + 1}'),
+                          title: Text(title),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

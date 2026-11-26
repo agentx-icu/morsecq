@@ -32,7 +32,23 @@ Future<void> settle(WidgetTester tester) async {
 
 Future<void> pumpApp(WidgetTester tester, {Size size = kPhoneSize}) async {
   final root = Directory.systemTemp.createTempSync('morsecq_local_test_');
-  addTearDown(() => root.deleteSync(recursive: true));
+  addTearDown(() async {
+    // The binding unmounts the app, but an already started file operation
+    // can still create a file while the temporary directory is being removed.
+    final elapsed = Stopwatch()..start();
+    final notEmpty = Platform.isMacOS ? 66 : (Platform.isWindows ? 145 : 39);
+    while (await root.exists()) {
+      try {
+        await root.delete(recursive: true);
+      } on FileSystemException catch (error) {
+        if (error.osError?.errorCode != notEmpty ||
+            elapsed.elapsed >= const Duration(seconds: 5)) {
+          rethrow;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 25));
+      }
+    }
+  });
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);

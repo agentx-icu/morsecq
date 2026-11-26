@@ -1,102 +1,119 @@
 part of 'listening_comprehension_screen.dart';
 
 extension _ComprehensionViews on _ListeningComprehensionScreenState {
-  Widget _content(BuildContext context) {
+  Widget _contextPanel(BuildContext context) {
+    final s = context.s;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!_started) ...[
+              Text(s.comprehensionIntro),
+              const SizedBox(height: 12),
+              Text(
+                s.comprehensionAudioRequired,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+            ],
+            DropdownButtonFormField<ListeningMode>(
+              key: const ValueKey('comprehension-mode'),
+              initialValue: _mode,
+              isExpanded: true,
+              // The selected label wraps at large text sizes instead of being
+              // clipped to the dense one-line height.
+              isDense: false,
+              itemHeight: null,
+              decoration: InputDecoration(
+                label: FieldLabel(s.comprehensionModeLabel),
+                border: const OutlineInputBorder(),
+              ),
+              items: [
+                for (final mode in ListeningMode.values)
+                  DropdownMenuItem(
+                    value: mode,
+                    child: Text(comprehensionModeLabel(context, mode)),
+                  ),
+              ],
+              onChanged:
+                  _started ||
+                      widget.planStepId != null ||
+                      widget.exercise != null
+                  ? null
+                  : (mode) {
+                      if (mode != null) _switchMode(mode);
+                    },
+            ),
+            const SizedBox(height: 12),
+            Text(comprehensionModeHelp(context, _mode)),
+            const SizedBox(height: 12),
+            Text(
+              s.comprehensionSpeed(
+                _settings.trainer.characterWpm.toStringAsFixed(0),
+                _effective.toStringAsFixed(0),
+              ),
+            ),
+            if (!_started &&
+                widget.planStepId == null &&
+                widget.practiceTiming == null &&
+                widget.exercise == null) ...[
+              const SizedBox(height: 8),
+              DropdownButtonFormField<double>(
+                key: const ValueKey('comprehension-speed'),
+                initialValue: _effective,
+                decoration: InputDecoration(
+                  label: FieldLabel(s.comprehensionSpeedLabel),
+                ),
+                items: [
+                  for (final speed in ({
+                    10.0,
+                    13.0,
+                    15.0,
+                    18.0,
+                    20.0,
+                    25.0,
+                    _effective,
+                  }.toList()..sort()))
+                    DropdownMenuItem(
+                      value: speed,
+                      child: Text(speed.toStringAsFixed(0)),
+                    ),
+                ],
+                onChanged: (speed) {
+                  if (speed != null) _setSpeed(speed);
+                },
+              ),
+            ],
+            if (_exercise.previewRequired) ...[
+              const SizedBox(height: 12),
+              Card(
+                key: const ValueKey('comprehension-preview'),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    s.comprehensionPreviewMissing(
+                      _exercise.missingSymbols.join(' '),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _exercisePanel(BuildContext context) {
     final s = context.s;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (!_started) ...[
-          Text(s.comprehensionIntro),
-          const SizedBox(height: 12),
-          Text(
-            s.comprehensionAudioRequired,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 16),
-        ],
-        DropdownButtonFormField<ListeningMode>(
-          key: const ValueKey('comprehension-mode'),
-          initialValue: _mode,
-          isExpanded: true,
-          // The selected label wraps at large text sizes instead of being
-          // clipped to the dense one-line height.
-          isDense: false,
-          itemHeight: null,
-          decoration: InputDecoration(
-            label: FieldLabel(s.comprehensionModeLabel),
-            border: const OutlineInputBorder(),
-          ),
-          items: [
-            for (final mode in ListeningMode.values)
-              DropdownMenuItem(
-                value: mode,
-                child: Text(comprehensionModeLabel(context, mode)),
-              ),
-          ],
-          onChanged:
-              _started || widget.planStepId != null || widget.exercise != null
-              ? null
-              : (mode) {
-                  if (mode != null) _switchMode(mode);
-                },
-        ),
-        const SizedBox(height: 12),
-        Text(comprehensionModeHelp(context, _mode)),
-        const SizedBox(height: 12),
-        Text(
-          s.comprehensionSpeed(
-            _settings.trainer.characterWpm.toStringAsFixed(0),
-            _effective.toStringAsFixed(0),
-          ),
-        ),
-        if (!_started &&
-            widget.planStepId == null &&
-            widget.practiceTiming == null &&
-            widget.exercise == null) ...[
-          const SizedBox(height: 8),
-          DropdownButtonFormField<double>(
-            key: const ValueKey('comprehension-speed'),
-            initialValue: _effective,
-            decoration: InputDecoration(
-              label: FieldLabel(s.comprehensionSpeedLabel),
-            ),
-            items: [
-              for (final speed in ({
-                10.0,
-                13.0,
-                15.0,
-                18.0,
-                20.0,
-                25.0,
-                _effective,
-              }.toList()..sort()))
-                DropdownMenuItem(
-                  value: speed,
-                  child: Text(speed.toStringAsFixed(0)),
-                ),
-            ],
-            onChanged: (speed) {
-              if (speed != null) _setSpeed(speed);
-            },
-          ),
-        ],
-        if (_exercise.previewRequired) ...[
-          const SizedBox(height: 12),
-          Card(
-            key: const ValueKey('comprehension-preview'),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                s.comprehensionPreviewMissing(
-                  _exercise.missingSymbols.join(' '),
-                ),
-              ),
-            ),
-          ),
-        ],
-        const SizedBox(height: 16),
         if (_score == null) ...[
+          SignalActivity(playing: _playing),
           OutlinedButton.icon(
             key: const ValueKey('comprehension-play'),
             onPressed: _playback == null || _playing || _backgrounded
@@ -141,7 +158,11 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
                 decoration: InputDecoration(
                   counterText: '',
                   label: FieldLabel(
-                    comprehensionFieldLabel(context, question.field),
+                    comprehensionFieldLabel(
+                      context,
+                      question.field,
+                      _exercise.mode,
+                    ),
                   ),
                   border: const OutlineInputBorder(),
                 ),
@@ -151,11 +172,6 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
               ),
               const SizedBox(height: 12),
             ],
-            FilledButton(
-              key: const ValueKey('comprehension-submit'),
-              onPressed: _playing ? null : _submit,
-              child: Text(s.learnSubmit),
-            ),
             TextButton(
               key: const ValueKey('comprehension-reveal'),
               onPressed: _playing || _revealed ? null : _reveal,
@@ -172,38 +188,7 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
             _assisted ? s.comprehensionAssisted : s.comprehensionIndependent,
           ),
           const SizedBox(height: 8),
-          for (final question in _exercise.questions)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    _score!.results[question.field]!
-                        ? Icons.check_circle
-                        : Icons.refresh,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          comprehensionFieldLabel(context, question.field),
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(question.answer),
-                        Text(
-                          _score!.results[question.field]!
-                              ? s.comprehensionFieldCorrect
-                              : s.comprehensionFieldWrong,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          for (final question in _exercise.questions) _resultAnswer(question),
           if (_saving) const LinearProgressIndicator(),
           if (_saveFailed) ...[
             Text(s.comprehensionSaveFailed),
@@ -212,16 +197,6 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
               child: Text(s.actionRetry),
             ),
           ],
-          const SizedBox(height: 12),
-          FilledButton(
-            key: const ValueKey('comprehension-next'),
-            onPressed: _saved ? _next : null,
-            child: Text(
-              widget.planStepId == null && widget.exercise == null
-                  ? s.comprehensionNext
-                  : s.comprehensionDone,
-            ),
-          ),
         ],
         if (_revealed || _score != null) ...[
           const SizedBox(height: 12),
@@ -243,9 +218,77 @@ extension _ComprehensionViews on _ListeningComprehensionScreenState {
             ),
           ),
         ],
-        const SizedBox(height: 20),
-        _history(context),
       ],
+    );
+  }
+
+  Widget? _exerciseFooter(BuildContext context) {
+    final s = context.s;
+    if (_score != null) {
+      return LearnFooter(
+        child: FilledButton(
+          key: const ValueKey('comprehension-next'),
+          onPressed: _saved ? _next : null,
+          child: Text(
+            widget.planStepId == null && widget.exercise == null
+                ? s.comprehensionNext
+                : s.comprehensionDone,
+          ),
+        ),
+      );
+    }
+    if (!_heard) return null;
+    return LearnFooter(
+      child: ListenableBuilder(
+        listenable: Listenable.merge(_answers.values),
+        builder: (context, child) => FilledButton(
+          key: const ValueKey('comprehension-submit'),
+          onPressed: !_playing && _hasAnswer ? _submit : null,
+          child: child,
+        ),
+        child: Text(s.learnSubmit),
+      ),
+    );
+  }
+
+  Widget _resultAnswer(ListeningQuestion question) {
+    final s = context.s;
+    final answer = _answers[question.field]!.text.trim();
+    final correct = _score!.results[question.field]!;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(correct ? Icons.check_circle : Icons.refresh),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  comprehensionFieldLabel(
+                    context,
+                    question.field,
+                    _exercise.mode,
+                  ),
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                if (answer.isEmpty)
+                  Text(s.comprehensionFieldUnanswered)
+                else
+                  Text(s.comprehensionYourAnswer(answer)),
+                if (!correct)
+                  Text(s.comprehensionExpectedAnswer(question.answer)),
+                if (correct)
+                  Text(s.comprehensionFieldCorrect)
+                else if (answer.isNotEmpty)
+                  Text(s.comprehensionFieldWrong),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/main.dart';
+import 'package:morsecq/training/local_learning_store.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/desktop/desktop.dart' as desktop;
 import 'package:morsecq/desktop/testing/testing.dart';
@@ -19,6 +22,17 @@ import 'package:morsecq/i18n/key_value_store.dart' as i18n;
 
 import '../learn/helpers/l10n.dart';
 import '../support/test_app.dart';
+
+class _RetryClearStore extends LocalLearningStore {
+  _RetryClearStore({required super.root});
+  int attempts = 0;
+
+  @override
+  Future<void> clear() async {
+    if (++attempts == 1) throw const FileSystemException('write protected');
+    await super.clear();
+  }
+}
 
 /// Records clipboard writes for the duration of one test.
 List<String> _recordClipboard(WidgetTester tester) {
@@ -52,16 +66,34 @@ Future<void> _openMe(WidgetTester tester, {Size size = kPhoneSize}) async {
 Future<T> _drive<T>(WidgetTester tester, Future<T> future) async {
   var done = false;
   late T value;
+  (Object, StackTrace)? failure;
   unawaited(
-    future.then((v) {
-      value = v;
-      done = true;
-    }),
+    future.then(
+      (v) {
+        value = v;
+        done = true;
+      },
+      onError: (Object error, StackTrace stack) {
+        failure = (error, stack);
+        done = true;
+      },
+    ),
   );
-  for (var i = 0; i < 20 && !done; i++) {
-    await settle(tester);
+  final elapsed = Stopwatch()..start();
+  while (!done && elapsed.elapsed < const Duration(seconds: 12)) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 5)),
+    );
+    await tester.pump(const Duration(milliseconds: 16));
   }
-  expect(done, isTrue, reason: 'future did not complete');
+  expect(
+    done,
+    isTrue,
+    reason: 'learning data did not finish within 12 seconds',
+  );
+  if (failure case (final error, final stack)) {
+    Error.throwWithStackTrace(error, stack);
+  }
   return value;
 }
 
@@ -138,6 +170,8 @@ void main() {
     await _drive(tester, c.setDailyGoal(77));
     await tapVisible(tester, find.byKey(const ValueKey('offline-clear')));
     expect(find.text(en.guestClearConfirm), findsOneWidget);
+    expect(find.text(en.offlineClearScope), findsOneWidget);
+    expect(find.text(en.offlineClearKeeps), findsOneWidget);
     await tester.tap(find.text(en.actionCancel));
     await settle(tester);
     expect(c.isDisposed, isFalse);
@@ -157,6 +191,37 @@ void main() {
     final after = await _controller(tester);
     expect(after, isNot(same(before)));
     expect(after.progress.dailyGoalChars, TrainerProgress().dailyGoalChars);
+  });
+
+  testWidgets('a clear failure keeps the scope and retries the same action', (
+    tester,
+  ) async {
+    final root = Directory.systemTemp.createTempSync('morsecq_clear_test_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final store = _RetryClearStore(root: () async => root.path);
+    await tester.pumpWidget(MorsecqApp(learningStore: store));
+    await settle(tester);
+    await tapVisible(tester, find.text(en.navMe).last);
+    final before = await _controller(tester);
+    await _drive(tester, before.setDailyGoal(77));
+    await tapVisible(tester, find.byKey(const ValueKey('offline-clear')));
+    await tester.tap(find.text(en.guestClearConfirm));
+    await settle(tester);
+
+    expect(find.text(en.offlineClearPartial), findsOneWidget);
+    expect(find.text(en.offlineClearScope), findsOneWidget);
+    expect(find.text(en.offlineClearKeeps), findsOneWidget);
+    expect(find.text(en.offlineCleared), findsNothing);
+    expect(store.attempts, 1);
+
+    await tester.tap(find.text(en.offlineClearRetry));
+    await settle(tester);
+    expect(store.attempts, 2);
+    expect(find.text(en.offlineCleared), findsOneWidget);
+    expect(
+      (await _controller(tester)).progress.dailyGoalChars,
+      TrainerProgress().dailyGoalChars,
+    );
   });
 
   testWidgets('the source link is copied with a confirmation', (tester) async {
