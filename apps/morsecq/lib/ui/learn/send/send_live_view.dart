@@ -5,6 +5,8 @@ import '../../../i18n/l10n_extension.dart';
 import 'send_tips.dart';
 import '../../appearance/style_tokens.dart';
 
+enum SendReadout { all, target, feedback }
+
 /// Live send-practice readout: the target (or a "hidden" placeholder), the
 /// decoded text so far, the pattern of the character being keyed and the
 /// estimated speed. Rebuilds on [SendSession.changes].
@@ -13,9 +15,11 @@ class SendLiveView extends StatelessWidget {
     super.key,
     required this.session,
     required this.hideTarget,
+    this.readout = SendReadout.all,
   });
 
   final SendSession session;
+  final SendReadout readout;
 
   /// "Copy from memory" mode: the target is masked until the attempt ends.
   final bool hideTarget;
@@ -24,15 +28,21 @@ class SendLiveView extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<void>(
       stream: session.changes,
-      builder: (context, _) => _Body(session: session, hideTarget: hideTarget),
+      builder: (context, _) =>
+          _Body(session: session, hideTarget: hideTarget, readout: readout),
     );
   }
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.session, required this.hideTarget});
+  const _Body({
+    required this.session,
+    required this.hideTarget,
+    required this.readout,
+  });
 
   final SendSession session;
+  final SendReadout readout;
   final bool hideTarget;
 
   @override
@@ -54,74 +64,78 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _Label(s.learnSendThis),
-        const SizedBox(height: 4),
-        if (hideTarget)
-          Text(
-            s.learnHiddenTarget,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-              fontStyle: FontStyle.italic,
+        if (readout != SendReadout.feedback) ...[
+          _Label(s.learnSendThis),
+          const SizedBox(height: 4),
+          if (hideTarget)
+            Text(
+              s.learnHiddenTarget,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
+            )
+          else ...<Widget>[
+            Text(session.target, style: mono),
+            Text(
+              session.targetPattern,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontFamily: 'monospace',
+              ),
             ),
-          )
-        else ...<Widget>[
-          Text(session.target, style: mono),
-          Text(
-            session.targetPattern,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-              fontFamily: 'monospace',
-            ),
-          ),
+          ],
         ],
-        const SizedBox(height: 16),
-        _Label(s.learnDecoded),
-        const SizedBox(height: 4),
-        Container(
-          constraints: const BoxConstraints(minHeight: 56),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: scheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(
-              styled ? tokens.controlRadius : 10,
+        if (readout == SendReadout.all) const SizedBox(height: 16),
+        if (readout != SendReadout.target) ...[
+          _Label(s.learnDecoded),
+          const SizedBox(height: 4),
+          Container(
+            constraints: const BoxConstraints(minHeight: 56),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(
+                styled ? tokens.controlRadius : 10,
+              ),
+              border: styled ? Border.all(color: scheme.outlineVariant) : null,
             ),
-            border: styled ? Border.all(color: scheme.outlineVariant) : null,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    decoded.isEmpty && pending.isEmpty
+                        ? s.learnWaitingForKey
+                        : decoded,
+                    style: decoded.isEmpty && pending.isEmpty
+                        ? theme.textTheme.bodyLarge?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          )
+                        : mono,
+                  ),
+                ),
+                if (pending.isNotEmpty)
+                  Text(pending, style: mono?.copyWith(color: scheme.primary)),
+              ],
+            ),
           ),
-          child: Row(
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Expanded(
+              Flexible(
                 child: Text(
-                  decoded.isEmpty && pending.isEmpty
-                      ? s.learnWaitingForKey
-                      : decoded,
-                  style: decoded.isEmpty && pending.isEmpty
-                      ? theme.textTheme.bodyLarge?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        )
-                      : mono,
+                  s.learnPendingPattern(pending.isEmpty ? '-' : pending),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    fontFamily: 'monospace',
+                  ),
                 ),
               ),
-              if (pending.isNotEmpty)
-                Text(pending, style: mono?.copyWith(color: scheme.primary)),
+              Text(formatWpm(s, wpm), style: theme.textTheme.labelLarge),
             ],
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: Text(
-                s.learnPendingPattern(pending.isEmpty ? '-' : pending),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-            Text(formatWpm(s, wpm), style: theme.textTheme.labelLarge),
-          ],
-        ),
+        ],
       ],
     );
   }

@@ -75,17 +75,19 @@ void main() {
     late TestTraining t;
     late ReceiveSession session;
     late _FakeWake wake;
+    late FakeLearnPlaybackFactory playback;
 
     Future<void> pump(WidgetTester tester) async {
       t = await TestTraining.create(settings: kShortSettings);
       addTearDown(t.controller.dispose);
       session = t.controller.startLessonSession();
       wake = _FakeWake();
+      playback = FakeLearnPlaybackFactory();
       await _open(
         tester,
         ReceiveDrillScreen(
           controller: t.controller,
-          playback: FakeLearnPlaybackFactory(),
+          playback: playback,
           session: session,
           screenWake: wake,
         ),
@@ -93,7 +95,13 @@ void main() {
     }
 
     Future<void> answerRound(WidgetTester tester) async {
+      playback.clock.advance(
+        MorseEncoder.totalDuration(session.currentTimeline) +
+            const Duration(milliseconds: 1),
+      );
+      await tester.pump();
       await tester.enterText(find.byType(TextField), session.currentDrill.text);
+      await tester.pump();
       await tester.tap(find.widgetWithText(FilledButton, en.learnSubmit));
       await tester.pumpAndSettle();
       expect(session.roundCount, 1);
@@ -195,6 +203,8 @@ void main() {
       await _setLifecycle(tester, AppLifecycleState.inactive);
       await _setLifecycle(tester, AppLifecycleState.resumed);
       expect(wake.calls, <bool>[true, false, true]);
+      await tester.tap(find.text(en.learnReplay));
+      await tester.pump();
 
       await answerRound(tester);
       await tester.tap(find.widgetWithText(FilledButton, en.learnFinish));

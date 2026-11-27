@@ -172,6 +172,28 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('a save failure stays visible from the brightness controls', (
+    tester,
+  ) async {
+    final settings = AppSettings(store: FailingStore());
+    addTearDown(settings.dispose);
+    await pumpAppearance(tester, settings, size: const Size(320, 640));
+    final s = S.of(tester.element(find.byType(AppearancePage)));
+    final dark = find.byKey(const ValueKey('mode-dark'));
+    final apply = find.byKey(const ValueKey('appearance-apply'));
+    await tester.ensureVisible(dark);
+    await tester.pumpAndSettle();
+    await tester.tap(dark);
+    await tester.pumpAndSettle();
+    await tester.tap(apply);
+    await tester.pumpAndSettle();
+
+    expect(settings.themeMode, ThemeMode.system);
+    expect(find.text(s.appearanceSaveFailed).hitTestable(), findsOneWidget);
+    expect(find.text(s.appearanceRetryApply).hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('restore stages Minimal White then persists it on Apply', (
     tester,
   ) async {

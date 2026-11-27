@@ -35,7 +35,7 @@ void main() {
     expect(snapshot.bestStreak, 3);
     expect(snapshot.totalChars, 0);
     expect(snapshot.accuracyLast7Days, isNull);
-    expect(snapshot.accuracyAllTime, isNull);
+    expect(snapshot.accuracyInHistory, isNull);
     expect(snapshot.trend, isEmpty);
   });
 

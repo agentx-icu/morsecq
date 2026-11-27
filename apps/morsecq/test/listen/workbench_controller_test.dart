@@ -194,6 +194,51 @@ void main() {
     },
   );
 
+  test(
+    'relink rejects a short WAV and preserves the source name on reopen',
+    () async {
+      final training = (await TestTraining.create()).controller;
+      addTearDown(training.dispose);
+      final material = AudioMaterial(
+        id: 'rec_source',
+        title: 'Evening practice',
+        file: 'media/recordings/rec_source.wav',
+        originalName: 'antenna.wav',
+        start: const Duration(milliseconds: 100),
+        end: const Duration(seconds: 2),
+        sampleRate: 8000,
+        channels: 1,
+        createdAt: DateTime.utc(2026),
+      );
+      final short = PickedRecording(name: 'short.wav', bytes: cwWav('K'));
+      final original = PickedRecording(
+        name: 'antenna.wav',
+        bytes: cwWav('SOS SOS SOS'),
+      );
+      expect(
+        await c.relinkRecording(short, material, training: training),
+        isFalse,
+      );
+      expect(c.failure, WorkbenchFailure.mismatch);
+      expect(await c.library.exists(material.file), isFalse);
+      expect(
+        await c.relinkRecording(original, material, training: training),
+        isTrue,
+      );
+      expect(
+        await c.openSaved(
+          material.file,
+          material.title,
+          selection: (material.start, material.end),
+          originalName: material.originalName,
+        ),
+        isTrue,
+      );
+      expect(c.name, material.title);
+      expect(c.originalName, material.originalName);
+    },
+  );
+
   test('audio materials round trip; missing media and bad entries', () async {
     final t = await TestTraining.create();
     final ctl = t.controller;

@@ -41,55 +41,68 @@ void main() {
     await result;
   });
 
-  test('a conditions session keeps speeds, never counts toward the lesson', () async {
-    final t = await TestTraining.create(settings: kShortSettings, seed: 3);
-    addTearDown(t.controller.dispose);
-    final c = t.controller;
-    final clean = c.startReceiveSession(ReceiveDrillKind.groups);
-    final radio = c.startReceiveSession(
-      ReceiveDrillKind.groups,
-      preset: RadioPreset.radio,
-    );
-    expect(clean.conditions, isNull);
-    expect(radio.conditions!.preset, RadioPreset.radio);
-    expect(radio.source, ExerciseSource.conditions);
-    expect(radio.countsTowardLesson, isFalse);
-    expect(radio.timing.wpm, clean.timing.wpm);
-    expect(radio.timing.farnsworthWpm, clean.timing.farnsworthWpm);
-    expect(radio.conditions!.toneHz, c.trainerSettings.toneHz);
-    // Review stays clean.
-    expect(
-      c.startReceiveSession(ReceiveDrillKind.review, preset: RadioPreset.radio).conditions,
-      isNull,
-    );
-  });
+  test(
+    'a conditions session keeps speeds, never counts toward the lesson',
+    () async {
+      final t = await TestTraining.create(settings: kShortSettings, seed: 3);
+      addTearDown(t.controller.dispose);
+      final c = t.controller;
+      final clean = c.startReceiveSession(ReceiveDrillKind.groups);
+      final radio = c.startReceiveSession(
+        ReceiveDrillKind.groups,
+        preset: RadioPreset.radio,
+      );
+      expect(clean.conditions, isNull);
+      expect(radio.conditions!.preset, RadioPreset.radio);
+      expect(radio.source, ExerciseSource.conditions);
+      expect(radio.countsTowardLesson, isFalse);
+      expect(radio.timing.wpm, clean.timing.wpm);
+      expect(radio.timing.farnsworthWpm, clean.timing.farnsworthWpm);
+      expect(radio.conditions!.toneHz, c.trainerSettings.toneHz);
+      // Review stays clean.
+      expect(
+        c
+            .startReceiveSession(
+              ReceiveDrillKind.review,
+              preset: RadioPreset.radio,
+            )
+            .conditions,
+        isNull,
+      );
+    },
+  );
 
-  test('recording keeps the scenario and changes no clean statistics', () async {
-    final t = await TestTraining.create(settings: kShortSettings);
-    addTearDown(t.controller.dispose);
-    final c = t.controller;
-    final statsBefore = c.progress.charStats;
-    final lessonBefore = c.currentLesson;
-    final session = c.startReceiveSession(
-      ReceiveDrillKind.groups,
-      preset: RadioPreset.light,
-    );
-    while (!session.isComplete) {
-      session.submit(session.currentDrill.text);
-    }
-    final outcome = await c.recordReceiveSession(session);
-    expect(outcome.credit.activity, isTrue);
-    expect(outcome.credit.receiveStats, isFalse);
-    expect(outcome.advanced, isFalse);
-    expect(c.currentLesson, lessonBefore);
-    expect(c.progress.charStats, statsBefore);
-    final entry = c.progress.history.last;
-    expect(entry.source, ExerciseSource.conditions);
-    expect(entry.conditions, session.conditions);
-  });
+  test(
+    'recording keeps the scenario and changes no clean statistics',
+    () async {
+      final t = await TestTraining.create(settings: kShortSettings);
+      addTearDown(t.controller.dispose);
+      final c = t.controller;
+      final statsBefore = c.progress.charStats;
+      final lessonBefore = c.currentLesson;
+      final session = c.startReceiveSession(
+        ReceiveDrillKind.groups,
+        preset: RadioPreset.light,
+      );
+      while (!session.isComplete) {
+        session.submit(session.currentDrill.text);
+      }
+      final outcome = await c.recordReceiveSession(session);
+      expect(outcome.credit.activity, isTrue);
+      expect(outcome.credit.receiveStats, isFalse);
+      expect(outcome.advanced, isFalse);
+      expect(c.currentLesson, lessonBefore);
+      expect(c.progress.charStats, statsBefore);
+      final entry = c.progress.history.last;
+      expect(entry.source, ExerciseSource.conditions);
+      expect(entry.conditions, session.conditions);
+    },
+  );
 
   group('drill screen', () {
-    Future<(TestTraining, ReceiveSession, FakeLearnPlaybackFactory, FakeClipPlayer)>
+    Future<
+      (TestTraining, ReceiveSession, FakeLearnPlaybackFactory, FakeClipPlayer)
+    >
     pump(
       WidgetTester tester, {
       bool sound = true,
@@ -127,11 +140,20 @@ void main() {
       return (t, session, playback, clip);
     }
 
-    testWidgets('plays rendered audio only and names the conditions', (tester) async {
+    testWidgets('plays rendered audio only and names the conditions', (
+      tester,
+    ) async {
       final (_, session, playback, clip) = await pump(tester);
       expect(clip.plays, hasLength(1));
-      expect(playback.sink.events, isEmpty, reason: 'no unaffected flash or tone');
-      expect(find.text(en.conditionsActive(en.conditionsRadio)), findsOneWidget);
+      expect(
+        playback.sink.events,
+        isEmpty,
+        reason: 'no unaffected flash or tone',
+      );
+      expect(
+        find.text(en.conditionsActive(en.conditionsRadio)),
+        findsOneWidget,
+      );
       // Same round, same rendering.
       clip.end();
       // The stream event, then the rebuild it schedules.
@@ -149,7 +171,9 @@ void main() {
       expect(session.isAssisted, isTrue, reason: 'a replay after hearing it');
     });
 
-    testWidgets('background stops the audio; return needs an explicit play', (tester) async {
+    testWidgets('background stops the audio; return needs an explicit play', (
+      tester,
+    ) async {
       final (_, _, _, clip) = await pump(tester);
       expect(clip.isPlaying, isTrue);
       for (final state in [
@@ -228,9 +252,13 @@ void main() {
       expect(interruptions.hasListener, isFalse);
     });
 
-    testWidgets('after answering, a clean reference plays through the sink', (tester) async {
+    testWidgets('after answering, a clean reference plays through the sink', (
+      tester,
+    ) async {
       final (_, session, playback, clip) = await pump(tester);
+      clip.end();
       await tester.enterText(find.byType(TextField), session.currentDrill.text);
+      await tester.pump();
       await tester.tap(find.text(en.learnSubmit));
       await tester.pumpAndSettle();
       expect(clip.isPlaying, isFalse);
@@ -241,38 +269,46 @@ void main() {
       expect(session.isAssisted, isFalse, reason: 'the answer was already in');
     });
 
-    testWidgets('without sound the conditions are explained, nothing plays', (tester) async {
+    testWidgets('without sound the conditions are explained, nothing plays', (
+      tester,
+    ) async {
       final (_, _, playback, clip) = await pump(tester, sound: false);
       expect(find.text(en.conditionsNeedSound), findsOneWidget);
       expect(clip.plays, isEmpty);
       expect(playback.sink.events, isEmpty);
     });
 
-    testWidgets('an audio engine failure is explained, not "listening" forever', (tester) async {
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final t = await TestTraining.create(settings: kShortSettings);
-      addTearDown(t.controller.dispose);
-      final session = t.controller.startReceiveSession(ReceiveDrillKind.groups, preset: RadioPreset.light);
-      await tester.pumpWidget(
-        l10nApp(
-          home: ReceiveDrillScreen(
-            controller: t.controller,
-            playback: FakeLearnPlaybackFactory(),
-            session: session,
-            conditionsPlayback: ConditionsPlayback(
-              player: _FailingClipPlayer(),
-              render: ConditionsPlayback.renderNow,
+    testWidgets(
+      'an audio engine failure is explained, not "listening" forever',
+      (tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final t = await TestTraining.create(settings: kShortSettings);
+        addTearDown(t.controller.dispose);
+        final session = t.controller.startReceiveSession(
+          ReceiveDrillKind.groups,
+          preset: RadioPreset.light,
+        );
+        await tester.pumpWidget(
+          l10nApp(
+            home: ReceiveDrillScreen(
+              controller: t.controller,
+              playback: FakeLearnPlaybackFactory(),
+              session: session,
+              conditionsPlayback: ConditionsPlayback(
+                player: _FailingClipPlayer(),
+                render: ConditionsPlayback.renderNow,
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text(en.conditionsAudioFailed), findsOneWidget);
-      expect(find.text(en.learnReady), findsOneWidget);
-    });
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(en.conditionsAudioFailed), findsOneWidget);
+        expect(find.text(en.learnReady), findsOneWidget);
+      },
+    );
 
     testWidgets('backgrounded while rendering: the round is not left '
         '"listening"', (tester) async {
@@ -284,7 +320,10 @@ void main() {
       addTearDown(t.controller.dispose);
       final clip = FakeClipPlayer();
       final gate = Completer<void>();
-      final session = t.controller.startReceiveSession(ReceiveDrillKind.groups, preset: RadioPreset.light);
+      final session = t.controller.startReceiveSession(
+        ReceiveDrillKind.groups,
+        preset: RadioPreset.light,
+      );
       await tester.pumpWidget(
         l10nApp(
           home: ReceiveDrillScreen(
@@ -324,57 +363,59 @@ void main() {
       expect(session.isAssisted, isFalse);
     });
 
-    testWidgets('a native load cancelled in the background leaves Replay enabled', (
-      tester,
-    ) async {
-      final t = await TestTraining.create(settings: kShortSettings);
-      addTearDown(t.controller.dispose);
-      final clip = _LoadingClipPlayer();
-      final session = t.controller.startReceiveSession(
-        ReceiveDrillKind.groups,
-        preset: RadioPreset.light,
-      );
-      await tester.pumpWidget(
-        l10nApp(
-          home: ReceiveDrillScreen(
-            controller: t.controller,
-            playback: FakeLearnPlaybackFactory(),
-            session: session,
-            conditionsPlayback: ConditionsPlayback(
-              player: clip,
-              render: (_, _) async => (Uint8List(0), const Duration(seconds: 1)),
+    testWidgets(
+      'a native load cancelled in the background leaves Replay enabled',
+      (tester) async {
+        final t = await TestTraining.create(settings: kShortSettings);
+        addTearDown(t.controller.dispose);
+        final clip = _LoadingClipPlayer();
+        final session = t.controller.startReceiveSession(
+          ReceiveDrillKind.groups,
+          preset: RadioPreset.light,
+        );
+        await tester.pumpWidget(
+          l10nApp(
+            home: ReceiveDrillScreen(
+              controller: t.controller,
+              playback: FakeLearnPlaybackFactory(),
+              session: session,
+              conditionsPlayback: ConditionsPlayback(
+                player: clip,
+                render: (_, _) async =>
+                    (Uint8List(0), const Duration(seconds: 1)),
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(clip.loadCalls, 1);
+        );
+        await tester.pumpAndSettle();
+        expect(clip.loadCalls, 1);
 
-      for (final state in [
-        AppLifecycleState.inactive,
-        AppLifecycleState.hidden,
-        AppLifecycleState.paused,
-      ]) {
-        tester.binding.handleAppLifecycleStateChanged(state);
-      }
-      clip.firstLoad.complete();
-      for (final state in [
-        AppLifecycleState.hidden,
-        AppLifecycleState.inactive,
-        AppLifecycleState.resumed,
-      ]) {
-        tester.binding.handleAppLifecycleStateChanged(state);
-      }
-      await tester.pumpAndSettle();
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        clip.firstLoad.complete();
+        for (final state in [
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
+          AppLifecycleState.resumed,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        await tester.pumpAndSettle();
 
-      expect(clip.isPlaying, isFalse);
-      expect(find.text(en.learnReady), findsOneWidget);
-      await tester.tap(find.text(en.learnReplay));
-      await tester.pumpAndSettle();
-      expect(clip.isPlaying, isTrue);
-      expect(clip.loadCalls, 2);
-      expect(session.isAssisted, isFalse);
-    });
+        expect(clip.isPlaying, isFalse);
+        expect(find.text(en.learnReady), findsOneWidget);
+        await tester.tap(find.text(en.learnReplay));
+        await tester.pumpAndSettle();
+        expect(clip.isPlaying, isTrue);
+        expect(clip.loadCalls, 2);
+        expect(session.isAssisted, isFalse);
+      },
+    );
 
     testWidgets('dispose releases the audio', (tester) async {
       final (_, _, _, clip) = await pump(tester);
@@ -428,8 +469,11 @@ final class _FailingClipPlayer implements ClipPlayer {
   Stream<bool> get playing => const Stream<bool>.empty();
 
   @override
-  Future<void> play(Uint8List wav, {required Duration length, bool loop = false}) =>
-      Future.error(StateError('no audio device'));
+  Future<void> play(
+    Uint8List wav, {
+    required Duration length,
+    bool loop = false,
+  }) => Future.error(StateError('no audio device'));
 
   @override
   Future<void> stop() async {}

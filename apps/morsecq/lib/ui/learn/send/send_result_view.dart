@@ -30,6 +30,11 @@ class SendResultView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
+        Text(
+          s.learnDecodedAccuracy,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelMedium,
+        ),
         // Wrap, not Row: with large accessibility fonts (or narrow phones)
         // the speed drops under the percentage instead of overflowing.
         Wrap(

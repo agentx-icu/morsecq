@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_io/morse_io.dart';
 import 'package:morse_session/morse_session.dart';
@@ -9,19 +10,26 @@ import 'package:morse_trainer/morse_trainer.dart';
 import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
+import '../../responsive.dart';
+import '../../telegraph/telegraph_labels.dart';
+import '../learn_footer.dart';
 import '../conditions/conditions_playback.dart';
 import '../conditions/conditions_widgets.dart';
 import '../drill_session_guard.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
-import '../progress_save_snack.dart';
+import '../plan/plan_labels.dart';
+import '../signal_activity.dart';
 import 'answer_keypad.dart';
+import 'guided_practice_sheet.dart';
 import 'receive_next_steps.dart';
 import 'receive_summary_view.dart';
 import 'receive_widgets.dart';
 import 'round_result_view.dart';
 
 part 'receive_listen_view.dart';
+
+part 'receive_result_views.dart';
 
 enum _Phase { listen, result, summary }
 
@@ -66,6 +74,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   _Phase _phase = _Phase.listen;
   bool _playing = false;
   bool _recording = false;
+  bool _retryingSave = false;
   ReceiveRound? _lastRound;
   ReceiveOutcome? _outcome;
   String? _unlockedChar;
@@ -84,6 +93,21 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   bool _stopping = false;
 
   ReceiveSession get _session => widget.session;
+
+  late final PlanStep? _planStep = _session.planStepId == null
+      ? null
+      : widget.controller.todayPlan?.stepById(_session.planStepId!);
+  late final int _planGroupSize = _session.currentDrill.charCount;
+
+  GuidedLevel? get _guidedLevel {
+    final parts = _session.sourceRef?.split('/');
+    if (parts == null || parts.length != 3 || parts.first != 'guided') {
+      return null;
+    }
+    return GuidedLevel.values
+        .where((level) => level.name == parts.last)
+        .firstOrNull;
+  }
 
   @override
   void initState() {
@@ -160,6 +184,7 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   bool _settingUp = false;
 
   void _onPlayerEvent(PlayerEvent event) {
+    if (_phase != _Phase.listen) return;
     if (event is PlayerCompleted) _heard = true;
     if (event is PlayerStopped && event.error != null) {
       _heard = false;
@@ -257,16 +282,19 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
     }
   }
 
-  void _submit() {
-    if (_phase != _Phase.listen ||
-        _session.isFinished ||
-        _audioFailed ||
-        _conditionsBlocked ||
-        _conditionsFailed ||
-        _playback == null ||
-        _backgrounded) {
-      return;
-    }
+  bool get _canCheck =>
+      _phase == _Phase.listen &&
+      !_session.isFinished &&
+      _heard &&
+      !_playing &&
+      !_audioFailed &&
+      !_conditionsBlocked &&
+      !_conditionsFailed &&
+      _playback != null &&
+      !_backgrounded;
+
+  void _submit({bool skip = false}) {
+    if (!_canCheck || (skip != _answer.text.trim().isEmpty)) return;
     _playback?.player.stop();
     _stopConditions();
     final round = _session.submit(_answer.text);
@@ -280,11 +308,15 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   }
 
   Future<void> _next() async {
+    _playback?.player.stop();
     if (_session.isComplete) {
       await _finish();
       return;
     }
-    setState(() => _phase = _Phase.listen);
+    setState(() {
+      _heard = false;
+      _phase = _Phase.listen;
+    });
     _play();
     if (hasPhysicalKeyboardByDefault) {
       _answerFocus.requestFocus();
@@ -307,9 +339,17 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       _unlockedChar = outcome.advanced ? widget.controller.newestChar : null;
       _phase = _Phase.summary;
     });
-    if (!outcome.saved) {
-      showProgressSaveFailed(context, widget.controller);
-    }
+  }
+
+  Future<void> _retrySaving() async {
+    if (_retryingSave) return;
+    setState(() => _retryingSave = true);
+    final saved = await widget.controller.retryProgressSave();
+    if (!mounted) return;
+    setState(() {
+      _retryingSave = false;
+      if (saved) _outcome = _outcome?.withSaved(true);
+    });
   }
 
   static bool _perceivable(TrainingSettings settings) =>
@@ -317,7 +357,11 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
       settings.flashEnabled ||
       (settings.hapticEnabled && isTouchPlatform);
 
+  TelegraphCodebook? get _codebook =>
+      TelegraphCurriculum.codebookOf(_session.sourceRef);
+
   void _appendChar(String c) {
+    if (_codebook != null && (_answer.text.length >= 4 || c == ' ')) return;
     _answer.text = '${_answer.text}$c';
   }
 
@@ -340,29 +384,71 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final step = _planStep;
     // A challenge says so in its title; everything else is practice.
     final title =
         widget.title ??
-        (_session.kind == ReceiveDrillKind.review
+        (step != null
+            ? PlanLabels.title(s, step)
+            : _session.kind == ReceiveDrillKind.review
             ? s.learnReviewTitle
             : _session.countsTowardLesson && _session.lesson != null
             ? s.learnChallengeTitle(_session.lesson!)
+            : _guidedLevel != null
+            ? s.learnVerdictAssisted
             : s.learnPracticeTitle);
-    final body = SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: switch (_phase) {
-              _Phase.listen => _buildListen(context),
-              _Phase.result => _buildResult(context),
-              _Phase.summary => _buildSummary(context),
-            },
-          ),
-        ),
-      ),
-    );
+    final codebook = _codebook;
+    const codebookBreakpoint = 900.0;
+    final inlineFooter = LearnFooter.belongsInBody(context);
+    final footer = switch (_phase) {
+      _Phase.listen => _listenActions(context),
+      _Phase.summary when _outcome?.saved == true => _summaryActions(context),
+      _ => null,
+    };
+    final content = switch (_phase) {
+      _Phase.listen => _buildListen(context),
+      _Phase.result => _buildResult(context),
+      _Phase.summary => _buildSummary(context),
+    };
+    final body = codebook != null && _phase == _Phase.listen
+        ? SafeArea(
+            bottom: false,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < codebookBreakpoint;
+                final codebookCard = Card(
+                  margin: EdgeInsets.zero,
+                  child: ListTile(
+                    leading: const Icon(Icons.hearing),
+                    title: Text(codebookLabel(s, codebook)),
+                    subtitle: Text(s.telegraphDigitsHint),
+                  ),
+                );
+                return AdaptivePanelBody(
+                  breakpoint: codebookBreakpoint,
+                  leading: [
+                    if (compact) codebookCard,
+                    content,
+                    if (inlineFooter && footer != null) footer,
+                  ],
+                  trailing: [if (!compact) codebookCard],
+                );
+              },
+            ),
+          )
+        : SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: inlineFooter && footer != null
+                      ? Column(children: [content, footer])
+                      : content,
+                ),
+              ),
+            ),
+          );
     final flash = _playback?.flash;
     return DrillLeaveGuard(
       guard: _hasUnsavedRounds,
@@ -378,59 +464,8 @@ class _ReceiveDrillScreenState extends State<ReceiveDrillScreen>
           ),
         ),
         body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
+        bottomNavigationBar: inlineFooter ? null : footer,
       ),
-    );
-  }
-
-  Widget _buildResult(BuildContext context) {
-    final round = _lastRound!;
-    final isLast = _session.isComplete;
-    final s = context.s;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        RoundResultView(round: round, kind: _session.kind),
-        if (_session.conditions != null)
-          CleanReferenceButton(onPressed: () => _playCleanReference(round)),
-        const SizedBox(height: 24),
-        FilledButton(
-          onPressed: _next,
-          autofocus: true,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(isLast ? s.learnFinish : s.learnNext),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSummary(BuildContext context) {
-    final outcome = _outcome;
-    if (outcome == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        ReceiveSummaryView(
-          session: _session,
-          outcome: outcome,
-          course: widget.controller.course,
-          unlockedChar: _unlockedChar,
-        ),
-        if (_session.conditions case final RadioScenario c)
-          ConditionsSummary(
-            scenario: c,
-            history: widget.controller.progress.history,
-          ),
-        const SizedBox(height: 24),
-        ReceiveNextSteps(
-          controller: widget.controller,
-          playbackFactory: widget.playback,
-          playback: _playback,
-          session: _session,
-          outcome: outcome,
-        ),
-      ],
     );
   }
 }

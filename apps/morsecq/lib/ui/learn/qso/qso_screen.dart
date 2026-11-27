@@ -10,12 +10,15 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
+import '../../responsive.dart';
 import '../drill_session_guard.dart';
 import '../keying/keyer_panel.dart';
+import '../learn_footer.dart';
 import '../learn_platform.dart';
 import '../learn_playback.dart';
 import '../progress_save_snack.dart';
 import 'qso_labels.dart';
+import 'qso_protocol_guide.dart';
 import 'qso_log_view.dart';
 import 'qso_summary_view.dart';
 
@@ -87,6 +90,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   late SendSession _keying;
   StreamSubscription<void>? _keyingSub;
   bool _remotePlaying = false;
+  int? _playingRemoteTurn;
   bool _backgrounded = false;
   late bool _initialRemotePending =
       widget.resumed == null && _session.learnerTurns == 0;
@@ -131,7 +135,15 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       if ((event is PlayerCompleted || event is PlayerStopped) &&
           _remotePlaying &&
           !_disposed) {
-        setState(() => _remotePlaying = false);
+        final turn = _playingRemoteTurn;
+        setState(() {
+          _remotePlaying = false;
+          _playingRemoteTurn = null;
+          if (event is PlayerCompleted && turn != null) {
+            _session.markRemoteTurnHeard(turn);
+          }
+        });
+        if (event is PlayerCompleted) _scheduleDraft();
       }
     });
     setState(() => _playback = playback);
@@ -161,15 +173,31 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   }
 
   void _playRemote(String? text) {
+    if (text == null) return;
+    final turn = _session.turns.lastIndexWhere(
+      (t) => t.fromRemote && t.text == text,
+    );
+    if (turn >= 0) _playRemoteTurn(turn);
+  }
+
+  void _playRemoteTurn(int index, {bool requested = false}) {
     final playback = _playback;
-    if (text == null || playback == null || _disposed || _backgrounded) return;
+    if (playback == null || _disposed || _backgrounded || _remotePlaying) {
+      return;
+    }
+    final replay = requested && _session.hasHeardRemoteTurn(index);
     _panel.currentState?.releaseHeld();
     _active.start();
     setState(() {
       _initialRemotePending = false;
       _remotePlaying = true;
+      _playingRemoteTurn = index;
+      if (replay) _session.recordRemoteRepeat();
     });
-    playback.player.play(MorseEncoder.encode(text, _remoteTiming));
+    playback.player.play(
+      MorseEncoder.encode(_session.turns[index].text, _remoteTiming),
+    );
+    if (replay) unawaited(_saveDraft());
   }
 
   void _pause() {
@@ -233,11 +261,19 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _submitText(String id, String text, {bool typed = false}) async {
+  Future<void> _submitText(
+    String id,
+    String text, {
+    bool typed = false,
+    ValueChanged<bool>? updateDraft,
+  }) async {
     if (_session.isDone) return;
     final reply = _session.submit(id, text, typed: typed);
     if (reply.duplicate) return;
     setState(() {
+      updateDraft?.call(
+        reply.advanced || reply.evaluation.intent != QsoIntent.answer,
+      );
       _issues = reply.evaluation.issues;
       if (reply.advanced) _hint = null;
     });
@@ -268,7 +304,6 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
     String text;
     if (_typing) {
       text = _typedText.text;
-      _typedText.clear();
     } else {
       final result = keying.finish();
       if (result.attempt.marks.length >= 3 && result.measuredWpm > 0) {
@@ -277,13 +312,22 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       text = '$_carry${result.attempt.decoded}';
     }
     final id = _carryId ?? keying.id;
-    _carry = '';
-    _carryId = null;
-    _pendingWasTyped = false;
-    _newKeying();
-    keying.dispose();
     _active.start();
-    await _submitText(id, text, typed: typed);
+    await _submitText(
+      id,
+      text,
+      typed: typed,
+      updateDraft: (advanced) {
+        if (advanced) _typedText.clear();
+        // A rejected keyed reply is a whole draft. New keying appends a
+        // separate word, such as the missing K or KN.
+        _carry = advanced || _typing ? '' : '${text.trimRight()} ';
+        _carryId = null;
+        _pendingWasTyped = !advanced && typed;
+        _newKeying();
+        keying.dispose();
+      },
+    );
   }
 
   void _clear() {
@@ -324,7 +368,9 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
   }
 
   void _reveal(int index) {
-    if (_revealed.add(index)) _session.hints++;
+    if (_revealed.add(index)) {
+      _session.markRevealed(_session.turns[index].stage);
+    }
     setState(() {});
     unawaited(_saveDraft());
   }
@@ -370,6 +416,7 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       appBar: AppBar(
         title: AppBarTitle(s.learnQsoTitle),
         actions: <Widget>[
+          const QsoProtocolGuideButton(),
           if (_remotePlaying)
             IconButton(
               tooltip: s.learnQsoPause,
@@ -381,25 +428,29 @@ class _QsoScreenState extends State<QsoScreen> with WidgetsBindingObserver {
       body: _withFlash(
         playback,
         SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: _session.isDone
-                    ? QsoSummaryView(
+          bottom: _session.isDone,
+          child: _session.isDone
+              ? SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 720),
+                      child: QsoSummaryView(
                         session: _session,
                         sendingWpm: _wpms.isEmpty
                             ? null
                             : _wpms.reduce((a, b) => a + b) / _wpms.length,
                         onDone: () => Navigator.of(context).pop(),
-                      )
-                    : _running(context, s, playback),
-              ),
-            ),
-          ),
+                      ),
+                    ),
+                  ),
+                )
+              : _running(context, s, playback),
         ),
       ),
+      bottomNavigationBar: _session.isDone
+          ? null
+          : _runningActions(s, playback),
     );
   }
 

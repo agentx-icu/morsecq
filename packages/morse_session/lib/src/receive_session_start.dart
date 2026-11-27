@@ -153,16 +153,22 @@ extension ReceiveSessionStart on TrainingCore {
     return GuidedLevel.values[index];
   }
 
-  ReceiveSession startGuidedSession({GuidedLevel? level}) {
-    final selected = level ?? recommendedGuidedLevel;
-    final chars = learnedChars;
+  ReceiveSession startGuidedSession({GuidedLevel? level}) =>
+      _guidedSession(level ?? recommendedGuidedLevel, currentLesson);
+
+  /// The first lesson's fixed K/M follow-up, even after revisiting it later.
+  ReceiveSession startFirstLessonPractice() =>
+      _guidedSession(GuidedLevel.single, 1);
+
+  ReceiveSession _guidedSession(GuidedLevel selected, int lesson) {
+    final chars = course.charsForLesson(lesson);
     return ReceiveSession(
       kind: selected.groupSize == 1
           ? ReceiveDrillKind.characters
           : ReceiveDrillKind.groups,
       generator: LessonChallengeDrill(
         chars: chars,
-        newChars: course.newCharsForLesson(currentLesson),
+        newChars: course.newCharsForLesson(lesson),
         minRequiredAttempts: 5,
         charBudget: selected.chars,
         groupSize: selected.groupSize,
@@ -171,9 +177,9 @@ extension ReceiveSessionStart on TrainingCore {
       chars: chars,
       timing: trainerSettings.toTiming(),
       charBudget: selected.chars,
-      lesson: currentLesson,
+      lesson: lesson,
       source: ExerciseSource.focus,
-      sourceRef: 'guided/$currentLesson/${selected.name}',
+      sourceRef: 'guided/$lesson/${selected.name}',
       random: random,
       now: now,
     );

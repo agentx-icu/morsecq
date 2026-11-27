@@ -49,6 +49,7 @@ import '../learn/helpers/fake_playback.dart';
 import '../learn/helpers/test_controller.dart';
 import '../listen/fake_pcm_source.dart';
 import '../listen/workbench_support.dart';
+import '../listen/workbench_wait.dart';
 import '../reference/reference_test_support.dart' show FakeReferencePlayer;
 import 'layout_harness.dart';
 
@@ -197,9 +198,13 @@ Future<void> _runIo(WidgetTester tester) async {
 }
 
 Future<void> _importRecording(WidgetTester tester) async {
-  await _runIo(tester);
-  await tester.tap(find.byKey(const ValueKey('workbench-import-empty')));
-  await _runIo(tester);
+  final importButton = find.byKey(const ValueKey('workbench-import-empty'));
+  await waitForWorkbench(tester, importButton);
+  await _tap(tester, importButton);
+  await waitForWorkbench(
+    tester,
+    find.byKey(const ValueKey('workbench-waveform')),
+  );
 }
 
 /// A QSO answered through all three stages of the short exchange.
@@ -349,9 +354,12 @@ final _scenes = <String, _Scene>{
       'Contest pile-up with long title',
     );
     await _tap(tester, find.byKey(const ValueKey('workbench-save-confirm')));
-    await _runIo(tester);
+    await waitForWorkbench(tester, find.text(_s(tester).workbenchSaved));
     await _tap(tester, find.byTooltip(_s(tester).workbenchLibrary));
-    await _runIo(tester);
+    await waitForWorkbench(
+      tester,
+      find.text('Contest pile-up with long title'),
+    );
   }, (tester) => find.text('Contest pile-up with long title')),
   'send-result': _scene(
     (t, p) => SendPracticeScreen(

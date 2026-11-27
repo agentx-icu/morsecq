@@ -11,16 +11,26 @@ import 'word_meanings.dart';
 /// Word meanings and CW shorthand definitions follow the submitted copy,
 /// so the vocabulary is explained without revealing the answer first.
 class RoundResultView extends StatelessWidget {
-  const RoundResultView({super.key, required this.round, this.kind});
+  const RoundResultView({
+    super.key,
+    required this.round,
+    this.kind,
+    this.onReplaySymbol,
+  });
 
   final ReceiveRound round;
   final ReceiveDrillKind? kind;
+  final ValueChanged<String>? onReplaySymbol;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final s = context.s;
     final score = round.score;
+    final differences = {
+      for (final p in score.alignment)
+        if (!p.isMatch) (p.target, p.answer),
+    };
     final headline = score.isPerfect
         ? s.learnRoundPerfect
         : s.learnRoundScore(score.correctChars, score.totalChars);
@@ -48,6 +58,43 @@ class RoundResultView extends StatelessWidget {
           label: s.learnYourCopy,
           child: AlignedSymbols(alignment: score.alignment, showTarget: false),
         ),
+        if (differences.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _LabelledRow(
+            label: s.learnRoundDifferences,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (target, answer) in differences)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Wrap(
+                      spacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          _description(
+                            s,
+                            AlignedPair(target: target, answer: answer),
+                          ),
+                        ),
+                        if (onReplaySymbol case final replay?)
+                          for (final symbol in [
+                            target,
+                            answer,
+                          ].whereType<String>())
+                            TextButton.icon(
+                              onPressed: () => replay(symbol),
+                              icon: const Icon(Icons.volume_up_outlined),
+                              label: Text(s.learnRoundReplaySymbol(symbol)),
+                            ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
         if (meanings.isNotEmpty) ...<Widget>[
           const SizedBox(height: 12),
           _LabelledRow(
@@ -66,6 +113,13 @@ class RoundResultView extends StatelessWidget {
     );
   }
 }
+
+String _description(S s, AlignedPair pair) => switch (pair.op) {
+  AlignmentOp.match => s.learnRoundCorrect(pair.target!),
+  AlignmentOp.insertion => s.learnRoundExtra(pair.answer!),
+  AlignmentOp.deletion => s.learnConfusedMissed(pair.target!),
+  AlignmentOp.substitution => s.learnConfusedAs(pair.target!, pair.answer!),
+};
 
 /// One row of aligned symbols: target or answer side of each column.
 ///
@@ -95,7 +149,16 @@ class AlignedSymbols extends StatelessWidget {
       runSpacing: 4,
       children: <Widget>[
         for (final pair in alignment)
-          _cell(pair, style, scheme, width: cellWidth(pair, style, scaler)),
+          Semantics(
+            label: _description(context.s, pair),
+            excludeSemantics: true,
+            child: _cell(
+              pair,
+              style,
+              scheme,
+              width: cellWidth(pair, style, scaler),
+            ),
+          ),
       ],
     );
   }

@@ -210,7 +210,7 @@ void main() {
     expect(find.text(en.learnPlanStepRecognition), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('plan-start')));
     await tester.pumpAndSettle();
-    expect(find.text(en.learnPracticeTitle), findsOneWidget);
+    expect(find.text(en.learnPlanStepRecognition), findsOneWidget);
     final first = t.controller.todayPlan!.steps.first;
     expect(first.kind, PlanStepKind.recognition);
     expect(first.state, PlanStepState.active);

@@ -20,6 +20,8 @@ import 'material_export_sheet.dart';
 import 'material_file_gateway.dart';
 import 'material_labels.dart';
 
+part 'material_version_tile.dart';
+
 /// My materials (functional spec §9): the learner's own texts, word lists
 /// and callsigns — create, edit, import TXT/JSON, export JSON or WAV,
 /// favourite, search, practise.
@@ -141,10 +143,20 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
       return;
     }
     final all = await _c.loadMaterials();
-    final ids = all.map((m) => m.id).toSet();
+    final importedIds = incoming.map((m) => m.id).toSet();
+    Map<String, String> conflictingVersions(List<TrainingMaterial> library) => {
+      for (final m in library)
+        if (importedIds.contains(m.id)) m.id: jsonEncode(m.toJson()),
+    };
+    final reviewed = conflictingVersions(all);
+    final prior = {for (final m in all) m.id: m};
     final seen = <String>{};
-    // Collisions with the library or within the file itself.
-    final collides = incoming.any((m) => ids.contains(m.id) || !seen.add(m.id));
+    final matches = <(TrainingMaterial, TrainingMaterial?, bool)>[];
+    for (final m in incoming) {
+      matches.add((m, prior[m.id], seen.add(m.id)));
+      prior[m.id] = m;
+    }
+    final collides = matches.any((entry) => entry.$2 != null);
     if (!mounted) return;
     // Every import is previewed and confirmed before anything is written.
     final policy = await showDialog<DuplicatePolicy>(
@@ -152,15 +164,35 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
       builder: (context) => SimpleDialog(
         title: Text(s.materialsImportConfirm(incoming.length)),
         children: <Widget>[
-          for (final m in incoming.take(5))
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text('• ${m.title}'),
-            ),
           if (collides)
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
               child: Text(s.materialsDuplicateTitle),
+            ),
+          for (final (material, previous, wasLocal) in matches)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (previous == null)
+                    Text(
+                      '${s.materialsIncomingVersion} · ${material.title} · ${MaterialLabels.kind(s, material.kind)}',
+                    )
+                  else ...[
+                    _MaterialVersionTile(
+                      label: s.materialsIncomingVersion,
+                      material: material,
+                    ),
+                    _MaterialVersionTile(
+                      label: wasLocal
+                          ? s.materialsLocalVersion
+                          : s.materialsPreviousImportVersion,
+                      material: previous,
+                    ),
+                  ],
+                ],
+              ),
             ),
           for (final p
               in collides
@@ -171,7 +203,7 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
               onPressed: () => Navigator.of(context).pop(p),
               child: Text(switch (p) {
                 _ when !collides => s.materialsImport,
-                DuplicatePolicy.overwrite => s.materialsDuplicateOverwrite,
+                DuplicatePolicy.overwrite => s.materialsReplaceConflicts,
                 DuplicatePolicy.keepCopy => s.materialsDuplicateKeepCopy,
                 DuplicatePolicy.skip => s.materialsDuplicateSkip,
               }),
@@ -185,15 +217,24 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
     );
     if (policy == null || !mounted) return;
     try {
-      await _c.updateMaterials(
-        (current) => MaterialLibraryCodec.merge(
+      await _c.updateMaterials((current) {
+        if (policy == DuplicatePolicy.overwrite) {
+          final latest = conflictingVersions(current);
+          if (latest.length != reviewed.length ||
+              latest.entries.any((e) => reviewed[e.key] != e.value)) {
+            throw const _ImportReviewExpired();
+          }
+        }
+        return MaterialLibraryCodec.merge(
           current,
           incoming,
           policy: policy,
           newId: _c.newMaterialId,
-        ),
-      );
+        );
+      });
       _snack(s.materialsImported(incoming.length));
+    } on _ImportReviewExpired {
+      _snack(s.materialsChangedReview);
     } on Object {
       _snack(s.materialsImportFailed);
     }
@@ -436,4 +477,8 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
       ),
     );
   }
+}
+
+class _ImportReviewExpired implements Exception {
+  const _ImportReviewExpired();
 }

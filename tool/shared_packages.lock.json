@@ -150,7 +150,7 @@
     {
       "path": "packages/morse_trainer/lib/src/learning_goal.dart",
       "kind": "morsecq-ahead",
-      "reason": "Advanced learning (9b47bad): goals, listening comprehension, mistake notebook, advanced progress; not taken by DitMesh."
+      "reason": "Advanced learning (9b47bad): goals, listening comprehension, mistake notebook, advanced progress; not taken by DitMesh. MorseCQ exposes the existing minimum sample rule so goal screens read the same thresholds as evaluation."
     },
     {
       "path": "packages/morse_trainer/lib/src/lesson_challenge_drill.dart",
@@ -210,7 +210,7 @@
     {
       "path": "packages/morse_trainer/lib/src/qso/qso_session.dart",
       "kind": "morsecq-ahead",
-      "reason": "Beginner progression (78fbbf8) and advanced learning (9b47bad) changes not taken by DitMesh."
+      "reason": "Beginner progression (78fbbf8) and advanced learning (9b47bad) changes not taken by DitMesh. MorseCQ tracks QSO stage assistance and completed playback in its resumable simulator."
     },
     {
       "path": "packages/morse_trainer/lib/src/qso_drill.dart",
@@ -316,6 +316,11 @@
       "path": "packages/morse_trainer/test/qso_learning_path_test.dart",
       "kind": "morsecq-ahead",
       "reason": "Beginner progression (78fbbf8): lesson challenge, learner stages, QSO readiness, recent practice; not taken by DitMesh."
+    },
+    {
+      "path": "packages/morse_trainer/test/qso_session_test.dart",
+      "kind": "morsecq-ahead",
+      "reason": "Verifies MorseCQ QSO stage assistance and compatibility with earlier simulator snapshots."
     },
     {
       "path": "packages/morse_trainer/test/recent_mastery_test.dart",
@@ -621,7 +626,7 @@
       "ditmesh": null
     },
     "packages/morse_trainer/lib/src/learning_goal.dart": {
-      "morsecq": "78cadb1f71f27966570ffeca7914a4509ab4dcea0aa6b40298f39602d7fa9271",
+      "morsecq": "500fbcce9a0f9d68888cd14ea734d0ec16b6fec058f3dba4a28dc17a0f4a0083",
       "ditmesh": null
     },
     "packages/morse_trainer/lib/src/lesson_challenge_drill.dart": {
@@ -673,7 +678,7 @@
       "ditmesh": "3794f43dec449dfe52b4e46f688fef659bd4f7abf43d98c088eda3041db53d2f"
     },
     "packages/morse_trainer/lib/src/qso/qso_session.dart": {
-      "morsecq": "6890a5af227e6fafb683a5e8542e09c5a582a0a24beea6884d20f807d5a8034b",
+      "morsecq": "50ffbb978aa7e175be1c3acafba0bb8eab612f9358858003ec90b7dfd7779530",
       "ditmesh": "a876a8f4fc5bf3abafe5938607d545c26d14c0e95316f556f945b046df304d7f"
     },
     "packages/morse_trainer/lib/src/qso_drill.dart": {
@@ -779,7 +784,10 @@
       "morsecq": "d1a63aced86ee778b29dc6aedaf39c9b26f992a197269c5dabd6d221953648a0",
       "ditmesh": null
     },
-    "packages/morse_trainer/test/qso_session_test.dart": "d73f28a961d307509de29381c4fd9dbc2775e1dadbf18d43652aea894f759e14",
+    "packages/morse_trainer/test/qso_session_test.dart": {
+      "morsecq": "81c530d17c69f31f7d1dc6cc4198dd8b454ca9e04e1879172b684abc292c3edd",
+      "ditmesh": "d73f28a961d307509de29381c4fd9dbc2775e1dadbf18d43652aea894f759e14"
+    },
     "packages/morse_trainer/test/radio_conditions_test.dart": "eda77067f9f63f35ed2c345d384e75d9d6eea86916e5941fd06fb05076615ab2",
     "packages/morse_trainer/test/recent_mastery_test.dart": {
       "morsecq": "6d12bbf564e68a8732f76cf414e8799631a42ae636aa32b6f3bbdec8736096bb",

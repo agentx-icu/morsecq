@@ -17,6 +17,7 @@ class FirstLessonTrialView extends StatelessWidget {
     required this.beginnerPace,
     required this.onAnswer,
     required this.onReplay,
+    required this.onSlowReplay,
     required this.onCompare,
     required this.onNext,
     required this.onPace,
@@ -30,6 +31,7 @@ class FirstLessonTrialView extends StatelessWidget {
   final bool beginnerPace;
   final ValueChanged<String> onAnswer;
   final VoidCallback onReplay;
+  final VoidCallback onSlowReplay;
   final ValueChanged<String> onCompare;
   final VoidCallback onNext;
   final ValueChanged<bool> onPace;
@@ -64,6 +66,13 @@ class FirstLessonTrialView extends StatelessWidget {
             onPressed: ready ? onReplay : null,
             icon: const Icon(Icons.replay),
             label: Text(s.learnReplay),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const ValueKey('trial-slow-replay'),
+            onPressed: ready ? onSlowReplay : null,
+            icon: const Icon(Icons.slow_motion_video),
+            label: Text(s.firstLessonSlowReplay),
           ),
         ] else ...[
           Text(

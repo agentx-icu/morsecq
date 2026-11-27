@@ -229,6 +229,27 @@ void main() {
       expect(s.stage, QsoStage.callConfirm);
     });
 
+    test('assistance is tracked by stage and survives a snapshot', () {
+      final s = start(QsoScenario.shortExchange);
+      final call = '${s.remote.callsign} DE BD1XYZ K';
+      expect(s.submit('call', call, typed: true).advanced, isTrue);
+      expect(s.usedAssistanceAt(QsoStage.callConfirm), isTrue);
+      expect(s.usedAssistanceAt(QsoStage.exchange), isFalse);
+      s.hint();
+      expect(s.submit('exchange', 'R UR RST 599 K').advanced, isTrue);
+
+      final json = s.toJson();
+      final restored = QsoSession.fromJson(json);
+      expect(restored.usedAssistanceAt(QsoStage.callConfirm), isTrue);
+      expect(restored.usedAssistanceAt(QsoStage.exchange), isTrue);
+      expect(restored.usedAssistanceAt(QsoStage.closing), isFalse);
+
+      final legacy = QsoSession.fromJson({...json}..remove('hintStages'));
+      expect(legacy.hints, 1);
+      expect(legacy.usedAssistanceAt(QsoStage.callConfirm), isTrue);
+      expect(legacy.usedAssistanceAt(QsoStage.exchange), isFalse);
+    });
+
     test('restores text and state from JSON', () {
       final s = start(QsoScenario.respondToCq);
       s.submit('1', '${s.remote.callsign} DE BD1XYZ K');

@@ -13,6 +13,7 @@ import 'package:morsecq/ui/learn/learn_playback.dart';
 import 'package:morsecq/ui/learn/mistakes/mistake_notebook_screen.dart';
 
 import 'support/native_advanced_playback.dart';
+import 'support/scene_walk.dart';
 import 'support/shot_harness.dart';
 
 Future<void> waitUntil(
@@ -26,6 +27,17 @@ Future<void> waitUntil(
     await tester.pump();
   }
   expect(ready(), isTrue, reason: label);
+}
+
+Future<void> submitWrongWord(WidgetTester tester) async {
+  final submit = find.byKey(const ValueKey('comprehension-submit'));
+  expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+  final answer = find.byKey(const ValueKey('comprehension-answer-answer'));
+  await tester.ensureVisible(answer);
+  await tester.enterText(answer, 'WRONG');
+  await tester.pump();
+  expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
+  await tapHittable(tester, submit, 'check the submitted word');
 }
 
 void main() {
@@ -82,10 +94,12 @@ void main() {
       'complete the recorded native timeline before grading',
     );
     expect(playback.marks, greaterThan(0));
-    expect(submit, findsOneWidget);
-    await tester.ensureVisible(submit);
-    await tester.tap(submit); // An omitted word must persist as a mistake.
-    await settle(tester);
+    await submitWrongWord(tester);
+    await waitUntil(
+      tester,
+      () => controller.progress.listeningAttempts.length == 1,
+      'persist the incorrect word as a mistake',
+    );
     expect(controller.progress.listeningAttempts.single.correct, 0);
     expect(controller.progress.mistakeNotebook.pending.length, 1);
     expect(controller.progress.charStats, isEmpty);
@@ -159,8 +173,7 @@ void main() {
       expect(controller.progress.listeningAttempts, isEmpty);
       expect(controller.progress.mistakeNotebook.entries, isEmpty);
     } else {
-      await tester.ensureVisible(submit);
-      await tester.tap(submit);
+      await submitWrongWord(tester);
       await waitUntil(
         tester,
         () => controller.progress.listeningAttempts.length == 1,

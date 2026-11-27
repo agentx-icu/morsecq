@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_session/morse_session.dart';
+import 'package:morse_trainer/morse_trainer.dart';
 import 'package:morsecq/training/training_controller.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/learn/lesson_card_extras.dart';
 import 'package:morsecq/ui/learn/onboarding/first_lesson_screen.dart';
 import 'package:morsecq/ui/learn/receive/receive_drill_screen.dart';
 import 'package:morsecq/ui/learn/receive/receive_summary_view.dart';
+import 'package:morsecq/ui/learn/receive/receive_widgets.dart';
 import 'package:morsecq/ui/theme.dart';
 
 import 'helpers/fake_playback.dart';
@@ -126,7 +128,7 @@ void main() {
         await _playToEnd(tester, session, playback);
         await _background(tester);
         expect(find.text(en.learnRoundInterrupted), findsNothing);
-        await tester.tap(find.text(en.learnReplay));
+        await tester.tap(find.text(en.learnReplayTurnsToPractice));
         await tester.pump();
         expect(session.isAssisted, isTrue);
         final outcome = await _finishPerfectly(t.controller, session);
@@ -141,7 +143,7 @@ void main() {
       (tester) async {
         final (t, session, playback) = await _pumpChallenge(tester);
         await _playToEnd(tester, session, playback);
-        await tester.tap(find.text(en.learnReplay));
+        await tester.tap(find.text(en.learnReplayTurnsToPractice));
         await tester.pump();
         expect(session.isAssisted, isTrue);
         final outcome = await _finishPerfectly(t.controller, session);
@@ -160,7 +162,7 @@ void main() {
         await tester.pump();
         await _playToEnd(tester, session, playback);
         expect(session.isAssisted, isFalse);
-        await tester.tap(find.text(en.learnReplay));
+        await tester.tap(find.text(en.learnReplayTurnsToPractice));
         await tester.pump();
         expect(session.isAssisted, isTrue);
       },
@@ -285,5 +287,47 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(en.learnCharsHeard(50)), findsOneWidget);
     expect(en.learnCharsHeard(50), '50 characters heard');
+  });
+
+  testWidgets('89.5 percent shows below the true 90 percent challenge rule', (
+    tester,
+  ) async {
+    final t = await TestTraining.create(
+      settings: const TrainingSettings(
+        trainer: TrainerSettings(sessionLengthChars: 200, groupSize: 5),
+      ),
+    );
+    addTearDown(t.controller.dispose);
+    final session = t.controller.startLessonSession();
+    var misses = 21;
+    while (!session.isComplete) {
+      final text = session.currentDrill.text;
+      final removed = math.min(text.length, misses);
+      session.submit(text.substring(0, text.length - removed));
+      misses -= removed;
+    }
+    final outcome = await t.controller.recordReceiveSession(session);
+    expect(outcome.score.correctChars, 179);
+    expect(outcome.score.totalChars, 200);
+    expect(outcome.passed, isFalse);
+    expect(t.controller.currentLesson, 1);
+    await tester.pumpWidget(
+      l10nApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ReceiveSummaryView(
+              session: session,
+              outcome: outcome,
+              course: t.controller.course,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('89.5%'), findsOneWidget);
+    expect(find.textContaining('179 / 200 · 89.5% / ≥ 90%'), findsOneWidget);
+    expect(formatChallengeAccuracy(en, 26 / 29, 0.9), '89.66%');
+    expect(formatChallengeAccuracy(en, 27 / 30, 0.9), '90%');
   });
 }

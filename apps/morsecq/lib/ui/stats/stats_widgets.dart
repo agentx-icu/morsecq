@@ -169,16 +169,16 @@ class OverviewTiles extends StatelessWidget {
       ),
       StatTile(
         icon: Icons.track_changes_outlined,
-        label: s.statsTileAccuracy,
+        label: s.statsReceiveAccuracy,
         value: formatPercentOrNoData(s, snap.accuracyLast7Days),
         detail: s.statsAccuracyDetail(
-          formatPercentOrNoData(s, snap.accuracyAllTime),
+          formatPercentOrNoData(s, snap.accuracyInHistory),
         ),
       ),
       StatTile(
         icon: Icons.timer_outlined,
         label: s.statsTilePractice,
-        value: formatPracticeDuration(s, snap.totalPracticeTime),
+        value: formatPracticeDuration(s, snap.practiceTimeInHistory),
         detail:
             '${s.statsCharsCopied(snap.totalChars)} / '
             '${s.statsSessions(snap.sessionCount)}',
@@ -244,7 +244,7 @@ class StatsSummaryCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final s = context.s;
     final snap = StatsSnapshot.from(progress, course: course, now: now);
-    final accuracy = snap.accuracyLast7Days ?? snap.accuracyAllTime;
+    final accuracy = snap.accuracyLast7Days ?? snap.accuracyInHistory;
     return Card(
       child: InkWell(
         onTap: onOpen,
@@ -334,7 +334,9 @@ class _SummaryStat extends StatelessWidget {
 
 /// Shown for a new learning profile with no sessions in history.
 class StatsEmptyState extends StatelessWidget {
-  const StatsEmptyState({super.key});
+  const StatsEmptyState({super.key, required this.onLearn});
+
+  final VoidCallback onLearn;
 
   @override
   Widget build(BuildContext context) {
@@ -365,13 +367,12 @@ class StatsEmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              Text(
-                s.statsEmptyCallToAction,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: scheme.primary,
-                  fontWeight: FontWeight.w600,
+              FilledButton.tonal(
+                onPressed: onLearn,
+                child: Text(
+                  s.statsEmptyCallToAction,
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

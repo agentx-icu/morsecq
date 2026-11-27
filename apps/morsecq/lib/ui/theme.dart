@@ -23,11 +23,16 @@ abstract final class MorsecqTheme {
     final (canvas, surface, primary, text) = switch ((style, dark)) {
       (UiStyle.white, false) => (
         0xFFFFFFFF,
-        0xFFF5F6F8,
-        0xFF273343,
-        0xFF1D2632,
+        0xFFF3F8F5,
+        0xFF126C5B,
+        0xFF162E28,
       ),
-      (UiStyle.white, true) => (0xFF151719, 0xFF22252A, 0xFFDDE4EE, 0xFFF2F4F6),
+      (UiStyle.white, true) => (
+        0xFF14231F,
+        0xFF1B3029,
+        0xFF85D8BC,
+        0xFFF0F7F3,
+      ),
       (UiStyle.classic, false) => (
         0xFFF6EEDD,
         0xFFFFF8E9,

@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:morse_core/morse_core.dart';
 import 'package:morse_session/morse_session.dart';
 import 'package:morse_trainer/morse_trainer.dart';
+import 'package:morsecq/i18n/l10n_extension.dart';
 import 'package:morsecq/ui/appearance/appearance_page.dart';
 import 'package:morsecq/ui/appearance/ui_style.dart';
 import 'package:morsecq/ui/keying/key_setup_page.dart';
@@ -74,14 +75,18 @@ ReceiveDrillScreen _receive(TestTraining t, FakeLearnPlaybackFactory p) =>
 
 /// Types an answer and checks it: the receive screen's result phase.
 Future<void> _answerRound(
-  WidgetTester tester, [
-  TestTraining? t,
-  FakeLearnPlaybackFactory? p,
-]) async {
-  await tester.pump(const Duration(seconds: 30));
+  WidgetTester tester,
+  TestTraining t,
+  FakeLearnPlaybackFactory p,
+) async {
+  p.clock.advance(const Duration(minutes: 1));
+  await tester.pump();
+  final strings = tester.element(find.byType(ReceiveDrillScreen)).s;
   await tester.enterText(find.byType(TextField), 'KM');
-  await tester.tap(find.byType(FilledButton).last);
+  await tester.pump();
+  await tester.tap(find.widgetWithText(FilledButton, strings.learnSubmit));
   await tester.pump(const Duration(seconds: 1));
+  expect(find.byType(RoundResultView), findsOneWidget);
 }
 
 /// Finishes the one-round session: the receive summary.
@@ -90,8 +95,11 @@ Future<void> _finishSession(
   TestTraining t,
   FakeLearnPlaybackFactory p,
 ) async {
-  await _answerRound(tester);
-  await tester.tap(find.byType(FilledButton).last);
+  await _answerRound(tester, t, p);
+  final strings = tester.element(find.byType(ReceiveDrillScreen)).s;
+  final finish = find.widgetWithText(FilledButton, strings.learnFinish);
+  await tester.ensureVisible(finish);
+  await tester.tap(finish);
   await tester.pump(const Duration(seconds: 1));
 }
 

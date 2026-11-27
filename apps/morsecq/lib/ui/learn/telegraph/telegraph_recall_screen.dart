@@ -11,6 +11,8 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../telegraph/telegraph_labels.dart';
+import '../../responsive.dart';
+import '../learn_footer.dart';
 import '../drill_session_guard.dart';
 
 /// Codebook recall (F13): a round of cards, character → code and code →
@@ -128,6 +130,8 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
   @override
   Widget build(BuildContext context) {
     final s = context.s;
+    final inlineFooter = LearnFooter.belongsInBody(context);
+    final footer = _done ? null : _recallFooter(context);
     // Leaving mid-deck loses the cards answered so far and whatever is typed
     // or revealed on the current card (the session is only recorded once the
     // deck is done): ask first, like the drills.
@@ -150,16 +154,55 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
           ),
         ),
         body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: _done ? _summary(context) : _card(context),
+          bottom: _done,
+          child: AdaptivePanelBody(
+            breakpoint: 900,
+            showTrailingWhenCompact: false,
+            leading: [
+              Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _done ? _summary(context) : _card(context),
+                  ),
+                ),
               ),
-            ),
+              if (inlineFooter && footer != null) footer,
+            ],
+            trailing: [
+              Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
+                    children: [
+                      Text(
+                        s.telegraphRecallHint,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.keyboard_outlined),
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(s.telegraphRecallCharPrompt),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.translate_outlined),
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(s.telegraphRecallCodePrompt),
+                      ),
+                      Text(s.telegraphSeparateNote),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+        bottomNavigationBar: inlineFooter ? null : footer,
       ),
     );
   }
@@ -222,14 +265,6 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
         ),
       const SizedBox(height: 16),
       if (!answered) ...[
-        if (toCode)
-          FilledButton(
-            key: const Key('telegraph-check'),
-            onPressed: _code.text.length == 4
-                ? () => _answer(_code.text)
-                : null,
-            child: Text(s.learnSubmit),
-          ),
         TextButton(
           key: const Key('telegraph-reveal'),
           onPressed: _revealed ? null : () => setState(() => _revealed = true),
@@ -262,14 +297,31 @@ class _TelegraphRecallScreenState extends State<TelegraphRecallScreen> {
                 : theme.colorScheme.error,
           ),
         ),
-        const SizedBox(height: 16),
-        FilledButton(
+      ],
+    ];
+  }
+
+  Widget? _recallFooter(BuildContext context) {
+    final s = context.s;
+    if (_lastCorrect != null) {
+      return LearnFooter(
+        child: FilledButton(
           key: const Key('telegraph-next'),
           onPressed: _next,
           child: Text(_index == _deck.length - 1 ? s.learnFinish : s.learnNext),
         ),
-      ],
-    ];
+      );
+    }
+    if (_deck[_index].direction != TelegraphRecallDirection.charToCode) {
+      return null;
+    }
+    return LearnFooter(
+      child: FilledButton(
+        key: const Key('telegraph-check'),
+        onPressed: _code.text.length == 4 ? () => _answer(_code.text) : null,
+        child: Text(s.learnSubmit),
+      ),
+    );
   }
 
   List<Widget> _summary(BuildContext context) {

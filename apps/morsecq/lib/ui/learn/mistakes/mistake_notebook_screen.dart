@@ -226,7 +226,7 @@ class _ListeningMistakeAnswers extends StatelessWidget {
       children: [
         for (final question in listening.exercise.questions) ...[
           Text(
-            '${comprehensionFieldLabel(context, question.field)}: ${question.answer}',
+            '${comprehensionFieldLabel(context, question.field, listening.exercise.mode)}: ${question.answer}',
             style: Theme.of(context).textTheme.labelLarge,
           ),
           Text(

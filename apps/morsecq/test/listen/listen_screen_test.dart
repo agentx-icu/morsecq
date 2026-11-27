@@ -65,6 +65,31 @@ void _pushText(FakePcmSource source, String text, {double wpm = 20}) {
 }
 
 void main() {
+  testWidgets('auto tuner searches only while microphone capture is active', (
+    tester,
+  ) async {
+    final source = FakePcmSource();
+    await _pump(tester, source);
+    expect(find.text(en.listenToneSearching), findsNothing);
+    await tester.tap(find.text(en.listenStart));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenToneSearching), findsOneWidget);
+    await tester.tap(find.text(en.listenStop));
+    await tester.pumpAndSettle();
+    expect(find.text(en.listenToneSearching), findsNothing);
+  });
+
+  testWidgets('wide listening keeps the transcript and tuner alongside', (
+    tester,
+  ) async {
+    await _pump(tester, FakePcmSource(), size: const Size(1280, 800));
+    final transcript = tester.getRect(find.byType(ListenDecodedText));
+    final tuner = tester.getRect(find.byType(ListenFrequencyPanel));
+    expect(transcript.left, closeTo(24, 1));
+    expect(tuner.left, greaterThan(transcript.right));
+    expect(tuner.top, lessThan(transcript.top + 70));
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'workbench waits for a failed capture to release the microphone',
     (tester) async {
@@ -267,6 +292,8 @@ void main() {
   ) async {
     final source = FakePcmSource();
     await _pump(tester, source);
+    expect(find.text(en.listenWaitingToReceive), findsOneWidget);
+    expect(find.text(en.listenPending), findsNothing);
     await tester.tap(find.text(en.listenStart));
     await tester.pumpAndSettle();
     _pushText(source, List.filled(12, 'CQ CQ DE BD1XYZ K').join(' '));
@@ -278,7 +305,8 @@ void main() {
         )
         .first;
     final position = tester.state<ScrollableState>(transcript).position;
-    position.jumpTo(position.maxScrollExtent / 2);
+    // Preserve a position that remains within the transcript at both sizes.
+    position.jumpTo(position.maxScrollExtent.clamp(0, 60).toDouble());
     final offset = position.pixels;
     expect(offset, greaterThan(0));
 
@@ -622,7 +650,7 @@ void main() {
   testWidgets('dragging the tuning slider switches to manual', (tester) async {
     final source = FakePcmSource();
     await _pump(tester, source);
-    expect(find.text(en.listenToneSearching), findsOneWidget);
+    expect(find.text(en.listenToneIdle), findsOneWidget);
     final slider = find.byType(Slider).first;
     final rect = tester.getRect(slider);
     await tester.tapAt(Offset(rect.left + rect.width * 0.9, rect.center.dy));
@@ -632,7 +660,7 @@ void main() {
 
     await tester.tap(find.text(en.listenRetune));
     await tester.pumpAndSettle();
-    expect(find.text(en.listenToneSearching), findsOneWidget);
+    expect(find.text(en.listenToneIdle), findsOneWidget);
   });
 
   testWidgets('disposing the screen stops and releases the source', (

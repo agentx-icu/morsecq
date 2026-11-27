@@ -70,6 +70,7 @@ Future<void> _submit(WidgetTester tester, String answer) async {
   );
   final submit = find.byKey(const ValueKey('workbench-submit'));
   await tester.ensureVisible(submit);
+  await tester.pump();
   await tester.tap(submit);
   await tester.pumpAndSettle();
 }

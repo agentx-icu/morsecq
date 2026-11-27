@@ -11,9 +11,12 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
+import '../../responsive.dart';
+import '../learn_footer.dart';
 import '../learn_playback.dart';
 import '../receive/receive_drill_screen.dart';
 import 'qso_readiness_card.dart';
+import 'qso_protocol_guide.dart';
 import 'qso_protocol_screen.dart';
 import 'qso_screen.dart';
 
@@ -277,195 +280,219 @@ class _QsoSetupScreenState extends State<QsoSetupScreen> {
     final s = context.s;
     final theme = Theme.of(context);
     final flash = _playback?.flash;
+    final readiness = AnimatedBuilder(
+      key: const ValueKey('qso-readiness-panel'),
+      animation: _c,
+      builder: (context, _) => QsoReadinessCard(
+        readiness: _c.qsoReadiness,
+        onHear: (c) => unawaited(_hear(c)),
+        onPractiseShorthand: _drill(ReceiveDrillKind.abbreviations),
+        onPractiseSymbols: () => unawaited(_practiseSymbols()),
+        onPractiseProtocol: () => unawaited(_protocol()),
+        onPractiseExchange: !_opening && QsoStation.isValidCallsign(_call.text)
+            ? () => unawaited(_start(scenario: QsoScenario.shortExchange))
+            : null,
+      ),
+    );
+    final scenarios = Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: RadioGroup<QsoScenario>(
+          groupValue: _scenario,
+          onChanged: (v) => setState(() => _scenario = v!),
+          child: Column(
+            children: <Widget>[
+              RadioListTile<QsoScenario>(
+                value: QsoScenario.shortExchange,
+                title: Text(s.learnQsoShortExchange),
+                subtitle: Text(s.learnQsoShortExchangeHint),
+              ),
+              RadioListTile<QsoScenario>(
+                value: QsoScenario.respondToCq,
+                title: Text(s.learnQsoRespond),
+                subtitle: Text(s.learnQsoRespondHint),
+              ),
+              RadioListTile<QsoScenario>(
+                value: QsoScenario.callCq,
+                title: Text(s.learnQsoCall),
+                subtitle: Text(s.learnQsoCallHint),
+              ),
+              RadioListTile<QsoScenario>(
+                key: const ValueKey('qso-scenario-contest'),
+                value: QsoScenario.contestExchange,
+                title: Text(s.qsoAdvancedContestTitle),
+                subtitle: Text(s.qsoAdvancedContestHint),
+              ),
+              RadioListTile<QsoScenario>(
+                key: const ValueKey('qso-scenario-pota'),
+                value: QsoScenario.potaActivation,
+                title: Text(s.qsoAdvancedPotaTitle),
+                subtitle: Text(s.qsoAdvancedPotaHint),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    final station = Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _call,
+              textCapitalization: TextCapitalization.characters,
+              autocorrect: false,
+              decoration: InputDecoration(
+                label: FieldLabel(s.learnQsoYourCall),
+                errorText: _callError(s),
+                border: const OutlineInputBorder(),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            if (_scenario == QsoScenario.respondToCq ||
+                _scenario == QsoScenario.callCq) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: _name,
+                textCapitalization: TextCapitalization.characters,
+                autocorrect: false,
+                decoration: InputDecoration(
+                  label: FieldLabel(s.learnQsoYourName),
+                  errorText: _wordError(s, _name),
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _qth,
+                textCapitalization: TextCapitalization.characters,
+                autocorrect: false,
+                decoration: InputDecoration(
+                  label: FieldLabel(s.learnQsoYourQth),
+                  errorText: _wordError(s, _qth),
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+            ],
+            if (_scenario == QsoScenario.contestExchange) ...[
+              const SizedBox(height: 12),
+              TextField(
+                key: const ValueKey('qso-station-serial'),
+                controller: _serial,
+                keyboardType: TextInputType.number,
+                autocorrect: false,
+                decoration: InputDecoration(
+                  label: FieldLabel(s.qsoAdvancedSerialLabel),
+                  errorText: QsoStation.isValidSerial(_serial.text)
+                      ? null
+                      : s.qsoAdvancedInvalidSerial,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+            ],
+            if (_scenario == QsoScenario.potaActivation) ...[
+              const SizedBox(height: 12),
+              TextField(
+                key: const ValueKey('qso-station-park'),
+                controller: _park,
+                textCapitalization: TextCapitalization.characters,
+                autocorrect: false,
+                decoration: InputDecoration(
+                  label: FieldLabel(s.qsoAdvancedParkLabel),
+                  errorText: QsoStation.isValidPark(_park.text)
+                      ? null
+                      : s.qsoAdvancedInvalidPark,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+    final supporting = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          s.learnQsoOffline,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        if (!_c.qsoReadiness.isReady)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              s.learnQsoExplorePending,
+              key: const ValueKey('qso-explore-label'),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.tertiary,
+              ),
+            ),
+          ),
+      ],
+    );
+    final resume = _draft == null
+        ? null
+        : FilledButton.tonalIcon(
+            key: const ValueKey('qso-resume'),
+            onPressed: _opening ? null : _resume,
+            icon: const Icon(Icons.restore),
+            label: Text(s.learnQsoResume),
+          );
     final body = !_loaded
         ? const Center(child: CircularProgressIndicator())
         : SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 640),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      // Follows the controller: practice recorded from
-                      // here (or elsewhere) updates the readiness.
-                      AnimatedBuilder(
-                        animation: _c,
-                        builder: (context, _) => QsoReadinessCard(
-                          readiness: _c.qsoReadiness,
-                          onHear: (c) => unawaited(_hear(c)),
-                          onPractiseShorthand: _drill(
-                            ReceiveDrillKind.abbreviations,
-                          ),
-                          onPractiseSymbols: () =>
-                              unawaited(_practiseSymbols()),
-                          onPractiseProtocol: () => unawaited(_protocol()),
-                          onPractiseExchange:
-                              !_opening &&
-                                  QsoStation.isValidCallsign(_call.text)
-                              ? () => unawaited(
-                                  _start(scenario: QsoScenario.shortExchange),
-                                )
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (_draft != null) ...<Widget>[
-                        FilledButton.tonalIcon(
-                          key: const ValueKey('qso-resume'),
-                          onPressed: _opening ? null : _resume,
-                          icon: const Icon(Icons.restore),
-                          label: Text(s.learnQsoResume),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                      RadioGroup<QsoScenario>(
-                        groupValue: _scenario,
-                        onChanged: (v) => setState(() => _scenario = v!),
-                        child: Column(
-                          children: <Widget>[
-                            RadioListTile<QsoScenario>(
-                              value: QsoScenario.shortExchange,
-                              title: Text(s.learnQsoShortExchange),
-                              subtitle: Text(s.learnQsoShortExchangeHint),
-                            ),
-                            RadioListTile<QsoScenario>(
-                              value: QsoScenario.respondToCq,
-                              title: Text(s.learnQsoRespond),
-                              subtitle: Text(s.learnQsoRespondHint),
-                            ),
-                            RadioListTile<QsoScenario>(
-                              value: QsoScenario.callCq,
-                              title: Text(s.learnQsoCall),
-                              subtitle: Text(s.learnQsoCallHint),
-                            ),
-                            RadioListTile<QsoScenario>(
-                              key: const ValueKey('qso-scenario-contest'),
-                              value: QsoScenario.contestExchange,
-                              title: Text(s.qsoAdvancedContestTitle),
-                              subtitle: Text(s.qsoAdvancedContestHint),
-                            ),
-                            RadioListTile<QsoScenario>(
-                              key: const ValueKey('qso-scenario-pota'),
-                              value: QsoScenario.potaActivation,
-                              title: Text(s.qsoAdvancedPotaTitle),
-                              subtitle: Text(s.qsoAdvancedPotaHint),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _call,
-                        textCapitalization: TextCapitalization.characters,
-                        autocorrect: false,
-                        decoration: InputDecoration(
-                          label: FieldLabel(s.learnQsoYourCall),
-                          errorText: _callError(s),
-                          border: const OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                      if (_scenario == QsoScenario.respondToCq ||
-                          _scenario == QsoScenario.callCq) ...[
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _name,
-                          textCapitalization: TextCapitalization.characters,
-                          autocorrect: false,
-                          decoration: InputDecoration(
-                            label: FieldLabel(s.learnQsoYourName),
-                            errorText: _wordError(s, _name),
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _qth,
-                          textCapitalization: TextCapitalization.characters,
-                          autocorrect: false,
-                          decoration: InputDecoration(
-                            label: FieldLabel(s.learnQsoYourQth),
-                            errorText: _wordError(s, _qth),
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ],
-                      if (_scenario == QsoScenario.contestExchange) ...[
-                        const SizedBox(height: 12),
-                        TextField(
-                          key: const ValueKey('qso-station-serial'),
-                          controller: _serial,
-                          keyboardType: TextInputType.number,
-                          autocorrect: false,
-                          decoration: InputDecoration(
-                            label: FieldLabel(s.qsoAdvancedSerialLabel),
-                            errorText: QsoStation.isValidSerial(_serial.text)
-                                ? null
-                                : s.qsoAdvancedInvalidSerial,
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ],
-                      if (_scenario == QsoScenario.potaActivation) ...[
-                        const SizedBox(height: 12),
-                        TextField(
-                          key: const ValueKey('qso-station-park'),
-                          controller: _park,
-                          textCapitalization: TextCapitalization.characters,
-                          autocorrect: false,
-                          decoration: InputDecoration(
-                            label: FieldLabel(s.qsoAdvancedParkLabel),
-                            errorText: QsoStation.isValidPark(_park.text)
-                                ? null
-                                : s.qsoAdvancedInvalidPark,
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      Text(
-                        s.learnQsoOffline,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      if (!_c.qsoReadiness.isReady)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            s.learnQsoExplorePending,
-                            key: const ValueKey('qso-explore-label'),
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: theme.colorScheme.tertiary,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      FilledButton.icon(
-                        key: const ValueKey('qso-start'),
-                        onPressed: !_opening && _valid
-                            ? () => unawaited(_start())
-                            : null,
-                        icon: const Icon(Icons.cell_tower),
-                        label: Text(s.learnQsoStart),
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(52),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            bottom: false,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 900;
+                return AdaptivePanelBody(
+                  breakpoint: 900,
+                  leading: [
+                    if (!wide) readiness,
+                    if (!wide) ?resume,
+                    scenarios,
+                    station,
+                    if (!wide) supporting,
+                  ],
+                  trailing: [
+                    if (wide) readiness,
+                    if (wide) ?resume,
+                    if (wide) supporting,
+                  ],
+                );
+              },
             ),
           );
     return Scaffold(
-      appBar: AppBar(title: AppBarTitle(s.learnQsoTitle)),
+      appBar: AppBar(
+        title: AppBarTitle(s.learnQsoTitle),
+        actions: [const QsoProtocolGuideButton()],
+      ),
+      bottomNavigationBar: _loaded
+          ? LearnFooter(
+              child: FilledButton.icon(
+                key: const ValueKey('qso-start'),
+                onPressed: !_opening && _valid
+                    ? () => unawaited(_start())
+                    : null,
+                icon: const Icon(Icons.cell_tower),
+                label: Text(s.learnQsoStart),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+              ),
+            )
+          : null,
       // Flash-only learners still see the symbol they tapped.
       body: flash == null ? body : FlashOverlay(isOn: flash, child: body),
     );

@@ -12,7 +12,10 @@ import '../../../i18n/l10n_extension.dart';
 import '../../../training/training_controller.dart';
 import '../../common/app_bar_title.dart';
 import '../../common/field_label.dart';
+import '../../responsive.dart';
 import '../drill_session_guard.dart';
+import '../learn_footer.dart';
+import '../signal_activity.dart';
 import '../learn_playback.dart';
 import 'comprehension_labels.dart';
 
@@ -262,8 +265,11 @@ class _ListeningComprehensionScreenState
     setState(() => _revealed = true);
   }
 
+  bool get _hasAnswer =>
+      _answers.values.any((answer) => answer.text.trim().isNotEmpty);
+
   void _submit() {
-    if (!_heard || _playing || _score != null) return;
+    if (!_heard || _playing || _score != null || !_hasAnswer) return;
     final score = _exercise.score({
       for (final e in _answers.entries) e.key: e.value.text,
     });
@@ -351,21 +357,35 @@ class _ListeningComprehensionScreenState
   }
 
   @override
-  Widget build(BuildContext context) => DrillLeaveGuard(
-    guard: _started && !_saved,
-    child: Scaffold(
-      appBar: AppBar(title: AppBarTitle(context.s.comprehensionTitle)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 680),
-              child: _content(context),
-            ),
+  Widget build(BuildContext context) {
+    final inlineFooter = LearnFooter.belongsInBody(context);
+    final footer = _exerciseFooter(context);
+    return DrillLeaveGuard(
+      guard: _started && !_saved,
+      child: Scaffold(
+        appBar: AppBar(title: AppBarTitle(context.s.comprehensionTitle)),
+        body: SafeArea(
+          bottom: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 900;
+              final settings = _contextPanel(context);
+              final exercise = _exercisePanel(context);
+              return AdaptivePanelBody(
+                breakpoint: 900,
+                leading: [
+                  if (!wide) settings,
+                  exercise,
+                  if (inlineFooter && footer != null) footer,
+                  if (!wide) _history(context),
+                ],
+                trailing: [if (wide) settings, if (wide) _history(context)],
+              );
+            },
           ),
         ),
+        bottomNavigationBar: inlineFooter ? null : footer,
       ),
-    ),
-  );
+    );
+  }
 }

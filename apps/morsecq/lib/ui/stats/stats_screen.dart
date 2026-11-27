@@ -82,7 +82,10 @@ class _StatsScreenState extends State<StatsScreen> {
         return RefreshIndicator(
           onRefresh: _reload,
           child: stats.isEmpty
-              ? const _ScrollableEmpty()
+              ? _ScrollableEmpty(
+                  onLearn: () =>
+                      Navigator.of(context).popUntil((route) => route.isFirst),
+                )
               : StatsDashboard(snapshot: stats),
         );
       },
@@ -202,7 +205,9 @@ class _ErrorState extends StatelessWidget {
 
 /// Empty state inside a scrollable so pull-to-refresh still works.
 class _ScrollableEmpty extends StatelessWidget {
-  const _ScrollableEmpty();
+  const _ScrollableEmpty({required this.onLearn});
+
+  final VoidCallback onLearn;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +216,7 @@ class _ScrollableEmpty extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: const StatsEmptyState(),
+          child: StatsEmptyState(onLearn: onLearn),
         ),
       ),
     );

@@ -32,6 +32,26 @@ Finder _card(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(AlphabetCard));
 
 void main() {
+  testWidgets('wide reference keeps selected pattern and actions visible', (
+    tester,
+  ) async {
+    await _pump(tester, size: kDesktop);
+    expect(find.text(en.learnReferenceSelection('K')), findsOneWidget);
+    await tester.tap(_card('F'));
+    await tester.pumpAndSettle();
+    final selection = find.text(en.learnReferenceSelection('F'));
+    expect(selection, findsOneWidget);
+    expect(
+      tester.getTopLeft(selection).dx,
+      greaterThan(tester.getTopRight(find.byType(AlphabetGrid)).dx),
+    );
+    expect(
+      find.byKey(const ValueKey('reference-selected-play')),
+      findsOneWidget,
+    );
+    expect(find.byTooltip(en.referenceCopyPattern), findsOneWidget);
+  });
+
   group('ReferenceScreen layout', () {
     testWidgets('phone shows tabs and the alphabet grid first', (tester) async {
       await _pump(tester);

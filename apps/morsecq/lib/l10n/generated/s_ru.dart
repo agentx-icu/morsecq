@@ -194,10 +194,10 @@ class SRu extends S {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Принято $count символа',
-      many: 'Принято $count символов',
-      few: 'Принято $count символа',
-      one: 'Принят $count символ',
+      other: 'Всего: $count знака',
+      many: 'Всего: $count знаков',
+      few: 'Всего: $count знака',
+      one: 'Всего: $count знак',
     );
     return '$_temp0';
   }
@@ -1119,7 +1119,7 @@ class SRu extends S {
   String get statsEmptyBody => 'Завершите первое занятие по приёму или передаче, и здесь появятся график точности, данные по каждому символу и календарь занятий.';
 
   @override
-  String get statsEmptyCallToAction => 'Перейдите в «Обучение» и нажмите «Продолжить урок».';
+  String get statsEmptyCallToAction => 'Перейти к обучению';
 
   @override
   String get statsOverviewTitle => 'Обзор';
@@ -1134,7 +1134,7 @@ class SRu extends S {
   String get statsNoData => '--';
 
   @override
-  String get statsTilePractice => 'Практика';
+  String get statsTilePractice => 'Время по сохранённым записям';
 
   @override
   String get statsTileStreak => 'Серия занятий';
@@ -1290,7 +1290,7 @@ class SRu extends S {
   String get listenPending => 'Приём';
 
   @override
-  String get listenSpeed => 'Скорость';
+  String get listenSpeed => 'Расчётная скорость';
 
   @override
   String get listenSpeedUnknown => '-- WPM';
@@ -1489,7 +1489,7 @@ class SRu extends S {
 
   @override
   String statsAccuracyDetail(String allTime) {
-    return 'Последние 7 дней / за всё время: $allTime';
+    return 'Последние 7 дней / сохранённые записи $allTime';
   }
 
   @override
@@ -1836,7 +1836,7 @@ class SRu extends S {
   String get learnQsoRemoteHidden => 'Принимайте на слух — текст скрыт.';
 
   @override
-  String get learnQsoShowText => 'Показать текст';
+  String get learnQsoShowText => 'Показать текст (с помощью)';
 
   @override
   String get learnQsoListen => 'Слушать';
@@ -1940,12 +1940,12 @@ class SRu extends S {
 
   @override
   String learnQsoSummaryRepeats(int count) {
-    return 'Повторы: $count';
+    return 'Повторные прослушивания корреспондента: $count';
   }
 
   @override
   String learnQsoSummaryHints(int count) {
-    return 'Подсказки: $count';
+    return 'Просмотры подсказок или текста: $count';
   }
 
   @override
@@ -2025,7 +2025,7 @@ class SRu extends S {
   String get workbenchFormats => 'WAV, 16-битный PCM, моно или стерео, 8/16/44,1/48 кГц; до 50 МБ и 20 минут.';
 
   @override
-  String get workbenchBackupNote => 'Записи остаются на этом устройстве. Сохраните копии перед очисткой данных или удалением приложения. Сохранённые фрагменты сохраняют названия, заметки и позиции.';
+  String get workbenchBackupNote => 'Сохраните исходный WAV-файл, выбранный при импорте, чтобы импортировать его повторно. При очистке учебных данных удаляются копии записей и сохранённые фрагменты в приложении. При удалении приложения они также могут исчезнуть.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2137,7 +2137,7 @@ class SRu extends S {
   String get workbenchDecoderHidden => 'Текст декодера скрыт, пока вы принимаете.';
 
   @override
-  String get workbenchShowDecoder => 'Показать текст декодера';
+  String get workbenchShowDecoder => 'Показать декодированный текст (с помощью)';
 
   @override
   String get workbenchReference => 'Эталонный текст (необязательно)';
@@ -2252,7 +2252,7 @@ class SRu extends S {
   }
 
   @override
-  String get materialsProblemNothingTrainable => 'Здесь нечего тренировать азбукой Морзе.';
+  String get materialsProblemNothingTrainable => 'Введите хотя бы одну букву, цифру или процедурный знак азбуки Морзе. Для китайских иероглифов откройте «Обучение → Другие упражнения → Китайский телеграфный код».';
 
   @override
   String get materialsSearch => 'Поиск материалов';
@@ -2301,13 +2301,13 @@ class SRu extends S {
   String get materialsSaveDialogTitle => 'Сохранить материал';
 
   @override
-  String get materialsImportFailed => 'Импорт не удался. Библиотека не изменилась.';
+  String get materialsImportFailed => 'Не удалось импортировать файл. Библиотека не изменена. Откройте «Импорт TXT или JSON» и повторно выберите файл.';
 
   @override
-  String get materialsImportNotUtf8 => 'Можно импортировать только текст в UTF-8.';
+  String get materialsImportNotUtf8 => 'Можно импортировать только текст в UTF-8. Сохраните TXT или JSON с материалами MorseCQ в UTF-8 и выберите файл снова.';
 
   @override
-  String get materialsImportInvalid => 'Это не файл материалов MorseCQ. Ничего не импортировано.';
+  String get materialsImportInvalid => 'В файле нет действительных материалов MorseCQ в формате JSON. Ничего не импортировано. Для повторной попытки выберите JSON-файл, экспортированный из MorseCQ.';
 
   @override
   String materialsImported(int count) {
@@ -2327,7 +2327,7 @@ class SRu extends S {
   String get materialsDuplicateSkip => 'Пропустить';
 
   @override
-  String get materialsExportJson => 'Экспорт в JSON';
+  String get materialsExportJson => 'Экспортировать показанные материалы в JSON';
 
   @override
   String materialsExported(int count) {
@@ -2335,7 +2335,7 @@ class SRu extends S {
   }
 
   @override
-  String get materialsExportFailed => 'Экспорт не удался.';
+  String get materialsExportFailed => 'Не удалось экспортировать файл. Снова выберите ту же команду экспорта, чтобы повторить попытку.';
 
   @override
   String get materialsExportWav => 'Экспорт аудио (WAV)';
@@ -2396,6 +2396,9 @@ class SRu extends S {
 
   @override
   String get placementCheckLevel => 'Проверить текущий уровень';
+
+  @override
+  String get placementKeepCurrent => 'Остаться на текущем уроке';
 
   @override
   String get placementFromZero => 'Пропустить введение: испытание урока 1';
@@ -2727,7 +2730,7 @@ class SRu extends S {
   String get offlineClearData => 'Удалить данные обучения';
 
   @override
-  String get offlineClearDataBody => 'Удаляет прогресс, планы и материалы на этом устройстве.';
+  String get offlineClearDataBody => 'Удалить локальные данные обучения, записи и фрагменты в приложении.';
 
   @override
   String get offlineCleared => 'Данные обучения удалены.';
@@ -2795,8 +2798,8 @@ class SRu extends S {
   String get learnGuidedPractice => 'Короткая тренировка (10 символов)';
 
   @override
-  String learnChallengeHint(int count, int min) {
-    return 'Испытание урока: $count символов с точностью 90 %, каждый новый символ не менее $min раз. Успех открывает следующий символ.';
+  String learnChallengeHint(int count, int min, String accuracy) {
+    return 'Нужно принять не менее $count знаков с общей точностью $accuracy. Для каждого нового знака требуется не менее $min попыток и точность $accuracy. Выполнение откроет следующий знак.';
   }
 
   @override
@@ -2878,7 +2881,7 @@ class SRu extends S {
   String get learnVerdictPractice => 'Тренировка записана';
 
   @override
-  String get learnVerdictPracticeHint => 'Свободная тренировка обновляет статистику и повторения, но никогда не продвигает курс. Это делает только испытание урока с главной страницы обучения.';
+  String get learnVerdictPracticeHint => 'Свободная практика обновляет статистику и повторение. Чтобы продвинуться, пройдите самостоятельное испытание текущего урока.';
 
   @override
   String get learnVerdictCourseComplete => 'Последнее испытание пройдено: весь курс символов освоен.';
@@ -3024,7 +3027,7 @@ class SRu extends S {
   }
 
   @override
-  String get firstLessonTooFast => 'Слишком быстро? Темп для новичка (длиннее паузы между символами)';
+  String get firstLessonTooFast => 'Увеличивать интервалы в будущих упражнениях с несколькими знаками';
 
   @override
   String get firstLessonNextTitle => 'Что дальше';
@@ -3119,7 +3122,7 @@ class SRu extends S {
   String get learnQsoHowTitle => 'Как проходит QSO';
 
   @override
-  String get learnQsoHowBody => 'Вызов (CQ = всем, DE = от), ответ позывными, обмен рапортом (RST), именем и QTH (место), затем 73 (наилучшие пожелания) и <SK> (конец). K означает «приём».';
+  String get learnQsoHowBody => 'CQ — вызов любой станции, DE — «от», K — передача хода. В коротком QSO подтверждают позывные, обмениваются рапортами RST и прощаются с 73 (приветствие) и <SK> (конец). В полном QSO также передают имя и QTH (местоположение).';
 
   @override
   String get learnQsoExploreLabel => 'Содержит невыученные символы';
@@ -3297,7 +3300,7 @@ class SRu extends S {
   String get goalsContest => 'Обмен в соревнованиях';
 
   @override
-  String get goalsExplanation => 'По мотивам CW Academy. Для этапа нужны две самостоятельные попытки с точностью от 90% на указанной эффективной скорости за последние 28 дней.';
+  String get goalsExplanation => 'На основе CW Academy. Для каждой цели нужны две самостоятельные попытки с точностью не менее 90% и эффективной скоростью не ниже указанной. Результаты действуют 28 дней.';
 
   @override
   String get goalsBeginner => 'Сначала пройдите курс знаков. Затем ежедневный план добавит понимание на слух и QSO по выбранной цели.';
@@ -3417,10 +3420,10 @@ class SRu extends S {
   String get qsoAdvancedTypedMode => 'Ответ текстом (с помощью)';
 
   @override
-  String get qsoAdvancedKeyedMode => 'Передать ответ ключом';
+  String get qsoAdvancedKeyedMode => 'Переключиться на ключ';
 
   @override
-  String get qsoAdvancedTypedReply => 'Ваша передача';
+  String get qsoAdvancedTypedReply => 'Ваш текстовый ответ';
 
   @override
   String get qsoAdvancedContestStage => 'Передать RST и свой номер';
@@ -3687,4 +3690,260 @@ class SRu extends S {
 
   @override
   String get learnPlanCourseEvidence => 'Практика и освоение курса учитываются отдельно. Завершение плана само по себе не означает прохождения урока.';
+
+  @override
+  String get learnRoundHeard => 'Сигнал завершён';
+
+  @override
+  String get learnReplayTurnsToPractice => 'Повторить с помощью';
+
+  @override
+  String get learnFinishListeningBeforeCheck => 'Вводите ответ во время сигнала. Проверка доступна после его завершения.';
+
+  @override
+  String get learnSkipRound => 'Пропустить раунд (считается пропуском)';
+
+  @override
+  String get offlineClearScope => 'Действие необратимо. Прогресс, упражнения, планы, материалы, записи приложения и сохранённые фрагменты на устройстве будут удалены.';
+
+  @override
+  String get offlineClearKeeps => 'Настройки приложения и исходные файлы вне MorseCQ сохраняются.';
+
+  @override
+  String get offlineClearPartial => 'Часть данных или записей уже могла быть удалена. Повторите попытку, чтобы удалить оставшееся.';
+
+  @override
+  String get offlineClearRetry => 'Повторить удаление';
+
+  @override
+  String get materialsIncomingVersion => 'Импортируемая версия';
+
+  @override
+  String get materialsLocalVersion => 'На этом устройстве';
+
+  @override
+  String get materialsPreviousImportVersion => 'Предыдущая запись в файле';
+
+  @override
+  String get materialsReplaceConflicts => 'Заменить совпадающие записи';
+
+  @override
+  String get materialsChangedReview => 'Материалы изменились. Откройте импорт снова, чтобы проверить совпадения.';
+
+  @override
+  String get learnChallengeOverall => 'Общая точность';
+
+  @override
+  String get learnChallengeReached => 'Достигнут';
+
+  @override
+  String get learnChallengeNotReached => 'Ниже цели';
+
+  @override
+  String get learnChallengeSamples => 'Попытки';
+
+  @override
+  String get learnRoundDifferences => 'Что повторить';
+
+  @override
+  String learnRoundExtra(String symbol) {
+    return 'Лишний: $symbol';
+  }
+
+  @override
+  String learnRoundCorrect(String symbol) {
+    return 'Верно: $symbol';
+  }
+
+  @override
+  String learnRoundReplaySymbol(String symbol) {
+    return 'Прослушать $symbol';
+  }
+
+  @override
+  String get learnGuidedReplayNote => 'Повторяйте при необходимости. Эта тренировка не продвигает курс.';
+
+  @override
+  String get keysTestWaiting => 'Ожидание ввода';
+
+  @override
+  String get keysTestOn => 'Сигнал активен';
+
+  @override
+  String get keysTestReleased => 'Клавиши отпущены';
+
+  @override
+  String get listenWaitingPermission => 'Ожидание разрешения на микрофон';
+
+  @override
+  String get listenMicNext => 'Продолжите, чтобы запросить разрешение системы. WAV можно открыть в редакторе без микрофона.';
+
+  @override
+  String get workbenchEstimateBasis => 'Основа сравнения: оценка декодера';
+
+  @override
+  String get workbenchReferenceBasis => 'Основа сравнения: ваш эталон';
+
+  @override
+  String workbenchEstimateMatch(String accuracy) {
+    return 'Совпадение с оценкой декодера: $accuracy';
+  }
+
+  @override
+  String workbenchReferenceMatch(String accuracy) {
+    return 'Совпадение с эталоном: $accuracy';
+  }
+
+  @override
+  String appearanceActive(String style, String mode) {
+    return 'Используется: $style · $mode';
+  }
+
+  @override
+  String get appearancePending => 'Предпросмотр · не применено';
+
+  @override
+  String get appearanceRetryApply => 'Применить повторно';
+
+  @override
+  String get workbenchRelinkFormat => 'Выберите исходный WAV, чтобы восстановить связь с фрагментом.';
+
+  @override
+  String get firstLessonSignalReceived => 'Я уловил сигнал. Продолжить';
+
+  @override
+  String get firstLessonNoSoundDesktop => 'Увеличьте громкость и проверьте бесшумный режим. Можно использовать вспышку экрана.';
+
+  @override
+  String get learnQsoFirstTryAccepted => 'Пройдено с первой попытки';
+
+  @override
+  String get learnQsoFirstTryRejected => 'Первый ответ требовал исправления';
+
+  @override
+  String get learnQsoStagePractice => 'Отработать этот ответ';
+
+  @override
+  String get learnQsoPracticeNoRecord => 'Эта проверка не изменяет завершённый результат.';
+
+  @override
+  String get learnQsoRemoteStation => 'Удалённая станция';
+
+  @override
+  String get listenToneIdle => 'Автонастройка · ожидание';
+
+  @override
+  String get keysTestActiveProfile => 'Проверить выбранный профиль';
+
+  @override
+  String get learnDecodedAccuracy => 'Точность декодирования';
+
+  @override
+  String learnPlanCopyCounts(int count, int group) {
+    return 'Всего $count знаков · до $group за раунд';
+  }
+
+  @override
+  String get learnPlanReplayNote => 'Повтор полностью прослушанного сигнала считается помощью.';
+
+  @override
+  String get learnPlanNoUnlock => 'Этот шаг не продвигает курс.';
+
+  @override
+  String learnChallengeHintLast(int count, int min, String accuracy) {
+    return 'Примите не менее $count знаков с общей точностью $accuracy. Для каждого нового знака нужны не менее $min попыток и точность $accuracy. Успешное прохождение завершает курс.';
+  }
+
+  @override
+  String learnReferenceSelection(String char) {
+    return 'Выбранный знак: $char';
+  }
+
+  @override
+  String get comprehensionFieldUnanswered => 'Без ответа';
+
+  @override
+  String get comprehensionSendingCallsign => 'Позывной передающей станции (после DE)';
+
+  @override
+  String comprehensionYourAnswer(String answer) {
+    return 'Ваш ответ: $answer';
+  }
+
+  @override
+  String comprehensionExpectedAnswer(String answer) {
+    return 'Правильный ответ: $answer';
+  }
+
+  @override
+  String get firstLessonSlowReplay => 'Повторить этот сигнал медленнее';
+
+  @override
+  String get learnQsoTextRevealed => 'Текст открыт · этап засчитан с помощью';
+
+  @override
+  String learnBeginGuided(String level) {
+    return 'Начать тренировку с подсказками: $level';
+  }
+
+  @override
+  String goalsSamples(int count) {
+    return 'Не менее $count за попытку';
+  }
+
+  @override
+  String get workbenchYourCopy => 'Ваш принятый текст';
+
+  @override
+  String get workbenchNewCopy => 'Начать новую попытку приёма';
+
+  @override
+  String get workbenchDeleteTitle => 'Удалить сохранённый фрагмент?';
+
+  @override
+  String workbenchDeleteSelection(String title) {
+    return '«$title», заметки и сохранённый диапазон будут удалены. Исходный WAV останется на месте.';
+  }
+
+  @override
+  String workbenchDeleteWithCopy(String title) {
+    return '«$title», заметки, диапазон и копия WAV в приложении будут удалены. Исходный WAV останется на месте.';
+  }
+
+  @override
+  String get workbenchRelinkMismatch => 'Этот WAV слишком короткий хотя бы для одного фрагмента либо отличается частотой дискретизации или числом каналов. Выберите исходный WAV.';
+
+  @override
+  String workbenchRelinkShared(int count) {
+    return 'Этот WAV используется в $count сохранённых фрагментах. Повторная привязка восстановит все.';
+  }
+
+  @override
+  String get learnQsoReplayAssisted => 'Прослушать снова (с подсказкой)';
+
+  @override
+  String get learnQsoStageAssisted => 'На этом этапе использована помощь';
+
+  @override
+  String get learnQsoYourTypedTurn => 'Отредактируйте текст ответа, затем нажмите «Отправить» (с помощью).';
+
+  @override
+  String get statsReceiveAccuracy => 'Точность приёма';
+
+  @override
+  String get listenWaitingToReceive => 'Ожидание запуска';
+
+  @override
+  String get workbenchAlignedEstimate => 'Оценка декодера';
+
+  @override
+  String get workbenchAlignedReference => 'Эталонный ответ';
+
+  @override
+  String get workbenchAlignmentLegend => 'Выделенные ячейки различаются. Точка обозначает пропущенный в этой строке знак.';
+
+  @override
+  String materialsImportUpdated(String stamp) {
+    return 'Изменено: $stamp';
+  }
 }

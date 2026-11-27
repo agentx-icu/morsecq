@@ -19,6 +19,15 @@ void main() {
     expect(theme.colorScheme.surface, Colors.white);
   });
 
+  test('the default appearance carries the new learning palette', () {
+    final light = MorsecqTheme.light().colorScheme;
+    final dark = MorsecqTheme.dark().colorScheme;
+    expect(light.primary, const Color(0xFF126C5B));
+    expect(light.surfaceContainerLow, const Color(0xFFF3F8F5));
+    expect(dark.primary, const Color(0xFF85D8BC));
+    expect(dark.surface, const Color(0xFF14231F));
+  });
+
   for (final style in UiStyle.values) {
     for (final dark in [false, true]) {
       test(

@@ -19,14 +19,20 @@ class QsoLogView extends StatelessWidget {
   final Set<int> revealed;
   final ValueChanged<int> onReveal;
 
-  /// Plays a remote transmission again locally; null while one is playing.
-  final ValueChanged<String>? onPlay;
+  /// Plays the indexed remote transmission; null while one is playing.
+  final ValueChanged<int>? onPlay;
 
   @override
   Widget build(BuildContext context) {
     final s = context.s;
     final theme = Theme.of(context);
     final turns = session.turns;
+    final confirmedCall = turns.any(
+      (turn) =>
+          !turn.fromRemote &&
+          turn.stage == QsoStage.callConfirm &&
+          turn.accepted == true,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -38,11 +44,12 @@ class QsoLogView extends StatelessWidget {
                     index: i,
                     text: turns[i].text,
                     shown: revealed.contains(i),
+                    heard: session.hasHeardRemoteTurn(i),
                     onReveal: () => onReveal(i),
-                    onPlay: onPlay == null
-                        ? null
-                        : () => onPlay!(turns[i].text),
-                    caption: s.learnQsoRemote(session.remote.callsign),
+                    onPlay: onPlay == null ? null : () => onPlay!(i),
+                    caption: confirmedCall || revealed.contains(i)
+                        ? s.learnQsoRemote(session.remote.callsign)
+                        : s.learnQsoRemoteStation,
                   )
                 : Align(
                     alignment: AlignmentDirectional.centerEnd,
@@ -91,6 +98,7 @@ class _RemoteTurn extends StatelessWidget {
     required this.index,
     required this.text,
     required this.shown,
+    required this.heard,
     required this.onReveal,
     required this.onPlay,
     required this.caption,
@@ -99,6 +107,7 @@ class _RemoteTurn extends StatelessWidget {
   final int index;
   final String text;
   final bool shown;
+  final bool heard;
   final VoidCallback onReveal;
   final VoidCallback? onPlay;
   final String caption;
@@ -116,9 +125,11 @@ class _RemoteTurn extends StatelessWidget {
           children: <Widget>[
             Text(caption, style: theme.textTheme.labelMedium),
             const SizedBox(height: 4),
-            if (shown)
-              SelectableText(text, key: ValueKey('qso-remote-$index'))
-            else
+            if (shown) ...[
+              SelectableText(text, key: ValueKey('qso-remote-$index')),
+              const SizedBox(height: 4),
+              Text(s.learnQsoTextRevealed, style: theme.textTheme.labelMedium),
+            ] else
               ExcludeSemantics(
                 child: Text(
                   s.learnQsoRemoteHidden,
@@ -131,9 +142,12 @@ class _RemoteTurn extends StatelessWidget {
               spacing: 4,
               children: <Widget>[
                 TextButton.icon(
+                  key: ValueKey('qso-play-$index'),
                   onPressed: onPlay,
                   icon: const Icon(Icons.volume_up_outlined),
-                  label: Text(s.learnQsoListen),
+                  label: Text(
+                    heard ? s.learnQsoReplayAssisted : s.learnQsoListen,
+                  ),
                 ),
                 if (!shown)
                   TextButton.icon(

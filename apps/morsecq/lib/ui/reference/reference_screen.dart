@@ -1,14 +1,17 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/l10n_extension.dart';
 import '../common/app_bar_title.dart';
+import '../common/feedback.dart';
 import '../listen/listen_screen.dart';
 import '../responsive.dart';
 import '../tools/radio_tools_screen.dart';
 import 'playback_settings_sheet.dart';
+import 'morse_pattern_text.dart';
 import 'reference_catalog.dart';
 import 'reference_layout.dart';
 import 'reference_playback_controller.dart';
@@ -63,6 +66,9 @@ class _ReferenceScreenState extends State<ReferenceScreen>
     vsync: this,
   );
   ReferenceSection get _selected => ReferenceSection.values[_sections.index];
+  ReferenceEntry _selectedCharacter = ReferenceCatalog.alphabet.firstWhere(
+    (entry) => entry.label == 'K',
+  );
   String _query = '';
 
   bool get _ownsSettings => widget.settings == null;
@@ -124,19 +130,13 @@ class _ReferenceScreenState extends State<ReferenceScreen>
         IconButton(
           tooltip: s.listenTitle,
           icon: const Icon(Icons.mic_none),
-          onPressed: () {
-            _controller.stop();
-            Navigator.of(context).push(ListenScreen.route());
-          },
+          onPressed: () => _openListen(context),
         ),
         IconButton(
           key: ReferenceScreen.radioToolsKey,
           tooltip: s.toolsTitle,
           icon: const Icon(Icons.handyman_outlined),
-          onPressed: () {
-            _controller.stop();
-            Navigator.of(context).push(RadioToolsScreen.route());
-          },
+          onPressed: () => _openRadioTools(context),
         ),
         IconButton(
           tooltip: s.referenceTranslatorTitle,
@@ -150,6 +150,16 @@ class _ReferenceScreenState extends State<ReferenceScreen>
         ),
       ],
     );
+  }
+
+  void _openListen(BuildContext context) {
+    _controller.stop();
+    Navigator.of(context).push(ListenScreen.route());
+  }
+
+  void _openRadioTools(BuildContext context) {
+    _controller.stop();
+    Navigator.of(context).push(RadioToolsScreen.route());
   }
 
   /// Pushed as a route (not a tab) so only one sidetone engine is alive at a
@@ -277,6 +287,8 @@ class _ReferenceScreenState extends State<ReferenceScreen>
   }
 
   Widget _buildTwoPane(BuildContext context) {
+    final showSelection =
+        _query.isEmpty && _selected == ReferenceSection.alphabet;
     return Scaffold(
       appBar: _appBar(context),
       body: SafeArea(
@@ -302,16 +314,107 @@ class _ReferenceScreenState extends State<ReferenceScreen>
                     _searchField(context),
                     Expanded(
                       child: _query.isEmpty
-                          ? ReferenceSectionView(section: _selected)
+                          ? ReferenceSectionView(
+                              section: _selected,
+                              selectedCharacter: _selectedCharacter,
+                              onCharacterSelected: (entry) =>
+                                  setState(() => _selectedCharacter = entry),
+                            )
                           : ReferenceSearchResults(query: _query),
                     ),
                   ],
                 ),
               ),
             ),
+            if (showSelection)
+              SizedBox(width: 240, child: _characterDetails(context)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _characterDetails(BuildContext context) {
+    final s = context.s;
+    final entry = _selectedCharacter;
+    final theme = Theme.of(context);
+    return ListView(
+      primary: false,
+      padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 16, 16),
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final playing = _controller.isPlayingId(entry.id);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 8,
+                  children: [
+                    Text(
+                      s.learnReferenceSelection(entry.label),
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    MorsePatternText(
+                      entry.pattern,
+                      activeMark: _controller.activeMarkFor(entry.id),
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 4,
+                      children: [
+                        FilledButton.tonalIcon(
+                          key: const ValueKey('reference-selected-play'),
+                          onPressed: () =>
+                              _controller.toggle(entry.id, entry.playText),
+                          icon: Icon(playing ? Icons.stop : Icons.play_arrow),
+                          label: Text(
+                            playing
+                                ? s.referenceStop
+                                : s.learnHearChar(entry.label),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: s.referenceCopyPattern,
+                          onPressed: () async {
+                            await Clipboard.setData(
+                              ClipboardData(
+                                text: displayMorsePattern(entry.pattern),
+                              ),
+                            );
+                            if (context.mounted) {
+                              showSnack(context, s.referencePatternCopied);
+                            }
+                          },
+                          icon: const Icon(Icons.copy_outlined),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.swap_horiz),
+          title: Text(s.referenceTranslatorTitle),
+          onTap: () => _openTranslator(context),
+        ),
+        ListTile(
+          leading: const Icon(Icons.mic_none),
+          title: Text(s.listenTitle),
+          onTap: () => _openListen(context),
+        ),
+        ListTile(
+          leading: const Icon(Icons.handyman_outlined),
+          title: Text(s.toolsTitle),
+          onTap: () => _openRadioTools(context),
+        ),
+      ],
     );
   }
 }

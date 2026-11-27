@@ -4,16 +4,18 @@
 # frame does not fail the job. A file that fails twice fails the run; the
 # summary lists every file with its outcome.
 #
-#   tool/ci/run_integration_tests.sh -d <device-id> [--shard <index>/<count>] [--skip <file>]...
+#   tool/ci/run_integration_tests.sh (-d <device-id> | --ci-ios-simulator <udid>) [--shard <index>/<count>] [--skip <file>]...
 set -euo pipefail
 
 DEVICE=""
+CI_IOS_SIMULATOR=0
 SHARD_INDEX=1
 SHARD_COUNT=1
 declare -a SKIP=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -d|--device) DEVICE="${2:-}"; shift 2 ;;
+    -d|--device) DEVICE="${2:-}"; CI_IOS_SIMULATOR=0; shift 2 ;;
+    --ci-ios-simulator) DEVICE="${2:-}"; CI_IOS_SIMULATOR=1; shift 2 ;;
     --shard)
       if [[ ! ${2:-} =~ ^([1-9][0-9]{0,8})/([1-9][0-9]{0,8})$ ]]; then
         echo 'expected --shard <index>/<count> with positive integers' >&2
@@ -26,8 +28,18 @@ while [[ $# -gt 0 ]]; do
     *) echo "unknown flag: $1" >&2; exit 64 ;;
   esac
 done
-[[ -n "$DEVICE" ]] || { echo 'usage: run_integration_tests.sh -d <device-id> [--shard <index>/<count>]' >&2; exit 64; }
+[[ -n "$DEVICE" ]] || { echo 'provide -d <device-id> or --ci-ios-simulator <udid>' >&2; exit 64; }
 (( SHARD_INDEX <= SHARD_COUNT )) || { echo 'shard index exceeds shard count' >&2; exit 64; }
+
+run_file() {
+  if (( CI_IOS_SIMULATOR )); then
+    # A hosted simulator can stop responding after Xcode finishes the build.
+    # Leave room in the 75-minute job for a fresh boot and a second attempt.
+    gtimeout --kill-after=30s 25m flutter test "$1" -d "$DEVICE" --reporter expanded
+  else
+    flutter test "$1" -d "$DEVICE"
+  fi
+}
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../../apps/morsecq"
 declare -a RESULTS=()
@@ -44,7 +56,7 @@ for f in integration_test/*_test.dart; do
   outcome=FAIL
   for attempt in 1 2; do
     echo "::group::$name on $DEVICE (attempt $attempt)"
-    if flutter test "$f" -d "$DEVICE"; then
+    if run_file "$f"; then
       echo "::endgroup::"
       if [[ $attempt -eq 1 ]]; then
         outcome=PASS
@@ -53,6 +65,13 @@ for f in integration_test/*_test.dart; do
         echo "::warning::$name passed on $DEVICE only after a retry"
       fi
       break
+    else
+      status=$?
+    fi
+    if (( CI_IOS_SIMULATOR && attempt == 1 && (status == 124 || status == 137) )); then
+      echo "::warning::$name timed out on $DEVICE; restarting this simulator before retry"
+      gtimeout --kill-after=10s 2m xcrun simctl shutdown "$DEVICE"
+      gtimeout --kill-after=10s 5m xcrun simctl bootstatus "$DEVICE" -b
     fi
     echo "::endgroup::"
   done

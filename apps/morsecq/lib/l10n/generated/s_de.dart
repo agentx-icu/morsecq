@@ -182,8 +182,8 @@ class SDe extends S {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Zeichen aufgenommen',
-      one: '$count Zeichen aufgenommen',
+      other: '$count Zeichen insgesamt geübt',
+      one: '1 Zeichen insgesamt geübt',
     );
     return '$_temp0';
   }
@@ -1081,7 +1081,7 @@ class SDe extends S {
   String get statsEmptyBody => 'Schließe deine erste Hör- oder Gebeübung ab. Dann erscheinen hier dein Genauigkeitsverlauf, deine Stärken bei einzelnen Zeichen und ein Übungskalender.';
 
   @override
-  String get statsEmptyCallToAction => 'Gehe zu „Lernen“ und drücke „Lektion fortsetzen“, um zu beginnen.';
+  String get statsEmptyCallToAction => 'Zum Lernen';
 
   @override
   String get statsOverviewTitle => 'Übersicht';
@@ -1096,7 +1096,7 @@ class SDe extends S {
   String get statsNoData => '--';
 
   @override
-  String get statsTilePractice => 'Übung';
+  String get statsTilePractice => 'Gespeicherte Übungszeit';
 
   @override
   String get statsTileStreak => 'Serie';
@@ -1252,7 +1252,7 @@ class SDe extends S {
   String get listenPending => 'Empfang läuft';
 
   @override
-  String get listenSpeed => 'Geschwindigkeit';
+  String get listenSpeed => 'Geschätztes Tempo';
 
   @override
   String get listenSpeedUnknown => '-- WPM';
@@ -1451,7 +1451,7 @@ class SDe extends S {
 
   @override
   String statsAccuracyDetail(String allTime) {
-    return 'Letzte 7 Tage / $allTime insgesamt';
+    return 'Letzte 7 Tage / gespeicherte Daten $allTime';
   }
 
   @override
@@ -1798,7 +1798,7 @@ class SDe extends S {
   String get learnQsoRemoteHidden => 'Nach Gehör mitschreiben – der Text ist verborgen.';
 
   @override
-  String get learnQsoShowText => 'Text zeigen';
+  String get learnQsoShowText => 'Text anzeigen (mit Hilfe)';
 
   @override
   String get learnQsoListen => 'Anhören';
@@ -1902,12 +1902,12 @@ class SDe extends S {
 
   @override
   String learnQsoSummaryRepeats(int count) {
-    return 'Wiederholungen: $count';
+    return 'Gegenstation erneut gehört: $count';
   }
 
   @override
   String learnQsoSummaryHints(int count) {
-    return 'Tipps: $count';
+    return 'Hinweise oder Klartext eingesehen: $count';
   }
 
   @override
@@ -1987,7 +1987,7 @@ class SDe extends S {
   String get workbenchFormats => 'WAV, 16-Bit-PCM, Mono oder Stereo, 8/16/44,1/48 kHz; bis 50 MB und 20 Minuten.';
 
   @override
-  String get workbenchBackupNote => 'Aufnahmen bleiben auf diesem Gerät. Sichere sie vor dem Löschen von Lerndaten oder der Deinstallation. Gespeicherte Ausschnitte behalten Titel, Notizen und Positionen.';
+  String get workbenchBackupNote => 'Behalte die ursprünglich ausgewählte WAV-Datei, damit du sie erneut importieren kannst. Beim Löschen der Lerndaten werden die Aufnahmekopien in der App und die gespeicherten Ausschnitte entfernt. Auch eine Deinstallation kann sie entfernen.';
 
   @override
   String workbenchInfo(String rate, String channels, String duration) {
@@ -2099,7 +2099,7 @@ class SDe extends S {
   String get workbenchDecoderHidden => 'Der Decodertext ist beim Mitschreiben verborgen.';
 
   @override
-  String get workbenchShowDecoder => 'Decodertext zeigen';
+  String get workbenchShowDecoder => 'Dekodierten Text anzeigen (mit Hilfe)';
 
   @override
   String get workbenchReference => 'Referenztext (optional)';
@@ -2214,7 +2214,7 @@ class SDe extends S {
   }
 
   @override
-  String get materialsProblemNothingTrainable => 'Hier lässt sich nichts morsen.';
+  String get materialsProblemNothingTrainable => 'Gib mindestens einen Morsebuchstaben, eine Ziffer oder ein Verfahrenszeichen ein. Für chinesische Schriftzeichen öffne Lernen → Weitere Übungen → Chinesischer Telegrafencode.';
 
   @override
   String get materialsSearch => 'Materialien durchsuchen';
@@ -2263,13 +2263,13 @@ class SDe extends S {
   String get materialsSaveDialogTitle => 'Material speichern';
 
   @override
-  String get materialsImportFailed => 'Import fehlgeschlagen. Deine Bibliothek ist unverändert.';
+  String get materialsImportFailed => 'Import fehlgeschlagen. Deine Bibliothek ist unverändert. Öffne „TXT oder JSON importieren“ und wähle die Datei erneut aus.';
 
   @override
-  String get materialsImportNotUtf8 => 'Nur UTF-8-Textdateien können importiert werden.';
+  String get materialsImportNotUtf8 => 'Es kann nur Text in UTF-8 importiert werden. Speichere die TXT-Datei oder das MorseCQ-Material-JSON als UTF-8 und wähle die Datei erneut aus.';
 
   @override
-  String get materialsImportInvalid => 'Keine gültige MorseCQ-Materialdatei. Nichts importiert.';
+  String get materialsImportInvalid => 'Keine gültige MorseCQ-Materialdatei im JSON-Format. Es wurde nichts importiert. Wähle zum erneuten Versuch eine aus MorseCQ exportierte JSON-Datei.';
 
   @override
   String materialsImported(int count) {
@@ -2289,7 +2289,7 @@ class SDe extends S {
   String get materialsDuplicateSkip => 'Überspringen';
 
   @override
-  String get materialsExportJson => 'Als JSON exportieren';
+  String get materialsExportJson => 'Angezeigte Materialien als JSON exportieren';
 
   @override
   String materialsExported(int count) {
@@ -2297,7 +2297,7 @@ class SDe extends S {
   }
 
   @override
-  String get materialsExportFailed => 'Export fehlgeschlagen.';
+  String get materialsExportFailed => 'Export fehlgeschlagen. Wähle dieselbe Exportoption erneut aus.';
 
   @override
   String get materialsExportWav => 'Audio exportieren (WAV)';
@@ -2358,6 +2358,9 @@ class SDe extends S {
 
   @override
   String get placementCheckLevel => 'Mein aktuelles Niveau prüfen';
+
+  @override
+  String get placementKeepCurrent => 'Aktuelle Lektion beibehalten';
 
   @override
   String get placementFromZero => 'Einführung überspringen: Prüfung Lektion 1';
@@ -2681,7 +2684,7 @@ class SDe extends S {
   String get offlineClearData => 'Lerndaten löschen';
 
   @override
-  String get offlineClearDataBody => 'Löscht deinen Fortschritt, deine Pläne und Materialien auf diesem Gerät.';
+  String get offlineClearDataBody => 'Lokale Lerndaten und in der App gespeicherte Aufnahmen und Ausschnitte löschen.';
 
   @override
   String get offlineCleared => 'Lerndaten gelöscht.';
@@ -2749,8 +2752,8 @@ class SDe extends S {
   String get learnGuidedPractice => 'Kurze Übung (10 Zeichen)';
 
   @override
-  String learnChallengeHint(int count, int min) {
-    return 'Die Lektionsprüfung: $count Zeichen bei 90 %, jedes neue Zeichen mindestens $min-mal. Bestehen schaltet das nächste Zeichen frei.';
+  String learnChallengeHint(int count, int min, String accuracy) {
+    return 'Mindestens $count Zeichen mit $accuracy Gesamtgenauigkeit. Jedes neue Zeichen braucht $min Versuche und $accuracy Genauigkeit. Bestehen schaltet das nächste Zeichen frei.';
   }
 
   @override
@@ -2831,7 +2834,7 @@ class SDe extends S {
   String get learnVerdictPractice => 'Übung gespeichert';
 
   @override
-  String get learnVerdictPracticeHint => 'Freie Übung aktualisiert Statistik und Wiederholungen, bringt den Kurs aber nie voran. Das tut nur die Lektionsprüfung von der Lernen-Startseite.';
+  String get learnVerdictPracticeHint => 'Freies Üben aktualisiert Statistik und Wiederholung. Bestehe die selbstständige Prüfung der aktuellen Lektion, um weiterzukommen.';
 
   @override
   String get learnVerdictCourseComplete => 'Letzte Prüfung bestanden: Der ganze Zeichenkurs gehört dir.';
@@ -2977,7 +2980,7 @@ class SDe extends S {
   }
 
   @override
-  String get firstLessonTooFast => 'Zu schnell? Anfängertempo nutzen (längere Pausen zwischen Zeichen)';
+  String get firstLessonTooFast => 'Anfängerabstände in künftigen Übungen mit mehreren Zeichen';
 
   @override
   String get firstLessonNextTitle => 'Wie weiter';
@@ -3072,7 +3075,7 @@ class SDe extends S {
   String get learnQsoHowTitle => 'So läuft ein QSO';
 
   @override
-  String get learnQsoHowBody => 'Anruf (CQ = an alle, DE = von), Antwort mit Rufzeichen, Austausch von Rapport (RST), Name und QTH (Standort), dann 73 (viele Grüße) und <SK> (Ende). K heißt bitte kommen.';
+  String get learnQsoHowBody => 'CQ ruft beliebige Stationen, DE bedeutet „von“ und K „bitte kommen“. Ein kurzes QSO bestätigt Rufzeichen, tauscht Rapporte (RST) und endet mit 73 (Gruß) und <SK> (Ende). Im vollständigen QSO kommen Name und QTH (Standort) dazu.';
 
   @override
   String get learnQsoExploreLabel => 'Enthält ungelernte Zeichen';
@@ -3250,7 +3253,7 @@ class SDe extends S {
   String get goalsContest => 'Contest-QSOs';
 
   @override
-  String get goalsExplanation => 'Nach CW Academy. Pro Meilenstein sind zwei selbstständige Versuche mit mindestens 90 % bei der angegebenen Effektivgeschwindigkeit innerhalb von 28 Tagen erforderlich.';
+  String get goalsExplanation => 'Inspiriert von der CW Academy. Jeder Meilenstein erfordert zwei eigenständige Versuche mit mindestens 90 % Genauigkeit und mindestens dem angegebenen effektiven Tempo. Nachweise gelten 28 Tage.';
 
   @override
   String get goalsBeginner => 'Beginne mit dem Zeichenkurs. Danach ergänzt der Tagesplan Hörverständnis und QSOs passend zum Ziel.';
@@ -3370,10 +3373,10 @@ class SDe extends S {
   String get qsoAdvancedTypedMode => 'Antwort tippen (mit Hilfe)';
 
   @override
-  String get qsoAdvancedKeyedMode => 'Antwort tasten';
+  String get qsoAdvancedKeyedMode => 'Zur Morsetaste wechseln';
 
   @override
-  String get qsoAdvancedTypedReply => 'Deine Sendung';
+  String get qsoAdvancedTypedReply => 'Deine Textantwort';
 
   @override
   String get qsoAdvancedContestStage => 'RST und deine Seriennummer senden';
@@ -3640,4 +3643,260 @@ class SDe extends S {
 
   @override
   String get learnPlanCourseEvidence => 'Übung und Kursbeherrschung werden getrennt erfasst. Ein abgeschlossener Plan bedeutet noch keine bestandene Lektion.';
+
+  @override
+  String get learnRoundHeard => 'Signal beendet';
+
+  @override
+  String get learnReplayTurnsToPractice => 'Mit Hilfe wiederholen';
+
+  @override
+  String get learnFinishListeningBeforeCheck => 'Beim Hören eingeben, nach dem Signal prüfen.';
+
+  @override
+  String get learnSkipRound => 'Runde überspringen (als verpasst gewertet)';
+
+  @override
+  String get offlineClearScope => 'Dies lässt sich nicht rückgängig machen. Kursfortschritt, Übungsdaten, Pläne, Materialien sowie App-Aufnahmen und Ausschnitte auf diesem Gerät werden gelöscht.';
+
+  @override
+  String get offlineClearKeeps => 'App-Einstellungen und Originaldateien außerhalb von MorseCQ bleiben erhalten.';
+
+  @override
+  String get offlineClearPartial => 'Einige Lerndaten oder Aufnahmen wurden möglicherweise bereits gelöscht. Erneut versuchen, um den Rest zu löschen.';
+
+  @override
+  String get offlineClearRetry => 'Löschen erneut versuchen';
+
+  @override
+  String get materialsIncomingVersion => 'Importierte Version';
+
+  @override
+  String get materialsLocalVersion => 'Auf diesem Gerät';
+
+  @override
+  String get materialsPreviousImportVersion => 'Vorheriger Eintrag in dieser Datei';
+
+  @override
+  String get materialsReplaceConflicts => 'Konflikte ersetzen';
+
+  @override
+  String get materialsChangedReview => 'Materialien wurden geändert. Import erneut öffnen, um Konflikte zu prüfen.';
+
+  @override
+  String get learnChallengeOverall => 'Gesamtgenauigkeit';
+
+  @override
+  String get learnChallengeReached => 'Erreicht';
+
+  @override
+  String get learnChallengeNotReached => 'Nicht erreicht';
+
+  @override
+  String get learnChallengeSamples => 'Versuche';
+
+  @override
+  String get learnRoundDifferences => 'Zum Wiederholen';
+
+  @override
+  String learnRoundExtra(String symbol) {
+    return 'Zu viel: $symbol';
+  }
+
+  @override
+  String learnRoundCorrect(String symbol) {
+    return 'Richtig: $symbol';
+  }
+
+  @override
+  String learnRoundReplaySymbol(String symbol) {
+    return '$symbol anhören';
+  }
+
+  @override
+  String get learnGuidedReplayNote => 'Bei Bedarf erneut abspielen. Diese Übung schaltet keine Lektion frei.';
+
+  @override
+  String get keysTestWaiting => 'Warte auf Eingabe';
+
+  @override
+  String get keysTestOn => 'Signal aktiv';
+
+  @override
+  String get keysTestReleased => 'Tasten losgelassen';
+
+  @override
+  String get listenWaitingPermission => 'Warte auf Mikrofonfreigabe';
+
+  @override
+  String get listenMicNext => 'Mit Weiter wird die Systemfreigabe angefragt. WAV-Dateien lassen sich auch ohne Mikrofon in der Aufnahme-Werkbank öffnen.';
+
+  @override
+  String get workbenchEstimateBasis => 'Vergleich mit geschätzter Dekodierung';
+
+  @override
+  String get workbenchReferenceBasis => 'Vergleich mit deiner Referenz';
+
+  @override
+  String workbenchEstimateMatch(String accuracy) {
+    return 'Übereinstimmung mit geschätzter Dekodierung: $accuracy';
+  }
+
+  @override
+  String workbenchReferenceMatch(String accuracy) {
+    return 'Übereinstimmung mit Referenz: $accuracy';
+  }
+
+  @override
+  String appearanceActive(String style, String mode) {
+    return 'Aktiv: $style · $mode';
+  }
+
+  @override
+  String get appearancePending => 'Vorschau · noch nicht angewendet';
+
+  @override
+  String get appearanceRetryApply => 'Erneut anwenden';
+
+  @override
+  String get workbenchRelinkFormat => 'Wähle die Original-WAV-Datei, um den Ausschnitt neu zu verknüpfen.';
+
+  @override
+  String get firstLessonSignalReceived => 'Signal wahrgenommen. Weiter';
+
+  @override
+  String get firstLessonNoSoundDesktop => 'Erhöhe die Lautstärke oder prüfe Stummschaltung und Nicht stören. Du kannst auch den Bildschirmblitz nutzen.';
+
+  @override
+  String get learnQsoFirstTryAccepted => 'Beim ersten Versuch bestanden';
+
+  @override
+  String get learnQsoFirstTryRejected => 'Erste Antwort musste korrigiert werden';
+
+  @override
+  String get learnQsoStagePractice => 'Diese Antwort üben';
+
+  @override
+  String get learnQsoPracticeNoRecord => 'Diese Prüfung ändert das fertige Ergebnis nicht.';
+
+  @override
+  String get learnQsoRemoteStation => 'Gegenstation';
+
+  @override
+  String get listenToneIdle => 'Automatische Abstimmung · inaktiv';
+
+  @override
+  String get keysTestActiveProfile => 'Ausgewähltes Profil testen';
+
+  @override
+  String get learnDecodedAccuracy => 'Decodiergenauigkeit';
+
+  @override
+  String learnPlanCopyCounts(int count, int group) {
+    return 'Insgesamt $count Zeichen · bis zu $group je Runde';
+  }
+
+  @override
+  String get learnPlanReplayNote => 'Erneutes Anhören eines vollständigen Signals gilt als Hilfe.';
+
+  @override
+  String get learnPlanNoUnlock => 'Dieser Schritt bringt den Kurs nicht voran.';
+
+  @override
+  String learnChallengeHintLast(int count, int min, String accuracy) {
+    return 'Mindestens $count Zeichen mit $accuracy Gesamttreffern aufnehmen. Jedes neue Zeichen benötigt mindestens $min Versuche und $accuracy Genauigkeit. Bestehen schließt den Kurs ab.';
+  }
+
+  @override
+  String learnReferenceSelection(String char) {
+    return 'Ausgewähltes Zeichen: $char';
+  }
+
+  @override
+  String get comprehensionFieldUnanswered => 'Nicht beantwortet';
+
+  @override
+  String get comprehensionSendingCallsign => 'Rufzeichen der sendenden Station (nach DE)';
+
+  @override
+  String comprehensionYourAnswer(String answer) {
+    return 'Deine Antwort: $answer';
+  }
+
+  @override
+  String comprehensionExpectedAnswer(String answer) {
+    return 'Richtige Antwort: $answer';
+  }
+
+  @override
+  String get firstLessonSlowReplay => 'Dieses Signal langsamer wiederholen';
+
+  @override
+  String get learnQsoTextRevealed => 'Text angezeigt · dieser Abschnitt gilt als unterstützt';
+
+  @override
+  String learnBeginGuided(String level) {
+    return 'Geführte Übung starten: $level';
+  }
+
+  @override
+  String goalsSamples(int count) {
+    return 'Mindestens $count pro Versuch';
+  }
+
+  @override
+  String get workbenchYourCopy => 'Deine Mitschrift';
+
+  @override
+  String get workbenchNewCopy => 'Neuen Mitschreibversuch starten';
+
+  @override
+  String get workbenchDeleteTitle => 'Gespeicherten Ausschnitt löschen?';
+
+  @override
+  String workbenchDeleteSelection(String title) {
+    return '„$title“, Notizen und Zeitbereich werden gelöscht. Die ursprüngliche WAV-Datei bleibt erhalten.';
+  }
+
+  @override
+  String workbenchDeleteWithCopy(String title) {
+    return '„$title“, Notizen und Zeitbereich sowie die WAV-Kopie der App werden gelöscht. Die ursprüngliche WAV-Datei bleibt erhalten.';
+  }
+
+  @override
+  String get workbenchRelinkMismatch => 'Diese WAV-Datei ist für mindestens einen Ausschnitt zu kurz oder hat eine andere Abtastrate oder Kanalzahl. Wähle die ursprünglich importierte WAV-Datei.';
+
+  @override
+  String workbenchRelinkShared(int count) {
+    return 'Diese WAV-Datei gehört zu $count gespeicherten Ausschnitten. Die Verknüpfung stellt alle wieder her.';
+  }
+
+  @override
+  String get learnQsoReplayAssisted => 'Erneut hören (mit Hilfe)';
+
+  @override
+  String get learnQsoStageAssisted => 'In dieser Phase wurde Hilfe genutzt';
+
+  @override
+  String get learnQsoYourTypedTurn => 'Bearbeite deine Textantwort und wähle „Senden“ (mit Hilfe).';
+
+  @override
+  String get statsReceiveAccuracy => 'Genauigkeit beim Mitschreiben';
+
+  @override
+  String get listenWaitingToReceive => 'Wartet auf Start';
+
+  @override
+  String get workbenchAlignedEstimate => 'Geschätzte Dekodierung';
+
+  @override
+  String get workbenchAlignedReference => 'Referenzantwort';
+
+  @override
+  String get workbenchAlignmentLegend => 'Markierte Felder unterscheiden sich. Ein Punkt steht für ein fehlendes Zeichen in dieser Zeile.';
+
+  @override
+  String materialsImportUpdated(String stamp) {
+    return 'Bearbeitet am $stamp';
+  }
 }

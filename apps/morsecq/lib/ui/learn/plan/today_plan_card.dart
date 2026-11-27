@@ -171,12 +171,18 @@ class _TodayPlanCardState extends State<TodayPlanCard>
     final earlier = _c.unfinishedEarlierPlan;
     return Card(
       key: const ValueKey('today-plan-card'),
+      color: plan.isComplete ? theme.colorScheme.primaryContainer : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(s.learnPlanTitle, style: theme.textTheme.titleMedium),
+            Text(
+              s.learnPlanTitle,
+              style: plan.isComplete
+                  ? theme.textTheme.labelLarge
+                  : theme.textTheme.titleMedium,
+            ),
             const SizedBox(height: 4),
             Text(
               s.learnPlanSummary(

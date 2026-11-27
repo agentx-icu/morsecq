@@ -90,6 +90,7 @@ void main() {
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
     await waitForWorkbenchCondition(
       tester,
@@ -99,6 +100,24 @@ void main() {
     final record = t.controller.progress.history.single;
     expect(record.assistance, contains(Assistance.decoder));
   });
+
+  testWidgets(
+    'empty and unsupported copy do not allow checking or revealing the estimate',
+    (tester) async {
+      final t = await TestTraining.create();
+      await pumpScreen(tester, t.controller);
+      final submit = find.byKey(const ValueKey('workbench-submit'));
+      final answer = find.byKey(const ValueKey('workbench-answer'));
+      expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+      await tester.enterText(answer, '   汉');
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+      expect(find.text('SOS TEST'), findsNothing);
+      await tester.enterText(answer, 'SOS');
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
+    },
+  );
 
   testWidgets('decoding the same selection again keeps it assisted', (
     tester,
@@ -119,6 +138,7 @@ void main() {
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
     await waitForWorkbenchCondition(
       tester,
@@ -155,9 +175,13 @@ void main() {
       find.byKey(const ValueKey('workbench-answer')),
       'SOS TEST',
     );
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('workbench-submit')));
     await waitForWorkbench(tester, find.text(en.learnProgressSaveFailed));
-    expect(find.text(en.learnAccuracyPercent(100)), findsOneWidget);
+    expect(
+      find.text(en.workbenchEstimateMatch(en.learnAccuracyPercent(100))),
+      findsOneWidget,
+    );
     expect(find.text(en.learnProgressSaveFailed), findsOneWidget);
     expect(find.text(en.actionRetry), findsOneWidget);
   });
