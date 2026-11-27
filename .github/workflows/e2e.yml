@@ -224,6 +224,7 @@ jobs:
       - name: Boot an iPhone simulator
         run: |
           set -euo pipefail
+          command -v gtimeout >/dev/null || brew install coreutils
           udid="$(xcrun simctl list devices available -j | python3 -c '
           import json, sys
           devices = json.load(sys.stdin)["devices"]
@@ -237,7 +238,7 @@ jobs:
       - name: Real-UI tests (offline learning)
         env:
           E2E_SHARD: ${{ matrix.shard }}
-        run: bash tool/ci/run_integration_tests.sh -d "$SIM_UDID" --shard "$E2E_SHARD"
+        run: bash tool/ci/run_integration_tests.sh --ci-ios-simulator "$SIM_UDID" --shard "$E2E_SHARD"
 
   android:
     if: >-

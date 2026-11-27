@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import tempfile
@@ -9,6 +10,54 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class PyramidTest(unittest.TestCase):
+    def test_ios_timeout_restarts_only_the_selected_simulator_before_retry(self):
+        with tempfile.TemporaryDirectory(prefix="morsecq-ios-timeout-") as temp:
+            root = Path(temp)
+            scripts = root / "tool/ci"
+            scripts.mkdir(parents=True)
+            runner = scripts / "run_integration_tests.sh"
+            shutil.copy(REPO / "tool/ci/run_integration_tests.sh", runner)
+            suite = root / "apps/morsecq/integration_test"
+            suite.mkdir(parents=True)
+            (suite / "launch_test.dart").touch()
+            programs = {
+                "gtimeout": 'echo "bounded $*"\nshift 2\nexec "$@"',
+                "xcrun": 'echo "device $*"',
+                "flutter": (
+                    'if [[ ! -f attempted ]]; then touch attempted; exit 124; fi\n'
+                    'exit "$RETRY_RESULT"'
+                ),
+            }
+            for name, body in programs.items():
+                program = root / name
+                program.write_text("#!/usr/bin/env bash\n" + body + "\n")
+                program.chmod(0o755)
+
+            for retry_result in (0, 124):
+                with self.subTest(retry_result=retry_result):
+                    (suite.parent / "attempted").unlink(missing_ok=True)
+                    result = subprocess.run(
+                        ["bash", str(runner), "--ci-ios-simulator", "fixture-udid"],
+                        env={
+                            **os.environ,
+                            "PATH": f"{root}:{os.environ['PATH']}",
+                            "RETRY_RESULT": str(retry_result),
+                        },
+                        text=True,
+                        capture_output=True,
+                    )
+                    self.assertEqual(result.returncode, int(retry_result != 0), result.stderr)
+                    events = [
+                        line for line in result.stdout.splitlines() if line.startswith("bounded ")
+                    ]
+                    self.assertEqual(len(events), 4, result.stdout)
+                    self.assertIn("flutter test integration_test/launch_test.dart -d fixture-udid", events[0])
+                    self.assertIn("xcrun simctl shutdown fixture-udid", events[1])
+                    self.assertIn("xcrun simctl bootstatus fixture-udid -b", events[2])
+                    self.assertEqual(events[0], events[3])
+                    summary = "PASS (retried)" if retry_result == 0 else "FAIL"
+                    self.assertIn(f"{summary} launch_test.dart", result.stdout)
+
     def test_e2e_shards_partition_discovered_files(self):
         with tempfile.TemporaryDirectory(prefix="morsecq-shards-") as temp:
             root = Path(temp)
